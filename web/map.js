@@ -597,7 +597,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				} else if(p.length == 6) {
 					if(p[0] in markers) {
 						var m = markers[p[0]];
-						var converted = fromWorldToLatLng(p[2], p[3], p[4]);
+						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
 						m.setPosition(converted);
 					} else {
 						var image = 'sign.png';
@@ -609,7 +609,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						else if (p[1] == 'spawn')
 							image = 'list_on.png';
 
-						var converted = fromWorldToLatLng(p[2], p[3], p[4]);
+						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
 						var marker = new MarkerWithLabel({
 							position: converted,
 							map: map,
