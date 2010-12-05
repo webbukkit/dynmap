@@ -1,10 +1,7 @@
 var setup = {
-	//Web based path to your tiles. Example: tileUrl: 'http://mydomain.com/myminecraftmap/',
-	tileUrl:     'http://gorfyhome.com/minecraft/',
-	//Web based path to your updates. Example: updateUrl: 'http://mydomain.com/myminecraftmap/up/',
-	updateUrl:   'http:/gorfyhome.com/minecraft/up/',
-	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
-	updateRate:  2000
+	tileUrl:     'http://www.yourdomain.com/minecraft/tiles/',
+	updateUrl:   'http://www.yourdomain.com/minecraft/up/',
+	updateRate:  2000	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
 };
 
 /* THERE SHOULD BE NO NEED FOR MANUAL CONFIGURATION BEYOND THIS POINT */
