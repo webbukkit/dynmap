@@ -69,7 +69,20 @@ public class WebServerRequest extends Thread {
 			for(Player player : etc.getServer().getPlayerList()) {
 				sb.append(player.getName() + " " + player.getX() + " " + player.getY() + " " + player.getZ() + "\n");
 			}
+			
+			for(MapMarker marker : mgr.markers.values())
+			{
+				sb.append(marker.name + " marker " + marker.owner + " " + marker.px + " " + marker.py + " " + marker.pz + "\n");
+			}
 
+			// TODO: Find a way to load the warps from the server.  Currently loading the from the flatfile over and over...
+			ArrayList<Warp> warps = mgr.loadWarps();
+			
+			for(Warp warp : warps)
+			{
+				sb.append(warp.Name + " warp unknown " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+			}
+			
 			synchronized(mgr.lock) {
 				for(TileUpdate tu : mgr.tileUpdates) {
 					if(tu.at >= cutoff) {

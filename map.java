@@ -17,7 +17,7 @@ public class map extends Plugin {
 		mgr.startManager();
 
 		try {
-			server = new WebServer(8123, mgr);
+			server = new WebServer(mgr.serverport, mgr);
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}
@@ -48,5 +48,9 @@ public class map extends Plugin {
 		etc.getInstance().addCommand("/map_regen", " - regenerate entire map");
 		etc.getInstance().addCommand("/map_debug", " - send map debugging messages");
 		etc.getInstance().addCommand("/map_nodebug", " - disable map debugging messages");
+		etc.getInstance().addCommand("/addmarker", " [name] - adds a named marker to the map");
+		etc.getInstance().addCommand("/removemarker", " [name] - removes a named marker to the map");
+		etc.getInstance().addCommand("/listmarkers", " - list all named markers");
+		etc.getInstance().addCommand("/tpmarker", " [name] - teleport to a named marker");
 	}
 }

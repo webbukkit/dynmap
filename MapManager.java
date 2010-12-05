@@ -1,17 +1,23 @@
+import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.Vector;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MapManager extends Thread {
 	protected static final Logger log = Logger.getLogger("Minecraft");
@@ -46,6 +52,12 @@ public class MapManager extends Thread {
 	/* path to image tile directory */
 	public String tilepath = "tiles/";
 
+	/* path to markers file */
+	public String markerpath = "markers.csv";
+	
+	/* port to run web server on */
+	public int serverport = 8123;
+	
 	/* time to pause between rendering tiles (ms) */
 	public int renderWait = 500;
 
@@ -57,6 +69,9 @@ public class MapManager extends Thread {
 
 	/* map debugging mode (send debugging messages to this player) */
 	public String debugPlayer = null;
+	
+	/* hashmap of markers */
+	public HashMap<String,MapMarker> markers = null;
 
 	public void debug(String msg)
 	{
@@ -66,7 +81,7 @@ public class MapManager extends Thread {
 		if(p == null) return;
 		p.sendMessage("Map> " + Colors.Red + msg);
 	}
-
+	
 	public MapManager()
 	{
 		/* load configuration */
@@ -76,6 +91,8 @@ public class MapManager extends Thread {
 		try {
 			tilepath = properties.getString("map-tilepath", "tiles/");
 			colorsetpath = properties.getString("map-colorsetpath", "colors.txt");
+			markerpath = properties.getString("map-markerpath", "markers.csv");
+			serverport = Integer.parseInt(properties.getString("map-serverport", "8123"));
 		} catch(Exception ex) {
 			log.log(Level.SEVERE, "Exception while reading properties for dynamic map", ex);
 		}
@@ -83,9 +100,8 @@ public class MapManager extends Thread {
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
 		tileUpdates = new LinkedList<TileUpdate>();
-
-
-
+		
+		markers = new HashMap<String,MapMarker>();
 	}
 
 	/* tile X for position x */
@@ -114,6 +130,8 @@ public class MapManager extends Thread {
 		/* load colorset */
 		File cfile = new File(colorsetpath);
 
+		loadMapMarkers();
+		
 		try {
 			Scanner scanner = new Scanner(cfile);
 			int nc = 0;
@@ -388,5 +406,183 @@ public class MapManager extends Thread {
 			open.add(getTileByPosition(t.px, t.py + tileHeight));
 			open.add(getTileByPosition(t.px, t.py - tileHeight));
 		}
+	}
+	
+	/* adds a marker to the map */
+	public boolean addMapMarker(Player player, String name, double px, double py, double pz)
+	{
+		if (markers.containsKey(name))
+		{
+			player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" already exists.");
+			return false;
+		}
+		
+		MapMarker marker = new MapMarker();
+		marker.name = name;
+		marker.owner = player.getName();
+		marker.px = px;
+		marker.py = py;
+		marker.pz = pz;
+		markers.put(name, marker);
+		
+		try
+		{
+			saveMapMarkers();
+			return true;
+		}
+		catch(IOException e)
+		{
+			log.log(Level.SEVERE, "Failed to save markers.csv", e);
+		}
+		
+		return false;
+	}
+	
+	/* removes a marker from the map */
+	public boolean removeMapMarker(Player player, String name)
+	{
+		if (markers.containsKey(name))
+		{
+			MapMarker marker = markers.get(name);
+			if (marker.owner.equalsIgnoreCase(player.getName()))
+			{
+				markers.remove(name);
+				
+				try
+				{
+					saveMapMarkers();
+					return true;
+				}
+				catch(IOException e)
+				{
+					log.log(Level.SEVERE, "Failed to save markers.csv", e);
+				}
+			}
+			else
+			{
+				player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" does not belong to you.");
+			}
+		}
+		else
+		{
+			player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" does not exist.");
+		}
+		
+		return false;
+	}
+	
+	/* teleports a user to a marker */
+	public boolean teleportToMapMarker(Player player, String name)
+	{
+		if (markers.containsKey(name))
+		{
+			MapMarker marker = markers.get(name);
+
+			player.teleportTo(marker.px, marker.py, marker.pz, 0, 0);
+		}
+		else
+		{
+			player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" does not exist.");
+		}
+		
+		return false;
+	}
+	
+	/* load the map marker file */
+	private void loadMapMarkers()
+	{
+		Scanner scanner = null;
+	    try
+	    {
+	    	scanner = new Scanner(new FileInputStream(markerpath), "UTF-8");
+	    	while (scanner.hasNextLine())
+	    	{
+	    		String line = scanner.nextLine();
+	    		String[] values = line.split(",");
+	    		MapMarker marker = new MapMarker();
+	    		marker.name = values[0];
+	    		marker.owner = values[1];
+	    		marker.px = Double.parseDouble(values[2]);
+	    		marker.py = Double.parseDouble(values[3]);
+	    		marker.pz = Double.parseDouble(values[4]);
+	    		markers.put(marker.name, marker);
+	    	}
+	    }
+	    catch(FileNotFoundException e)
+	    {
+	    	log.log(Level.SEVERE, "markers.csv not found", e);
+	    }
+	    finally
+	    {
+	    	if (scanner != null) scanner.close();
+	    }
+	}
+	
+	/* save the map marker file */
+	private void saveMapMarkers() throws IOException
+	{
+		Writer out = null;
+	    try
+	    {
+	    	out = new OutputStreamWriter(new FileOutputStream(markerpath), "UTF-8");
+	    	Collection<MapMarker> values = markers.values();
+	    	Iterator<MapMarker> it = values.iterator();
+	    	while(it.hasNext())
+	    	{
+	    		MapMarker marker = it.next();
+	    		String line = marker.name + "," + marker.owner + "," + marker.px + "," +  marker.py + "," +  marker.pz + "\r\n";
+	    		out.write(line);
+	    	}
+	    }
+	    catch(UnsupportedEncodingException e)
+	    {
+	    	log.log(Level.SEVERE, "Unsupported encoding", e);
+	    }
+	    catch(FileNotFoundException e)
+	    {
+	    	log.log(Level.SEVERE, "markers.csv not found", e);
+	    }
+	    finally
+	    {
+	    	if (out != null) out.close();
+	    }
+	}
+	
+	/* load the warps file (doesn't work with SQL data source) */
+	/* find a way to load this from the server itself, loading the file each time isn't good */
+	public ArrayList<Warp> loadWarps()
+	{
+		ArrayList<Warp> warps = new ArrayList<Warp>();
+		Scanner scanner = null;
+		
+	    try
+	    {
+	    	scanner = new Scanner(new FileInputStream("warps.txt"), "UTF-8");
+	    	while (scanner.hasNextLine())
+	    	{
+	    		String line = scanner.nextLine();
+	    		String[] values = line.split(":");
+	    		Warp warp = new Warp();
+	    		warp.Name = values[0];
+	    		warp.Location = new Location(
+	    				Double.parseDouble(values[1]),
+	    				Double.parseDouble(values[2]),
+	    				Double.parseDouble(values[3]),
+	    				Float.parseFloat(values[4]),
+	    				Float.parseFloat(values[5])
+	    		);
+	    		warps.add(warp);
+	    	}
+	    }
+	    catch(FileNotFoundException e)
+	    {
+
+	    }
+	    finally
+	    {
+	    	if (scanner != null) scanner.close();
+	    }
+	    
+	    return warps;
 	}
 }

@@ -118,8 +118,10 @@ public class MapTile {
 			String path = getPath(mgr);
 			File file = new File(path);
 			ImageIO.write(im, "png", file);
-
-			//log.info("Saved tile: " + path);
+		} catch(java.lang.NullPointerException e) {
+			// IOException is not enough, a NullPointerException often occurs due to this issue
+			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5034864
+			log.log(Level.SEVERE, "Failed to save tile (NullPointerException): " + getPath(mgr), e);
 		} catch(IOException e) {
 			log.log(Level.SEVERE, "Failed to save tile: " + getPath(mgr), e);
 		}

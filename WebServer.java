@@ -20,7 +20,7 @@ public class WebServer extends Thread {
 		sock = new ServerSocket(port, 5, InetAddress.getByName("127.0.0.1"));
 		running = true;
 		start();
-		log.info("map WebServer started");
+		log.info("map WebServer started on port " + port);
 	}
 
 	public void run()

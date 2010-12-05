@@ -1,3 +1,14 @@
+var setup = {
+	//Web based path to your tiles. Example: tileUrl: 'http://mydomain.com/myminecraftmap/',
+	tileUrl:     'http://gorfyhome.com/minecraft/',
+	//Web based path to your updates. Example: updateUrl: 'http://mydomain.com/myminecraftmap/up/',
+	updateUrl:   'http:/gorfyhome.com/minecraft/up/',
+	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
+	updateRate:  2000
+};
+
+/* THERE SHOULD BE NO NEED FOR MANUAL CONFIGURATION BEYOND THIS POINT */
+
 /**
  * This constructor creates a label and associates it with a marker.
  * It is for the private use of the MarkerWithLabel class.
@@ -7,10 +18,10 @@
  */
 function MarkerLabel_(marker) {
   this.marker_ = marker;
-
+ 
   this.labelDiv_ = document.createElement("div");
   this.labelDiv_.style.cssText = "position: absolute; overflow: hidden;";
-
+ 
   // Set up the DIV for handling mouse events in the label. This DIV forms a transparent veil
   // in the "overlayMouseTarget" pane, a veil that covers just the label. This is done so that
   // events can be captured even if the label is in the shadow of a google.maps.InfoWindow.
@@ -18,10 +29,10 @@ function MarkerLabel_(marker) {
   this.eventDiv_ = document.createElement("div");
   this.eventDiv_.style.cssText = this.labelDiv_.style.cssText;
 }
-
+ 
 // MarkerLabel_ inherits from OverlayView:
 MarkerLabel_.prototype = new google.maps.OverlayView();
-
+ 
 /**
  * Adds the DIV representing the label to the DOM. This method is called
  * automatically when the marker's <code>setMap</code> method is called.
@@ -35,7 +46,7 @@ MarkerLabel_.prototype.onAdd = function () {
   var cSavedZIndex;
   var cLatOffset, cLngOffset;
   var cIgnoreClick;
-
+ 
   // Stops all processing of an event.
   //
   var cAbortEvent = function (e) {
@@ -47,10 +58,10 @@ MarkerLabel_.prototype.onAdd = function () {
       e.stopPropagation();
     }
   };
-
+ 
   this.getPanes().overlayImage.appendChild(this.labelDiv_);
   this.getPanes().overlayMouseTarget.appendChild(this.eventDiv_);
-
+ 
   this.listeners_ = [
     google.maps.event.addDomListener(document, "mouseup", function (mEvent) {
       if (cDraggingInProgress) {
@@ -145,7 +156,7 @@ MarkerLabel_.prototype.onAdd = function () {
     })
   ];
 };
-
+ 
 /**
  * Removes the DIV for the label from the DOM. It also removes all event handlers.
  * This method is called automatically when the marker's <code>setMap(null)</code>
@@ -156,13 +167,13 @@ MarkerLabel_.prototype.onRemove = function () {
   var i;
   this.labelDiv_.parentNode.removeChild(this.labelDiv_);
   this.eventDiv_.parentNode.removeChild(this.eventDiv_);
-
+ 
   // Remove event listeners:
   for (i = 0; i < this.listeners_.length; i++) {
     google.maps.event.removeListener(this.listeners_[i]);
   }
 };
-
+ 
 /**
  * Draws the label on the map.
  * @private
@@ -172,7 +183,7 @@ MarkerLabel_.prototype.draw = function () {
   this.setTitle();
   this.setStyles();
 };
-
+ 
 /**
  * Sets the content of the label.
  * The content can be plain text or an HTML DOM node.
@@ -189,7 +200,7 @@ MarkerLabel_.prototype.setContent = function () {
     this.eventDiv_.appendChild(content);
   }
 };
-
+ 
 /**
  * Sets the content of the tool tip for the label. It is
  * always set to be the same as for the marker itself.
@@ -198,7 +209,7 @@ MarkerLabel_.prototype.setContent = function () {
 MarkerLabel_.prototype.setTitle = function () {
   this.eventDiv_.title = this.marker_.getTitle() || "";
 };
-
+ 
 /**
  * Sets the style of the label by setting the style sheet and applying
  * other specific styles requested.
@@ -206,11 +217,11 @@ MarkerLabel_.prototype.setTitle = function () {
  */
 MarkerLabel_.prototype.setStyles = function () {
   var i, labelStyle;
-
+ 
   // Apply style values from the style sheet defined in the labelClass parameter:
   this.labelDiv_.className = this.marker_.get("labelClass");
   this.eventDiv_.className = this.labelDiv_.className;
-
+ 
   // Clear existing inline style values:
   this.labelDiv_.style.cssText = "";
   this.eventDiv_.style.cssText = "";
@@ -224,7 +235,7 @@ MarkerLabel_.prototype.setStyles = function () {
   }
   this.setMandatoryStyles();
 };
-
+ 
 /**
  * Sets the mandatory styles to the DIV representing the label as well as to the
  * associated event DIV. This includes setting the DIV position, zIndex, and visibility.
@@ -237,7 +248,7 @@ MarkerLabel_.prototype.setMandatoryStyles = function () {
   if (typeof this.labelDiv_.style.opacity !== "undefined") {
     this.labelDiv_.style.filter = "alpha(opacity=" + (this.labelDiv_.style.opacity * 100) + ")";
   }
-
+ 
   this.eventDiv_.style.position = this.labelDiv_.style.position;
   this.eventDiv_.style.overflow = this.labelDiv_.style.overflow;
   this.eventDiv_.style.opacity = 0.01; // Don't use 0; DIV won't be clickable on MSIE
@@ -247,7 +258,7 @@ MarkerLabel_.prototype.setMandatoryStyles = function () {
   this.setPosition(); // This also updates zIndex, if necessary.
   this.setVisible();
 };
-
+ 
 /**
  * Sets the anchor point of the label.
  * @private
@@ -259,7 +270,7 @@ MarkerLabel_.prototype.setAnchor = function () {
   this.eventDiv_.style.marginLeft = -anchor.x + "px";
   this.eventDiv_.style.marginTop = -anchor.y + "px";
 };
-
+ 
 /**
  * Sets the position of the label. The zIndex is also updated, if necessary.
  * @private
@@ -271,10 +282,10 @@ MarkerLabel_.prototype.setPosition = function () {
   this.labelDiv_.style.top = position.y + "px";
   this.eventDiv_.style.left = this.labelDiv_.style.left;
   this.eventDiv_.style.top = this.labelDiv_.style.top;
-
+ 
   this.setZIndex();
 };
-
+ 
 /**
  * Sets the zIndex of the label. If the marker's zIndex property has not been defined, the zIndex
  * of the label is set to the vertical coordinate of the label. This is in keeping with the default
@@ -291,7 +302,7 @@ MarkerLabel_.prototype.setZIndex = function () {
     this.eventDiv_.style.zIndex = this.labelDiv_.style.zIndex;
   }
 };
-
+ 
 /**
  * Sets the visibility of the label. The label is visible only if the marker itself is
  * visible (i.e., its visible property is true) and the labelVisible property is true.
@@ -305,7 +316,7 @@ MarkerLabel_.prototype.setVisible = function () {
   }
   this.eventDiv_.style.display = this.labelDiv_.style.display;
 };
-
+ 
 /**
  * @name MarkerWithLabelOptions
  * @class This class represents the optional parameter passed to the {@link MarkerWithLabel} constructor.
@@ -359,29 +370,29 @@ function MarkerWithLabel(opt_options) {
   if (typeof opt_options.labelVisible === "undefined") {
     opt_options.labelVisible = true;
   }
-
+ 
   this.label = new MarkerLabel_(this); // Bind the label to the marker
-
+ 
   // Call the parent constructor. It calls Marker.setValues to initialize, so all
   // the new parameters are conveniently saved and can be accessed with get/set.
   // Marker.set triggers a property changed event (called "propertyname_changed")
   // that the marker label listens for in order to react to state changes.
   google.maps.Marker.apply(this, arguments);
 }
-
+ 
 // MarkerWithLabel inherits from <code>Marker</code>:
 MarkerWithLabel.prototype = new google.maps.Marker();
-
+ 
 MarkerWithLabel.prototype.setMap = function (theMap) {
   // Call the inherited function...
   google.maps.Marker.prototype.setMap.apply(this, arguments);
-
+ 
   // ... then deal with the label:
   this.label.setMap(theMap);
 };
-
-
-
+ 
+ 
+ 
 /* generic function for making an XMLHttpRequest
  *  url:   request URL
  *  func:  callback function for success
@@ -395,16 +406,16 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 function makeRequest(url, func, type, fail, post, contenttype)
 {
 	var http_request = false;
-
+ 
 	type = typeof(type) != 'undefined' ? type : 'text';
 	fail = typeof(fail) != 'undefined' ? fail : function() { };
-
+ 
 	if(window.XMLHttpRequest) {
 		http_request = new XMLHttpRequest();
 	} else if(window.ActiveXObject) {
 		http_request = new ActiveXObject("Microsoft.XMLHTTP");
 	}
-
+ 
 	if(type == 'text') {
 		http_request.onreadystatechange = function() {
 			if(http_request.readyState == 4) {
@@ -418,15 +429,13 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	} else {
 		http_request.onreadystatechange = function() {
 			if(http_request.readyState == 4) {
-				if(http_request.status == 200) {
-					func(http_request.responseXML);
-				} else {
+				if(http_request.status == 200) { func(http_request.responseXML); } else {
 					fail(http_request);
 				}
 			}
 		}
 	}
-
+ 
 	if(typeof(post) != 'undefined') {
 		http_request.open('POST', url, true);
 		if(typeof(contenttype) != 'undefined')
@@ -437,48 +446,281 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		http_request.send(null);
 	}
 }
-
-var markers = new Array();
-
-function initActive()
-{
-	playerUpdate();
-}
-
-function playerUpdate()
-{
-	makeRequest('/pos', function(res) {
-		var rows = res.split('\n');
-		var loggedin = new Array();
-		for(var line in rows) {
-			var p = rows[line].split(' ');
-			loggedin[p[0]] = 1;
-			if(p[0] == '') continue;
-			if(p[0] in markers) {
-				var m = markers[p[0]];
-				var converted = fromWorldToLatLng(p[1], p[2], p[3]);
-				m.setPosition(converted);
-			} else {
-			  var converted = fromWorldToLatLng(p[1], p[2], p[3]);
-			   var marker = new MarkerWithLabel({
-				position: converted,
-				map: map,
-				labelContent: p[0],
-				labelAnchor: new google.maps.Point(-10, 30),
-				labelClass: "labels"
-			  });
-
-			  markers[p[0]] = marker;
-			}
+ 
+ 
+ 	var config = {
+		tileUrl:     setup.tileUrl,
+		updateUrl:   setup.updateUrl,
+		tileWidth:   128,
+		tileHeight:  128,
+		updateRate:  setup.updateRate,
+		zoomSize:    [ 32, 128, 256 ]
+	};
+ 
+  function MCMapProjection() {
+  }
+ 
+  MCMapProjection.prototype.fromLatLngToPoint = function(latLng) {
+    var x = (latLng.lng() * config.tileWidth)|0;
+    var y = (latLng.lat() * config.tileHeight)|0;
+    return new google.maps.Point(x, y);
+  };
+ 
+  MCMapProjection.prototype.fromPointToLatLng = function(point) {
+    var lng = point.x / config.tileWidth;
+    var lat = point.y / config.tileHeight;
+    return new google.maps.LatLng(lat, lng);
+  };
+ 
+	function fromWorldToLatLng(x, y, z)
+	{
+		var dx = +x;
+		var dy = +y - 127;
+		var dz = +z;
+		var px = dx + dz;
+		var py = dx - dz - dy;
+ 
+		var lng = -px / config.tileWidth / 2 + 0.5;
+		var lat = py / config.tileHeight / 2;
+ 
+		return new google.maps.LatLng(lat, lng);
+	}
+ 
+	function mcMapType() {
+	}
+ 
+	var tileDict = new Array();
+	var lastSeen = new Array();
+ 
+	function tileUrl(tile, always) {
+		if(always) {
+			var now = new Date();
+			return config.tileUrl + 't_' + tile + '.png?' + now.getTime();
+		} else if(tile in lastSeen) {
+			return config.tileUrl + 't_' + tile + '.png?' + lastSeen[tile];
+		} else {
+			return config.tileUrl + 't_' + tile + '.png?0';
 		}
-
-		for(var m in markers) {
-			if(!(m in loggedin)) {
-				markers[m].setMap(null);
-				delete markers[m];
-			}
+	}
+ 
+	function imgSubst(tile) {
+		if(!(tile in tileDict))
+			return;
+ 
+		var src = tileUrl(tile);
+		var t = tileDict[tile];
+		t.src = src;
+		t.style.display = '';
+		t.onerror = function() {
+			setTimeout(function() {
+				t.src = tileUrl(tile, 1);
+			}, 1000);
+			t.onerror = '';
 		}
+	}
+ 
+	mcMapType.prototype.tileSize = new google.maps.Size(config.tileWidth, config.tileHeight);
+	mcMapType.prototype.minZoom = 1;
+	mcMapType.prototype.maxZoom = 2;
+	mcMapType.prototype.getTile = function(coord, zoom, doc) {
+		var img = doc.createElement('IMG');
+ 
+		img.onerror = function() { img.style.display = 'none'; }
+ 
+		img.style.width = config.zoomSize[zoom] + 'px';
+		img.style.height = config.zoomSize[zoom] + 'px';
+		img.style.borderStyle = 'none';
+ 
+		var tilename = (- coord.x * config.tileWidth) + '_' + coord.y * config.tileHeight;
+		tileDict[tilename] = img;
+ 
+		var url = tileUrl(tilename);
+		img.src = url;
+		//img.style.background = 'url(' + url + ')';
+		//img.innerHTML = '<small>' + tilename + '</small>';
+ 
+		return img;
+	}
+ 
+	var markers = new Array();
+	var lasttimestamp = 0;
+	var followPlayer = '';
+ 
+	var lst;
+	var plistbtn;
+	var lstopen = true;
+	var oldplayerlst = '[Connecting]';
+ 
+	function mapUpdate()
+	{
+		makeRequest(config.updateUrl + lasttimestamp, function(res) {
+			var rows = res.split('\n');
+			var loggedin = new Array();
+ 
+			lasttimestamp = rows[0];
+			delete rows[0];
+ 
+			var playerlst = ''
+ 
+			for(var line in rows) {
+				var p = rows[line].split(' ');
+				loggedin[p[0]] = 1;
+				if(p[0] == '') continue;
+ 
+				if(p.length == 4) {
+					if(playerlst != '') playerlst += '<br />';
+					playerlst += '<img id="icon_' + p[0] + '" class="plicon" src="' + (p[0] == followPlayer ? 'follow_on.png' : 'follow_off.png') + '" onclick="plfollow(' + "'" + p[0] + "'" + ')" alt="" /> <a href="#" onclick="plclick(' + "'" + p[0] + "'" + ')">' + p[0] + '</a>';
+ 
+					if(p[0] == followPlayer) {
+						map.setCenter(fromWorldToLatLng(p[1], p[2], p[3]));
+					}
+ 
+					if(p[0] in markers) {
+						var m = markers[p[0]];
+						var converted = fromWorldToLatLng(p[1], p[2], p[3]);
+						m.setPosition(converted);
+					} else {
+						var converted = fromWorldToLatLng(p[1], p[2], p[3]);
+						var marker = new MarkerWithLabel({
+							position: converted,
+							map: map,
+							labelContent: p[0],
+							labelAnchor: new google.maps.Point(-14, 10),
+							labelClass: "labels",
+							clickable: false,
+							flat: true,
+							icon: new google.maps.MarkerImage('marker.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+						});
+ 
+						markers[p[0]] = marker;
+					}
+				} else if(p.length == 6) {
+					if(p[0] in markers) {
+						var m = markers[p[0]];
+						var converted = fromWorldToLatLng(p[2], p[3], p[4]);
+						m.setPosition(converted);
+					} else {
+						var image = 'sign.png';
 
-		setTimeout(playerUpdate, 2000);
-	}, 'text', function() { alert('failed to get position data'); } );
-}
+						if (p[1] == 'warp')
+							image = 'watch.png';
+						else if (p[1] == 'home')
+							image = 'list_on.png';
+						else if (p[1] == 'spawn')
+							image = 'list_on.png';
+
+						var converted = fromWorldToLatLng(p[2], p[3], p[4]);
+						var marker = new MarkerWithLabel({
+							position: converted,
+							map: map,
+							labelContent: p[0],
+							labelAnchor: new google.maps.Point(-14, 10),
+							labelClass: "labels",
+							clickable: false,
+							flat: true,
+							icon: new google.maps.MarkerImage(image, new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+						});
+						
+						markers[p[0]] = marker;
+					}
+				} else if(p.length == 1) {
+					lastSeen[p[0]] = lasttimestamp;
+					imgSubst(p[0]);
+				}
+			}
+ 
+			if(playerlst != oldplayerlst) {
+				oldplayerlst = playerlst;
+				lst.innerHTML = playerlst;
+			}
+ 
+			for(var m in markers) {
+				if(!(m in loggedin)) {
+					markers[m].setMap(null);
+					delete markers[m];
+				}
+			}
+ 
+			setTimeout(mapUpdate, config.updateRate);
+		}, 'text', function() { alert('failed to get update data'); } );
+	}
+
+	window.onload = function initialize() {
+		lst = document.getElementById('lst');
+		plistbtn = document.getElementById('plistbtn');
+		var mapOptions = {
+			zoom: 1,
+			center: new google.maps.LatLng(0, 1),
+			navigationControl: true,
+			navigationControlOptions: {
+				style: google.maps.NavigationControlStyle.SMALL
+			},
+			scaleControl: false,
+			mapTypeControl: false,
+			streetViewControl: false,
+			mapTypeId: 'mcmap'
+		};
+		map = new google.maps.Map(document.getElementById("mcmap"), mapOptions);
+		mapType = new mcMapType();
+		mapType.projection = new MCMapProjection();
+		map.zoom_changed = function() {
+			mapType.tileSize = new google.maps.Size(config.zoomSize[map.zoom], config.zoomSize[map.zoom]);
+		};
+ 
+		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
+				plfollow('');
+			});
+ 
+		map.dragstart = plfollow('');
+		map.mapTypes.set('mcmap', mapType);
+		map.setMapTypeId('mcmap');
+		mapUpdate();
+	}
+ 
+	function plistopen() {
+		if(lstopen) {
+			lstopen = false;
+			lst.style.display = 'none';
+			lst.style.visibility = 'hidden';
+			plistbtn.src = 'list_off.png';
+		} else {
+			lstopen = true;
+			lst.style.display = '';
+			lst.style.visibility = '';
+			plistbtn.src = 'list_on.png';
+		}
+	}
+ 
+	function plclick(name) {
+		if(name in markers) {
+			if(name != followPlayer) plfollow('');
+			map.setCenter(markers[name].getPosition());
+		}
+	}
+ 
+	function plfollow(name) {
+		var icon;
+ 
+		if(followPlayer == name) {
+			icon = document.getElementById('icon_' + followPlayer);
+			if(icon) icon.src = 'follow_off.png';
+			followPlayer = '';
+			return;
+		}
+ 
+		if(followPlayer) {
+			icon = document.getElementById('icon_' + followPlayer);
+			if(icon) icon.src = 'follow_off.png';
+			followPlayer = '';
+		}
+ 
+		if(!name) return;
+ 
+		icon = document.getElementById('icon_' + name);
+		if(icon) icon.src = 'follow_on.png';
+		followPlayer = name;
+ 
+		if(name in markers) {
+			map.setCenter(markers[name].getPosition());
+		}
+	}
