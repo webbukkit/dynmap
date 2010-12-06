@@ -30,6 +30,22 @@ body { height: 100%; margin: 0px; padding: 0px ; background-color: #000; }
 	font-size: 8pt;
 	color: #ddd;
 }
+#controls {
+	position: absolute;
+	top: 4px;
+	left: 30px;
+	border: 1px solid #808080;
+	background: #000;
+	opacity: 0.6;
+	padding: 2px;
+	font-size: 8pt;
+	color: #ddd;
+	text-align:right;
+}
+#controls img{
+	height:14px;
+	width:14px;
+}
 a, a:visited {
 	color: white;
 	text-decoration: none;
@@ -39,4 +55,5 @@ a, a:visited {
 	font-family: sans-serif;
 	white-space: nowrap;
 	color: white;
+	display:none;
 }

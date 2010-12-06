@@ -553,6 +553,8 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		makeRequest(config.updateUrl + lasttimestamp, function(res) {
 			var rows = res.split('\n');
 			var loggedin = new Array();
+			var showWarps = document.getElementById('showWarps').checked;
+			var showMarkers = document.getElementById('showMarkers').checked;
  
 			lasttimestamp = rows[0];
 			delete rows[0];
@@ -592,33 +594,75 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						markers[p[0]] = marker;
 					}
 				} else if(p.length == 6) {
-					if(p[0] in markers) {
-						var m = markers[p[0]];
-						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
-						m.setPosition(converted);
-					} else {
-						var image = 'sign.png';
-
-						if (p[1] == 'warp')
-							image = 'watch.png';
-						else if (p[1] == 'home')
-							image = 'list_on.png';
-						else if (p[1] == 'spawn')
-							image = 'list_on.png';
-
-						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
-						var marker = new MarkerWithLabel({
-							position: converted,
-							map: map,
-							labelContent: p[0],
-							labelAnchor: new google.maps.Point(-14, 10),
-							labelClass: "labels",
-							clickable: false,
-							flat: true,
-							icon: new google.maps.MarkerImage(image, new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-						});
+					if (p[1] == 'warp')
+					{
+						if(p[0] in markers) {
+							var m = markers[p[0]];
+							
+							if (showWarps == false) {
+								m.setMap(null);
+								continue;
+							}
+							else if (m.map == null) {
+								m.setMap(map);
+							}
+							
+							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+							m.setPosition(converted);
+						} else {
+							if (showWarps == false) {
+								continue;
+							}
 						
-						markers[p[0]] = marker;
+							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+							var marker = new MarkerWithLabel({
+								position: converted,
+								map: map,
+								labelContent: p[0],
+								labelAnchor: new google.maps.Point(-14, 10),
+								labelClass: "labels",
+								clickable: false,
+								flat: true,
+								icon: new google.maps.MarkerImage('watch.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+							});
+							
+							markers[p[0]] = marker;
+						}
+					}
+					else if (p[1] == 'marker')
+					{
+						if(p[0] in markers) {
+							var m = markers[p[0]];
+
+							if (showMarkers == false) {
+								m.setMap(null);
+								continue;
+							}
+							else if (m.map == null) {
+								m.setMap(map);
+							}
+							
+							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+							m.setPosition(converted);
+						} else {
+							if (showMarkers == false) {
+								continue;
+							}
+						
+							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+							var marker = new MarkerWithLabel({
+								position: converted,
+								map: map,
+								labelContent: p[0],
+								labelAnchor: new google.maps.Point(-14, 10),
+								labelClass: "labels",
+								clickable: false,
+								flat: true,
+								icon: new google.maps.MarkerImage('sign.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+							});
+							
+							markers[p[0]] = marker;
+						}
 					}
 				} else if(p.length == 1) {
 					lastSeen[p[0]] = lasttimestamp;
@@ -720,4 +764,17 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		if(name in markers) {
 			map.setCenter(markers[name].getPosition());
 		}
+	}
+
+	//remove item (string or number) from an array
+	function removeItem(originalArray, itemToRemove) {
+		var j = 0;
+		while (j < originalArray.length) {
+			//	alert(originalArray[j]);
+			if (originalArray[j] == itemToRemove) {
+				originalArray.splice(j, 1);
+			} else { j++; }
+		}
+		//	assert('hi');
+		return originalArray;
 	}
