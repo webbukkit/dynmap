@@ -510,7 +510,7 @@ public class MapManager extends Thread {
 	    }
 	    catch(FileNotFoundException e)
 	    {
-	    	log.log(Level.SEVERE, "markers.csv not found", e);
+	    	// No need to log FileNotFoundException
 	    }
 	    finally
 	    {
