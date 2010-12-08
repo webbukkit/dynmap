@@ -14,6 +14,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -237,28 +238,6 @@ public class MapManager extends Thread {
 		log.info("Map renderer has started.");
 
 		while(running) {
-
-			/*
-			if(debugPlayer != null) {
-				Player p = etc.getServer().getPlayer(debugPlayer);
-				if(p != null) {
-					int x = (int) p.getX();
-					int y = (int) p.getY();
-					int z = (int) p.getZ();
-					int dx = x - anchorx;
-					int dy = y - anchory;
-					int dz = z - anchorz;
-					int px = dx + dz;
-					int py = dx - dz - dy;
-
-					int tx = tilex(px);
-					int ty = tiley(py);
-
-					p.sendMessage(Colors.Red + "pos " + x + "," + y + "," + z + " -> px=" + px + " py=" + py + " -> tx=" + tx + " ty=" + ty);
-				}
-			}
-			*/
-
 			MapTile t = this.popStaleTile();
 			if(t != null) {
 				t.render(this);
@@ -307,12 +286,6 @@ public class MapManager extends Thread {
 		boolean r;
 
 		r = pushStaleTile(tx, ty);
-
-		/*
-		if(r) {
-			debug("touch stale " + x + "," + y + "," + z + " -> px=" + px + " py=" + py + " -> tx=" + tx + " ty=" + ty);
-		}
-		*/
 
 		boolean ledge = tilex(px - 4) != tx;
 		boolean tedge = tiley(py - 4) != ty;
@@ -456,10 +429,10 @@ public class MapManager extends Thread {
 		int px = dx + dz;
 		int py = dx - dz - dy;
 
-		int zpx = ztilex(tilex(px));
-		int zpy = ztiley(tiley(py));
+		int fzpx = ztilex(tilex(px));
+		int fzpy = ztiley(tiley(py));
 
-		class Pair {
+		class Pair implements Comparator {
 			public int x;
 			public int y;
 			public Pair(int x, int y)
@@ -473,23 +446,65 @@ public class MapManager extends Thread {
 				return (x << 16) ^ y;
 			}
 
-			public boolean equals(Pair o)
+			public boolean equals(Object o)
 			{
-				return x == o.x && y == o.y;
+				Pair p = (Pair) o;
+				return x == p.x && y == p.y;
+			}
+
+			public int compare(Object o1, Object o2)
+			{
+				Pair p1 = (Pair) o1;
+				Pair p2 = (Pair) o2;
+				if(p1.x < p1.x) return -1;
+				if(p1.x > p1.x) return 1;
+				if(p1.y < p1.y) return -1;
+				if(p1.y > p1.y) return 1;
+				return 0;
 			}
 		}
 
 		HashSet<Pair> visited = new HashSet<Pair>();
-		HashSet<Pair> open = new HashSet<Pair>();
+		Vector<Pair> open = new Vector<Pair>();
+
+		Pair fp = new Pair(fzpx, fzpy);
+		open.add(fp);
+		visited.add(fp);
+
+		while(open.size() > 0) {
+			Pair p = open.remove(open.size() - 1);
+
+			int zpx = p.x;
+			int zpy = p.y;
+
+			log.info("Regenerating zoom tile " + zpx + "," + zpy);
+
+			int g = regenZoomTile(zpx, zpy);
+
+			if(g > 0) {
+				Pair[] np = new Pair[4];
+				np[0] = new Pair(zpx-zTileWidth, zpy);
+				np[1] = new Pair(zpx+zTileWidth, zpy);
+				np[2] = new Pair(zpx, zpy-zTileHeight);
+				np[3] = new Pair(zpx, zpy+zTileHeight);
+
+				for(int i=0; i<4; i++) {
+					if(!visited.contains(np[i])) {
+						visited.add(np[i]);
+						open.add(np[i]);
+					}
+				}
+			}
+		}
 	}
 
 	/* regenerate zoom-out tile
 	 * returns number of valid subtiles */
 	public int regenZoomTile(int zpx, int zpy)
 	{
-		int px1 = (zpx >= 0) ? zpx + tileWidth : zpx - zTileWidth;
-		int py1 = (zpy >= 0) ? zpy : zpy - zTileHeight;
-		int px2 = px1 - tileWidth;
+		int px1 = zpx + tileWidth;
+		int py1 = zpy;
+		int px2 = zpx;
 		int py2 = py1 + tileHeight;
 
 		MapTile t1 = getTileByPosition(px1, py1);

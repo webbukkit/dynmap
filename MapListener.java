@@ -135,6 +135,12 @@ public class MapListener extends PluginListener {
 			return true;
 		}
 
+		if(split[0].equals("/map_regenzoom")) {
+			mgr.regenerateZoom((int) player.getX(), (int) player.getY(), (int) player.getZ());
+			player.sendMessage(Colors.Rose + "regenerateZoom done");
+			return true;
+		}
+
 		return false;
 	}
 }

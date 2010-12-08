@@ -214,9 +214,14 @@ public class MapTile {
 	public BufferedImage loadTile(MapManager mgr)
 	{
 		try {
-			File file = new File(getPath(mgr));
-			return ImageIO.read(file);
+			String path = getPath(mgr);
+			//log.info("Loading tile from " + path);
+			File file = new File(path);
+			BufferedImage im = ImageIO.read(file);
+			//log.info("OK");
+			return im;
 		} catch(IOException e) {
+			//log.info("failed: " + e.toString());
 		}
 
 		return null;
