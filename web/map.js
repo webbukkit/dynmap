@@ -606,7 +606,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 					}
 				} else if(p.length == 6) {
 					var image = 'sign.png';
-					if (p[1] == 'marker')
+					if (p[1] == 'warp')
 					{
 						image = 'watch.png';
 					}
