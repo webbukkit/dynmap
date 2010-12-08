@@ -614,7 +614,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 					if(p[0] in markers) {
 						var m = markers[p[0]];
 							
-						if (showWarps == false) {
+						if ((p[1] == 'warp' && showWarps == false) || (p[1] == 'marker' && showMarkers == false)) {
 							m.setMap(null);
 							continue;
 						}
@@ -625,7 +625,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
 						m.setPosition(converted);
 					} else {
-						if (showWarps == false) {
+						if ((p[1] == 'warp' && showWarps == false) || (p[1] == 'marker' && showMarkers == false)) {
 							continue;
 						}
 						
