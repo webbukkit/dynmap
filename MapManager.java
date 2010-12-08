@@ -1,15 +1,13 @@
-import java.awt.Color;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -19,12 +17,26 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.awt.image.BufferedImage;
+
+import java.io.File;
+import java.io.IOException;
+
+import java.awt.*;
+import java.awt.image.*;
+import javax.imageio.ImageIO;
+
 public class MapManager extends Thread {
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
 	/* dimensions of a map tile */
 	public static final int tileWidth = 128;
 	public static final int tileHeight = 128;
+
+	/* (logical!) dimensions of a zoomed out map tile
+	 * must be twice the size of the normal tile */
+	public static final int zTileWidth = 256;
+	public static final int zTileHeight = 256;
 
 	/* lock for our data structures */
 	public static final Object lock = new Object();
@@ -73,6 +85,12 @@ public class MapManager extends Thread {
 	/* hashmap of markers */
 	public HashMap<String,MapMarker> markers = null;
 
+	/* cache this many zoomed-out tiles */
+	public static final int zoomCacheSize = 64;
+
+	/* zoomed-out tile cache */
+	public Cache<String, BufferedImage> zoomCache;
+
 	public void debug(String msg)
 	{
 		if(debugPlayer == null) return;
@@ -100,6 +118,7 @@ public class MapManager extends Thread {
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
 		tileUpdates = new LinkedList<TileUpdate>();
+		zoomCache = new Cache<String, BufferedImage>(zoomCacheSize);
 		
 		markers = new HashMap<String,MapMarker>();
 	}
@@ -120,6 +139,25 @@ public class MapManager extends Thread {
 			return y - (tileHeight + (y % tileHeight));
 		else
 			return y - (y % tileHeight);
+	}
+
+	/* zoomed-out tile X for tile position x */
+	static int ztilex(int x)
+	{
+		if(x < 0)
+			return x + x % zTileWidth;
+		else
+			return x - (x % zTileWidth);
+	}
+
+	/* zoomed-out tile Y for tile position y */
+	static int ztiley(int y)
+	{
+		if(y < 0)
+			return y + y % zTileHeight;
+			//return y - (zTileHeight + (y % zTileHeight));
+		else
+			return y - (y % zTileHeight);
 	}
 
 	/* initialize and start map manager */
@@ -346,7 +384,8 @@ public class MapManager extends Thread {
 			MapTile t = tileStore.get(key);
 			if(t == null) {
 				/* no maptile exists, need to create one */
-				t = new MapTile(px, py);
+
+				t = new MapTile(px, py, ztilex(px), ztiley(py));
 				tileStore.put(key, t);
 				return t;
 			} else {
@@ -406,6 +445,110 @@ public class MapManager extends Thread {
 			open.add(getTileByPosition(t.px, t.py + tileHeight));
 			open.add(getTileByPosition(t.px, t.py - tileHeight));
 		}
+	}
+
+	/* regenerate all zoom tiles, starting at position */
+	public void regenerateZoom(int x, int y, int z)
+	{
+		int dx = x - anchorx;
+		int dy = y - anchory;
+		int dz = z - anchorz;
+		int px = dx + dz;
+		int py = dx - dz - dy;
+
+		int zpx = ztilex(tilex(px));
+		int zpy = ztiley(tiley(py));
+
+		class Pair {
+			public int x;
+			public int y;
+			public Pair(int x, int y)
+			{
+				this.x = x;
+				this.y = y;
+			}
+
+			public int hashCode()
+			{
+				return (x << 16) ^ y;
+			}
+
+			public boolean equals(Pair o)
+			{
+				return x == o.x && y == o.y;
+			}
+		}
+
+		HashSet<Pair> visited = new HashSet<Pair>();
+		HashSet<Pair> open = new HashSet<Pair>();
+	}
+
+	/* regenerate zoom-out tile
+	 * returns number of valid subtiles */
+	public int regenZoomTile(int zpx, int zpy)
+	{
+		int px1 = (zpx >= 0) ? zpx + tileWidth : zpx - zTileWidth;
+		int py1 = (zpy >= 0) ? zpy : zpy - zTileHeight;
+		int px2 = px1 - tileWidth;
+		int py2 = py1 + tileHeight;
+
+		MapTile t1 = getTileByPosition(px1, py1);
+		MapTile t2 = getTileByPosition(px2, py1);
+		MapTile t3 = getTileByPosition(px1, py2);
+		MapTile t4 = getTileByPosition(px2, py2);
+
+		BufferedImage im1 = t1.loadTile(this);
+		BufferedImage im2 = t2.loadTile(this);
+		BufferedImage im3 = t3.loadTile(this);
+		BufferedImage im4 = t4.loadTile(this);
+
+		BufferedImage zIm = new BufferedImage(MapManager.tileWidth, MapManager.tileHeight, BufferedImage.TYPE_INT_RGB);
+		WritableRaster zr = zIm.getRaster();
+		Graphics2D g2 = zIm.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+		int scw = tileWidth / 2;
+		int sch = tileHeight / 2;
+
+		int good = 0;
+
+		if(im1 != null) {
+			g2.drawImage(im1, 0, 0, scw, sch, null);
+			good ++;
+		}
+
+		if(im2 != null) {
+			g2.drawImage(im2, scw, 0, scw, sch, null);
+			good ++;
+		}
+
+		if(im3 != null) {
+			g2.drawImage(im3, 0, sch, scw, sch, null);
+			good ++;
+		}
+
+		if(im4 != null) {
+			g2.drawImage(im4, scw, sch, scw, sch, null);
+			good ++;
+		}
+
+		if(good == 0) {
+			return 0;
+		}
+
+		String zPath = t1.getZoomPath(this);
+		/* save zoom-out tile */
+		try {
+			File file = new File(zPath);
+			ImageIO.write(zIm, "png", file);
+			log.info("regenZoomTile saved zoom-out tile at " + zPath);
+		} catch(IOException e) {
+			log.log(Level.SEVERE, "Failed to save zoom-out tile: " + zPath, e);
+		} catch(java.lang.NullPointerException e) {
+			log.log(Level.SEVERE, "Failed to save zoom-out tile (NullPointerException): " + zPath, e);
+		}
+
+		return good;
 	}
 	
 	/* adds a marker to the map */

@@ -5,6 +5,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class WebServerRequest extends Thread {
+	protected static final Logger log = Logger.getLogger("Minecraft");
+
 	private Socket sock;
 	private MapManager mgr;
 
@@ -86,7 +88,7 @@ public class WebServerRequest extends Thread {
 			synchronized(mgr.lock) {
 				for(TileUpdate tu : mgr.tileUpdates) {
 					if(tu.at >= cutoff) {
-						sb.append(tu.tile.px + "_" + tu.tile.py + "\n");
+						sb.append(tu.tile.px + "_" + tu.tile.py + " " + tu.tile.zpx + "_" + tu.tile.zpy + "\n");
 					}
 				}
 			}

@@ -15,6 +15,9 @@ public class MapTile {
 	/* projection position */
 	public int px, py;
 
+	/* projection position of zoom-out tile */
+	public int zpx, zpy;
+
 	/* minecraft space origin */
 	public int mx, my, mz;
 
@@ -22,10 +25,12 @@ public class MapTile {
 	boolean stale = false;
 
 	/* create new MapTile */
-	public MapTile(int px, int py)
+	public MapTile(int px, int py, int zpx, int zpy)
 	{
 		this.px = px;
 		this.py = py;
+		this.zpx = zpx;
+		this.zpy = zpy;
 
 		mx = MapManager.anchorx + px / 2 + py / 2;
 		my = MapManager.anchory;
@@ -118,19 +123,103 @@ public class MapTile {
 			String path = getPath(mgr);
 			File file = new File(path);
 			ImageIO.write(im, "png", file);
-		} catch(java.lang.NullPointerException e) {
-			// IOException is not enough, a NullPointerException often occurs due to this issue
-			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5034864
-			log.log(Level.SEVERE, "Failed to save tile (NullPointerException): " + getPath(mgr), e);
 		} catch(IOException e) {
 			log.log(Level.SEVERE, "Failed to save tile: " + getPath(mgr), e);
+		} catch(java.lang.NullPointerException e) {
+			log.log(Level.SEVERE, "Failed to save tile (NullPointerException): " + getPath(mgr), e);
+		}
+
+		/* now update zoom-out tile */
+		String zPath = getZoomPath(mgr);
+		BufferedImage zIm = mgr.zoomCache.get(zPath);
+
+		if(zIm == null) {
+			/* zoom-out tile doesn't exist - try to load it from disk */
+
+			mgr.debug("Trying to load zoom-out tile: " + zPath);
+
+			try {
+				File file = new File(zPath);
+				zIm = ImageIO.read(file);
+			} catch(IOException e) {
+			}
+
+
+			if(zIm == null) {
+				mgr.debug("Failed to load zoom-out tile: " + zPath);
+
+				/* create new one */
+				/* TODO: we might use existing tiles that we could load
+				 * to fill the zoomed out tile in... */
+				zIm = new BufferedImage(MapManager.tileWidth, MapManager.tileHeight, BufferedImage.TYPE_INT_RGB);
+			} else {
+				mgr.debug("Loaded zoom-out tile from " + zPath);
+			}
+		} else {
+			mgr.debug("Using zoom-out tile from cache: " + zPath);
+		}
+
+		/* update zoom-out tile */
+
+		/* scaled size */
+		int scw = mgr.tileWidth / 2;
+		int sch = mgr.tileHeight / 2;
+
+		/* origin in zoomed-out tile */
+		int ox = scw;
+		int oy = 0;
+
+		if(zpx != px) ox = 0;
+		if(zpy != py) oy = sch;
+
+		/* blit scaled rendered tile onto zoom-out tile */
+		WritableRaster zr = zIm.getRaster();
+		Graphics2D g2 = zIm.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.drawImage(im, ox, oy, scw, sch, null);
+
+		/* update zoom-out tile cache */
+		BufferedImage oldIm = mgr.zoomCache.put(zPath, zIm);
+		if(oldIm != null && oldIm != zIm) {
+			oldIm.flush();
+		}
+
+		/* save zoom-out tile */
+		try {
+			File file = new File(zPath);
+			ImageIO.write(zIm, "png", file);
+			mgr.debug("saved zoom-out tile at " + zPath);
+
+			//log.info("Saved tile: " + path);
+		} catch(IOException e) {
+			log.log(Level.SEVERE, "Failed to save zoom-out tile: " + zPath, e);
+		} catch(java.lang.NullPointerException e) {
+			log.log(Level.SEVERE, "Failed to save zoom-out tile (NullPointerException): " + zPath, e);
 		}
 	}
 
 	/* generate a path name for this map tile */
-	String getPath(MapManager mgr)
+	public String getPath(MapManager mgr)
 	{
 		return mgr.tilepath + "t_" + px + "_" + py + ".png";
+	}
+
+	/* generate a path name for the zoomed-out tile */
+	public String getZoomPath(MapManager mgr)
+	{
+		return mgr.tilepath + "zt_" + zpx + "_" + zpy + ".png";
+	}
+
+	/* try to load already generated image */
+	public BufferedImage loadTile(MapManager mgr)
+	{
+		try {
+			File file = new File(getPath(mgr));
+			return ImageIO.read(file);
+		} catch(IOException e) {
+		}
+
+		return null;
 	}
 
 	/* cast a ray into the map */

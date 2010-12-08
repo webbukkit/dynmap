@@ -451,23 +451,30 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		tileWidth:   128,
 		tileHeight:  128,
 		updateRate:  setup.updateRate,
-		zoomSize:    [ 32, 128, 256 ]
+		zoomSize:    [ 128, 128, 256 ]
 	};
  
-  function MCMapProjection() {
-  }
- 
-  MCMapProjection.prototype.fromLatLngToPoint = function(latLng) {
-    var x = (latLng.lng() * config.tileWidth)|0;
-    var y = (latLng.lat() * config.tileHeight)|0;
-    return new google.maps.Point(x, y);
-  };
- 
-  MCMapProjection.prototype.fromPointToLatLng = function(point) {
-    var lng = point.x / config.tileWidth;
-    var lat = point.y / config.tileHeight;
-    return new google.maps.LatLng(lat, lng);
-  };
+	function MCMapProjection() {
+	}
+
+	MCMapProjection.prototype.fromLatLngToPoint = function(latLng) {
+		var x = (latLng.lng() * config.tileWidth)|0;
+		var y = (latLng.lat() * config.tileHeight)|0;
+
+		if(map.zoom == 0) {
+			x += config.tileWidth / 2;
+		}
+		return new google.maps.Point(x, y);
+	};
+
+	MCMapProjection.prototype.fromPointToLatLng = function(point) {
+		var x = point.x;
+		if(map.zoom == 0)
+			x -= config.tileWidth / 2;
+		var lng = x / config.tileWidth;
+		var lat = point.y / config.tileHeight;
+		return new google.maps.LatLng(lat, lng);
+	};
  
 	function fromWorldToLatLng(x, y, z)
 	{
@@ -492,11 +499,11 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	function tileUrl(tile, always) {
 		if(always) {
 			var now = new Date();
-			return config.tileUrl + 't_' + tile + '.png?' + now.getTime();
+			return config.tileUrl + tile + '.png?' + now.getTime();
 		} else if(tile in lastSeen) {
-			return config.tileUrl + 't_' + tile + '.png?' + lastSeen[tile];
+			return config.tileUrl + tile + '.png?' + lastSeen[tile];
 		} else {
-			return config.tileUrl + 't_' + tile + '.png?0';
+			return config.tileUrl + tile + '.png?0';
 		}
 	}
  
@@ -517,7 +524,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	}
  
 	mcMapType.prototype.tileSize = new google.maps.Size(config.tileWidth, config.tileHeight);
-	mcMapType.prototype.minZoom = 1;
+	mcMapType.prototype.minZoom = 0;
 	mcMapType.prototype.maxZoom = 2;
 	mcMapType.prototype.getTile = function(coord, zoom, doc) {
 		var img = doc.createElement('IMG');
@@ -528,7 +535,11 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		img.style.height = config.zoomSize[zoom] + 'px';
 		img.style.borderStyle = 'none';
  
-		var tilename = (- coord.x * config.tileWidth) + '_' + coord.y * config.tileHeight;
+		if(zoom > 0) {
+			var tilename = "t_" + (- coord.x * config.tileWidth) + '_' + coord.y * config.tileHeight;
+		} else {
+			var tilename = "zt_" + (- coord.x * config.tileWidth * 2) + '_' + coord.y * config.tileHeight * 2;
+		}
 		tileDict[tilename] = img;
  
 		var url = tileUrl(tilename);
@@ -594,79 +605,50 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						markers[p[0]] = marker;
 					}
 				} else if(p.length == 6) {
-					if (p[1] == 'warp')
+					var image = 'sign.png';
+					if (p[1] == 'marker')
 					{
-						if(p[0] in markers) {
-							var m = markers[p[0]];
-							
-							if (showWarps == false) {
-								m.setMap(null);
-								continue;
-							}
-							else if (m.map == null) {
-								m.setMap(map);
-							}
-							
-							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
-							m.setPosition(converted);
-						} else {
-							if (showWarps == false) {
-								continue;
-							}
-						
-							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
-							var marker = new MarkerWithLabel({
-								position: converted,
-								map: map,
-								labelContent: p[0],
-								labelAnchor: new google.maps.Point(-14, 10),
-								labelClass: "labels",
-								clickable: false,
-								flat: true,
-								icon: new google.maps.MarkerImage('watch.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-							});
-							
-							markers[p[0]] = marker;
-						}
+						image = 'watch.png';
 					}
-					else if (p[1] == 'marker')
-					{
-						if(p[0] in markers) {
-							var m = markers[p[0]];
 
-							if (showMarkers == false) {
-								m.setMap(null);
-								continue;
-							}
-							else if (m.map == null) {
-								m.setMap(map);
-							}
+					if(p[0] in markers) {
+						var m = markers[p[0]];
 							
-							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
-							m.setPosition(converted);
-						} else {
-							if (showMarkers == false) {
-								continue;
-							}
-						
-							var converted = fromWorldToLatLng(p[3], p[4], p[5]);
-							var marker = new MarkerWithLabel({
-								position: converted,
-								map: map,
-								labelContent: p[0],
-								labelAnchor: new google.maps.Point(-14, 10),
-								labelClass: "labels",
-								clickable: false,
-								flat: true,
-								icon: new google.maps.MarkerImage('sign.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-							});
-							
-							markers[p[0]] = marker;
+						if (showWarps == false) {
+							m.setMap(null);
+							continue;
 						}
+						else if (m.map == null) {
+							m.setMap(map);
+						}
+						
+						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+						m.setPosition(converted);
+					} else {
+						if (showWarps == false) {
+							continue;
+						}
+						
+						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+						var marker = new MarkerWithLabel({
+							position: converted,
+							map: map,
+							labelContent: p[0],
+							labelAnchor: new google.maps.Point(-14, 10),
+							labelClass: "labels",
+							clickable: false,
+							flat: true,
+							icon: new google.maps.MarkerImage(image, new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+						});
+						
+						markers[p[0]] = marker;
 					}
-				} else if(p.length == 1) {
-					lastSeen[p[0]] = lasttimestamp;
-					imgSubst(p[0]);
+				} else if(p.length == 2) {
+					lastSeen['t_' + p[0]] = lasttimestamp;
+					lastSeen['zt_' + p[1]] = lasttimestamp;
+
+					imgSubst('t_' + p[0]);
+					imgSubst('zt_' + p[1]);
 				}
 			}
  
@@ -699,7 +681,8 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			scaleControl: false,
 			mapTypeControl: false,
 			streetViewControl: false,
-			mapTypeId: 'mcmap'
+			mapTypeId: 'mcmap',
+			backgroundColor: '#000'
 		};
 		map = new google.maps.Map(document.getElementById("mcmap"), mapOptions);
 		mapType = new mcMapType();

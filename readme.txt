@@ -5,6 +5,7 @@ Commands
 /map_regen - regenerate entire map (currently buggy)
 /map_debug - send map debugging messages
 /map_nodebug - disable map debugging messages
+/map_regenzoom - regenerates zoom-out tiles
 
 /addmarker [name] - adds a named marker to the map
 /removemarker [name] - removes a named marker to the map
