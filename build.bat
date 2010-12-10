@@ -19,6 +19,6 @@ COPY .\web\*.* .\plugins\web
 COPY .\web\tiles\*.* .\plugins\web\tiles
 COPY .\web\up\*.* .\plugins\web\up
 
-CALL "C:\Program Files\WinRAR\Rar.exe" a -m5 -ed -r DynamicMap.rar .\plugins\*.*
+CALL "C:\Program Files\WinRAR\Rar.exe" a -m5 -ed -r .\dist\DynamicMap.rar .\plugins\*.*
 
 PAUSE
