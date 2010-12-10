@@ -1,5 +1,7 @@
 @ECHO OFF
 
-CD E:\Users\Fescen9\workspace\DynamicMap\branches\fescen9
-del *.class
-del ..\..\..\map.jar
+CD E:\Projects\DynamicMap\branches\fescen9
+
+DEL /Q *.rar
+DEL /Q *.class
+RMDIR /S /Q .\plugins

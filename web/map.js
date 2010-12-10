@@ -1,6 +1,6 @@
 var setup = {
 	tileUrl:     'http://www.yourdomain.com/minecraft/tiles/',
-	updateUrl:   'http://www.yourdomain.com/minecraft/up/',
+	updateUrl:   'http://www.yourdomain.com/minecraft/up/', // Or if using ASP.NET: http://www.yourdomain.com/minecraft/up/default.aspx?lasttimestamp=
 	updateRate:  2000	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
 };
 
@@ -566,6 +566,8 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			var loggedin = new Array();
 			var showWarps = document.getElementById('showWarps').checked;
 			var showMarkers = document.getElementById('showMarkers').checked;
+			var showHomes = document.getElementById('showHomes').checked;
+			var showSpawn = document.getElementById('showSpawn').checked;
  
 			lasttimestamp = rows[0];
 			delete rows[0];
@@ -574,6 +576,12 @@ function makeRequest(url, func, type, fail, post, contenttype)
  
 			for(var line in rows) {
 				var p = rows[line].split(' ');
+				
+				// Hack to keep duplicate markers/warps/players from conflicting with eachother
+				if(p.length == 6) {
+					p[0] = p[0] + '<span style="display:none;">' + p[1] + '</span>';
+				}
+				
 				loggedin[p[0]] = 1;
 				if(p[0] == '') continue;
  
@@ -599,22 +607,25 @@ function makeRequest(url, func, type, fail, post, contenttype)
 							labelClass: "labels",
 							clickable: false,
 							flat: true,
-							icon: new google.maps.MarkerImage('marker.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+							icon: new google.maps.MarkerImage('player.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
 						});
  
 						markers[p[0]] = marker;
 					}
 				} else if(p.length == 6) {
-					var image = 'sign.png';
-					if (p[1] == 'warp')
-					{
-						image = 'watch.png';
-					}
+					var image = p[1] + '.png';
+					
+					var hideMarker = (
+						(p[1] == 'warp' && showWarps == false) ||
+						(p[1] == 'marker' && showMarkers == false) ||
+						(p[1] == 'home' && showHomes == false) ||
+						(p[1] == 'spawn' && showSpawn == false)
+					);
 
 					if(p[0] in markers) {
 						var m = markers[p[0]];
 							
-						if ((p[1] == 'warp' && showWarps == false) || (p[1] == 'marker' && showMarkers == false)) {
+						if (hideMarker) {
 							m.setMap(null);
 							continue;
 						}
@@ -625,7 +636,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
 						m.setPosition(converted);
 					} else {
-						if ((p[1] == 'warp' && showWarps == false) || (p[1] == 'marker' && showMarkers == false)) {
+						if (hideMarker) {
 							continue;
 						}
 						

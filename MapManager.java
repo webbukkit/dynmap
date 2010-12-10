@@ -1,11 +1,19 @@
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.util.List;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,17 +22,9 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import java.awt.image.BufferedImage;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.awt.*;
-import java.awt.image.*;
 import javax.imageio.ImageIO;
 
 public class MapManager extends Thread {
@@ -66,7 +66,7 @@ public class MapManager extends Thread {
 	public String tilepath = "tiles/";
 
 	/* path to markers file */
-	public String markerpath = "markers.csv";
+	public String markerpath = "markers.txt";
 	
 	/* port to run web server on */
 	public int serverport = 8123;
@@ -110,7 +110,7 @@ public class MapManager extends Thread {
 		try {
 			tilepath = properties.getString("map-tilepath", "tiles/");
 			colorsetpath = properties.getString("map-colorsetpath", "colors.txt");
-			markerpath = properties.getString("map-markerpath", "markers.csv");
+			markerpath = properties.getString("map-markerpath", "markers.txt");
 			serverport = Integer.parseInt(properties.getString("map-serverport", "8123"));
 		} catch(Exception ex) {
 			log.log(Level.SEVERE, "Exception while reading properties for dynamic map", ex);
@@ -590,7 +590,7 @@ public class MapManager extends Thread {
 		}
 		catch(IOException e)
 		{
-			log.log(Level.SEVERE, "Failed to save markers.csv", e);
+			log.log(Level.SEVERE, "Failed to save markers.txt", e);
 		}
 		
 		return false;
@@ -613,7 +613,7 @@ public class MapManager extends Thread {
 				}
 				catch(IOException e)
 				{
-					log.log(Level.SEVERE, "Failed to save markers.csv", e);
+					log.log(Level.SEVERE, "Failed to save markers.txt", e);
 				}
 			}
 			else
@@ -656,14 +656,27 @@ public class MapManager extends Thread {
 	    	while (scanner.hasNextLine())
 	    	{
 	    		String line = scanner.nextLine();
-	    		String[] values = line.split(",");
-	    		MapMarker marker = new MapMarker();
-	    		marker.name = values[0];
-	    		marker.owner = values[1];
-	    		marker.px = Double.parseDouble(values[2]);
-	    		marker.py = Double.parseDouble(values[3]);
-	    		marker.pz = Double.parseDouble(values[4]);
-	    		markers.put(marker.name, marker);
+	    		String[] values = line.split(":");
+				// If user has old style of file (CSV)
+				if (values.length != 5)
+				{
+					values = line.split(",");
+				}
+				
+				if (values.length == 5)
+				{
+					MapMarker marker = new MapMarker();
+					marker.name = values[0];
+					marker.owner = values[1];
+					marker.px = Double.parseDouble(values[2]);
+					marker.py = Double.parseDouble(values[3]);
+					marker.pz = Double.parseDouble(values[4]);
+					markers.put(marker.name, marker);
+				}
+				else
+				{
+					log.log(Level.INFO, "Failed to load marker: " + values[0]);
+				}
 	    	}
 	    }
 	    catch(FileNotFoundException e)
@@ -688,7 +701,7 @@ public class MapManager extends Thread {
 	    	while(it.hasNext())
 	    	{
 	    		MapMarker marker = it.next();
-	    		String line = marker.name + "," + marker.owner + "," + marker.px + "," +  marker.py + "," +  marker.pz + "\r\n";
+	    		String line = marker.name + ":" + marker.owner + ":" + marker.px + ":" +  marker.py + ":" +  marker.pz + "\n";
 	    		out.write(line);
 	    	}
 	    }
@@ -698,7 +711,7 @@ public class MapManager extends Thread {
 	    }
 	    catch(FileNotFoundException e)
 	    {
-	    	log.log(Level.SEVERE, "markers.csv not found", e);
+	    	log.log(Level.SEVERE, "markers.txt not found", e);
 	    }
 	    finally
 	    {
@@ -706,41 +719,53 @@ public class MapManager extends Thread {
 	    }
 	}
 	
-	/* load the warps file (doesn't work with SQL data source) */
-	/* find a way to load this from the server itself, loading the file each time isn't good */
-	public ArrayList<Warp> loadWarps()
+	/* TODO: Is there a cleaner way to get warps/homes than using custom DataSource classes to expose the protected properties? */
+	
+	protected List<Warp> loadWarps()
 	{
-		ArrayList<Warp> warps = new ArrayList<Warp>();
-		Scanner scanner = null;
-		
-	    try
-	    {
-	    	scanner = new Scanner(new FileInputStream("warps.txt"), "UTF-8");
-	    	while (scanner.hasNextLine())
-	    	{
-	    		String line = scanner.nextLine();
-	    		String[] values = line.split(":");
-	    		Warp warp = new Warp();
-	    		warp.Name = values[0];
-	    		warp.Location = new Location(
-	    				Double.parseDouble(values[1]),
-	    				Double.parseDouble(values[2]),
-	    				Double.parseDouble(values[3]),
-	    				Float.parseFloat(values[4]),
-	    				Float.parseFloat(values[5])
-	    		);
-	    		warps.add(warp);
-	    	}
-	    }
-	    catch(FileNotFoundException e)
-	    {
+		PropertiesFile props = new PropertiesFile("server.properties");
 
-	    }
-	    finally
-	    {
-	    	if (scanner != null) scanner.close();
-	    }
-	    
-	    return warps;
+		List<Warp> warps = null;
+		
+		if (props.getString("data-source").equals("flatfile")) {
+			DMFlatFileSource dataSource = new DMFlatFileSource();
+			dataSource.initialize();
+			dataSource.loadWarps();
+			dataSource.loadHomes();
+			warps = dataSource.getAllWarps();
+		}
+		else if (props.getString("data-source").equals("mysql")) {
+			DMMySQLSource dataSource = new DMMySQLSource();
+			dataSource.initialize();
+			dataSource.loadWarps();
+			dataSource.loadHomes();
+			warps = dataSource.getAllWarps();
+		}
+		
+		return warps;
+	}
+	
+	protected List<Warp> loadHomes()
+	{
+		PropertiesFile props = new PropertiesFile("server.properties");
+
+		List<Warp> homes = null;
+		
+		if (props.getString("data-source").equals("flatfile")) {
+			DMFlatFileSource dataSource = new DMFlatFileSource();
+			dataSource.initialize();
+			dataSource.loadWarps();
+			dataSource.loadHomes();
+			homes = dataSource.getAllHomes();
+		}
+		else if (props.getString("data-source").equals("mysql")) {
+			DMMySQLSource dataSource = new DMMySQLSource();
+			dataSource.initialize();
+			dataSource.loadWarps();
+			dataSource.loadHomes();
+			homes = dataSource.getAllHomes();
+		}
+		
+		return homes;
 	}
 }

@@ -1,7 +1,11 @@
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class WebServerRequest extends Thread {
@@ -77,13 +81,24 @@ public class WebServerRequest extends Thread {
 				sb.append(marker.name + " marker " + marker.owner + " " + marker.px + " " + marker.py + " " + marker.pz + "\n");
 			}
 
-			// TODO: Find a way to load the warps from the server.  Currently loading the from the flatfile over and over...
-			ArrayList<Warp> warps = mgr.loadWarps();
+			List<Warp> warps = mgr.loadWarps();
+			List<Warp> homes = mgr.loadHomes();
 			
-			for(Warp warp : warps)
-			{
-				sb.append(warp.Name + " warp unknown " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+			Location spawnLocation = etc.getServer().getSpawnLocation();
+			
+			if (warps != null) {
+				for(Warp warp : warps) {
+					sb.append(warp.Name + " warp unknown " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+				}
 			}
+			
+			if (homes != null) {
+				for(Warp warp : homes) {
+					sb.append(warp.Name + " home " + warp.Name + " " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+				}
+			}
+			
+			sb.append("Spawn spawn none " + spawnLocation.x + " " + spawnLocation.y + " " + spawnLocation.z + "\n");
 			
 			synchronized(mgr.lock) {
 				for(TileUpdate tu : mgr.tileUpdates) {
