@@ -48,9 +48,9 @@ public class map extends Plugin {
 		etc.getInstance().addCommand("/map_regen", " - regenerate entire map");
 		etc.getInstance().addCommand("/map_debug", " - send map debugging messages");
 		etc.getInstance().addCommand("/map_nodebug", " - disable map debugging messages");
-		etc.getInstance().addCommand("/addmarker", " [name] - adds a named marker to the map");
-		etc.getInstance().addCommand("/removemarker", " [name] - removes a named marker to the map");
-		etc.getInstance().addCommand("/listmarkers", " - list all named markers");
-		etc.getInstance().addCommand("/tpmarker", " [name] - teleport to a named marker");
+		etc.getInstance().addCommand("/addsign", " [name] - adds a named sign to the map");
+		etc.getInstance().addCommand("/removesign", " [name] - removes a named sign to the map");
+		etc.getInstance().addCommand("/listsigns", " - list all named signs");
+		etc.getInstance().addCommand("/tpsign", " [name] - teleport to a named sign");
 	}
 }

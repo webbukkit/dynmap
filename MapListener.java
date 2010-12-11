@@ -6,8 +6,7 @@ import java.util.logging.Logger;
 public class MapListener extends PluginListener {
 	private static final Logger log = Logger.getLogger("Minecraft");
 	private MapManager mgr;
-	private ArrayList<MapMarker> markers;
-
+	
 	public MapListener(MapManager mgr)
 	{
 		this.mgr = mgr;
@@ -76,58 +75,58 @@ public class MapListener extends PluginListener {
 			return true;
 		}
 		
-		if(split[0].equals("/addmarker")) {
+		if(split[0].equals("/addsign")) {
 			if(split.length < 2)
 			{
-				player.sendMessage("Map> " + Colors.Red + "Usage: /map_addmarker [name]");
+				player.sendMessage("Map> " + Colors.Red + "Usage: /addsign [name]");
 			}
 			else
 			{
-				if (mgr.addMapMarker(player, split[1], player.getX(), player.getY(), player.getZ()))
+				if (mgr.addSign(player, split[1], player.getX(), player.getY(), player.getZ()))
 				{
-					player.sendMessage("Map> " + Colors.White + "Marker \"" + split[1] + "\" added successfully");
+					player.sendMessage("Map> " + Colors.White + "Sign \"" + split[1] + "\" added successfully");
 				}
 			}
 			return true;
 		}
 		
-		if(split[0].equals("/removemarker")) {
+		if(split[0].equals("/removesign")) {
 			if(split.length < 2)
 			{
-				player.sendMessage("Map> " + Colors.Red + "Usage: /map_removemarker [name]");
+				player.sendMessage("Map> " + Colors.Red + "Usage: /removesign [name]");
 			}
 			else
 			{
-				if (mgr.removeMapMarker(player, split[1]))
+				if (mgr.removeSign(player, split[1]))
 				{
-					player.sendMessage("Map> " + Colors.White + "Marker \"" + split[1] + "\" removed successfully");
+					player.sendMessage("Map> " + Colors.White + "Sign \"" + split[1] + "\" removed successfully");
 				}
 			}
 			return true;
 		}
 		
-		if(split[0].equals("/listmarkers")) {
+		if(split[0].equals("/listsigns")) {
 			String msg = "";
-			Collection<MapMarker> values = mgr.markers.values();
-	    	Iterator<MapMarker> it = values.iterator();
+			Collection<Warp> values = mgr.signs.values();
+	    	Iterator<Warp> it = values.iterator();
 	    	while(it.hasNext())
 	    	{
-	    		MapMarker marker = it.next();
-	    		String line = " - " + marker.name + " (" + marker.owner + ")\t";
+	    		Warp sign = it.next();
+	    		String line = " - " + sign.Name + "\t";
 	    		msg += line;
 	    	}
 	    	player.sendMessage("" + Colors.White + msg);
 			return true;
 		}
 		
-		if(split[0].equals("/tpmarker")) {
+		if(split[0].equals("/tpsign")) {
 			if(split.length < 2)
 			{
-				player.sendMessage("Map> " + Colors.Red + "Usage: /map_tpmarker [name]");
+				player.sendMessage("Map> " + Colors.Red + "Usage: /tpsign [name]");
 			}
 			else
 			{
-				if (mgr.teleportToMapMarker(player, split[1]))
+				if (mgr.teleportToSign(player, split[1]))
 				{
 					//player.sendMessage("Map> " + Colors.White + "");
 				}

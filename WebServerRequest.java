@@ -72,33 +72,44 @@ public class WebServerRequest extends Thread {
 			StringBuilder sb = new StringBuilder();
 			sb.append(current + "\n");
 
-			for(Player player : etc.getServer().getPlayerList()) {
-				sb.append(player.getName() + " " + player.getX() + " " + player.getY() + " " + player.getZ() + "\n");
+			if (mgr.showPlayers) {
+				for(Player player : etc.getServer().getPlayerList()) {
+					sb.append(player.getName() + " player " + player.getX() + " " + player.getY() + " " + player.getZ() + "\n");
+				}
 			}
 			
-			for(MapMarker marker : mgr.markers.values())
-			{
-				sb.append(marker.name + " marker " + marker.owner + " " + marker.px + " " + marker.py + " " + marker.pz + "\n");
+			if (mgr.showSigns) {
+				for(Warp sign : mgr.signs.values())
+				{
+					sb.append(sign.Name + " sign " + sign.Location.x + " " + sign.Location.y + " " + sign.Location.z + "\n");
+				}
 			}
 
-			List<Warp> warps = mgr.loadWarps();
-			List<Warp> homes = mgr.loadHomes();
-			
-			Location spawnLocation = etc.getServer().getSpawnLocation();
-			
-			if (warps != null) {
-				for(Warp warp : warps) {
-					sb.append(warp.Name + " warp unknown " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+			if (mgr.showWarps) {
+				List<Warp> warps = mgr.loadWarps();
+				
+				if (warps != null) {
+					for(Warp warp : warps) {
+						sb.append(warp.Name + " warp " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+					}
 				}
 			}
 			
-			if (homes != null) {
-				for(Warp warp : homes) {
-					sb.append(warp.Name + " home " + warp.Name + " " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+			if (mgr.showHomes) {
+				List<Warp> homes = mgr.loadHomes();
+				
+				if (homes != null) {
+					for(Warp warp : homes) {
+						sb.append(warp.Name + " home " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+					}
 				}
 			}
 			
-			sb.append("Spawn spawn none " + spawnLocation.x + " " + spawnLocation.y + " " + spawnLocation.z + "\n");
+			if (mgr.showSpawn) {
+				Location spawnLocation = etc.getServer().getSpawnLocation();
+				
+				sb.append("Spawn spawn " + spawnLocation.x + " " + spawnLocation.y + " " + spawnLocation.z + "\n");
+			}
 			
 			synchronized(mgr.lock) {
 				for(TileUpdate tu : mgr.tileUpdates) {

@@ -565,7 +565,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			var rows = res.split('\n');
 			var loggedin = new Array();
 			var showWarps = document.getElementById('showWarps').checked;
-			var showMarkers = document.getElementById('showMarkers').checked;
+			var showSigns = document.getElementById('showSigns').checked;
 			var showHomes = document.getElementById('showHomes').checked;
 			var showSpawn = document.getElementById('showSpawn').checked;
  
@@ -573,55 +573,49 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			delete rows[0];
  
 			var playerlst = ''
+			var numwarps = 0;
+			var numsigns = 0;
+			var numhomes = 0;
+			var numspawns = 0;
+			var numplayers = 0;
  
 			for(var line in rows) {
 				var p = rows[line].split(' ');
 				
-				// Hack to keep duplicate markers/warps/players from conflicting with eachother
-				if(p.length == 6) {
+				if(p[0] == '') continue;
+				
+				// Hack to keep duplicate markers from conflicting with eachother
+				if (p[1] != 'player') {
 					p[0] = p[0] + '<span style="display:none;">' + p[1] + '</span>';
 				}
 				
 				loggedin[p[0]] = 1;
-				if(p[0] == '') continue;
- 
-				if(p.length == 4) {
+				
+				if (p[1] == 'player') {
 					if(playerlst != '') playerlst += '<br />';
 					playerlst += '<img id="icon_' + p[0] + '" class="plicon" src="' + (p[0] == followPlayer ? 'follow_on.png' : 'follow_off.png') + '" onclick="plfollow(' + "'" + p[0] + "'" + ')" alt="" /> <a href="#" onclick="plclick(' + "'" + p[0] + "'" + ')">' + p[0] + '</a>';
+				}
  
-					if(p[0] == followPlayer) {
-						map.setCenter(fromWorldToLatLng(p[1], p[2], p[3]));
-					}
- 
-					if(p[0] in markers) {
-						var m = markers[p[0]];
-						var converted = fromWorldToLatLng(p[1], p[2], p[3]);
-						m.setPosition(converted);
-					} else {
-						var converted = fromWorldToLatLng(p[1], p[2], p[3]);
-						var marker = new MarkerWithLabel({
-							position: converted,
-							map: map,
-							labelContent: p[0],
-							labelAnchor: new google.maps.Point(-14, 10),
-							labelClass: "labels",
-							clickable: false,
-							flat: true,
-							icon: new google.maps.MarkerImage('player.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-						});
- 
-						markers[p[0]] = marker;
-					}
-				} else if(p.length == 6) {
+				if(p.length == 5) {
 					var image = p[1] + '.png';
+					
+					if (p[1] == 'warp') numwarps++;
+					if (p[1] == 'sign') numsigns++;
+					if (p[1] == 'home') numhomes++;
+					if (p[1] == 'spawn') numspawns++;
+					if (p[1] == 'player') numplayers++;
 					
 					var hideMarker = (
 						(p[1] == 'warp' && showWarps == false) ||
-						(p[1] == 'marker' && showMarkers == false) ||
+						(p[1] == 'sign' && showSigns == false) ||
 						(p[1] == 'home' && showHomes == false) ||
 						(p[1] == 'spawn' && showSpawn == false)
 					);
 
+					if(p[0] == followPlayer) {
+						map.panTo(fromWorldToLatLng(p[2], p[3], p[4]));
+					}
+					
 					if(p[0] in markers) {
 						var m = markers[p[0]];
 							
@@ -633,14 +627,14 @@ function makeRequest(url, func, type, fail, post, contenttype)
 							m.setMap(map);
 						}
 						
-						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+						var converted = fromWorldToLatLng(p[2], p[3], p[4]);
 						m.setPosition(converted);
 					} else {
 						if (hideMarker) {
 							continue;
 						}
 						
-						var converted = fromWorldToLatLng(p[3], p[4], p[5]);
+						var converted = fromWorldToLatLng(p[2], p[3], p[4]);
 						var marker = new MarkerWithLabel({
 							position: converted,
 							map: map,
@@ -674,6 +668,15 @@ function makeRequest(url, func, type, fail, post, contenttype)
 					delete markers[m];
 				}
 			}
+			
+			document.getElementById('warpsDiv').style.display = (numwarps == 0)?'none':'';
+			document.getElementById('signsDiv').style.display = (numsigns == 0)?'none':'';
+			document.getElementById('homesDiv').style.display = (numhomes == 0)?'none':'';
+			document.getElementById('spawnsDiv').style.display = (numspawns == 0)?'none':'';
+			
+			document.getElementById('plist').style.display = (numplayers == 0)?'none':'';
+			
+			document.getElementById('controls').style.display = ((numwarps + numsigns + numhomes + numspawns) == 0)?'none':'';
  
 			setTimeout(mapUpdate, config.updateRate);
 		}, 'text', function() { alert('failed to get update data'); } );

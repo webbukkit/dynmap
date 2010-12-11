@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.List;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -18,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -65,8 +65,8 @@ public class MapManager extends Thread {
 	/* path to image tile directory */
 	public String tilepath = "tiles/";
 
-	/* path to markers file */
-	public String markerpath = "markers.txt";
+	/* path to signs file */
+	public String signspath = "signs.txt";
 	
 	/* port to run web server on */
 	public int serverport = 8123;
@@ -83,14 +83,27 @@ public class MapManager extends Thread {
 	/* map debugging mode (send debugging messages to this player) */
 	public String debugPlayer = null;
 	
-	/* hashmap of markers */
-	public HashMap<String,MapMarker> markers = null;
+	/* hashmap of signs */
+	public HashMap<String, Warp> signs = null;
 
 	/* cache this many zoomed-out tiles */
 	public static final int zoomCacheSize = 64;
 
 	/* zoomed-out tile cache */
 	public Cache<String, BufferedImage> zoomCache;
+	
+	/* data source */
+	public String datasource = "flatfile";
+	
+	/* which markers to show (spawn,homes,warps,signs,players,all,none) */
+	public String showmarkers = "all";
+	
+	/* booleans designating what to show on the map */
+	public Boolean showSpawn = false;
+	public Boolean showHomes = false;
+	public Boolean showWarps = false;
+	public Boolean showSigns = false;
+	public Boolean showPlayers = false;
 
 	public void debug(String msg)
 	{
@@ -110,8 +123,10 @@ public class MapManager extends Thread {
 		try {
 			tilepath = properties.getString("map-tilepath", "tiles/");
 			colorsetpath = properties.getString("map-colorsetpath", "colors.txt");
-			markerpath = properties.getString("map-markerpath", "markers.txt");
+			signspath = properties.getString("map-signspath", "signs.txt");
 			serverport = Integer.parseInt(properties.getString("map-serverport", "8123"));
+			datasource = properties.getString("data-source", "flatfile");
+			showmarkers = properties.getString("map-showmarkers", "all");
 		} catch(Exception ex) {
 			log.log(Level.SEVERE, "Exception while reading properties for dynamic map", ex);
 		}
@@ -121,7 +136,9 @@ public class MapManager extends Thread {
 		tileUpdates = new LinkedList<TileUpdate>();
 		zoomCache = new Cache<String, BufferedImage>(zoomCacheSize);
 		
-		markers = new HashMap<String,MapMarker>();
+		signs = new HashMap<String, Warp>();
+		
+		loadShowOptions();
 	}
 
 	/* tile X for position x */
@@ -169,7 +186,7 @@ public class MapManager extends Thread {
 		/* load colorset */
 		File cfile = new File(colorsetpath);
 
-		loadMapMarkers();
+		loadSigns();
 		
 		try {
 			Scanner scanner = new Scanner(cfile);
@@ -566,116 +583,124 @@ public class MapManager extends Thread {
 		return good;
 	}
 	
-	/* adds a marker to the map */
-	public boolean addMapMarker(Player player, String name, double px, double py, double pz)
+	/* adds a sign to the map */
+	public boolean addSign(Player player, String name, double px, double py, double pz)
 	{
-		if (markers.containsKey(name))
+		if (signs.containsKey(name))
 		{
-			player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" already exists.");
+			player.sendMessage("Map> " + Colors.Red + "Sign \"" + name + "\" already exists.");
 			return false;
 		}
 		
-		MapMarker marker = new MapMarker();
-		marker.name = name;
-		marker.owner = player.getName();
-		marker.px = px;
-		marker.py = py;
-		marker.pz = pz;
-		markers.put(name, marker);
+		Warp sign = new Warp();
+		sign.Name = name;
+		sign.Location = new Location(px,py,pz);
+		signs.put(name, sign);
 		
 		try
 		{
-			saveMapMarkers();
+			saveSigns();
 			return true;
 		}
 		catch(IOException e)
 		{
-			log.log(Level.SEVERE, "Failed to save markers.txt", e);
+			log.log(Level.SEVERE, "Failed to save signs.txt", e);
 		}
 		
 		return false;
 	}
 	
-	/* removes a marker from the map */
-	public boolean removeMapMarker(Player player, String name)
+	/* removes a sign from the map */
+	public boolean removeSign(Player player, String name)
 	{
-		if (markers.containsKey(name))
+		if (signs.containsKey(name))
 		{
-			MapMarker marker = markers.get(name);
-			if (marker.owner.equalsIgnoreCase(player.getName()))
-			{
-				markers.remove(name);
-				
-				try
-				{
-					saveMapMarkers();
-					return true;
-				}
-				catch(IOException e)
-				{
-					log.log(Level.SEVERE, "Failed to save markers.txt", e);
-				}
-			}
-			else
-			{
-				player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" does not belong to you.");
-			}
-		}
-		else
-		{
-			player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" does not exist.");
-		}
-		
-		return false;
-	}
-	
-	/* teleports a user to a marker */
-	public boolean teleportToMapMarker(Player player, String name)
-	{
-		if (markers.containsKey(name))
-		{
-			MapMarker marker = markers.get(name);
+			Warp sign = signs.get(name);
 
-			player.teleportTo(marker.px, marker.py, marker.pz, 0, 0);
+			signs.remove(name);
+				
+			try
+			{
+				saveSigns();
+				return true;
+			}
+			catch(IOException e)
+			{
+				log.log(Level.SEVERE, "Failed to save signs.txt", e);
+			}
 		}
 		else
 		{
-			player.sendMessage("Map> " + Colors.Red + "Marker \"" + name + "\" does not exist.");
+			player.sendMessage("Map> " + Colors.Red + "Sign \"" + name + "\" does not exist.");
 		}
 		
 		return false;
 	}
 	
-	/* load the map marker file */
-	private void loadMapMarkers()
+	/* teleports a user to a sign */
+	public boolean teleportToSign(Player player, String name)
+	{
+		if (signs.containsKey(name))
+		{
+			Warp sign = signs.get(name);
+
+			player.teleportTo(sign.Location.x, sign.Location.y, sign.Location.z, 0, 0);
+		}
+		else
+		{
+			player.sendMessage("Map> " + Colors.Red + "Sign \"" + name + "\" does not exist.");
+		}
+		
+		return false;
+	}
+	
+	/* load the map sign file */
+	private void loadSigns()
 	{
 		Scanner scanner = null;
 	    try
 	    {
-	    	scanner = new Scanner(new FileInputStream(markerpath), "UTF-8");
+	    	scanner = new Scanner(new FileInputStream(signspath), "UTF-8");
 	    	while (scanner.hasNextLine())
 	    	{
 	    		String line = scanner.nextLine();
 	    		String[] values = line.split(":");
+				String name = "";
+				Double x = 0.0,y = 0.0,z = 0.0;
+				
 				// If user has old style of file (CSV)
-				if (values.length != 5)
+				if (values.length == 1)
 				{
 					values = line.split(",");
 				}
 				
+				// If user has old style of file (owners)
 				if (values.length == 5)
 				{
-					MapMarker marker = new MapMarker();
-					marker.name = values[0];
-					marker.owner = values[1];
-					marker.px = Double.parseDouble(values[2]);
-					marker.py = Double.parseDouble(values[3]);
-					marker.pz = Double.parseDouble(values[4]);
-					markers.put(marker.name, marker);
+					name = values[0];
+					x = Double.parseDouble(values[2]);
+					y = Double.parseDouble(values[3]);
+					z = Double.parseDouble(values[4]);
+				}
+				else if (values.length == 4)
+				{
+					name = values[0];
+					x = Double.parseDouble(values[1]);
+					y = Double.parseDouble(values[2]);
+					z = Double.parseDouble(values[3]);
 				}
 				else
 				{
-					log.log(Level.INFO, "Failed to load marker: " + values[0]);
+					log.log(Level.INFO, "Failed to load sign: " + values[0]);
+				}
+				
+				// If a sign was loaded, add it to the hash
+				if (name.isEmpty() == false && x != 0.0 && y != 0.0 && z != 0.0)
+				{
+					Warp sign = new Warp();
+					sign.Name = name;
+					sign.Location = new Location(x, y, z);
+					signs.put(sign.Name, sign);
 				}
 	    	}
 	    }
@@ -689,19 +714,19 @@ public class MapManager extends Thread {
 	    }
 	}
 	
-	/* save the map marker file */
-	private void saveMapMarkers() throws IOException
+	/* save the map sign file */
+	private void saveSigns() throws IOException
 	{
 		Writer out = null;
 	    try
 	    {
-	    	out = new OutputStreamWriter(new FileOutputStream(markerpath), "UTF-8");
-	    	Collection<MapMarker> values = markers.values();
-	    	Iterator<MapMarker> it = values.iterator();
+	    	out = new OutputStreamWriter(new FileOutputStream(signspath), "UTF-8");
+	    	Collection<Warp> values = signs.values();
+	    	Iterator<Warp> it = values.iterator();
 	    	while(it.hasNext())
 	    	{
-	    		MapMarker marker = it.next();
-	    		String line = marker.name + ":" + marker.owner + ":" + marker.px + ":" +  marker.py + ":" +  marker.pz + "\n";
+	    		Warp sign = it.next();
+	    		String line = sign.Name + ":" + sign.Location.x + ":" +  sign.Location.y + ":" +  sign.Location.z + "\n";
 	    		out.write(line);
 	    	}
 	    }
@@ -711,7 +736,7 @@ public class MapManager extends Thread {
 	    }
 	    catch(FileNotFoundException e)
 	    {
-	    	log.log(Level.SEVERE, "markers.txt not found", e);
+	    	log.log(Level.SEVERE, "signs.txt not found", e);
 	    }
 	    finally
 	    {
@@ -723,23 +748,19 @@ public class MapManager extends Thread {
 	
 	protected List<Warp> loadWarps()
 	{
-		PropertiesFile props = new PropertiesFile("server.properties");
-
 		List<Warp> warps = null;
 		
-		if (props.getString("data-source").equals("flatfile")) {
-			DMFlatFileSource dataSource = new DMFlatFileSource();
-			dataSource.initialize();
-			dataSource.loadWarps();
-			dataSource.loadHomes();
-			warps = dataSource.getAllWarps();
+		if (datasource.equals("flatfile")) {
+			DMFlatFileSource ds = new DMFlatFileSource();
+			ds.initialize();
+			ds.loadWarps();
+			warps = ds.getAllWarps();
 		}
-		else if (props.getString("data-source").equals("mysql")) {
-			DMMySQLSource dataSource = new DMMySQLSource();
-			dataSource.initialize();
-			dataSource.loadWarps();
-			dataSource.loadHomes();
-			warps = dataSource.getAllWarps();
+		else if (datasource.equals("mysql")) {
+			DMMySQLSource ds = new DMMySQLSource();
+			ds.initialize();
+			ds.loadWarps();
+			warps = ds.getAllWarps();
 		}
 		
 		return warps;
@@ -747,25 +768,68 @@ public class MapManager extends Thread {
 	
 	protected List<Warp> loadHomes()
 	{
-		PropertiesFile props = new PropertiesFile("server.properties");
-
 		List<Warp> homes = null;
 		
-		if (props.getString("data-source").equals("flatfile")) {
-			DMFlatFileSource dataSource = new DMFlatFileSource();
-			dataSource.initialize();
-			dataSource.loadWarps();
-			dataSource.loadHomes();
-			homes = dataSource.getAllHomes();
+		if (datasource.equals("flatfile")) {
+			DMFlatFileSource ds = new DMFlatFileSource();
+			ds.initialize();
+			ds.loadHomes();
+			homes = ds.getAllHomes();
 		}
-		else if (props.getString("data-source").equals("mysql")) {
-			DMMySQLSource dataSource = new DMMySQLSource();
-			dataSource.initialize();
-			dataSource.loadWarps();
-			dataSource.loadHomes();
-			homes = dataSource.getAllHomes();
+		else if (datasource.equals("mysql")) {
+			DMMySQLSource ds = new DMMySQLSource();
+			ds.initialize();
+			ds.loadHomes();
+			homes = ds.getAllHomes();
 		}
 		
 		return homes;
+	}
+	
+	private void loadShowOptions()
+	{
+		String[] values = showmarkers.split(",");
+		
+		for (int i = 0; i < values.length; i++)
+		{
+			String opt = values[i];
+			
+			if (opt.equals("all"))
+			{
+				showSpawn = true;
+				showHomes = true;
+				showWarps = true;
+				showSigns = true;
+				showPlayers = true;
+			}
+			else if (opt.equals("none"))
+			{
+				showSpawn = false;
+				showHomes = false;
+				showWarps = false;
+				showSigns = false;
+				showPlayers = false;
+			}
+			else if (opt.equals("spawn"))
+			{
+				showSpawn = true;
+			}
+			else if (opt.equals("homes"))
+			{
+				showHomes = true;
+			}
+			else if (opt.equals("warps"))
+			{
+				showWarps = true;
+			}
+			else if (opt.equals("signs"))
+			{
+				showSigns = true;
+			}
+			else if (opt.equals("players"))
+			{
+				showPlayers = true;
+			}
+		}
 	}
 }
