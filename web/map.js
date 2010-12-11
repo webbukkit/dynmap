@@ -585,7 +585,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				if(p[0] == '') continue;
 				
 				// Hack to keep duplicate markers from conflicting with eachother
-				if (p[1] != 'player') {
+				if (p[1] != 'player' && p.length == 5) {
 					p[0] = p[0] + '<span style="display:none;">' + p[1] + '</span>';
 				}
 				
