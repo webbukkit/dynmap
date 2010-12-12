@@ -36,6 +36,12 @@ public class MapListener extends PluginListener {
 	}
 
 	@Override
+	public void onLogin(Player player)
+	{
+		mgr.getPlayerImage(player);
+	}
+	
+	@Override
 	public boolean onCommand(Player player, String[] split)
 	{
 		if(!player.canUseCommand(split[0]))

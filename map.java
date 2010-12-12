@@ -42,6 +42,7 @@ public class map extends Plugin {
 		etc.getLoader().addListener(PluginLoader.Hook.COMMAND, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_CREATED, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_DESTROYED, listener, this, PluginListener.Priority.MEDIUM);
+		etc.getLoader().addListener(PluginLoader.Hook.LOGIN, listener, this, PluginListener.Priority.MEDIUM);
 
 		etc.getInstance().addCommand("/map_wait", " [wait] - set wait between tile renders (ms)");
 		etc.getInstance().addCommand("/map_stat", " - query number of tiles in render queue");

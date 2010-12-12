@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,6 +14,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -831,5 +836,46 @@ public class MapManager extends Thread {
 				showPlayers = true;
 			}
 		}
+	}
+	
+	protected void getPlayerImage(Player player)
+	{
+		String urlString = "http://www.minecraft.net/skin/" + player.getName() + ".png";
+		String filename = tilepath + player.getName() + ".png";
+		
+		if (downloadPlayerImage(urlString, filename) == false) {
+			downloadPlayerImage("http://www.minecraft.net/img/char.png", filename);
+		}
+	}
+	
+	private Boolean downloadPlayerImage(String urlString, String filename)
+	{
+		BufferedImage img = null;
+		Boolean success = false;
+		File out = null;
+		
+		try
+		{
+			img = ImageIO.read(new URL(urlString));
+			out = new File(filename);
+			
+			BufferedImage imgCropped = img.getSubimage(8, 8, 8, 8);
+			BufferedImage imgResized = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB); 
+			
+			Graphics2D g = imgResized.createGraphics();
+			g.drawImage(imgCropped, 0, 0, 24, 24, null);
+			g.dispose();
+			
+			ImageIO.write(imgResized, "png", out);
+			success = true;
+		}
+		catch(IOException e) {
+			log.log(Level.INFO, "Failed to fetch player image " + filename, e);
+		}
+		catch(NullPointerException e) {
+			log.log(Level.INFO, "Failed to fetch player image " + filename, e);
+		}
+		
+		return success;
 	}
 }

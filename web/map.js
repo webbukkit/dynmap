@@ -388,8 +388,6 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
   this.label.setMap(theMap);
 };
  
- 
- 
 /* generic function for making an XMLHttpRequest
  *  url:   request URL
  *  func:  callback function for success
@@ -451,7 +449,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		tileWidth:   128,
 		tileHeight:  128,
 		updateRate:  setup.updateRate,
-		zoomSize:    [ 128, 128, 256 ]
+		zoomSize:    [ 128, 128, 256, 512 ]
 	};
  
 	function MCMapProjection() {
@@ -525,7 +523,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
  
 	mcMapType.prototype.tileSize = new google.maps.Size(config.tileWidth, config.tileHeight);
 	mcMapType.prototype.minZoom = 0;
-	mcMapType.prototype.maxZoom = 2;
+	mcMapType.prototype.maxZoom = 3;
 	mcMapType.prototype.getTile = function(coord, zoom, doc) {
 		var img = doc.createElement('IMG');
  
@@ -558,7 +556,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	var plistbtn;
 	var lstopen = true;
 	var oldplayerlst = '[Connecting]';
- 
+
 	function mapUpdate()
 	{
 		makeRequest(config.updateUrl + lasttimestamp, function(res) {
@@ -568,11 +566,9 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			var showSigns = document.getElementById('showSigns').checked;
 			var showHomes = document.getElementById('showHomes').checked;
 			var showSpawn = document.getElementById('showSpawn').checked;
- 
-			lasttimestamp = rows[0];
+ 			lasttimestamp = rows[0];
 			delete rows[0];
- 
-			var playerlst = ''
+ 			var playerlst = ''
 			var numwarps = 0;
 			var numsigns = 0;
 			var numhomes = 0;
@@ -587,17 +583,17 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				// Hack to keep duplicate markers from conflicting with eachother
 				if (p[1] != 'player' && p.length == 5) {
 					p[0] = p[0] + '<span style="display:none;">' + p[1] + '</span>';
-				}
-				
+				}				
 				loggedin[p[0]] = 1;
 				
-				if (p[1] == 'player') {
-					if(playerlst != '') playerlst += '<br />';
-					playerlst += '<img id="icon_' + p[0] + '" class="plicon" src="' + (p[0] == followPlayer ? 'follow_on.png' : 'follow_off.png') + '" onclick="plfollow(' + "'" + p[0] + "'" + ')" alt="" /> <a href="#" onclick="plclick(' + "'" + p[0] + "'" + ')">' + p[0] + '</a>';
-				}
- 
 				if(p.length == 5) {
 					var image = p[1] + '.png';
+					
+					if (p[1] == 'player') {
+						if(playerlst != '') playerlst += '<br />';
+						playerlst += '<img id="icon_' + p[0] + '" title="Follow" class="plicon" src="' + (p[0] == followPlayer ? 'follow_on.png' : 'follow_off.png') + '" onclick="plfollow(' + "'" + p[0] + "'" + ')" alt="" /><a href="#" onclick="plclick(' + "'" + p[0] + "'" + ')"><img class="plisthead" src="' + setup.tileUrl + p[0] + '.png" />' + p[0] + '</a>';
+						image = setup.tileUrl + p[0] + '.png';
+					}
 					
 					if (p[1] == 'warp') numwarps++;
 					if (p[1] == 'sign') numsigns++;
@@ -651,7 +647,6 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				} else if(p.length == 2) {
 					lastSeen['t_' + p[0]] = lasttimestamp;
 					lastSeen['zt_' + p[1]] = lasttimestamp;
-
 					imgSubst('t_' + p[0]);
 					imgSubst('zt_' + p[1]);
 				}
@@ -661,24 +656,20 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				oldplayerlst = playerlst;
 				lst.innerHTML = playerlst;
 			}
- 
+
 			for(var m in markers) {
 				if(!(m in loggedin)) {
 					markers[m].setMap(null);
 					delete markers[m];
 				}
 			}
-			
+			setTimeout(mapUpdate, config.updateRate);
 			document.getElementById('warpsDiv').style.display = (numwarps == 0)?'none':'';
 			document.getElementById('signsDiv').style.display = (numsigns == 0)?'none':'';
 			document.getElementById('homesDiv').style.display = (numhomes == 0)?'none':'';
 			document.getElementById('spawnsDiv').style.display = (numspawns == 0)?'none':'';
-			
 			document.getElementById('plist').style.display = (numplayers == 0)?'none':'';
-			
 			document.getElementById('controls').style.display = ((numwarps + numsigns + numhomes + numspawns) == 0)?'none':'';
- 
-			setTimeout(mapUpdate, config.updateRate);
 		}, 'text', function() { alert('failed to get update data'); } );
 	}
 
@@ -690,7 +681,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			center: new google.maps.LatLng(0, 1),
 			navigationControl: true,
 			navigationControlOptions: {
-				style: google.maps.NavigationControlStyle.SMALL
+				style: google.maps.NavigationControlStyle.DEFAULT
 			},
 			scaleControl: false,
 			mapTypeControl: false,
@@ -707,6 +698,12 @@ function makeRequest(url, func, type, fail, post, contenttype)
  
 		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 				plfollow('');
+			});
+		google.maps.event.addListener(map, 'zoom_changed', function() {
+				makeLink();
+			});
+		google.maps.event.addListener(map, 'center_changed', function() {
+				makeLink();
 			});
  
 		map.dragstart = plfollow('');
@@ -732,7 +729,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	function plclick(name) {
 		if(name in markers) {
 			if(name != followPlayer) plfollow('');
-			map.setCenter(markers[name].getPosition());
+			map.panTo(markers[name].getPosition());
 		}
 	}
  
@@ -759,8 +756,16 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		followPlayer = name;
  
 		if(name in markers) {
-			map.setCenter(markers[name].getPosition());
+			map.panTo(markers[name].getPosition());
 		}
+	}
+
+	function makeLink() {
+		var a=location.href.substring(0,location.href.lastIndexOf("/")+1)
+		+ "?lat=" + map.getCenter().lat().toFixed(6)
+		+ "&lng=" + map.getCenter().lng().toFixed(6)
+		+ "&zoom=" + map.getZoom();
+		document.getElementById("link").innerHTML = a;
 	}
 
 	//remove item (string or number) from an array
