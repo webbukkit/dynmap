@@ -870,10 +870,10 @@ public class MapManager extends Thread {
 			success = true;
 		}
 		catch(IOException e) {
-			log.log(Level.INFO, "Failed to fetch player image " + filename, e);
+			//log.log(Level.INFO, "Failed to fetch player image " + filename, e);
 		}
 		catch(NullPointerException e) {
-			log.log(Level.INFO, "Failed to fetch player image " + filename, e);
+			//log.log(Level.INFO, "Failed to fetch player image " + filename, e);
 		}
 		
 		return success;
