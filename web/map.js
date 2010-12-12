@@ -1,7 +1,9 @@
 var setup = {
 	tileUrl:     'http://www.yourdomain.com/minecraft/tiles/',
 	updateUrl:   'http://www.yourdomain.com/minecraft/up/', // Or if using ASP.NET: http://www.yourdomain.com/minecraft/up/default.aspx?lasttimestamp=
-	updateRate:  2000	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
+	updateRate:  2000,	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
+	showPortraitsOnMap: true,
+	showPortraitsInPlayerList: true
 };
 
 /* THERE SHOULD BE NO NEED FOR MANUAL CONFIGURATION BEYOND THIS POINT */
@@ -591,8 +593,11 @@ function makeRequest(url, func, type, fail, post, contenttype)
 					
 					if (p[1] == 'player') {
 						if(playerlst != '') playerlst += '<br />';
-						playerlst += '<img id="icon_' + p[0] + '" title="Follow" class="plicon" src="' + (p[0] == followPlayer ? 'follow_on.png' : 'follow_off.png') + '" onclick="plfollow(' + "'" + p[0] + "'" + ')" alt="" /><a href="#" onclick="plclick(' + "'" + p[0] + "'" + ')"><img class="plisthead" src="' + setup.tileUrl + p[0] + '.png" />' + p[0] + '</a>';
-						image = setup.tileUrl + p[0] + '.png';
+						playerlst += '<img id="icon_' + p[0] + '" title="Follow" class="plicon" src="' + (p[0] == followPlayer ? 'follow_on.png' : 'follow_off.png') + '" onclick="plfollow(' + "'" + p[0] + "'" + ')" alt="" /><a href="#" onclick="plclick(' + "'" + p[0] + "'" + ')">' + ((setup.showPortraitsInPlayerList)?'<img class="plisthead" src="' + setup.tileUrl + p[0] + '.png" />':'') + p[0] + '</a>';
+						
+						if (setup.showPortraitsOnMap) {
+							image = setup.tileUrl + p[0] + '.png';
+						}
 					}
 					
 					if (p[1] == 'warp') numwarps++;
