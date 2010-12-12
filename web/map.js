@@ -3,7 +3,8 @@ var setup = {
 	updateUrl:   'http://www.yourdomain.com/minecraft/up/', // Or if using ASP.NET: http://www.yourdomain.com/minecraft/up/default.aspx?lasttimestamp=
 	updateRate:  2000,	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
 	showPortraitsOnMap: true,
-	showPortraitsInPlayerList: true
+	showPortraitsInPlayerList: true,
+	showPlayerNameOnMap: false
 };
 
 /* THERE SHOULD BE NO NEED FOR MANUAL CONFIGURATION BEYOND THIS POINT */
@@ -639,7 +640,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						var marker = new MarkerWithLabel({
 							position: converted,
 							map: map,
-							labelContent: p[0],
+							labelContent: (p[1] == 'player' && setup.showPlayerNameOnMap == false)?'':p[0],
 							labelAnchor: new google.maps.Point(-14, 10),
 							labelClass: "labels",
 							clickable: false,
