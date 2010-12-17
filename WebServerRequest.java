@@ -60,6 +60,7 @@ public class WebServerRequest extends Thread {
 
 			int current = (int) (System.currentTimeMillis() / 1000);
 			long cutoff = 0;
+
 			if(path.charAt(0) == '/') {
 				try {
 					cutoff = ((long) Integer.parseInt(path.substring(1))) * 1000;
@@ -114,7 +115,13 @@ public class WebServerRequest extends Thread {
 			synchronized(mgr.lock) {
 				for(TileUpdate tu : mgr.tileUpdates) {
 					if(tu.at >= cutoff) {
-						sb.append(tu.tile.px + "_" + tu.tile.py + " " + tu.tile.zpx + "_" + tu.tile.zpy + "\n");
+						sb.append(tu.tile.px + "_" + tu.tile.py + " " + tu.tile.zpx + "_" + tu.tile.zpy + " t\n");
+					}
+				}
+
+				for(TileUpdate tu : mgr.caveTileUpdates) {
+					if(tu.at >= cutoff) {
+						sb.append(tu.tile.px + "_" + tu.tile.py + " " + tu.tile.zpx + "_" + tu.tile.zpy + " c\n");
 					}
 				}
 			}

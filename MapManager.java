@@ -52,6 +52,8 @@ public class MapManager extends Thread {
 
 	/* a list of MapTiles to be updated */
 	private LinkedList<MapTile> staleTiles;
+	/* a list of MapTiles for which the cave tile is to be updated */
+	private LinkedList<MapTile> staleCaveTiles;
 
 	/* whether the worker thread should be running now */
 	private boolean running = false;
@@ -84,6 +86,8 @@ public class MapManager extends Thread {
 
 	/* this list stores the tile updates */
 	public LinkedList<TileUpdate> tileUpdates = null;
+	/* this list stores the cave tile updates */
+	public LinkedList<TileUpdate> caveTileUpdates = null;
 
 	/* map debugging mode (send debugging messages to this player) */
 	public String debugPlayer = null;
@@ -138,7 +142,9 @@ public class MapManager extends Thread {
 
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
+		staleCaveTiles = new LinkedList<MapTile>();
 		tileUpdates = new LinkedList<TileUpdate>();
+		caveTileUpdates = new LinkedList<TileUpdate>();
 		zoomCache = new Cache<String, BufferedImage>(zoomCacheSize);
 		
 		signs = new HashMap<String, Warp>();
@@ -254,37 +260,62 @@ public class MapManager extends Thread {
 		}
 	}
 
+	/* update tile update list */
+	private void updateUpdates(MapTile t, LinkedList<TileUpdate> lst)
+	{
+		long now = System.currentTimeMillis();
+		long deadline = now - maxTileAge;
+
+		synchronized(lock) {
+			ListIterator<TileUpdate> it = lst.listIterator(0);
+			while(it.hasNext()) {
+				TileUpdate tu = it.next();
+				if(tu.at < deadline || tu.tile == t)
+					it.remove();
+			}
+			lst.addLast(new TileUpdate(now, t));
+		}
+	}
+
 	/* the worker/renderer thread */
 	public void run()
 	{
 		log.info("Map renderer has started.");
 
 		while(running) {
+			boolean found = false;
+
 			MapTile t = this.popStaleTile();
 			if(t != null) {
 				t.render(this);
 
-				long now = System.currentTimeMillis();
-				long deadline = now - maxTileAge;
-
-				/* update the tileupdate list */
-				synchronized(lock) {
-					ListIterator<TileUpdate> it = tileUpdates.listIterator(0);
-					while(it.hasNext()) {
-						TileUpdate tu = it.next();
-						if(tu.at < deadline || tu.tile == t)
-							it.remove();
-					}
-					tileUpdates.addLast(new TileUpdate(now, t));
-				}
+				updateUpdates(t, tileUpdates);
 
 				try {
 					this.sleep(renderWait);
 				} catch(InterruptedException e) {
 				}
-			} else {
+
+				found = true;
+			}
+
+			MapTile ct = this.popStaleCaveTile();
+			if(ct != null) {
+				ct.renderCave(this);
+
+				updateUpdates(ct, caveTileUpdates);
+
 				try {
-					this.sleep(1000);
+					this.sleep(renderWait);
+				} catch(InterruptedException e) {
+				}
+
+				found = true;
+			}
+
+			if(!found) {
+				try {
+					this.sleep(500);
 				} catch(InterruptedException e) {
 				}
 			}
@@ -350,18 +381,47 @@ public class MapManager extends Thread {
 		}
 	}
 
+	/* get next MapTile for which the cave map needs to be
+	 * regenerated, or null
+	 * the mapTile is removed from the list of stale cave tiles */
+	public MapTile popStaleCaveTile()
+	{
+		synchronized(lock) {
+			try {
+				MapTile t = staleCaveTiles.removeFirst();
+				t.staleCave = false;
+				return t;
+			} catch(NoSuchElementException e) {
+				return null;
+			}
+		}
+	}
+
 	/* put a MapTile that needs to be regenerated on the list of stale tiles */
 	public boolean pushStaleTile(MapTile m)
 	{
 		synchronized(lock) {
-			if(m.stale) return false;
+			boolean ret = false;
 
-			m.stale = true;
-			staleTiles.addLast(m);
+			if(!m.stale) {
+				m.stale = true;
+				staleTiles.addLast(m);
 
-			debug(m.toString() + " is now stale");
+				debug(m.toString() + " is now stale");
 
-			return true;
+				ret = true;
+			}
+
+			if(!m.staleCave) {
+				m.staleCave = true;
+				staleCaveTiles.addLast(m);
+
+				debug(m.toString() + " cave is now stale");
+
+				ret = true;
+			}
+
+			return ret;
 		}
 	}
 
@@ -393,7 +453,7 @@ public class MapManager extends Thread {
 	public int getStaleCount()
 	{
 		synchronized(lock) {
-			return staleTiles.size();
+			return staleTiles.size() + staleCaveTiles.size();
 		}
 	}
 
@@ -401,7 +461,7 @@ public class MapManager extends Thread {
 	public int getRecentUpdateCount()
 	{
 		synchronized(lock) {
-			return tileUpdates.size();
+			return tileUpdates.size() + caveTileUpdates.size();
 		}
 	}
 

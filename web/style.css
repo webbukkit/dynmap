@@ -20,6 +20,10 @@ body { height: 100%; margin: 0px; padding: 0px ; background-color: #000; }
 	float:right;
 	cursor:pointer;
 }
+#cavebtn {
+	float:right;
+	cursor:pointer;
+}
 #link {
 	position: absolute;
 	bottom: 4px;
@@ -68,4 +72,5 @@ a, a:visited {
 	display:inline-block;
 	height:14px;width:14px;
 	background-color:#000;
+	border: 0px;
 }
