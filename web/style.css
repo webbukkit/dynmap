@@ -74,3 +74,6 @@ a, a:visited {
 	background-color:#000;
 	border: 0px;
 }
+#servertime {
+	color: #dede90;
+}

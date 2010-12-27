@@ -569,6 +569,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	var cavebtn;
 	var lstopen = true;
 	var oldplayerlst = '[Connecting]';
+	var servertime = 0;
 
 	function mapUpdate()
 	{
@@ -579,9 +580,11 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			var showSigns = document.getElementById('showSigns').checked;
 			var showHomes = document.getElementById('showHomes').checked;
 			var showSpawn = document.getElementById('showSpawn').checked;
- 			lasttimestamp = rows[0];
+ 			var firstRow = rows[0].split(' ');
+			var lasttimestamp = firstRow[0];
+			servertime = firstRow[1];
 			delete rows[0];
- 			var playerlst = ''
+ 			var playerlst = '';
 			var numwarps = 0;
 			var numsigns = 0;
 			var numhomes = 0;
@@ -681,10 +684,24 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				}
 			}
  
+			if (playerlst != '') playerlst += '<br>';
+			playerlst += '<img class="plicon" src="clock_' + (servertime > 12000 ? 'night' : 'day') + '.png"> <span id="servertime">...</span>';
+
 			if(playerlst != oldplayerlst) {
 				oldplayerlst = playerlst;
 				lst.innerHTML = playerlst;
 			}
+
+			var timelbl = document.getElementById('servertime');
+			var rem = 0;
+			if (servertime > 12000) {
+				rem = (24000 - servertime) / 20;
+			} else {
+				rem = (12000 - servertime) / 20;
+			}
+			var remMin = parseInt(rem / 60);
+			var remSec = parseInt(rem) - remMin * 60;
+			timelbl.innerHTML = remMin + (remSec < 10 ? ":0" : ":") + remSec;
 
 			for(var m in markers) {
 				if(!(m in loggedin)) {
