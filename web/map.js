@@ -1,14 +1,3 @@
-var setup = {
-	tileUrl:     'http://www.yourdomain.com/minecraft/tiles/',
-	updateUrl:   'http://www.yourdomain.com/minecraft/up/', // Or if using ASP.NET: http://www.yourdomain.com/minecraft/up/default.aspx?lasttimestamp=
-	updateRate:  2000,	//Seconds the map should poll for updates. (Seconds) * 1000. The default is 2000 (every 2 seconds).
-	showPortraitsOnMap: true,
-	showPortraitsInPlayerList: true,
-	showPlayerNameOnMap: false
-};
-
-/* THERE SHOULD BE NO NEED FOR MANUAL CONFIGURATION BEYOND THIS POINT */
-
 /**
  * This constructor creates a label and associates it with a marker.
  * It is for the private use of the MarkerWithLabel class.
