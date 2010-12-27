@@ -82,8 +82,18 @@ public class MapTile {
 		for(x=x1; x<x2; x+=16) {
 			for(z=z1; z<z2; z+=16) {
 				if(!s.isChunkLoaded(x, 0, z)) {
-					log.info("chunk not loaded: " + x + ", " + z + " for tile " + this.toString());
-					return false;
+					// Will try to load chunk.
+					//log.info("chunk not loaded: " + x + ", " + z + " for tile " + this.toString());
+                                        try {
+                                                s.loadChunk(x, 0, z);
+                                        } catch(Exception e) {
+                                                log.log(Level.SEVERE, "Caught exception from loadChunk!", e);
+						return false;
+                                        }
+					if(!s.isChunkLoaded(x, 0, z)) {
+						log.info("Could not load chunk: " + x + ", " + z + " for tile " + this.toString());
+						return false;
+					}
 				}
 			}
 		}
