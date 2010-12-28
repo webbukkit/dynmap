@@ -74,6 +74,68 @@ a, a:visited {
 	background-color:#000;
 	border: 0px;
 }
-#servertime {
+#clock {
+	padding-left: 16px;
 	color: #dede90;
+	background-repeat: no-repeat;
+}
+#clock.night { background-image: url(clock_night.png); }
+#clock.day { background-image: url(clock_day.png); }
+
+.playerIcon {
+}
+
+.playerrow {
+	width: 120px;
+	vertical-align: middle;
+	overflow: hidden;
+	padding: 1px;
+	cursor: pointer;
+}
+
+.playerrow:hover {
+	border: 1px solid #222222;
+	background-color: #333333;
+	padding: 0px;
+}
+
+.playerrow * {
+	vertical-align: middle;
+}
+
+.Marker {
+	font-family: Tahoma;
+	font-size: 12px;
+	color: white;
+	width: 100px;
+	white-space: nowrap;
+
+	margin-left: -12px;
+	margin-top: -12px;
+}
+
+.Marker * {
+	vertical-align: middle;
+}
+
+.Marker span {
+	visibility: hidden;
+}
+
+.Marker:hover span {
+	visibility: visible;
+}
+
+.Marker img {
+	width: 25px;
+	height: 25px;
+}
+
+.playerMarker {
+	margin-left: -16px;
+	margin-top: -16px;
+}
+
+.playerMarker span {
+	visibility: visible;
 }
