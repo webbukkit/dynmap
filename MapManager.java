@@ -113,6 +113,7 @@ public class MapManager extends Thread {
 	public Boolean showWarps = false;
 	public Boolean showSigns = false;
 	public Boolean showPlayers = false;
+	public Boolean enablePortraitGeneration = false;
 
 	public void debug(String msg)
 	{
@@ -136,6 +137,7 @@ public class MapManager extends Thread {
 			serverport = Integer.parseInt(properties.getString("map-serverport", "8123"));
 			datasource = properties.getString("data-source", "flatfile");
 			showmarkers = properties.getString("map-showmarkers", "all");
+			enablePortraitGeneration = !properties.getString("map-portraitgeneration", "0").equals("0");
 		} catch(Exception ex) {
 			log.log(Level.SEVERE, "Exception while reading properties for dynamic map", ex);
 		}
@@ -900,6 +902,7 @@ public class MapManager extends Thread {
 	
 	protected void getPlayerImage(Player player)
 	{
+		if (!enablePortraitGeneration) return;
 		String urlString = "http://www.minecraft.net/skin/" + player.getName() + ".png";
 		String filename = tilepath + player.getName() + ".png";
 		
