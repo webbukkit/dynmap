@@ -2,10 +2,15 @@
 	<!-- Change the following two properties to the correct jar files -->
 	<property name="minecraftserver.jar" location="../../minecraft_server.jar"/>
 	<property name="hmod.jar" location="../../Minecraft_Mod.jar"/>
+
+	<property name="minecraft" location="../../"/>
+	<property name="plugins" location="${minecraft}/plugins/"/>
+	<property name="http_root" location="/srv/http/dynmap/"/>
 	
 	<property name="src" location="src"/>
 	<property name="bin" location="bin"/>
 	<property name="dist" location="dist"/>
+	<property name="web" location="web"/>
 	
 	<target name="init">
 		<mkdir dir="${bin}"/>
@@ -23,7 +28,25 @@
 	<target name="dist" depends="compile">
 		<mkdir dir="${dist}"/>
 		<jar jarfile="${dist}/map.jar" basedir="${bin}"/>
-		<copy todir="${dist}" file="colors.txt"/>
+	</target>
+	
+	<target name="deploy" depends="dist">
+		<copy file="${dist}/map.jar" todir="${plugins}"/>
+		<copy file="colors.txt" todir="${minecraft}"/>
+		<copy todir="${http_root}">
+			<fileset dir="web"/>
+		</copy>
+	</target>
+	
+	<target name="release" depends="dist">
+		<delete file="dynmap.zip"/>
+		<zip destfile="dynmap.zip">
+			<zipfileset dir="." includes="README.md" fullpath="readme.txt"/>
+			<zipfileset dir="." includes="build.xml"/>
+			<zipfileset dir="${dist}" includes="*.jar"/>
+			<zipfileset dir="${src}" includes="*.java" prefix="src/"/>
+			<zipfileset dir="${web}" includes="**" prefix="web/"/>
+		</zip>
 	</target>
 	
 	<target name="clean">
