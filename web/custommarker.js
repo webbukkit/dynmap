@@ -53,6 +53,10 @@ CustomMarker.prototype.setPosition = function(p) {
 	}
 };
 
+CustomMarker.prototype.getPosition = function(p) {
+	return this.latlng_;
+};
+
 CustomMarker.prototype.hide = function() {
 	if (this.div_ && !this.isHidden) {
 		this.div_.style.display = 'none';

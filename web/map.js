@@ -187,24 +187,101 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	var oldplayerlst = '[Connecting]';
 	var servertime = 0;
 
+	function updateMarker(mi) {
+		if(mi.id in markers) {
+			var m = markers[mi.id];
+			if (!mi.visible) {
+				m.hide();
+				return;
+			}
+			else {
+				m.show();
+			}
+			
+			var converted = mi.position;
+			m.setPosition(mi.position);
+		} else {
+			var contentfun = function(div,mi) {
+				div.className = 'Marker ' + mi.type + 'Marker';
+				div.innerHTML = '<img src="' + mi.type + '.png" /> <span>' + mi.text + '</span>';
+			};
+			if (mi.type == 'player') {
+				contentfun = function(div, mi) {
+					div.className = 'Marker playerMarker';
+					var span = document.createElement('span');
+					span.className = 'playerName';
+					span.appendChild(document.createTextNode(mi.text));
+					div.appendChild(span);
+					getMinecraftHead(mi.text, 32, function(head) {
+						head.className = 'playerIcon';
+						div.insertBefore(head, div.firstChild);
+					});
+				};
+			}
+			var marker = new CustomMarker(converted, map, contentfun, mi);
+			marker.markerType = mi.type;
+			
+			markers[mi.id] = marker;
+
+			if (mi.type == 'player') {
+				var playerRow = document.createElement('div');
+				playerRow.id = 'playerrow_' + mi.text;
+				playerRow.className = 'playerrow';
+				
+				var followButton = document.createElement('input');
+				followButton.type = 'checkbox';
+				followButton.name = 'followPlayer';
+				followButton.checked = false;
+				followButton.value = mi.text;
+				marker.followButton = followButton;
+				followButton.className = 'followButton';
+				followButton.onclick = function(e) {
+					plfollow(mi.id != followPlayer ? mi.id : '');
+				};
+				playerRow.appendChild(followButton);
+				
+				var playerIconContainer = document.createElement('span');
+				playerRow.appendChild(playerIconContainer);
+				getMinecraftHead(mi.text, 16, function(head) {
+					head.className = 'playerIcon';
+					playerRow.icon = head;
+					playerIconContainer.appendChild(head);
+				});
+				var playerText = document.createElement('a');
+				playerText.appendChild(document.createTextNode(mi.text));
+				playerText.href = '#';
+				playerText.onclick = function(e) { map.panTo(markers[mi.id].getPosition()); };
+				playerRow.appendChild(playerText);
+				
+				marker.playerRow = playerRow;
+				var playerlst = document.getElementById('playerlst');
+				playerlst.appendChild(playerRow);
+			}
+		}
+		
+		if(mi.id == followPlayer) {
+			map.panTo(markers[mi.id].getPosition());
+		}
+	}
+
 	function mapUpdate()
 	{
 		makeRequest(config.updateUrl + lasttimestamp, function(res) {
+			var typeVisibleMap = {
+				'warp': document.getElementById('showWarps').checked,
+				'sign': document.getElementById('showSigns').checked,
+				'home': document.getElementById('showHomes').checked,
+				'spawn': document.getElementById('showSpawn').checked
+			};
+			
+			var typeCount = {};
+			
 			var rows = res.split('\n');
 			var loggedin = new Array();
-			var showWarps = document.getElementById('showWarps').checked;
-			var showSigns = document.getElementById('showSigns').checked;
-			var showHomes = document.getElementById('showHomes').checked;
-			var showSpawn = document.getElementById('showSpawn').checked;
  			var firstRow = rows[0].split(' ');
 			var lasttimestamp = firstRow[0];
 			servertime = firstRow[1];
 			delete rows[0];
-			var numwarps = 0;
-			var numsigns = 0;
-			var numhomes = 0;
-			var numspawns = 0;
-			var numplayers = 0;
  
 			for(var line in rows) {
 				var p = rows[line].split(' ');
@@ -216,85 +293,14 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						id: p[0] + '_' + p[1],
 						text: p[0],
 						type: p[1],
-						position: fromWorldToLatLng(p[2], p[3], p[4])
+						position: fromWorldToLatLng(p[2], p[3], p[4]),
+						visible: ((p[1] in typeVisibleMap) ? typeVisibleMap[p[1]] : true)
 					};
 
+					updateMarker(mi);
 					loggedin[mi.id] = 1;
-
-					if (mi.type == 'warp') numwarps++;
-					if (mi.type == 'sign') numsigns++;
-					if (mi.type == 'home') numhomes++;
-					if (mi.type == 'spawn') numspawns++;
-					if (mi.type == 'player') numplayers++;
-					
-					var hideMarker = (
-						(mi.type == 'warp' && showWarps == false) ||
-						(mi.type == 'sign' && showSigns == false) ||
-						(mi.type == 'home' && showHomes == false) ||
-						(mi.type == 'spawn' && showSpawn == false)
-					);
-
-					if(mi.id == followPlayer) {
-						map.panTo(fromWorldToLatLng(p[2], p[3], p[4]));
-					}
-					
-					if(mi.id in markers) {
-						var m = markers[mi.id];
-							
-						if (hideMarker) {
-							m.hide();
-							continue;
-						}
-						else {
-							m.show();
-						}
-						
-						var converted = mi.position;
-						m.setPosition(mi.position);
-					} else {
-						var contentfun = function(div,mi) {
-							div.className = 'Marker ' + mi.type + 'Marker';
-							div.innerHTML = '<img src="' + mi.type + '.png" /> <span>' + mi.text + '</span>';
-						};
-						if (mi.type == 'player') {
-							contentfun = function(div, mi) {
-								div.className = 'Marker playerMarker';
-								var span = document.createElement('span');
-								span.className = 'playerName';
-								span.appendChild(document.createTextNode(mi.text));
-								div.appendChild(span);
-								getMinecraftHead(mi.text, 32, function(head) {
-									head.className = 'playerIcon';
-									div.insertBefore(head, div.firstChild);
-								});
-							};
-						}
-						var marker = new CustomMarker(converted, map, contentfun, mi);
-						//if (hideMarker)
-						//	marker.hide();
-						marker.markerType = mi.type;
-						
-						markers[mi.id] = marker;
-
-						if (mi.type == 'player') {
-							var playerRow = document.createElement('div');
-							playerRow.id = 'playerrow_' + mi.text;
-							playerRow.className = 'playerrow';
-							getMinecraftHead(mi.text, 16, function(head) {
-								head.className = 'playerIcon';
-								playerRow.icon = head;
-								playerRow.insertBefore(head, playerRow.firstChild);
-							});
-							var playerText = document.createElement('a');
-							playerText.appendChild(document.createTextNode(' ' + mi.text));
-							playerText.href = '#';
-							playerText.onclick = function(e) { plclick(mi.id); };
-							playerRow.appendChild(playerText);
-							
-							marker.playerRow = playerRow;
-							playerlst.appendChild(playerRow);
-						}
-					}
+					if (!mi.type in typeCount) typeCount[mi.type] = 0;
+					typeCount[mi.type]++;
 				} else if(p.length == 3) {
 					if(p[2] == 't') {
 						lastSeen['t_' + p[0]] = lasttimestamp;
@@ -337,12 +343,10 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				}
 			}
 			setTimeout(mapUpdate, config.updateRate);
-			document.getElementById('warpsDiv').style.display = (numwarps == 0)?'none':'';
-			document.getElementById('signsDiv').style.display = (numsigns == 0)?'none':'';
-			document.getElementById('homesDiv').style.display = (numhomes == 0)?'none':'';
-			document.getElementById('spawnsDiv').style.display = (numspawns == 0)?'none':'';
-			//document.getElementById('plist').style.display = (numplayers == 0)?'none':'';
-			document.getElementById('controls').style.display = ((numwarps + numsigns + numhomes + numspawns) == 0)?'none':'';
+			document.getElementById('warpsDiv').style.display = (typeCount['warps'] == 0)?'none':'';
+			document.getElementById('signsDiv').style.display = (typeCount['signs'] == 0)?'none':'';
+			document.getElementById('homesDiv').style.display = (typeCount['homes'] == 0)?'none':'';
+			document.getElementById('spawnsDiv').style.display = (typeCount['spawns'] == 0)?'none':'';
 		}, 'text', function() { alert('failed to get update data'); } );
 	}
 
@@ -420,38 +424,15 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		}
 	}
 
-	function plclick(name) {
-		if(name in markers) {
-			if(name != followPlayer) plfollow('');
-			map.panTo(markers[name].getPosition());
-		}
-	}
-
 	function plfollow(name) {
-		var icon;
-
-		if(followPlayer == name) {
-			icon = document.getElementById('icon_' + followPlayer);
-			if(icon) icon.src = 'follow_off.png';
-			followPlayer = '';
-			return;
-		}
-
-		if(followPlayer) {
-			icon = document.getElementById('icon_' + followPlayer);
-			if(icon) icon.src = 'follow_off.png';
-			followPlayer = '';
-		}
-
-		if(!name) return;
-
-		icon = document.getElementById('icon_' + name);
-		if(icon) icon.src = 'follow_on.png';
-		followPlayer = name;
-
+		$('.followButton').removeAttr('checked');
+		
 		if(name in markers) {
-			map.panTo(markers[name].getPosition());
+			var m = markers[name];
+			$(m.followButton).attr('checked', 'checked');
+			map.panTo(m.getPosition());
 		}
+		followPlayer = name;
 	}
 
 	function makeLink() {

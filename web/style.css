@@ -139,3 +139,13 @@ a, a:visited {
 .playerMarker span {
 	visibility: visible;
 }
+
+.followButton {
+	width: 16px;
+	height: 16px;
+	background-image: url(follow_off.png);
+}
+
+.followButton.enabled {
+	background-image: url(follow_on.png);
+}
