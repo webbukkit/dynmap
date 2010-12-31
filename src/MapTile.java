@@ -84,7 +84,11 @@ public class MapTile {
 				if(!s.isChunkLoaded(x, 0, z)) {
 					// Will try to load chunk.
 					//log.info("chunk not loaded: " + x + ", " + z + " for tile " + this.toString());
-                                        try {
+					
+					return false;
+					
+					// Sometimes give very heavy serverload:
+                                        /*try {
                                                 s.loadChunk(x, 0, z);
                                         } catch(Exception e) {
                                                 log.log(Level.SEVERE, "Caught exception from loadChunk!", e);
@@ -93,7 +97,7 @@ public class MapTile {
 					if(!s.isChunkLoaded(x, 0, z)) {
 						log.info("Could not load chunk: " + x + ", " + z + " for tile " + this.toString());
 						return false;
-					}
+					}*/
 				}
 			}
 		}
