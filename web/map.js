@@ -202,19 +202,25 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			m.setPosition(mi.position);
 		} else {
 			var contentfun = function(div,mi) {
-				div.className = 'Marker ' + mi.type + 'Marker';
-				div.innerHTML = '<img src="' + mi.type + '.png" /> <span>' + mi.text + '</span>';
+				$(div)
+					.addClass('Marker')
+					.addClass(mi.type + 'Marker')
+					.append($('<img/>').attr({src: mi.type + '.png'}))
+					.append($('<span/>').text(mi.text));
 			};
 			if (mi.type == 'player') {
 				contentfun = function(div, mi) {
-					div.className = 'Marker playerMarker';
-					var span = document.createElement('span');
-					span.className = 'playerName';
-					span.appendChild(document.createTextNode(mi.text));
-					div.appendChild(span);
+					$(div)
+						.addClass('Marker')
+						.addClass('playerMarker')
+						.append($('<span/>')
+							.addClass('playerName')
+							.text(mi.text));
+					
 					getMinecraftHead(mi.text, 32, function(head) {
-						head.className = 'playerIcon';
-						div.insertBefore(head, div.firstChild);
+						$(head)
+							.addClass('playerIcon')
+							.prependTo(div);
 					});
 				};
 			}
@@ -224,38 +230,33 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			markers[mi.id] = marker;
 
 			if (mi.type == 'player') {
-				var playerRow = document.createElement('div');
-				playerRow.id = 'playerrow_' + mi.text;
-				playerRow.className = 'playerrow';
-				
-				var followButton = document.createElement('input');
-				followButton.type = 'checkbox';
-				followButton.name = 'followPlayer';
-				followButton.checked = false;
-				followButton.value = mi.text;
-				marker.followButton = followButton;
-				followButton.className = 'followButton';
-				followButton.onclick = function(e) {
-					plfollow(mi.id != followPlayer ? mi.id : '');
-				};
-				playerRow.appendChild(followButton);
-				
-				var playerIconContainer = document.createElement('span');
-				playerRow.appendChild(playerIconContainer);
+				marker.playerRow = $('<div/>')
+					.attr({ id: 'playerrow_' + mi.text })
+					.addClass('playerrow')
+					.append(marker.followButton = $('<input/>')
+						.attr({	type: 'checkbox',
+							name: 'followPlayer',
+							checked: false,
+							value: mi.text
+							})
+						.addClass('followButton')
+						.click(function(e) {
+							plfollow(mi.id != followPlayer ? mi.id : '');
+						}))
+					.append(marker.playerIconContainer = $('<span/>'))
+					.append($('<a/>')
+						.text(mi.text)
+						.attr({ href: '#' })
+						.click(function(e) { map.panTo(markers[mi.id].getPosition()); })
+						);
+
 				getMinecraftHead(mi.text, 16, function(head) {
-					head.className = 'playerIcon';
-					playerRow.icon = head;
-					playerIconContainer.appendChild(head);
+					marker.playerRow.icon = $(head)
+						.addClass('playerIcon')
+						.appendTo(marker.playerIconContainer);
 				});
-				var playerText = document.createElement('a');
-				playerText.appendChild(document.createTextNode(mi.text));
-				playerText.href = '#';
-				playerText.onclick = function(e) { map.panTo(markers[mi.id].getPosition()); };
-				playerRow.appendChild(playerText);
 				
-				marker.playerRow = playerRow;
-				var playerlst = document.getElementById('playerlst');
-				playerlst.appendChild(playerRow);
+				$('#playerlst').append(marker.playerRow);
 			}
 		}
 		
@@ -323,21 +324,23 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			}
  
 			var time = {
-				hours: parseInt(servertime / 1000),
+				// Assuming it is day at 8:00
+				hours: (parseInt(servertime / 1000)+8) % 24,
 				minutes: parseInt(((servertime / 1000) % 1) * 60),
 				seconds: parseInt(((((servertime / 1000) % 1) * 60) % 1) * 60)
 			};
 
 			
-			var clock = document.getElementById('clock');
-			clock.className = (servertime > 12000 ? 'night' : 'day');
-			clock.innerText = formatTime(time);
+			$('#clock')
+				.addClass(servertime > 12000 ? 'night' : 'day')
+				.removeClass(servertime > 12000 ? 'day' : 'night')
+				.text(formatTime(time));
 
 			for(var m in markers) {
 				if(!(m in loggedin)) {
 					markers[m].remove(null);
-					if (markers[m].markerType == 'player') {
-						playerlst.removeChild(markers[m].playerRow);
+					if (markers[m].playerRow) {
+						markers[m].playerRow.remove();
 					}
 					delete markers[m];
 				}
