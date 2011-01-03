@@ -7,15 +7,18 @@ import java.net.Socket;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import org.bukkit.*;
 
 public class WebServerRequest extends Thread {
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
 	private Socket sock;
 	private MapManager mgr;
+	private map etc;
 
 	public WebServerRequest(Socket socket, MapManager mgr)
 	{
+		this.etc = mgr.etc;
 		sock = socket;
 		this.mgr = mgr;
 	}
@@ -71,18 +74,19 @@ public class WebServerRequest extends Thread {
 			sendHeader(out, 200, "text/plain", -1, System.currentTimeMillis());
 
 			StringBuilder sb = new StringBuilder();
-			sb.append(current + " " + etc.getServer().getRelativeTime() + "\n");
+			//sb.append(current + " " + etc.getServer().getRelativeTime() + "\n");
+			sb.append(current + " " + 0 +"\n");
 
 			if (mgr.showPlayers) {
-				for(Player player : etc.getServer().getPlayerList()) {
-					sb.append(player.getName() + " player " + player.getX() + " " + player.getY() + " " + player.getZ() + "\n");
+				for(Player player : etc.getServer().getOnlinePlayers()) {
+					sb.append(player.getName() + " player " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
 				}
 			}
 			
-			if (mgr.showSigns) {
+			/*if (mgr.showSigns) {
 				for(Warp sign : mgr.signs.values())
 				{
-					sb.append(sign.Name + " sign " + sign.Location.x + " " + sign.Location.y + " " + sign.Location.z + "\n");
+					sb.append(sign.Name + " sign " + sign.Location.getX() + " " + sign.Location.getY() + " " + sign.Location.getZ() + "\n");
 				}
 			}
 
@@ -91,7 +95,7 @@ public class WebServerRequest extends Thread {
 				
 				if (warps != null) {
 					for(Warp warp : warps) {
-						sb.append(warp.Name + " warp " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
+						sb.append(warp.Name + " warp " + warp.Location.getX() + " " + warp.Location.getY() + " " + warp.Location.getZ() + "\n");
 					}
 				}
 			}
@@ -110,7 +114,7 @@ public class WebServerRequest extends Thread {
 				Location spawnLocation = etc.getServer().getSpawnLocation();
 				
 				sb.append("Spawn spawn " + spawnLocation.x + " " + spawnLocation.y + " " + spawnLocation.z + "\n");
-			}
+			}*/
 			
 			synchronized(mgr.lock) {
 				for(TileUpdate tu : mgr.tileUpdates) {

@@ -1,7 +1,14 @@
 import java.util.logging.Logger;
 import java.io.IOException;
 
-public class map extends Plugin {
+import java.io.File;
+import org.bukkit.*;
+import org.bukkit.event.*;
+import org.bukkit.event.Event.Priority;
+import org.bukkit.plugin.*;
+import org.bukkit.plugin.java.*;
+
+public class map extends JavaPlugin {
 
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
@@ -9,11 +16,20 @@ public class map extends Plugin {
 	private MapManager mgr = null;
 	private MapListener listener = null;
 
+	public map(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
+		super(pluginLoader, instance, desc, plugin, cLoader);
+		registerEvents();
+	}
+
+	public World getWorld() {
+		return getServer().getWorlds()[0];
+	}
+
 	@Override
-	public void enable() {
+	public void onEnable() {
 		log.info("Map INIT");
 
-		mgr = new MapManager();
+		mgr = new MapManager(this);
 		mgr.startManager();
 
 		try {
@@ -26,7 +42,7 @@ public class map extends Plugin {
 	}
 
 	@Override
-	public void disable() {
+	public void onDisable() {
 		log.info("Map UNINIT");
 
 		mgr.stopManager();
@@ -37,9 +53,10 @@ public class map extends Plugin {
 		}
 	}
 
-	@Override
-	public void initialize() {
-		etc.getLoader().addListener(PluginLoader.Hook.COMMAND, listener, this, PluginListener.Priority.MEDIUM);
+	public void registerEvents() {
+		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, listener, Priority.Normal, this);
+		//getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DESTROYED, listener, Priority.Normal, this);
+	/*	etc.getLoader().addListener(PluginLoader.Hook.COMMAND, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_CREATED, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_DESTROYED, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.LOGIN, listener, this, PluginListener.Priority.MEDIUM);
@@ -52,6 +69,6 @@ public class map extends Plugin {
 		etc.getInstance().addCommand("/addsign", " [name] - adds a named sign to the map");
 		etc.getInstance().addCommand("/removesign", " [name] - removes a named sign to the map");
 		etc.getInstance().addCommand("/listsigns", " - list all named signs");
-		etc.getInstance().addCommand("/tpsign", " [name] - teleport to a named sign");
+		etc.getInstance().addCommand("/tpsign", " [name] - teleport to a named sign");*/
 	}
 }

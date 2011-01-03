@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import org.bukkit.*;
 
 import java.util.logging.Logger;
 

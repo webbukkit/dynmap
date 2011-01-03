@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import org.bukkit.World;
+import org.bukkit.Server;
 
 public class MapTile {
 	protected static final Logger log = Logger.getLogger("Minecraft");
@@ -27,9 +29,11 @@ public class MapTile {
 	/* whether the cave map of this tile needs to be updated */
 	boolean staleCave = false;
 
+	private map etc;
 	/* create new MapTile */
-	public MapTile(int px, int py, int zpx, int zpy)
+	public MapTile(map etc, int px, int py, int zpx, int zpy)
 	{
+		this.etc = etc;
 		this.px = px;
 		this.py = py;
 		this.zpx = zpx;
@@ -51,17 +55,19 @@ public class MapTile {
 
 		int x, z;
 		Server s = etc.getServer();
+		World w = etc.getWorld();
 
 		for(x=x1; x<x2; x+=16) {
 			for(z=z1; z<z2; z+=16) {
-				if(!s.isChunkLoaded(x, 0, z)) {
-					log.info("map render loading chunk: " + x + ", 0, " + z);
+				if(!w.isChunkLoaded(w.getChunkAt(x, z))) {
+					log.info("chunk not loaded: " + x + ", 0, " + z);
+					/*
 
 					try {
 						s.loadChunk(x, 0, z);
 					} catch(Exception e) {
 						log.log(Level.SEVERE, "Caught exception from loadChunk!", e);
-					}
+					}*/
 				}
 			}
 		}
@@ -78,10 +84,11 @@ public class MapTile {
 
 		int x, z;
 		Server s = etc.getServer();
+		World w = etc.getWorld();
 
 		for(x=x1; x<x2; x+=16) {
 			for(z=z1; z<z2; z+=16) {
-				if(!s.isChunkLoaded(x, 0, z)) {
+				if(!w.isChunkLoaded(w.getChunkAt(x, z))) {
 					// Will try to load chunk.
 					//log.info("chunk not loaded: " + x + ", " + z + " for tile " + this.toString());
 					
@@ -380,12 +387,12 @@ public class MapTile {
 	private Color scan(MapManager mgr, int x, int y, int z, int seq)
 	{
 		Server s = etc.getServer();
-
+		World w = etc.getWorld();
 		for(;;) {
 			if(y < 0)
 				return Color.BLUE;
 
-			int id = s.getBlockIdAt(x, y, z);
+			int id = w.getBlockAt(x, y, z).getTypeID();
 
 			switch(seq) {
 			case 0:
@@ -438,13 +445,14 @@ public class MapTile {
 	private Color caveScan(MapManager mgr, int x, int y, int z, int seq)
 	{
 		Server s = etc.getServer();
+		World w = etc.getWorld();
 		boolean air = true;
 
 		for(;;) {
 			if(y < 0)
 				return Color.BLACK;
 
-			int id = s.getBlockIdAt(x, y, z);
+			int id = w.getBlockAt(x, y, z).getTypeID();
 
 			switch(seq) {
 			case 0:

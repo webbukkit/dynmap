@@ -30,10 +30,14 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.*;
+
 import javax.imageio.ImageIO;
 
 public class MapManager extends Thread {
 	protected static final Logger log = Logger.getLogger("Minecraft");
+
+	public map etc;
 
 	/* dimensions of a map tile */
 	public static final int tileWidth = 128;
@@ -93,7 +97,7 @@ public class MapManager extends Thread {
 	public String debugPlayer = null;
 	
 	/* hashmap of signs */
-	public HashMap<String, Warp> signs = null;
+	//public HashMap<String, Warp> signs = null;
 
 	/* cache this many zoomed-out tiles */
 	public static final int zoomCacheSize = 64;
@@ -121,13 +125,14 @@ public class MapManager extends Thread {
 		Server s = etc.getServer();
 		Player p = s.getPlayer(debugPlayer);
 		if(p == null) return;
-		p.sendMessage("Map> " + Colors.Red + msg);
+		p.sendMessage("Map> " + Color.RED + msg);
 	}
 	
-	public MapManager()
+	public MapManager(map plugin)
 	{
+		etc = plugin;
 		/* load configuration */
-		PropertiesFile properties;
+		/*PropertiesFile properties;
 
 		properties = new PropertiesFile("server.properties");
 		try {
@@ -140,7 +145,21 @@ public class MapManager extends Thread {
 			generatePortraits = !properties.getString("map-generateportraits", "0").equals("0");
 		} catch(Exception ex) {
 			log.log(Level.SEVERE, "Exception while reading properties for dynamic map", ex);
+		}*/
+		tilepath = "/srv/http/dynmap/tiles/";
+		colorsetpath = "colors.txt";
+		signspath = "signs.txt";
+		serverport = 8123;
+		datasource = "flatfile";
+		showmarkers = "all";
+		{
+			showSpawn = true;
+			showHomes = true;
+			showWarps = true;
+			showSigns = true;
+			showPlayers = true;
 		}
+		generatePortraits = false;
 
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
@@ -149,9 +168,9 @@ public class MapManager extends Thread {
 		caveTileUpdates = new LinkedList<TileUpdate>();
 		zoomCache = new Cache<String, BufferedImage>(zoomCacheSize);
 		
-		signs = new HashMap<String, Warp>();
+//		signs = new HashMap<String, Warp>();
 		
-		loadShowOptions();
+//		loadShowOptions();
 	}
 
 	/* tile X for position x */
@@ -199,7 +218,7 @@ public class MapManager extends Thread {
 		/* load colorset */
 		File cfile = new File(colorsetpath);
 
-		loadSigns();
+		//loadSigns();
 		
 		try {
 			Scanner scanner = new Scanner(cfile);
@@ -442,7 +461,7 @@ public class MapManager extends Thread {
 			if(t == null) {
 				/* no maptile exists, need to create one */
 
-				t = new MapTile(px, py, ztilex(px), ztiley(py));
+				t = new MapTile(etc, px, py, ztilex(px), ztiley(py));
 				tileStore.put(key, t);
 				return t;
 			} else {
@@ -485,11 +504,12 @@ public class MapManager extends Thread {
 		open.add(first);
 
 		Server s = etc.getServer();
+		World w = etc.getWorld();
 
 		while(open.size() > 0) {
 			MapTile t = open.remove(open.size() - 1);
 			if(t.stale) continue;
-			int h = s.getHighestBlockY(t.mx, t.mz);
+			int h = w.getHighestBlockYAt(t.mx, t.mz);
 
 			log.info("walking: " + t.mx + ", " + t.mz + ", h = " + h);
 			if(h < 1)
@@ -651,7 +671,7 @@ public class MapManager extends Thread {
 	}
 	
 	/* adds a sign to the map */
-	public boolean addSign(Player player, String name, double px, double py, double pz)
+/*	public boolean addSign(Player player, String name, double px, double py, double pz)
 	{
 		if (signs.containsKey(name))
 		{
@@ -675,10 +695,10 @@ public class MapManager extends Thread {
 		}
 		
 		return false;
-	}
+	}*/
 	
 	/* removes a sign from the map */
-	public boolean removeSign(Player player, String name)
+/*	public boolean removeSign(Player player, String name)
 	{
 		if (signs.containsKey(name))
 		{
@@ -702,10 +722,10 @@ public class MapManager extends Thread {
 		}
 		
 		return false;
-	}
+	}*/
 	
 	/* teleports a user to a sign */
-	public boolean teleportToSign(Player player, String name)
+/*	public boolean teleportToSign(Player player, String name)
 	{
 		if (signs.containsKey(name))
 		{
@@ -719,10 +739,10 @@ public class MapManager extends Thread {
 		}
 		
 		return false;
-	}
+	}*/
 	
 	/* load the map sign file */
-	private void loadSigns()
+/*	private void loadSigns()
 	{
 		Scanner scanner = null;
 	    try
@@ -779,10 +799,10 @@ public class MapManager extends Thread {
 	    {
 	    	if (scanner != null) scanner.close();
 	    }
-	}
+	}*/
 	
 	/* save the map sign file */
-	private void saveSigns() throws IOException
+/*	private void saveSigns() throws IOException
 	{
 		Writer out = null;
 	    try
@@ -809,11 +829,11 @@ public class MapManager extends Thread {
 	    {
 	    	if (out != null) out.close();
 	    }
-	}
+	}*/
 	
 	/* TODO: Is there a cleaner way to get warps/homes than using custom DataSource classes to expose the protected properties? */
 	
-	protected List<Warp> loadWarps()
+/*	protected List<Warp> loadWarps()
 	{
 		List<Warp> warps = null;
 		
@@ -940,5 +960,5 @@ public class MapManager extends Thread {
 		}
 		
 		return success;
-	}
+	}*/
 }

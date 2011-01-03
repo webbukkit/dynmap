@@ -2,12 +2,12 @@
 
 import java.util.List;
 
-public class DMMySQLSource extends MySQLSource {
+public class DMMySQLSource{/* extends MySQLSource {
 	public List<Warp> getAllWarps() {
 		return this.warps;
 	}
 	
 	public List<Warp> getAllHomes() {
 		return this.homes;
-	}
+	}*/
 }
