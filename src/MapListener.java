@@ -15,6 +15,10 @@ public class MapListener extends PluginListener {
 	@Override
 	public boolean onBlockCreate(Player player, Block blockPlaced, Block blockClicked, int itemInHand)
 	{
+		if(blockPlaced == null) {
+			mgr.debug(player.getName() + " touched a null block");
+			return false;
+		}
 		if(mgr.touch(blockPlaced.getX(), blockPlaced.getY(), blockPlaced.getZ()))
 			mgr.debug(player.getName() + " touch " + blockPlaced.getX() + "," + blockPlaced.getY() + "," + blockPlaced.getZ() + " from onBlockCreate");
 		return false;
