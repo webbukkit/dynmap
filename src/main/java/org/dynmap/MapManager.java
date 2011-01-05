@@ -33,13 +33,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.*;
+import org.dynmap.debug.Debugger;
 
 import javax.imageio.ImageIO;
 
 public class MapManager extends Thread {
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
-	public map etc;
+	private World world;
+	private Debugger debugger;
 
 	/* dimensions of a map tile */
 	public static final int tileWidth = 128;
@@ -106,62 +108,21 @@ public class MapManager extends Thread {
 
 	/* zoomed-out tile cache */
 	public Cache<String, BufferedImage> zoomCache;
-	
-	/* data source */
-	public String datasource = "flatfile";
-	
-	/* which markers to show (spawn,homes,warps,signs,players,all,none) */
-	public String showmarkers = "all";
-	
-	/* booleans designating what to show on the map */
-	public Boolean showSpawn = false;
-	public Boolean showHomes = false;
-	public Boolean showWarps = false;
-	public Boolean showSigns = false;
-	public Boolean showPlayers = false;
-	public Boolean generatePortraits = false;
 
 	public void debug(String msg)
 	{
-		if(debugPlayer == null) return;
-		Server s = etc.getServer();
-		Player p = s.getPlayer(debugPlayer);
-		if(p == null) return;
-		p.sendMessage("Map> " + Color.RED + msg);
+		debugger.debug(msg);
 	}
 	
-	public MapManager(map plugin)
+	public MapManager(World world, Debugger debugger)
 	{
-		etc = plugin;
-		/* load configuration */
-		/*PropertiesFile properties;
+		this.world = world;
+		this.debugger = debugger;
 
-		properties = new PropertiesFile("server.properties");
-		try {
-			tilepath = properties.getString("map-tilepath", "tiles/");
-			colorsetpath = properties.getString("map-colorsetpath", "colors.txt");
-			signspath = properties.getString("map-signspath", "signs.txt");
-			serverport = Integer.parseInt(properties.getString("map-serverport", "8123"));
-			datasource = properties.getString("data-source", "flatfile");
-			showmarkers = properties.getString("map-showmarkers", "all");
-			generatePortraits = !properties.getString("map-generateportraits", "0").equals("0");
-		} catch(Exception ex) {
-			log.log(Level.SEVERE, "Exception while reading properties for dynamic map", ex);
-		}*/
 		tilepath = "/srv/http/dynmap/tiles/";
 		colorsetpath = "colors.txt";
 		signspath = "signs.txt";
 		serverport = 8123;
-		datasource = "flatfile";
-		showmarkers = "all";
-		{
-			showSpawn = true;
-			showHomes = true;
-			showWarps = true;
-			showSigns = true;
-			showPlayers = true;
-		}
-		generatePortraits = false;
 
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
@@ -169,10 +130,6 @@ public class MapManager extends Thread {
 		tileUpdates = new LinkedList<TileUpdate>();
 		caveTileUpdates = new LinkedList<TileUpdate>();
 		zoomCache = new Cache<String, BufferedImage>(zoomCacheSize);
-		
-//		signs = new HashMap<String, Warp>();
-		
-//		loadShowOptions();
 	}
 
 	/* tile X for position x */
@@ -219,8 +176,6 @@ public class MapManager extends Thread {
 
 		/* load colorset */
 		File cfile = new File(colorsetpath);
-
-		//loadSigns();
 		
 		try {
 			Scanner scanner = new Scanner(cfile);
@@ -463,7 +418,7 @@ public class MapManager extends Thread {
 			if(t == null) {
 				/* no maptile exists, need to create one */
 
-				t = new MapTile(etc, px, py, ztilex(px), ztiley(py));
+				t = new MapTile(world, px, py, ztilex(px), ztiley(py));
 				tileStore.put(key, t);
 				return t;
 			} else {
@@ -505,13 +460,10 @@ public class MapManager extends Thread {
 		Vector<MapTile> open = new Vector<MapTile>();
 		open.add(first);
 
-		Server s = etc.getServer();
-		World w = etc.getWorld();
-
 		while(open.size() > 0) {
 			MapTile t = open.remove(open.size() - 1);
 			if(t.stale) continue;
-			int h = w.getHighestBlockYAt(t.mx, t.mz);
+			int h = world.getHighestBlockYAt(t.mx, t.mz);
 
 			log.info("walking: " + t.mx + ", " + t.mz + ", h = " + h);
 			if(h < 1)
@@ -671,296 +623,4 @@ public class MapManager extends Thread {
 
 		return good;
 	}
-	
-	/* adds a sign to the map */
-/*	public boolean addSign(Player player, String name, double px, double py, double pz)
-	{
-		if (signs.containsKey(name))
-		{
-			player.sendMessage("Map> " + Colors.Red + "Sign \"" + name + "\" already exists.");
-			return false;
-		}
-		
-		Warp sign = new Warp();
-		sign.Name = name;
-		sign.Location = new Location(px,py,pz);
-		signs.put(name, sign);
-		
-		try
-		{
-			saveSigns();
-			return true;
-		}
-		catch(IOException e)
-		{
-			log.log(Level.SEVERE, "Failed to save signs.txt", e);
-		}
-		
-		return false;
-	}*/
-	
-	/* removes a sign from the map */
-/*	public boolean removeSign(Player player, String name)
-	{
-		if (signs.containsKey(name))
-		{
-			Warp sign = signs.get(name);
-
-			signs.remove(name);
-				
-			try
-			{
-				saveSigns();
-				return true;
-			}
-			catch(IOException e)
-			{
-				log.log(Level.SEVERE, "Failed to save signs.txt", e);
-			}
-		}
-		else
-		{
-			player.sendMessage("Map> " + Colors.Red + "Sign \"" + name + "\" does not exist.");
-		}
-		
-		return false;
-	}*/
-	
-	/* teleports a user to a sign */
-/*	public boolean teleportToSign(Player player, String name)
-	{
-		if (signs.containsKey(name))
-		{
-			Warp sign = signs.get(name);
-
-			player.teleportTo(sign.Location.x, sign.Location.y, sign.Location.z, 0, 0);
-		}
-		else
-		{
-			player.sendMessage("Map> " + Colors.Red + "Sign \"" + name + "\" does not exist.");
-		}
-		
-		return false;
-	}*/
-	
-	/* load the map sign file */
-/*	private void loadSigns()
-	{
-		Scanner scanner = null;
-	    try
-	    {
-	    	scanner = new Scanner(new FileInputStream(signspath), "UTF-8");
-	    	while (scanner.hasNextLine())
-	    	{
-	    		String line = scanner.nextLine();
-	    		String[] values = line.split(":");
-				String name = "";
-				Double x = 0.0,y = 0.0,z = 0.0;
-				
-				// If user has old style of file (CSV)
-				if (values.length == 1)
-				{
-					values = line.split(",");
-				}
-				
-				// If user has old style of file (owners)
-				if (values.length == 5)
-				{
-					name = values[0];
-					x = Double.parseDouble(values[2]);
-					y = Double.parseDouble(values[3]);
-					z = Double.parseDouble(values[4]);
-				}
-				else if (values.length == 4)
-				{
-					name = values[0];
-					x = Double.parseDouble(values[1]);
-					y = Double.parseDouble(values[2]);
-					z = Double.parseDouble(values[3]);
-				}
-				else
-				{
-					log.log(Level.INFO, "Failed to load sign: " + values[0]);
-				}
-				
-				// If a sign was loaded, add it to the hash
-				if (name.isEmpty() == false && x != 0.0 && y != 0.0 && z != 0.0)
-				{
-					Warp sign = new Warp();
-					sign.Name = name;
-					sign.Location = new Location(x, y, z);
-					signs.put(sign.Name, sign);
-				}
-	    	}
-	    }
-	    catch(FileNotFoundException e)
-	    {
-	    	// No need to log FileNotFoundException
-	    }
-	    finally
-	    {
-	    	if (scanner != null) scanner.close();
-	    }
-	}*/
-	
-	/* save the map sign file */
-/*	private void saveSigns() throws IOException
-	{
-		Writer out = null;
-	    try
-	    {
-	    	out = new OutputStreamWriter(new FileOutputStream(signspath), "UTF-8");
-	    	Collection<Warp> values = signs.values();
-	    	Iterator<Warp> it = values.iterator();
-	    	while(it.hasNext())
-	    	{
-	    		Warp sign = it.next();
-	    		String line = sign.Name + ":" + sign.Location.x + ":" +  sign.Location.y + ":" +  sign.Location.z + "\n";
-	    		out.write(line);
-	    	}
-	    }
-	    catch(UnsupportedEncodingException e)
-	    {
-	    	log.log(Level.SEVERE, "Unsupported encoding", e);
-	    }
-	    catch(FileNotFoundException e)
-	    {
-	    	log.log(Level.SEVERE, "signs.txt not found", e);
-	    }
-	    finally
-	    {
-	    	if (out != null) out.close();
-	    }
-	}*/
-	
-	/* TODO: Is there a cleaner way to get warps/homes than using custom DataSource classes to expose the protected properties? */
-	
-/*	protected List<Warp> loadWarps()
-	{
-		List<Warp> warps = null;
-		
-		if (datasource.equals("flatfile")) {
-			DMFlatFileSource ds = new DMFlatFileSource();
-			ds.initialize();
-			ds.loadWarps();
-			warps = ds.getAllWarps();
-		}
-		else if (datasource.equals("mysql")) {
-			DMMySQLSource ds = new DMMySQLSource();
-			ds.initialize();
-			ds.loadWarps();
-			warps = ds.getAllWarps();
-		}
-		
-		return warps;
-	}
-	
-	protected List<Warp> loadHomes()
-	{
-		List<Warp> homes = null;
-		
-		if (datasource.equals("flatfile")) {
-			DMFlatFileSource ds = new DMFlatFileSource();
-			ds.initialize();
-			ds.loadHomes();
-			homes = ds.getAllHomes();
-		}
-		else if (datasource.equals("mysql")) {
-			DMMySQLSource ds = new DMMySQLSource();
-			ds.initialize();
-			ds.loadHomes();
-			homes = ds.getAllHomes();
-		}
-		
-		return homes;
-	}
-	
-	private void loadShowOptions()
-	{
-		String[] values = showmarkers.split(",");
-		
-		for (int i = 0; i < values.length; i++)
-		{
-			String opt = values[i];
-			
-			if (opt.equals("all"))
-			{
-				showSpawn = true;
-				showHomes = true;
-				showWarps = true;
-				showSigns = true;
-				showPlayers = true;
-			}
-			else if (opt.equals("none"))
-			{
-				showSpawn = false;
-				showHomes = false;
-				showWarps = false;
-				showSigns = false;
-				showPlayers = false;
-			}
-			else if (opt.equals("spawn"))
-			{
-				showSpawn = true;
-			}
-			else if (opt.equals("homes"))
-			{
-				showHomes = true;
-			}
-			else if (opt.equals("warps"))
-			{
-				showWarps = true;
-			}
-			else if (opt.equals("signs"))
-			{
-				showSigns = true;
-			}
-			else if (opt.equals("players"))
-			{
-				showPlayers = true;
-			}
-		}
-	}
-	
-	protected void getPlayerImage(Player player)
-	{
-		if (!generatePortraits) return;
-		String urlString = "http://www.minecraft.net/skin/" + player.getName() + ".png";
-		String filename = tilepath + player.getName() + ".png";
-		
-		if (downloadPlayerImage(urlString, filename) == false) {
-			downloadPlayerImage("http://www.minecraft.net/img/char.png", filename);
-		}
-	}
-	
-	private Boolean downloadPlayerImage(String urlString, String filename)
-	{
-		BufferedImage img = null;
-		Boolean success = false;
-		File out = null;
-		
-		try
-		{
-			img = ImageIO.read(new URL(urlString));
-			out = new File(filename);
-			
-			BufferedImage imgCropped = img.getSubimage(8, 8, 8, 8);
-			BufferedImage imgResized = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB); 
-			
-			Graphics2D g = imgResized.createGraphics();
-			g.drawImage(imgCropped, 0, 0, 24, 24, null);
-			g.dispose();
-			
-			ImageIO.write(imgResized, "png", out);
-			success = true;
-		}
-		catch(IOException e) {
-			//log.log(Level.INFO, "Failed to fetch player image " + filename, e);
-		}
-		catch(NullPointerException e) {
-			//log.log(Level.INFO, "Failed to fetch player image " + filename, e);
-		}
-		
-		return success;
-	}*/
 }

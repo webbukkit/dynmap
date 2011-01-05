@@ -16,11 +16,10 @@ public class WebServerRequest extends Thread {
 
 	private Socket sock;
 	private MapManager mgr;
-	private map etc;
+	private DynmapPlugin etc;
 
 	public WebServerRequest(Socket socket, MapManager mgr)
 	{
-		this.etc = mgr.etc;
 		sock = socket;
 		this.mgr = mgr;
 	}
@@ -79,44 +78,9 @@ public class WebServerRequest extends Thread {
 			//sb.append(current + " " + etc.getServer().getRelativeTime() + "\n");
 			sb.append(current + " " + 0 +"\n");
 
-			if (mgr.showPlayers) {
-				for(Player player : etc.getServer().getOnlinePlayers()) {
-					sb.append(player.getName() + " player " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
-				}
+			for(Player player : etc.getServer().getOnlinePlayers()) {
+				sb.append(player.getName() + " player " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
 			}
-			
-			/*if (mgr.showSigns) {
-				for(Warp sign : mgr.signs.values())
-				{
-					sb.append(sign.Name + " sign " + sign.Location.getX() + " " + sign.Location.getY() + " " + sign.Location.getZ() + "\n");
-				}
-			}
-
-			if (mgr.showWarps) {
-				List<Warp> warps = mgr.loadWarps();
-				
-				if (warps != null) {
-					for(Warp warp : warps) {
-						sb.append(warp.Name + " warp " + warp.Location.getX() + " " + warp.Location.getY() + " " + warp.Location.getZ() + "\n");
-					}
-				}
-			}
-			
-			if (mgr.showHomes) {
-				List<Warp> homes = mgr.loadHomes();
-				
-				if (homes != null) {
-					for(Warp warp : homes) {
-						sb.append(warp.Name + " home " + warp.Location.x + " " + warp.Location.y + " " + warp.Location.z + "\n");
-					}
-				}
-			}
-			
-			if (mgr.showSpawn) {
-				Location spawnLocation = etc.getServer().getSpawnLocation();
-				
-				sb.append("Spawn spawn " + spawnLocation.x + " " + spawnLocation.y + " " + spawnLocation.z + "\n");
-			}*/
 			
 			synchronized(mgr.lock) {
 				for(TileUpdate tu : mgr.tileUpdates) {

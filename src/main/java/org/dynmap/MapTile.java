@@ -16,6 +16,8 @@ import org.bukkit.Server;
 public class MapTile {
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
+	private World world;
+	
 	/* projection position */
 	public int px, py;
 
@@ -31,11 +33,10 @@ public class MapTile {
 	/* whether the cave map of this tile needs to be updated */
 	boolean staleCave = false;
 
-	private map etc;
 	/* create new MapTile */
-	public MapTile(map etc, int px, int py, int zpx, int zpy)
+	public MapTile(World world, int px, int py, int zpx, int zpy)
 	{
-		this.etc = etc;
+		this.world = world;
 		this.px = px;
 		this.py = py;
 		this.zpx = zpx;
@@ -56,12 +57,10 @@ public class MapTile {
 		int z2 = mz + MapManager.tileWidth / 2 + 64;
 
 		int x, z;
-		Server s = etc.getServer();
-		World w = etc.getWorld();
 
 		for(x=x1; x<x2; x+=16) {
 			for(z=z1; z<z2; z+=16) {
-				if(!w.isChunkLoaded(w.getChunkAt(x, z))) {
+				if(!world.isChunkLoaded(world.getChunkAt(x, z))) {
 					log.info("chunk not loaded: " + x + ", 0, " + z);
 					/*
 
@@ -85,15 +84,12 @@ public class MapTile {
 		int z2 = mz + MapManager.tileWidth / 2 + 64;
 
 		int x, z;
-		Server s = etc.getServer();
-		World w = etc.getWorld();
 
 		for(x=x1; x<x2; x+=16) {
 			for(z=z1; z<z2; z+=16) {
-				if(!w.isChunkLoaded(w.getChunkAt(x, z))) {
+				if(!world.isChunkLoaded(world.getChunkAt(x, z))) {
 					// Will try to load chunk.
 					//log.info("chunk not loaded: " + x + ", " + z + " for tile " + this.toString());
-					
 					return false;
 					
 					// Sometimes give very heavy serverload:
@@ -388,13 +384,11 @@ public class MapTile {
 	/* cast a ray into the map */
 	private Color scan(MapManager mgr, int x, int y, int z, int seq)
 	{
-		Server s = etc.getServer();
-		World w = etc.getWorld();
 		for(;;) {
 			if(y < 0)
 				return Color.BLUE;
 
-			int id = w.getBlockAt(x, y, z).getTypeID();
+			int id = world.getBlockAt(x, y, z).getTypeID();
 
 			switch(seq) {
 			case 0:
@@ -446,15 +440,13 @@ public class MapTile {
 	/* cast a ray into the caves */
 	private Color caveScan(MapManager mgr, int x, int y, int z, int seq)
 	{
-		Server s = etc.getServer();
-		World w = etc.getWorld();
 		boolean air = true;
 
 		for(;;) {
 			if(y < 0)
 				return Color.BLACK;
 
-			int id = w.getBlockAt(x, y, z).getTypeID();
+			int id = world.getBlockAt(x, y, z).getTypeID();
 
 			switch(seq) {
 			case 0:

@@ -9,16 +9,19 @@ import org.bukkit.event.*;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
+import org.dynmap.debug.BukkitPlayerDebugger;
 
-public class map extends JavaPlugin {
+public class DynmapPlugin extends JavaPlugin {
 
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
 	private WebServer server = null;
 	private MapManager mgr = null;
-	private MapListener listener = null;
+	private DynmapBlockListener listener = null;
+	
+	private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
 
-	public map(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
+	public DynmapPlugin(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
 		super(pluginLoader, instance, desc, plugin, cLoader);
 	}
 
@@ -30,7 +33,7 @@ public class map extends JavaPlugin {
 	public void onEnable() {
 		log.info("Map INIT");
 
-		mgr = new MapManager(this);
+		mgr = new MapManager(getWorld(), debugger);
 		mgr.startManager();
 
 		try {
@@ -39,7 +42,7 @@ public class map extends JavaPlugin {
 			log.info("position failed to start WebServer (IOException)");
 		}
 
-		listener = new MapListener(mgr);
+		listener = new DynmapBlockListener(mgr);
 		
 		registerEvents();
 	}
@@ -73,5 +76,6 @@ public class map extends JavaPlugin {
 		etc.getInstance().addCommand("/removesign", " [name] - removes a named sign to the map");
 		etc.getInstance().addCommand("/listsigns", " - list all named signs");
 		etc.getInstance().addCommand("/tpsign", " [name] - teleport to a named sign");*/
+		
 	}
 }
