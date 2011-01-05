@@ -1,3 +1,5 @@
+package org.dynmap;
+
 import java.util.logging.Logger;
 import java.io.IOException;
 
@@ -18,7 +20,6 @@ public class map extends JavaPlugin {
 
 	public map(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
 		super(pluginLoader, instance, desc, plugin, cLoader);
-		registerEvents();
 	}
 
 	public World getWorld() {
@@ -39,6 +40,8 @@ public class map extends JavaPlugin {
 		}
 
 		listener = new MapListener(mgr);
+		
+		registerEvents();
 	}
 
 	@Override

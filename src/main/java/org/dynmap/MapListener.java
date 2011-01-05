@@ -1,3 +1,5 @@
+package org.dynmap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;

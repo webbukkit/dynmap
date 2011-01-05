@@ -1,3 +1,5 @@
+package org.dynmap;
+
 /* this class stores a tile update */
 
 public class TileUpdate {

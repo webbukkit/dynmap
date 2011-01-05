@@ -1,3 +1,5 @@
+package org.dynmap;
+
 import java.util.HashMap;
 
 public class Cache<K, V>
