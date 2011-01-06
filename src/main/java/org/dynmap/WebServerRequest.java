@@ -88,12 +88,6 @@ public class WebServerRequest extends Thread {
 						sb.append(tu.tile.px + "_" + tu.tile.py + " " + tu.tile.zpx + "_" + tu.tile.zpy + " t\n");
 					}
 				}
-
-				for(TileUpdate tu : mgr.caveTileUpdates) {
-					if(tu.at >= cutoff) {
-						sb.append(tu.tile.px + "_" + tu.tile.py + " " + tu.tile.zpx + "_" + tu.tile.zpy + " c\n");
-					}
-				}
 			}
 
 			out.write(sb.toString().getBytes());

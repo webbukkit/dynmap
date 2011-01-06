@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Vector;
@@ -34,6 +35,10 @@ import java.util.logging.Logger;
 
 import org.bukkit.*;
 import org.dynmap.debug.Debugger;
+import org.dynmap.render.CaveTileRenderer;
+import org.dynmap.render.CombinedTileRenderer;
+import org.dynmap.render.DayTileRenderer;
+import org.dynmap.render.MapTileRenderer;
 
 import javax.imageio.ImageIO;
 
@@ -42,6 +47,7 @@ public class MapManager extends Thread {
 
 	private World world;
 	private Debugger debugger;
+	private MapTileRenderer renderer;
 
 	/* dimensions of a map tile */
 	public static final int tileWidth = 128;
@@ -60,8 +66,6 @@ public class MapManager extends Thread {
 
 	/* a list of MapTiles to be updated */
 	private LinkedList<MapTile> staleTiles;
-	/* a list of MapTiles for which the cave tile is to be updated */
-	private LinkedList<MapTile> staleCaveTiles;
 
 	/* whether the worker thread should be running now */
 	private boolean running = false;
@@ -72,7 +76,7 @@ public class MapManager extends Thread {
 	public static final int anchorz = 0;
 
 	/* color database: id -> Color */
-	public HashMap<Integer, Color[]> colors = null;
+	public Map<Integer, Color[]> colors = null;
 
 	/* path to colors.txt */
 	private String colorsetpath = "colors.txt";
@@ -94,8 +98,6 @@ public class MapManager extends Thread {
 
 	/* this list stores the tile updates */
 	public LinkedList<TileUpdate> tileUpdates = null;
-	/* this list stores the cave tile updates */
-	public LinkedList<TileUpdate> caveTileUpdates = null;
 
 	/* map debugging mode (send debugging messages to this player) */
 	public String debugPlayer = null;
@@ -126,10 +128,15 @@ public class MapManager extends Thread {
 
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
-		staleCaveTiles = new LinkedList<MapTile>();
 		tileUpdates = new LinkedList<TileUpdate>();
-		caveTileUpdates = new LinkedList<TileUpdate>();
 		zoomCache = new Cache<String, BufferedImage>(zoomCacheSize);
+		
+		colors = loadColorSet(colorsetpath);
+		
+		renderer = new CombinedTileRenderer(new MapTileRenderer[] {
+				new DayTileRenderer(colors, tilepath + "t_{X}_{Y}.png"),
+				new CaveTileRenderer(colors, tilepath + "ct_{X}_{Y}.png")
+		});
 	}
 
 	/* tile X for position x */
@@ -172,46 +179,6 @@ public class MapManager extends Thread {
 	/* initialize and start map manager */
 	public void startManager()
 	{
-		colors = new HashMap<Integer, Color[]>();
-
-		/* load colorset */
-		File cfile = new File(colorsetpath);
-		
-		try {
-			Scanner scanner = new Scanner(cfile);
-			int nc = 0;
-			while(scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				if (line.startsWith("#") || line.equals("")) {
-					continue;
-				}
-
-				String[] split = line.split("\t");
-				if (split.length < 17) {
-					continue;
-				}
-
-				Integer id = new Integer(split[0]);
-
-				Color[] c = new Color[4];
-
-				/* store colors by raycast sequence number */
-				c[0] = new Color(Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]));
-				c[3] = new Color(Integer.parseInt(split[5]), Integer.parseInt(split[6]), Integer.parseInt(split[7]), Integer.parseInt(split[8]));
-				c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
-				c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
-
-				colors.put(id, c);
-				nc += 1;
-			}
-			scanner.close();
-
-			log.info(nc + " colors loaded from " + colorsetpath);
-		} catch(Exception e) {
-			log.log(Level.SEVERE, "Failed to load colorset: " + colorsetpath, e);
-			return;
-		}
-
 		running = true;
 		this.start();
 		try {
@@ -265,23 +232,9 @@ public class MapManager extends Thread {
 
 			MapTile t = this.popStaleTile();
 			if(t != null) {
-				t.render(this);
+				renderer.render(t);
 
 				updateUpdates(t, tileUpdates);
-
-				try {
-					this.sleep(renderWait);
-				} catch(InterruptedException e) {
-				}
-
-				found = true;
-			}
-
-			MapTile ct = this.popStaleCaveTile();
-			if(ct != null) {
-				ct.renderCave(this);
-
-				updateUpdates(ct, caveTileUpdates);
 
 				try {
 					this.sleep(renderWait);
@@ -359,22 +312,6 @@ public class MapManager extends Thread {
 		}
 	}
 
-	/* get next MapTile for which the cave map needs to be
-	 * regenerated, or null
-	 * the mapTile is removed from the list of stale cave tiles */
-	public MapTile popStaleCaveTile()
-	{
-		synchronized(lock) {
-			try {
-				MapTile t = staleCaveTiles.removeFirst();
-				t.staleCave = false;
-				return t;
-			} catch(NoSuchElementException e) {
-				return null;
-			}
-		}
-	}
-
 	/* put a MapTile that needs to be regenerated on the list of stale tiles */
 	public boolean pushStaleTile(MapTile m)
 	{
@@ -386,15 +323,6 @@ public class MapManager extends Thread {
 				staleTiles.addLast(m);
 
 				debug(m.toString() + " is now stale");
-
-				ret = true;
-			}
-
-			if(!m.staleCave) {
-				m.staleCave = true;
-				staleCaveTiles.addLast(m);
-
-				debug(m.toString() + " cave is now stale");
 
 				ret = true;
 			}
@@ -431,7 +359,7 @@ public class MapManager extends Thread {
 	public int getStaleCount()
 	{
 		synchronized(lock) {
-			return staleTiles.size() + staleCaveTiles.size();
+			return staleTiles.size();
 		}
 	}
 
@@ -439,11 +367,12 @@ public class MapManager extends Thread {
 	public int getRecentUpdateCount()
 	{
 		synchronized(lock) {
-			return tileUpdates.size() + caveTileUpdates.size();
+			return tileUpdates.size();
 		}
 	}
 
-	/* regenerate the entire map, starting at position */
+	/*
+	// regenerate the entire map, starting at position
 	public void regenerate(int x, int y, int z)
 	{
 		int dx = x - anchorx;
@@ -478,7 +407,7 @@ public class MapManager extends Thread {
 		}
 	}
 
-	/* regenerate all zoom tiles, starting at position */
+	// regenerate all zoom tiles, starting at position
 	public void regenerateZoom(int x, int y, int z)
 	{
 		int dx = x - anchorx;
@@ -556,8 +485,8 @@ public class MapManager extends Thread {
 		}
 	}
 
-	/* regenerate zoom-out tile
-	 * returns number of valid subtiles */
+	// regenerate zoom-out tile
+	// returns number of valid subtiles
 	public int regenZoomTile(int zpx, int zpy)
 	{
 		int px1 = zpx + tileWidth;
@@ -610,7 +539,7 @@ public class MapManager extends Thread {
 		}
 
 		String zPath = t1.getZoomPath(this);
-		/* save zoom-out tile */
+		// save zoom-out tile
 		try {
 			File file = new File(zPath);
 			ImageIO.write(zIm, "png", file);
@@ -622,5 +551,48 @@ public class MapManager extends Thread {
 		}
 
 		return good;
+	}
+	*/
+	
+	public Map<Integer, Color[]> loadColorSet(String colorsetpath) {
+		Map<Integer, Color[]> colors = new HashMap<Integer, Color[]>();
+
+		/* load colorset */
+		File cfile = new File(colorsetpath);
+		
+		try {
+			Scanner scanner = new Scanner(cfile);
+			int nc = 0;
+			while(scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				if (line.startsWith("#") || line.equals("")) {
+					continue;
+				}
+
+				String[] split = line.split("\t");
+				if (split.length < 17) {
+					continue;
+				}
+
+				Integer id = new Integer(split[0]);
+
+				Color[] c = new Color[4];
+
+				/* store colors by raycast sequence number */
+				c[0] = new Color(Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]));
+				c[3] = new Color(Integer.parseInt(split[5]), Integer.parseInt(split[6]), Integer.parseInt(split[7]), Integer.parseInt(split[8]));
+				c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
+				c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
+
+				colors.put(id, c);
+				nc += 1;
+			}
+			scanner.close();
+
+			log.info(nc + " colors loaded from " + colorsetpath);
+		} catch(Exception e) {
+			log.log(Level.SEVERE, "Failed to load colorset: " + colorsetpath, e);
+		}
+		return colors;
 	}
 }
