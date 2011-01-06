@@ -75,8 +75,9 @@ public class WebServerRequest extends Thread {
 			sendHeader(out, 200, "text/plain", -1, System.currentTimeMillis());
 
 			StringBuilder sb = new StringBuilder();
-			//sb.append(current + " " + etc.getServer().getRelativeTime() + "\n");
-			sb.append(current + " " + 0 +"\n");
+			
+			long relativeTime = etc.getServer().getTime() % 24000;
+			sb.append(current + " " + relativeTime + "\n");
 
 			for(Player player : etc.getServer().getOnlinePlayers()) {
 				sb.append(player.getName() + " player " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
