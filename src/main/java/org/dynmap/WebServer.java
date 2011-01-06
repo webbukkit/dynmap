@@ -20,7 +20,7 @@ public class WebServer extends Thread {
 	public WebServer(int port, MapManager mgr) throws IOException
 	{
 		this.mgr = mgr;
-		sock = new ServerSocket(port, 5, InetAddress.getByName("127.0.0.1"));
+		sock = new ServerSocket(port, 5, mgr.bindaddress.equals("0.0.0.0") ? null : InetAddress.getByName(mgr.bindaddress));
 		running = true;
 		start();
 		log.info("map WebServer started on port " + port);

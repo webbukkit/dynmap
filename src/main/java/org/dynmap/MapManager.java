@@ -90,6 +90,9 @@ public class MapManager extends Thread {
 	/* port to run web server on */
 	public int serverport = 8123;
 	
+	/* bind web server to ip-address */
+	public String bindaddress = "0.0.0.0";
+	
 	/* time to pause between rendering tiles (ms) */
 	public int renderWait = 500;
 
@@ -125,6 +128,7 @@ public class MapManager extends Thread {
 		colorsetpath = "colors.txt";
 		signspath = "signs.txt";
 		serverport = 8123;
+		bindaddress = "0.0.0.0";
 
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
