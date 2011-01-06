@@ -1,0 +1,40 @@
+#logo {
+	position: absolute;
+	top:1px;
+	left:1px;
+	width:1064px;
+	height:103px;
+	background: #cfe7fa; /* old browsers */
+	background: -moz-linear-gradient(top, #cfe7fa 0%, #6393c1 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cfe7fa), color-stop(100%,#6393c1)); /* webkit */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cfe7fa', endColorstr='#6393c1',GradientType=0 ); /* ie */
+}
+#content {
+	position: absolute;
+	top:105px; /* -12px dont know why */
+	left:1px;
+	width:1064px;
+	clear:both;
+	min-height:494px;
+	background:#fff;
+	color:#000;
+}
+#menu {
+	position: absolute;
+	top:76px;
+	height:30px;
+	left:1px;
+	width:1064px;
+}
+#footer {
+	position: absolute;
+	bottom:-20px;
+	right:20px;
+	text-align:right;
+	font-size:10px;
+	color:#fff;
+}
+a.black {
+	color:#000000;
+	font-weight:bold;
+}

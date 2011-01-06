@@ -1,0 +1,120 @@
+/* gmaps hide copyrights */
+#mcmap > DIV > DIV:first-child + DIV { visibility: hidden !important; }
+#mcmap > DIV > DIV:first-child + DIV + DIV { visibility: hidden !important; }
+/* gmaps hide copyrights */
+
+/* gmaps controls hack */
+#mcmap > DIV > DIV:first-child + DIV + DIV + DIV {
+	position:absolute !important;
+	opacity: 0.6 !important;
+	top:-11px !important;
+	left:-11px !important;
+}
+/* gmaps controls hack */
+
+#mcmap {
+	width:1064px;
+	height: 458px;
+	position:absolute;
+	top:36px;
+}
+#ctrl {
+	position:absolute;
+	top:36px;
+	right:0px;
+	width:300px;
+	height:0px;
+}
+#controls {
+	position: absolute;
+	padding: 2px;
+	top: 8px;
+	right: 8px;
+	border: 1px solid #808080;
+	background: #000;
+	opacity: 0.6;
+	padding: 2px;
+	z-index:998;
+	min-height:196px;
+	min-width:32px;
+}
+#controls img {
+	position:relative;
+	top:3px;
+	left:3px;
+	width:25px;
+	height:25px;
+}
+#plist, #wlist, #hlist, #slist, #splist {
+	position:absolute;
+	font-family: sans-serif;
+	font-size: 8pt;
+	color: white;
+	top: 8px;
+	right: 50px;
+	border: 1px solid #808080;
+	background: #000;
+	opacity: 0.6;
+	padding: 2px;
+	z-index:998;
+	min-height:196px;
+	min-width:32px;
+}
+#right {
+	position:absolute;
+	right: 46px;
+	opacity: 0.6;
+	z-index:998;
+}
+.plicon {
+	position:relative;
+	border:1px solid #000000;
+	top:2px;
+	width:18px;
+	height:18px;
+}
+.pliconfollow {
+	position:relative;
+	border:1px solid #ffffff;
+	top:2px;
+	width:18px;
+	height:18px;
+}
+#fullscreenbtn{
+	position:relative;
+	margin-bottom:5px;
+}
+#showPlayers {
+	position:relative;
+	margin-bottom:5px;
+}
+#cavebtn {
+	position:relative;
+	margin-top:5px;
+}
+.labels {
+	font-size: 10pt;
+	font-family: sans-serif;
+	white-space: nowrap;
+	color: white;
+	display:none;
+	text-shadow: #000 -1px 0px 2px,  #000 0px 1px 2px,  #000 1px 0px 2px,  #000 0px -1px 2px;
+}
+.labels span {
+	display:none;
+}
+#plist a span, #wlist a span, #hlist a span, #slist a span, #splist a span {
+	display:none;
+}
+#link {
+	position: absolute;
+	bottom: 8px;
+	left: 8px;
+	border: 1px solid #808080;
+	background: #000;
+	opacity: 0.6;
+	padding: 2px;
+	font-size: 8pt;
+	color: #ddd;
+	display:none;
+}

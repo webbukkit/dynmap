@@ -1,0 +1,24 @@
+<h1>Dynamic map</h1>
+
+<div id="mcmap"></div>
+
+<div id="ctrl">
+	<div id="plist" style="display:;"></div>
+	<div id="wlist" style="display:none;"></div>
+	<div id="hlist" style="display:none;"></div>
+	<div id="slist" style="display:none;"></div>
+	<div id="splist" style="display:none;"></div>
+	<img src="plugins/map/right.png" id="right" style="display:; top:54px;" />
+	
+	<div id="controls"> 
+			<img src="plugins/map/fullscreen_off.png" alt="on" title="Toggle fullscreen" id="fullscreenbtn" onclick="fs();" /><br />
+			<img src="plugins/map/player.png" alt="Players" title="Players" id="showPlayers" onclick="openPlayers()" /><br />
+			<img src="plugins/map/spawn.png" alt="Spawn point" title="Spawn point" id="showSpawn" onclick="openSpawn();" /><br />
+			<img src="plugins/map/home.png" alt="Homes" title="Homes" id="showHomes" onclick="openHomes();" /><br />
+			<img src="plugins/map/warp.png" alt="Warps" title="Warps" id="showWarps" onclick="openWarps();" /><br />
+			<img src="plugins/map/sign.png" alt="Signs" title="Signs" id="showSigns" onclick="openSigns();" /><br />
+			<img src="plugins/map/cave_off.png" alt="X-Ray" title="X-Ray" id="cavebtn" onclick="caveSwitch()">
+	</div>
+</div>
+
+<div id="link"></div>

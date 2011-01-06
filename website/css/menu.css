@@ -1,0 +1,35 @@
+UL#nav {
+	padding : 0;
+	margin : 0;
+}
+UL#nav li {
+	list-style-type : none;
+	font-size : 12px;
+	line-height : 30px;
+	font-weight : normal;
+	float : left;
+	width : 139px;
+}
+UL#nav li a {
+	display : block;
+	text-decoration : none;
+	font-weight : bold;
+	padding-left : 15px;
+	padding-right : 15px;
+}
+UL#nav li.fstLevel:hover a {
+	background: #d0d0d0;
+	color : #000;
+}
+UL#nav li.fstLevel a {
+	background : none;
+	color : #000;
+}
+UL#nav li.fstLevelActive:hover a {
+	background: #800000;
+	color : #fff;
+}
+UL#nav li.fstLevelActive a {
+	background : #600000;
+	color : #fff;
+}
