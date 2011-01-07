@@ -67,6 +67,9 @@ public class MapManager extends Thread {
 	/* a list of MapTiles to be updated */
 	private LinkedList<MapTile> staleTiles;
 
+	/* this list stores the tile updates */
+	public LinkedList<TileUpdate> tileUpdates = null;
+	
 	/* whether the worker thread should be running now */
 	private boolean running = false;
 
@@ -75,17 +78,14 @@ public class MapManager extends Thread {
 	public static final int anchory = 127;
 	public static final int anchorz = 0;
 
-	/* color database: id -> Color */
-	public Map<Integer, Color[]> colors = null;
-
 	/* path to colors.txt */
 	private String colorsetpath = "colors.txt";
 
 	/* path to image tile directory */
 	public String tilepath = "tiles/";
-
-	/* path to signs file */
-	public String signspath = "signs.txt";
+	
+	/* web files location */
+	public String webPath;
 	
 	/* bind web server to ip-address */
 	public String bindaddress = "0.0.0.0";
@@ -98,24 +98,6 @@ public class MapManager extends Thread {
 
 	/* remember up to this old tile updates (ms) */
 	private static final int maxTileAge = 60000;
-
-	/* this list stores the tile updates */
-	public LinkedList<TileUpdate> tileUpdates = null;
-
-	/* map debugging mode (send debugging messages to this player) */
-	public String debugPlayer = null;
-	
-	/* hashmap of signs */
-	//public HashMap<String, Warp> signs = null;
-
-	/* cache this many zoomed-out tiles */
-	public static final int zoomCacheSize = 64;
-
-	/* zoomed-out tile cache */
-	public Cache<String, BufferedImage> zoomCache;
-
-	/* web files location */
-	public String webPath;
 	
 	public void debug(String msg)
 	{
@@ -129,7 +111,6 @@ public class MapManager extends Thread {
 
 		tilepath = "/srv/http/dynmap/tiles/";
 		colorsetpath = "colors.txt";
-		signspath = "signs.txt";
 		serverport = 8123;
 		bindaddress = "0.0.0.0";
 		//webPath = "/srv/http/dynmap/";
@@ -138,10 +119,8 @@ public class MapManager extends Thread {
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
 		tileUpdates = new LinkedList<TileUpdate>();
-		zoomCache = new Cache<String, BufferedImage>(zoomCacheSize);
 		
-		colors = loadColorSet(colorsetpath);
-		
+		Map<Integer, Color[]> colors = loadColorSet(colorsetpath);
 		renderer = new CombinedTileRenderer(new MapTileRenderer[] {
 				new DayTileRenderer(debugger, colors, tilepath + "t_{X}_{Y}.png"),
 				new CaveTileRenderer(debugger, colors, tilepath + "ct_{X}_{Y}.png")
