@@ -81,7 +81,7 @@ public class MapTile {
 	/* check if all relevant chunks are loaded */
 	public boolean isMapLoaded()
 	{
-		int x1 = mx - 64;
+		int x1 = mx - MapManager.tileHeight / 2;
 		int x2 = mx + MapManager.tileWidth / 2 + MapManager.tileHeight / 2;
 
 		int z1 = mz - MapManager.tileHeight / 2;

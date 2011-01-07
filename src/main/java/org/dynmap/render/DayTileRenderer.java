@@ -16,16 +16,31 @@ import javax.imageio.ImageIO;
 import org.bukkit.World;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
+import org.dynmap.debug.Debugger;
 
 public class DayTileRenderer implements MapTileRenderer {
-	protected static final Logger log = Logger.getLogger("Minecraft");
+	protected Debugger debugger;
 	protected String outputPath;
+	protected String outputZoomPath;
 	private Map<Integer, Color[]> colors;
 	
-	public DayTileRenderer(Map<Integer, Color[]> colors, String outputPath) {
+	public DayTileRenderer(Debugger debugger, Map<Integer, Color[]> colors, String outputPath) {
+		this(debugger, colors, outputPath, convertToZoomPath(outputPath));
+	}
+	
+	public DayTileRenderer(Debugger debugger, Map<Integer, Color[]> colors, String outputPath, String outputZoomPath) {
+		this.debugger = debugger;
 		this.colors = colors;
 		this.outputPath = outputPath;
+		this.outputZoomPath = outputZoomPath;
 	}
+	
+	private static String convertToZoomPath(String outputPath) {
+		File outputFile = new File(outputPath);
+		String zoomFilename = "z" + outputFile.getName();
+		return new File(outputFile.getParentFile(), zoomFilename).getPath();
+	}
+	
 	public void render(MapTile tile) {
 		World world = tile.getWorld();
 		BufferedImage im = new BufferedImage(MapManager.tileWidth, MapManager.tileHeight, BufferedImage.TYPE_INT_RGB);
@@ -142,14 +157,17 @@ public class DayTileRenderer implements MapTileRenderer {
 		String tilePath = outputPath
 			.replace("{X}", Integer.toString(tile.px))
 			.replace("{Y}", Integer.toString(tile.py));
+		
+		debugger.debug("saving tile " + tilePath);
+		
 		/* save image */
 		try {
 			File file = new File(tilePath);
 			ImageIO.write(im, "png", file);
 		} catch(IOException e) {
-			log.log(Level.SEVERE, "Failed to save tile: " + tilePath, e);
+			debugger.error("Failed to save tile: " + tilePath, e);
 		} catch(java.lang.NullPointerException e) {
-			log.log(Level.SEVERE, "Failed to save tile (NullPointerException): " + tilePath, e);
+			debugger.error("Failed to save tile (NullPointerException): " + tilePath, e);
 		}
 
 		/* now update zoom-out tile */

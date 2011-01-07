@@ -11,7 +11,7 @@
 	</target>
 	
 	<target name="compile" depends="init">
-		<javac srcdir="${src}/main/java" destdir="${bin}" classpath="${bukkit.jar}" includeantruntime="false" />
+		<javac srcdir="${src}/main/java" destdir="${bin}" classpath="${bukkit.jar}" debug="on" includeantruntime="false" />
 	</target>
 	
 	<target name="dist" depends="compile">
@@ -19,6 +19,7 @@
 		<jar jarfile="${dist}/${pluginname}.jar">
 			<fileset dir="${bin}"/>
 			<fileset file="${src}/main/resources/plugin.yml"/>
+			<zipfileset dir="web" prefix="web/"/>
 		</jar>
 	</target>
 	

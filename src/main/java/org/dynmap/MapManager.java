@@ -87,11 +87,11 @@ public class MapManager extends Thread {
 	/* path to signs file */
 	public String signspath = "signs.txt";
 	
-	/* port to run web server on */
-	public int serverport = 8123;
-	
 	/* bind web server to ip-address */
 	public String bindaddress = "0.0.0.0";
+	
+	/* port to run web server on */
+	public int serverport = 8123;
 	
 	/* time to pause between rendering tiles (ms) */
 	public int renderWait = 500;
@@ -114,6 +114,9 @@ public class MapManager extends Thread {
 	/* zoomed-out tile cache */
 	public Cache<String, BufferedImage> zoomCache;
 
+	/* web files location */
+	public String webPath;
+	
 	public void debug(String msg)
 	{
 		debugger.debug(msg);
@@ -129,6 +132,8 @@ public class MapManager extends Thread {
 		signspath = "signs.txt";
 		serverport = 8123;
 		bindaddress = "0.0.0.0";
+		//webPath = "/srv/http/dynmap/";
+		webPath = "[JAR]";
 
 		tileStore = new HashMap<Long, MapTile>();
 		staleTiles = new LinkedList<MapTile>();
@@ -138,11 +143,11 @@ public class MapManager extends Thread {
 		colors = loadColorSet(colorsetpath);
 		
 		renderer = new CombinedTileRenderer(new MapTileRenderer[] {
-				new DayTileRenderer(colors, tilepath + "t_{X}_{Y}.png"),
-				new CaveTileRenderer(colors, tilepath + "ct_{X}_{Y}.png")
+				new DayTileRenderer(debugger, colors, tilepath + "t_{X}_{Y}.png"),
+				new CaveTileRenderer(debugger, colors, tilepath + "ct_{X}_{Y}.png")
 		});
 	}
-
+	
 	/* tile X for position x */
 	static int tilex(int x)
 	{
@@ -236,6 +241,7 @@ public class MapManager extends Thread {
 
 			MapTile t = this.popStaleTile();
 			if(t != null) {
+				debugger.debug("rendering tile " + t + "...");
 				renderer.render(t);
 
 				updateUpdates(t, tileUpdates);
@@ -262,6 +268,8 @@ public class MapManager extends Thread {
 	/* "touch" a block - its map tile will be regenerated */
 	public boolean touch(int x, int y, int z)
 	{
+		debugger.debug("touched: " + x + "," + y + "," + z);
+		
 		int dx = x - anchorx;
 		int dy = y - anchory;
 		int dz = z - anchorz;

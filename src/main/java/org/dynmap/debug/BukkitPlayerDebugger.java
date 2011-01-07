@@ -1,7 +1,10 @@
 package org.dynmap.debug;
 
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.bukkit.Color;
 import org.bukkit.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -12,6 +15,10 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BukkitPlayerDebugger implements Debugger {
+	protected static final Logger log = Logger.getLogger("Minecraft");
+	
+	private boolean isLogging = true;
+	
 	private JavaPlugin plugin;
 	private HashSet<Player> debugees = new HashSet<Player>();
 	private String debugCommand;
@@ -30,6 +37,7 @@ public class BukkitPlayerDebugger implements Debugger {
 	public void enable() {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new CommandListener(), Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, new CommandListener(), Priority.Normal, plugin);
+		log.info("Debugger enabled, use: " + debugCommand);
 	}
 	
 	public void disable() {
@@ -48,10 +56,26 @@ public class BukkitPlayerDebugger implements Debugger {
 		debugees.clear();
 	}
 	
-	public void debug(String message) {
+	public void sendToDebuggees(String message) {
 		for (Player p : debugees) {
 			p.sendMessage(prepend + message);
 		}
+	}
+	
+	public void debug(String message) {
+		sendToDebuggees(message);
+		if (isLogging) log.info(prepend + message);
+	}
+	
+	public void error(String message) {
+		sendToDebuggees(prepend + Color.RED + message);
+		if (isLogging) log.log(Level.SEVERE, prepend + message);
+	}
+	
+	public void error(String message, Throwable thrown) {
+		sendToDebuggees(prepend + Color.RED + message);
+		sendToDebuggees(thrown.toString());
+		if (isLogging) log.log(Level.SEVERE, prepend + message);
 	}
 	
 	protected class CommandListener extends PlayerListener {

@@ -17,7 +17,6 @@ public class DynmapPlugin extends JavaPlugin {
 
 	private WebServer server = null;
 	private MapManager mgr = null;
-	private DynmapBlockListener listener = null;
 	
 	private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
 
@@ -31,36 +30,33 @@ public class DynmapPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		log.info("Map INIT");
-
+		debugger.enable();
 		mgr = new MapManager(getWorld(), debugger);
 		mgr.startManager();
 
 		try {
-			server = new WebServer(mgr.serverport, mgr);
+			server = new WebServer(mgr.serverport, mgr, getServer(), debugger);
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}
-
-		listener = new DynmapBlockListener(mgr);
 		
 		registerEvents();
 	}
 
 	@Override
 	public void onDisable() {
-		log.info("Map UNINIT");
-
 		mgr.stopManager();
 
 		if(server != null) {
 			server.shutdown();
 			server = null;
 		}
+		debugger.disable();
 	}
 
 	public void registerEvents() {
-		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, listener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, new DynmapBlockListener(mgr), Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new DynmapPlayerListener(mgr), Priority.Normal, this);
 		//getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DESTROYED, listener, Priority.Normal, this);
 	/*	etc.getLoader().addListener(PluginLoader.Hook.COMMAND, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_CREATED, listener, this, PluginListener.Priority.MEDIUM);
