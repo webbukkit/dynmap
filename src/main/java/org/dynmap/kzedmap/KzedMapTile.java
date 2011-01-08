@@ -21,25 +21,20 @@ public class KzedMapTile extends MapTile {
 
 	public KzedMap map;
 	
-	public String prefix;
+	public MapTileRenderer renderer;
 	
 	/* projection position */
 	public int px, py;
-
-	/* projection position of zoom-out tile */
-	public int zpx, zpy;
 
 	/* minecraft space origin */
 	public int mx, my, mz;
 
 	/* create new MapTile */
-	public KzedMapTile(KzedMap map, String prefix, int px, int py, int zpx, int zpy) {
+	public KzedMapTile(KzedMap map, MapTileRenderer renderer, int px, int py) {
 		super(map);
-		this.prefix = prefix;
+		this.renderer = renderer;
 		this.px = px;
 		this.py = py;
-		this.zpx = zpx;
-		this.zpy = zpy;
 
 		mx = KzedMap.anchorx + px / 2 + py / 2;
 		my = KzedMap.anchory;
@@ -48,7 +43,7 @@ public class KzedMapTile extends MapTile {
 	
 	@Override
 	public String getName() {
-		return prefix + "_" + this.px + "_" + this.py;
+		return renderer.getName() + "_" + px + "_" + py;
 	}
 	
 	/* try to get the server to load the relevant chunks */
@@ -126,7 +121,7 @@ public class KzedMapTile extends MapTile {
 	/* hash value, based on projection position */
 	public int hashCode()
 	{
-		return (px << 16) ^ py;
+		return ((px << 16) ^ py) ^ getName().hashCode();
 	}
 
 	@Override
@@ -140,12 +135,12 @@ public class KzedMapTile extends MapTile {
 	/* equality comparison - based on projection position */
 	public boolean equals(KzedMapTile o)
 	{
-		return o.px == px && o.py == py;
+		return o.getName().equals(getName()) && o.px == px && o.py == py;
 	}
 
 	/* return a simple string representation... */
 	public String toString()
 	{
-		return px + "_" + py;
+		return getName() + "_" + px + "_" + py;
 	}
 }

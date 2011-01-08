@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 import org.bukkit.*;
 import org.dynmap.debug.Debugger;
 import org.dynmap.kzedmap.CaveTileRenderer;
-import org.dynmap.kzedmap.DayTileRenderer;
+import org.dynmap.kzedmap.DefaultTileRenderer;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.kzedmap.MapTileRenderer;
 
@@ -55,9 +55,6 @@ public class MapManager extends Thread {
 
 	/* whether the worker thread should be running now */
 	private boolean running = false;
-
-	/* path to colors.txt */
-	private String colorsetpath = "colors.txt";
 
 	/* path to image tile directory */
 	public String tilepath = "tiles/";
@@ -86,17 +83,12 @@ public class MapManager extends Thread {
 		this.staleQueue = new StaleQueue();
 
 		tilepath = "/srv/http/dynmap/tiles/";
-		colorsetpath = "colors.txt";
 		serverport = 8123;
 		bindaddress = "0.0.0.0";
 		//webPath = "/srv/http/dynmap/";
 		webPath = "[JAR]";
 		
-		Map<Integer, Color[]> colors = loadColorSet(colorsetpath);
-		map = new KzedMap(world, staleQueue, new MapTileRenderer[] {
-				new DayTileRenderer(debugger, colors, tilepath + "t_{X}_{Y}.png"),
-				new CaveTileRenderer(debugger, colors, tilepath + "ct_{X}_{Y}.png")
-		});
+		map = new KzedMap(this, world, debugger);
 	}
 	
 	/* initialize and start map manager */
@@ -141,7 +133,7 @@ public class MapManager extends Thread {
 				debugger.debug("rendering tile " + t + "...");
 				t.getMap().render(t);
 
-				staleQueue.freshenTile(t);
+				staleQueue.onTileUpdated(t);
 
 				try {
 					this.sleep(renderWait);
@@ -166,45 +158,8 @@ public class MapManager extends Thread {
 		map.touch(new Location(world, x, y, z));
 	}
 	
-	public Map<Integer, Color[]> loadColorSet(String colorsetpath) {
-		Map<Integer, Color[]> colors = new HashMap<Integer, Color[]>();
-
-		/* load colorset */
-		File cfile = new File(colorsetpath);
-		
-		try {
-			Scanner scanner = new Scanner(cfile);
-			int nc = 0;
-			while(scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				if (line.startsWith("#") || line.equals("")) {
-					continue;
-				}
-
-				String[] split = line.split("\t");
-				if (split.length < 17) {
-					continue;
-				}
-
-				Integer id = new Integer(split[0]);
-
-				Color[] c = new Color[4];
-
-				/* store colors by raycast sequence number */
-				c[0] = new Color(Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]));
-				c[3] = new Color(Integer.parseInt(split[5]), Integer.parseInt(split[6]), Integer.parseInt(split[7]), Integer.parseInt(split[8]));
-				c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
-				c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
-
-				colors.put(id, c);
-				nc += 1;
-			}
-			scanner.close();
-
-			log.info(nc + " colors loaded from " + colorsetpath);
-		} catch(Exception e) {
-			log.log(Level.SEVERE, "Failed to load colorset: " + colorsetpath, e);
-		}
-		return colors;
+	public void invalidateTile(MapTile tile) {
+		debugger.debug("invalidating tile " + tile.getName());
+		staleQueue.pushStaleTile(tile);
 	}
 }

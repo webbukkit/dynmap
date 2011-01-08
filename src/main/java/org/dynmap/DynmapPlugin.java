@@ -10,6 +10,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
 import org.dynmap.debug.BukkitPlayerDebugger;
+import org.dynmap.debug.NullDebugger;
 
 public class DynmapPlugin extends JavaPlugin {
 
@@ -35,7 +36,7 @@ public class DynmapPlugin extends JavaPlugin {
 		mgr.startManager();
 
 		try {
-			server = new WebServer(mgr.serverport, mgr, getServer(), debugger);
+			server = new WebServer(mgr.serverport, mgr, getServer(), new NullDebugger());
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}
@@ -71,7 +72,8 @@ public class DynmapPlugin extends JavaPlugin {
 		etc.getInstance().addCommand("/addsign", " [name] - adds a named sign to the map");
 		etc.getInstance().addCommand("/removesign", " [name] - removes a named sign to the map");
 		etc.getInstance().addCommand("/listsigns", " - list all named signs");
-		etc.getInstance().addCommand("/tpsign", " [name] - teleport to a named sign");*/
+		etc.getInstance().addCommand("/tpsign", " [name] - teleport to a named sign");
+		*/
 		
 	}
 }

@@ -1,14 +1,20 @@
 package org.dynmap.kzedmap;
 
+import java.awt.Color;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.logging.Level;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.Map;
+import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.StaleQueue;
+import org.dynmap.debug.Debugger;
 
 public class KzedMap extends Map {
-	MapTileRenderer[] renderers;
-	
 	/* dimensions of a map tile */
 	public static final int tileWidth = 128;
 	public static final int tileHeight = 128;
@@ -23,9 +29,17 @@ public class KzedMap extends Map {
 	public static final int anchory = 127;
 	public static final int anchorz = 0;
 	
-	public KzedMap(World world, StaleQueue queue, MapTileRenderer[] renderers) {
-		super(world, queue);
-		this.renderers = renderers;
+	public static java.util.Map<Integer, Color[]> colors;
+	MapTileRenderer[] renderers;
+	
+	public KzedMap(MapManager manager, World world, Debugger debugger) {
+		super(manager, world, debugger);
+		if (colors == null)
+			colors = loadColorSet("colors.txt");
+		renderers = new MapTileRenderer[] {
+				new DefaultTileRenderer("t", debugger),
+				new CaveTileRenderer("ct", debugger)
+		};
 	}
 	
 	@Override
@@ -62,15 +76,15 @@ public class KzedMap extends Map {
 	}
 	
 	public void invalidateTile(int px, int py) {
-		invalidateTile(new KzedMapTile(this, "t", px, py, ztilex(px), ztiley(py)));
+		for(MapTileRenderer renderer : renderers) {
+			invalidateTile(new KzedMapTile(this, renderer, px, py));
+		}
 	}
 	
 	@Override
 	public void render(MapTile tile) {
 		KzedMapTile t = (KzedMapTile)tile;
-		for(MapTileRenderer renderer : renderers) {
-			renderer.render(t);
-		}
+		t.renderer.render(t, getMapManager().tilepath);
 	}
 	
 	/* tile X for position x */
@@ -292,4 +306,44 @@ public class KzedMap extends Map {
 		return good;
 	}
 	*/
+	
+	public static java.util.Map<Integer, Color[]> loadColorSet(String colorsetpath) {
+		java.util.Map<Integer, Color[]> colors = new HashMap<Integer, Color[]>();
+
+		/* load colorset */
+		File cfile = new File(colorsetpath);
+		
+		try {
+			Scanner scanner = new Scanner(cfile);
+			int nc = 0;
+			while(scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				if (line.startsWith("#") || line.equals("")) {
+					continue;
+				}
+
+				String[] split = line.split("\t");
+				if (split.length < 17) {
+					continue;
+				}
+
+				Integer id = new Integer(split[0]);
+
+				Color[] c = new Color[4];
+
+				/* store colors by raycast sequence number */
+				c[0] = new Color(Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]));
+				c[3] = new Color(Integer.parseInt(split[5]), Integer.parseInt(split[6]), Integer.parseInt(split[7]), Integer.parseInt(split[8]));
+				c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
+				c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
+
+				colors.put(id, c);
+				nc += 1;
+			}
+			scanner.close();
+		} catch(Exception e) {
+			return null;
+		}
+		return colors;
+	}
 }

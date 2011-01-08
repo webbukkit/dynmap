@@ -18,30 +18,20 @@ import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.debug.Debugger;
 
-public class DayTileRenderer implements MapTileRenderer {
+public class DefaultTileRenderer implements MapTileRenderer {
+	private String name;
 	protected Debugger debugger;
-	protected String outputPath;
-	protected String outputZoomPath;
-	private Map<Integer, Color[]> colors;
 	
-	public DayTileRenderer(Debugger debugger, Map<Integer, Color[]> colors, String outputPath) {
-		this(debugger, colors, outputPath, convertToZoomPath(outputPath));
+	public String getName() {
+		return name;
 	}
 	
-	public DayTileRenderer(Debugger debugger, Map<Integer, Color[]> colors, String outputPath, String outputZoomPath) {
+	public DefaultTileRenderer(String name, Debugger debugger) {
+		this.name = name;
 		this.debugger = debugger;
-		this.colors = colors;
-		this.outputPath = outputPath;
-		this.outputZoomPath = outputZoomPath;
 	}
 	
-	private static String convertToZoomPath(String outputPath) {
-		File outputFile = new File(outputPath);
-		String zoomFilename = "z" + outputFile.getName();
-		return new File(outputFile.getParentFile(), zoomFilename).getPath();
-	}
-	
-	public void render(KzedMapTile tile) {
+	public void render(KzedMapTile tile, String path) {
 		World world = tile.getMap().getWorld();
 		BufferedImage im = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
 
@@ -93,7 +83,7 @@ public class DayTileRenderer implements MapTileRenderer {
 		}
 
 		/* save the generated tile */
-		saveTile(tile, im);
+		saveTile(tile, im, path);
 	}
 	
 	protected Color scan(World world, int x, int y, int z, int seq)
@@ -122,7 +112,7 @@ public class DayTileRenderer implements MapTileRenderer {
 			seq = (seq + 1) & 3;
 
 			if(id != 0) {
-				Color[] colors = this.colors.get(id);
+				Color[] colors = KzedMap.colors.get(id);
 				if(colors != null) {
 					Color c = colors[seq];
 					if(c.getAlpha() > 0) {
@@ -152,11 +142,9 @@ public class DayTileRenderer implements MapTileRenderer {
 	}
 	
 	/* save rendered tile, update zoom-out tile */
-	public void saveTile(KzedMapTile tile, BufferedImage im)
+	public void saveTile(KzedMapTile tile, BufferedImage im, String path)
 	{
-		String tilePath = outputPath
-			.replace("{X}", Integer.toString(tile.px))
-			.replace("{Y}", Integer.toString(tile.py));
+		String tilePath = getPath(tile, path);
 		
 		debugger.debug("saving tile " + tilePath);
 		
@@ -237,8 +225,13 @@ public class DayTileRenderer implements MapTileRenderer {
 		}*/
 	}
 	
+	public String getPath(KzedMapTile tile, String outputPath)
+	{
+		return new File(new File(outputPath), tile.getName() + ".png").getPath();
+	}
+	
 	/* try to load already generated image */
-	public BufferedImage loadTile(KzedMapTile tile)
+	/*public BufferedImage loadTile(KzedMapTile tile)
 	{
 		try {
 			String path = getPath(tile);
@@ -252,14 +245,7 @@ public class DayTileRenderer implements MapTileRenderer {
 		}
 
 		return null;
-	}
-	
-	public String getPath(KzedMapTile tile)
-	{
-		return outputPath
-			.replace("{X}", Integer.toString(tile.px))
-			.replace("{Y}", Integer.toString(tile.py));
-	}
+	}*/
 	
 	/*
 	// generate a path name for this map tile

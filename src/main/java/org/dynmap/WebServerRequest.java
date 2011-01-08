@@ -122,7 +122,7 @@ public class WebServerRequest extends Thread {
 			sb.append("tile " + tu.tile.getName() + "\n");
 		}
 
-		//debugger.debug("Sending " + players.length + " players and " + tileUpdates.length + " tile-updates. " + path + ";" + cutoff);
+		debugger.debug("Sending " + players.length + " players and " + tileUpdates.length + " tile-updates. " + path + ";" + cutoff);
 		
 		byte[] bytes = sb.toString().getBytes();
 		

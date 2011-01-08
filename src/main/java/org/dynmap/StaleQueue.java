@@ -54,7 +54,7 @@ public class StaleQueue {
 		}
 	}
 	
-	public void freshenTile(MapTile t) {
+	public void onTileUpdated(MapTile t) {
 		long now = System.currentTimeMillis();
 		long deadline = now - maxTileAge;
 		synchronized(MapManager.lock) {
