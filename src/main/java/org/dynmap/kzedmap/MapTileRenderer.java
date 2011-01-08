@@ -1,7 +1,7 @@
-package org.dynmap.render;
+package org.dynmap.kzedmap;
 
 import org.dynmap.MapTile;
 
 public interface MapTileRenderer {
-	void render(MapTile tile);
+	void render(KzedMapTile tile);
 }

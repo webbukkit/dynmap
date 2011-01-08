@@ -1,4 +1,4 @@
-package org.dynmap.render;
+package org.dynmap.kzedmap;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -41,9 +41,9 @@ public class DayTileRenderer implements MapTileRenderer {
 		return new File(outputFile.getParentFile(), zoomFilename).getPath();
 	}
 	
-	public void render(MapTile tile) {
-		World world = tile.getWorld();
-		BufferedImage im = new BufferedImage(MapManager.tileWidth, MapManager.tileHeight, BufferedImage.TYPE_INT_RGB);
+	public void render(KzedMapTile tile) {
+		World world = tile.getMap().getWorld();
+		BufferedImage im = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
 
 		WritableRaster r = im.getRaster();
 
@@ -55,11 +55,11 @@ public class DayTileRenderer implements MapTileRenderer {
 		int x, y;
 
 		/* draw the map */
-		for(y=0; y<MapManager.tileHeight;) {
+		for(y=0; y<KzedMap.tileHeight;) {
 			jx = ix;
 			jz = iz;
 
-			for(x=MapManager.tileWidth-1; x>=0; x-=2) {
+			for(x=KzedMap.tileWidth-1; x>=0; x-=2) {
 				Color c1 = scan(world, jx, iy, jz, 0);
 				Color c2 = scan(world, jx, iy, jz, 2);
 
@@ -76,7 +76,7 @@ public class DayTileRenderer implements MapTileRenderer {
 			jx = ix;
 			jz = iz - 1;
 
-			for(x=MapManager.tileWidth-1; x>=0; x-=2) {
+			for(x=KzedMap.tileWidth-1; x>=0; x-=2) {
 				Color c1 = scan(world, jx, iy, jz, 2);
 				jx++;
 				jz++;
@@ -152,7 +152,7 @@ public class DayTileRenderer implements MapTileRenderer {
 	}
 	
 	/* save rendered tile, update zoom-out tile */
-	public void saveTile(MapTile tile, BufferedImage im)
+	public void saveTile(KzedMapTile tile, BufferedImage im)
 	{
 		String tilePath = outputPath
 			.replace("{X}", Integer.toString(tile.px))
@@ -238,7 +238,7 @@ public class DayTileRenderer implements MapTileRenderer {
 	}
 	
 	/* try to load already generated image */
-	public BufferedImage loadTile(MapTile tile)
+	public BufferedImage loadTile(KzedMapTile tile)
 	{
 		try {
 			String path = getPath(tile);
@@ -254,7 +254,7 @@ public class DayTileRenderer implements MapTileRenderer {
 		return null;
 	}
 	
-	public String getPath(MapTile tile)
+	public String getPath(KzedMapTile tile)
 	{
 		return outputPath
 			.replace("{X}", Integer.toString(tile.px))

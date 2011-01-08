@@ -1,4 +1,4 @@
-package org.dynmap.render;
+package org.dynmap.kzedmap;
 
 import java.awt.Color;
 import java.util.Map;

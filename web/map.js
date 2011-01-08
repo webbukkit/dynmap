@@ -177,7 +177,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	}
 
 	var markers = new Array();
-	var lasttimestamp = 0;
+	var lasttimestamp = '0';
 	var followPlayer = '';
 
 	var lst;
@@ -267,6 +267,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 	function mapUpdate()
 	{
+		console.log('requesting ' + config.updateUrl + lasttimestamp);
 		makeRequest(config.updateUrl + lasttimestamp, function(res) {
 			var typeVisibleMap = {
 				'warp': document.getElementById('showWarps').checked,
@@ -280,7 +281,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			var rows = res.split('\n');
 			var loggedin = new Array();
  			var firstRow = rows[0].split(' ');
-			var lasttimestamp = firstRow[0];
+			lasttimestamp = firstRow[0];
 			servertime = firstRow[1];
 			delete rows[0];
  
@@ -289,38 +290,25 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 				if (p[0] == '') continue;
 				
-				if(p.length == 5) {
+				({	tile: function() {
+						var tileName = p[1];
+						lastSeen[tileName] = lasttimestamp;
+						imgSubst(tileName);
+					}
+				}[p[0]] || function() {
 					var mi = {
 						id: p[0] + '_' + p[1],
-						text: p[0],
-						type: p[1],
+						text: p[1],
+						type: p[0],
 						position: fromWorldToLatLng(p[2], p[3], p[4]),
-						visible: ((p[1] in typeVisibleMap) ? typeVisibleMap[p[1]] : true)
+						visible: ((p[0] in typeVisibleMap) ? typeVisibleMap[p[0]] : true)
 					};
 
 					updateMarker(mi);
 					loggedin[mi.id] = 1;
 					if (!mi.type in typeCount) typeCount[mi.type] = 0;
 					typeCount[mi.type]++;
-				} else if(p.length == 3) {
-					if(p[2] == 't') {
-						lastSeen['t_' + p[0]] = lasttimestamp;
-						lastSeen['zt_' + p[1]] = lasttimestamp;
-
-						if(!caveMode) {
-							imgSubst('t_' + p[0]);
-							imgSubst('zt_' + p[1]);
-						}
-					} else {
-						lastSeen['ct_' + p[0]] = lasttimestamp;
-						lastSeen['czt_' + p[1]] = lasttimestamp;
-
-						if(caveMode) {
-							imgSubst('ct_' + p[0]);
-							imgSubst('czt_' + p[1]);
-						}
-					}
-				}
+				})();
 			}
  
 			var time = {

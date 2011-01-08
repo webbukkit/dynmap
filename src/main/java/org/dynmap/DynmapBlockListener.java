@@ -18,7 +18,6 @@ public class DynmapBlockListener extends BlockListener {
 	@Override
 	public void onBlockPlaced(BlockPlacedEvent event) {
 		Block blockPlaced = event.getBlock();
-		if(mgr.touch(blockPlaced.getX(), blockPlaced.getY(), blockPlaced.getZ()))
-			mgr.debug(/*player.getName() + */" touch " + blockPlaced.getX() + "," + blockPlaced.getY() + "," + blockPlaced.getZ() + " from onBlockCreate");
+		mgr.touch(blockPlaced.getX(), blockPlaced.getY(), blockPlaced.getZ());
 	}
 }
