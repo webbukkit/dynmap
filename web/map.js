@@ -73,8 +73,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	};
 
 	MCMapProjection.prototype.fromPointToLatLng = function(point) {
-		var x = point.x;
-		var lng = x / config.tileWidth;
+		var lng = point.x / config.tileWidth;
 		var lat = point.y / config.tileHeight;
 		return new google.maps.LatLng(lat, lng);
 	};
