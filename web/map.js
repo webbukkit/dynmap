@@ -150,9 +150,9 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 		img.style.width = config.zoomSize[zoom] + 'px';
 		img.style.height = config.zoomSize[zoom] + 'px';
-		//img.style.borderStyle = 'none';
-		img.style.border = '1px solid red';
-		img.style.margin = '-1px -1px -1px -1px';
+		img.style.borderStyle = 'none';
+		//img.style.border = '1px solid red';
+		//img.style.margin = '-1px -1px -1px -1px';
 
 		var pfx = caveMode ? "c" : "";
 
