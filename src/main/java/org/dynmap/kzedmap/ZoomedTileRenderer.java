@@ -48,10 +48,10 @@ public class ZoomedTileRenderer {
 		int sch = KzedMap.tileHeight / 2;
 
 		/* origin in zoomed-out tile */
-		int ox = scw;
+		int ox = 0;
 		int oy = 0;
 
-		if(zpx != px) ox = 0;
+		if(zpx != px) ox = scw;
 		if(zpy != py) oy = sch;
 
 		/* blit scaled rendered tile onto zoom-out tile */

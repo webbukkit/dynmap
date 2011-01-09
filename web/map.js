@@ -69,16 +69,11 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		var x = (latLng.lng() * config.tileWidth)|0;
 		var y = (latLng.lat() * config.tileHeight)|0;
 
-		if(map.zoom == 0) {
-			x += config.tileWidth / 2;
-		}
 		return new google.maps.Point(x, y);
 	};
 
 	MCMapProjection.prototype.fromPointToLatLng = function(point) {
 		var x = point.x;
-		if(map.zoom == 0)
-			x -= config.tileWidth / 2;
 		var lng = x / config.tileWidth;
 		var lat = point.y / config.tileHeight;
 		return new google.maps.LatLng(lat, lng);
@@ -269,7 +264,6 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 	function mapUpdate()
 	{
-		console.log('requesting ' + config.updateUrl + lasttimestamp);
 		makeRequest(config.updateUrl + lasttimestamp, function(res) {
 			var typeVisibleMap = {
 				'warp': document.getElementById('showWarps').checked,
