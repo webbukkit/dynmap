@@ -156,14 +156,16 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 		img.style.width = config.zoomSize[zoom] + 'px';
 		img.style.height = config.zoomSize[zoom] + 'px';
-		img.style.borderStyle = 'none';
+		//img.style.borderStyle = 'none';
+		img.style.border = '1px solid red';
+		img.style.margin = '-1px -1px -1px -1px';
 
 		var pfx = caveMode ? "c" : "";
 
 		if(zoom > 0) {
 			var tilename = pfx + "t_" + (- coord.x * config.tileWidth) + '_' + coord.y * config.tileHeight;
 		} else {
-			var tilename = pfx + "zt_" + (- coord.x * config.tileWidth * 2) + '_' + coord.y * config.tileHeight * 2;
+			var tilename = pfx + "zt_" + (- coord.x * config.tileWidth * 2) + '_' + (coord.y * config.tileHeight * 2);
 		}
 
 		tileDict[tilename] = img;

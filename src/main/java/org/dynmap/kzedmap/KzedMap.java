@@ -31,6 +31,7 @@ public class KzedMap extends Map {
 	
 	public static java.util.Map<Integer, Color[]> colors;
 	MapTileRenderer[] renderers;
+	ZoomedTileRenderer zoomrenderer;
 	
 	public KzedMap(MapManager manager, World world, Debugger debugger) {
 		super(manager, world, debugger);
@@ -38,8 +39,9 @@ public class KzedMap extends Map {
 			colors = loadColorSet("colors.txt");
 		renderers = new MapTileRenderer[] {
 				new DefaultTileRenderer("t", debugger),
-				new CaveTileRenderer("ct", debugger)
+				new CaveTileRenderer("ct", debugger),
 		};
+		zoomrenderer = new ZoomedTileRenderer(debugger);
 	}
 	
 	@Override
@@ -83,8 +85,11 @@ public class KzedMap extends Map {
 	
 	@Override
 	public void render(MapTile tile) {
-		KzedMapTile t = (KzedMapTile)tile;
-		t.renderer.render(t, getMapManager().tilepath);
+		if (tile instanceof KzedZoomedMapTile) {
+			zoomrenderer.render((KzedZoomedMapTile)tile, getMapManager().tilepath);
+		} else if (tile instanceof KzedMapTile) {
+			((KzedMapTile)tile).renderer.render((KzedMapTile)tile, getMapManager().tilepath);
+		}
 	}
 	
 	/* tile X for position x */

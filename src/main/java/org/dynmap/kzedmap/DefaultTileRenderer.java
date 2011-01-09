@@ -84,6 +84,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
 		/* save the generated tile */
 		saveTile(tile, im, path);
+		
+		((KzedMap)tile.getMap()).invalidateTile(new KzedZoomedMapTile((KzedMap)tile.getMap(), im, tile));
 	}
 	
 	protected Color scan(World world, int x, int y, int z, int seq)
@@ -157,6 +159,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
 		} catch(java.lang.NullPointerException e) {
 			debugger.error("Failed to save tile (NullPointerException): " + tilePath, e);
 		}
+		
+		
 
 		/* now update zoom-out tile */
 		/*BufferedImage zIm = mgr.zoomCache.get(zoomPath);
