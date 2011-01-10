@@ -112,18 +112,18 @@ public class WebServerRequest extends Thread {
 		long relativeTime = server.getTime() % 24000;
 		sb.append(current + " " + relativeTime + "\n");
 
-		for(Player player : server.getOnlinePlayers()) {
-			sb.append(player.getName() + " player " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
+		Player[] players = server.getOnlinePlayers();
+		for(Player player : players) {
+			sb.append("player " + player.getName() + " " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
 		}
 		
-		synchronized(mgr.lock) {
-			for(TileUpdate tu : mgr.tileUpdates) {
-				if(tu.at >= cutoff) {
-					sb.append(tu.tile.px + "_" + tu.tile.py + " " + tu.tile.zpx + "_" + tu.tile.zpy + " t\n");
-				}
-			}
+		TileUpdate[] tileUpdates = mgr.staleQueue.getTileUpdates(cutoff);
+		for(TileUpdate tu : tileUpdates) {
+			sb.append("tile " + tu.tile.getName() + "\n");
 		}
 
+		debugger.debug("Sending " + players.length + " players and " + tileUpdates.length + " tile-updates. " + path + ";" + cutoff);
+		
 		byte[] bytes = sb.toString().getBytes();
 		
 		String dateStr = new Date().toString();

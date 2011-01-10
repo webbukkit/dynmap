@@ -1,4 +1,4 @@
-package org.dynmap.render;
+package org.dynmap.kzedmap;
 
 import java.awt.Color;
 import java.util.Map;
@@ -7,10 +7,10 @@ import org.bukkit.World;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debugger;
 
-public class CaveTileRenderer extends DayTileRenderer {
+public class CaveTileRenderer extends DefaultTileRenderer {
 
-	public CaveTileRenderer(Debugger debugger, Map<Integer, Color[]> colors, String outputPath) {
-		super(debugger, colors, outputPath);
+	public CaveTileRenderer(String name, Debugger debugger) {
+		super(name, debugger);
 	}
 
 	@Override

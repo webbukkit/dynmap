@@ -58,8 +58,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		updateUrl:   setup.updateUrl,
 		tileWidth:   128,
 		tileHeight:  128,
-		updateRate:  setup.updateRate,
-		zoomSize:    [ 128, 128, 256, 512 ]
+		updateRate:  setup.updateRate
 	};
 
 	function MCMapProjection() {
@@ -69,17 +68,11 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		var x = (latLng.lng() * config.tileWidth)|0;
 		var y = (latLng.lat() * config.tileHeight)|0;
 
-		if(map.zoom == 0) {
-			x += config.tileWidth / 2;
-		}
 		return new google.maps.Point(x, y);
 	};
 
 	MCMapProjection.prototype.fromPointToLatLng = function(point) {
-		var x = point.x;
-		if(map.zoom == 0)
-			x -= config.tileWidth / 2;
-		var lng = x / config.tileWidth;
+		var lng = point.x / config.tileWidth;
 		var lat = point.y / config.tileHeight;
 		return new google.maps.LatLng(lat, lng);
 	};
@@ -146,6 +139,30 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		}
 	}
 
+	function getImageSize(zoom) {
+		return zoom > 0 ? config.tileWidth : config.tileWidth*2;
+	}
+	
+	function getTileSize(zoom, imageSize) {
+		imageSize = imageSize || getImageSize(zoom); 
+		return Math.pow(2, 6+zoom) * (imageSize / config.tileWidth);
+	}
+	
+	function getTileInfo(coord, zoom) {
+		var imageSize = getImageSize(zoom);
+		var tileSize = getTileSize(zoom, imageSize);
+		
+		var imageName = '';
+		if (caveMode) imageName += 'c';
+		if (zoom == 0) imageName += 'z';
+		imageName += 't_' + (-coord.x * imageSize) + '_' + (coord.y * imageSize);
+
+		return {
+			name: imageName,
+			size: tileSize,
+		};
+	}
+	
 	mcMapType.prototype.tileSize = new google.maps.Size(config.tileWidth, config.tileHeight);
 	mcMapType.prototype.minZoom = 0;
 	mcMapType.prototype.maxZoom = 3;
@@ -154,21 +171,17 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 		img.onerror = function() { img.style.display = 'none'; }
 
-		img.style.width = config.zoomSize[zoom] + 'px';
-		img.style.height = config.zoomSize[zoom] + 'px';
+		var tileInfo = getTileInfo(coord, zoom);
+		
+		img.style.width = tileInfo.size + 'px';
+		img.style.height = tileInfo.size + 'px';
 		img.style.borderStyle = 'none';
+		//img.style.border = '1px solid red';
+		//img.style.margin = '-1px -1px -1px -1px';
 
-		var pfx = caveMode ? "c" : "";
+		tileDict[tileInfo.name] = img;
 
-		if(zoom > 0) {
-			var tilename = pfx + "t_" + (- coord.x * config.tileWidth) + '_' + coord.y * config.tileHeight;
-		} else {
-			var tilename = pfx + "zt_" + (- coord.x * config.tileWidth * 2) + '_' + coord.y * config.tileHeight * 2;
-		}
-
-		tileDict[tilename] = img;
-
-		var url = tileUrl(tilename);
+		var url = tileUrl(tileInfo.name);
 		img.src = url;
 		//img.style.background = 'url(' + url + ')';
 		//img.innerHTML = '<small>' + tilename + '</small>';
@@ -177,7 +190,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 	}
 
 	var markers = new Array();
-	var lasttimestamp = 0;
+	var lasttimestamp = '0';
 	var followPlayer = '';
 
 	var lst;
@@ -280,7 +293,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			var rows = res.split('\n');
 			var loggedin = new Array();
  			var firstRow = rows[0].split(' ');
-			var lasttimestamp = firstRow[0];
+			lasttimestamp = firstRow[0];
 			servertime = firstRow[1];
 			delete rows[0];
  
@@ -289,38 +302,25 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 				if (p[0] == '') continue;
 				
-				if(p.length == 5) {
+				({	tile: function() {
+						var tileName = p[1];
+						lastSeen[tileName] = lasttimestamp;
+						imgSubst(tileName);
+					}
+				}[p[0]] || function() {
 					var mi = {
 						id: p[0] + '_' + p[1],
-						text: p[0],
-						type: p[1],
+						text: p[1],
+						type: p[0],
 						position: fromWorldToLatLng(p[2], p[3], p[4]),
-						visible: ((p[1] in typeVisibleMap) ? typeVisibleMap[p[1]] : true)
+						visible: ((p[0] in typeVisibleMap) ? typeVisibleMap[p[0]] : true)
 					};
 
 					updateMarker(mi);
 					loggedin[mi.id] = 1;
 					if (!mi.type in typeCount) typeCount[mi.type] = 0;
 					typeCount[mi.type]++;
-				} else if(p.length == 3) {
-					if(p[2] == 't') {
-						lastSeen['t_' + p[0]] = lasttimestamp;
-						lastSeen['zt_' + p[1]] = lasttimestamp;
-
-						if(!caveMode) {
-							imgSubst('t_' + p[0]);
-							imgSubst('zt_' + p[1]);
-						}
-					} else {
-						lastSeen['ct_' + p[0]] = lasttimestamp;
-						lastSeen['czt_' + p[1]] = lasttimestamp;
-
-						if(caveMode) {
-							imgSubst('ct_' + p[0]);
-							imgSubst('czt_' + p[1]);
-						}
-					}
-				}
+				})();
 			}
  
 			var time = {
@@ -391,7 +391,8 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		caveMapType.projection = new MCMapProjection();
 
 		map.zoom_changed = function() {
-			mapType.tileSize = new google.maps.Size(config.zoomSize[map.zoom], config.zoomSize[map.zoom]);
+			var tileSize = getTileSize(map.zoom);
+			mapType.tileSize = new google.maps.Size(tileSize, tileSize);
 			caveMapType.tileSize = mapType.tileSize;
 		};
 
