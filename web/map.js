@@ -1,3 +1,5 @@
+if (!console) console = { log: function() {} }; 
+
 /* generic function for making an XMLHttpRequest
  *  url:   request URL
  *  func:  callback function for success
@@ -51,48 +53,6 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		http_request.send(null);
 	}
 }
- 
- 
- 	var config = {
-		tileUrl:     setup.tileUrl,
-		updateUrl:   setup.updateUrl,
-		tileWidth:   128,
-		tileHeight:  128,
-		updateRate:  setup.updateRate
-	};
-
-	function MCMapProjection() {
-	  }
-
-	MCMapProjection.prototype.fromLatLngToPoint = function(latLng) {
-		var x = (latLng.lng() * config.tileWidth)|0;
-		var y = (latLng.lat() * config.tileHeight)|0;
-
-		return new google.maps.Point(x, y);
-	};
-
-	MCMapProjection.prototype.fromPointToLatLng = function(point) {
-		var lng = point.x / config.tileWidth;
-		var lat = point.y / config.tileHeight;
-		return new google.maps.LatLng(lat, lng);
-	};
-
-	function fromWorldToLatLng(x, y, z)
-	{
-		var dx = +x;
-		var dy = +y - 127;
-		var dz = +z;
-		var px = dx + dz;
-		var py = dx - dz - dy;
-
-		var lng = -px / config.tileWidth / 2 + 0.5;
-		var lat = py / config.tileHeight / 2;
-
-		return new google.maps.LatLng(lat, lng);
-	}
-
-	function mcMapType() {
-	}
 
 	var tileDict = new Array();
 	var lastSeen = new Array();
@@ -108,86 +68,20 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		}
 	}
 
-	function imgSubst(tile) {
-		if(!(tile in tileDict))
+	function onTileUpdated(tileName, f) {
+		
+	}
+	
+	function imgSubst(tileName) {
+		if(!(tileName in tileDict))
 			return;
 
-		var src = tileUrl(tile);
-		var t = tileDict[tile];
-		t.src = src;
-		t.style.display = '';
-		t.onerror = function() {
-			setTimeout(function() {
-				t.src = tileUrl(tile, 1);
-			}, 1000);
-			t.onerror = '';
-		}
+		var src = tileUrl(tileName);
+		var t = tileDict[tileName];
+		t.attr('src', src);
+		t.show();
 	}
 
-	var caveMode = false;
-
-	function caveSwitch()
-	{
-		caveMode = !caveMode;
-
-		if(caveMode) {
-			cavebtn.src = 'cave_on.png';
-			map.setMapTypeId('cavemap');
-		} else {
-			cavebtn.src = 'cave_off.png';
-			map.setMapTypeId('mcmap');
-		}
-	}
-
-	function getImageSize(zoom) {
-		return zoom > 0 ? config.tileWidth : config.tileWidth*2;
-	}
-	
-	function getTileSize(zoom, imageSize) {
-		imageSize = imageSize || getImageSize(zoom); 
-		return Math.pow(2, 6+zoom) * (imageSize / config.tileWidth);
-	}
-	
-	function getTileInfo(coord, zoom) {
-		var imageSize = getImageSize(zoom);
-		var tileSize = getTileSize(zoom, imageSize);
-		
-		var imageName = '';
-		if (caveMode) imageName += 'c';
-		if (zoom == 0) imageName += 'z';
-		imageName += 't_' + (-coord.x * imageSize) + '_' + (coord.y * imageSize);
-
-		return {
-			name: imageName,
-			size: tileSize,
-		};
-	}
-	
-	mcMapType.prototype.tileSize = new google.maps.Size(config.tileWidth, config.tileHeight);
-	mcMapType.prototype.minZoom = 0;
-	mcMapType.prototype.maxZoom = 3;
-	mcMapType.prototype.getTile = function(coord, zoom, doc) {
-		var img = doc.createElement('IMG');
-
-		img.onerror = function() { img.style.display = 'none'; }
-
-		var tileInfo = getTileInfo(coord, zoom);
-		
-		img.style.width = tileInfo.size + 'px';
-		img.style.height = tileInfo.size + 'px';
-		img.style.borderStyle = 'none';
-		//img.style.border = '1px solid red';
-		//img.style.margin = '-1px -1px -1px -1px';
-
-		tileDict[tileInfo.name] = img;
-
-		var url = tileUrl(tileInfo.name);
-		img.src = url;
-		//img.style.background = 'url(' + url + ')';
-		//img.innerHTML = '<small>' + tilename + '</small>';
-
-		return img;
-	}
 
 	var markers = new Array();
 	var lasttimestamp = '0';
@@ -195,7 +89,6 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 	var lst;
 	var plistbtn;
-	var cavebtn;
 	var lstopen = true;
 	var oldplayerlst = '[Connecting]';
 	var servertime = 0;
@@ -312,7 +205,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 						id: p[0] + '_' + p[1],
 						text: p[1],
 						type: p[0],
-						position: fromWorldToLatLng(p[2], p[3], p[4]),
+						position: map.getProjection().fromWorldToLatLng(p[2], p[3], p[4]),
 						visible: ((p[0] in typeVisibleMap) ? typeVisibleMap[p[0]] : true)
 					};
 
@@ -365,11 +258,10 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		}
 		return s;
 	}
-
+	
 	window.onload = function initialize() {
 		lst = document.getElementById('lst');
 		plistbtn = document.getElementById('plistbtn');
-		cavebtn = document.getElementById('cavebtn');
 
 		var mapOptions = {
 			zoom: 1,
@@ -381,20 +273,9 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			scaleControl: false,
 			mapTypeControl: false,
 			streetViewControl: false,
-			mapTypeId: 'mcmap',
 			backgroundColor: '#000'
 		};
 		map = new google.maps.Map(document.getElementById("mcmap"), mapOptions);
-		mapType = new mcMapType();
-		mapType.projection = new MCMapProjection();
-		caveMapType = new mcMapType();
-		caveMapType.projection = new MCMapProjection();
-
-		map.zoom_changed = function() {
-			var tileSize = getTileSize(map.zoom);
-			mapType.tileSize = new google.maps.Size(tileSize, tileSize);
-			caveMapType.tileSize = mapType.tileSize;
-		};
 
 		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 				plfollow('');
@@ -407,11 +288,36 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			});
 		map.dragstart = plfollow('');
 
-		map.mapTypes.set('mcmap', mapType);
-		map.mapTypes.set('cavemap', caveMapType);
+		$.each(config.maps, function(name, mapType){
+			map.mapTypes.set(name, mapType);
+			
+			var mapButton;
+			$('#maplist').append($('<div/>')
+					.addClass('maprow')
+					.append(mapButton = $('<input/>')
+						.addClass('maptype_' + name)
+						.attr({
+							type: 'radio',
+							name: 'map',
+							id: 'maptypebutton_' + name 
+						})
+						.attr('checked', config.defaultMap == name ? 'checked' : null)
+						)
+					.append($('<label/>')
+							.attr('for', 'maptypebutton_' + name)
+							.text(name)
+							)
+					.click(function() {
+							$('.mapbutton').removeAttr('checked');
+							map.setMapTypeId(name);
+							mapButton.attr('checked', 'checked');
+						})
+				);
+		});
 
-		map.setMapTypeId('mcmap');
-		mapUpdate();
+		map.setMapTypeId(config.defaultMap);
+		
+		setTimeout(mapUpdate, config.updateRate);
 	}
 
 	function plistopen() {
