@@ -58,8 +58,7 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		updateUrl:   setup.updateUrl,
 		tileWidth:   128,
 		tileHeight:  128,
-		updateRate:  setup.updateRate,
-		zoomSize:    [ 128, 128, 256, 512 ]
+		updateRate:  setup.updateRate
 	};
 
 	function MCMapProjection() {
@@ -140,6 +139,30 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		}
 	}
 
+	function getImageSize(zoom) {
+		return zoom > 0 ? config.tileWidth : config.tileWidth*2;
+	}
+	
+	function getTileSize(zoom, imageSize) {
+		imageSize = imageSize || getImageSize(zoom); 
+		return Math.pow(2, 6+zoom) * (imageSize / config.tileWidth);
+	}
+	
+	function getTileInfo(coord, zoom) {
+		var imageSize = getImageSize(zoom);
+		var tileSize = getTileSize(zoom, imageSize);
+		
+		var imageName = '';
+		if (caveMode) imageName += 'c';
+		if (zoom == 0) imageName += 'z';
+		imageName += 't_' + (-coord.x * imageSize) + '_' + (coord.y * imageSize);
+
+		return {
+			name: imageName,
+			size: tileSize,
+		};
+	}
+	
 	mcMapType.prototype.tileSize = new google.maps.Size(config.tileWidth, config.tileHeight);
 	mcMapType.prototype.minZoom = 0;
 	mcMapType.prototype.maxZoom = 3;
@@ -148,23 +171,17 @@ function makeRequest(url, func, type, fail, post, contenttype)
 
 		img.onerror = function() { img.style.display = 'none'; }
 
-		img.style.width = config.zoomSize[zoom] + 'px';
-		img.style.height = config.zoomSize[zoom] + 'px';
+		var tileInfo = getTileInfo(coord, zoom);
+		
+		img.style.width = tileInfo.size + 'px';
+		img.style.height = tileInfo.size + 'px';
 		img.style.borderStyle = 'none';
 		//img.style.border = '1px solid red';
 		//img.style.margin = '-1px -1px -1px -1px';
 
-		var pfx = caveMode ? "c" : "";
+		tileDict[tileInfo.name] = img;
 
-		if(zoom > 0) {
-			var tilename = pfx + "t_" + (- coord.x * config.tileWidth) + '_' + coord.y * config.tileHeight;
-		} else {
-			var tilename = pfx + "zt_" + (- coord.x * config.tileWidth * 2) + '_' + (coord.y * config.tileHeight * 2);
-		}
-
-		tileDict[tilename] = img;
-
-		var url = tileUrl(tilename);
+		var url = tileUrl(tileInfo.name);
 		img.src = url;
 		//img.style.background = 'url(' + url + ')';
 		//img.innerHTML = '<small>' + tilename + '</small>';
@@ -374,7 +391,8 @@ function makeRequest(url, func, type, fail, post, contenttype)
 		caveMapType.projection = new MCMapProjection();
 
 		map.zoom_changed = function() {
-			mapType.tileSize = new google.maps.Size(config.zoomSize[map.zoom], config.zoomSize[map.zoom]);
+			var tileSize = getTileSize(map.zoom);
+			mapType.tileSize = new google.maps.Size(tileSize, tileSize);
 			caveMapType.tileSize = mapType.tileSize;
 		};
 
