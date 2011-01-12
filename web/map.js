@@ -35,7 +35,7 @@ MinecraftClock.prototype = {
 			this.timeout = window.setTimeout(function() {
 				me.timeout = null;
 				me.setTime(getMinecraftTime(me.time.servertime+(1000/60)));
-			}, 700 /* should be 600, but since server-resyncing it looks better with 700 */);
+			}, 700);
 		}
 	},
 	formatTime: function(time) {
@@ -50,56 +50,47 @@ MinecraftClock.prototype = {
 	}
 };
 
-var tileDict = new Array();
-var lastSeen = new Array();
-
-function getTileUrl(tile, always) {
-	if(always) {
-		var now = new Date();
-		return config.tileUrl + tile + '.png?' + now.getTime();
-	} else if(tile in lastSeen) {
-		return config.tileUrl + tile + '.png?' + lastSeen[tile];
-	} else {
-		return config.tileUrl + tile + '.png?0';
-	}
-}
-
-function registerTile(mapType, tileName, tile) {
-	tileDict[tileName] = {
-			tileElement: tile,
-			mapType: mapType
-	};
-}
-
-function unregisterTile(mapType, tileName) {
-	delete tileDict[tileName];
-}
-
-function onTileUpdated(tileName) {
-	lastSeen[tileName] = lasttimestamp;
-	
-	var tile = tileDict[tileName];
-	if (tile) {
-		tile.mapType.onTileUpdated(tile.tileElement, tileName);
-	}
-}
-
+var registeredTiles = new Array();
 var clock = null;
 var markers = new Array();
 var lasttimestamp = '0';
 var followingPlayer = '';
 
+function getTileUrl(tileName, always) {
+	var tile = registeredTiles[tileName];
+	
+	if(tile) {
+		return config.tileUrl + tileName + '.png?' + tile.lastseen;
+	} else {
+		return config.tileUrl + tileName + '.png?0';
+	}
+}
+
+function registerTile(mapType, tileName, tile) {
+	registeredTiles[tileName] = {
+			tileElement: tile,
+			mapType: mapType,
+			lastseen: '0'
+	};
+}
+
+function unregisterTile(mapType, tileName) {
+	delete registeredTiles[tileName];
+}
+
+function onTileUpdated(tileName) {
+	var tile = registeredTiles[tileName];
+	
+	if (tile) {
+		tile.lastseen = lasttimestamp;
+		tile.mapType.onTileUpdated(tile.tileElement, tileName);
+	}
+}
+
 function updateMarker(mi) {
 	if(mi.id in markers) {
 		var m = markers[mi.id];
-		if (!mi.visible) {
-			m.hide();
-			return;
-		}
-		else {
-			m.show();
-		}
-		
+		m.toggle(mi.visible);
 		m.setPosition(mi.position);
 	} else {
 		var contentfun = function(div,mi) {
@@ -125,7 +116,7 @@ function updateMarker(mi) {
 				});
 			};
 		}
-		var marker = new CustomMarker(converted, map, contentfun, mi);
+		var marker = new CustomMarker(mi.position, map, contentfun, mi);
 		marker.markerType = mi.type;
 		
 		markers[mi.id] = marker;
