@@ -87,6 +87,21 @@ a, a:visited, label {
 #clock.night { background-image: url(clock_night.png); }
 #clock.day { background-image: url(clock_day.png); }
 
+#alert {
+	padding: 5px;
+	position: fixed;
+	margin: auto;
+	top: 0;
+	left: 0;
+	right: 0;
+	width: 25em;
+	text-align: center;
+	font: 14px/16px sans-serif;
+	box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+	background-color: InfoBackground;
+	border-radius: 0 0 3px 3px;
+}
+
 .playerIcon {
 }
 

@@ -68,3 +68,19 @@ function getMinecraftHead(player,size,completed) {
 		completed(resizeImage(head,size));
 	}
 }
+
+function getMinecraftTime(servertime) {
+	servertime = parseInt(servertime);
+	return {
+		servertime: servertime,
+		days: parseInt((servertime+8000) / 24000),
+		
+		// Assuming it is day at 8:00
+		hours: (parseInt(servertime / 1000)+8) % 24,
+		minutes: parseInt(((servertime / 1000) % 1) * 60),
+		seconds: parseInt(((((servertime / 1000) % 1) * 60) % 1) * 60),
+		
+		day: servertime > 12000,
+		night: servertime <= 12000
+	};
+}

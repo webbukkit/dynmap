@@ -26,8 +26,10 @@ KzedProjection.prototype = {
 		}
 };
 
+KzedMapType.prototype = new DynMapType();
 function KzedMapType() {}
 KzedMapType.prototype = {
+	constructor: KzedMapType,
 	projection: new KzedProjection(),
 	tileSize: new google.maps.Size(128, 128),
 	minZoom: 0,
@@ -96,7 +98,7 @@ KzedMapType.prototype = {
 		}
 		if (tileName) {
 			img = $('<img/>')
-				.attr('src', tileUrl(tileName))
+				.attr('src', getTileUrl(tileName))
 				.error(function() { img.hide(); })
 				.css({
 					width: imgSize + 'px',
@@ -106,9 +108,9 @@ KzedMapType.prototype = {
 					marginTop: offset.y + 'px'
 				})
 				.appendTo(tile);
-				tileDict[tileName] = img;
+			registerTile(this, tileName, img);
 		} else {
-			delete tileDict[tileName];
+			unregisterTile(this, tileName);
 		}
 		return tile.get(0);
 	},
