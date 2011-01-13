@@ -1,286 +1,169 @@
-/* generic function for making an XMLHttpRequest
- *  url:   request URL
- *  func:  callback function for success
- *  type:  'text' by default (callback is called with response text)
- *         otherwise, callback is called with a parsed XML dom
- *  fail:  callback function for failure
- *  post:  if given, make a POST request instead of GET; post data given
- *
- *  contenttype: if given for a POST, set request content-type header
- */
-function makeRequest(url, func, type, fail, post, contenttype)
-{
-	var http_request = false;
+if (!console) console = { log: function() {} }; 
 
-	type = typeof(type) != 'undefined' ? type : 'text';
-	fail = typeof(fail) != 'undefined' ? fail : function() { };
-
-	if(window.XMLHttpRequest) {
-		http_request = new XMLHttpRequest();
-	} else if(window.ActiveXObject) {
-		http_request = new ActiveXObject("Microsoft.XMLHTTP");
+function DynMapType() { }
+DynMapType.prototype = {
+	onTileUpdated: function(tile, tileName) {
+		var src = getTileUrl(tileName);
+		tile.attr('src', src);
+		tile.show();
 	}
+};
 
-	if(type == 'text') {
-		http_request.onreadystatechange = function() {
-			if(http_request.readyState == 4) {
-				if(http_request.status == 200) {
-					func(http_request.responseText);
-				} else {
-					fail(http_request);
-				}
-			}
+function MinecraftClock(element) { this.element = element; }
+MinecraftClock.prototype = {
+	element: null,
+	timeout: null,
+	time: null,
+	create: function(element) {
+		if (!element) element = $('<div/>');
+		this.element = element;
+		return element;
+	},
+	setTime: function(time) {
+		if (this.timeout != null) {
+			window.clearTimeout(this.timeout);
+			this.timeout = null;
 		}
-	} else {
-		http_request.onreadystatechange = function() {
-			if(http_request.readyState == 4) {
-				if(http_request.status == 200) { func(http_request.responseXML); } else {
-					fail(http_request);
-				}
-			}
+		this.time = time;
+		this.element
+			.addClass(time.day ? 'day' : 'night')
+			.removeClass(time.night ? 'day' : 'night')
+			.text(this.formatTime(time));
+		
+		if (this.timeout == null) {
+			var me = this;
+			this.timeout = window.setTimeout(function() {
+				me.timeout = null;
+				me.setTime(getMinecraftTime(me.time.servertime+(1000/60)));
+			}, 700);
 		}
+	},
+	formatTime: function(time) {
+		var formatDigits = function(n, digits) {
+			var s = n.toString();
+			while (s.length < digits) {
+				s = '0' + s;
+			}
+			return s;
+		}
+		return formatDigits(time.hours, 2) + ':' + formatDigits(time.minutes, 2);
 	}
+};
 
-	if(typeof(post) != 'undefined') {
-		http_request.open('POST', url, true);
-		if(typeof(contenttype) != 'undefined')
-			http_request.setRequestHeader("Content-Type", contenttype);
-		http_request.send(post);
+var registeredTiles = new Array();
+var clock = null;
+var markers = new Array();
+var lasttimestamp = '0';
+var followingPlayer = '';
+
+function getTileUrl(tileName, always) {
+	var tile = registeredTiles[tileName];
+	
+	if(tile) {
+		return config.tileUrl + tileName + '.png?' + tile.lastseen;
 	} else {
-		http_request.open('GET', url, true);
-		http_request.send(null);
+		return config.tileUrl + tileName + '.png?0';
 	}
 }
- 
- 
- 	var config = {
-		tileUrl:     setup.tileUrl,
-		updateUrl:   setup.updateUrl,
-		tileWidth:   128,
-		tileHeight:  128,
-		updateRate:  setup.updateRate
+
+function registerTile(mapType, tileName, tile) {
+	registeredTiles[tileName] = {
+			tileElement: tile,
+			mapType: mapType,
+			lastseen: '0'
 	};
+}
 
-	function MCMapProjection() {
-	  }
+function unregisterTile(mapType, tileName) {
+	delete registeredTiles[tileName];
+}
 
-	MCMapProjection.prototype.fromLatLngToPoint = function(latLng) {
-		var x = (latLng.lng() * config.tileWidth)|0;
-		var y = (latLng.lat() * config.tileHeight)|0;
-
-		return new google.maps.Point(x, y);
-	};
-
-	MCMapProjection.prototype.fromPointToLatLng = function(point) {
-		var lng = point.x / config.tileWidth;
-		var lat = point.y / config.tileHeight;
-		return new google.maps.LatLng(lat, lng);
-	};
-
-	function fromWorldToLatLng(x, y, z)
-	{
-		var dx = +x;
-		var dy = +y - 127;
-		var dz = +z;
-		var px = dx + dz;
-		var py = dx - dz - dy;
-
-		var lng = -px / config.tileWidth / 2 + 0.5;
-		var lat = py / config.tileHeight / 2;
-
-		return new google.maps.LatLng(lat, lng);
-	}
-
-	function mcMapType() {
-	}
-
-	var tileDict = new Array();
-	var lastSeen = new Array();
-
-	function tileUrl(tile, always) {
-		if(always) {
-			var now = new Date();
-			return config.tileUrl + tile + '.png?' + now.getTime();
-		} else if(tile in lastSeen) {
-			return config.tileUrl + tile + '.png?' + lastSeen[tile];
-		} else {
-			return config.tileUrl + tile + '.png?0';
-		}
-	}
-
-	function imgSubst(tile) {
-		if(!(tile in tileDict))
-			return;
-
-		var src = tileUrl(tile);
-		var t = tileDict[tile];
-		t.src = src;
-		t.style.display = '';
-		t.onerror = function() {
-			setTimeout(function() {
-				t.src = tileUrl(tile, 1);
-			}, 1000);
-			t.onerror = '';
-		}
-	}
-
-	var caveMode = false;
-
-	function caveSwitch()
-	{
-		caveMode = !caveMode;
-
-		if(caveMode) {
-			cavebtn.src = 'cave_on.png';
-			map.setMapTypeId('cavemap');
-		} else {
-			cavebtn.src = 'cave_off.png';
-			map.setMapTypeId('mcmap');
-		}
-	}
-
-	function getImageSize(zoom) {
-		return zoom > 0 ? config.tileWidth : config.tileWidth*2;
-	}
+function onTileUpdated(tileName) {
+	var tile = registeredTiles[tileName];
 	
-	function getTileSize(zoom, imageSize) {
-		imageSize = imageSize || getImageSize(zoom); 
-		return Math.pow(2, 6+zoom) * (imageSize / config.tileWidth);
+	if (tile) {
+		tile.lastseen = lasttimestamp;
+		tile.mapType.onTileUpdated(tile.tileElement, tileName);
 	}
-	
-	function getTileInfo(coord, zoom) {
-		var imageSize = getImageSize(zoom);
-		var tileSize = getTileSize(zoom, imageSize);
-		
-		var imageName = '';
-		if (caveMode) imageName += 'c';
-		if (zoom == 0) imageName += 'z';
-		imageName += 't_' + (-coord.x * imageSize) + '_' + (coord.y * imageSize);
+}
 
-		return {
-			name: imageName,
-			size: tileSize,
+function updateMarker(mi) {
+	if(mi.id in markers) {
+		var m = markers[mi.id];
+		m.toggle(mi.visible);
+		m.setPosition(mi.position);
+	} else {
+		var contentfun = function(div,mi) {
+			$(div)
+				.addClass('Marker')
+				.addClass(mi.type + 'Marker')
+				.append($('<img/>').attr({src: mi.type + '.png'}))
+				.append($('<span/>').text(mi.text));
 		};
-	}
-	
-	mcMapType.prototype.tileSize = new google.maps.Size(config.tileWidth, config.tileHeight);
-	mcMapType.prototype.minZoom = 0;
-	mcMapType.prototype.maxZoom = 3;
-	mcMapType.prototype.getTile = function(coord, zoom, doc) {
-		var img = doc.createElement('IMG');
-
-		img.onerror = function() { img.style.display = 'none'; }
-
-		var tileInfo = getTileInfo(coord, zoom);
-		
-		img.style.width = tileInfo.size + 'px';
-		img.style.height = tileInfo.size + 'px';
-		img.style.borderStyle = 'none';
-		//img.style.border = '1px solid red';
-		//img.style.margin = '-1px -1px -1px -1px';
-
-		tileDict[tileInfo.name] = img;
-
-		var url = tileUrl(tileInfo.name);
-		img.src = url;
-		//img.style.background = 'url(' + url + ')';
-		//img.innerHTML = '<small>' + tilename + '</small>';
-
-		return img;
-	}
-
-	var markers = new Array();
-	var lasttimestamp = '0';
-	var followPlayer = '';
-
-	var lst;
-	var plistbtn;
-	var cavebtn;
-	var lstopen = true;
-	var oldplayerlst = '[Connecting]';
-	var servertime = 0;
-
-	function updateMarker(mi) {
-		if(mi.id in markers) {
-			var m = markers[mi.id];
-			if (!mi.visible) {
-				m.hide();
-				return;
-			}
-			else {
-				m.show();
-			}
-			
-			var converted = mi.position;
-			m.setPosition(mi.position);
-		} else {
-			var contentfun = function(div,mi) {
+		if (mi.type == 'player') {
+			contentfun = function(div, mi) {
 				$(div)
 					.addClass('Marker')
-					.addClass(mi.type + 'Marker')
-					.append($('<img/>').attr({src: mi.type + '.png'}))
-					.append($('<span/>').text(mi.text));
-			};
-			if (mi.type == 'player') {
-				contentfun = function(div, mi) {
-					$(div)
-						.addClass('Marker')
-						.addClass('playerMarker')
-						.append($('<span/>')
-							.addClass('playerName')
-							.text(mi.text));
-					
-					getMinecraftHead(mi.text, 32, function(head) {
-						$(head)
-							.addClass('playerIcon')
-							.prependTo(div);
-					});
-				};
-			}
-			var marker = new CustomMarker(converted, map, contentfun, mi);
-			marker.markerType = mi.type;
-			
-			markers[mi.id] = marker;
-
-			if (mi.type == 'player') {
-				marker.playerRow = $('<div/>')
-					.attr({ id: 'playerrow_' + mi.text })
-					.addClass('playerrow')
-					.append(marker.followButton = $('<input/>')
-						.attr({	type: 'checkbox',
-							name: 'followPlayer',
-							checked: false,
-							value: mi.text
-							})
-						.addClass('followButton')
-						.click(function(e) {
-							plfollow(mi.id != followPlayer ? mi.id : '');
-						}))
-					.append(marker.playerIconContainer = $('<span/>'))
-					.append($('<a/>')
-						.text(mi.text)
-						.attr({ href: '#' })
-						.click(function(e) { map.panTo(markers[mi.id].getPosition()); })
-						);
-
-				getMinecraftHead(mi.text, 16, function(head) {
-					marker.playerRow.icon = $(head)
-						.addClass('playerIcon')
-						.appendTo(marker.playerIconContainer);
-				});
+					.addClass('playerMarker')
+					.append($('<span/>')
+						.addClass('playerName')
+						.text(mi.text));
 				
-				$('#playerlst').append(marker.playerRow);
-			}
+				getMinecraftHead(mi.text, 32, function(head) {
+					$(head)
+						.addClass('playerIcon')
+						.prependTo(div);
+				});
+			};
 		}
+		var marker = new CustomMarker(mi.position, map, contentfun, mi);
+		marker.markerType = mi.type;
 		
-		if(mi.id == followPlayer) {
-			map.panTo(markers[mi.id].getPosition());
+		markers[mi.id] = marker;
+
+		if (mi.type == 'player') {
+			marker.playerRow = $('<div/>')
+				.attr({ id: 'playerrow_' + mi.text })
+				.addClass('playerrow')
+				.append(marker.followButton = $('<input/>')
+					.attr({	type: 'checkbox',
+						name: 'followPlayer',
+						checked: false,
+						value: mi.text
+						})
+					.addClass('followButton')
+					.click(function(e) {
+						followPlayer(mi.id != followingPlayer ? mi.id : '');
+					}))
+				.append(marker.playerIconContainer = $('<span/>'))
+				.append($('<a/>')
+					.text(mi.text)
+					.attr({ href: '#' })
+					.click(function(e) { map.panTo(markers[mi.id].getPosition()); })
+					);
+
+			getMinecraftHead(mi.text, 16, function(head) {
+				marker.playerRow.icon = $(head)
+					.addClass('playerIcon')
+					.appendTo(marker.playerIconContainer);
+			});
+			
+			$('#playerlst').append(marker.playerRow);
 		}
 	}
+	
+	if(mi.id == followingPlayer) {
+		map.panTo(markers[mi.id].getPosition());
+	}
+}
 
-	function mapUpdate()
-	{
-		makeRequest(config.updateUrl + lasttimestamp, function(res) {
+function mapUpdate()
+{
+	$.ajax({
+		url: config.updateUrl + lasttimestamp,
+		success: function(res) {
+			$('#alert')
+				.hide();
 			var typeVisibleMap = {
 				'warp': document.getElementById('showWarps').checked,
 				'sign': document.getElementById('showSigns').checked,
@@ -294,25 +177,25 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			var loggedin = new Array();
  			var firstRow = rows[0].split(' ');
 			lasttimestamp = firstRow[0];
-			servertime = firstRow[1];
 			delete rows[0];
- 
+			
+			var servertime = firstRow[1];
+			clock.setTime(getMinecraftTime(servertime));
+			
 			for(var line in rows) {
 				var p = rows[line].split(' ');
 
 				if (p[0] == '') continue;
 				
 				({	tile: function() {
-						var tileName = p[1];
-						lastSeen[tileName] = lasttimestamp;
-						imgSubst(tileName);
+						onTileUpdated(p[1]);
 					}
 				}[p[0]] || function() {
 					var mi = {
 						id: p[0] + '_' + p[1],
 						text: p[1],
 						type: p[0],
-						position: fromWorldToLatLng(p[2], p[3], p[4]),
+						position: map.getProjection().fromWorldToLatLng(p[2], p[3], p[4]),
 						visible: ((p[0] in typeVisibleMap) ? typeVisibleMap[p[0]] : true)
 					};
 
@@ -323,19 +206,6 @@ function makeRequest(url, func, type, fail, post, contenttype)
 				})();
 			}
  
-			var time = {
-				// Assuming it is day at 8:00
-				hours: (parseInt(servertime / 1000)+8) % 24,
-				minutes: parseInt(((servertime / 1000) % 1) * 60),
-				seconds: parseInt(((((servertime / 1000) % 1) * 60) % 1) * 60)
-			};
-
-			
-			$('#clock')
-				.addClass(servertime > 12000 ? 'night' : 'day')
-				.removeClass(servertime > 12000 ? 'day' : 'night')
-				.text(formatTime(time));
-
 			for(var m in markers) {
 				if(!(m in loggedin)) {
 					markers[m].remove(null);
@@ -350,112 +220,91 @@ function makeRequest(url, func, type, fail, post, contenttype)
 			document.getElementById('signsDiv').style.display = (typeCount['signs'] == 0)?'none':'';
 			document.getElementById('homesDiv').style.display = (typeCount['homes'] == 0)?'none':'';
 			document.getElementById('spawnsDiv').style.display = (typeCount['spawns'] == 0)?'none':'';
-		}, 'text', function() { alert('failed to get update data'); } );
-	}
-
-	function formatTime(time) {
-		//return formatDigits(time.hours, 2) + ':' + formatDigits(time.minutes, 2) + ':' + formatDigits(time.seconds, 2);
-		return formatDigits(time.hours, 2) + ':' + formatDigits(time.minutes, 2);
-	}
-
-	function formatDigits(n, digits) {
-		var s = n.toString();
-		while (s.length < digits) {
-			s = '0' + s;
+		},
+	error: function(request, statusText, ex) {
+			$('#alert')
+				.text('Could not update map')
+				.show();
+			setTimeout(mapUpdate, config.updateRate);
 		}
-		return s;
-	}
+	});
+}
 
-	window.onload = function initialize() {
-		lst = document.getElementById('lst');
-		plistbtn = document.getElementById('plistbtn');
-		cavebtn = document.getElementById('cavebtn');
+window.onload = function initialize() {
+	var mapOptions = {
+		zoom: 1,
+		center: new google.maps.LatLng(0, 1),
+		navigationControl: true,
+		navigationControlOptions: {
+			style: google.maps.NavigationControlStyle.DEFAULT
+		},
+		scaleControl: false,
+		mapTypeControl: false,
+		streetViewControl: false,
+		backgroundColor: '#000'
+	};
+	map = new google.maps.Map(document.getElementById("mcmap"), mapOptions);
 
-		var mapOptions = {
-			zoom: 1,
-			center: new google.maps.LatLng(0, 1),
-			navigationControl: true,
-			navigationControlOptions: {
-				style: google.maps.NavigationControlStyle.DEFAULT
-			},
-			scaleControl: false,
-			mapTypeControl: false,
-			streetViewControl: false,
-			mapTypeId: 'mcmap',
-			backgroundColor: '#000'
-		};
-		map = new google.maps.Map(document.getElementById("mcmap"), mapOptions);
-		mapType = new mcMapType();
-		mapType.projection = new MCMapProjection();
-		caveMapType = new mcMapType();
-		caveMapType.projection = new MCMapProjection();
+	google.maps.event.addListener(map, 'dragstart', function(mEvent) {
+		followPlayer('');
+	});
+	google.maps.event.addListener(map, 'zoom_changed', function() {
+		makeLink();
+	});
+	google.maps.event.addListener(map, 'center_changed', function() {
+		makeLink();
+	});
+	map.dragstart = followPlayer('');
 
-		map.zoom_changed = function() {
-			var tileSize = getTileSize(map.zoom);
-			mapType.tileSize = new google.maps.Size(tileSize, tileSize);
-			caveMapType.tileSize = mapType.tileSize;
-		};
-
-		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
-				plfollow('');
-			});
-		google.maps.event.addListener(map, 'zoom_changed', function() {
-				makeLink();
-			});
-		google.maps.event.addListener(map, 'center_changed', function() {
-				makeLink();
-			});
-		map.dragstart = plfollow('');
-
-		map.mapTypes.set('mcmap', mapType);
-		map.mapTypes.set('cavemap', caveMapType);
-
-		map.setMapTypeId('mcmap');
-		mapUpdate();
-	}
-
-	function plistopen() {
-		if(lstopen) {
-			lstopen = false;
-			lst.style.display = 'none';
-			lst.style.visibility = 'hidden';
-			plistbtn.src = 'list_off.png';
-		} else {
-			lstopen = true;
-			lst.style.display = '';
-			lst.style.visibility = '';
-			plistbtn.src = 'list_on.png';
-		}
-	}
-
-	function plfollow(name) {
-		$('.followButton').removeAttr('checked');
+	$.each(config.maps, function(name, mapType){
+		map.mapTypes.set(name, mapType);
 		
-		if(name in markers) {
-			var m = markers[name];
-			$(m.followButton).attr('checked', 'checked');
-			map.panTo(m.getPosition());
-		}
-		followPlayer = name;
-	}
+		var mapButton;
+		$('#maplist').append($('<div/>')
+				.addClass('maprow')
+				.append(mapButton = $('<input/>')
+					.addClass('maptype_' + name)
+					.attr({
+						type: 'radio',
+						name: 'map',
+						id: 'maptypebutton_' + name 
+					})
+					.attr('checked', config.defaultMap == name ? 'checked' : null)
+					)
+				.append($('<label/>')
+						.attr('for', 'maptypebutton_' + name)
+						.text(name)
+						)
+				.click(function() {
+						$('.mapbutton').removeAttr('checked');
+						map.setMapTypeId(name);
+						mapButton.attr('checked', 'checked');
+					})
+			);
+	});
 
-	function makeLink() {
-		var a=location.href.substring(0,location.href.lastIndexOf("/")+1)
-		+ "?lat=" + map.getCenter().lat().toFixed(6)
-		+ "&lng=" + map.getCenter().lng().toFixed(6)
-		+ "&zoom=" + map.getZoom();
-		document.getElementById("link").innerHTML = a;
-	}
+	map.setMapTypeId(config.defaultMap);
+	
+	clock = new MinecraftClock($('#clock'));
+	
+	setTimeout(mapUpdate, config.updateRate);
+}
 
-	//remove item (string or number) from an array
-	function removeItem(originalArray, itemToRemove) {
-		var j = 0;
-		while (j < originalArray.length) {
-			//	alert(originalArray[j]);
-			if (originalArray[j] == itemToRemove) {
-				originalArray.splice(j, 1);
-			} else { j++; }
-		}
-		//	assert('hi');
-		return originalArray;
+function followPlayer(name) {
+	$('.followButton').removeAttr('checked');
+	
+	if(name in markers) {
+		var m = markers[name];
+		$(m.followButton).attr('checked', 'checked');
+		map.panTo(m.getPosition());
 	}
+	followingPlayer = name;
+}
+
+function makeLink() {
+	var a=location.href.substring(0,location.href.lastIndexOf("/")+1)
+	+ "?lat=" + map.getCenter().lat().toFixed(6)
+	+ "&lng=" + map.getCenter().lng().toFixed(6)
+	+ "&zoom=" + map.getZoom();
+	document.getElementById("link").innerHTML = a;
+}

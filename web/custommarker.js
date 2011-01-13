@@ -71,6 +71,15 @@ CustomMarker.prototype.show = function() {
 	}
 }
 
+CustomMarker.prototype.toggle = function(t) {
+	if (typeof t == "boolean") {
+		if (t) this.show();
+		else this.hide();
+	} else {
+		this.toggle(this.isHidden == true);
+	}
+}
+
 CustomMarker.prototype.remove = function() {
 	// Check if the overlay was on the map and needs to be removed.
 	if (this.div_) {

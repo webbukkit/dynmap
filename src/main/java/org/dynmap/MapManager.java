@@ -82,7 +82,6 @@ public class MapManager extends Thread {
 		this.debugger = debugger;
 		this.staleQueue = new StaleQueue();
 
-		tilepath = "/srv/http/dynmap/tiles/";
 		serverport = 8123;
 		bindaddress = "0.0.0.0";
 		//webPath = "/srv/http/dynmap/";
