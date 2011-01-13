@@ -2,6 +2,8 @@ package org.dynmap.kzedmap;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -35,8 +37,11 @@ public class KzedMap extends Map {
 	
 	public KzedMap(MapManager manager, World world, Debugger debugger) {
 		super(manager, world, debugger);
-		if (colors == null)
+		getDebugger().debug("Loading colors...");
+		if (colors == null) {
+			getDebugger().debug("Loading colors2...");
 			colors = loadColorSet("colors.txt");
+		}
 		renderers = new MapTileRenderer[] {
 				new DefaultTileRenderer("t", debugger),
 				new CaveTileRenderer("ct", debugger),
@@ -312,14 +317,21 @@ public class KzedMap extends Map {
 	}
 	*/
 	
-	public static java.util.Map<Integer, Color[]> loadColorSet(String colorsetpath) {
+	public java.util.Map<Integer, Color[]> loadColorSet(String colorsetpath) {
 		java.util.Map<Integer, Color[]> colors = new HashMap<Integer, Color[]>();
 
-		/* load colorset */
-		File cfile = new File(colorsetpath);
-		
+		InputStream stream;
+
 		try {
-			Scanner scanner = new Scanner(cfile);
+			/* load colorset */
+			File cfile = new File(colorsetpath);
+			if (cfile.exists()) {
+				stream = new FileInputStream(cfile);
+			} else {
+				stream = KzedMap.class.getResourceAsStream("/colors.txt");
+			}
+			
+			Scanner scanner = new Scanner(stream);
 			int nc = 0;
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
@@ -347,6 +359,7 @@ public class KzedMap extends Map {
 			}
 			scanner.close();
 		} catch(Exception e) {
+			getDebugger().error("Could not load colors", e);
 			return null;
 		}
 		return colors;
