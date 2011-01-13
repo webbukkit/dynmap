@@ -20,12 +20,12 @@
 			<fileset dir="${bin}"/>
 			<fileset file="${src}/main/resources/plugin.yml"/>
 			<zipfileset dir="web" prefix="web/"/>
+			<zipfileset file="${src}/main/resources/colors.txt"/>
 		</jar>
 	</target>
 	
 	<target name="deploy" depends="dist">
 		<copy file="${dist}/${pluginname}.jar" todir="${plugins}"/>
-		<copy file="colors.txt" todir="${minecraft}"/>
 		<copy todir="${http_root}">
 			<fileset dir="web"/>
 		</copy>
