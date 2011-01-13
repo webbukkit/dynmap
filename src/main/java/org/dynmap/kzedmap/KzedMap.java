@@ -325,7 +325,7 @@ public class KzedMap extends Map {
 		try {
 			/* load colorset */
 			File cfile = new File(colorsetpath);
-			if (cfile.exists()) {
+			if (cfile.isFile()) {
 				stream = new FileInputStream(cfile);
 			} else {
 				stream = KzedMap.class.getResourceAsStream("/colors.txt");
