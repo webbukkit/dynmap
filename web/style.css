@@ -1,7 +1,12 @@
 html { height: 100% }
 body { height: 100%; margin: 0px; padding: 0px ; background-color: #000; }
 #mcmap { width:100%; height: 100% }
-#plist {
+
+.map {
+	width: 100%; height: 100%;
+}
+
+.sidebar {
 	position: absolute;
 	top: 8px;
 	right: 8px;
@@ -15,51 +20,34 @@ input {
 	margin: 0px;
 }
 
-#lst, label {
+.sidebar, label {
 	clear:both;
 	font-family: sans-serif;
 	font-size: 8pt;
 	color: white;
 }
-#plistbtn {
-	float:right;
-	cursor:pointer;
-}
-#cavebtn {
-	float:right;
-	cursor:pointer;
-}
-#link {
+
+.linkbox {
 	position: absolute;
 	bottom: 4px;
 	left: 80px;
-	border: 1px solid #808080;
-	background: #000;
+}
+
+.linkbox input {
 	opacity: 0.6;
+	border: 1px solid #808080;
 	padding: 2px;
+	background: #000;
 	font-size: 8pt;
 	color: #ddd;
+	width: 10em;
 }
-#controls {
-	position: absolute;
-	top: 12px;
-	left: 45px;
-	border: 1px solid #808080;
-	background: #000;
-	opacity: 0.6;
-	padding: 2px;
-	font-size: 8pt;
-	color: #ddd;
-	text-align:right;
-}
-#controls img{
-	height:14px;
-	width:14px;
-}
+
 a, a:visited, label {
 	color: white;
 	text-decoration: none;
 }
+
 .labels {
 	font-size: 10pt;
 	font-family: sans-serif;
@@ -79,15 +67,16 @@ a, a:visited, label {
 	background-color:#000;
 	border: 0px;
 }
-#clock {
+
+.clock {
 	padding-left: 16px;
 	color: #dede90;
 	background-repeat: no-repeat;
 }
-#clock.night { background-image: url(clock_night.png); }
-#clock.day { background-image: url(clock_day.png); }
+.clock.night { background-image: url(clock_night.png); }
+.clock.day { background-image: url(clock_day.png); }
 
-#alert {
+.alertbox {
 	padding: 5px;
 	position: fixed;
 	margin: auto;

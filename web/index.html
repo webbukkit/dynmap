@@ -17,39 +17,16 @@
 	<script type="text/javascript" src="minecraft.js"></script>
 	<script type="text/javascript" src="map.js"></script>
 	<script type="text/javascript" src="kzedmaps.js"></script> 
-	<script type="text/javascript" src="config.js"></script> 
+	<script type="text/javascript" src="config.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		new DynMap($.extend({
+			container: $('#mcmap'),
+		}, config));
+	});
+	</script>
 </head> 
 <body> 
 	<div id="mcmap"></div>
-	<div id="alert">Updating...</div>
-	<div id="plist">
-		<input type="checkbox" onclick="$('#lst').toggle()" title="Toggle Player List" checked="checked"/>
-		<div id="lst">
-			<div id="maplist"></div>
-			<div id="playerlst"></div>
-			<div id="clock"></div>
-		</div> 
-	</div> 
-	<div id="controls"> 
-		<form action="#" method="get">
-			<div id="warpsDiv" style="display:none;">
-				<img src="warp.png" alt="Warps" title="Warps" /> 
-				<input type="checkbox" checked="checked" id="showWarps" />
-			</div>
-			<div id="signsDiv" style="display:none;">
-				<img src="sign.png" alt="Signs" title="Signs" /> 
-				<input type="checkbox" checked="checked" id="showSigns" /><br />
-			</div>	
-			<div id="homesDiv" style="display:none;">
-				<img src="home.png" alt="Homes" title="Homes" /> 
-				<input type="checkbox" checked="checked" id="showHomes" /><br />
-			</div>
-			<div id="spawnsDiv" style="display:none;">
-				<img src="spawn.png" alt="Spawn" title="Spawn" /> 
-				<input type="checkbox" checked="checked" id="showSpawn" /><br /> 
-			</div>
-		</form> 
-	</div> 
-	<div id="link"></div> 
 </body> 
 </html> 

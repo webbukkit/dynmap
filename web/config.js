@@ -14,4 +14,3 @@ var config = {
 		tileWidth: 128,
 		tileHeight: 128
 };
-
