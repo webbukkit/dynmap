@@ -355,7 +355,7 @@ DynMap.prototype = {
 		};
 	},
 	unregisterTile: function(mapType, tileName) {
-		delete registeredTiles[tileName];
+		delete this.registeredTiles[tileName];
 	},
 	// TODO: Enable hash-links.
 /*	updateLink: function() {
