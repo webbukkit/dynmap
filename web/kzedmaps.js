@@ -69,14 +69,14 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			offset = {x: mod(coord.x,segments)*-tileSize, y: mod(coord.y,segments)*-tileSize};
 			
 			// The next couple of lines are somewhat of a hack, but makes it faster to render zoomed in tiles:
-			/*tileSize = imgSize;
+			tileSize = imgSize;
 			
 			if (offset.x == 0 && offset.y == 0) {
 				tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
 			}
-			offset = {x: 0, y: 0};*/
+			offset = {x: 0, y: 0};
 			// The next line is not:
-			tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
+			//tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
 		}
 		var img;
 		var tile = $('<div/>')
@@ -112,7 +112,7 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			this.dynmap.unregisterTile(this, tileName);
 		}
 		return tile.get(0);
-	},
+	}
 });
 
 
