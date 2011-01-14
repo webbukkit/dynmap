@@ -36,7 +36,7 @@ public class DynmapPlugin extends JavaPlugin {
 		mgr.startManager();
 
 		try {
-			server = new WebServer(mgr.serverport, mgr, getServer(), new NullDebugger());
+			server = new WebServer(mgr.serverport, mgr, getServer(), debugger);
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}
