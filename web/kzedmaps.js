@@ -27,8 +27,7 @@ KzedProjection.prototype = {
 };
 
 function KzedMapType() {}
-KzedMapType.prototype = {
-	__proto__: new DynMapType(),
+KzedMapType.prototype = $.extend(new DynMapType(), {
 	constructor: KzedMapType,
 	projection: new KzedProjection(),
 	tileSize: new google.maps.Size(128, 128),
@@ -114,18 +113,18 @@ KzedMapType.prototype = {
 		}
 		return tile.get(0);
 	},
-};
+});
 
 
-DefaultMapType.prototype = new KzedMapType();
-DefaultMapType.prototype.constructor = DefaultMapType;
 function DefaultMapType(){}
-DefaultMapType.prototype.prefix = 't';
+DefaultMapType.prototype = $.extend(new KzedMapType(), {
+	prefix: 't'
+});
 
 
 
-CaveMapType.prototype = new KzedMapType();
-CaveMapType.prototype.constructor = CaveMapType;
 function CaveMapType(){}
-CaveMapType.prototype.prefix = 'ct';
+CaveMapType.prototype = $.extend(new KzedMapType(), {
+	prefix: 'ct'
+});
 
