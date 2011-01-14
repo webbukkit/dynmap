@@ -37,9 +37,7 @@ public class KzedMap extends Map {
 	
 	public KzedMap(MapManager manager, World world, Debugger debugger) {
 		super(manager, world, debugger);
-		getDebugger().debug("Loading colors...");
 		if (colors == null) {
-			getDebugger().debug("Loading colors2...");
 			colors = loadColorSet("colors.txt");
 		}
 		renderers = new MapTileRenderer[] {
@@ -325,9 +323,11 @@ public class KzedMap extends Map {
 		try {
 			/* load colorset */
 			File cfile = new File(colorsetpath);
-			if (cfile.exists()) {
+			if (cfile.isFile()) {
+				getDebugger().debug("Loading colors from '" + colorsetpath + "'...");
 				stream = new FileInputStream(cfile);
 			} else {
+				getDebugger().debug("Loading colors from jar...");
 				stream = KzedMap.class.getResourceAsStream("/colors.txt");
 			}
 			

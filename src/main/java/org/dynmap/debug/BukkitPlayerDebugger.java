@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Color;
+import org.bukkit.ChatColor;
 import org.bukkit.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -68,12 +68,12 @@ public class BukkitPlayerDebugger implements Debugger {
 	}
 	
 	public void error(String message) {
-		sendToDebuggees(prepend + Color.RED + message);
+		sendToDebuggees(prepend + ChatColor.RED + message);
 		if (isLogging) log.log(Level.SEVERE, prepend + message);
 	}
 	
 	public void error(String message, Throwable thrown) {
-		sendToDebuggees(prepend + Color.RED + message);
+		sendToDebuggees(prepend + ChatColor.RED + message);
 		sendToDebuggees(thrown.toString());
 		if (isLogging) log.log(Level.SEVERE, prepend + message);
 	}

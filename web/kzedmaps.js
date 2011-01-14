@@ -26,9 +26,9 @@ KzedProjection.prototype = {
 		}
 };
 
-KzedMapType.prototype = new DynMapType();
 function KzedMapType() {}
 KzedMapType.prototype = {
+	__proto__: new DynMapType(),
 	constructor: KzedMapType,
 	projection: new KzedProjection(),
 	tileSize: new google.maps.Size(128, 128),
@@ -98,7 +98,7 @@ KzedMapType.prototype = {
 		}
 		if (tileName) {
 			img = $('<img/>')
-				.attr('src', getTileUrl(tileName))
+				.attr('src', this.dynmap.getTileUrl(tileName))
 				.error(function() { img.hide(); })
 				.css({
 					width: imgSize + 'px',
@@ -108,13 +108,14 @@ KzedMapType.prototype = {
 					marginTop: offset.y + 'px'
 				})
 				.appendTo(tile);
-			registerTile(this, tileName, img);
+			this.dynmap.registerTile(this, tileName, img);
 		} else {
-			unregisterTile(this, tileName);
+			this.dynmap.unregisterTile(this, tileName);
 		}
 		return tile.get(0);
 	},
 };
+
 
 DefaultMapType.prototype = new KzedMapType();
 DefaultMapType.prototype.constructor = DefaultMapType;
