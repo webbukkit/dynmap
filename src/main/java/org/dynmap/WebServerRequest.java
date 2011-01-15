@@ -73,7 +73,7 @@ public class WebServerRequest extends Thread {
 			if (path.startsWith("/up/")) {
 				handleUp(out, path.substring(3));
 			} else if (path.startsWith("/tiles/")) {
-				handleMapToDirectory(out, path.substring(6), "/srv/http/dynmap/tiles/");
+				handleMapToDirectory(out, path.substring(6), mgr.tilepath);
 			} else if (path.startsWith("/")) {
 				if(mgr.webPath.equals("[JAR]")) {
 					handleMapToJar(out, path);
