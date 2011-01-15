@@ -22,7 +22,7 @@ public class CaveTileRenderer extends DefaultTileRenderer {
 			if(y < 0)
 				return Color.BLACK;
 
-			int id = world.getBlockAt(x, y, z).getTypeID();
+			int id = world.getBlockTypeIdAt(x, y, z);
 
 			switch(seq) {
 			case 0:

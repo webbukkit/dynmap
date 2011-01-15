@@ -22,8 +22,8 @@ public class DynmapPlugin extends JavaPlugin {
 	
 	private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
 
-	public DynmapPlugin(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File plugin, ClassLoader cLoader) {
-		super(pluginLoader, instance, desc, plugin, cLoader);
+	public DynmapPlugin(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
+		super(pluginLoader, instance, desc, folder, plugin, cLoader);
 	}
 
 	public World getWorld() {

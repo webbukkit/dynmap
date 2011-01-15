@@ -43,20 +43,6 @@ public class DefaultTileRenderer implements MapTileRenderer {
 		int iy = tile.my;
 		int iz = tile.mz;
 		
-		Block block = tile.getMap().getWorld().getBlockAt(ix, iy, iz);
-		if (block == null) {
-			debugger.debug("Could not get block for rendering.");
-			return;
-		}
-		Chunk chunk = block.getChunk();
-		if (chunk == null) {
-			debugger.debug("Could not get chunk for rendering.");
-			return;
-		}
-		if (!world.isChunkLoaded(chunk)) {
-			debugger.debug("Chunk was not loaded, but we'll still continue render.");
-		}
-		
 		int jx, jz;
 
 		int x, y;
@@ -111,7 +97,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
 			if(y < 0)
 				return Color.BLUE;
 
-			int id = world.getBlockAt(x, y, z).getTypeID();
+			int id = world.getBlockTypeIdAt(x, y, z);
 
 			switch(seq) {
 			case 0:
