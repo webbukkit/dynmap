@@ -6,14 +6,12 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.Map;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
-import org.dynmap.StaleQueue;
 import org.dynmap.debug.Debugger;
 
 public class KzedMap extends Map {

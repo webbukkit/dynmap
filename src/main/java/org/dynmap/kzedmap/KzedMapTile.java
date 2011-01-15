@@ -1,19 +1,7 @@
 package org.dynmap.kzedmap;
 
 import java.util.logging.Logger;
-import java.util.logging.Level;
 
-import java.awt.*;
-import java.awt.image.*;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import org.bukkit.Player;
-import org.bukkit.World;
-import org.bukkit.Server;
 import org.dynmap.MapTile;
 
 public class KzedMapTile extends MapTile {

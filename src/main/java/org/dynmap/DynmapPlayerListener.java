@@ -1,12 +1,10 @@
 package org.dynmap;
 
-import java.util.logging.Logger;
-import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 
 public class DynmapPlayerListener extends PlayerListener {
-	private static final Logger log = Logger.getLogger("Minecraft");
 	private MapManager mgr;
 	
 	public DynmapPlayerListener(MapManager mgr) {

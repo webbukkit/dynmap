@@ -1,12 +1,13 @@
 package org.dynmap;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import org.bukkit.*;
-import org.dynmap.debug.Debugger;
-
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.logging.Logger;
+
+import org.bukkit.Server;
+import org.dynmap.debug.Debugger;
 
 public class WebServer extends Thread {
 

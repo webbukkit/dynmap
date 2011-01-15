@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Player;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -17,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BukkitPlayerDebugger implements Debugger {
 	protected static final Logger log = Logger.getLogger("Minecraft");
 	
-	private boolean isLogging = true;
+	private boolean isLogging = false;
 	
 	private JavaPlugin plugin;
 	private HashSet<Player> debugees = new HashSet<Player>();

@@ -10,10 +10,11 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.bukkit.*;
+
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.dynmap.debug.Debugger;
 
 public class WebServerRequest extends Thread {

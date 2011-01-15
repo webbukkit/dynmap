@@ -1,46 +1,12 @@
 package org.dynmap;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.dynmap.debug.Debugger;
-import org.dynmap.kzedmap.CaveTileRenderer;
-import org.dynmap.kzedmap.DefaultTileRenderer;
 import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.MapTileRenderer;
-
-import javax.imageio.ImageIO;
 
 public class MapManager extends Thread {
 	protected static final Logger log = Logger.getLogger("Minecraft");

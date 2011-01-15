@@ -11,7 +11,6 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
 import org.dynmap.debug.BukkitPlayerDebugger;
-import org.dynmap.debug.NullDebugger;
 
 public class DynmapPlugin extends JavaPlugin {
 

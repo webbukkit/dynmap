@@ -1,6 +1,5 @@
 package org.dynmap;
 
-import org.bukkit.Block;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.debug.Debugger;
