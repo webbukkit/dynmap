@@ -19,12 +19,10 @@
       </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
+  	<dependency>
+  		<groupId>org.bukkit</groupId>
+  		<artifactId>bukkit</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>

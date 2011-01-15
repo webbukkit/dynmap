@@ -1,1 +1,0 @@
-Update map.js and set tileUrl and updateUrl
