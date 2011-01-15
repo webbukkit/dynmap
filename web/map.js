@@ -1,15 +1,15 @@
-if (!console) console = { log: function() {} }; 
+//if (!console) console = { log: function() {} }; 
 
 function splitArgs(s) {
 	var r = s.split(' ');
 	delete arguments[0];
 	var obj = {};
 	var index = 0;
-	for(var argumentIndex in arguments) {
-		var argument = arguments[argumentIndex];
+	$.each(arguments, function(argumentIndex, argument) {
+		if (!argumentIndex) return;
 		var value = r[argumentIndex-1];
 		obj[argument] = value;
-	}
+	});
 	return obj;
 }
 
@@ -272,17 +272,21 @@ DynMap.prototype = {
 			};
 			if (mi.type == 'player') {
 				contentfun = function(div, mi) {
+					var playerImage;
 					$(div)
 						.addClass('Marker')
 						.addClass('playerMarker')
+						.append(playerImage = $('<img/>')
+								.attr({ src: 'player.png' }))
 						.append($('<span/>')
 							.addClass('playerName')
-							.text(mi.text));
+							.text(mi.text))
 					
 					getMinecraftHead(mi.text, 32, function(head) {
 						$(head)
 							.addClass('playerIcon')
 							.prependTo(div);
+						playerImage.remove();
 					});
 				};
 			}
