@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.Block;
+import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
@@ -40,6 +42,21 @@ public class DefaultTileRenderer implements MapTileRenderer {
 		int ix = tile.mx;
 		int iy = tile.my;
 		int iz = tile.mz;
+		
+		Block block = tile.getMap().getWorld().getBlockAt(ix, iy, iz);
+		if (block == null) {
+			debugger.debug("Could not get block for rendering.");
+			return;
+		}
+		Chunk chunk = block.getChunk();
+		if (chunk == null) {
+			debugger.debug("Could not get chunk for rendering.");
+			return;
+		}
+		if (!world.isChunkLoaded(chunk)) {
+			debugger.debug("Chunk was not loaded, but we'll still continue render.");
+		}
+		
 		int jx, jz;
 
 		int x, y;

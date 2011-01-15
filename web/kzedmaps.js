@@ -27,8 +27,7 @@ KzedProjection.prototype = {
 };
 
 function KzedMapType() {}
-KzedMapType.prototype = {
-	__proto__: new DynMapType(),
+KzedMapType.prototype = $.extend(new DynMapType(), {
 	constructor: KzedMapType,
 	projection: new KzedProjection(),
 	tileSize: new google.maps.Size(128, 128),
@@ -70,14 +69,14 @@ KzedMapType.prototype = {
 			offset = {x: mod(coord.x,segments)*-tileSize, y: mod(coord.y,segments)*-tileSize};
 			
 			// The next couple of lines are somewhat of a hack, but makes it faster to render zoomed in tiles:
-			/*tileSize = imgSize;
+			tileSize = imgSize;
 			
 			if (offset.x == 0 && offset.y == 0) {
 				tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
 			}
-			offset = {x: 0, y: 0};*/
+			offset = {x: 0, y: 0};
 			// The next line is not:
-			tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
+			//tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
 		}
 		var img;
 		var tile = $('<div/>')
@@ -113,19 +112,19 @@ KzedMapType.prototype = {
 			this.dynmap.unregisterTile(this, tileName);
 		}
 		return tile.get(0);
-	},
-};
+	}
+});
 
 
-DefaultMapType.prototype = new KzedMapType();
-DefaultMapType.prototype.constructor = DefaultMapType;
 function DefaultMapType(){}
-DefaultMapType.prototype.prefix = 't';
+DefaultMapType.prototype = $.extend(new KzedMapType(), {
+	prefix: 't'
+});
 
 
 
-CaveMapType.prototype = new KzedMapType();
-CaveMapType.prototype.constructor = CaveMapType;
 function CaveMapType(){}
-CaveMapType.prototype.prefix = 'ct';
+CaveMapType.prototype = $.extend(new KzedMapType(), {
+	prefix: 'ct'
+});
 

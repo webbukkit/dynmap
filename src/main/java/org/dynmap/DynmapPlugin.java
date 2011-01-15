@@ -7,6 +7,7 @@ import java.io.File;
 import org.bukkit.*;
 import org.bukkit.event.*;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.event.block.BlockListener;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
 import org.dynmap.debug.BukkitPlayerDebugger;
@@ -29,7 +30,6 @@ public class DynmapPlugin extends JavaPlugin {
 		return getServer().getWorlds()[0];
 	}
 
-	@Override
 	public void onEnable() {
 		debugger.enable();
 		mgr = new MapManager(getWorld(), debugger);
@@ -44,7 +44,6 @@ public class DynmapPlugin extends JavaPlugin {
 		registerEvents();
 	}
 
-	@Override
 	public void onDisable() {
 		mgr.stopManager();
 
@@ -56,7 +55,10 @@ public class DynmapPlugin extends JavaPlugin {
 	}
 
 	public void registerEvents() {
-		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, new DynmapBlockListener(mgr), Priority.Normal, this);
+		BlockListener blockListener = new DynmapBlockListener(mgr);
+		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
+		
 		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new DynmapPlayerListener(mgr), Priority.Normal, this);
 		//getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DESTROYED, listener, Priority.Normal, this);
 	/*	etc.getLoader().addListener(PluginLoader.Hook.COMMAND, listener, this, PluginListener.Priority.MEDIUM);

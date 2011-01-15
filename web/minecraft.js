@@ -51,9 +51,9 @@ function getMinecraftHead(player,size,completed) {
 	// Asynchronous
 	if (!head) {
 		playerHeads[player] = { working: true, hooks: [{f:completed,s:size}] };
-		console.log('Creating head for ',player,'...');
+		//console.log('Creating head for ',player,'...');
 		createMinecraftHead(player, function(head) {
-			console.log('Created head for ',player,': ', head);
+			//console.log('Created head for ',player,': ', head);
 			hooks = playerHeads[player].hooks;
 			playerHeads[player] = head;
 			var i;
@@ -62,7 +62,7 @@ function getMinecraftHead(player,size,completed) {
 			}
 		});
 	} else if (head.working) {
-		console.log('Other process working on head of ',player,', will add myself to hooks...');
+		//console.log('Other process working on head of ',player,', will add myself to hooks...');
 		head.hooks[head.hooks.length] = {f:completed,s:size};
 	} else {
 		completed(resizeImage(head,size));
