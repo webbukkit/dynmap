@@ -94,6 +94,9 @@ public class WebServerRequest extends Thread {
 				}
 			}
 		}
+		catch(Exception ex) {
+			debugger.error("Exception on WebRequest-thread: " + ex.toString());
+		}
 	}
 	
 	public void handleUp(BufferedOutputStream out, String path) throws IOException {

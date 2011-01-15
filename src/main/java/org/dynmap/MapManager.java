@@ -99,6 +99,7 @@ public class MapManager extends Thread {
 	/* initialize and start map manager */
 	public void startManager()
 	{
+		synchronized(lock) {
 		running = true;
 		this.start();
 		try {
@@ -107,56 +108,63 @@ public class MapManager extends Thread {
 		} catch(SecurityException e) {
 			log.info("Failed to set minimum priority for worker thread!");
 		}
+		}
 	}
 
 	/* stop map manager */
 	public void stopManager()
 	{
-		if(!running)
-			return;
-
-		log.info("Stopping map renderer...");
-		running = false;
-
-		try {
-			this.join();
-		} catch(InterruptedException e) {
-			log.info("Waiting for map renderer to stop is interrupted");
+		synchronized(lock) {
+			if(!running)
+				return;
+	
+			log.info("Stopping map renderer...");
+			running = false;
+	
+			try {
+				this.join();
+			} catch(InterruptedException e) {
+				log.info("Waiting for map renderer to stop is interrupted");
+			}
 		}
 	}
 
 	/* the worker/renderer thread */
 	public void run()
 	{
-		log.info("Map renderer has started.");
-
-		while(running) {
-			boolean found = false;
-
-			MapTile t = staleQueue.popStaleTile();
-			if(t != null) {
-				debugger.debug("rendering tile " + t + "...");
-				t.getMap().render(t);
-
-				staleQueue.onTileUpdated(t);
-
-				try {
-					this.sleep(renderWait);
-				} catch(InterruptedException e) {
+		try {
+			log.info("Map renderer has started.");
+	
+			while(running) {
+				boolean found = false;
+	
+				MapTile t = staleQueue.popStaleTile();
+				if(t != null) {
+					debugger.debug("rendering tile " + t + "...");
+					t.getMap().render(t);
+	
+					staleQueue.onTileUpdated(t);
+	
+					try {
+						Thread.sleep(renderWait);
+					} catch(InterruptedException e) {
+					}
+	
+					found = true;
 				}
-
-				found = true;
-			}
-
-			if(!found) {
-				try {
-					this.sleep(500);
-				} catch(InterruptedException e) {
+	
+				if(!found) {
+					try {
+						Thread.sleep(500);
+					} catch(InterruptedException e) {
+					}
 				}
 			}
+	
+			log.info("Map renderer has stopped.");
+		} catch(Exception ex) {
+			debugger.error("Exception on rendering-thread: " + ex.toString());
 		}
-
-		log.info("Map renderer has stopped.");
 	}
 
 	public void touch(int x, int y, int z) {

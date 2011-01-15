@@ -34,45 +34,45 @@ public class BukkitPlayerDebugger implements Debugger {
 		prepend = pdfFile.getName() + ": ";
 	}
 	
-	public void enable() {
+	public synchronized void enable() {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new CommandListener(), Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, new CommandListener(), Priority.Normal, plugin);
 		log.info("Debugger enabled, use: " + debugCommand);
 	}
 	
-	public void disable() {
+	public synchronized void disable() {
 		clearDebugees();
 	}
 	
-	public void addDebugee(Player p) {
+	public synchronized void addDebugee(Player p) {
 		debugees.add(p);
 	}
 	
-	public void removeDebugee(Player p) {
+	public synchronized void removeDebugee(Player p) {
 		debugees.remove(p);
 	}
 	
-	public void clearDebugees() {
+	public synchronized void clearDebugees() {
 		debugees.clear();
 	}
 	
-	public void sendToDebuggees(String message) {
+	public synchronized void sendToDebuggees(String message) {
 		for (Player p : debugees) {
 			p.sendMessage(prepend + message);
 		}
 	}
 	
-	public void debug(String message) {
+	public synchronized void debug(String message) {
 		sendToDebuggees(message);
 		if (isLogging) log.info(prepend + message);
 	}
 	
-	public void error(String message) {
+	public synchronized void error(String message) {
 		sendToDebuggees(prepend + ChatColor.RED + message);
 		if (isLogging) log.log(Level.SEVERE, prepend + message);
 	}
 	
-	public void error(String message, Throwable thrown) {
+	public synchronized void error(String message, Throwable thrown) {
 		sendToDebuggees(prepend + ChatColor.RED + message);
 		sendToDebuggees(thrown.toString());
 		if (isLogging) log.log(Level.SEVERE, prepend + message);

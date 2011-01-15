@@ -34,18 +34,22 @@ public class WebServer extends Thread {
 
 	public void run()
 	{
-		while (running) {
-			try {
-				Socket socket = sock.accept();
-				WebServerRequest requestThread = new WebServerRequest(socket, mgr, server, debugger);
-				requestThread.start();
+		try {
+			while (running) {
+				try {
+					Socket socket = sock.accept();
+					WebServerRequest requestThread = new WebServerRequest(socket, mgr, server, debugger);
+					requestThread.start();
+				}
+				catch (IOException e) {
+					log.info("map WebServer.run() stops with IOException");
+					break;
+				}
 			}
-			catch (IOException e) {
-				log.info("map WebServer.run() stops with IOException");
-				break;
-			}
+			log.info("map WebServer run() exiting");
+		} catch (Exception ex) {
+			debugger.error("Exception on WebServer-thread: " + ex.toString());
 		}
-		log.info("map WebServer run() exiting");
 	}
 
 	public void shutdown()
