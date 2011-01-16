@@ -24,10 +24,10 @@ public class MapManager extends Thread {
 	private boolean running = false;
 
 	/* path to image tile directory */
-	public String tilepath = "tiles/";
+	public File tileDirectory;
 	
 	/* web files location */
-	public String webPath;
+	public File webDirectory;
 	
 	/* bind web server to ip-address */
 	public String bindaddress = "0.0.0.0";
@@ -48,24 +48,19 @@ public class MapManager extends Thread {
 		this.world = world;
 		this.debugger = debugger;
 		this.staleQueue = new StaleQueue();
-
 		
-		File tilepathFile = new File(tilepath); 
-		if (!tilepathFile.isDirectory())
-			tilepathFile.mkdirs();
-			
+		tileDirectory = new File(DynmapPlugin.dataRoot, configuration.getString("tilespath", "web/tiles"));
+		webDirectory = new File(DynmapPlugin.dataRoot, configuration.getString("webpath", "web"));
+		renderWait = (int)(configuration.getDouble("renderinterval", 0.5) * 1000);
 		
-		serverport = 8123;
-		bindaddress = "0.0.0.0";
-		//webPath = "/srv/http/dynmap/";
-		webPath = "[JAR]";
-		
+		if (!tileDirectory.isDirectory())
+			tileDirectory.mkdirs();
 		map = new KzedMap(this, world, debugger, configuration);
 	}
 	
 	/* initialize and start map manager */
 	public void startManager()
-	{
+	{		
 		synchronized(lock) {
 		running = true;
 		this.start();

@@ -21,9 +21,12 @@ public class DynmapPlugin extends JavaPlugin {
 	private MapManager mgr = null;
 	
 	private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
+	
+	public static File dataRoot;
 
 	public DynmapPlugin(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
 		super(pluginLoader, instance, desc, folder, plugin, cLoader);
+		dataRoot = folder;
 	}
 
 	public World getWorld() {
@@ -31,8 +34,6 @@ public class DynmapPlugin extends JavaPlugin {
 	}
 
 	public void onEnable() {
-		if (!this.getDataFolder().isDirectory())
-			this.getDataFolder().mkdirs();
 		Configuration configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
 		configuration.load();
 		
@@ -41,7 +42,7 @@ public class DynmapPlugin extends JavaPlugin {
 		mgr.startManager();
 
 		try {
-			server = new WebServer(mgr.serverport, mgr, getServer(), debugger, configuration);
+			server = new WebServer(mgr, getServer(), debugger, configuration);
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}

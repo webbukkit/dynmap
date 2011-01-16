@@ -1,0 +1,13 @@
+renderinterval: 30      # How often a tile gets rendered (in seconds).
+tilepath: web/tiles     # The path where the tile-files are placed.
+webpath: web            # The path where the web-files are located. [JAR] to use the internal web-files supplied in the .jar-file.
+
+webserver:
+  address: 0.0.0.0      # The interface the webserver will bind to (0.0.0.0 is all interfaces).
+  port: 8123            # The port the webserver will listen on.
+maps:
+  org.dynmap.kzedmap.KzedMap:
+    colorpath: [JAR]
+    renderers:
+      org.dynmap.kzedmap.DefaultTileRenderer: { prefix: t }
+      org.dynmap.kzedmap.CaveTileRenderer: { prefix: ct }

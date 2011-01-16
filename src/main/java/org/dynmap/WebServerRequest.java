@@ -74,13 +74,9 @@ public class WebServerRequest extends Thread {
 			if (path.startsWith("/up/")) {
 				handleUp(out, path.substring(3));
 			} else if (path.startsWith("/tiles/")) {
-				handleMapToDirectory(out, path.substring(6), mgr.tilepath);
+				handleMapToDirectory(out, path.substring(6), mgr.tileDirectory);
 			} else if (path.startsWith("/")) {
-				if(mgr.webPath.equals("[JAR]")) {
-					handleMapToJar(out, path);
-				} else if(mgr.webPath.length() > 0) {
-					handleMapToDirectory(out, path, mgr.webPath);
-				}
+				handleMapToDirectory(out, path, mgr.webDirectory);
 			}
 			out.flush();
 			out.close();
@@ -188,13 +184,12 @@ public class WebServerRequest extends Thread {
 		writeEndOfHeaders(out);
 	}
 	
-	public void handleMapToDirectory(BufferedOutputStream out, String path, String directoryPath) throws IOException {
+	public void handleMapToDirectory(BufferedOutputStream out, String path, File directory) throws IOException {
 		path = getFilePath(path);
 		if (path != null) {
-			File tilesDirectory = new File(directoryPath);
-			File tileFile = new File(tilesDirectory, path);
+			File tileFile = new File(directory, path);
 	
-			if (tileFile.getAbsolutePath().startsWith(tilesDirectory.getAbsolutePath()) && tileFile.isFile()) {
+			if (tileFile.getAbsolutePath().startsWith(directory.getAbsolutePath()) && tileFile.isFile()) {
 				FileInputStream s = new FileInputStream(tileFile);
 				writeFile(out, path, s);
 				return;

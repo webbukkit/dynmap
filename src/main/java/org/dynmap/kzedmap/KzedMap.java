@@ -88,9 +88,9 @@ public class KzedMap extends MapType {
 	@Override
 	public void render(MapTile tile) {
 		if (tile instanceof KzedZoomedMapTile) {
-			zoomrenderer.render((KzedZoomedMapTile)tile, getMapManager().tilepath);
+			zoomrenderer.render((KzedZoomedMapTile)tile, getMapManager().tileDirectory.getAbsolutePath());
 		} else if (tile instanceof KzedMapTile) {
-			((KzedMapTile)tile).renderer.render((KzedMapTile)tile, getMapManager().tilepath);
+			((KzedMapTile)tile).renderer.render((KzedMapTile)tile, getMapManager().tileDirectory.getAbsolutePath());
 		}
 	}
 	

@@ -23,15 +23,19 @@ public class WebServer extends Thread {
 	private MapManager mgr;
 	private Server server;
 
-	public WebServer(int port, MapManager mgr, Server server, Debugger debugger, ConfigurationNode configuration) throws IOException
+	public WebServer(MapManager mgr, Server server, Debugger debugger, ConfigurationNode configuration) throws IOException
 	{
 		this.mgr = mgr;
 		this.server = server;
 		this.debugger = debugger;
-		sock = new ServerSocket(port, 5, mgr.bindaddress.equals("0.0.0.0") ? null : InetAddress.getByName(mgr.bindaddress));
+		
+		String bindAddress = configuration.getString("webserver/bindaddress", "0.0.0.0");
+		int port = configuration.getInt("webserver/port", 8123);
+		
+		sock = new ServerSocket(port, 5, bindAddress.equals("0.0.0.0") ? null : InetAddress.getByName(bindAddress));
 		running = true;
 		start();
-		log.info("map WebServer started on port " + port);
+		debugger.debug("WebServer started on " + bindAddress + ":" + port);
 	}
 
 	public void run()
