@@ -14,14 +14,13 @@ public class DynmapBlockListener extends BlockListener {
 	}
 
 	@Override
-	public void onBlockPlaced(BlockPlaceEvent event) {
+	public void onBlockPlace(BlockPlaceEvent event) {
 		Block blockPlaced = event.getBlockPlaced();
 		mgr.touch(blockPlaced.getX(), blockPlaced.getY(), blockPlaced.getZ());
 	}
-	
-	@Override
-	public void onBlockDamaged(BlockDamageEvent event) {
-		if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
+
+	public void onBlockDamage(BlockDamageEvent event) {
+				if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
 			Block blockBroken = event.getBlock();
 			mgr.touch(blockBroken.getX(), blockBroken.getY(), blockBroken.getZ());
 		}
