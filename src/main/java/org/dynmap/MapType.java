@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.debug.Debugger;
 
-public abstract class Map {
+public abstract class MapType {
 	private MapManager manager;
 	public MapManager getMapManager() {
 		return manager;
@@ -20,7 +20,7 @@ public abstract class Map {
 		return debugger;
 	}
 	
-	public Map(MapManager manager, World world, Debugger debugger) {
+	public MapType(MapManager manager, World world, Debugger debugger) {
 		this.manager = manager;
 		this.world = world;
 		this.debugger = debugger;

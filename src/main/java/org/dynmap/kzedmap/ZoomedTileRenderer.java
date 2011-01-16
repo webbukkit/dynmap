@@ -8,12 +8,13 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 
 public class ZoomedTileRenderer {
 	protected Debugger debugger;
 	
-	public ZoomedTileRenderer(Debugger debugger) {
+	public ZoomedTileRenderer(Debugger debugger, ConfigurationNode configuration) {
 		this.debugger = debugger;
 	}
 	

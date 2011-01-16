@@ -9,12 +9,13 @@ import java.util.Scanner;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.dynmap.Map;
+import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.MapType;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.debug.Debugger;
 
-public class KzedMap extends Map {
+public class KzedMap extends MapType {
 	/* dimensions of a map tile */
 	public static final int tileWidth = 128;
 	public static final int tileHeight = 128;
@@ -33,16 +34,16 @@ public class KzedMap extends Map {
 	MapTileRenderer[] renderers;
 	ZoomedTileRenderer zoomrenderer;
 	
-	public KzedMap(MapManager manager, World world, Debugger debugger) {
+	public KzedMap(MapManager manager, World world, Debugger debugger, ConfigurationNode configuration) {
 		super(manager, world, debugger);
 		if (colors == null) {
 			colors = loadColorSet("colors.txt");
 		}
 		renderers = new MapTileRenderer[] {
-				new DefaultTileRenderer("t", debugger),
-				new CaveTileRenderer("ct", debugger),
+				new DefaultTileRenderer("t", debugger, configuration),
+				new CaveTileRenderer("ct", debugger, configuration),
 		};
-		zoomrenderer = new ZoomedTileRenderer(debugger);
+		zoomrenderer = new ZoomedTileRenderer(debugger, configuration);
 	}
 	
 	@Override

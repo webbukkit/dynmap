@@ -10,6 +10,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
+import org.bukkit.util.config.Configuration;
 import org.dynmap.debug.BukkitPlayerDebugger;
 
 public class DynmapPlugin extends JavaPlugin {
@@ -30,12 +31,17 @@ public class DynmapPlugin extends JavaPlugin {
 	}
 
 	public void onEnable() {
+		if (!this.getDataFolder().isDirectory())
+			this.getDataFolder().mkdirs();
+		Configuration configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
+		configuration.load();
+		
 		debugger.enable();
-		mgr = new MapManager(getWorld(), debugger);
+		mgr = new MapManager(getWorld(), debugger, configuration);
 		mgr.startManager();
 
 		try {
-			server = new WebServer(mgr.serverport, mgr, getServer(), debugger);
+			server = new WebServer(mgr.serverport, mgr, getServer(), debugger, configuration);
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}

@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 import org.dynmap.kzedmap.KzedMap;
 
@@ -13,7 +14,7 @@ public class MapManager extends Thread {
 
 	private World world;
 	private Debugger debugger;
-	private org.dynmap.Map map;
+	private MapType map;
 	public StaleQueue staleQueue;
 
 	/* lock for our data structures */
@@ -42,7 +43,7 @@ public class MapManager extends Thread {
 		debugger.debug(msg);
 	}
 	
-	public MapManager(World world, Debugger debugger)
+	public MapManager(World world, Debugger debugger, ConfigurationNode configuration)
 	{
 		this.world = world;
 		this.debugger = debugger;
@@ -59,7 +60,7 @@ public class MapManager extends Thread {
 		//webPath = "/srv/http/dynmap/";
 		webPath = "[JAR]";
 		
-		map = new KzedMap(this, world, debugger);
+		map = new KzedMap(this, world, debugger, configuration);
 	}
 	
 	/* initialize and start map manager */

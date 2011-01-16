@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.bukkit.World;
+import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 
 public class DefaultTileRenderer implements MapTileRenderer {
@@ -19,7 +20,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
 		return name;
 	}
 	
-	public DefaultTileRenderer(String name, Debugger debugger) {
+	public DefaultTileRenderer(String name, Debugger debugger, ConfigurationNode configuration) {
 		this.name = name;
 		this.debugger = debugger;
 	}

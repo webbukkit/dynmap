@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
+import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 
 public class WebServer extends Thread {
@@ -22,7 +23,7 @@ public class WebServer extends Thread {
 	private MapManager mgr;
 	private Server server;
 
-	public WebServer(int port, MapManager mgr, Server server, Debugger debugger) throws IOException
+	public WebServer(int port, MapManager mgr, Server server, Debugger debugger, ConfigurationNode configuration) throws IOException
 	{
 		this.mgr = mgr;
 		this.server = server;

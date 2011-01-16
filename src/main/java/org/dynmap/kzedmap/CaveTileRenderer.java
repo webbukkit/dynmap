@@ -3,12 +3,13 @@ package org.dynmap.kzedmap;
 import java.awt.Color;
 
 import org.bukkit.World;
+import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
 
-	public CaveTileRenderer(String name, Debugger debugger) {
-		super(name, debugger);
+	public CaveTileRenderer(String name, Debugger debugger, ConfigurationNode configuration) {
+		super(name, debugger, configuration);
 	}
 
 	@Override
