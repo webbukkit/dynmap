@@ -22,7 +22,6 @@
 		<jar jarfile="${dist}/${pluginname}.jar">
 			<fileset dir="${bin}"/>
 			<fileset file="${src}/main/resources/plugin.yml"/>
-			<zipfileset dir="web" prefix="web/"/>
 			<zipfileset file="${src}/main/resources/colors.txt"/>
 		</jar>
 	</target>
