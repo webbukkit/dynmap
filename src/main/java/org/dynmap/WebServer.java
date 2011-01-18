@@ -29,8 +29,8 @@ public class WebServer extends Thread {
 		this.server = server;
 		this.debugger = debugger;
 		
-		String bindAddress = configuration.getString("webserver/bindaddress", "0.0.0.0");
-		int port = configuration.getInt("webserver/port", 8123);
+		String bindAddress = configuration.getString("webserver-bindaddress", "0.0.0.0");
+		int port = configuration.getInt("webserver-port", 8123);
 		
 		sock = new ServerSocket(port, 5, bindAddress.equals("0.0.0.0") ? null : InetAddress.getByName(bindAddress));
 		running = true;
