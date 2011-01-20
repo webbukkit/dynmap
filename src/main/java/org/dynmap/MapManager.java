@@ -16,6 +16,7 @@ public class MapManager extends Thread {
 	private Debugger debugger;
 	private MapType map;
 	public StaleQueue staleQueue;
+	public PlayerList playerList;
 
 	/* lock for our data structures */
 	public static final Object lock = new Object();
@@ -55,6 +56,7 @@ public class MapManager extends Thread {
 		
 		if (!tileDirectory.isDirectory())
 			tileDirectory.mkdirs();
+		
 		map = new KzedMap(this, world, debugger, configuration);
 	}
 	

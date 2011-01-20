@@ -22,11 +22,13 @@ public class WebServer extends Thread {
 
 	private MapManager mgr;
 	private Server server;
+	private PlayerList playerList;
 
-	public WebServer(MapManager mgr, Server server, Debugger debugger, ConfigurationNode configuration) throws IOException
+	public WebServer(MapManager mgr, Server server, PlayerList playerList, Debugger debugger, ConfigurationNode configuration) throws IOException
 	{
 		this.mgr = mgr;
 		this.server = server;
+		this.playerList = playerList;
 		this.debugger = debugger;
 		
 		String bindAddress = configuration.getString("webserver-bindaddress", "0.0.0.0");
@@ -44,7 +46,7 @@ public class WebServer extends Thread {
 			while (running) {
 				try {
 					Socket socket = sock.accept();
-					WebServerRequest requestThread = new WebServerRequest(socket, mgr, server, debugger);
+					WebServerRequest requestThread = new WebServerRequest(socket, mgr, server, playerList, debugger);
 					requestThread.start();
 				}
 				catch (IOException e) {

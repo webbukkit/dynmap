@@ -24,13 +24,15 @@ public class WebServerRequest extends Thread {
 	private Socket socket;
 	private MapManager mgr;
 	private Server server;
+	private PlayerList playerList;
 
-	public WebServerRequest(Socket socket, MapManager mgr, Server server, Debugger debugger)
+	public WebServerRequest(Socket socket, MapManager mgr, Server server, PlayerList playerList, Debugger debugger)
 	{
 		this.debugger = debugger;
 		this.socket = socket;
 		this.mgr = mgr;
 		this.server = server;
+		this.playerList = playerList;
 	}
 	
 	private static void writeHttpHeader(BufferedOutputStream out, int statusCode, String statusText) throws IOException {
@@ -112,7 +114,7 @@ public class WebServerRequest extends Thread {
 		long relativeTime = server.getTime() % 24000;
 		sb.append(current + " " + relativeTime + "\n");
 
-		Player[] players = server.getOnlinePlayers();
+		Player[] players = playerList.getVisiblePlayers();
 		for(Player player : players) {
 			sb.append("player " + player.getName() + " " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
 		}

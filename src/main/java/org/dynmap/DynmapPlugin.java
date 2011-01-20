@@ -17,8 +17,9 @@ public class DynmapPlugin extends JavaPlugin {
 
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
-	private WebServer server = null;
+	private WebServer webserver = null;
 	private MapManager mgr = null;
+	private PlayerList playerList;
 	
 	private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
 	
@@ -38,11 +39,14 @@ public class DynmapPlugin extends JavaPlugin {
 		configuration.load();
 		
 		debugger.enable();
+		playerList = new PlayerList(getServer());
+		playerList.load();
+		
 		mgr = new MapManager(getWorld(), debugger, configuration);
 		mgr.startManager();
 
 		try {
-			server = new WebServer(mgr, getServer(), debugger, configuration);
+			webserver = new WebServer(mgr, getServer(), playerList, debugger, configuration);
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}
@@ -53,9 +57,9 @@ public class DynmapPlugin extends JavaPlugin {
 	public void onDisable() {
 		mgr.stopManager();
 
-		if(server != null) {
-			server.shutdown();
-			server = null;
+		if(webserver != null) {
+			webserver.shutdown();
+			webserver = null;
 		}
 		debugger.disable();
 	}
@@ -65,7 +69,7 @@ public class DynmapPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
 		
-		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new DynmapPlayerListener(mgr), Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new DynmapPlayerListener(mgr, playerList), Priority.Normal, this);
 		//getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DESTROYED, listener, Priority.Normal, this);
 	/*	etc.getLoader().addListener(PluginLoader.Hook.COMMAND, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_CREATED, listener, this, PluginListener.Priority.MEDIUM);
