@@ -15,9 +15,13 @@ public class DynmapPlayerListener extends PlayerListener {
 	public void onPlayerCommand(PlayerChatEvent event) {
 		String[] split = event.getMessage().split(" ");
         Player player = event.getPlayer();
-        if (split[0].equalsIgnoreCase("/map_render")) {
-        	mgr.touch(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-        	event.setCancelled(true);
+        if (split[0].equalsIgnoreCase("/map")) {
+        	if (split.length > 1) {
+        		if (split[1].equals("render")) {
+		        	mgr.touch(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+		        	event.setCancelled(true);
+        		}
+        	}
         }
 	}
 }
