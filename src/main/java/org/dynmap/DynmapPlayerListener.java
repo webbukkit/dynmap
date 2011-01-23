@@ -16,7 +16,7 @@ public class DynmapPlayerListener extends PlayerListener {
 	@Override
 	public void onPlayerCommand(PlayerChatEvent event) {
 		String[] split = event.getMessage().split(" ");
-        if (split[0].equalsIgnoreCase("/map")) {
+        if (split[0].equalsIgnoreCase("/dynmap")) {
         	if (split.length > 1) {
         		if (split[1].equals("render")) {
         			Player player = event.getPlayer();
