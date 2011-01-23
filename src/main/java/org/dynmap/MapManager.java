@@ -44,14 +44,21 @@ public class MapManager extends Thread {
 		debugger.debug(msg);
 	}
 	
+	private static File combinePaths(File parent, String path) { return combinePaths(parent, new File(path)); } 
+	
+	private static File combinePaths(File parent, File path) {
+		if (path.isAbsolute()) return path;
+		return new File(parent, path.getPath());
+	}
+	
 	public MapManager(World world, Debugger debugger, ConfigurationNode configuration)
 	{
 		this.world = world;
 		this.debugger = debugger;
 		this.staleQueue = new StaleQueue();
 		
-		tileDirectory = new File(DynmapPlugin.dataRoot, configuration.getString("tilespath", "web/tiles"));
-		webDirectory = new File(DynmapPlugin.dataRoot, configuration.getString("webpath", "web"));
+		tileDirectory = combinePaths(DynmapPlugin.dataRoot, configuration.getString("tilespath", "web/tiles"));
+		webDirectory = combinePaths(DynmapPlugin.dataRoot, configuration.getString("webpath", "web"));
 		renderWait = (int)(configuration.getDouble("renderinterval", 0.5) * 1000);
 		
 		if (!tileDirectory.isDirectory())
