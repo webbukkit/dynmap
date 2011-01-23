@@ -97,7 +97,7 @@ DynMap.prototype = {
 			scaleControl: false,
 			mapTypeControl: false,
 			streetViewControl: false,
-			backgroundColor: '#000'
+			backgroundColor: 'none'
 		});
 
 		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
