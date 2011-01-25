@@ -75,6 +75,7 @@ DynMap.prototype = {
 	registeredTiles: new Array(),
 	clock: null,
 	markers: new Array(),
+	chatPopups: new Array(),
 	lasttimestamp: '0',
 	followingPlayer: '',
 	initialize: function() {
@@ -180,6 +181,10 @@ DynMap.prototype = {
 	},
 	update: function() {
 		var me = this;
+		
+		// TODO: is there a better place for this?
+		this.cleanPopups();
+		
 		$.ajax({
 			url: me.options.updateUrl + me.lasttimestamp,
 			success: function(res) {
@@ -258,18 +263,63 @@ DynMap.prototype = {
 			}
 		});
 	},
+	cleanPopups: function() {
+		var POPUP_LIFE = 8000;
+		var d = new Date();
+		var now = d.getTime();
+		for (var popupIndex in this.chatPopups)
+		{
+			var popup = this.chatPopups[popupIndex];
+			if (now - popup.popupTime > POPUP_LIFE)
+			{
+				popup.infoWindow.close();
+				popup.infoWindow = null;
+				this.chatPopups[popupIndex] = popup;
+			}
+		}
+	},
 	onPlayerChat: function(playerName, message) {
 		var me = this;
 		var markers = me.markers;
+		var chatPopups = this.chatPopups;
 		var map = me.map;
 		var mid = "player_" + playerName;
 		var playerMarker = markers[mid];
 		if (playerMarker)
 		{
-			var infowindow = new google.maps.InfoWindow({
-			    content: message
+			var popup = chatPopups[playerName];
+			if (popup == null)
+			{
+				popup = new Object();
+				popup.lines = new Array();
+				popup.lines[0] = message;
+			}
+			else
+			{
+				if (popup.infoWindow != null)
+				{
+					popup.infoWindow.close();	
+				}
+				popup.lines[popup.lines.length] = message;
+			}
+			var MAX_LINES = 5;
+			if (popup.lines.length > MAX_LINES)
+			{
+				popup.lines = popup.lines.slice(1);
+			}
+			htmlMessage = '<div id="content"><b>' + playerName + "</b><br/><br/>"
+			for (var line in popup.lines)
+			{
+				htmlMessage = htmlMessage + popup.lines[line] + "<br/>";
+			}
+			htmlMessage = htmlMessage + "</div>"
+			var now = new Date();
+			popup.popupTime = now.getTime();
+			popup.infoWindow = new google.maps.InfoWindow({
+			    content: htmlMessage
 			});
-			infowindow.open(map,playerMarker);
+			popup.infoWindow.open(map, playerMarker);
+			this.chatPopups[playerName] = popup;
 		}
 	},
 	onTileUpdated: function(tileName) {
