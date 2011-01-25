@@ -210,7 +210,21 @@ DynMap.prototype = {
 						tile: function() {
 							me.onTileUpdated(row.name);
 						}
-					}, function() {
+					  , chat: function() {
+							var chats = line.split(' ');
+							var message = '';
+							for (var chatIndex = 2; chatIndex < chats.length; chatIndex++)
+							{
+								if (chatIndex > 2) message = message + " "; 
+								message = message + chats[chatIndex];
+							}
+							if (message.length > 0)
+							{
+								me.onPlayerChat(row.name, message);
+							}
+						}
+					},
+					function() {
 						var mi = {
 							id: row.type + '_' + row.name,
 							text: row.name,
@@ -243,6 +257,20 @@ DynMap.prototype = {
 				setTimeout(function() { me.update(); }, me.options.updateRate);
 			}
 		});
+	},
+	onPlayerChat: function(playerName, message) {
+		var me = this;
+		var markers = me.markers;
+		var map = me.map;
+		var mid = "player_" + playerName;
+		var playerMarker = markers[mid];
+		if (playerMarker)
+		{
+			var infowindow = new google.maps.InfoWindow({
+			    content: message
+			});
+			infowindow.open(map,playerMarker);
+		}
 	},
 	onTileUpdated: function(tileName) {
 		var me = this;

@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 import org.dynmap.kzedmap.KzedMap;
@@ -16,6 +17,7 @@ public class MapManager extends Thread {
 	private Debugger debugger;
 	private MapType map;
 	public StaleQueue staleQueue;
+	public ChatQueue chatQueue;
 	public PlayerList playerList;
 
 	/* lock for our data structures */
@@ -56,6 +58,7 @@ public class MapManager extends Thread {
 		this.world = world;
 		this.debugger = debugger;
 		this.staleQueue = new StaleQueue();
+		this.chatQueue = new ChatQueue();
 		
 		tileDirectory = combinePaths(DynmapPlugin.dataRoot, configuration.getString("tilespath", "web/tiles"));
 		webDirectory = combinePaths(DynmapPlugin.dataRoot, configuration.getString("webpath", "web"));
@@ -145,5 +148,10 @@ public class MapManager extends Thread {
 	public void invalidateTile(MapTile tile) {
 		debugger.debug("invalidating tile " + tile.getName());
 		staleQueue.pushStaleTile(tile);
+	}
+	
+	public void addChatEvent(PlayerChatEvent event)
+	{
+		chatQueue.pushChatMessage(event);
 	}
 }
