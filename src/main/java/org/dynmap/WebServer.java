@@ -37,7 +37,7 @@ public class WebServer extends Thread {
 		sock = new ServerSocket(port, 5, bindAddress.equals("0.0.0.0") ? null : InetAddress.getByName(bindAddress));
 		running = true;
 		start();
-		debugger.debug("WebServer started on " + bindAddress + ":" + port);
+		log.info("Dynmap WebServer started on " + bindAddress + ":" + port);
 	}
 
 	public void run()

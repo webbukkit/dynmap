@@ -37,7 +37,6 @@ public class BukkitPlayerDebugger implements Debugger {
 	public synchronized void enable() {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new CommandListener(), Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, new CommandListener(), Priority.Normal, plugin);
-		log.info("Debugger enabled, use: " + debugCommand);
 	}
 	
 	public synchronized void disable() {
