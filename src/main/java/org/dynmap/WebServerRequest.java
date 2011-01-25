@@ -123,8 +123,13 @@ public class WebServerRequest extends Thread {
 		for(TileUpdate tu : tileUpdates) {
 			sb.append("tile " + tu.tile.getName() + "\n");
 		}
+		
+		ChatQueue.ChatMessage[] messages = mgr.chatQueue.getChatMessages(cutoff);
+		for(ChatQueue.ChatMessage cu : messages) {
+			sb.append("chat " + cu.playerName + " " + cu.message + "\n");
+		}
 
-		debugger.debug("Sending " + players.length + " players and " + tileUpdates.length + " tile-updates. " + path + ";" + cutoff);
+		debugger.debug("Sending " + players.length + " players, " + tileUpdates.length + " tile-updates, and " + messages.length + " chats. "+ path + ";" + cutoff);
 		
 		byte[] bytes = sb.toString().getBytes();
 		

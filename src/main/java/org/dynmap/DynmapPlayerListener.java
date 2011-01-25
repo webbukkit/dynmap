@@ -38,4 +38,14 @@ public class DynmapPlayerListener extends PlayerListener {
         	}
         }
 	}
+	
+    /**
+     * Called when a player sends a chat message
+     *
+     * @param event Relevant event details
+     */
+    public void onPlayerChat(PlayerChatEvent event) 
+    {
+    	mgr.addChatEvent(event);
+    }
 }
