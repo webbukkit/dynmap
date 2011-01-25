@@ -17,14 +17,14 @@ public class DynmapPlugin extends JavaPlugin {
 
 	protected static final Logger log = Logger.getLogger("Minecraft");
 
-	private WebServer webserver = null;
-	private MapManager mgr = null;
+	private WebServer webServer = null;
+	private MapManager mapManager = null;
 	private PlayerList playerList;
 	
 	private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
 	
 	public static File dataRoot;
-
+	
 	public DynmapPlugin(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
 		super(pluginLoader, instance, desc, folder, plugin, cLoader);
 		dataRoot = folder;
@@ -32,6 +32,14 @@ public class DynmapPlugin extends JavaPlugin {
 
 	public World getWorld() {
 		return getServer().getWorlds()[0];
+	}
+	
+	public MapManager getMapManager() {
+		return mapManager;
+	}
+	
+	public WebServer getWebServer() {
+		return webServer;
 	}
 
 	public void onEnable() {
@@ -42,11 +50,11 @@ public class DynmapPlugin extends JavaPlugin {
 		playerList = new PlayerList(getServer());
 		playerList.load();
 		
-		mgr = new MapManager(getWorld(), debugger, configuration);
-		mgr.startManager();
+		mapManager = new MapManager(getWorld(), debugger, configuration);
+		mapManager.startManager();
 
 		try {
-			webserver = new WebServer(mgr, getServer(), playerList, debugger, configuration);
+			webServer = new WebServer(mapManager, getServer(), playerList, debugger, configuration);
 		} catch(IOException e) {
 			log.info("position failed to start WebServer (IOException)");
 		}
@@ -55,21 +63,21 @@ public class DynmapPlugin extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		mgr.stopManager();
+		mapManager.stopManager();
 
-		if(webserver != null) {
-			webserver.shutdown();
-			webserver = null;
+		if(webServer != null) {
+			webServer.shutdown();
+			webServer = null;
 		}
 		debugger.disable();
 	}
 
 	public void registerEvents() {
-		BlockListener blockListener = new DynmapBlockListener(mgr);
+		BlockListener blockListener = new DynmapBlockListener(mapManager);
 		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Normal, this);
 		getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
 		
-		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new DynmapPlayerListener(mgr, playerList), Priority.Normal, this);
+		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new DynmapPlayerListener(mapManager, playerList), Priority.Normal, this);
 		//getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DESTROYED, listener, Priority.Normal, this);
 	/*	etc.getLoader().addListener(PluginLoader.Hook.COMMAND, listener, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_CREATED, listener, this, PluginListener.Priority.MEDIUM);
