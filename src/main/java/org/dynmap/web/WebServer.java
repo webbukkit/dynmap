@@ -1,4 +1,4 @@
-package org.dynmap;
+package org.dynmap.web;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -7,7 +7,10 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
+import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.MapManager;
+import org.dynmap.PlayerList;
 import org.dynmap.debug.Debugger;
 
 public class WebServer extends Thread {
@@ -23,12 +26,14 @@ public class WebServer extends Thread {
 	private MapManager mgr;
 	private Server server;
 	private PlayerList playerList;
+	private ConfigurationNode configuration;
 
 	public WebServer(MapManager mgr, Server server, PlayerList playerList, Debugger debugger, ConfigurationNode configuration) throws IOException
 	{
 		this.mgr = mgr;
 		this.server = server;
 		this.playerList = playerList;
+		this.configuration = configuration;
 		this.debugger = debugger;
 		
 		String bindAddress = configuration.getString("webserver-bindaddress", "0.0.0.0");
@@ -46,7 +51,7 @@ public class WebServer extends Thread {
 			while (running) {
 				try {
 					Socket socket = sock.accept();
-					WebServerRequest requestThread = new WebServerRequest(socket, mgr, server, playerList, debugger);
+					WebServerRequest requestThread = new WebServerRequest(socket, mgr, server, playerList, configuration, debugger);
 					requestThread.start();
 				}
 				catch (IOException e) {

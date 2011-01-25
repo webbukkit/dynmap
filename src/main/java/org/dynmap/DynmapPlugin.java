@@ -12,6 +12,7 @@ import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.*;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.debug.BukkitPlayerDebugger;
+import org.dynmap.web.WebServer;
 
 public class DynmapPlugin extends JavaPlugin {
 

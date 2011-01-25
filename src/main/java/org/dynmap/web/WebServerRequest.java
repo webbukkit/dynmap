@@ -1,4 +1,4 @@
-package org.dynmap;
+package org.dynmap.web;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -10,11 +10,18 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.ChatQueue;
+import org.dynmap.MapManager;
+import org.dynmap.PlayerList;
+import org.dynmap.TileUpdate;
+import org.dynmap.ChatQueue.ChatMessage;
 import org.dynmap.debug.Debugger;
 
 public class WebServerRequest extends Thread {
@@ -25,14 +32,16 @@ public class WebServerRequest extends Thread {
 	private MapManager mgr;
 	private Server server;
 	private PlayerList playerList;
+	private ConfigurationNode configuration;
 
-	public WebServerRequest(Socket socket, MapManager mgr, Server server, PlayerList playerList, Debugger debugger)
+	public WebServerRequest(Socket socket, MapManager mgr, Server server, PlayerList playerList, ConfigurationNode configuration, Debugger debugger)
 	{
 		this.debugger = debugger;
 		this.socket = socket;
 		this.mgr = mgr;
 		this.server = server;
 		this.playerList = playerList;
+		this.configuration = configuration;
 	}
 	
 	private static void writeHttpHeader(BufferedOutputStream out, int statusCode, String statusText) throws IOException {
@@ -73,7 +82,9 @@ public class WebServerRequest extends Thread {
 
 			String path = request.substring(4, request.length() - 9);
 			debugger.debug("request: " + path);
-			if (path.startsWith("/up/")) {
+			if (path.equals("/up/configuration")) {
+				handleConfiguration(out);
+			} else if (path.startsWith("/up/")) {
 				handleUp(out, path.substring(3));
 			} else if (path.startsWith("/tiles/")) {
 				handleMapToDirectory(out, path.substring(6), mgr.tileDirectory);
@@ -96,6 +107,49 @@ public class WebServerRequest extends Thread {
 		catch(Exception ex) {
 			debugger.error("Exception on WebRequest-thread: " + ex.toString());
 		}
+	}
+	
+	public String stringifyJson(Object o) {
+		if (o == null) {
+			return "null";
+		} else if (o instanceof String) {
+			return "\"" + o + "\"";
+		} else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
+			return o.toString();
+		} else if (o instanceof LinkedHashMap<?, ?>) {
+			LinkedHashMap<String, Object> m = (LinkedHashMap<String, Object>)o;
+			StringBuilder sb = new StringBuilder();
+			sb.append("{");
+			boolean first = true;
+			for (String key : m.keySet()) {
+				if (first) first = false;
+				else sb.append(",");
+				
+				sb.append(stringifyJson(key));
+				sb.append(": ");
+				sb.append(stringifyJson(m.get(key)));
+			}
+			sb.append("}");
+			return sb.toString();
+		} else {
+			return "undefined";
+		}
+	}
+	
+	public void handleConfiguration(BufferedOutputStream out) throws IOException {
+		
+		String s = stringifyJson(configuration.getProperty("web"));
+		
+		byte[] bytes = s.getBytes();
+		String dateStr = new Date().toString();
+		writeHttpHeader(out, 200, "OK");
+		writeHeaderField(out, "Date", dateStr);
+		writeHeaderField(out, "Content-Type", "text/plain");
+		writeHeaderField(out, "Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
+		writeHeaderField(out, "Last-modified", dateStr);
+		writeHeaderField(out, "Content-Length", Integer.toString(bytes.length));
+		writeEndOfHeaders(out);
+		out.write(bytes);
 	}
 	
 	public void handleUp(BufferedOutputStream out, String path) throws IOException {

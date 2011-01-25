@@ -14,3 +14,11 @@ webserver-bindaddress: 0.0.0.0
 
 # The TCP-port the webserver will listen on.
 webserver-port: 8123
+
+web:
+    # Interval the browser should poll for updates.
+    updaterate: 2000
+    showchatballoon: true
+    shownmaps:
+        defaultmap: DefaultMapType
+        cavemap: CaveMapType
