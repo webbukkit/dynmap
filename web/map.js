@@ -274,7 +274,7 @@ DynMap.prototype = {
 			{
 				popup.infoWindow.close();
 				popup.infoWindow = null;
-				this.chatPopups[popupIndex] = popup;
+				delete this.chatPopups[popupIndex];
 			}
 		}
 	},
@@ -288,20 +288,11 @@ DynMap.prototype = {
 		if (playerMarker)
 		{
 			var popup = chatPopups[playerName];
-			if (popup == null)
-			{
-				popup = new Object();
-				popup.lines = new Array();
-				popup.lines[0] = message;
-			}
+			if (!popup)
+				popup = { lines: [ message ] };
 			else
-			{
-				if (popup.infoWindow != null)
-				{
-					popup.infoWindow.close();	
-				}
 				popup.lines[popup.lines.length] = message;
-			}
+
 			var MAX_LINES = 5;
 			if (popup.lines.length > MAX_LINES)
 			{
@@ -315,9 +306,13 @@ DynMap.prototype = {
 			htmlMessage = htmlMessage + "</div>"
 			var now = new Date();
 			popup.popupTime = now.getTime();
-			popup.infoWindow = new google.maps.InfoWindow({
-			    content: htmlMessage
-			});
+			if (!popup.infoWindow) {
+				popup.infoWindow = new google.maps.InfoWindow({
+				    content: htmlMessage
+				});
+			} else {
+				popup.infoWindow.setContent(htmlMessage);
+			}
 			popup.infoWindow.open(map, playerMarker);
 			this.chatPopups[playerName] = popup;
 		}
