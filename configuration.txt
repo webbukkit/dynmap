@@ -15,10 +15,23 @@ webserver-bindaddress: 0.0.0.0
 # The TCP-port the webserver will listen on.
 webserver-port: 8123
 
+maps:
+  - class: org.dynmap.kzedmap.KzedMap
+    renderers:
+      - class: org.dynmap.kzedmap.DefaultTileRenderer
+        prefix: t
+      - class: org.dynmap.kzedmap.CaveTileRenderer
+        prefix: ct
+
 web:
     # Interval the browser should poll for updates.
     updaterate: 2000
-    showchatballoon: true
+    
+    defaultmap: defaultmap
     shownmaps:
-        defaultmap: DefaultMapType
-        cavemap: CaveMapType
+      - type: KzedMapType
+        name: defaultmap
+        prefix: t
+      - type: KzedMapType
+        name: cavemap
+        prefix: ct

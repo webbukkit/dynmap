@@ -5,6 +5,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -14,7 +15,7 @@ import org.dynmap.debug.Debugger;
 public class ZoomedTileRenderer {
 	protected Debugger debugger;
 	
-	public ZoomedTileRenderer(Debugger debugger, ConfigurationNode configuration) {
+	public ZoomedTileRenderer(Debugger debugger, Map<String, Object> configuration) {
 		this.debugger = debugger;
 	}
 	

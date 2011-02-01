@@ -4,18 +4,24 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.util.config.ConfigurationNode;
-import org.dynmap.MapType;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
+import org.dynmap.MapType;
 import org.dynmap.debug.Debugger;
 
 public class KzedMap extends MapType {
+	protected static final Logger log = Logger.getLogger("Minecraft");
+	
 	/* dimensions of a map tile */
 	public static final int tileWidth = 128;
 	public static final int tileHeight = 128;
@@ -34,16 +40,36 @@ public class KzedMap extends MapType {
 	MapTileRenderer[] renderers;
 	ZoomedTileRenderer zoomrenderer;
 	
-	public KzedMap(MapManager manager, World world, Debugger debugger, ConfigurationNode configuration) {
+	public KzedMap(MapManager manager, World world, Debugger debugger, Map<String, Object> configuration) {
 		super(manager, world, debugger);
 		if (colors == null) {
 			colors = loadColorSet("colors.txt");
 		}
-		renderers = new MapTileRenderer[] {
-				new DefaultTileRenderer("t", debugger, configuration),
-				new CaveTileRenderer("ct", debugger, configuration),
-		};
+		
+		renderers = loadRenderers(configuration);
 		zoomrenderer = new ZoomedTileRenderer(debugger, configuration);
+	}
+	
+	private MapTileRenderer[] loadRenderers(Map<String, Object> configuration) {
+		List<?> configuredRenderers = (List<?>)configuration.get("renderers");
+		ArrayList<MapTileRenderer> renderers = new ArrayList<MapTileRenderer>();
+		for(Object configuredRendererObj : configuredRenderers) {
+			try {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> configuredRenderer = (Map<String, Object>)configuredRendererObj;
+				String typeName = (String)configuredRenderer.get("class");
+				log.info("Loading renderer '" + typeName.toString() + "'...");
+				Class<?> mapTypeClass = Class.forName(typeName);
+				Constructor<?> constructor = mapTypeClass.getConstructor(Debugger.class, Map.class);
+				MapTileRenderer mapTileRenderer = (MapTileRenderer)constructor.newInstance(getDebugger(), configuredRenderer);
+				renderers.add(mapTileRenderer);
+			} catch (Exception e) {
+				getDebugger().error("Error loading renderer", e);
+			}
+		}
+		MapTileRenderer[] result = new MapTileRenderer[renderers.size()];
+		renderers.toArray(result);
+		return result;
 	}
 	
 	@Override

@@ -68,8 +68,12 @@ MinecraftClock.prototype = {
 };
 
 function DynMap(options) {
-	this.options = options;
-	this.initialize();
+	var self = this;
+	self.options = options;
+	$.getJSON(self.options.updateUrl + 'configuration', function(configuration) {
+		self.configure(configuration);
+		self.initialize();
+	})
 }
 DynMap.prototype = {
 	registeredTiles: new Array(),
@@ -78,6 +82,17 @@ DynMap.prototype = {
 	chatPopups: new Array(),
 	lasttimestamp: '0',
 	followingPlayer: '',
+	configure: function(configuration) {
+		var self = this;
+		$.extend(this.options, configuration);
+		if (!self.options.maps) self.options.maps = {};
+		$.each(self.options.shownmaps, function(index, mapentry) {
+			var mapconstructor = eval(mapentry.type);
+			var mapname = mapentry.name;
+			var mapconfiguration = mapentry;
+			self.options.maps[mapname] = new mapconstructor(mapconfiguration);
+		});
+	},
 	initialize: function() {
 		var me = this;
 		
@@ -136,7 +151,7 @@ DynMap.prototype = {
 						name: 'map',
 						id: 'maptypebutton_' + name 
 					})
-					.attr('checked', me.options.defaultMap == name ? 'checked' : null)
+					.attr('checked', me.options.defaultmap == name ? 'checked' : null)
 					)
 				.append($('<label/>')
 						.attr('for', 'maptypebutton_' + name)
@@ -150,7 +165,7 @@ DynMap.prototype = {
 				.data('maptype', mapType)
 				.appendTo(maplist);
 		});
-		map.setMapTypeId(me.options.defaultMap);
+		map.setMapTypeId(me.options.defaultmap);
 		
 		// The Player List
 		var playerlist = me.playerlist = $('<div/>')

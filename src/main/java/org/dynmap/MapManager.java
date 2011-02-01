@@ -1,6 +1,12 @@
 package org.dynmap;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -15,7 +21,7 @@ public class MapManager extends Thread {
 
 	private World world;
 	private Debugger debugger;
-	private MapType map;
+	private MapType[] maps;
 	public StaleQueue staleQueue;
 	public ChatQueue chatQueue;
 	public PlayerList playerList;
@@ -67,7 +73,29 @@ public class MapManager extends Thread {
 		if (!tileDirectory.isDirectory())
 			tileDirectory.mkdirs();
 		
-		map = new KzedMap(this, world, debugger, configuration);
+		maps = loadMapTypes(configuration);
+	}
+	
+	private MapType[] loadMapTypes(ConfigurationNode configuration) {
+		List<?> configuredMaps = (List<?>)configuration.getProperty("maps");
+		ArrayList<MapType> mapTypes = new ArrayList<MapType>();
+		for(Object configuredMapObj : configuredMaps) {
+			try {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> configuredMap = (Map<String, Object>)configuredMapObj;
+				String typeName = (String)configuredMap.get("class");
+				log.info("Loading map '" + typeName.toString() + "'...");
+				Class<?> mapTypeClass = Class.forName(typeName);
+				Constructor<?> constructor = mapTypeClass.getConstructor(MapManager.class, World.class, Debugger.class, Map.class);
+				MapType mapType = (MapType)constructor.newInstance(this, world, debugger, configuredMap);
+				mapTypes.add(mapType);
+			} catch (Exception e) {
+				debugger.error("Error loading map", e);
+			}
+		}
+		MapType[] result = new MapType[mapTypes.size()];
+		mapTypes.toArray(result);
+		return result;
 	}
 	
 	/* initialize and start map manager */
@@ -142,7 +170,9 @@ public class MapManager extends Thread {
 	}
 
 	public void touch(int x, int y, int z) {
-		map.touch(new Location(world, x, y, z));
+		for (int i = 0; i < maps.length; i++) {
+			maps[i].touch(new Location(world, x, y, z));
+		}
 	}
 	
 	public void invalidateTile(MapTile tile) {

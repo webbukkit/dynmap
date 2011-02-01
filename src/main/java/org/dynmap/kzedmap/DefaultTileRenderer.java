@@ -5,11 +5,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.bukkit.World;
-import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 
 public class DefaultTileRenderer implements MapTileRenderer {
@@ -20,9 +20,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
 		return name;
 	}
 	
-	public DefaultTileRenderer(String name, Debugger debugger, ConfigurationNode configuration) {
-		this.name = name;
+	public DefaultTileRenderer(Debugger debugger, Map<String, Object> configuration) {
 		this.debugger = debugger;
+		name = (String)configuration.get("prefix");
 	}
 	
 	public void render(KzedMapTile tile, String path) {
