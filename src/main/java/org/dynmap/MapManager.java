@@ -2,9 +2,7 @@ package org.dynmap;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -14,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
-import org.dynmap.kzedmap.KzedMap;
 
 public class MapManager extends Thread {
 	protected static final Logger log = Logger.getLogger("Minecraft");

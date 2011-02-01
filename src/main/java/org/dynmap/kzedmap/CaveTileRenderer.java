@@ -2,9 +2,7 @@ package org.dynmap.kzedmap;
 
 import java.awt.Color;
 import java.util.Map;
-
 import org.bukkit.World;
-import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
