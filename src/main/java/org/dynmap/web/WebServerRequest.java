@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,7 +22,6 @@ import org.dynmap.ChatQueue;
 import org.dynmap.MapManager;
 import org.dynmap.PlayerList;
 import org.dynmap.TileUpdate;
-import org.dynmap.ChatQueue.ChatMessage;
 import org.dynmap.debug.Debugger;
 
 public class WebServerRequest extends Thread {
@@ -112,11 +112,14 @@ public class WebServerRequest extends Thread {
 	public String stringifyJson(Object o) {
 		if (o == null) {
 			return "null";
+		} else if (o instanceof Boolean) {
+			return ((Boolean)o) ? "true" : "false";
 		} else if (o instanceof String) {
 			return "\"" + o + "\"";
 		} else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
 			return o.toString();
 		} else if (o instanceof LinkedHashMap<?, ?>) {
+			@SuppressWarnings("unchecked")
 			LinkedHashMap<String, Object> m = (LinkedHashMap<String, Object>)o;
 			StringBuilder sb = new StringBuilder();
 			sb.append("{");
@@ -130,6 +133,17 @@ public class WebServerRequest extends Thread {
 				sb.append(stringifyJson(m.get(key)));
 			}
 			sb.append("}");
+			return sb.toString();
+		} else if (o instanceof ArrayList<?>) {
+			@SuppressWarnings("unchecked")
+			ArrayList<Object> l = (ArrayList<Object>)o;
+			StringBuilder sb = new StringBuilder();
+			int count = 0;
+			for(int i=0;i<l.size();i++) {
+				sb.append(count++ == 0 ? "[" : ",");
+				sb.append(stringifyJson(l.get(i)));
+			}
+			sb.append("]");
 			return sb.toString();
 		} else {
 			return "undefined";

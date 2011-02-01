@@ -15,6 +15,7 @@ webserver-bindaddress: 0.0.0.0
 # The TCP-port the webserver will listen on.
 webserver-port: 8123
 
+# The maptypes Dynmap will use to render.
 maps:
   - class: org.dynmap.kzedmap.KzedMap
     renderers:
@@ -27,7 +28,14 @@ web:
     # Interval the browser should poll for updates.
     updaterate: 2000
     
+    showchatballoons: true
+    showplayerfacesonmap: true
+    showplayerfacesinmenu: true
+    
+    # The name of the map shown when opening Dynmap's page (must be in menu).
     defaultmap: defaultmap
+    
+    # The maps shown in the menu.
     shownmaps:
       - type: KzedMapType
         name: defaultmap

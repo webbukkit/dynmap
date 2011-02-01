@@ -68,11 +68,11 @@ MinecraftClock.prototype = {
 };
 
 function DynMap(options) {
-	var self = this;
-	self.options = options;
-	$.getJSON(self.options.updateUrl + 'configuration', function(configuration) {
-		self.configure(configuration);
-		self.initialize();
+	var me = this;
+	me.options = options;
+	$.getJSON(me.options.updateUrl + 'configuration', function(configuration) {
+		me.configure(configuration);
+		me.initialize();
 	})
 }
 DynMap.prototype = {
@@ -83,14 +83,12 @@ DynMap.prototype = {
 	lasttimestamp: '0',
 	followingPlayer: '',
 	configure: function(configuration) {
-		var self = this;
-		$.extend(this.options, configuration);
-		if (!self.options.maps) self.options.maps = {};
-		$.each(self.options.shownmaps, function(index, mapentry) {
+		var me = this;
+		$.extend(me.options, configuration);
+		if (!me.options.maps) me.options.maps = {};
+		$.each(me.options.shownmaps, function(index, mapentry) {
 			var mapconstructor = eval(mapentry.type);
-			var mapname = mapentry.name;
-			var mapconfiguration = mapentry;
-			self.options.maps[mapname] = new mapconstructor(mapconfiguration);
+			me.options.maps[mapentry.name] = new mapconstructor(mapentry);
 		});
 	},
 	initialize: function() {
@@ -192,7 +190,7 @@ DynMap.prototype = {
 			.addClass('alertbox')
 			.appendTo(container);
 		
-		setTimeout(function() { me.update(); }, me.options.updateRate);
+		setTimeout(function() { me.update(); }, me.options.updaterate);
 	},
 	update: function() {
 		var me = this;
@@ -231,6 +229,8 @@ DynMap.prototype = {
 							me.onTileUpdated(row.name);
 						}
 					  , chat: function() {
+						    if (!me.options.showchatballoons)
+						    	return;
 							var chats = line.split(' ');
 							var message = '';
 							for (var chatIndex = 2; chatIndex < chats.length; chatIndex++)
@@ -268,13 +268,13 @@ DynMap.prototype = {
 						delete me.markers[m];
 					}
 				}
-				setTimeout(function() { me.update(); }, me.options.updateRate);
+				setTimeout(function() { me.update(); }, me.options.updaterate);
 			},
 		error: function(request, statusText, ex) {
 				me.alertbox
 					.text('Could not update map')
 					.show();
-				setTimeout(function() { me.update(); }, me.options.updateRate);
+				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}
 		});
 	},
@@ -369,13 +369,14 @@ DynMap.prototype = {
 						.append($('<span/>')
 							.addClass('playerName')
 							.text(mi.text))
-					
-					getMinecraftHead(mi.text, 32, function(head) {
-						$(head)
-							.addClass('playerIcon')
-							.prependTo(div);
-						playerImage.remove();
-					});
+					if (me.options.showplayerfacesonmap) {
+						getMinecraftHead(mi.text, 32, function(head) {
+							$(head)
+								.addClass('playerIcon')
+								.prependTo(div);
+							playerImage.remove();
+						});
+					}
 				};
 			}
 			var marker = new CustomMarker(mi.position, map, contentfun, mi);
@@ -404,11 +405,13 @@ DynMap.prototype = {
 						.click(function(e) { map.panTo(markers[mi.id].getPosition()); })
 						);
 
-				getMinecraftHead(mi.text, 16, function(head) {
-					marker.playerRow.icon = $(head)
-						.addClass('playerIcon')
-						.appendTo(marker.playerIconContainer);
-				});
+				if (me.options.showplayerfacesinmenu) {
+					getMinecraftHead(mi.text, 16, function(head) {
+						marker.playerRow.icon = $(head)
+							.addClass('playerIcon')
+							.appendTo(marker.playerIconContainer);
+					});
+				}
 				
 				me.playerlist.append(marker.playerRow);
 			}
