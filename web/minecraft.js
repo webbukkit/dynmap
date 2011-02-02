@@ -71,6 +71,7 @@ function getMinecraftHead(player,size,completed) {
 
 function getMinecraftTime(servertime) {
 	servertime = parseInt(servertime);
+	var day = servertime >= 0 && servertime < 13700;
 	return {
 		servertime: servertime,
 		days: parseInt((servertime+8000) / 24000),
@@ -80,7 +81,7 @@ function getMinecraftTime(servertime) {
 		minutes: parseInt(((servertime / 1000) % 1) * 60),
 		seconds: parseInt(((((servertime / 1000) % 1) * 60) % 1) * 60),
 		
-		day: servertime > 12000,
-		night: servertime <= 12000
+		day: day,
+		night: !day
 	};
 }
