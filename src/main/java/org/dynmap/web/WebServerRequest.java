@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.ChatQueue;
@@ -30,16 +30,16 @@ public class WebServerRequest extends Thread {
 	private Debugger debugger;
 	private Socket socket;
 	private MapManager mgr;
-	private Server server;
+	private World world;
 	private PlayerList playerList;
 	private ConfigurationNode configuration;
 
-	public WebServerRequest(Socket socket, MapManager mgr, Server server, PlayerList playerList, ConfigurationNode configuration, Debugger debugger)
+	public WebServerRequest(Socket socket, MapManager mgr, World world, PlayerList playerList, ConfigurationNode configuration, Debugger debugger)
 	{
 		this.debugger = debugger;
 		this.socket = socket;
 		this.mgr = mgr;
-		this.server = server;
+		this.world = world;
 		this.playerList = playerList;
 		this.configuration = configuration;
 	}
@@ -66,11 +66,12 @@ public class WebServerRequest extends Thread {
 
 	public void run()
 	{
-		InputStream reader = null;
+		BufferedReader in = null;
+		BufferedOutputStream out = null;
 		try {
 			socket.setSoTimeout(30000);
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new BufferedOutputStream(socket.getOutputStream());
 
 			String request = in.readLine();
 			if (request == null || !request.startsWith("GET ") || !(request.endsWith(" HTTP/1.0") || request.endsWith("HTTP/1.1"))) {
@@ -95,16 +96,12 @@ public class WebServerRequest extends Thread {
 			out.close();
 		}
 		catch (IOException e) {
-			if (reader != null) {
-				try {
-					reader.close();
-				}
-				catch (Exception anye) {
-					// Do nothing.
-				}
-			}
+			if (out != null) { try { out.close(); } catch (Exception anye) { } }
+			if (in != null) { try { in.close(); } catch (Exception anye) { } }
 		}
 		catch(Exception ex) {
+			if (out != null) { try { out.close(); } catch (Exception anye) { } }
+			if (in != null) { try { in.close(); } catch (Exception anye) { } }
 			debugger.error("Exception on WebRequest-thread: " + ex.toString());
 		}
 	}
@@ -178,8 +175,7 @@ public class WebServerRequest extends Thread {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		
-		long relativeTime = server.getTime() % 24000;
+		long relativeTime = world.getTime() % 24000;
 		sb.append(current + " " + relativeTime + "\n");
 
 		Player[] players = playerList.getVisiblePlayers();

@@ -6,8 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-import org.bukkit.Server;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.World;
 import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.MapManager;
 import org.dynmap.PlayerList;
@@ -24,14 +23,14 @@ public class WebServer extends Thread {
 	private boolean running = false;
 
 	private MapManager mgr;
-	private Server server;
+	private World world;
 	private PlayerList playerList;
 	private ConfigurationNode configuration;
 
-	public WebServer(MapManager mgr, Server server, PlayerList playerList, Debugger debugger, ConfigurationNode configuration) throws IOException
+	public WebServer(MapManager mgr, World world, PlayerList playerList, Debugger debugger, ConfigurationNode configuration) throws IOException
 	{
 		this.mgr = mgr;
-		this.server = server;
+		this.world = world;
 		this.playerList = playerList;
 		this.configuration = configuration;
 		this.debugger = debugger;
@@ -51,7 +50,7 @@ public class WebServer extends Thread {
 			while (running) {
 				try {
 					Socket socket = sock.accept();
-					WebServerRequest requestThread = new WebServerRequest(socket, mgr, server, playerList, configuration, debugger);
+					WebServerRequest requestThread = new WebServerRequest(socket, mgr, world, playerList, configuration, debugger);
 					requestThread.start();
 				}
 				catch (IOException e) {
