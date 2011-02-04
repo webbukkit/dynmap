@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -135,24 +136,28 @@ public class MapManager extends Thread {
 			log.info("Map renderer has started.");
 	
 			while(running) {
-				boolean found = false;
-	
 				MapTile t = staleQueue.popStaleTile();
 				if(t != null) {
-					debugger.debug("rendering tile " + t + "...");
+					MapType map = t.getMap();
+					World world = map.getWorld();
+					
+					Chunk[] requiredChunks = map.getRequiredChunks(t);
+					debugger.debug("Loading " + requiredChunks.length + " chunks for tile " + t + "...");
+					for (int i=0;i<requiredChunks.length;i++) {
+						Chunk requiredChunk = requiredChunks[i];
+						if (!world.isChunkLoaded(requiredChunk))
+							world.loadChunk(requiredChunk);
+					}
+					
+					debugger.debug("Rendering tile " + t + "...");
 					t.getMap().render(t);
-	
 					staleQueue.onTileUpdated(t);
 	
 					try {
 						Thread.sleep(renderWait);
 					} catch(InterruptedException e) {
 					}
-	
-					found = true;
-				}
-	
-				if(!found) {
+				} else {
 					try {
 						Thread.sleep(500);
 					} catch(InterruptedException e) {
@@ -168,12 +173,15 @@ public class MapManager extends Thread {
 
 	public void touch(int x, int y, int z) {
 		for (int i = 0; i < maps.length; i++) {
-			maps[i].touch(new Location(world, x, y, z));
+			MapTile[] tiles = maps[i].getTiles(new Location(world, x, y, z));
+			for(int j=0;j<tiles.length;j++) {
+				invalidateTile(tiles[j]);
+			}
 		}
 	}
 	
 	public void invalidateTile(MapTile tile) {
-		debugger.debug("invalidating tile " + tile.getName());
+		debugger.debug("Invalidating tile " + tile.getName());
 		staleQueue.pushStaleTile(tile);
 	}
 	

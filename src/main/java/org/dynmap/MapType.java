@@ -1,5 +1,6 @@
 package org.dynmap;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.debug.Debugger;
@@ -26,10 +27,9 @@ public abstract class MapType {
 		this.debugger = debugger;
 	}
 	
-	public void invalidateTile(MapTile tile) {
-		manager.invalidateTile(tile);
-	}
-	
-	public abstract void touch(Location l);
-	public abstract void render(MapTile tile);
+	public abstract MapTile[] getTiles(Location l);
+	public abstract MapTile[] getAdjecentTiles(MapTile tile);
+	public abstract Chunk[] getRequiredChunks(MapTile tile);
+	public abstract boolean render(MapTile tile);
+	public abstract boolean isRendered(MapTile tile);
 }

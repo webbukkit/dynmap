@@ -18,7 +18,7 @@ public class CaveTileRenderer extends DefaultTileRenderer {
 
 		for(;;) {
 			if(y < 0)
-				return Color.BLACK;
+				return translucent;
 
 			int id = world.getBlockTypeIdAt(x, y, z);
 

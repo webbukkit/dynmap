@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.MapManager;
@@ -73,7 +74,7 @@ public class KzedMap extends MapType {
 	}
 	
 	@Override
-	public void touch(Location l) {
+	public MapTile[] getTiles(Location l) {
 		int x = l.getBlockX();
 		int y = l.getBlockY();
 		int z = l.getBlockZ();
@@ -87,37 +88,101 @@ public class KzedMap extends MapType {
 		int tx = tilex(px);
 		int ty = tiley(py);
 
-		invalidateTile(tx, ty);
+		ArrayList<MapTile> tiles = new ArrayList<MapTile>();
+		
+		addTile(tiles, tx, ty);
 
 		boolean ledge = tilex(px - 4) != tx;
 		boolean tedge = tiley(py - 4) != ty;
 		boolean redge = tilex(px + 4) != tx;
 		boolean bedge = tiley(py + 4) != ty;
 
-		if(ledge) invalidateTile(tx - tileWidth, ty);
-		if(redge) invalidateTile(tx + tileWidth, ty);
-		if(tedge) invalidateTile(tx, ty - tileHeight);
-		if(bedge) invalidateTile(tx, ty + tileHeight);
+		if(ledge) addTile(tiles, tx - tileWidth, ty);
+		if(redge) addTile(tiles, tx + tileWidth, ty);
+		if(tedge) addTile(tiles, tx, ty - tileHeight);
+		if(bedge) addTile(tiles, tx, ty + tileHeight);
 
-		if(ledge && tedge) invalidateTile(tx - tileWidth, ty - tileHeight);
-		if(ledge && bedge) invalidateTile(tx - tileWidth, ty + tileHeight);
-		if(redge && tedge) invalidateTile(tx + tileWidth, ty - tileHeight);
-		if(redge && bedge) invalidateTile(tx + tileWidth, ty + tileHeight);
+		if(ledge && tedge) addTile(tiles, tx - tileWidth, ty - tileHeight);
+		if(ledge && bedge) addTile(tiles, tx - tileWidth, ty + tileHeight);
+		if(redge && tedge) addTile(tiles, tx + tileWidth, ty - tileHeight);
+		if(redge && bedge) addTile(tiles, tx + tileWidth, ty + tileHeight);
+		
+		MapTile[] result = new MapTile[tiles.size()];
+		tiles.toArray(result);
+		return result;
 	}
 	
-	public void invalidateTile(int px, int py) {
-		for(MapTileRenderer renderer : renderers) {
-			invalidateTile(new KzedMapTile(this, renderer, px, py));
+	@Override
+	public MapTile[] getAdjecentTiles(MapTile tile) {
+		if (tile instanceof KzedMapTile) {
+			KzedMapTile t = (KzedMapTile)tile;
+			MapTileRenderer renderer = t.renderer;
+			return new MapTile[] {
+					new KzedMapTile(this, renderer, t.px-tileWidth, t.py),
+					new KzedMapTile(this, renderer, t.px+tileWidth, t.py),
+					new KzedMapTile(this, renderer, t.px, t.py-tileHeight),
+					new KzedMapTile(this, renderer, t.px, t.py+tileHeight)
+			};
+		}
+		return new MapTile[0];
+	}
+	
+	public void addTile(ArrayList<MapTile> tiles, int px, int py) {
+		for (int i=0;i<renderers.length;i++) {
+			tiles.add(new KzedMapTile(this, renderers[i], px, py));
+		}
+	}
+	
+	public void invalidateTile(MapTile tile) {
+		getMapManager().invalidateTile(tile);
+	}
+	
+	@Override
+	public Chunk[] getRequiredChunks(MapTile tile) {
+		if (tile instanceof KzedMapTile) {
+			KzedMapTile t = (KzedMapTile)tile;
+			int x1 = t.mx - KzedMap.tileHeight / 2;
+			int x2 = t.mx + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
+	
+			int z1 = t.mz - KzedMap.tileHeight / 2;
+			int z2 = t.mz + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
+	
+			int x, z;
+			
+			ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+			World world = getWorld();
+			for(x=x1; x<x2; x+=16) {
+				for(z=z1; z<z2; z+=16) {
+					Chunk chunk = world.getChunkAt(x/16, z/16);
+					chunks.add(chunk);
+				}
+			}
+			Chunk[] result = new Chunk[chunks.size()];
+			chunks.toArray(result);
+			return result;
+		} else {
+			return new Chunk[0];
 		}
 	}
 	
 	@Override
-	public void render(MapTile tile) {
+	public boolean render(MapTile tile) {
 		if (tile instanceof KzedZoomedMapTile) {
 			zoomrenderer.render((KzedZoomedMapTile)tile, getMapManager().tileDirectory.getAbsolutePath());
+			return true;
 		} else if (tile instanceof KzedMapTile) {
-			((KzedMapTile)tile).renderer.render((KzedMapTile)tile, getMapManager().tileDirectory.getAbsolutePath());
+			return ((KzedMapTile)tile).renderer.render((KzedMapTile)tile, getMapManager().tileDirectory.getAbsolutePath());
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean isRendered(MapTile tile) {
+		if (tile instanceof KzedMapTile) {
+			File tileFile = new File(DefaultTileRenderer.getPath((KzedMapTile)tile, getMapManager().tileDirectory.getAbsolutePath()));
+			return tileFile.exists();
+		}
+		return false;
 	}
 	
 	/* tile X for position x */
