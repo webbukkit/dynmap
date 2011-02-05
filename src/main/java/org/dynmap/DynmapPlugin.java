@@ -1,18 +1,26 @@
 package org.dynmap;
 
-import java.util.logging.Logger;
-import java.io.IOException;
-
 import java.io.File;
-import org.bukkit.*;
-import org.bukkit.event.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockListener;
-import org.bukkit.plugin.*;
-import org.bukkit.plugin.java.*;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.debug.BukkitPlayerDebugger;
 import org.dynmap.web.WebServer;
+import org.dynmap.web.handlers.ClientConfigurationHandler;
+import org.dynmap.web.handlers.ClientUpdateHandler;
+import org.dynmap.web.handlers.FilesystemHandler;
 
 public class DynmapPlugin extends JavaPlugin {
 
@@ -54,10 +62,29 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager = new MapManager(getWorld(), debugger, configuration);
         mapManager.startManager();
 
+        InetAddress bindAddress;
+        {
+            String address = configuration.getString("webserver-bindaddress", "0.0.0.0");
+            try {
+                bindAddress = address.equals("0.0.0.0")
+                        ? null
+                        : InetAddress.getByName(address);
+            } catch (UnknownHostException e) {
+                bindAddress = null;
+            }
+        }
+        int port = configuration.getInt("webserver-port", 8123);
+
+        webServer = new WebServer(bindAddress, port);
+        webServer.handlers.put("/", new FilesystemHandler(mapManager.webDirectory));
+        webServer.handlers.put("/tiles/", new FilesystemHandler(mapManager.tileDirectory));
+        webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getWorld()));
+        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
+
         try {
-            webServer = new WebServer(mapManager, getWorld(), playerList, debugger, configuration);
+            webServer.startServer();
         } catch (IOException e) {
-            log.info("position failed to start WebServer (IOException)");
+            log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
 
         registerEvents();

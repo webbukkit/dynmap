@@ -4,42 +4,30 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.World;
-import org.bukkit.util.config.ConfigurationNode;
-import org.dynmap.MapManager;
-import org.dynmap.PlayerList;
-import org.dynmap.debug.Debugger;
-
 public class WebServer extends Thread {
-
-    public static final String VERSION = "Huncraft";
     protected static final Logger log = Logger.getLogger("Minecraft");
-
-    private Debugger debugger;
 
     private ServerSocket sock = null;
     private boolean running = false;
 
-    private MapManager mgr;
-    private World world;
-    private PlayerList playerList;
-    private ConfigurationNode configuration;
+    private InetAddress bindAddress;
+    private int port;
 
-    public WebServer(MapManager mgr, World world, PlayerList playerList, Debugger debugger, ConfigurationNode configuration) throws IOException {
-        this.mgr = mgr;
-        this.world = world;
-        this.playerList = playerList;
-        this.configuration = configuration;
-        this.debugger = debugger;
+    public SortedMap<String, HttpHandler> handlers = new TreeMap<String, HttpHandler>(Collections.reverseOrder());
 
-        String bindAddress = configuration.getString("webserver-bindaddress", "0.0.0.0");
-        int port = configuration.getInt("webserver-port", 8123);
+    public WebServer(InetAddress bindAddress, int port) {
+        this.bindAddress = bindAddress;
+        this.port = port;
+    }
 
-        sock = new ServerSocket(port, 5, bindAddress.equals("0.0.0.0")
-                ? null
-                : InetAddress.getByName(bindAddress));
+    public void startServer() throws IOException {
+        sock = new ServerSocket(port, 5, bindAddress);
         running = true;
         start();
         log.info("Dynmap WebServer started on " + bindAddress + ":" + port);
@@ -50,7 +38,7 @@ public class WebServer extends Thread {
             while (running) {
                 try {
                     Socket socket = sock.accept();
-                    WebServerRequest requestThread = new WebServerRequest(socket, mgr, world, playerList, configuration, debugger);
+                    WebServerRequest requestThread = new WebServerRequest(socket, this);
                     requestThread.start();
                 } catch (IOException e) {
                     log.info("map WebServer.run() stops with IOException");
@@ -59,7 +47,7 @@ public class WebServer extends Thread {
             }
             log.info("map WebServer run() exiting");
         } catch (Exception ex) {
-            debugger.error("Exception on WebServer-thread: " + ex.toString());
+            log.log(Level.SEVERE, "Exception on WebServer-thread", ex);
         }
     }
 
