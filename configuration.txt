@@ -31,6 +31,7 @@ web:
     showchatballoons: true
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
+    focuschatballoons: false
     
     # The name of the map shown when opening Dynmap's page (must be in menu).
     defaultmap: defaultmap

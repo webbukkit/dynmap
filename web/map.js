@@ -323,6 +323,7 @@ DynMap.prototype = {
 			popup.popupTime = now.getTime();
 			if (!popup.infoWindow) {
 				popup.infoWindow = new google.maps.InfoWindow({
+					disableAutoPan: me.options.focuschatballoons || false
 				    content: htmlMessage
 				});
 			} else {
