@@ -1,5 +1,7 @@
 package org.dynmap.web;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -39,6 +41,35 @@ public class Json {
                 sb.append(stringifyJson(l.get(i)));
             }
             sb.append("]");
+            return sb.toString();
+        } else if (o instanceof Object) /* TODO: Always true, maybe interface? */ {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            boolean first = true;
+            
+            Class<?> c = o.getClass();
+            for(Field field : c.getFields()) {
+                if (!Modifier.isPublic(field.getModifiers()))
+                    continue;
+                String fieldName = field.getName();
+                Object fieldValue;
+                try {
+                     fieldValue = field.get(o);
+                } catch (IllegalArgumentException e) {
+                    continue;
+                } catch (IllegalAccessException e) {
+                    continue;
+                }
+                
+                if (first)
+                    first = false;
+                else
+                    sb.append(",");
+                sb.append(stringifyJson(fieldName));
+                sb.append(": ");
+                sb.append(stringifyJson(fieldValue));
+            }
+            sb.append("}");
             return sb.toString();
         } else {
             return "undefined";
