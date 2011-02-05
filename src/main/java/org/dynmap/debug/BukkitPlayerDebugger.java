@@ -68,13 +68,13 @@ public class BukkitPlayerDebugger implements Debugger {
 	
 	public synchronized void error(String message) {
 		sendToDebuggees(prepend + ChatColor.RED + message);
-		if (isLogging) log.log(Level.SEVERE, prepend + message);
+		log.log(Level.SEVERE, prepend + message);
 	}
 	
 	public synchronized void error(String message, Throwable thrown) {
 		sendToDebuggees(prepend + ChatColor.RED + message);
 		sendToDebuggees(thrown.toString());
-		if (isLogging) log.log(Level.SEVERE, prepend + message);
+		log.log(Level.SEVERE, prepend + message);
 	}
 	
 	protected class CommandListener extends PlayerListener {

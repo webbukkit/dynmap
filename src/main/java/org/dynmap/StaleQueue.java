@@ -25,6 +25,10 @@ public class StaleQueue {
 		tileUpdates = new LinkedList<TileUpdate>();
 	}
 	
+	public int size() {
+		return staleTilesQueue.size();
+	}
+	
 	/* put a MapTile that needs to be regenerated on the list of stale tiles */
 	public boolean pushStaleTile(MapTile m)
 	{
