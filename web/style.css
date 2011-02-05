@@ -181,3 +181,8 @@ a, a:visited, label {
 	height: 15px;
 	margin-left: 5px;
 }
+
+.tile img {
+	image-rendering: -moz-crisp-edges;
+	-ms-interpolation-mode: nearest-neighbor;
+}
