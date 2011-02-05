@@ -14,7 +14,7 @@ public class HttpResponse {
     private OutputStream body;
     public OutputStream getBody() throws IOException {
         if (body != null) {
-            WebServerRequest.writeResponseHeader(body, this);
+            HttpServerConnection.writeResponseHeader(body, this);
             OutputStream b = body;
             body = null;
             return b;

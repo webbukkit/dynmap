@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebServerRequest extends Thread {
+public class HttpServerConnection extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
     private Socket socket;
-    private WebServer server;
+    private HttpServer server;
 
-    public WebServerRequest(Socket socket, WebServer server) {
+    public HttpServerConnection(Socket socket, HttpServer server) {
         this.socket = socket;
         this.server = server;
     }

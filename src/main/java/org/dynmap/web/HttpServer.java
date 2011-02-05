@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class WebServer extends Thread {
+public class HttpServer extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
     private ServerSocket sock = null;
@@ -21,7 +21,7 @@ public class WebServer extends Thread {
 
     public SortedMap<String, HttpHandler> handlers = new TreeMap<String, HttpHandler>(Collections.reverseOrder());
 
-    public WebServer(InetAddress bindAddress, int port) {
+    public HttpServer(InetAddress bindAddress, int port) {
         this.bindAddress = bindAddress;
         this.port = port;
     }
@@ -38,7 +38,7 @@ public class WebServer extends Thread {
             while (running) {
                 try {
                     Socket socket = sock.accept();
-                    WebServerRequest requestThread = new WebServerRequest(socket, this);
+                    HttpServerConnection requestThread = new HttpServerConnection(socket, this);
                     requestThread.start();
                 } catch (IOException e) {
                     log.info("map WebServer.run() stops with IOException");

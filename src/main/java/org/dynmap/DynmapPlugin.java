@@ -17,7 +17,7 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.debug.BukkitPlayerDebugger;
-import org.dynmap.web.WebServer;
+import org.dynmap.web.HttpServer;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
@@ -26,7 +26,7 @@ public class DynmapPlugin extends JavaPlugin {
 
     protected static final Logger log = Logger.getLogger("Minecraft");
 
-    private WebServer webServer = null;
+    private HttpServer webServer = null;
     private MapManager mapManager = null;
     private PlayerList playerList;
 
@@ -47,7 +47,7 @@ public class DynmapPlugin extends JavaPlugin {
         return mapManager;
     }
 
-    public WebServer getWebServer() {
+    public HttpServer getWebServer() {
         return webServer;
     }
 
@@ -75,7 +75,7 @@ public class DynmapPlugin extends JavaPlugin {
         }
         int port = configuration.getInt("webserver-port", 8123);
 
-        webServer = new WebServer(bindAddress, port);
+        webServer = new HttpServer(bindAddress, port);
         webServer.handlers.put("/", new FilesystemHandler(mapManager.webDirectory));
         webServer.handlers.put("/tiles/", new FilesystemHandler(mapManager.tileDirectory));
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getWorld()));
