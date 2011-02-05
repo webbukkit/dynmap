@@ -1,5 +1,6 @@
 package org.dynmap.web;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,13 +8,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -33,6 +43,8 @@ public class WebServerRequest extends Thread {
     private World world;
     private PlayerList playerList;
     private ConfigurationNode configuration;
+    
+    public SortedMap<String, HttpHandler> handlers = new TreeMap<String, HttpHandler>(Collections.reverseOrder());
 
     public WebServerRequest(Socket socket, MapManager mgr, World world, PlayerList playerList, ConfigurationNode configuration, Debugger debugger) {
         this.debugger = debugger;
@@ -41,6 +53,27 @@ public class WebServerRequest extends Thread {
         this.world = world;
         this.playerList = playerList;
         this.configuration = configuration;
+        
+        handlers.put("/", new HttpHandler() {
+            @Override
+            public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
+                response.fields.put("Content-Type", "text/plain");
+                BufferedOutputStream s = new BufferedOutputStream(response.getBody());
+                s.write("Hallo".getBytes());
+                s.flush();
+                s.close();
+            }
+        });
+        handlers.put("/test/", new HttpHandler() {
+            @Override
+            public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
+                response.fields.put("Content-Type", "text/plain");
+                BufferedOutputStream s = new BufferedOutputStream(response.getBody());
+                s.write("test".getBytes());
+                s.flush();
+                s.close();
+            }
+        });
     }
 
     private static void writeHttpHeader(BufferedOutputStream out, int statusCode, String statusText) throws IOException {
@@ -63,24 +96,90 @@ public class WebServerRequest extends Thread {
         out.write(10);
     }
 
+    private static Pattern requestHeaderLine = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+HTTP/(.+)$");
+    private static Pattern requestHeaderField = Pattern.compile("^([^:]+):\\s*(.+)$");
+    private static boolean readRequestHeader(InputStream in, HttpRequest request) throws IOException {
+        BufferedReader r = new BufferedReader(new InputStreamReader(in));
+        Matcher m = requestHeaderLine.matcher(r.readLine());
+        if (!m.matches())
+            return false;
+        request.method = m.group(1);
+        request.path = m.group(2);
+        request.version = m.group(3);
+        
+        String line;
+        while((line = r.readLine()) != null) {
+            log.info("Header line: " + line);
+            if (line.equals(""))
+                break;
+            m = requestHeaderField.matcher(line);
+            // Warning: unknown lines are ignored.
+            if (m.matches()) {
+                String fieldName = m.group(1);
+                String fieldValue = m.group(2);
+                // TODO: Does not support duplicate field-names.
+                request.fields.put(fieldName, fieldValue);
+            }
+        }
+        return true;
+    }
+    
+    public static void writeResponseHeader(OutputStream out, HttpResponse response) throws IOException {
+        BufferedOutputStream o = new BufferedOutputStream(out);
+        StringBuilder sb = new StringBuilder();
+        sb.append(response.statusCode);
+        sb.append(" ");
+        sb.append(response.statusMessage);
+        sb.append("\n");
+        for(Entry<String,String> field : response.fields.entrySet()) {
+            sb.append(field.getKey());
+            sb.append(": ");
+            sb.append(field.getValue());
+            sb.append("\n");
+        }
+        sb.append("\n");
+        o.write(sb.toString().getBytes());
+    }
+    
     public void run() {
-        BufferedReader in = null;
-        BufferedOutputStream out = null;
         try {
             socket.setSoTimeout(30000);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new BufferedOutputStream(socket.getOutputStream());
 
-            String request = in.readLine();
-            if (request == null || !request.startsWith("GET ") || !(request.endsWith(" HTTP/1.0") || request.endsWith("HTTP/1.1"))) {
-                // Invalid request type (no "GET")
-                writeHttpHeader(out, 500, "Invalid Method.");
-                writeEndOfHeaders(out);
+            HttpRequest request = new HttpRequest();
+            log.info("Reading request...");
+            if (!readRequestHeader(socket.getInputStream(), request)) {
+                log.info("Invalid request header, aborting...");
+                socket.close();
                 return;
             }
 
-            String path = request.substring(4, request.length() - 9);
-            debugger.debug("request: " + path);
+            // TODO: Optimize HttpHandler-finding by using a real path-aware tree.
+            HttpResponse response = null;
+            for(Entry<String, HttpHandler> entry : handlers.entrySet()) {
+                String key = entry.getKey();
+                boolean directoryHandler = key.endsWith("/");
+                if (directoryHandler && request.path.startsWith(entry.getKey()) ||
+                        !directoryHandler && request.path.equals(entry.getKey())) {
+                    String path = request.path.substring(entry.getKey().length());
+                    
+                    response = new HttpResponse(socket.getOutputStream());
+                    entry.getValue().handle(path, request, response);
+                    break;
+                }
+            }
+            
+            if (response != null) {
+                String connection = response.fields.get("Connection");
+                if (connection != null && connection.equals("close")) {
+                    socket.close();
+                    return;
+                }
+            } else {
+                log.info("No handler found");
+                socket.close();
+                return;
+            }
+            /*debugger.debug("request: " + path);
             if (path.equals("/up/configuration")) {
                 handleConfiguration(out);
             } else if (path.startsWith("/up/")) {
@@ -89,36 +188,13 @@ public class WebServerRequest extends Thread {
                 handleMapToDirectory(out, path.substring(6), mgr.tileDirectory);
             } else if (path.startsWith("/")) {
                 handleMapToDirectory(out, path, mgr.webDirectory);
-            }
-            out.flush();
-            out.close();
+            }*/
         } catch (IOException e) {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (Exception anye) {
-                }
-            }
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception anye) {
-                }
-            }
-        } catch (Exception ex) {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (Exception anye) {
-                }
-            }
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception anye) {
-                }
-            }
-            debugger.error("Exception on WebRequest-thread: " + ex.toString());
+            try { socket.close(); } catch(IOException ex) { }
+        } catch (Exception e) {
+            try { socket.close(); } catch(IOException ex) { }
+            debugger.error("Exception on WebRequest-thread: " + e.toString());
+            e.printStackTrace();
         }
     }
 
