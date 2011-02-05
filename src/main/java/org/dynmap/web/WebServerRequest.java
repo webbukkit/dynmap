@@ -56,7 +56,7 @@ public class WebServerRequest extends Thread {
         this.configuration = configuration;
         
         handlers.put("/", new FilesystemHandler(mgr.webDirectory));
-        handlers.put("/tiles/", new FilesystemHandler(mgr.webDirectory));
+        handlers.put("/tiles/", new FilesystemHandler(mgr.tileDirectory));
         handlers.put("/up/", new ClientUpdateHandler());
         handlers.put("/up/configuration", new ClientConfigurationHandler());
         handlers.put("/test/", new HttpHandler() {
@@ -84,7 +84,6 @@ public class WebServerRequest extends Thread {
         
         String line;
         while((line = r.readLine()) != null) {
-            log.info("Header line: " + line);
             if (line.equals(""))
                 break;
             m = requestHeaderField.matcher(line);
@@ -124,9 +123,7 @@ public class WebServerRequest extends Thread {
             socket.setSoTimeout(30000);
 
             HttpRequest request = new HttpRequest();
-            log.info("Reading request...");
             if (!readRequestHeader(socket.getInputStream(), request)) {
-                log.info("Invalid request header, aborting...");
                 socket.close();
                 return;
             }
@@ -161,7 +158,6 @@ public class WebServerRequest extends Thread {
                     return;
                 }
             } else {
-                log.info("No handler found");
                 socket.close();
                 return;
             }
@@ -241,9 +237,9 @@ public class WebServerRequest extends Thread {
             int current = (int) (System.currentTimeMillis() / 1000);
             long cutoff = 0;
 
-            if (path.charAt(0) == '/') {
+            if (path.length() > 0) {
                 try {
-                    cutoff = ((long) Integer.parseInt(path.substring(1))) * 1000;
+                    cutoff = ((long) Integer.parseInt(path)) * 1000;
                 } catch (NumberFormatException e) {
                 }
             }
