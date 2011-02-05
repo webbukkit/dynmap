@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import org.dynmap.web.FileHandler;
 
 public class FilesystemHandler extends FileHandler {
     private File root;

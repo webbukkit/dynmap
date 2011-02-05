@@ -2,7 +2,6 @@ package org.dynmap.web.handlers;
 
 import java.io.InputStream;
 
-import org.dynmap.web.FileHandler;
 
 public class JarFileHandler extends FileHandler {
     private String root;
