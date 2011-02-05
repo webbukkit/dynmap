@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,16 +55,10 @@ public class WebServerRequest extends Thread {
         this.playerList = playerList;
         this.configuration = configuration;
         
-        handlers.put("/", new HttpHandler() {
-            @Override
-            public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
-                response.fields.put("Content-Type", "text/plain");
-                BufferedOutputStream s = new BufferedOutputStream(response.getBody());
-                s.write("Hallo".getBytes());
-                s.flush();
-                s.close();
-            }
-        });
+        handlers.put("/", new FilesystemHandler(mgr.webDirectory));
+        handlers.put("/tiles/", new FilesystemHandler(mgr.webDirectory));
+        handlers.put("/up/", new ClientUpdateHandler());
+        handlers.put("/up/configuration", new ClientConfigurationHandler());
         handlers.put("/test/", new HttpHandler() {
             @Override
             public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
@@ -74,26 +69,6 @@ public class WebServerRequest extends Thread {
                 s.close();
             }
         });
-    }
-
-    private static void writeHttpHeader(BufferedOutputStream out, int statusCode, String statusText) throws IOException {
-        out.write("HTTP/1.0 ".getBytes());
-        out.write(Integer.toString(statusCode).getBytes());
-        out.write((" " + statusText + "\r\n").getBytes());
-    }
-
-    private static void writeHeaderField(BufferedOutputStream out, String name, String value) throws IOException {
-        out.write(name.getBytes());
-        out.write((int) ':');
-        out.write((int) ' ');
-        out.write(value.getBytes());
-        out.write(13);
-        out.write(10);
-    }
-
-    private static void writeEndOfHeaders(BufferedOutputStream out) throws IOException {
-        out.write(13);
-        out.write(10);
     }
 
     private static Pattern requestHeaderLine = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+HTTP/(.+)$");
@@ -127,6 +102,9 @@ public class WebServerRequest extends Thread {
     public static void writeResponseHeader(OutputStream out, HttpResponse response) throws IOException {
         BufferedOutputStream o = new BufferedOutputStream(out);
         StringBuilder sb = new StringBuilder();
+        sb.append("HTTP/");
+        sb.append(response.version);
+        sb.append(" ");
         sb.append(response.statusCode);
         sb.append(" ");
         sb.append(response.statusMessage);
@@ -169,8 +147,16 @@ public class WebServerRequest extends Thread {
             }
             
             if (response != null) {
+                if (response.fields.get("Content-Length") == null) {
+                    response.fields.put("Content-Length", "0");
+                    OutputStream out = response.getBody();
+                    if (out != null) {
+                        out.close();
+                    }
+                }
+                
                 String connection = response.fields.get("Connection");
-                if (connection != null && connection.equals("close")) {
+                if (connection == null || connection.equals("close")) {
                     socket.close();
                     return;
                 }
@@ -179,16 +165,6 @@ public class WebServerRequest extends Thread {
                 socket.close();
                 return;
             }
-            /*debugger.debug("request: " + path);
-            if (path.equals("/up/configuration")) {
-                handleConfiguration(out);
-            } else if (path.startsWith("/up/")) {
-                handleUp(out, path.substring(3));
-            } else if (path.startsWith("/tiles/")) {
-                handleMapToDirectory(out, path.substring(6), mgr.tileDirectory);
-            } else if (path.startsWith("/")) {
-                handleMapToDirectory(out, path, mgr.webDirectory);
-            }*/
         } catch (IOException e) {
             try { socket.close(); } catch(IOException ex) { }
         } catch (Exception e) {
@@ -208,12 +184,11 @@ public class WebServerRequest extends Thread {
         } else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
             return o.toString();
         } else if (o instanceof LinkedHashMap<?, ?>) {
-            @SuppressWarnings("unchecked")
-            LinkedHashMap<String, Object> m = (LinkedHashMap<String, Object>) o;
+            LinkedHashMap<?, ?> m = (LinkedHashMap<?, ?>) o;
             StringBuilder sb = new StringBuilder();
             sb.append("{");
             boolean first = true;
-            for (String key : m.keySet()) {
+            for (Object key : m.keySet()) {
                 if (first)
                     first = false;
                 else
@@ -226,8 +201,7 @@ public class WebServerRequest extends Thread {
             sb.append("}");
             return sb.toString();
         } else if (o instanceof ArrayList<?>) {
-            @SuppressWarnings("unchecked")
-            ArrayList<Object> l = (ArrayList<Object>) o;
+            ArrayList<?> l = (ArrayList<?>) o;
             StringBuilder sb = new StringBuilder();
             int count = 0;
             for (int i = 0; i < l.size(); i++) {
@@ -241,146 +215,104 @@ public class WebServerRequest extends Thread {
         }
     }
 
-    public void handleConfiguration(BufferedOutputStream out) throws IOException {
+    
+    public class ClientConfigurationHandler implements HttpHandler {
+        @Override
+        public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
+            String s = stringifyJson(configuration.getProperty("web"));
 
-        String s = stringifyJson(configuration.getProperty("web"));
-
-        byte[] bytes = s.getBytes();
-        String dateStr = new Date().toString();
-        writeHttpHeader(out, 200, "OK");
-        writeHeaderField(out, "Date", dateStr);
-        writeHeaderField(out, "Content-Type", "text/plain");
-        writeHeaderField(out, "Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
-        writeHeaderField(out, "Last-modified", dateStr);
-        writeHeaderField(out, "Content-Length", Integer.toString(bytes.length));
-        writeEndOfHeaders(out);
-        out.write(bytes);
+            byte[] bytes = s.getBytes();
+            String dateStr = new Date().toString();
+            
+            response.fields.put("Date", dateStr);
+            response.fields.put("Content-Type", "text/plain");
+            response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
+            response.fields.put("Last-modified", dateStr);
+            response.fields.put("Content-Length", Integer.toString(bytes.length));
+            BufferedOutputStream out = new BufferedOutputStream(response.getBody());
+            out.write(s.getBytes());
+            out.flush();
+        }
     }
 
-    public void handleUp(BufferedOutputStream out, String path) throws IOException {
-        int current = (int) (System.currentTimeMillis() / 1000);
-        long cutoff = 0;
+    public class ClientUpdateHandler implements HttpHandler {
+        @Override
+        public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
+            int current = (int) (System.currentTimeMillis() / 1000);
+            long cutoff = 0;
 
-        if (path.charAt(0) == '/') {
-            try {
-                cutoff = ((long) Integer.parseInt(path.substring(1))) * 1000;
-            } catch (NumberFormatException e) {
+            if (path.charAt(0) == '/') {
+                try {
+                    cutoff = ((long) Integer.parseInt(path.substring(1))) * 1000;
+                } catch (NumberFormatException e) {
+                }
             }
-        }
 
-        StringBuilder sb = new StringBuilder();
-        long relativeTime = world.getTime() % 24000;
-        sb.append(current + " " + relativeTime + "\n");
+            StringBuilder sb = new StringBuilder();
+            long relativeTime = world.getTime() % 24000;
+            sb.append(current + " " + relativeTime + "\n");
 
-        Player[] players = playerList.getVisiblePlayers();
-        for (Player player : players) {
-            sb.append("player " + player.getName() + " " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
-        }
-
-        TileUpdate[] tileUpdates = mgr.staleQueue.getTileUpdates(cutoff);
-        for (TileUpdate tu : tileUpdates) {
-            sb.append("tile " + tu.tile.getName() + "\n");
-        }
-
-        ChatQueue.ChatMessage[] messages = mgr.chatQueue.getChatMessages(cutoff);
-        for (ChatQueue.ChatMessage cu : messages) {
-            sb.append("chat " + cu.playerName + " " + cu.message + "\n");
-        }
-
-        debugger.debug("Sending " + players.length + " players, " + tileUpdates.length + " tile-updates, and " + messages.length + " chats. " + path + ";" + cutoff);
-
-        byte[] bytes = sb.toString().getBytes();
-
-        String dateStr = new Date().toString();
-        writeHttpHeader(out, 200, "OK");
-        writeHeaderField(out, "Date", dateStr);
-        writeHeaderField(out, "Content-Type", "text/plain");
-        writeHeaderField(out, "Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
-        writeHeaderField(out, "Last-modified", dateStr);
-        writeHeaderField(out, "Content-Length", Integer.toString(bytes.length));
-        writeEndOfHeaders(out);
-        out.write(bytes);
-    }
-
-    private byte[] readBuffer = new byte[40960];
-
-    public void writeFile(BufferedOutputStream out, String path, InputStream fileInput) throws IOException {
-        int dotindex = path.lastIndexOf('.');
-        String extension = null;
-        if (dotindex > 0)
-            extension = path.substring(dotindex);
-
-        writeHttpHeader(out, 200, "OK");
-        writeHeaderField(out, "Content-Type", getMimeTypeFromExtension(extension));
-        writeHeaderField(out, "Connection", "close");
-        writeEndOfHeaders(out);
-        try {
-            int readBytes;
-            while ((readBytes = fileInput.read(readBuffer)) > 0) {
-                out.write(readBuffer, 0, readBytes);
+            Player[] players = playerList.getVisiblePlayers();
+            for (Player player : players) {
+                sb.append("player " + player.getName() + " " + player.getLocation().getX() + " " + player.getLocation().getY() + " " + player.getLocation().getZ() + "\n");
             }
-        } catch (IOException e) {
-            fileInput.close();
-            throw e;
+
+            TileUpdate[] tileUpdates = mgr.staleQueue.getTileUpdates(cutoff);
+            for (TileUpdate tu : tileUpdates) {
+                sb.append("tile " + tu.tile.getName() + "\n");
+            }
+
+            ChatQueue.ChatMessage[] messages = mgr.chatQueue.getChatMessages(cutoff);
+            for (ChatQueue.ChatMessage cu : messages) {
+                sb.append("chat " + cu.playerName + " " + cu.message + "\n");
+            }
+
+            debugger.debug("Sending " + players.length + " players, " + tileUpdates.length + " tile-updates, and " + messages.length + " chats. " + path + ";" + cutoff);
+
+            byte[] bytes = sb.toString().getBytes();
+
+            String dateStr = new Date().toString();
+            response.fields.put("Date", dateStr);
+            response.fields.put("Content-Type", "text/plain");
+            response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
+            response.fields.put("Last-modified", dateStr);
+            response.fields.put("Content-Length", Integer.toString(bytes.length));
+            BufferedOutputStream out = new BufferedOutputStream(response.getBody());
+            out.write(bytes);
+            out.flush();
         }
-        fileInput.close();
     }
 
-    public String getFilePath(String path) {
-        int qmark = path.indexOf('?');
-        if (qmark >= 0)
-            path = path.substring(0, qmark);
-        path = path.substring(1);
-
-        if (path.startsWith("/") || path.startsWith("."))
+    public class JarFileHandler extends FileHandler {
+        private String root;
+        public JarFileHandler(String root) {
+            if (root.endsWith("/")) root = root.substring(0, root.length()-1);
+            this.root = root;
+        }
+        @Override
+        protected InputStream getFileInput(String path) {
+            return this.getClass().getResourceAsStream(root + "/" + path);
+        }
+    }
+    
+    public class FilesystemHandler extends FileHandler {
+        private File root;
+        public FilesystemHandler(File root) {
+            if (!root.isDirectory())
+                throw new IllegalArgumentException();
+            this.root = root;
+        }
+        @Override
+        protected InputStream getFileInput(String path) {
+            File file = new File(root, path);
+            if (file.getAbsolutePath().startsWith(root.getAbsolutePath()) && file.isFile()) {
+                try {
+                    return new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    return null;
+                }
+            }
             return null;
-        if (path.length() == 0)
-            path = "index.html";
-        return path;
-    }
-
-    public void handleMapToJar(BufferedOutputStream out, String path) throws IOException {
-        path = getFilePath(path);
-        if (path != null) {
-            InputStream s = this.getClass().getResourceAsStream("/web/" + path);
-            if (s != null) {
-                writeFile(out, path, s);
-                return;
-            }
         }
-        writeHttpHeader(out, 404, "Not found");
-        writeEndOfHeaders(out);
-    }
-
-    public void handleMapToDirectory(BufferedOutputStream out, String path, File directory) throws IOException {
-        path = getFilePath(path);
-        if (path != null) {
-            File tileFile = new File(directory, path);
-
-            if (tileFile.getAbsolutePath().startsWith(directory.getAbsolutePath()) && tileFile.isFile()) {
-                FileInputStream s = new FileInputStream(tileFile);
-                writeFile(out, path, s);
-                return;
-            }
-        }
-        writeHttpHeader(out, 404, "Not found");
-        writeEndOfHeaders(out);
-    }
-
-    private static Map<String, String> mimes = new HashMap<String, String>();
-    static {
-        mimes.put(".html", "text/html");
-        mimes.put(".htm", "text/html");
-        mimes.put(".js", "text/javascript");
-        mimes.put(".png", "image/png");
-        mimes.put(".css", "text/css");
-        mimes.put(".txt", "text/plain");
-    }
-
-    public static String getMimeTypeFromExtension(String extension) {
-        String m = mimes.get(extension);
-        if (m != null)
-            return m;
-        return "application/octet-steam";
     }
 }

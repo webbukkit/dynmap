@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
+    public String version = "1.0";
     public int statusCode = 200;
     public String statusMessage = "OK";
     public Map<String, String> fields = new HashMap<String, String>();
