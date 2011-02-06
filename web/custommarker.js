@@ -15,7 +15,8 @@ CustomMarker.prototype = new google.maps.OverlayView();
 
 CustomMarker.prototype.draw = function() {
 	var me = this;
-	
+	if (this.removed)
+		return;
 	// Check if the div has been created.
 	var div = this.div_;
 	if (!div) {
@@ -85,5 +86,6 @@ CustomMarker.prototype.remove = function() {
 	if (this.div_) {
 	this.div_.parentNode.removeChild(this.div_);
 	this.div_ = null;
+	this.removed = true;
 	}
 };

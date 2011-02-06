@@ -66,8 +66,9 @@ public abstract class FileHandler implements HttpHandler {
         }
         
         String extension = getExtension(path);
+        String mimeType = getMimeTypeFromExtension(extension);
 
-        response.fields.put("Content-Type", getMimeTypeFromExtension(extension));
+        response.fields.put("Content-Type", mimeType);
         response.fields.put("Connection", "close");
         OutputStream out = response.getBody();
         try {

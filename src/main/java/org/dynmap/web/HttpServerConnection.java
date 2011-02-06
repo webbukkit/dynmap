@@ -61,15 +61,16 @@ public class HttpServerConnection extends Thread {
         sb.append(response.statusCode);
         sb.append(" ");
         sb.append(response.statusMessage);
-        sb.append("\n");
+        sb.append("\r\n");
         for (Entry<String, String> field : response.fields.entrySet()) {
             sb.append(field.getKey());
             sb.append(": ");
             sb.append(field.getValue());
-            sb.append("\n");
+            sb.append("\r\n");
         }
-        sb.append("\n");
+        sb.append("\r\n");
         o.write(sb.toString().getBytes());
+        o.flush();
     }
 
     public void run() {
@@ -84,34 +85,41 @@ public class HttpServerConnection extends Thread {
 
             // TODO: Optimize HttpHandler-finding by using a real path-aware
             // tree.
-            HttpResponse response = null;
+            HttpHandler handler = null;
+            String relativePath = null;
             for (Entry<String, HttpHandler> entry : server.handlers.entrySet()) {
                 String key = entry.getKey();
                 boolean directoryHandler = key.endsWith("/");
                 if (directoryHandler && request.path.startsWith(entry.getKey()) || !directoryHandler && request.path.equals(entry.getKey())) {
-                    String path = request.path.substring(entry.getKey().length());
-
-                    response = new HttpResponse(socket.getOutputStream());
-                    entry.getValue().handle(path, request, response);
+                    relativePath = request.path.substring(entry.getKey().length());
+                    handler = entry.getValue();
                     break;
                 }
             }
 
-            if (response != null) {
-                if (response.fields.get("Content-Length") == null) {
-                    response.fields.put("Content-Length", "0");
-                    OutputStream out = response.getBody();
-                    if (out != null) {
-                        out.close();
-                    }
-                }
+            if (handler == null) {
+                socket.close();
+                return;
+            }
 
-                String connection = response.fields.get("Connection");
-                if (connection == null || connection.equals("close")) {
-                    socket.close();
-                    return;
-                }
-            } else {
+            HttpResponse response = new HttpResponse(socket.getOutputStream());
+
+            try {
+                handler.handle(relativePath, request, response);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "HttpHandler '" + handler + "' has thown an exception", e);
+                e.printStackTrace();
+                socket.close();
+                return;
+            }
+
+            if (response.fields.get("Content-Length") == null) {
+                response.fields.put("Content-Length", "0");
+                /* OutputStream out = */response.getBody();
+            }
+
+            String connection = response.fields.get("Connection");
+            if (connection != null && connection.equals("close")) {
                 socket.close();
                 return;
             }

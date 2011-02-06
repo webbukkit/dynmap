@@ -1,6 +1,7 @@
 package org.dynmap.kzedmap;
 
 import java.util.logging.Logger;
+
 import org.dynmap.MapTile;
 
 public class KzedMapTile extends MapTile {

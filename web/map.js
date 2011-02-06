@@ -198,65 +198,42 @@ DynMap.prototype = {
 		// TODO: is there a better place for this?
 		this.cleanPopups();
 		
-		$.ajax({
-			url: me.options.updateUrl + me.lasttimestamp,
-			success: function(res) {
-				if (!res) {
-					me.alertbox
-						.text('Invalid response')
-						.show();
-				}
-			
+		$.getJSON(me.options.updateUrl + me.lasttimestamp, function(update) {
 				me.alertbox.hide();
-				var rows = res.split('\n');
-	 			var row = splitArgs(rows[0], 'timestamp', 'servertime');
-				delete rows[0];
-				
-				me.lasttimestamp = row.timestamp;
-				me.clock.setTime(getMinecraftTime(row.servertime));
+			
+				me.lasttimestamp = update.timestamp;
+				me.clock.setTime(getMinecraftTime(update.servertime));
 
 				var typeVisibleMap = {};
 				var newmarkers = {};
 				
-				for(var rowIndex in rows) {
-					var line = rows[rowIndex];
-					row = splitArgs(line, 'type', 'name', 'posx', 'posy', 'posz');
+				$.each(update.players, function(index, player) {
+					var mi = {
+						id: 'player_' + player.name,
+						text: player.name,
+						type: 'player',
+						position: me.map.getProjection().fromWorldToLatLng(parseFloat(player.x), parseFloat(player.y), parseFloat(player.z)),
+						visible: true
+					};
 
-					if (!row.type) continue;
-					
-					swtch(row.type, {
+					me.updateMarker(mi);
+					newmarkers[mi.id] = mi;
+				});
+				
+				$.each(update.updates, function(index, update) {
+					swtch(update.type, {
 						tile: function() {
-							me.onTileUpdated(row.name);
-						}
-					  , chat: function() {
+							me.onTileUpdated(update.name);
+						},
+						chat: function() {
 						    if (!me.options.showchatballoons)
 						    	return;
-							var chats = line.split(' ');
-							var message = '';
-							for (var chatIndex = 2; chatIndex < chats.length; chatIndex++)
-							{
-								if (chatIndex > 2) message = message + " "; 
-								message = message + chats[chatIndex];
-							}
-							if (message.length > 0)
-							{
-								me.onPlayerChat(row.name, message);
-							}
+							me.onPlayerChat(update.playerName, update.message);
 						}
-					},
-					function() {
-						var mi = {
-							id: row.type + '_' + row.name,
-							text: row.name,
-							type: row.type,
-							position: me.map.getProjection().fromWorldToLatLng(parseFloat(row.posx), parseFloat(row.posy), parseFloat(row.posz)),
-							visible: true
-						};
-
-						me.updateMarker(mi);
-						newmarkers[mi.id] = mi;
+					}, function(type) {
+						console.log('Unknown type ', value, '!');
 					});
-				}
+				});
 	 
 				for(var m in me.markers) {
 					var marker = me.markers[m];
@@ -269,14 +246,13 @@ DynMap.prototype = {
 					}
 				}
 				setTimeout(function() { me.update(); }, me.options.updaterate);
-			},
-		error: function(request, statusText, ex) {
+			}, function(request, statusText, ex) {
 				me.alertbox
 					.text('Could not update map')
 					.show();
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}
-		});
+		);
 	},
 	cleanPopups: function() {
 		var POPUP_LIFE = 8000;

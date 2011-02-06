@@ -1,6 +1,7 @@
 package org.dynmap.kzedmap;
 
 import java.awt.image.BufferedImage;
+
 import org.dynmap.MapTile;
 
 public class KzedZoomedMapTile extends MapTile {

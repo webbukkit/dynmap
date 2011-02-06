@@ -8,9 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debugger;
 
@@ -21,7 +21,7 @@ public class MapManager extends Thread {
     private Debugger debugger;
     private MapType[] maps;
     public StaleQueue staleQueue;
-    public ChatQueue chatQueue;
+    public UpdateQueue updateQueue;
     public PlayerList playerList;
 
     /* lock for our data structures */
@@ -65,7 +65,7 @@ public class MapManager extends Thread {
         this.world = world;
         this.debugger = debugger;
         this.staleQueue = new StaleQueue();
-        this.chatQueue = new ChatQueue();
+        this.updateQueue = new UpdateQueue();
 
         tileDirectory = combinePaths(DynmapPlugin.dataRoot, configuration.getString("tilespath", "web/tiles"));
         webDirectory = combinePaths(DynmapPlugin.dataRoot, configuration.getString("webpath", "web"));
@@ -110,7 +110,7 @@ public class MapManager extends Thread {
                 debugger.debug("renderQueue: " + renderQueue.size() + "/" + found.size());
                 if (map.render(tile)) {
                     found.remove(tile);
-                    staleQueue.onTileUpdated(tile);
+                    updateQueue.pushUpdate(new Client.Tile(tile.getName()));
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
                         if (!(found.contains(adjTile) || map.isRendered(adjTile))) {
                             found.add(adjTile);
@@ -244,7 +244,7 @@ public class MapManager extends Thread {
 
                     debugger.debug("Rendering tile " + t + "...");
                     boolean isNonEmptyTile = t.getMap().render(t);
-                    staleQueue.onTileUpdated(t);
+                    updateQueue.pushUpdate(new Client.Tile(t.getName()));
 
                     if (isNonEmptyTile)
                         handleFullMapRender(t);
@@ -280,9 +280,5 @@ public class MapManager extends Thread {
     public void invalidateTile(MapTile tile) {
         debugger.debug("Invalidating tile " + tile.getName());
         staleQueue.pushStaleTile(tile);
-    }
-
-    public void addChatEvent(PlayerChatEvent event) {
-        chatQueue.pushChatMessage(event);
     }
 }

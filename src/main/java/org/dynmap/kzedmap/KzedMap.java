@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Logger;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.DynmapChunk;

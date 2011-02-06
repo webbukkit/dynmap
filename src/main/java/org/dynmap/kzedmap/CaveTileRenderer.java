@@ -2,6 +2,7 @@ package org.dynmap.kzedmap;
 
 import java.awt.Color;
 import java.util.Map;
+
 import org.bukkit.World;
 import org.dynmap.debug.Debugger;
 
