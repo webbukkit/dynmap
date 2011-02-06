@@ -1,5 +1,6 @@
 package org.dynmap.web;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
@@ -35,10 +36,22 @@ public class Json {
         } else if (o instanceof List<?>) {
             List<?> l = (List<?>) o;
             StringBuilder sb = new StringBuilder();
+            sb.append("[");
             int count = 0;
             for (int i = 0; i < l.size(); i++) {
-                sb.append(count++ == 0 ? "[" : ",");
+                if (count++ > 0) sb.append(",");
                 sb.append(stringifyJson(l.get(i)));
+            }
+            sb.append("]");
+            return sb.toString();
+        } else if (o.getClass().isArray()) {
+            int length = Array.getLength(o);
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            int count = 0;
+            for (int i = 0; i < length; i++) {
+                if (count++ > 0) sb.append(",");
+                sb.append(stringifyJson(Array.get(o, i)));
             }
             sb.append("]");
             return sb.toString();
