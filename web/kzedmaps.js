@@ -114,3 +114,5 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 		return tile.get(0);
 	}
 });
+
+maptypes.KzedMapType = function(configuration) { return new KzedMapType(configuration); };

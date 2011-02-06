@@ -1,5 +1,7 @@
 //if (!console) console = { log: function() {} }; 
 
+var maptypes = {};
+
 function splitArgs(s) {
 	var r = s.split(' ');
 	delete arguments[0];
@@ -87,8 +89,7 @@ DynMap.prototype = {
 		$.extend(me.options, configuration);
 		if (!me.options.maps) me.options.maps = {};
 		$.each(me.options.shownmaps, function(index, mapentry) {
-			var mapconstructor = eval(mapentry.type);
-			me.options.maps[mapentry.name] = new mapconstructor(mapentry);
+			me.options.maps[mapentry.name] = maptypes[mapentry.type](mapentry);
 		});
 	},
 	initialize: function() {
