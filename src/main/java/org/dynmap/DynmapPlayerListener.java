@@ -21,9 +21,11 @@ public class DynmapPlayerListener extends PlayerListener {
         String[] split = event.getMessage().split(" ");
         if (split[0].equalsIgnoreCase("/dynmap")) {
             if (split.length > 1) {
-                for(String s : (Iterable<String>)configuration.getProperty("disabledcommands")) {
-                    if (split[1].equals(s)) {
-                        return;
+                if (configuration.getProperty("disabledcommands") instanceof Iterable<?>) {
+                    for(String s : (Iterable<String>)configuration.getProperty("disabledcommands")) {
+                        if (split[1].equals(s)) {
+                            return;
+                        }
                     }
                 }
                 
