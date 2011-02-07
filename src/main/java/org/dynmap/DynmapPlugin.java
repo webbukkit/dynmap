@@ -40,7 +40,7 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public World getWorld() {
-        return getServer().getWorlds()[0];
+        return getServer().getWorlds().get(0);
     }
 
     public MapManager getMapManager() {
