@@ -19,6 +19,10 @@ webserver-bindaddress: 0.0.0.0
 # The TCP-port the webserver will listen on.
 webserver-port: 8123
 
+disabledcommands:
+  - fullrender
+  - fullrenderasync
+
 # The maptypes Dynmap will use to render.
 maps:
   - class: org.dynmap.kzedmap.KzedMap

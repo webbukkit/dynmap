@@ -3,14 +3,17 @@ package org.dynmap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.util.config.ConfigurationNode;
 
 public class DynmapPlayerListener extends PlayerListener {
     private MapManager mgr;
     private PlayerList playerList;
+    private ConfigurationNode configuration;
 
-    public DynmapPlayerListener(MapManager mgr, PlayerList playerList) {
+    public DynmapPlayerListener(MapManager mgr, PlayerList playerList, ConfigurationNode configuration) {
         this.mgr = mgr;
         this.playerList = playerList;
+        this.configuration = configuration;
     }
 
     @Override
@@ -18,6 +21,12 @@ public class DynmapPlayerListener extends PlayerListener {
         String[] split = event.getMessage().split(" ");
         if (split[0].equalsIgnoreCase("/dynmap")) {
             if (split.length > 1) {
+                for(String s : (Iterable<String>)configuration.getProperty("disabledcommands")) {
+                    if (split[1].equals(s)) {
+                        return;
+                    }
+                }
+                
                 if (split[1].equals("render")) {
                     Player player = event.getPlayer();
                     mgr.touch(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());

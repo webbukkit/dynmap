@@ -12,6 +12,7 @@ import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,6 +30,7 @@ public class DynmapPlugin extends JavaPlugin {
     private HttpServer webServer = null;
     private MapManager mapManager = null;
     private PlayerList playerList;
+    private Configuration configuration;
 
     private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
 
@@ -52,7 +54,7 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public void onEnable() {
-        Configuration configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
+        configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
         configuration.load();
 
         debugger.enable();
@@ -105,7 +107,8 @@ public class DynmapPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
 
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, new DynmapPlayerListener(mapManager, playerList), Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, new DynmapPlayerListener(mapManager, playerList), Priority.Normal, this);
+        PlayerListener playerListener = new DynmapPlayerListener(mapManager, playerList, configuration);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
     }
 }
