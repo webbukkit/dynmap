@@ -54,9 +54,6 @@ public class DynmapPlayerListener extends PlayerListener {
                 } else if (split[1].equals("fullrender")) {
                     Player player = event.getPlayer();
                     mgr.renderFullWorld(player.getLocation());
-                } else if (split[1].equals("fullrenderasync")) {
-                    Player player = event.getPlayer();
-                    mgr.renderFullWorldAsync(player.getLocation());
                 }
             }
         }

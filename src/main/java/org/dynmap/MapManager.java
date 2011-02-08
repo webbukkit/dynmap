@@ -78,27 +78,16 @@ public class MapManager extends Thread {
         maps = loadMapTypes(configuration);
     }
 
-    void renderFullWorldAsync(Location l) {
-        fullmapTiles.clear();
-        fullmapTilesRendered.clear();
-        debugger.debug("Full render starting...");
-        for (MapType map : maps) {
-            for (MapTile tile : map.getTiles(l)) {
-                fullmapTiles.add(tile);
-                invalidateTile(tile);
-            }
-        }
-        debugger.debug("Full render finished.");
-    }
-
     void renderFullWorld(Location l) {
         debugger.debug("Full render starting...");
         for (MapType map : maps) {
             HashSet<MapTile> found = new HashSet<MapTile>();
+            HashSet<MapTile> rendered = new HashSet<MapTile>();
             LinkedList<MapTile> renderQueue = new LinkedList<MapTile>();
+            LinkedList<DynmapChunk> loadedChunks = new LinkedList<DynmapChunk>();
 
             for (MapTile tile : map.getTiles(l)) {
-                if (!(found.contains(tile) || map.isRendered(tile))) {
+                if (!found.contains(tile)) {
                     found.add(tile);
                     renderQueue.add(tile);
                 }
@@ -106,13 +95,29 @@ public class MapManager extends Thread {
             while (!renderQueue.isEmpty()) {
                 MapTile tile = renderQueue.pollFirst();
 
-                loadRequiredChunks(tile);
+                DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
+
+                // Unload old chunks.
+                while (loadedChunks.size() >= Math.max(0, 200 - requiredChunks.length)) {
+                    DynmapChunk c = loadedChunks.pollFirst();
+                    world.unloadChunk(c.x, c.y, false, true);
+                }
+
+                // Load the required chunks.
+                for (DynmapChunk chunk : requiredChunks) {
+                    boolean wasLoaded = world.isChunkLoaded(chunk.x, chunk.y);
+                    world.loadChunk(chunk.x, chunk.y, false);
+                    if (!wasLoaded)
+                        loadedChunks.add(chunk);
+                }
+
                 debugger.debug("renderQueue: " + renderQueue.size() + "/" + found.size());
                 if (map.render(tile)) {
                     found.remove(tile);
+                    rendered.add(tile);
                     updateQueue.pushUpdate(new Client.Tile(tile.getName()));
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
-                        if (!(found.contains(adjTile) || map.isRendered(adjTile))) {
+                        if (!(found.contains(adjTile) || rendered.contains(adjTile))) {
                             found.add(adjTile);
                             renderQueue.add(adjTile);
                         }
@@ -121,62 +126,14 @@ public class MapManager extends Thread {
                 found.remove(tile);
                 System.gc();
             }
-        }
-        debugger.debug("Full render finished.");
-    }
 
-    public HashSet<MapTile> fullmapTiles = new HashSet<MapTile>();
-    public boolean fullmapRenderStarting = false;
-    public HashSet<MapTile> fullmapTilesRendered = new HashSet<MapTile>();
-
-    void handleFullMapRender(MapTile tile) {
-        if (!fullmapTiles.contains(tile)) {
-            debugger.debug("Non fullmap-render tile: " + tile);
-            return;
-        }
-        fullmapTilesRendered.add(tile);
-        MapType map = tile.getMap();
-        MapTile[] adjecenttiles = map.getAdjecentTiles(tile);
-        for (int i = 0; i < adjecenttiles.length; i++) {
-            MapTile adjecentTile = adjecenttiles[i];
-            if (!fullmapTiles.contains(adjecentTile)) {
-                fullmapTiles.add(adjecentTile);
-                staleQueue.pushStaleTile(adjecentTile);
+            // Unload remaining chunks to clean-up.
+            while (!loadedChunks.isEmpty()) {
+                DynmapChunk c = loadedChunks.pollFirst();
+                world.unloadChunk(c.x, c.y, false, true);
             }
         }
-        debugger.debug("Queue size: " + staleQueue.size() + "+" + fullmapTilesRendered.size() + "/" + fullmapTiles.size());
-    }
-
-    private boolean hasEnoughMemory() {
-        return Runtime.getRuntime().freeMemory() >= 100 * 1024 * 1024;
-    }
-
-    private void waitForMemory() {
-        if (!hasEnoughMemory()) {
-            debugger.debug("Waiting for memory...");
-            // Wait until there is at least 50mb of free memory.
-            do {
-                System.gc();
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while (!hasEnoughMemory());
-            debugger.debug(Runtime.getRuntime().freeMemory() / (1024 * 1024) + "MB of memory free, will continue...");
-        }
-    }
-
-    private void loadRequiredChunks(MapTile tile) {
-        if (!loadChunks)
-            return;
-        waitForMemory();
-
-        // Actually load the chunks.
-        for (DynmapChunk chunk : tile.getMap().getRequiredChunks(tile)) {
-            if (!world.isChunkLoaded(chunk.x, chunk.y))
-                world.loadChunk(chunk.x, chunk.y);
-        }
+        debugger.debug("Full render finished.");
     }
 
     private MapType[] loadMapTypes(ConfigurationNode configuration) {
@@ -240,14 +197,9 @@ public class MapManager extends Thread {
             while (running) {
                 MapTile t = staleQueue.popStaleTile();
                 if (t != null) {
-                    loadRequiredChunks(t);
-
                     debugger.debug("Rendering tile " + t + "...");
                     boolean isNonEmptyTile = t.getMap().render(t);
                     updateQueue.pushUpdate(new Client.Tile(t.getName()));
-
-                    if (isNonEmptyTile)
-                        handleFullMapRender(t);
 
                     try {
                         Thread.sleep(renderWait);

@@ -3,10 +3,6 @@
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 
-# When enabled Dynmap will preload chunks before rendering a tile. This will avoid Dynmap rendering unloaded (=partially blue) tiles.
-# This WILL impact memory and diskio.
-loadChunks: false
-
 # The path where the tile-files are placed.
 tilepath: web/tiles
 
