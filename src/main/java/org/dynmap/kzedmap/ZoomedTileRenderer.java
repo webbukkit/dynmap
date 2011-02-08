@@ -19,26 +19,38 @@ public class ZoomedTileRenderer {
     }
 
     public void render(KzedZoomedMapTile zt, String outputPath) {
-        KzedMapTile t = zt.originalTile;
-        String zoomPath = new File(new File(outputPath), zt.getName() + ".png").getPath();
-        render(t.px, t.py, zt.getTileX(), zt.getTileY(), zt.unzoomedImage, zoomPath);
-    }
-
-    public void render(int px, int py, int zpx, int zpy, BufferedImage image, String zoomPath) {
-        BufferedImage zIm = null;
-        debugger.debug("Trying to load zoom-out tile: " + zoomPath);
+        KzedMapTile originalTile = zt.originalTile;
+        int px = originalTile.px;
+        int py = originalTile.py;
+        int zpx = zt.getTileX();
+        int zpy = zt.getTileY();
+        
+        BufferedImage image = null;
         try {
-            File file = new File(zoomPath);
-            zIm = ImageIO.read(file);
+            image = ImageIO.read(new File(new File(outputPath), originalTile.getName() + ".png"));
         } catch (IOException e) {
+            return;
+        }
+        
+        if (image == null) {
+            debugger.debug("Could not load original tile, won't render zoom-out tile.");
+            return;
+        }
+        
+        BufferedImage zIm = null;
+        File zoomFile = new File(new File(outputPath), zt.getName() + ".png");
+        try {
+            zIm = ImageIO.read(zoomFile);
+        } catch (IOException e) {
+            return;
         }
 
         if (zIm == null) {
             /* create new one */
             zIm = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
-            debugger.debug("New zoom-out tile created " + zoomPath);
+            debugger.debug("New zoom-out tile created " + zt.getName());
         } else {
-            debugger.debug("Loaded zoom-out tile from " + zoomPath);
+            debugger.debug("Loaded zoom-out tile from " + zt.getName());
         }
 
         /* update zoom-out tile */
@@ -66,13 +78,12 @@ public class ZoomedTileRenderer {
 
         /* save zoom-out tile */
         try {
-            File file = new File(zoomPath);
-            ImageIO.write(zIm, "png", file);
-            debugger.debug("Saved zoom-out tile at " + zoomPath);
+            ImageIO.write(zIm, "png", zoomFile);
+            debugger.debug("Saved zoom-out tile at " + zoomFile.getName());
         } catch (IOException e) {
-            debugger.error("Failed to save zoom-out tile: " + zoomPath, e);
+            debugger.error("Failed to save zoom-out tile: " + zoomFile.getName(), e);
         } catch (java.lang.NullPointerException e) {
-            debugger.error("Failed to save zoom-out tile (NullPointerException): " + zoomPath, e);
+            debugger.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile.getName(), e);
         }
         zIm.flush();
     }

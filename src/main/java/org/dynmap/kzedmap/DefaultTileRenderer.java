@@ -93,8 +93,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
         /* save the generated tile */
         saveTile(tile, im, path);
-
-        ((KzedMap) tile.getMap()).invalidateTile(new KzedZoomedMapTile((KzedMap) tile.getMap(), im, tile));
+        im.flush();
+        ((KzedMap) tile.getMap()).invalidateTile(new KzedZoomedMapTile((KzedMap) tile.getMap(), tile));
 
         return !isempty;
     }

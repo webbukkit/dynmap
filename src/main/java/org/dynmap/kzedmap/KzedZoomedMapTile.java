@@ -10,12 +10,10 @@ public class KzedZoomedMapTile extends MapTile {
         return "z" + originalTile.renderer.getName() + "_" + getTileX() + "_" + getTileY();
     }
 
-    public BufferedImage unzoomedImage;
     public KzedMapTile originalTile;
 
-    public KzedZoomedMapTile(KzedMap map, BufferedImage unzoomedImage, KzedMapTile original) {
+    public KzedZoomedMapTile(KzedMap map, KzedMapTile original) {
         super(map);
-        this.unzoomedImage = unzoomedImage;
         this.originalTile = original;
     }
 
