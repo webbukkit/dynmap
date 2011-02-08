@@ -1,7 +1,6 @@
 package org.dynmap.web.handlers;
 
 import java.io.BufferedOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ public class ClientConfigurationHandler implements HttpHandler {
         this.configuration = configuration;
     }
     @Override
-    public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
+    public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         String s = Json.stringifyJson(configuration);
 
         byte[] bytes = s.getBytes();

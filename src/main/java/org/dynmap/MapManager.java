@@ -79,61 +79,63 @@ public class MapManager extends Thread {
     }
 
     void renderFullWorld(Location l) {
-        debugger.debug("Full render starting...");
-        for (MapType map : maps) {
-            HashSet<MapTile> found = new HashSet<MapTile>();
-            HashSet<MapTile> rendered = new HashSet<MapTile>();
-            LinkedList<MapTile> renderQueue = new LinkedList<MapTile>();
-            LinkedList<DynmapChunk> loadedChunks = new LinkedList<DynmapChunk>();
-
-            for (MapTile tile : map.getTiles(l)) {
-                if (!found.contains(tile)) {
-                    found.add(tile);
-                    renderQueue.add(tile);
+        synchronized (lock) {
+            debugger.debug("Full render starting...");
+            for (MapType map : maps) {
+                HashSet<MapTile> found = new HashSet<MapTile>();
+                HashSet<MapTile> rendered = new HashSet<MapTile>();
+                LinkedList<MapTile> renderQueue = new LinkedList<MapTile>();
+                LinkedList<DynmapChunk> loadedChunks = new LinkedList<DynmapChunk>();
+    
+                for (MapTile tile : map.getTiles(l)) {
+                    if (!found.contains(tile)) {
+                        found.add(tile);
+                        renderQueue.add(tile);
+                    }
                 }
-            }
-            while (!renderQueue.isEmpty()) {
-                MapTile tile = renderQueue.pollFirst();
-
-                DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
-
-                // Unload old chunks.
-                while (loadedChunks.size() >= Math.max(0, 200 - requiredChunks.length)) {
+                while (!renderQueue.isEmpty()) {
+                    MapTile tile = renderQueue.pollFirst();
+    
+                    DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
+    
+                    // Unload old chunks.
+                    while (loadedChunks.size() >= Math.max(0, 200 - requiredChunks.length)) {
+                        DynmapChunk c = loadedChunks.pollFirst();
+                        world.unloadChunk(c.x, c.y, false, true);
+                    }
+    
+                    // Load the required chunks.
+                    for (DynmapChunk chunk : requiredChunks) {
+                        boolean wasLoaded = world.isChunkLoaded(chunk.x, chunk.y);
+                        world.loadChunk(chunk.x, chunk.y, false);
+                        if (!wasLoaded)
+                            loadedChunks.add(chunk);
+                    }
+    
+                    debugger.debug("renderQueue: " + renderQueue.size() + "/" + found.size());
+                    if (map.render(tile)) {
+                        found.remove(tile);
+                        rendered.add(tile);
+                        updateQueue.pushUpdate(new Client.Tile(tile.getName()));
+                        for (MapTile adjTile : map.getAdjecentTiles(tile)) {
+                            if (!(found.contains(adjTile) || rendered.contains(adjTile))) {
+                                found.add(adjTile);
+                                renderQueue.add(adjTile);
+                            }
+                        }
+                    }
+                    found.remove(tile);
+                    System.gc();
+                }
+    
+                // Unload remaining chunks to clean-up.
+                while (!loadedChunks.isEmpty()) {
                     DynmapChunk c = loadedChunks.pollFirst();
                     world.unloadChunk(c.x, c.y, false, true);
                 }
-
-                // Load the required chunks.
-                for (DynmapChunk chunk : requiredChunks) {
-                    boolean wasLoaded = world.isChunkLoaded(chunk.x, chunk.y);
-                    world.loadChunk(chunk.x, chunk.y, false);
-                    if (!wasLoaded)
-                        loadedChunks.add(chunk);
-                }
-
-                debugger.debug("renderQueue: " + renderQueue.size() + "/" + found.size());
-                if (map.render(tile)) {
-                    found.remove(tile);
-                    rendered.add(tile);
-                    updateQueue.pushUpdate(new Client.Tile(tile.getName()));
-                    for (MapTile adjTile : map.getAdjecentTiles(tile)) {
-                        if (!(found.contains(adjTile) || rendered.contains(adjTile))) {
-                            found.add(adjTile);
-                            renderQueue.add(adjTile);
-                        }
-                    }
-                }
-                found.remove(tile);
-                System.gc();
             }
-
-            // Unload remaining chunks to clean-up.
-            while (!loadedChunks.isEmpty()) {
-                DynmapChunk c = loadedChunks.pollFirst();
-                world.unloadChunk(c.x, c.y, false, true);
-            }
+            debugger.debug("Full render finished.");
         }
-        debugger.debug("Full render finished.");
     }
 
     private MapType[] loadMapTypes(ConfigurationNode configuration) {

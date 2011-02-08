@@ -56,30 +56,38 @@ public abstract class FileHandler implements HttpHandler {
     }
     
     @Override
-    public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
-        path = formatPath(path);
-        InputStream fileInput = getFileInput(path);
-        if (fileInput == null) {
-            response.statusCode = 404;
-            response.statusMessage = "Not found";
-            return;
-        }
-        
-        String extension = getExtension(path);
-        String mimeType = getMimeTypeFromExtension(extension);
-
-        response.fields.put("Content-Type", mimeType);
-        response.fields.put("Connection", "close");
-        OutputStream out = response.getBody();
+    public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
+        InputStream fileInput = null;
         try {
-            int readBytes;
-            while ((readBytes = fileInput.read(readBuffer)) > 0) {
-                out.write(readBuffer, 0, readBytes);
+            path = formatPath(path);
+            fileInput = getFileInput(path);
+            if (fileInput == null) {
+                response.statusCode = 404;
+                response.statusMessage = "Not found";
+                return;
             }
-        } catch (IOException e) {
+    
+            String extension = getExtension(path);
+            String mimeType = getMimeTypeFromExtension(extension);
+    
+            response.fields.put("Content-Type", mimeType);
+            response.fields.put("Connection", "close");
+            OutputStream out = response.getBody();
+            try {
+                int readBytes;
+                while ((readBytes = fileInput.read(readBuffer)) > 0) {
+                    out.write(readBuffer, 0, readBytes);
+                }
+            } catch (IOException e) {
+                fileInput.close();
+                throw e;
+            }
             fileInput.close();
+        } catch (Exception e) {
+            if (fileInput != null) {
+                try { fileInput.close(); } catch (IOException ex) { }
+            }
             throw e;
         }
-        fileInput.close();
     }
 }

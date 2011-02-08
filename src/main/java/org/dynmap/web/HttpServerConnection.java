@@ -75,7 +75,7 @@ public class HttpServerConnection extends Thread {
 
     public void run() {
         try {
-            socket.setSoTimeout(30000);
+            socket.setSoTimeout(5000);
 
             HttpRequest request = new HttpRequest();
             if (!readRequestHeader(socket.getInputStream(), request)) {
@@ -106,10 +106,13 @@ public class HttpServerConnection extends Thread {
 
             try {
                 handler.handle(relativePath, request, response);
+            } catch (IOException e) {
+                throw e;
             } catch (Exception e) {
                 log.log(Level.SEVERE, "HttpHandler '" + handler + "' has thown an exception", e);
-                e.printStackTrace();
-                socket.close();
+                if (socket != null) {
+                    socket.close();
+                }
                 return;
             }
 

@@ -1,7 +1,6 @@
 package org.dynmap.web.handlers;
 
 import java.io.BufferedOutputStream;
-import java.io.IOException;
 import java.util.Date;
 
 import org.bukkit.World;
@@ -26,7 +25,7 @@ public class ClientUpdateHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(String path, HttpRequest request, HttpResponse response) throws IOException {
+    public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         long current = System.currentTimeMillis();
         long cutoff = 0;
 
