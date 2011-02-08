@@ -103,13 +103,13 @@ public class MapManager extends Thread {
                 // Unload old chunks.
                 while (loadedChunks.size() >= requiredChunkCount - requiredChunks.length) {
                     DynmapChunk c = loadedChunks.pollFirst();
-                    world.unloadChunk(c.x, c.y, false, true);
+                    world.unloadChunk(c.x, c.z, false, true);
                 }
 
                 // Load the required chunks.
                 for (DynmapChunk chunk : requiredChunks) {
-                    boolean wasLoaded = world.isChunkLoaded(chunk.x, chunk.y);
-                    world.loadChunk(chunk.x, chunk.y, false);
+                    boolean wasLoaded = world.isChunkLoaded(chunk.x, chunk.z);
+                    world.loadChunk(chunk.x, chunk.z, false);
                     if (!wasLoaded)
                         loadedChunks.add(chunk);
                 }
@@ -132,7 +132,7 @@ public class MapManager extends Thread {
             // Unload remaining chunks to clean-up.
             while (!loadedChunks.isEmpty()) {
                 DynmapChunk c = loadedChunks.pollFirst();
-                world.unloadChunk(c.x, c.y, false, true);
+                world.unloadChunk(c.x, c.z, false, true);
             }
         }
         debugger.debug("Full render finished.");

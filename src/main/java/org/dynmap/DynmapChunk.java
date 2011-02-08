@@ -1,10 +1,10 @@
 package org.dynmap;
 
 public class DynmapChunk {
-    public int x, y;
+    public int x, z;
 
-    public DynmapChunk(int x, int y) {
+    public DynmapChunk(int x, int z) {
         this.x = x;
-        this.y = y;
+        this.z = z;
     }
 }
