@@ -16,8 +16,7 @@ webserver-bindaddress: 0.0.0.0
 webserver-port: 8123
 
 disabledcommands:
-#  - fullrender
-#  - fullrenderasync
+  - fullrender
 
 # The maptypes Dynmap will use to render.
 maps:
