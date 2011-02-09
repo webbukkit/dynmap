@@ -29,7 +29,6 @@ public class ZoomedTileRenderer {
         try {
             image = ImageIO.read(new File(new File(outputPath), originalTile.getName() + ".png"));
         } catch (IOException e) {
-            return;
         }
         
         if (image == null) {
@@ -42,7 +41,6 @@ public class ZoomedTileRenderer {
         try {
             zIm = ImageIO.read(zoomFile);
         } catch (IOException e) {
-            return;
         }
 
         if (zIm == null) {
