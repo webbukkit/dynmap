@@ -96,8 +96,6 @@ public class DynmapPlugin extends JavaPlugin {
 				log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
 			}
 		}
-		else
-			System.out.println("WebServer Disabled");
 
 		if(configuration.getBoolean("jsonfile", false)) {
 			jsonConfig();
@@ -105,8 +103,7 @@ public class DynmapPlugin extends JavaPlugin {
 			 timer = new Timer();
 			 timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
 		}
-		else
-			System.out.println("JsonFile Writing Disabled");
+
         registerEvents();
     }
 
