@@ -1,11 +1,14 @@
 package org.dynmap;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.Timer;
 
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -22,6 +25,7 @@ import org.dynmap.web.HttpServer;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
+import org.dynmap.web.Json;
 
 public class DynmapPlugin extends JavaPlugin {
 
@@ -31,6 +35,8 @@ public class DynmapPlugin extends JavaPlugin {
     private MapManager mapManager = null;
     private PlayerList playerList;
     private Configuration configuration;
+
+	private Timer timer;
 
     private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
 
@@ -64,31 +70,43 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager = new MapManager(getWorld(), debugger, configuration);
         mapManager.startManager();
 
-        InetAddress bindAddress;
-        {
-            String address = configuration.getString("webserver-bindaddress", "0.0.0.0");
-            try {
-                bindAddress = address.equals("0.0.0.0")
-                        ? null
-                        : InetAddress.getByName(address);
-            } catch (UnknownHostException e) {
-                bindAddress = null;
-            }
-        }
-        int port = configuration.getInt("webserver-port", 8123);
+		if(!configuration.getBoolean("disable-webserver", true)) {
+			InetAddress bindAddress;
+			{
+				String address = configuration.getString("webserver-bindaddress", "0.0.0.0");
+				try {
+					bindAddress = address.equals("0.0.0.0")
+							? null
+							: InetAddress.getByName(address);
+				} catch (UnknownHostException e) {
+					bindAddress = null;
+				}
+			}
+			int port = configuration.getInt("webserver-port", 8123);
 
-        webServer = new HttpServer(bindAddress, port);
-        webServer.handlers.put("/", new FilesystemHandler(mapManager.webDirectory));
-        webServer.handlers.put("/tiles/", new FilesystemHandler(mapManager.tileDirectory));
-        webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getWorld()));
-        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
+			webServer = new HttpServer(bindAddress, port);
+			webServer.handlers.put("/", new FilesystemHandler(mapManager.webDirectory));
+			webServer.handlers.put("/tiles/", new FilesystemHandler(mapManager.tileDirectory));
+			webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getWorld()));
+			webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
 
-        try {
-            webServer.startServer();
-        } catch (IOException e) {
-            log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
-        }
+			try {
+				webServer.startServer();
+			} catch (IOException e) {
+				log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
+			}
+		}
+		else
+			System.out.println("WebServer Disabled");
 
+		if(configuration.getBoolean("jsonfile", false)) {
+			jsonConfig();
+			int jsonInterval = configuration.getInt("jsonfile", 1) * 1000;
+			 timer = new Timer();
+			 timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
+		}
+		else
+			System.out.println("JsonFile Writing Disabled");
         registerEvents();
     }
 
@@ -111,4 +129,30 @@ public class DynmapPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
     }
+
+	private void jsonConfig()
+	{
+		File outputFile;
+		Map<?, ?> clientConfig =  (Map<?, ?>) configuration.getProperty("web");
+		File webpath = new File(configuration.getString("webpath", "web"), "dynmap_config.json");
+		if(webpath.isAbsolute())
+			outputFile = webpath;
+		else
+			outputFile = new File(DynmapPlugin.dataRoot, webpath.toString());
+
+		try
+		{
+			FileOutputStream fos = new FileOutputStream(outputFile);
+			fos.write(Json.stringifyJson(clientConfig).getBytes());
+			fos.close();
+		}
+		catch(FileNotFoundException ex)
+		{
+			System.out.println("FileNotFoundException : " + ex);
+		}
+		catch(IOException ioe)
+		{
+			System.out.println("IOException : " + ioe);
+		}
+	}
 }

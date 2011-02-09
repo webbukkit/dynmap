@@ -15,6 +15,15 @@ webserver-bindaddress: 0.0.0.0
 # The TCP-port the webserver will listen on.
 webserver-port: 8123
 
+# Disables Webserver portion of Dynmap (Advanced users only)
+disable-webserver: true
+
+# Writes JSON to file in the webpath
+jsonfile: true
+
+# How often the json file gets written to(in seconds)
+jsonfile-interval: 1000
+
 disabledcommands:
   - fullrender
 
