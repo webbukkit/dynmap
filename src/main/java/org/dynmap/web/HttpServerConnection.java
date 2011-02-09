@@ -29,7 +29,10 @@ public class HttpServerConnection extends Thread {
 
     private static boolean readRequestHeader(InputStream in, HttpRequest request) throws IOException {
         BufferedReader r = new BufferedReader(new InputStreamReader(in));
-        Matcher m = requestHeaderLine.matcher(r.readLine());
+        String statusLine = r.readLine();
+        if (statusLine == null)
+            return false;
+        Matcher m = requestHeaderLine.matcher(statusLine);
         if (!m.matches())
             return false;
         request.method = m.group(1);
