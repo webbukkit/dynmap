@@ -16,7 +16,7 @@ function blitImage(ctx, image, sx ,sy, sw, sh, dx, dy, dw, dh) {
 	}	
 }
 
-function createMinecraftHead(player,completed) {
+function createMinecraftHead(player,completed,failed) {
 	var skinImage = new Image();
 	skinImage.onload = function() {
 		var headCanvas = document.createElement('canvas');
@@ -26,6 +26,13 @@ function createMinecraftHead(player,completed) {
 		blitImage(headContext, skinImage,  8,8,8,8, 0,0,8,8);
 		blitImage(headContext, skinImage, 40,8,8,8, 0,0,8,8);
 		completed(headCanvas);
+	};
+	skinImage.onerror = function() {
+		if (skinImage.src == 'http://www.minecraft.net/img/char.png') {
+			failed();
+		} else {
+			skinImage.src = 'http://www.minecraft.net/img/char.png';
+		}
 	};
 	skinImage.src = 'http://www.minecraft.net/skin/' + player + '.png';
 }
@@ -60,6 +67,8 @@ function getMinecraftHead(player,size,completed) {
 			for(i=0;i<hooks.length;i++) {
 				hooks[i].f(resizeImage(head,hooks[i].s));
 			}
+		}, function() {
+			
 		});
 	} else if (head.working) {
 		//console.log('Other process working on head of ',player,', will add myself to hooks...');
