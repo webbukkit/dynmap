@@ -4,7 +4,7 @@
 renderinterval: 1
 
 # The path where the tile-files are placed.
-tilepath: web/tiles
+tilespath: web/tiles
 
 # The path where the web-files are located.
 webpath: web
