@@ -4,12 +4,11 @@ import java.awt.Color;
 import java.util.Map;
 
 import org.bukkit.World;
-import org.dynmap.debug.Debugger;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
 
-    public CaveTileRenderer(Debugger debugger, Map<String, Object> configuration) {
-        super(debugger, configuration);
+    public CaveTileRenderer(Map<String, Object> configuration) {
+        super(configuration);
     }
 
     @Override

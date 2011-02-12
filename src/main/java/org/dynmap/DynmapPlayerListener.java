@@ -31,7 +31,7 @@ public class DynmapPlayerListener extends PlayerListener {
                 
                 if (split[1].equals("render")) {
                     Player player = event.getPlayer();
-                    mgr.touch(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+                    mgr.touch(player.getLocation());
                     event.setCancelled(true);
                 } else if (split[1].equals("hide")) {
                     if (split.length == 2) {

@@ -10,24 +10,23 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.bukkit.World;
-import org.dynmap.debug.Debugger;
+import org.dynmap.debug.Debug;
 
 public class DefaultTileRenderer implements MapTileRenderer {
     protected static Color translucent = new Color(0, 0, 0, 0);
     private String name;
-    protected Debugger debugger;
 
+    @Override
     public String getName() {
         return name;
     }
 
-    public DefaultTileRenderer(Debugger debugger, Map<String, Object> configuration) {
-        this.debugger = debugger;
+    public DefaultTileRenderer(Map<String, Object> configuration) {
         name = (String) configuration.get("prefix");
     }
 
-    public boolean render(KzedMapTile tile, String path) {
-        World world = tile.getMap().getWorld();
+    public boolean render(KzedMapTile tile, File outputFile) {
+        World world = tile.getWorld();
         BufferedImage im = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
 
         WritableRaster r = im.getRaster();
@@ -92,9 +91,11 @@ public class DefaultTileRenderer implements MapTileRenderer {
         }
 
         /* save the generated tile */
-        saveTile(tile, im, path);
+        saveImage(im, outputFile);
         im.flush();
-        ((KzedMap) tile.getMap()).invalidateTile(new KzedZoomedMapTile((KzedMap) tile.getMap(), tile));
+        
+        tile.file = outputFile;
+        ((KzedMap) tile.getMap()).invalidateTile(new KzedZoomedMapTile(world, (KzedMap) tile.getMap(), tile));
 
         return !isempty;
     }
@@ -154,23 +155,15 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
 
     /* save rendered tile, update zoom-out tile */
-    public void saveTile(KzedMapTile tile, BufferedImage im, String path) {
-        String tilePath = getPath(tile, path);
-
-        debugger.debug("saving tile " + tilePath);
-
+    public void saveImage(BufferedImage im, File outputFile) {
+        Debug.debug("saving image " + outputFile.getPath());
         /* save image */
         try {
-            File file = new File(tilePath);
-            ImageIO.write(im, "png", file);
+            ImageIO.write(im, "png", outputFile);
         } catch (IOException e) {
-            debugger.error("Failed to save tile: " + tilePath, e);
+            Debug.error("Failed to save image: " + outputFile.getPath(), e);
         } catch (java.lang.NullPointerException e) {
-            debugger.error("Failed to save tile (NullPointerException): " + tilePath, e);
+            Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
         }
-    }
-
-    public static String getPath(KzedMapTile tile, String outputPath) {
-        return new File(new File(outputPath), tile.getName() + ".png").getPath();
     }
 }
