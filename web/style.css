@@ -82,15 +82,12 @@ a, a:visited, label {
 	background-image: url(compass.png);
 }
 
-.timeofday { background-repeat: no-repeat; }
-.timeofday.time1 { background-image: url(time1.png); }
-.timeofday.time2 { background-image: url(time2.png); }
-.timeofday.time3 { background-image: url(time3.png); }
-.timeofday.time4 { background-image: url(time4.png); }
-.timeofday.time5 { background-image: url(time5.png); }
-.timeofday.time6 { background-image: url(time6.png); }
-.timeofday.time7 { background-image: url(time7.png); }
-.timeofday.time8 { background-image: url(time8.png); }
+.timeofday {
+	background-repeat: no-repeat; 
+}
+
+.timeofday.sun { background-image: url(sun.png); }
+.timeofday.moon { background-image: url(moon.png); }
 
 .alertbox {
 	padding: 5px;
