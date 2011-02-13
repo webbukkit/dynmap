@@ -79,5 +79,6 @@ public class ClientUpdateHandler implements HttpHandler {
         response.fields.put("Content-Length", Integer.toString(bytes.length));
         BufferedOutputStream out = new BufferedOutputStream(response.getBody());
         out.write(bytes);
+        out.flush();
     }
 }
