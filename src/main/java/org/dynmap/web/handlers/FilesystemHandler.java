@@ -5,6 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import org.dynmap.web.HttpRequest;
+import org.dynmap.web.HttpResponse;
+
 
 public class FilesystemHandler extends FileHandler {
     private File root;
@@ -14,14 +17,17 @@ public class FilesystemHandler extends FileHandler {
         this.root = root;
     }
     @Override
-    protected InputStream getFileInput(String path) {
+    protected InputStream getFileInput(String path, HttpRequest request, HttpResponse response) {
         File file = new File(root, path);
         if (file.getAbsolutePath().startsWith(root.getAbsolutePath()) && file.isFile()) {
+            FileInputStream result;
             try {
-                return new FileInputStream(file);
+                result = new FileInputStream(file);
             } catch (FileNotFoundException e) {
                 return null;
             }
+            response.fields.put("Content-Length", Long.toString(file.length()));
+            return result;
         }
         return null;
     }

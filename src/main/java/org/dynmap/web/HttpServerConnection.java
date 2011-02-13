@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dynmap.debug.Debug;
+
 public class HttpServerConnection extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
@@ -121,7 +123,14 @@ public class HttpServerConnection extends Thread {
 
             if (response.fields.get("Content-Length") == null) {
                 response.fields.put("Content-Length", "0");
-                /* OutputStream out = */response.getBody();
+                OutputStream out = response.getBody();
+                
+                // The HttpHandler has already send the headers and written to the body without setting the Content-Length.
+                if (out == null) {
+                    Debug.debug("Response was not cleanly handled by '" + handler + "' for path '" + request.path + "'");
+                    socket.close();
+                    return;
+                }
             }
 
             String connection = response.fields.get("Connection");
