@@ -60,6 +60,7 @@ public class DynmapPlugin extends JavaPlugin {
         configuration.load();
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
+        tilesDirectory.mkdirs();
         
         playerList = new PlayerList(getServer());
         playerList.load();
