@@ -69,6 +69,44 @@ MinecraftClock.prototype = {
 	}
 };
 
+function MinecraftTimeOfDay(element) { this.element = element; }
+MinecraftTimeOfDay.prototype = {
+	element: null,
+	create: function(element) {
+		if (!element) element = $('<div/>');
+		this.element = element;
+		return element;
+	},
+	setTime: function(time) {
+		this.element
+			.removeClass('time1')
+			.removeClass('time2')
+			.removeClass('time3')
+			.removeClass('time4')
+			.removeClass('time5')
+			.removeClass('time6')
+			.removeClass('time7')
+			.removeClass('time8')
+			.addClass('time' + time.day)
+			.html("&nbsp;&rlm;&nbsp;")
+			.height(60);
+	}
+};
+
+function MinecraftCompass(element) { this.element = element; }
+MinecraftCompass.prototype = {
+	element: null,
+	create: function(element) {
+		if (!element) element = $('<div/>');
+		this.element = element;
+		return element;
+	},
+	initialize: function() {
+		this.element.html("&nbsp;&rlm;&nbsp;");
+		this.element.height(120);
+	}
+};
+
 function DynMap(options) {
 	var me = this;
 	me.options = options;
@@ -178,6 +216,21 @@ DynMap.prototype = {
 					.appendTo(sidebar)
 		);
 		
+		// The TimeOfDay
+		var timeofday = me.timeofday = new MinecraftTimeOfDay(
+				$('<div/>')
+					.addClass('timeofday')
+					.appendTo(sidebar)
+		);
+		
+		// The Compass
+		var compass = me.compass = new MinecraftCompass(
+				$('<div/>')
+					.addClass('compass')
+					.appendTo(sidebar)
+		);
+		compass.initialize();
+		
 		// TODO: Enable hash-links.
 		/*
 		var link;
@@ -204,6 +257,7 @@ DynMap.prototype = {
 			
 				me.lasttimestamp = update.timestamp;
 				me.clock.setTime(getMinecraftTime(update.servertime));
+				me.timeofday.setTime(me.clock.time);
 
 				var typeVisibleMap = {};
 				var newmarkers = {};
