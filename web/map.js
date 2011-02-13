@@ -454,9 +454,9 @@ DynMap.prototype = {
 		var tile = me.registeredTiles[tileName];
 		
 		if(tile) {
-			return me.options.tileUrl + me.world + '/' + tileName + '.png?' + tile.lastseen;
+			return me.options.tileUrl + me.world + '/' + tileName + '?' + tile.lastseen;
 		} else {
-			return me.options.tileUrl + me.world + '/' + tileName + '.png?0';
+			return me.options.tileUrl + me.world + '/' + tileName + '?0';
 		}
 	},
 	registerTile: function(mapType, tileName, tile) {
