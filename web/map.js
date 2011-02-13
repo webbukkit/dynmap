@@ -72,24 +72,57 @@ MinecraftClock.prototype = {
 function MinecraftTimeOfDay(element) { this.element = element; }
 MinecraftTimeOfDay.prototype = {
 	element: null,
+	elementsun: null,
+	elementmoon: null,
 	create: function(element) {
 		if (!element) element = $('<div/>');
 		this.element = element;
 		return element;
 	},
+	initialize: function(elementsun, elementmoon) {
+		if (!elementsun) elementsun = $('<div/>');
+		this.elementsun = elementsun;
+		this.elementsun.appendTo(this.element);
+		if (!elementmoon) elementmoon = $('<div/>');
+		this.elementmoon = elementmoon;
+		this.elementmoon.appendTo(this.elementsun);
+		this.element.height(60);
+		this.element.addClass('timeofday');
+		this.elementsun.height(60);
+		this.elementsun.addClass('timeofday');
+		this.elementsun.addClass('sun');
+		this.elementmoon.height(60);
+		this.elementmoon.addClass('timeofday');
+		this.elementmoon.addClass('moon');
+		this.elementmoon.html("&nbsp;&rlm;&nbsp;");
+		this.elementsun.css("background-position", (-120) + "px " + (-120) + "px");
+		this.elementmoon.css("background-position", (-120) + "px " + (-120) + "px");
+	},
 	setTime: function(time) {
-		this.element
-			.removeClass('time1')
-			.removeClass('time2')
-			.removeClass('time3')
-			.removeClass('time4')
-			.removeClass('time5')
-			.removeClass('time6')
-			.removeClass('time7')
-			.removeClass('time8')
-			.addClass('time' + time.day)
-			.html("&nbsp;&rlm;&nbsp;")
-			.height(60);
+		var sunangle;
+		
+		if(time > 23100 || time < 12900)
+		{
+			//day mode
+			var movedtime = time + 900;
+			movedtime = (movedtime >= 24000) ? movedtime - 24000 : movedtime;
+			//Now we have 0 -> 13800 for the day period
+			//Devide by 13800*2=27600 instead of 24000 to compress day
+		    sunangle = ((movedtime)/27600 * 2 * Math.PI);
+		}
+		else
+		{
+			//night mode
+			var movedtime = time - 12900;
+			//Now we have 0 -> 10200 for the night period
+			//Devide by 10200*2=20400 instead of 24000 to expand night
+		    sunangle = Math.PI + ((movedtime)/20400 * 2 * Math.PI);
+		}
+		
+		var moonangle = sunangle + Math.PI;
+		
+		this.elementsun.css("background-position", (-50 * Math.cos(sunangle)) + "px " + (-50 * Math.sin(sunangle)) + "px");
+		this.elementmoon.css("background-position", (-50 * Math.cos(moonangle)) + "px " + (-50 * Math.sin(moonangle)) + "px");
 	}
 };
 
@@ -117,7 +150,6 @@ function DynMap(options) {
 }
 DynMap.prototype = {
 	registeredTiles: new Array(),
-	clock: null,
 	markers: new Array(),
 	chatPopups: new Array(),
 	lasttimestamp: '0',
@@ -248,19 +280,12 @@ DynMap.prototype = {
 			.addClass('playerlist')
 			.appendTo(sidebar);
 		
-		// The Clock
-		var clock = me.clock = new MinecraftClock(
-				$('<div/>')
-					.addClass('clock')
-					.appendTo(sidebar)
-		);
-		
 		// The TimeOfDay
 		var timeofday = me.timeofday = new MinecraftTimeOfDay(
 				$('<div/>')
-					.addClass('timeofday')
-					.appendTo(sidebar)
+				.appendTo(sidebar)
 		);
+		timeofday.initialize();
 		
 		// The Compass
 		var compass = me.compass = new MinecraftCompass(
@@ -295,8 +320,7 @@ DynMap.prototype = {
 				me.alertbox.hide();
 			
 				me.lasttimestamp = update.timestamp;
-				me.clock.setTime(getMinecraftTime(update.servertime));
-				me.timeofday.setTime(me.clock.time);
+				me.timeofday.setTime(update.servertime);
 
 				var typeVisibleMap = {};
 				var newmarkers = {};
