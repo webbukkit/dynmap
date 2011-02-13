@@ -170,9 +170,9 @@ public class MapManager {
         File worldTileDirectory = worldTileDirectories.get(world);
         if (worldTileDirectory == null) {
             worldTileDirectory = new File(DynmapPlugin.tilesDirectory, tile.getWorld().getName());
-            worldTileDirectory.mkdirs();
             worldTileDirectories.put(world, worldTileDirectory);
         }
+        worldTileDirectory.mkdirs();
         return new File(worldTileDirectory, tile.getFilename()); 
     }
 
