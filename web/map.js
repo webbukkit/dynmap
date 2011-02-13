@@ -91,6 +91,7 @@ DynMap.prototype = {
 		$.each(me.options.shownmaps, function(index, mapentry) {
 			me.options.maps[mapentry.name] = maptypes[mapentry.type](mapentry);
 		});
+		me.world = me.options.defaultworld;
 	},
 	initialize: function() {
 		var me = this;
@@ -131,11 +132,48 @@ DynMap.prototype = {
 			.addClass('sidebar')
 			.appendTo(container);
 		
+		// The world list.
+		var worldlist = me.worldlist = $('<div/>')
+			.addClass('worldlist')
+			.appendTo(sidebar);
+		
+		$.each(me.options.shownworlds, function(index, name) {
+			var worldButton;
+			$('<div/>')
+				.addClass('worldrow')
+				.append(worldButton = $('<input/>')
+					.addClass('worldbutton')
+					.addClass('world_' + name)
+					.attr({
+						type: 'radio',
+						name: 'world',
+						value: name
+						})
+					.attr('checked', me.options.defaultworld == name ? 'checked' : null)
+					)
+				.append($('<label/>')
+						.attr('for', 'worldbutton_' + name)
+						.text(name)
+						)
+				.click(function() {
+						$('.worldbutton', worldlist).removeAttr('checked');
+						map.setMapTypeId('none');
+						me.world = name;
+						// Another workaround for GMaps not being able to reload tiles.
+						window.setTimeout(function() {
+							map.setMapTypeId(me.options.defaultmap);
+						}, 1);
+						worldButton.attr('checked', 'checked');
+					})
+				.data('world', name)
+				.appendTo(worldlist);
+		});
+		
 		// The map list.
 		var maplist = me.maplist = $('<div/>')
 			.addClass('maplist')
 			.appendTo(sidebar);
-			
+		
 		$.each(me.options.maps, function(name, mapType){
 			mapType.dynmap = me;
 			map.mapTypes.set(name, mapType);
@@ -144,11 +182,12 @@ DynMap.prototype = {
 			$('<div/>')
 				.addClass('maprow')
 				.append(mapButton = $('<input/>')
+					.addClass('mapbutton')
 					.addClass('maptype_' + name)
 					.attr({
 						type: 'radio',
 						name: 'map',
-						id: 'maptypebutton_' + name 
+						value: name
 					})
 					.attr('checked', me.options.defaultmap == name ? 'checked' : null)
 					)
@@ -199,7 +238,7 @@ DynMap.prototype = {
 		// TODO: is there a better place for this?
 		this.cleanPopups();
 		
-		$.getJSON(me.options.updateUrl + me.lasttimestamp, function(update) {
+		$.getJSON(me.options.updateUrl + "world/" + me.world + "/" + me.lasttimestamp, function(update) {
 				me.alertbox.hide();
 			
 				me.lasttimestamp = update.timestamp;
@@ -415,9 +454,9 @@ DynMap.prototype = {
 		var tile = me.registeredTiles[tileName];
 		
 		if(tile) {
-			return me.options.tileUrl + tileName + '.png?' + tile.lastseen;
+			return me.options.tileUrl + me.world + '/' + tileName + '.png?' + tile.lastseen;
 		} else {
-			return me.options.tileUrl + tileName + '.png?0';
+			return me.options.tileUrl + me.world + '/' + tileName + '.png?0';
 		}
 	},
 	registerTile: function(mapType, tileName, tile) {

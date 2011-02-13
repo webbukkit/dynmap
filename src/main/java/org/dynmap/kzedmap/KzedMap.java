@@ -15,11 +15,9 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.DynmapChunk;
-import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
-import org.dynmap.debug.Debugger;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");

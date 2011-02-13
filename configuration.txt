@@ -47,3 +47,12 @@ web:
       - type: KzedMapType
         name: cavemap
         prefix: ct
+    
+    # The name of the world shown when opening Dynmap's page.
+    defaultworld: world
+    
+    # The worlds shown in the menu.
+    shownworlds:
+      - world
+      - nether
+      - world_bad

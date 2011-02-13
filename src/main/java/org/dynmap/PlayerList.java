@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class PlayerList {
@@ -68,6 +69,21 @@ public class PlayerList {
             hide(playerName);
     }
 
+    // TODO: Clean this up... one day
+    public Player[] getVisiblePlayers(String worldName) {
+        ArrayList<Player> visiblePlayers = new ArrayList<Player>();
+        Player[] onlinePlayers = server.getOnlinePlayers();
+        for (int i = 0; i < onlinePlayers.length; i++) {
+            Player p = onlinePlayers[i];
+            if (p.getWorld().getName().equals(worldName) && !hiddenPlayerNames.contains(p.getName())) {
+                visiblePlayers.add(p);
+            }
+        }
+        Player[] result = new Player[visiblePlayers.size()];
+        visiblePlayers.toArray(result);
+        return result;
+    }
+    
     public Player[] getVisiblePlayers() {
         ArrayList<Player> visiblePlayers = new ArrayList<Player>();
         Player[] onlinePlayers = server.getOnlinePlayers();

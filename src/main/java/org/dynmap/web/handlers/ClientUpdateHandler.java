@@ -2,6 +2,9 @@ package org.dynmap.web.handlers;
 
 import java.io.BufferedOutputStream;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -24,14 +27,24 @@ public class ClientUpdateHandler implements HttpHandler {
         this.world = world;
     }
 
+    Pattern updatePathPattern = Pattern.compile("world/([a-zA-Z0-9_]+)/([0-9]*)");
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
+        
+        Matcher match = updatePathPattern.matcher(path);
+        
+        if (!match.matches())
+            return;
+        
+        String worldName = match.group(1);
+        String timeKey = match.group(2);
+        
         long current = System.currentTimeMillis();
-        long cutoff = 0;
+        long since = 0;
 
         if (path.length() > 0) {
             try {
-                cutoff = Long.parseLong(path);
+                since = Long.parseLong(timeKey);
             } catch (NumberFormatException e) {
             }
         }
@@ -41,14 +54,15 @@ public class ClientUpdateHandler implements HttpHandler {
         update.servertime = world.getTime() % 24000;
         
         
-        Player[] players = playerList.getVisiblePlayers();
+        Player[] players = playerList.getVisiblePlayers(worldName);
         update.players = new Client.Player[players.length];
         for(int i=0;i<players.length;i++) {
             Player p = players[i];
             update.players[i] = new Client.Player(p.getName(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
         }
         
-        update.updates = mapManager.updateQueue.getUpdatedObjects(cutoff);
+        update.updates = mapManager.getWorldUpdates(worldName, since);
+        
         
         byte[] bytes = Json.stringifyJson(update).getBytes();
 

@@ -21,14 +21,16 @@ public class MapManager {
 
     private MapType[] mapTypes;
     public AsynchronousQueue<MapTile> tileQueue;
-    public UpdateQueue updateQueue;
+    
+    public Map<String, UpdateQueue> worldUpdateQueues = new HashMap<String, UpdateQueue>();
+    public ArrayList<String> worlds = new ArrayList<String>();
+    
     public PlayerList playerList;
 
     /* lock for our data structures */
     public static final Object lock = new Object();
 
     public MapManager(ConfigurationNode configuration) {
-        this.updateQueue = new UpdateQueue();
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {
@@ -81,7 +83,6 @@ public class MapManager {
                 if (render(tile)) {
                     found.remove(tile);
                     rendered.add(tile);
-                    updateQueue.pushUpdate(new Client.Tile(tile.getFilename()));
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
                         if (!found.contains(adjTile) && !rendered.contains(adjTile)) {
                             found.add(adjTile);
@@ -157,7 +158,9 @@ public class MapManager {
     }
     
     public boolean render(MapTile tile) {
-        return tile.getMap().render(tile, getTileFile(tile));
+        boolean result = tile.getMap().render(tile, getTileFile(tile));
+        pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+        return result;
     }
     
     
@@ -171,5 +174,32 @@ public class MapManager {
             worldTileDirectories.put(world, worldTileDirectory);
         }
         return new File(worldTileDirectory, tile.getFilename()); 
+    }
+
+    public void pushUpdate(Object update) {
+        for(int i=0;i<worlds.size();i++) {
+            UpdateQueue queue = worldUpdateQueues.get(worlds.get(i));
+            queue.pushUpdate(update);
+        }
+    }
+    
+    public void pushUpdate(World world, Object update) {
+        pushUpdate(world.getName(), update);
+    }
+    
+    public void pushUpdate(String world, Object update) {
+        UpdateQueue updateQueue = worldUpdateQueues.get(world);
+        if (updateQueue == null) {
+            worldUpdateQueues.put(world, updateQueue = new UpdateQueue());
+            worlds.add(world);
+        }
+        updateQueue.pushUpdate(update);
+    }
+    
+    public Object[] getWorldUpdates(String worldName, long since) {
+        UpdateQueue queue = worldUpdateQueues.get(worldName);
+        if (queue == null)
+            return new Object[0];
+        return queue.getUpdatedObjects(since);
     }
 }
