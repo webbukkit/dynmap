@@ -69,14 +69,6 @@ a, a:visited, label {
 	border: 0px;
 }
 
-.clock {
-	padding-left: 16px;
-	color: #dede90;
-	background-repeat: no-repeat;
-}
-.clock.night { background-image: url(clock_night.png); }
-.clock.day { background-image: url(clock_day.png); }
-
 .compass { 
 	background-repeat: no-repeat;
 	background-image: url(compass.png);
