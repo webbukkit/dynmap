@@ -80,17 +80,37 @@ function getMinecraftHead(player,size,completed) {
 
 function getMinecraftTime(servertime) {
 	servertime = parseInt(servertime);
-	var day = servertime >= 0 && servertime < 13700;
+	var hours = (parseInt(servertime / 1000)+8) % 24;
+	var minutes = parseInt(((servertime / 1000) % 1) * 60);
+	var seconds = parseInt(((((servertime / 1000) % 1) * 60) % 1) * 60);
+	
+	var daytime = 0;
+	if(hours >= 6 && hours <= 7)
+	daytime =  1;
+	if(hours >= 8 && hours <= 9)
+	daytime =  2;
+	if(hours >= 10 && hours <= 17)
+	daytime =  3;
+	if(hours >= 18 && hours <= 19)
+	daytime =  4;
+	if(hours >= 20 && hours <= 21)
+	daytime =  5;
+	if(hours >= 22 && hours <= 23)
+	daytime =  6;
+	if(hours >= 0 && hours <= 3)
+	daytime =  7;
+	if(hours >= 4 && hours <= 5)
+	daytime =  8;
+	
 	return {
 		servertime: servertime,
 		days: parseInt((servertime+8000) / 24000),
 		
 		// Assuming it is day at 8:00
-		hours: (parseInt(servertime / 1000)+8) % 24,
-		minutes: parseInt(((servertime / 1000) % 1) * 60),
-		seconds: parseInt(((((servertime / 1000) % 1) * 60) % 1) * 60),
+		hours: hours,
+		minutes: minutes,
+		seconds: seconds,
 		
-		day: day,
-		night: !day
+		day: daytime,
 	};
 }
