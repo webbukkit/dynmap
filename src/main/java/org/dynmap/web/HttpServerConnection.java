@@ -81,62 +81,71 @@ public class HttpServerConnection extends Thread {
     public void run() {
         try {
             socket.setSoTimeout(5000);
-
-            HttpRequest request = new HttpRequest();
-            if (!readRequestHeader(socket.getInputStream(), request)) {
-                socket.close();
-                return;
-            }
-
-            // TODO: Optimize HttpHandler-finding by using a real path-aware
-            // tree.
-            HttpHandler handler = null;
-            String relativePath = null;
-            for (Entry<String, HttpHandler> entry : server.handlers.entrySet()) {
-                String key = entry.getKey();
-                boolean directoryHandler = key.endsWith("/");
-                if (directoryHandler && request.path.startsWith(entry.getKey()) || !directoryHandler && request.path.equals(entry.getKey())) {
-                    relativePath = request.path.substring(entry.getKey().length());
-                    handler = entry.getValue();
-                    break;
-                }
-            }
-
-            if (handler == null) {
-                socket.close();
-                return;
-            }
-
-            HttpResponse response = new HttpResponse(socket.getOutputStream());
-
-            try {
-                handler.handle(relativePath, request, response);
-            } catch (IOException e) {
-                throw e;
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "HttpHandler '" + handler + "' has thown an exception", e);
-                if (socket != null) {
-                    socket.close();
-                }
-                return;
-            }
-
-            if (response.fields.get("Content-Length") == null) {
-                response.fields.put("Content-Length", "0");
-                OutputStream out = response.getBody();
-                
-                // The HttpHandler has already send the headers and written to the body without setting the Content-Length.
-                if (out == null) {
-                    Debug.debug("Response was not cleanly handled by '" + handler + "' for path '" + request.path + "'");
+            while (true) {
+                HttpRequest request = new HttpRequest();
+                InputStream in = socket.getInputStream();
+                if (!readRequestHeader(in, request)) {
                     socket.close();
                     return;
                 }
-            }
 
-            String connection = response.fields.get("Connection");
-            if (connection != null && connection.equals("close")) {
-                socket.close();
-                return;
+                // TODO: Optimize HttpHandler-finding by using a real path-aware
+                // tree.
+                HttpHandler handler = null;
+                String relativePath = null;
+                for (Entry<String, HttpHandler> entry : server.handlers.entrySet()) {
+                    String key = entry.getKey();
+                    boolean directoryHandler = key.endsWith("/");
+                    if (directoryHandler && request.path.startsWith(entry.getKey()) || !directoryHandler && request.path.equals(entry.getKey())) {
+                        relativePath = request.path.substring(entry.getKey().length());
+                        handler = entry.getValue();
+                        break;
+                    }
+                }
+
+                if (handler == null) {
+                    socket.close();
+                    return;
+                }
+
+                OutputStream out = socket.getOutputStream();
+                HttpResponse response = new HttpResponse(out);
+
+                try {
+                    handler.handle(relativePath, request, response);
+                } catch (IOException e) {
+                    throw e;
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, "HttpHandler '" + handler + "' has thown an exception", e);
+                    if (socket != null) {
+                        out.flush();
+                        socket.close();
+                    }
+                    return;
+                }
+
+                String connection = response.fields.get("Connection");
+                String contentLength = response.fields.get("Content-Length");
+                if (contentLength == null && connection == null) {
+                    response.fields.put("Content-Length", "0");
+                    OutputStream responseBody = response.getBody();
+
+                    // The HttpHandler has already send the headers and written to the body without setting the Content-Length.
+                    if (responseBody == null) {
+                        Debug.debug("Response was given without Content-Length by '" + handler + "' for path '" + request.path + "'.");
+                        out.flush();
+                        socket.close();
+                        return;
+                    }
+                }
+
+                if (connection != null && connection.equals("close")) {
+                    out.flush();
+                    socket.close();
+                    return;
+                }
+
+                out.flush();
             }
         } catch (IOException e) {
             if (socket != null) {
@@ -145,6 +154,7 @@ public class HttpServerConnection extends Thread {
                 } catch (IOException ex) {
                 }
             }
+            return;
         } catch (Exception e) {
             if (socket != null) {
                 try {
@@ -154,6 +164,7 @@ public class HttpServerConnection extends Thread {
             }
             log.log(Level.SEVERE, "Exception while handling request: ", e);
             e.printStackTrace();
+            return;
         }
     }
 }
