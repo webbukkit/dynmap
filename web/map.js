@@ -45,8 +45,8 @@ MinecraftClock.prototype = {
 		}
 		this.time = time;
 		this.element
-			.addClass(time.day ? 'day' : 'night')
-			.removeClass(time.night ? 'day' : 'night')
+			.addClass((time.day <= 4) ? 'day' : 'night')
+			.removeClass((time.day <= 4) ? 'day' : 'night')
 			.text(this.formatTime(time));
 		
 		if (this.timeout == null) {
