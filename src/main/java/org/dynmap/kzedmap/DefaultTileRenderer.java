@@ -15,6 +15,7 @@ import org.dynmap.debug.Debug;
 public class DefaultTileRenderer implements MapTileRenderer {
     protected static Color translucent = new Color(0, 0, 0, 0);
     private String name;
+    protected int maximumHeight = 127;
 
     @Override
     public String getName() {
@@ -23,6 +24,12 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
     public DefaultTileRenderer(Map<String, Object> configuration) {
         name = (String) configuration.get("prefix");
+        Object o = configuration.get("maximumheight");
+        if (o != null) {
+            maximumHeight = Integer.parseInt(String.valueOf(o));
+            if (maximumHeight > 127)
+                maximumHeight = 127;
+        }
     }
 
     public boolean render(KzedMapTile tile, File outputFile) {
@@ -32,9 +39,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
         WritableRaster r = im.getRaster();
         boolean isempty = true;
 
-        int ix = tile.mx;
-        int iy = tile.my;
-        int iz = tile.mz;
+        int ix = KzedMap.anchorx + tile.px / 2 + tile.py / 2;
+        int iy = maximumHeight;
+        int iz = KzedMap.anchorz + tile.px / 2 - tile.py / 2;
 
         int jx, jz;
 

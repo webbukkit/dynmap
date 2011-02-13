@@ -24,8 +24,10 @@ maps:
     renderers:
       - class: org.dynmap.kzedmap.DefaultTileRenderer
         prefix: t
+        maximumheight: 127
       - class: org.dynmap.kzedmap.CaveTileRenderer
         prefix: ct
+        maximumheight: 127
 
 web:
     # Interval the browser should poll for updates.

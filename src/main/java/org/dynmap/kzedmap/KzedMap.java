@@ -152,11 +152,16 @@ public class KzedMap extends MapType {
     public DynmapChunk[] getRequiredChunks(MapTile tile) {
         if (tile instanceof KzedMapTile) {
             KzedMapTile t = (KzedMapTile) tile;
-            int x1 = t.mx - KzedMap.tileHeight / 2;
-            int x2 = t.mx + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
+            
+            int ix = KzedMap.anchorx + t.px / 2 + t.py / 2;
+            int iy = 127;
+            int iz = KzedMap.anchorz + t.px / 2 - t.py / 2;
+            
+            int x1 = ix - KzedMap.tileHeight / 2;
+            int x2 = ix + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
 
-            int z1 = t.mz - KzedMap.tileHeight / 2;
-            int z2 = t.mz + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
+            int z1 = iz - KzedMap.tileHeight / 2;
+            int z2 = iz + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
 
             int x, z;
 

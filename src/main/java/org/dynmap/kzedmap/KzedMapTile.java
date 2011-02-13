@@ -8,7 +8,6 @@ public class KzedMapTile extends MapTile {
     public KzedMap map;
     public MapTileRenderer renderer;
     public int px, py;
-    public int mx, my, mz;
     
     // Hack.
     public File file = null;
@@ -19,10 +18,6 @@ public class KzedMapTile extends MapTile {
         this.renderer = renderer;
         this.px = px;
         this.py = py;
-
-        mx = KzedMap.anchorx + px / 2 + py / 2;
-        my = KzedMap.anchory;
-        mz = KzedMap.anchorz + px / 2 - py / 2;
     }
 
     @Override
