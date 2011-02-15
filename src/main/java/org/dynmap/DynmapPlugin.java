@@ -17,12 +17,15 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
+import org.dynmap.Event.Listener;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.LogDebugger;
 import org.dynmap.web.HttpServer;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
+import org.dynmap.web.handlers.SendMessageHandler;
+import org.dynmap.web.handlers.SendMessageHandler.Message;
 
 public class DynmapPlugin extends JavaPlugin {
 
@@ -55,13 +58,13 @@ public class DynmapPlugin extends JavaPlugin {
 
     public void onEnable() {
         Debug.addDebugger(new LogDebugger());
-        
+
         configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
         configuration.load();
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         tilesDirectory.mkdirs();
-        
+
         playerList = new PlayerList(getServer());
         playerList.load();
 
@@ -86,6 +89,16 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer()));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
+
+        SendMessageHandler messageHandler = new SendMessageHandler();
+        messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
+            @Override
+            public void triggered(Message t) {
+                log.info("[WEB] " + t.name + ": " + t.message);
+                getServer().broadcastMessage("[WEB] " + t.name + ": " + t.message);
+            }
+        });
+        webServer.handlers.put("/up/sendmessage", messageHandler);
 
         try {
             webServer.startServer();
@@ -115,7 +128,7 @@ public class DynmapPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
     }
-    
+
     private static File combinePaths(File parent, String path) {
         return combinePaths(parent, new File(path));
     }
@@ -125,7 +138,7 @@ public class DynmapPlugin extends JavaPlugin {
             return path;
         return new File(parent, path.getPath());
     }
-    
+
     public File getFile(String path) {
         return combinePaths(DynmapPlugin.dataRoot, path);
     }
