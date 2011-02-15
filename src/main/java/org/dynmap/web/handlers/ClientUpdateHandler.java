@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -59,11 +60,12 @@ public class ClientUpdateHandler implements HttpHandler {
         update.servertime = world.getTime() % 24000;
         
         
-        Player[] players = playerList.getVisiblePlayers(worldName);
+        Player[] players = playerList.getVisiblePlayers();
         update.players = new Client.Player[players.length];
         for(int i=0;i<players.length;i++) {
             Player p = players[i];
-            update.players[i] = new Client.Player(p.getName(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
+            Location pl = p.getLocation();
+            update.players[i] = new Client.Player(p.getName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
         }
         
         update.updates = mapManager.getWorldUpdates(worldName, since);

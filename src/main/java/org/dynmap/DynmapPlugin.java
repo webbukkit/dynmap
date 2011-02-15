@@ -108,8 +108,8 @@ public class DynmapPlugin extends JavaPlugin {
 
     public void registerEvents() {
         BlockListener blockListener = new DynmapBlockListener(mapManager);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Monitor, this);
+        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Monitor, this);
 
         PlayerListener playerListener = new DynmapPlayerListener(mapManager, playerList, configuration);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);

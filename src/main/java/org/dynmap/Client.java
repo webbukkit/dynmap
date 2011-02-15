@@ -11,10 +11,12 @@ public class Client {
     public static class Player {
         public String type = "player";
         public String name;
+        public String world;
         public double x, y, z;
 
-        public Player(String name, double x, double y, double z) {
+        public Player(String name, String world, double x, double y, double z) {
             this.name = name;
+            this.world = world;
             this.x = x;
             this.y = y;
             this.z = z;
