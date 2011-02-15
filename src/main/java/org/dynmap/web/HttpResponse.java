@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
+    private HttpServerConnection connection;
     public String version = "1.0";
     public int statusCode = 200;
     public String statusMessage = "OK";
@@ -14,7 +15,7 @@ public class HttpResponse {
     private OutputStream body;
     public OutputStream getBody() throws IOException {
         if (body != null) {
-            HttpServerConnection.writeResponseHeader(body, this);
+            connection.writeResponseHeader(this);
             OutputStream b = body;
             body = null;
             return b;
@@ -22,7 +23,8 @@ public class HttpResponse {
         return null;
     }
     
-    public HttpResponse(OutputStream body) {
+    public HttpResponse(HttpServerConnection connection, OutputStream body) {
+        this.connection = connection;
         this.body = body;
     }
 }

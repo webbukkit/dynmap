@@ -1,11 +1,11 @@
 package org.dynmap.web;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -18,23 +18,53 @@ import org.dynmap.debug.Debug;
 public class HttpServerConnection extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
+    private static Pattern requestHeaderLine = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+HTTP/(.+)$");
+    private static Pattern requestHeaderField = Pattern.compile("^([^:]+):\\s*(.+)$");
+    
     private Socket socket;
     private HttpServer server;
+    
+    private PrintStream printOut;
+    private StringWriter sw = new StringWriter();
+    private Matcher requestHeaderLineMatcher;
+    private Matcher requestHeaderFieldMatcher;
 
     public HttpServerConnection(Socket socket, HttpServer server) {
         this.socket = socket;
         this.server = server;
     }
 
-    private static Pattern requestHeaderLine = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+HTTP/(.+)$");
-    private static Pattern requestHeaderField = Pattern.compile("^([^:]+):\\s*(.+)$");
+    private final static void readLine(InputStream in, StringWriter sw) throws IOException {
+        int readc;
+        while((readc = in.read()) > 0) {
+            char c = (char)readc;
+            if (c == '\n')
+                break;
+            else if (c != '\r')
+                sw.append(c);
+        }
+    }
+    
+    private final String readLine(InputStream in) throws IOException {
+        readLine(in, sw);
+        String r = sw.toString();
+        sw.getBuffer().setLength(0);
+        return r;
+    }
 
-    private static boolean readRequestHeader(InputStream in, HttpRequest request) throws IOException {
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
-        String statusLine = r.readLine();
+    private final boolean readRequestHeader(InputStream in, HttpRequest request) throws IOException {
+        String statusLine = readLine(in);
+        
         if (statusLine == null)
             return false;
-        Matcher m = requestHeaderLine.matcher(statusLine);
+        
+        if (requestHeaderLineMatcher == null) {
+            requestHeaderLineMatcher = requestHeaderLine.matcher(statusLine);
+        } else {
+            requestHeaderLineMatcher.reset(statusLine);
+        }
+        
+        Matcher m = requestHeaderLineMatcher;
         if (!m.matches())
             return false;
         request.method = m.group(1);
@@ -42,10 +72,14 @@ public class HttpServerConnection extends Thread {
         request.version = m.group(3);
 
         String line;
-        while ((line = r.readLine()) != null) {
-            if (line.equals(""))
-                break;
-            m = requestHeaderField.matcher(line);
+        while (!(line = readLine(in)).equals("")) {
+            if (requestHeaderFieldMatcher == null) {
+                requestHeaderFieldMatcher = requestHeaderField.matcher(line);
+            } else {
+                requestHeaderFieldMatcher.reset(line);
+            }
+            
+            m = requestHeaderFieldMatcher;
             // Warning: unknown lines are ignored.
             if (m.matches()) {
                 String fieldName = m.group(1);
@@ -57,40 +91,61 @@ public class HttpServerConnection extends Thread {
         return true;
     }
 
-    public static void writeResponseHeader(OutputStream out, HttpResponse response) throws IOException {
-        BufferedOutputStream o = new BufferedOutputStream(out);
-        StringBuilder sb = new StringBuilder();
-        sb.append("HTTP/");
-        sb.append(response.version);
-        sb.append(" ");
-        sb.append(response.statusCode);
-        sb.append(" ");
-        sb.append(response.statusMessage);
-        sb.append("\r\n");
+    public static final void writeResponseHeader(PrintStream out, HttpResponse response) throws IOException {
+        out.append("HTTP/");
+        out.append(response.version);
+        out.append(" ");
+        out.append(String.valueOf(response.statusCode));
+        out.append(" ");
+        out.append(response.statusMessage);
+        out.append("\r\n");
         for (Entry<String, String> field : response.fields.entrySet()) {
-            sb.append(field.getKey());
-            sb.append(": ");
-            sb.append(field.getValue());
-            sb.append("\r\n");
+            out.append(field.getKey());
+            out.append(": ");
+            out.append(field.getValue());
+            out.append("\r\n");
         }
-        sb.append("\r\n");
-        o.write(sb.toString().getBytes());
-        o.flush();
+        out.append("\r\n");
+        out.flush();
+    }
+    
+    public final void writeResponseHeader(HttpResponse response) throws IOException {
+        writeResponseHeader(printOut, response);
     }
 
     public void run() {
         try {
             socket.setSoTimeout(5000);
+            InputStream in = socket.getInputStream();
+            OutputStream out = socket.getOutputStream();
+            
+            printOut = new PrintStream(out);
             while (true) {
                 HttpRequest request = new HttpRequest();
-                InputStream in = socket.getInputStream();
+                
                 if (!readRequestHeader(in, request)) {
                     socket.close();
                     return;
                 }
+                
+                long bound = -1;
+                BoundInputStream boundBody = null;
+                {
+                    String contentLengthStr = request.fields.get(HttpField.contentLength);
+                    if (contentLengthStr != null) {
+                        try {
+                            bound = Long.parseLong(contentLengthStr);
+                        } catch (NumberFormatException e) {
+                        }
+                        if (bound >= 0) {
+                            request.body = boundBody = new BoundInputStream(in, bound);
+                        } else {
+                            request.body = in;
+                        }
+                    }
+                }
 
-                // TODO: Optimize HttpHandler-finding by using a real path-aware
-                // tree.
+                // TODO: Optimize HttpHandler-finding by using a real path-aware tree.
                 HttpHandler handler = null;
                 String relativePath = null;
                 for (Entry<String, HttpHandler> entry : server.handlers.entrySet()) {
@@ -108,8 +163,7 @@ public class HttpServerConnection extends Thread {
                     return;
                 }
 
-                OutputStream out = socket.getOutputStream();
-                HttpResponse response = new HttpResponse(out);
+                HttpResponse response = new HttpResponse(this, out);
 
                 try {
                     handler.handle(relativePath, request, response);
