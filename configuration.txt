@@ -38,6 +38,10 @@ web:
     showplayerfacesinmenu: true
     focuschatballoons: false
     
+    # The clock that is shown alongside the map.
+    clock: timeofday
+    #clock: digital
+    
     # The name of the map shown when opening Dynmap's page (must be in menu).
     defaultmap: defaultmap
     
