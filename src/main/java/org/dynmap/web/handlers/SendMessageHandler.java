@@ -1,7 +1,6 @@
 package org.dynmap.web.handlers;
 
 import java.io.InputStreamReader;
-import java.nio.CharBuffer;
 import java.util.logging.Logger;
 
 import org.dynmap.Event;

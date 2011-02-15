@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class PlayerList {

@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Location;
 import org.bukkit.Server;

@@ -1,7 +1,5 @@
 package org.dynmap.kzedmap;
 
-import java.awt.image.BufferedImage;
-
 import org.bukkit.World;
 import org.dynmap.MapTile;
 
