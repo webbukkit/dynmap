@@ -1,6 +1,5 @@
 package org.dynmap.web;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -163,6 +162,10 @@ public class HttpServerConnection extends Thread {
                     return;
                 }
 
+                if (bound > 0) {
+                    boundBody.skip(bound);
+                }
+                
                 HttpResponse response = new HttpResponse(this, out);
 
                 try {
