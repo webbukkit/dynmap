@@ -42,23 +42,34 @@ web:
     clock: timeofday
     #clock: digital
     
-    # The name of the map shown when opening Dynmap's page (must be in menu).
-    defaultmap: defaultmap
-    
-    # The maps shown in the menu.
-    shownmaps:
-      - type: KzedMapType
-        name: defaultmap
-        prefix: t
-      - type: KzedMapType
-        name: cavemap
-        prefix: ct
-    
-    # The name of the world shown when opening Dynmap's page.
     defaultworld: world
-    
-    # The worlds shown in the menu.
-    shownworlds:
-      - world
-      - nether
-      - world_bad
+    worlds:
+      - title: World
+        name: world
+        maps:
+          - type: KzedMapType
+            title: Surface
+            name: surface
+            prefix: t
+          - type: KzedMapType
+            title: Cave
+            name: cave
+            prefix: ct
+      - title: Corrupted World
+        name: world_bad
+        maps:
+          - type: KzedMapType
+            title: Surface
+            name: surface
+            prefix: t
+          - type: KzedMapType
+            title: Cave
+            name: cave
+            prefix: ct
+      - title: Nether
+        name: nether
+        maps:
+          - type: KzedMapType
+            title: Surface
+            name: nether
+            prefix: t

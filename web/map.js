@@ -1,3 +1,4 @@
+"use strict";
 //if (!console) console = { log: function() {} }; 
 
 var maptypes = {};
@@ -26,7 +27,8 @@ DynMapType.prototype = {
 		var src = this.dynmap.getTileUrl(tileName);
 		tile.attr('src', src);
 		tile.show();
-	}
+	},
+	updateTileSize: function(zoom) {}
 };
 
 function MinecraftCompass(element) { this.element = element; }
@@ -52,6 +54,7 @@ function DynMap(options) {
 	})
 }
 DynMap.prototype = {
+	worlds: {},
 	registeredTiles: new Array(),
 	markers: new Array(),
 	chatPopups: new Array(),
@@ -60,16 +63,29 @@ DynMap.prototype = {
 	configure: function(configuration) {
 		var me = this;
 		$.extend(me.options, configuration);
-		if (!me.options.maps) me.options.maps = {};
-		$.each(me.options.shownmaps, function(index, mapentry) {
-			me.options.maps[mapentry.name] = maptypes[mapentry.type](mapentry);
+		
+		$.each(me.options.worlds, function(index, worldentry) {
+			var world = me.worlds[worldentry.name] = $.extend({}, worldentry, {
+				maps: {}
+			});
+			
+			$.each(worldentry.maps, function(index, mapentry) {
+				var map = $.extend({}, mapentry, {
+					world: world,
+					dynmap: me
+				});
+				map = world.maps[mapentry.name] = maptypes[mapentry.type](map);
+				
+				world.defaultmap = world.defaultmap || map;
+			});
+			me.defaultworld = me.defaultworld || world;
 		});
-		me.world = me.options.defaultworld;
 	},
 	initialize: function() {
 		var me = this;
 		
 		var container = $(me.options.container);
+		container.addClass('dynmap');
 		
 		var mapContainer;
 		(mapContainer = $('<div/>'))
@@ -88,6 +104,10 @@ DynMap.prototype = {
 			streetViewControl: false,
 			backgroundColor: 'none'
 		});
+		
+		map.zoom_changed = function() {
+			me.maptype.updateTileSize(me.map.zoom);
+		};
 
 		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 			me.followPlayer('');
@@ -100,100 +120,71 @@ DynMap.prototype = {
 			me.updateLink();
 		});*/
 
-		// The sidebar
+		// Sidebar
 		var sidebar = me.sidebar = $('<div/>')
 			.addClass('sidebar')
+			//.addClass('pinned')
 			.appendTo(container);
 		
-		// The world list.
-		var worldlist = me.worldlist = $('<div/>')
-			.addClass('worldlist')
+		var panel = $('<div/>')
+			.addClass('panel')
 			.appendTo(sidebar);
 		
-		$.each(me.options.shownworlds, function(index, name) {
-			var worldButton;
-			$('<div/>')
-				.addClass('worldrow')
-				.append(worldButton = $('<input/>')
-					.addClass('worldbutton')
-					.addClass('world_' + name)
-					.attr({
-						type: 'radio',
-						name: 'world',
-						value: name
-						})
-					.attr('checked', me.options.defaultworld == name ? 'checked' : null)
-					)
-				.append($('<label/>')
-						.attr('for', 'worldbutton_' + name)
-						.text(name)
+		// Worlds
+		var worldlist;
+		$('<fieldset/>')
+			.append($('<legend/>').text('Map Types'))
+			.append(me.worldlist = worldlist = $('<ul/>').addClass('worldlist'))
+			.appendTo(panel);
+		
+		$.each(me.worlds, function(index, world) {
+			var maplist; 
+			world.element = $('<li/>')
+				.addClass('world')
+				.text(world.title)
+				.append(maplist = $('<ul/>')
+						.addClass('maplist')
 						)
-				.click(function() {
-						$('.worldbutton', worldlist).removeAttr('checked');
-						map.setMapTypeId('none');
-						me.world = name;
-						// Another workaround for GMaps not being able to reload tiles.
-						window.setTimeout(function() {
-							map.setMapTypeId(me.options.defaultmap);
-						}, 1);
-						worldButton.attr('checked', 'checked');
-					})
-				.data('world', name)
+				.data('world', world)
 				.appendTo(worldlist);
-		});
-		
-		// The map list.
-		var maplist = me.maplist = $('<div/>')
-			.addClass('maplist')
-			.appendTo(sidebar);
-		
-		$.each(me.options.maps, function(name, mapType){
-			mapType.dynmap = me;
-			map.mapTypes.set(name, mapType);
 			
-			var mapButton;
-			$('<div/>')
-				.addClass('maprow')
-				.append(mapButton = $('<input/>')
-					.addClass('mapbutton')
-					.addClass('maptype_' + name)
-					.attr({
-						type: 'radio',
-						name: 'map',
-						value: name
+			$.each(world.maps, function(index, map) {
+				me.map.mapTypes.set(map.world.name + '.' + map.name, map);
+				
+				map.element = $('<li/>')
+					.addClass('map')
+					.append($('<a/>')
+							.attr({ title: map.title, href: '#' })
+							.addClass('maptype')
+							.css({ backgroundImage: 'url(' + (map.icon || 'block_' + map.name + '.png') + ')' })
+							.text(map.title)
+							)
+					.click(function() {
+						me.selectMap(map);
 					})
-					.attr('checked', me.options.defaultmap == name ? 'checked' : null)
-					)
-				.append($('<label/>')
-						.attr('for', 'maptypebutton_' + name)
-						.text(name)
-						)
-				.click(function() {
-						$('.mapbutton', maplist).removeAttr('checked');
-						map.setMapTypeId(name);
-						mapButton.attr('checked', 'checked');
-					})
-				.data('maptype', mapType)
-				.appendTo(maplist);
+					.data('map', map)
+					.appendTo(maplist);
+			});
 		});
-		map.setMapTypeId(me.options.defaultmap);
-		
+
 		// The Player List
-		var playerlist = me.playerlist = $('<div/>')
-			.addClass('playerlist')
-			.appendTo(sidebar);
+		var playerlist;
+		$('<fieldset/>')
+			.append($('<legend/>').text('Players'))
+			.append(me.playerlist = playerlist = $('<ul/>').addClass('playerlist'))
+			.appendTo(panel);
 		
 		// The clock
 		var clock = me.clock = clocks[me.options.clock](
 				$('<div/>')
-					.appendTo(sidebar)
+					.appendTo(panel)
 		);
 		
 		// The Compass
 		var compass = me.compass = new MinecraftCompass(
 				$('<div/>')
 					.addClass('compass')
-					.appendTo(sidebar)
+					.appendTo(panel)
 		);
 		compass.initialize();
 		
@@ -206,11 +197,29 @@ DynMap.prototype = {
 			.data('link', link)
 			.appendTo(container);*/
 		
+		$('<div/>')
+			.addClass('hitbar')
+			.appendTo(panel);
+		
 		var alertbox = me.alertbox = $('<div/>')
 			.addClass('alertbox')
 			.appendTo(container);
 		
+		me.selectMap(me.defaultworld.defaultmap);
+		
 		setTimeout(function() { me.update(); }, me.options.updaterate);
+	},
+	selectMap: function(map) {
+		var me = this;
+		me.map.setMapTypeId('none');
+		me.world = map.world;
+		me.maptype = map;
+		me.maptype.updateTileSize(me.map.zoom);
+		window.setTimeout(function() {
+			me.map.setMapTypeId(map.world.name + '.' + map.name);
+		}, 1);
+		$('.map', me.worldlist).removeClass('selected');
+		$(map.element).addClass('selected');
 	},
 	update: function() {
 		var me = this;
@@ -218,7 +227,7 @@ DynMap.prototype = {
 		// TODO: is there a better place for this?
 		this.cleanPopups();
 		
-		$.getJSON(me.options.updateUrl + "world/" + me.world + "/" + me.lasttimestamp, function(update) {
+		$.getJSON(me.options.updateUrl + "world/" + me.world.name + "/" + me.lasttimestamp, function(update) {
 				me.alertbox.hide();
 			
 				me.lasttimestamp = update.timestamp;
@@ -273,6 +282,26 @@ DynMap.prototype = {
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}
 		);
+	},
+	getTileUrl: function(tileName, always) {
+		var me = this;
+		var tile = me.registeredTiles[tileName];
+		
+		if(tile) {
+			return me.options.tileUrl + me.world.name + '/' + tileName + '?' + tile.lastseen;
+		} else {
+			return me.options.tileUrl + me.world.name + '/' + tileName + '?0';
+		}
+	},
+	registerTile: function(mapType, tileName, tile) {
+		this.registeredTiles[tileName] = {
+				tileElement: tile,
+				mapType: mapType,
+				lastseen: '0'
+		};
+	},
+	unregisterTile: function(mapType, tileName) {
+		delete this.registeredTiles[tileName];
 	},
 	cleanPopups: function() {
 		var POPUP_LIFE = 8000;
@@ -369,7 +398,7 @@ DynMap.prototype = {
 					if (me.options.showplayerfacesonmap) {
 						getMinecraftHead(mi.text, 32, function(head) {
 							$(head)
-								.addClass('playerIcon')
+								.addClass('playericon')
 								.prependTo(div);
 							playerImage.remove();
 						});
@@ -382,35 +411,33 @@ DynMap.prototype = {
 			markers[mi.id] = marker;
 
 			if (mi.type == 'player') {
-				marker.playerRow = $('<div/>')
-					.attr({ id: 'playerrow_' + mi.text })
-					.addClass('playerrow')
-					.append(marker.followButton = $('<input/>')
-						.attr({	type: 'checkbox',
-							name: 'followPlayer',
-							checked: false,
-							value: mi.text
-							})
-						.addClass('followButton')
-						.click(function(e) {
-							me.followPlayer(mi.id != me.followingPlayer ? mi.id : '');
-						}))
-					.append(marker.playerIconContainer = $('<span/>'))
+				marker.playerItem = $('<li/>')
+					.addClass('player')
+					.append(marker.playerIconContainer = $('<span/>')
+							.addClass('playerIcon')
+							.append($('<img/>').attr({ src: 'player_face.png' }))
+							.attr({ title: 'Follow ' + mi.text })
+							.click(function() {
+								var follow = mi.id != me.followingPlayer;
+								me.followPlayer(follow ? mi.id : '')
+							}))
 					.append($('<a/>')
-						.text(mi.text)
-						.attr({ href: '#' })
-						.click(function(e) { map.panTo(markers[mi.id].getPosition()); })
-						);
+							.attr({
+								href: '#',
+								title: 'Center on ' + mi.text
+								})
+							.text(mi.text)
+							)
+					.click(function(e) { map.panTo(markers[mi.id].getPosition()); })
+					.appendTo(me.playerlist);
 
 				if (me.options.showplayerfacesinmenu) {
 					getMinecraftHead(mi.text, 16, function(head) {
-						marker.playerRow.icon = $(head)
-							.addClass('playerIcon')
+						$('img', marker.playerIconContainer).remove();
+						marker.playerItem.icon = $(head)
 							.appendTo(marker.playerIconContainer);
 					});
 				}
-				
-				me.playerlist.append(marker.playerRow);
 			}
 		}
 		
@@ -420,34 +447,14 @@ DynMap.prototype = {
 	},
 	followPlayer: function(name) {
 		var me = this;
-		$('.followButton', me.playerlist).removeAttr('checked');
+		$('.following', me.playerlist).removeClass('following');
 		
 		var m = me.markers[name];
 		if(m) {
-			$(m.followButton).attr('checked', 'checked');
+			$(m.playerItem).addClass('following');
 			me.map.panTo(m.getPosition());
 		}
 		this.followingPlayer = name;
-	},
-	getTileUrl: function(tileName, always) {
-		var me = this;
-		var tile = me.registeredTiles[tileName];
-		
-		if(tile) {
-			return me.options.tileUrl + me.world + '/' + tileName + '?' + tile.lastseen;
-		} else {
-			return me.options.tileUrl + me.world + '/' + tileName + '?0';
-		}
-	},
-	registerTile: function(mapType, tileName, tile) {
-		this.registeredTiles[tileName] = {
-				tileElement: tile,
-				mapType: mapType,
-				lastseen: '0'
-		};
-	},
-	unregisterTile: function(mapType, tileName) {
-		delete this.registeredTiles[tileName];
 	},
 	// TODO: Enable hash-links.
 /*	updateLink: function() {

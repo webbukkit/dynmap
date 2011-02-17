@@ -112,6 +112,9 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			this.dynmap.unregisterTile(this, tileName);
 		}
 		return tile.get(0);
+	},
+	updateTileSize: function(zoom) {
+		//this.tileSize = new google.maps.Size(config.zoomSize[zoom], config.zoomSize[zoom]);
 	}
 });
 
