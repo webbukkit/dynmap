@@ -174,6 +174,19 @@ body {
 	transition: all 0.6s ease-in-out;
 }
 
+.dynmap .sidebar .panel > .pin {
+	position: absolute;
+	right: 4px;
+	top: 4px;
+	width: 16px;
+	height: 16px;
+	background-image: url(window_unpinned.png);
+}
+
+.dynmap .sidebar.pinned .panel > .pin {
+	background-image: url(window_pinned.png);
+}
+
 /* magic and metrics */
 
 .dynmap .sidebar:hover,
