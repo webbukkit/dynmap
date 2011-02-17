@@ -32,40 +32,49 @@ class JsonTimerTask extends TimerTask
   }
 
   public void run() {
-    long current = System.currentTimeMillis();
+	for(World world : this.server.getWorlds())
+	{
+		long current = System.currentTimeMillis();
 
-    Client.Update update = new Client.Update();
-    update.timestamp = current;
-    update.servertime = ((World)this.server.getWorlds().get(0)).getTime();
+		Client.Update update = new Client.Update();
+		update.timestamp = current;
+		update.servertime = world.getTime();
 
-    Player[] players = this.playerList.getVisiblePlayers();
-    update.players = new Client.Player[players.length];
-    for (int i = 0; i < players.length; i++) {
-      Player p = players[i];
-      update.players[i] = new Client.Player(p.getName(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
-    }
-    update.updates = this.mapManager.updateQueue.getUpdatedObjects(current - 10L);
+        update.timestamp = current;
+        update.servertime = world.getTime() % 24000;
 
-    File webpath = new File(this.configuration.getString("webpath", "web"), "dynmap.json");
-    File outputFile;
-    if (webpath.isAbsolute())
-      outputFile = webpath;
-    else {
-      outputFile = new File(DynmapPlugin.dataRoot, webpath.toString());
-    }
-    try
-    {
-      FileOutputStream fos = new FileOutputStream(outputFile);
-      fos.write(Json.stringifyJson(update).getBytes());
-      fos.close();
-    }
-    catch (FileNotFoundException ex)
-    {
-      System.out.println("FileNotFoundException : " + ex);
-    }
-    catch (IOException ioe)
-    {
-      System.out.println("IOException : " + ioe);
-    }
-  }
+
+        Player[] players = playerList.getVisiblePlayers();
+        update.players = new Client.Player[players.length];
+        for(int i=0;i<players.length;i++) {
+            Player p = players[i];
+            Location pl = p.getLocation();
+            update.players[i] = new Client.Player(p.getName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
+        }
+
+        update.updates = mapManager.getWorldUpdates(world.getName(), current - 10L);
+
+		File webpath = new File(this.configuration.getString("webpath", "web"), "dynmap_"+world.getName()+".json");
+		File outputFile;
+		if (webpath.isAbsolute())
+		outputFile = webpath;
+		else {
+		outputFile = new File(DynmapPlugin.dataRoot, webpath.toString());
+		}
+		try
+		{
+		FileOutputStream fos = new FileOutputStream(outputFile);
+		fos.write(Json.stringifyJson(update).getBytes());
+		fos.close();
+		}
+		catch (FileNotFoundException ex)
+		{
+		System.out.println("FileNotFoundException : " + ex);
+		}
+		catch (IOException ioe)
+		{
+		System.out.println("IOException : " + ioe);
+		}
+	}
+}
 }
