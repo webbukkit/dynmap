@@ -16,10 +16,10 @@ webserver-bindaddress: 0.0.0.0
 webserver-port: 8123
 
 # Disables Webserver portion of Dynmap (Advanced users only)
-disable-webserver: true
+disable-webserver: false
 
 # Writes JSON to file in the webpath
-jsonfile: true
+jsonfile: false
 
 # How often the json file gets written to(in seconds)
 jsonfile-interval: 1000
