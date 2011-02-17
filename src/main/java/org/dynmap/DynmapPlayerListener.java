@@ -31,7 +31,7 @@ public class DynmapPlayerListener extends PlayerListener {
                 
                 if (split[1].equals("render")) {
                     Player player = event.getPlayer();
-                    mgr.touch(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+                    mgr.touch(player.getLocation());
                     event.setCancelled(true);
                 } else if (split[1].equals("hide")) {
                     if (split.length == 2) {
@@ -54,6 +54,7 @@ public class DynmapPlayerListener extends PlayerListener {
                 } else if (split[1].equals("fullrender")) {
                     Player player = event.getPlayer();
                     mgr.renderFullWorld(player.getLocation());
+                    event.setCancelled(true);
                 }
             }
         }
@@ -66,6 +67,6 @@ public class DynmapPlayerListener extends PlayerListener {
      *            Relevant event details
      */
     public void onPlayerChat(PlayerChatEvent event) {
-        mgr.updateQueue.pushUpdate(new Client.ChatMessage(event.getPlayer().getName(), event.getMessage()));
+        mgr.pushUpdate(new Client.ChatMessage(event.getPlayer().getName(), event.getMessage()));
     }
 }

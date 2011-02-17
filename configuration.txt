@@ -4,7 +4,7 @@
 renderinterval: 1
 
 # The path where the tile-files are placed.
-tilepath: web/tiles
+tilespath: web/tiles
 
 # The path where the web-files are located.
 webpath: web
@@ -33,8 +33,10 @@ maps:
     renderers:
       - class: org.dynmap.kzedmap.DefaultTileRenderer
         prefix: t
+        maximumheight: 127
       - class: org.dynmap.kzedmap.CaveTileRenderer
         prefix: ct
+        maximumheight: 127
 
 web:
     # Interval the browser should poll for updates.
@@ -44,6 +46,10 @@ web:
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
     focuschatballoons: false
+    
+    # The clock that is shown alongside the map.
+    clock: timeofday
+    #clock: digital
     
     # The name of the map shown when opening Dynmap's page (must be in menu).
     defaultmap: defaultmap
@@ -56,3 +62,12 @@ web:
       - type: KzedMapType
         name: cavemap
         prefix: ct
+    
+    # The name of the world shown when opening Dynmap's page.
+    defaultworld: world
+    
+    # The worlds shown in the menu.
+    shownworlds:
+      - world
+      - nether
+      - world_bad

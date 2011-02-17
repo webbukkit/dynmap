@@ -2,6 +2,9 @@ package org.dynmap.web.handlers;
 
 import java.io.InputStream;
 
+import org.dynmap.web.HttpRequest;
+import org.dynmap.web.HttpResponse;
+
 
 public class JarFileHandler extends FileHandler {
     private String root;
@@ -10,7 +13,7 @@ public class JarFileHandler extends FileHandler {
         this.root = root;
     }
     @Override
-    protected InputStream getFileInput(String path) {
+    protected InputStream getFileInput(String path, HttpRequest request, HttpResponse response) {
         return this.getClass().getResourceAsStream(root + "/" + path);
     }
 }

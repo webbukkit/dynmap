@@ -2,6 +2,11 @@ html { height: 100% }
 body { height: 100%; margin: 0px; padding: 0px ; background-color: #000; }
 #mcmap { width:100%; height: 100% }
 
+/* hide gmaps copyrights */
+div.map > DIV > DIV:first-child + DIV { visibility: hidden !important; }
+div.map > DIV > DIV:first-child + DIV + DIV { visibility: hidden !important; }
+
+
 .map {
 	width: 100%; height: 100%;
 	background-color: black;
@@ -76,6 +81,18 @@ a, a:visited, label {
 }
 .clock.night { background-image: url(clock_night.png); }
 .clock.day { background-image: url(clock_day.png); }
+
+.compass { 
+	background-repeat: no-repeat;
+	background-image: url(compass.png);
+}
+
+.timeofday {
+	background-repeat: no-repeat; 
+}
+
+.timeofday.sun { background-image: url(sun.png); }
+.timeofday.moon { background-image: url(moon.png); }
 
 .alertbox {
 	padding: 5px;

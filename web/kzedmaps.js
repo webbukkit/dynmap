@@ -49,7 +49,7 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			
 			tileSize = 128;
 			imgSize = tileSize;
-			tileName = 'z' + this.prefix + '_' + (-coord.x * tileSize*2) + '_' + (coord.y * tileSize*2);
+			tileName = 'z' + this.prefix + '_' + (-coord.x * tileSize*2) + '_' + (coord.y * tileSize*2) + '.png';
 		} else {
 			// Other zoom levels.
 			tileSize = 128;
@@ -72,7 +72,7 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			tileSize = imgSize;
 			
 			if (offset.x == 0 && offset.y == 0) {
-				tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
+				tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y + '.png';
 			}
 			offset = {x: 0, y: 0};
 			// The next line is not:

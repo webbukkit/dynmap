@@ -1,19 +1,18 @@
 package org.dynmap.kzedmap;
 
-import java.awt.image.BufferedImage;
-
+import org.bukkit.World;
 import org.dynmap.MapTile;
 
 public class KzedZoomedMapTile extends MapTile {
     @Override
-    public String getName() {
-        return "z" + originalTile.renderer.getName() + "_" + getTileX() + "_" + getTileY();
+    public String getFilename() {
+        return "z" + originalTile.renderer.getName() + "_" + getTileX() + "_" + getTileY() + ".png";
     }
 
     public KzedMapTile originalTile;
 
-    public KzedZoomedMapTile(KzedMap map, KzedMapTile original) {
-        super(map);
+    public KzedZoomedMapTile(World world, KzedMap map, KzedMapTile original) {
+        super(world, map);
         this.originalTile = original;
     }
 
@@ -42,7 +41,7 @@ public class KzedZoomedMapTile extends MapTile {
 
     @Override
     public int hashCode() {
-        return getName().hashCode();
+        return getFilename().hashCode() ^ getWorld().hashCode();
     }
 
     @Override

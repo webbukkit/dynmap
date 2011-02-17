@@ -1,6 +1,7 @@
 //if (!console) console = { log: function() {} }; 
 
 var maptypes = {};
+var clocks = {};
 
 function splitArgs(s) {
 	var r = s.split(' ');
@@ -28,44 +29,17 @@ DynMapType.prototype = {
 	}
 };
 
-function MinecraftClock(element) { this.element = element; }
-MinecraftClock.prototype = {
+function MinecraftCompass(element) { this.element = element; }
+MinecraftCompass.prototype = {
 	element: null,
-	timeout: null,
-	time: null,
 	create: function(element) {
 		if (!element) element = $('<div/>');
 		this.element = element;
 		return element;
 	},
-	setTime: function(time) {
-		if (this.timeout != null) {
-			window.clearTimeout(this.timeout);
-			this.timeout = null;
-		}
-		this.time = time;
-		this.element
-			.addClass(time.day ? 'day' : 'night')
-			.removeClass(time.night ? 'day' : 'night')
-			.text(this.formatTime(time));
-		
-		if (this.timeout == null) {
-			var me = this;
-			this.timeout = window.setTimeout(function() {
-				me.timeout = null;
-				me.setTime(getMinecraftTime(me.time.servertime+(1000/60)));
-			}, 700);
-		}
-	},
-	formatTime: function(time) {
-		var formatDigits = function(n, digits) {
-			var s = n.toString();
-			while (s.length < digits) {
-				s = '0' + s;
-			}
-			return s;
-		}
-		return formatDigits(time.hours, 2) + ':' + formatDigits(time.minutes, 2);
+	initialize: function() {
+		this.element.html("&nbsp;&rlm;&nbsp;");
+		this.element.height(120);
 	}
 };
 
@@ -79,7 +53,6 @@ function DynMap(options) {
 }
 DynMap.prototype = {
 	registeredTiles: new Array(),
-	clock: null,
 	markers: new Array(),
 	chatPopups: new Array(),
 	lasttimestamp: '0',
@@ -91,6 +64,7 @@ DynMap.prototype = {
 		$.each(me.options.shownmaps, function(index, mapentry) {
 			me.options.maps[mapentry.name] = maptypes[mapentry.type](mapentry);
 		});
+		me.world = me.options.defaultworld;
 	},
 	initialize: function() {
 		var me = this;
@@ -131,11 +105,48 @@ DynMap.prototype = {
 			.addClass('sidebar')
 			.appendTo(container);
 		
+		// The world list.
+		var worldlist = me.worldlist = $('<div/>')
+			.addClass('worldlist')
+			.appendTo(sidebar);
+		
+		$.each(me.options.shownworlds, function(index, name) {
+			var worldButton;
+			$('<div/>')
+				.addClass('worldrow')
+				.append(worldButton = $('<input/>')
+					.addClass('worldbutton')
+					.addClass('world_' + name)
+					.attr({
+						type: 'radio',
+						name: 'world',
+						value: name
+						})
+					.attr('checked', me.options.defaultworld == name ? 'checked' : null)
+					)
+				.append($('<label/>')
+						.attr('for', 'worldbutton_' + name)
+						.text(name)
+						)
+				.click(function() {
+						$('.worldbutton', worldlist).removeAttr('checked');
+						map.setMapTypeId('none');
+						me.world = name;
+						// Another workaround for GMaps not being able to reload tiles.
+						window.setTimeout(function() {
+							map.setMapTypeId(me.options.defaultmap);
+						}, 1);
+						worldButton.attr('checked', 'checked');
+					})
+				.data('world', name)
+				.appendTo(worldlist);
+		});
+		
 		// The map list.
 		var maplist = me.maplist = $('<div/>')
 			.addClass('maplist')
 			.appendTo(sidebar);
-			
+		
 		$.each(me.options.maps, function(name, mapType){
 			mapType.dynmap = me;
 			map.mapTypes.set(name, mapType);
@@ -144,11 +155,12 @@ DynMap.prototype = {
 			$('<div/>')
 				.addClass('maprow')
 				.append(mapButton = $('<input/>')
+					.addClass('mapbutton')
 					.addClass('maptype_' + name)
 					.attr({
 						type: 'radio',
 						name: 'map',
-						id: 'maptypebutton_' + name 
+						value: name
 					})
 					.attr('checked', me.options.defaultmap == name ? 'checked' : null)
 					)
@@ -171,12 +183,19 @@ DynMap.prototype = {
 			.addClass('playerlist')
 			.appendTo(sidebar);
 		
-		// The Clock
-		var clock = me.clock = new MinecraftClock(
+		// The clock
+		var clock = me.clock = clocks[me.options.clock](
 				$('<div/>')
-					.addClass('clock')
 					.appendTo(sidebar)
 		);
+		
+		// The Compass
+		var compass = me.compass = new MinecraftCompass(
+				$('<div/>')
+					.addClass('compass')
+					.appendTo(sidebar)
+		);
+		compass.initialize();
 		
 		// TODO: Enable hash-links.
 		/*
@@ -199,11 +218,11 @@ DynMap.prototype = {
 		// TODO: is there a better place for this?
 		this.cleanPopups();
 		
-		$.getJSON(me.options.updateUrl + me.lasttimestamp, function(update) {
+		$.getJSON(me.options.updateUrl + "world/" + me.world + "/" + me.lasttimestamp, function(update) {
 				me.alertbox.hide();
 			
 				me.lasttimestamp = update.timestamp;
-				me.clock.setTime(getMinecraftTime(update.servertime));
+				me.clock.setTime(update.servertime);
 
 				var typeVisibleMap = {};
 				var newmarkers = {};
@@ -300,7 +319,7 @@ DynMap.prototype = {
 			popup.popupTime = now.getTime();
 			if (!popup.infoWindow) {
 				popup.infoWindow = new google.maps.InfoWindow({
-					disableAutoPan: me.options.focuschatballoons || false,
+					disableAutoPan: !(me.options.focuschatballoons || false),
 				    content: htmlMessage
 				});
 			} else {
@@ -415,9 +434,9 @@ DynMap.prototype = {
 		var tile = me.registeredTiles[tileName];
 		
 		if(tile) {
-			return me.options.tileUrl + tileName + '.png?' + tile.lastseen;
+			return me.options.tileUrl + me.world + '/' + tileName + '?' + tile.lastseen;
 		} else {
-			return me.options.tileUrl + tileName + '.png?0';
+			return me.options.tileUrl + me.world + '/' + tileName + '?0';
 		}
 	},
 	registerTile: function(mapType, tileName, tile) {

@@ -20,11 +20,15 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
-import org.dynmap.debug.BukkitPlayerDebugger;
+import org.dynmap.Event.Listener;
+import org.dynmap.debug.Debug;
+import org.dynmap.debug.LogDebugger;
 import org.dynmap.web.HttpServer;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
+import org.dynmap.web.handlers.SendMessageHandler;
+import org.dynmap.web.handlers.SendMessageHandler.Message;
 import org.dynmap.web.Json;
 
 public class DynmapPlugin extends JavaPlugin {
@@ -36,10 +40,8 @@ public class DynmapPlugin extends JavaPlugin {
     private PlayerList playerList;
     private Configuration configuration;
 
+    public static File tilesDirectory;
 	private Timer timer;
-
-    private BukkitPlayerDebugger debugger = new BukkitPlayerDebugger(this);
-
     public static File dataRoot;
 
     public DynmapPlugin(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
@@ -60,15 +62,19 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public void onEnable() {
+        Debug.addDebugger(new LogDebugger());
+
         configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
         configuration.load();
 
-        debugger.enable();
+        tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
+        tilesDirectory.mkdirs();
+
         playerList = new PlayerList(getServer());
         playerList.load();
 
-        mapManager = new MapManager(getWorld(), debugger, configuration);
-        mapManager.startManager();
+        mapManager = new MapManager(configuration);
+        mapManager.startRendering();
 
 		if(!configuration.getBoolean("disable-webserver", true)) {
 			InetAddress bindAddress;
@@ -85,10 +91,20 @@ public class DynmapPlugin extends JavaPlugin {
 			int port = configuration.getInt("webserver-port", 8123);
 
 			webServer = new HttpServer(bindAddress, port);
-			webServer.handlers.put("/", new FilesystemHandler(mapManager.webDirectory));
-			webServer.handlers.put("/tiles/", new FilesystemHandler(mapManager.tileDirectory));
-			webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getWorld()));
+			webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web"))));
+			webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
+			webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer()));
 			webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
+
+			SendMessageHandler messageHandler = new SendMessageHandler();
+			messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
+				@Override
+				public void triggered(Message t) {
+					log.info("[WEB] " + t.name + ": " + t.message);
+					getServer().broadcastMessage("[WEB] " + t.name + ": " + t.message);
+				}
+			});
+			webServer.handlers.put("/up/sendmessage", messageHandler);
 
 			try {
 				webServer.startServer();
@@ -108,23 +124,37 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public void onDisable() {
-        mapManager.stopManager();
+        mapManager.stopRendering();
 
         if (webServer != null) {
             webServer.shutdown();
             webServer = null;
         }
-        debugger.disable();
+        Debug.clearDebuggers();
     }
 
     public void registerEvents() {
         BlockListener blockListener = new DynmapBlockListener(mapManager);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Monitor, this);
+        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Monitor, this);
 
         PlayerListener playerListener = new DynmapPlayerListener(mapManager, playerList, configuration);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
+    }
+
+    private static File combinePaths(File parent, String path) {
+        return combinePaths(parent, new File(path));
+    }
+
+    private static File combinePaths(File parent, File path) {
+        if (path.isAbsolute())
+            return path;
+        return new File(parent, path.getPath());
+    }
+
+    public File getFile(String path) {
+        return combinePaths(DynmapPlugin.dataRoot, path);
     }
 
 	private void jsonConfig()

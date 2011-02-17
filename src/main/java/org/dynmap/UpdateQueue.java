@@ -11,7 +11,7 @@ public class UpdateQueue {
 
     private static final int maxUpdateAge = 120000;
 
-    public void pushUpdate(Object obj) {
+    public synchronized void pushUpdate(Object obj) {
         long now = System.currentTimeMillis();
         long deadline = now - maxUpdateAge;
         synchronized (lock) {
@@ -27,7 +27,7 @@ public class UpdateQueue {
 
     private ArrayList<Object> tmpupdates = new ArrayList<Object>();
 
-    public Object[] getUpdatedObjects(long since) {
+    public synchronized Object[] getUpdatedObjects(long since) {
         long now = System.currentTimeMillis();
         long deadline = now - maxUpdateAge;
         Object[] updates;

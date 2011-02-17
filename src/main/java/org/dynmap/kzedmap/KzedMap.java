@@ -15,10 +15,9 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.DynmapChunk;
-import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
-import org.dynmap.debug.Debugger;
+import org.dynmap.debug.Debug;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -43,14 +42,13 @@ public class KzedMap extends MapType {
     MapTileRenderer[] renderers;
     ZoomedTileRenderer zoomrenderer;
 
-    public KzedMap(MapManager manager, World world, Debugger debugger, Map<String, Object> configuration) {
-        super(manager, world, debugger);
+    public KzedMap(Map<String, Object> configuration) {
         if (colors == null) {
             colors = loadColorSet("colors.txt");
         }
 
         renderers = loadRenderers(configuration);
-        zoomrenderer = new ZoomedTileRenderer(debugger, configuration);
+        zoomrenderer = new ZoomedTileRenderer(configuration);
     }
 
     private MapTileRenderer[] loadRenderers(Map<String, Object> configuration) {
@@ -63,11 +61,12 @@ public class KzedMap extends MapType {
                 String typeName = (String) configuredRenderer.get("class");
                 log.info("Loading renderer '" + typeName.toString() + "'...");
                 Class<?> mapTypeClass = Class.forName(typeName);
-                Constructor<?> constructor = mapTypeClass.getConstructor(Debugger.class, Map.class);
-                MapTileRenderer mapTileRenderer = (MapTileRenderer) constructor.newInstance(getDebugger(), configuredRenderer);
+                Constructor<?> constructor = mapTypeClass.getConstructor(Map.class);
+                MapTileRenderer mapTileRenderer = (MapTileRenderer) constructor.newInstance(configuredRenderer);
                 renderers.add(mapTileRenderer);
             } catch (Exception e) {
-                getDebugger().error("Error loading renderer", e);
+                Debug.error("Error loading renderer", e);
+                e.printStackTrace();
             }
         }
         MapTileRenderer[] result = new MapTileRenderer[renderers.size()];
@@ -77,6 +76,8 @@ public class KzedMap extends MapType {
 
     @Override
     public MapTile[] getTiles(Location l) {
+        World world = l.getWorld();
+        
         int x = l.getBlockX();
         int y = l.getBlockY();
         int z = l.getBlockZ();
@@ -92,7 +93,7 @@ public class KzedMap extends MapType {
 
         ArrayList<MapTile> tiles = new ArrayList<MapTile>();
 
-        addTile(tiles, tx, ty);
+        addTile(tiles, world, tx, ty);
 
         boolean ledge = tilex(px - 4) != tx;
         boolean tedge = tiley(py - 4) != ty;
@@ -100,22 +101,22 @@ public class KzedMap extends MapType {
         boolean bedge = tiley(py + 4) != ty;
 
         if (ledge)
-            addTile(tiles, tx - tileWidth, ty);
+            addTile(tiles, world, tx - tileWidth, ty);
         if (redge)
-            addTile(tiles, tx + tileWidth, ty);
+            addTile(tiles, world, tx + tileWidth, ty);
         if (tedge)
-            addTile(tiles, tx, ty - tileHeight);
+            addTile(tiles, world, tx, ty - tileHeight);
         if (bedge)
-            addTile(tiles, tx, ty + tileHeight);
+            addTile(tiles, world, tx, ty + tileHeight);
 
         if (ledge && tedge)
-            addTile(tiles, tx - tileWidth, ty - tileHeight);
+            addTile(tiles, world, tx - tileWidth, ty - tileHeight);
         if (ledge && bedge)
-            addTile(tiles, tx - tileWidth, ty + tileHeight);
+            addTile(tiles, world, tx - tileWidth, ty + tileHeight);
         if (redge && tedge)
-            addTile(tiles, tx + tileWidth, ty - tileHeight);
+            addTile(tiles, world, tx + tileWidth, ty - tileHeight);
         if (redge && bedge)
-            addTile(tiles, tx + tileWidth, ty + tileHeight);
+            addTile(tiles, world, tx + tileWidth, ty + tileHeight);
 
         MapTile[] result = new MapTile[tiles.size()];
         tiles.toArray(result);
@@ -126,35 +127,41 @@ public class KzedMap extends MapType {
     public MapTile[] getAdjecentTiles(MapTile tile) {
         if (tile instanceof KzedMapTile) {
             KzedMapTile t = (KzedMapTile) tile;
+            World world = tile.getWorld();
             MapTileRenderer renderer = t.renderer;
             return new MapTile[] {
-                new KzedMapTile(this, renderer, t.px - tileWidth, t.py),
-                new KzedMapTile(this, renderer, t.px + tileWidth, t.py),
-                new KzedMapTile(this, renderer, t.px, t.py - tileHeight),
-                new KzedMapTile(this, renderer, t.px, t.py + tileHeight) };
+                new KzedMapTile(world, this, renderer, t.px - tileWidth, t.py),
+                new KzedMapTile(world, this, renderer, t.px + tileWidth, t.py),
+                new KzedMapTile(world, this, renderer, t.px, t.py - tileHeight),
+                new KzedMapTile(world, this, renderer, t.px, t.py + tileHeight) };
         }
         return new MapTile[0];
     }
 
-    public void addTile(ArrayList<MapTile> tiles, int px, int py) {
+    public void addTile(ArrayList<MapTile> tiles, World world, int px, int py) {
         for (int i = 0; i < renderers.length; i++) {
-            tiles.add(new KzedMapTile(this, renderers[i], px, py));
+            tiles.add(new KzedMapTile(world, this, renderers[i], px, py));
         }
     }
 
     public void invalidateTile(MapTile tile) {
-        getMapManager().invalidateTile(tile);
+        onTileInvalidated.trigger(tile);
     }
 
     @Override
     public DynmapChunk[] getRequiredChunks(MapTile tile) {
         if (tile instanceof KzedMapTile) {
             KzedMapTile t = (KzedMapTile) tile;
-            int x1 = t.mx - KzedMap.tileHeight / 2;
-            int x2 = t.mx + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
+            
+            int ix = KzedMap.anchorx + t.px / 2 + t.py / 2;
+            int iy = 127;
+            int iz = KzedMap.anchorz + t.px / 2 - t.py / 2;
+            
+            int x1 = ix - KzedMap.tileHeight / 2;
+            int x2 = ix + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
 
-            int z1 = t.mz - KzedMap.tileHeight / 2;
-            int z2 = t.mz + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
+            int z1 = iz - KzedMap.tileHeight / 2;
+            int z2 = iz + KzedMap.tileWidth / 2 + KzedMap.tileHeight / 2;
 
             int x, z;
 
@@ -174,21 +181,12 @@ public class KzedMap extends MapType {
     }
 
     @Override
-    public boolean render(MapTile tile) {
+    public boolean render(MapTile tile, File outputFile) {
         if (tile instanceof KzedZoomedMapTile) {
-            zoomrenderer.render((KzedZoomedMapTile) tile, getMapManager().tileDirectory.getAbsolutePath());
+            zoomrenderer.render((KzedZoomedMapTile) tile, outputFile);
             return true;
         } else if (tile instanceof KzedMapTile) {
-            return ((KzedMapTile) tile).renderer.render((KzedMapTile) tile, getMapManager().tileDirectory.getAbsolutePath());
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isRendered(MapTile tile) {
-        if (tile instanceof KzedMapTile) {
-            File tileFile = new File(DefaultTileRenderer.getPath((KzedMapTile) tile, getMapManager().tileDirectory.getAbsolutePath()));
-            return tileFile.exists();
+            return ((KzedMapTile) tile).renderer.render((KzedMapTile) tile, outputFile);
         }
         return false;
     }
@@ -235,10 +233,10 @@ public class KzedMap extends MapType {
             /* load colorset */
             File cfile = new File(colorsetpath);
             if (cfile.isFile()) {
-                getDebugger().debug("Loading colors from '" + colorsetpath + "'...");
+                Debug.debug("Loading colors from '" + colorsetpath + "'...");
                 stream = new FileInputStream(cfile);
             } else {
-                getDebugger().debug("Loading colors from jar...");
+                Debug.debug("Loading colors from jar...");
                 stream = KzedMap.class.getResourceAsStream("/colors.txt");
             }
 
@@ -270,7 +268,7 @@ public class KzedMap extends MapType {
             }
             scanner.close();
         } catch (Exception e) {
-            getDebugger().error("Could not load colors", e);
+            Debug.error("Could not load colors", e);
             return null;
         }
         return colors;

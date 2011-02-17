@@ -30,7 +30,7 @@ public abstract class FileHandler implements HttpHandler {
         return "application/octet-steam";
     }
     
-    protected abstract InputStream getFileInput(String path);
+    protected abstract InputStream getFileInput(String path, HttpRequest request, HttpResponse response);
     
     protected String getExtension(String path) {
         int dotindex = path.lastIndexOf('.');
@@ -60,10 +60,12 @@ public abstract class FileHandler implements HttpHandler {
         InputStream fileInput = null;
         try {
             path = formatPath(path);
-            fileInput = getFileInput(path);
+            fileInput = getFileInput(path, request, response);
             if (fileInput == null) {
                 response.statusCode = 404;
                 response.statusMessage = "Not found";
+                response.fields.put("Content-Length", "0");
+                response.getBody();
                 return;
             }
     
