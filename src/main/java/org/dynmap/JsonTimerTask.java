@@ -52,7 +52,7 @@ class JsonTimerTask extends TimerTask
             update.players[i] = new Client.Player(p.getName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
         }
 
-        update.updates = mapManager.getWorldUpdates(world.getName(), current - 10L);
+        update.updates = mapManager.getWorldUpdates(world.getName(), current - (configuration.getInt("jsonfile-interval", 1) + 10));
 
 		File webpath = new File(this.configuration.getString("webpath", "web"), "dynmap_"+world.getName()+".json");
 		File outputFile;

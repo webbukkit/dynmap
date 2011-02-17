@@ -115,7 +115,7 @@ public class DynmapPlugin extends JavaPlugin {
 
 		if(configuration.getBoolean("jsonfile", false)) {
 			jsonConfig();
-			int jsonInterval = configuration.getInt("jsonfile", 1) * 1000;
+			int jsonInterval = configuration.getInt("jsonfile-interval", 1) * 1000;
 			 timer = new Timer();
 			 timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
 		}
