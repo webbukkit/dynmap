@@ -123,12 +123,19 @@ DynMap.prototype = {
 		// Sidebar
 		var sidebar = me.sidebar = $('<div/>')
 			.addClass('sidebar')
-			//.addClass('pinned')
 			.appendTo(container);
 		
 		var panel = $('<div/>')
 			.addClass('panel')
 			.appendTo(sidebar);
+		
+		// Pin button.
+		var pinbutton = $('<div/>')
+			.addClass('pin')
+			.click(function() {
+				sidebar.toggleClass('pinned');
+			})
+			.appendTo(panel);
 		
 		// Worlds
 		var worldlist;
@@ -210,6 +217,7 @@ DynMap.prototype = {
 		setTimeout(function() { me.update(); }, me.options.updaterate);
 	},
 	selectMap: function(map) {
+		if (!map) { throw "Cannot select map " + map; }
 		var me = this;
 		me.map.setMapTypeId('none');
 		me.world = map.world;

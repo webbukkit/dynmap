@@ -73,11 +73,11 @@ CustomMarker.prototype.show = function() {
 }
 
 CustomMarker.prototype.toggle = function(t) {
-	if (typeof t == "boolean") {
-		if (t) this.show();
-		else this.hide();
+	if ((typeof t) == "boolean") {
+		if (t) { this.show(); }
+		else { this.hide(); }
 	} else {
-		this.toggle(this.isHidden == true);
+		this.toggle((this.isHidden) == true);
 	}
 }
 
