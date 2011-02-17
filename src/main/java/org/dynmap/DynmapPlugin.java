@@ -130,6 +130,11 @@ public class DynmapPlugin extends JavaPlugin {
             webServer.shutdown();
             webServer = null;
         }
+
+		if(timer != null) {
+			timer.cancel();
+		}
+
         Debug.clearDebuggers();
     }
 
