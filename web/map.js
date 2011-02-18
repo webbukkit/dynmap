@@ -212,6 +212,12 @@ DynMap.prototype = {
 					type: 'text',
 					value: 'not working yet'
 				})
+				.keydown(function(event) {
+					if (event.keyCode == '13') {
+						event.preventDefault();
+						alert(this.value);
+					}
+				})
 				.appendTo(chat);
 			var chatcursor = me.chatcursor = $('<span/>')
 				.attr({ id: 'chatcursor'})
