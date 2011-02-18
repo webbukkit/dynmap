@@ -276,8 +276,8 @@ DynMap.prototype = {
 					var marker = me.markers[m];
 					if(!(m in newmarkers)) {
 						marker.remove(null);
-						if (marker.playerRow) {
-							marker.playerRow.remove();
+						if (marker.playerItem) {
+							marker.playerItem.remove();
 						}
 						delete me.markers[m];
 					}
