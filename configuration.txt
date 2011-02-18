@@ -40,6 +40,8 @@ web:
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
     focuschatballoons: false
+    joinmessage: %playername% joined
+    quitmessage: %playername% quit
     
     # The clock that is shown alongside the map.
     clock: timeofday

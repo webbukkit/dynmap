@@ -2,6 +2,7 @@ package org.dynmap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.util.config.ConfigurationNode;
 
@@ -69,4 +70,19 @@ public class DynmapPlayerListener extends PlayerListener {
     public void onPlayerChat(PlayerChatEvent event) {
         mgr.pushUpdate(new Client.ChatMessage(event.getPlayer().getName(), event.getMessage()));
     }
+
+    /**
+     * Called when a player joins or quits the server
+     */
+    public void onPlayerJoin(PlayerEvent event) {
+    	String joinMessage = configuration.getString("joinmessage", "%playername% joined");
+  		joinMessage = joinMessage.replaceAll("%playername%", event.getPlayer().getName());
+  		mgr.pushUpdate(new Client.ChatMessage("Server", joinMessage));
+	}
+	public void onPlayerQuit(PlayerEvent event) {
+		String quitMessage = configuration.getString("quitmessage", "%playername% quit");
+  		quitMessage = quitMessage.replaceAll("%playername%", event.getPlayer().getName());
+  		mgr.pushUpdate(new Client.ChatMessage("Server", quitMessage));
+	}
+
 }

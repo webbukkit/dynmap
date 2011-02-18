@@ -64,7 +64,7 @@ public class DynmapPlugin extends JavaPlugin {
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         tilesDirectory.mkdirs();
-
+        
         playerList = new PlayerList(getServer());
         playerList.load();
 
@@ -127,6 +127,9 @@ public class DynmapPlugin extends JavaPlugin {
         PlayerListener playerListener = new DynmapPlayerListener(mapManager, playerList, configuration);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
     }
 
     private static File combinePaths(File parent, String path) {
