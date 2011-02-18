@@ -36,7 +36,8 @@ web:
     # Interval the browser should poll for updates.
     updaterate: 2000
     
-    showchatballoons: true
+    # showchat: modal/balloons
+    showchat: modal
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
     focuschatballoons: false
