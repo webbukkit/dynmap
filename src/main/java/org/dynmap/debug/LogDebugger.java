@@ -20,6 +20,7 @@ public class LogDebugger implements Debugger {
     @Override
     public void error(String message, Throwable thrown) {
         log.log(Level.SEVERE, prepend + message);
+        thrown.printStackTrace();
     }
 
 }
