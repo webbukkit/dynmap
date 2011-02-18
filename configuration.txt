@@ -28,6 +28,9 @@ maps:
       - class: org.dynmap.kzedmap.CaveTileRenderer
         prefix: ct
         maximumheight: 127
+      - class: org.dynmap.kzedmap.DefaultTileRenderer
+        prefix: nt
+        maximumheight: 64
 
 web:
     # Interval the browser should poll for updates.
@@ -61,17 +64,17 @@ web:
           - type: KzedMapType
             title: Surface
             name: nether
-            prefix: t
-       # Example:
-       #- title: Other World           # Under what name the world is displayed.
-       #  name: world_other            # The actual name of the world (equal to your directory-name).
-       #  maps:
-       #    - type: KzedMapType        # The type (or perspective) of the map. At the moment, there are no others than KzedMapType.
-       #      title: Surface           # The name of the map that will be displayed.
-       #      name: surface            # The actual name of the map (should be unique for this world).
-       #      prefix: t                # The prefix of the tile-files that are generated.
-       #      icon: block_other.png    # Sets the icon of the map. (optional)
-       #    - type: KzedMapType
-       #      title: Cave
-       #      name: cave
-       #      prefix: ct
+            prefix: nt
+      # Example:
+      #- title: Other World           # Under what name the world is displayed.
+      #  name: world_other            # The actual name of the world (equal to your directory-name).
+      #  maps:
+      #    - type: KzedMapType        # The type (or perspective) of the map. At the moment, there are no others than KzedMapType.
+      #      title: Surface           # The name of the map that will be displayed.
+      #      name: surface            # The actual name of the map (should be unique for this world).
+      #      prefix: t                # The prefix of the tile-files that are generated.
+      #      icon: block_other.png    # Sets the icon of the map. (optional)
+      #    - type: KzedMapType
+      #      title: Cave
+      #      name: cave
+      #      prefix: ct
