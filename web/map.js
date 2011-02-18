@@ -195,6 +195,30 @@ DynMap.prototype = {
 		);
 		compass.initialize();
 		
+		// The chat
+		if (me.options.showchat == 'modal') {
+			var chat = me.chat = $('<div/>')
+				.addClass('chat')
+				.attr({ id: 'chat' })
+				.appendTo(container);
+			var messagelist = me.messagelist = $('<div/>')
+				.addClass('messagelist')
+				.attr({ id: 'messagelist' })
+				.appendTo(chat);
+			var chatinput = me.chatinput = $('<input/>')
+				.addClass('chatinput')
+				.attr({
+					id: 'chatinput',
+					type: 'text',
+					value: 'not working yet'
+				})
+				.appendTo(chat);
+			var chatcursor = me.chatcursor = $('<span/>')
+				.attr({ id: 'chatcursor'})
+				.text('>_')
+				.appendTo(chat);
+		}
+		
 		// TODO: Enable hash-links.
 		/*
 		var link;
@@ -263,7 +287,7 @@ DynMap.prototype = {
 							me.onTileUpdated(update.name);
 						},
 						chat: function() {
-						    if (!me.options.showchatballoons)
+							if (!me.options.showchat)
 						    	return;
 							me.onPlayerChat(update.playerName, update.message);
 						}
@@ -333,37 +357,83 @@ DynMap.prototype = {
 		var map = me.map;
 		var mid = "player_" + playerName;
 		var playerMarker = markers[mid];
-		if (playerMarker)
-		{
-			var popup = chatPopups[playerName];
-			if (!popup)
-				popup = { lines: [ message ] };
-			else
-				popup.lines[popup.lines.length] = message;
+		if (me.options.showchat == 'balloons') {
+			if (playerMarker)
+			{
+				var popup = chatPopups[playerName];
+				if (!popup)
+					popup = { lines: [ message ] };
+				else
+					popup.lines[popup.lines.length] = message;
+	
+				var MAX_LINES = 5;
+				if (popup.lines.length > MAX_LINES)
+				{
+					popup.lines = popup.lines.slice(1);
+				}
+				htmlMessage = '<div id="content"><b>' + playerName + "</b><br/><br/>"
+				for (var line in popup.lines)
+				{
+					htmlMessage = htmlMessage + popup.lines[line] + "<br/>";
+				}
+				htmlMessage = htmlMessage + "</div>"
+				var now = new Date();
+				popup.popupTime = now.getTime();
+				if (!popup.infoWindow) {
+					popup.infoWindow = new google.maps.InfoWindow({
+						disableAutoPan: !(me.options.focuschatballoons || false),
+					    content: htmlMessage
+					});
+				} else {
+					popup.infoWindow.setContent(htmlMessage);
+				}
+				popup.infoWindow.open(map, playerMarker);
+				this.chatPopups[playerName] = popup;
+			}
+		} else if (me.options.showchat == 'modal') {
+			var me = this;
+			var messagelist = me.messagelist;
 
-			var MAX_LINES = 5;
-			if (popup.lines.length > MAX_LINES)
-			{
-				popup.lines = popup.lines.slice(1);
+			var messageRow = $('<div/>')
+				.addClass('messagerow')
+
+			var playerIconContainer = $('<span/>')
+				.addClass('messageicon')
+
+				if (me.options.showplayerfacesinmenu) {
+					getMinecraftHead(playerName, 16, function(head) {
+						messageRow.icon = $(head)
+							.addClass('playerIcon')
+							.appendTo(playerIconContainer);
+					});
+				}
+
+			if (playerName != 'Server') {
+				var playerWorldContainer = $('<span/>')
+				 .addClass('messagetext')
+				 .text('['+me.world+']')
+	
+				var playerGroupContainer = $('<span/>')
+				 .addClass('messagetext')
+				 .text('[Group]')
 			}
-			htmlMessage = '<div id="content"><b>' + playerName + "</b><br/><br/>"
-			for (var line in popup.lines)
-			{
-				htmlMessage = htmlMessage + popup.lines[line] + "<br/>";
-			}
-			htmlMessage = htmlMessage + "</div>"
-			var now = new Date();
-			popup.popupTime = now.getTime();
-			if (!popup.infoWindow) {
-				popup.infoWindow = new google.maps.InfoWindow({
-					disableAutoPan: !(me.options.focuschatballoons || false),
-				    content: htmlMessage
-				});
-			} else {
-				popup.infoWindow.setContent(htmlMessage);
-			}
-			popup.infoWindow.open(map, playerMarker);
-			this.chatPopups[playerName] = popup;
+
+			var playerNameContainer = $('<span/>')
+				.addClass('messagetext')
+				.text(' '+playerName+': ')
+
+			var playerMessageContainer = $('<span/>')
+				.addClass('messagetext')
+				.text(message)
+
+			messageRow.append(playerIconContainer,playerNameContainer,playerMessageContainer);
+			//messageRow.append(playerIconContainer,playerWorldContainer,playerGroupContainer,playerNameContainer,playerMessageContainer);
+			messagelist.append(messageRow);
+			
+			me.messagelist.show();
+			//var scrollHeight = jQuery(me.messagelist).attr('scrollHeight');
+			var scrollHeight = me.messagelist[0].scrollHeight;
+			messagelist.scrollTop(scrollHeight);
 		}
 	},
 	onTileUpdated: function(tileName) {

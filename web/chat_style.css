@@ -1,0 +1,58 @@
+#chat {
+	position:absolute;
+	bottom:14px;
+	left:14px;
+	border: 1px solid rgba(0,0,0,0.5);
+	background: rgba(0, 0, 0, 0.6);
+}
+#chatcursor {
+	position:absolute;
+	left:5px;
+	bottom:5px;
+	font-size:10px;
+	color: white;
+	padding:0px;
+}
+#chatinput {
+	margin:4px;
+	width:608px;
+	height:12px;
+	font-family:sans-serif;
+	font-size:10px;
+	padding:1px;
+	padding-left:15px;
+	color: white;
+	border: 0px;
+	background: rgba(0, 0, 0, 0.6);
+}
+#messagelist {
+	margin:4px 4px 0px 4px;
+	width:622px;
+	max-height:198px;
+	font-family:sans-serif;
+	font-size: 10px;
+	padding:1px;
+	color: white;
+	background: rgba(0, 0, 0, 0.6);
+	overflow:hidden;
+	display:none;
+}
+#messagerow {
+	position:relative;
+	left:0px;
+	bottom:0px;
+	max-height:200px;
+	font-family:sans-serif;
+	font-size: 10px;
+	color: white;
+}
+.messageicon {
+	position:relative;
+	left:0px;
+	top:1px;
+}
+.messagetext {
+	position:relative;
+	left:0px;
+	top:-3px;
+}
