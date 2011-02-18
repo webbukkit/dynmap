@@ -5,12 +5,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 
 public abstract class FileHandler implements HttpHandler {
+    protected static final Logger log = Logger.getLogger("Minecraft");
     private byte[] readBuffer = new byte[40960];
 
     private static Map<String, String> mimes = new HashMap<String, String>();
@@ -73,7 +75,6 @@ public abstract class FileHandler implements HttpHandler {
             String mimeType = getMimeTypeFromExtension(extension);
     
             response.fields.put("Content-Type", mimeType);
-            response.fields.put("Connection", "close");
             OutputStream out = response.getBody();
             try {
                 int readBytes;
