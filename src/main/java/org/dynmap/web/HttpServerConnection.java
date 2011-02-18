@@ -161,10 +161,6 @@ public class HttpServerConnection extends Thread {
                     socket.close();
                     return;
                 }
-
-                if (bound > 0) {
-                    boundBody.skip(bound);
-                }
                 
                 HttpResponse response = new HttpResponse(this, out);
 
@@ -181,6 +177,10 @@ public class HttpServerConnection extends Thread {
                     return;
                 }
 
+                if (bound > 0) {
+                    boundBody.skip(bound);
+                }
+                
                 String connection = response.fields.get("Connection");
                 String contentLength = response.fields.get("Content-Length");
                 if (contentLength == null && connection == null) {
