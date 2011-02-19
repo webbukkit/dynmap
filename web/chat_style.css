@@ -1,15 +1,29 @@
 #chat {
 	position:absolute;
-	bottom:14px;
+	bottom:0px;
 	left:14px;
-	border: 1px solid rgba(0,0,0,0.5);
-	background: rgba(0, 0, 0, 0.6);
+
+    border-color: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
+
+    border-style: solid;
+    border-width: 1px 1px 0px 1px;
+
+    -moz-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    -o-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+
+    -moz-border-radius: 3px 3px 0px 0px;
+    -webkit-border-radius: 3px 3px 0px 0px;
+    -o-border-radius: 3px 3px 0px 0px;
+
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    border-radius: 3px 3px 0px 0px;
 }
 #chatcursor {
 	position:absolute;
 	left:5px;
 	bottom:5px;
-	font-size:10px;
 	color: white;
 	padding:0px;
 }
@@ -17,8 +31,6 @@
 	margin:4px;
 	width:608px;
 	height:12px;
-	font-family:sans-serif;
-	font-size:10px;
 	padding:1px;
 	padding-left:15px;
 	color: white;
@@ -29,11 +41,8 @@
 	margin:4px 4px 0px 4px;
 	width:622px;
 	max-height:198px;
-	font-family:sans-serif;
-	font-size: 10px;
 	padding:1px;
 	color: white;
-	background: rgba(0, 0, 0, 0.6);
 	overflow:hidden;
 	display:none;
 }
@@ -42,9 +51,8 @@
 	left:0px;
 	bottom:0px;
 	max-height:200px;
-	font-family:sans-serif;
-	font-size: 10px;
 	color: white;
+	font-weight:bold;
 }
 .messageicon {
 	position:relative;

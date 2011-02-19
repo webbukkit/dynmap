@@ -2,26 +2,26 @@
  * Page setup
  */
 
-html { 
-	height: 100%
+html {
+    height: 100%
 }
 
 body {
-	height: 100%;
+    height: 100%;
 
-	font-family: sans-serif;
-	font-size: 11px;
+    font-family: sans-serif;
+    font-size: 11px;
 
-	color: #fff;
-	background: #000;
+    color: #fff;
+    background: #000;
 
-	margin: 0px;
-	padding: 0px ; 
+    margin: 0px;
+    padding: 0px ;
 }
 
-.dynmap .map .tile img {
-	image-rendering: -moz-crisp-edges;
-	-ms-interpolation-mode: nearest-neighbor;
+.dynmap .map .tile img, img {
+    image-rendering: -moz-crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
 }
 
 
@@ -30,13 +30,13 @@ body {
  */
 
 .dynmap fieldset {
-	border: none;
-	border-top: 1px solid rgba(196,196,196,0.4);
+    border: none;
+    border-top: 1px solid rgba(196,196,196,0.4);
 }
 
 .dynmap legend {
-	padding: 8px 4px;
-	font-weight: bold;
+    padding: 8px 4px;
+    font-weight: bold;
 }
 
 
@@ -45,59 +45,61 @@ body {
  */
 
 #mcmap {
-	width: 100%;
-	height: 100%
+    width: 100%;
+    height: 100%
 }
 
 .dynmap {
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
 .dynmap > .map {
-	width: 100%;
-	height: 100%;
-	background-color: #000;
+    width: 100%;
+    height: 100%;
+    background: #000;
 }
 
 /* Map Controls */
 .gmnoprint{
-	margin-top:-75px;
-	margin-left:-20px
+    margin-top:-75px;
+    margin-left:-20px
 }
 
 /* Google branding */
 
-.dynmap > div.map > DIV > DIV:first-child + DIV, 
-.dynmap > div.map > DIV > DIV:first-child + DIV + DIV { 
-	visibility: hidden !important; 
+.dynmap > div.map > DIV > DIV:first-child + DIV,
+.dynmap > div.map > DIV > DIV:first-child + DIV + DIV {
+    visibility: hidden !important;
 }
 
 
 /*******************
- * Alerts
+ * Alerts are pretty.
  */
 
 .alertbox {
-	position: fixed;
-	width: 50%;
+    position: fixed;
+    width: 50%;
+    z-index: 999;
 
-	top: 0;
-	left: 0;
-	right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
 
-	text-align: center;
-	color: #a00;
-	background-color: #fff;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
 
-	margin: auto;
-	padding: 5px;
+    color: #fff;
+    background: #c00;
 
-	border: 1px solid #a00;
-	box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
-	border-radius: 0 0 3px 3px;
+    border-color: #a00;
+
+    margin: auto;
+    padding: 8px;
 }
 
 
@@ -106,16 +108,35 @@ body {
  */
 
 .dynmap .panel ul, .dynmap .panel li {
-	list-style: none;
+    list-style: none;
 
-	padding: 0;
-	margin: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .maplist li a,
 .playerlist li a {
-	outline: none;
-	text-decoration: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.alertbox,
+.largeclock {
+    background: rgba(0,0,0,0.6);
+
+    border-style: solid;
+    border-width: 0px 1px 1px 1px;
+
+    -moz-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    -o-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+
+    -moz-border-radius: 0 0 3px 3px;
+    -webkit-border-radius: 0 0 3px 3px;
+    -o-border-radius: 0 0 3px 3px;
+
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 3px 3px;
 }
 
 /*******************
@@ -124,139 +145,221 @@ body {
 
 .dynmap .sidebar {
 
-	display: block;
-	position: absolute;
+    display: block;
+    position: absolute;
+    z-index: 120;
 
-	top: 0px;
-	right: 0px;
+    top: 0px;
+    right: 0px;
 
-	width: 250px;
-	height: 100%;
+    width: 200px;
+    height: 100%;
 
-	background: rgb(0,0,0); /* FU IE */
-	background: rgba(0,0,0,0.6);
-	color: #fff;
+    background: rgb(0,0,0); /* FU IE */
+    background: rgba(0,0,0,0.6);
+    color: #fff;
 
-	border-left: 1px solid rgba(0,0,0,0.5);
+    border-left: 1px solid rgba(0,0,0,0.5);
 
-	margin-right: -253px;
-	/*margin-right: 251px;*/
+    margin-right: -203px;
 
-	-moz-transition: all 0.6s ease-in-out;
-	-webkit-transition: all 0.6s ease-in-out;
-	-o-transition: all 0.6s ease-in-out;
-	transition: all 0.6s ease-in-out;
+    -moz-transition: all 0.6s ease-in-out;
+    -webkit-transition: all 0.6s ease-in-out;
+    -o-transition: all 0.6s ease-in-out;
+
+    transition: all 0.6s ease-in-out;
 }
 
 .dynmap .hitbar {
 
-	display: block;
-	position: fixed;
+    display: block;
+    position: fixed;
+    z-index: 110;
 
-	right: 0px;
-	top: 0px;
+    right: 0px;
+    top: 0px;
 
-	height: 100%;
-	width: 16px;
+    height: 100%;
+    width: 16px;
 
-	text-align: center;
+    text-align: center;
 
-	background: url(sidebar_hint.png) rgb(0,0,0);
-	background: url(sidebar_hint.png) rgba(0,0,0,0.6);
-	background-repeat: no-repeat;
-	background-position:center;
+    background: url(sidebar_hint.png) rgb(0,0,0);
+    background: url(sidebar_hint.png) rgba(0,0,0,0.6);
+    background-repeat: no-repeat;
+    background-position:center;
 
-	border: 1px solid rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,0,0,0.5);
 
-	-moz-transition: all 0.6s ease-in-out;
-	-webkit-transition: all 0.6s ease-in-out;
-	-o-transition: all 0.6s ease-in-out;
-	transition: all 0.6s ease-in-out;
-}
+    -moz-transition: all 0.6s ease-in-out;
+    -webkit-transition: all 0.6s ease-in-out;
+    -o-transition: all 0.6s ease-in-out;
 
-.dynmap .sidebar .panel > .pin {
-	position: absolute;
-	right: 4px;
-	top: 4px;
-	width: 16px;
-	height: 16px;
-	background-image: url(window_unpinned.png);
-}
-
-.dynmap .sidebar.pinned .panel > .pin {
-	background-image: url(window_pinned.png);
+    transition: all 0.6s ease-in-out;
 }
 
 /* magic and metrics */
 
 .dynmap .sidebar:hover,
 .dynmap .sidebar.pinned {
-	margin-right: 0px;
+    margin-right: 0px;
 }
 
 .dynmap .sidebar < .hitbar:hover {
-	margin-right: 0px;	
+    margin-right: 0px;
 }
 
 .dynmap .sidebar:hover .hitbar,
 .dynmap .sidebar.pinned .hitbar {
-	right: -120px;
+    right: -120px;
 }
 
+/* pinning */
+
+.dynmap .sidebar .panel > .pin {
+    position: absolute;
+
+    right: 8px;
+    top: 7px;
+
+    width: 16px;
+    height: 16px;
+
+    background-image: url(window_close.png);
+}
+
+.dynmap .sidebar .panel > .pin:hover {
+    background-image: url(window_pinned.png);
+}
+
+.dynmap .sidebar.pinned .panel > .pin:hover {
+    background-image: url(window_close.png);
+}
+
+.dynmap .sidebar.pinned .panel > .pin {
+    background-image: url(window_pinned.png);
+}
+
+
+/*******************
+ * Sidebar clock style
+ */
+
+/*.dynmap .panel .clock {
+    display: inline-block;
+    height: 16px;
+
+    font-weight: bold;
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    margin-left: 8px;
+}*/
+.clock {
+	position:relative;
+	bottom:12px;
+	text-align:center;
+}
+
+/*.clock.night {
+    background-image: url(clock_night.png);
+    color: #dff;
+}
+
+.clock.day {
+    background-image: url(clock_day.png);
+    color: #fd3;
+}*/
+
+.clock.night, clock.day {
+    -moz-transition: all 8s 8s linear;
+    -webkit-transition: all 8s 8s linear;
+    -o-transition: all 8s 8s linear;
+    transition: all 8s 8s linear;
+}
+
+
+/*******************
+ * Large clock style
+ */
+
+.largeclock {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-color: rgba(0,0,0,0.5);
+    width: 150px;
+    height: 60px;
+    background: rgba(0,0,0,0.6);
+
+    margin: auto;
+}
+
+.timeofday { 
+    background-repeat: no-repeat; 
+}
+
+.timeofday.sun {
+    background-image: url(sun.png);
+}
+
+.timeofday.moon {
+    background-image: url(moon.png);
+}
 
 /*******************
  * map list-specific styling
  */
 
 .dynmap .panel .world {
-	display: block;
-	clear: both;
+    display: block;
+    clear: both;
 
-	width: 100%;
-	line-height: 18px;
-	margin: 0 0 30px 0;
+    width: 100%;
+    line-height: 18px;
+    margin: 0 0 30px 0;
 
-	border-bottom: 1px solid rgba(128,128,128,0.3);
+    border-bottom: 1px solid rgba(128,128,128,0.3);
 
 }
 
 .dynmap .maplist .map {
-	display: block;
-	float: left;
+    display: block;
+    float: left;
 
-	height: 18px;
-	width: 18px;
+    height: 18px;
+    width: 18px;
 
-	padding: 2px;
-	margin: 5px 2px;
-	
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	
-	background: rgba(32,32,32,0.6);
-	border: 1px solid rgba(64,64,64,0.6);
+    padding: 2px;
+    margin: 5px 2px;
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+
+    background: rgba(32,32,32,0.6);
+    border: 1px solid rgba(64,64,64,0.6);
 }
 
 .dynmap .maplist .map:hover {
-	background: rgba(64,64,64,0.6);
-	border: 1px solid rgba(128,128,128,0.6);
+    background: rgba(64,64,64,0.6);
+    border: 1px solid rgba(128,128,128,0.6);
 }
 
 .dynmap .maplist .map.selected {
-	background: rgba(128,128,128,0.5);
-	border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(128,128,128,0.5);
+    border: 1px solid rgba(255,255,255,0.5);
 }
 
 .dynmap .maplist .map > a {
-	display: block;
+    display: block;
 
-	text-indent: -99999px;
-	outline: none;
+    text-indent: -99999px;
+    outline: none;
 }
 
 .dynmap .maplist .map > a {
-	background-repeat: no-repeat;
-	background-position:center;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /*******************
@@ -265,54 +368,93 @@ body {
 
 .dynmap .playerlist .player {
 
-	display: inline-block;
-	float: left;
-	width: 100%;
+    display: inline-block;
+    float: left;
+    width: 100%;
 
-	padding: 4px 0;
-	border: 3px solid transparent;
+    padding: 4px 0;
+    border: 3px solid transparent;
 }
 
 .dynmap .playerlist .player:hover {
-	background: rgba(64,64,64,0.6);
+    background: rgba(64,64,64,0.6);
 }
 
 .dynmap .playerlist .player a {
-	color: #fff;
+    color: #fff;
 }
 
-/* may need to tweak this for canvas */
+.dynmap .playerlist .playerIcon img {
+    width: 16px;
+    height: 16px;
+}
 
 .dynmap .playerlist .playerIcon > * {
-	vertical-align: middle;
-	border: none;
+    vertical-align: middle;
+    border: none;
 }
 
 .dynmap .playerlist .playerIcon {
-	width: 16px;
-	height: 16px;
-	margin: 0px 7px;
-	display: block;
-	float: left;
+    width: 16px;
+    height: 16px;
+    margin: 0px 7px;
+    display: block;
+    float: left;
 }
 
 .dynmap .playerlist .player.following {
-	background: rgba(128,128,128,0.5);
-	border: 1px solid rgba(255,255,255,0.5);
-	border-radius: 3px;
-	padding: 6px 2px;
-	-moz-border-radius: 3px;
+    background: rgba(128,128,128,0.5);
+    border: 1px solid rgba(255,255,255,0.5);
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+
+    padding: 6px 2px;
 }
 
 .dynmap .playerlist .player:hover .playericon {
-	background: url(player_follow_off.png) no-repeat;
+    background: url(player_follow_off.png) no-repeat;
 }
 
 .dynmap .playerlist .player.following .playericon {
-	background: url(player_follow_on.gif) no-repeat;
+    background: url(player_follow_on.gif) no-repeat;
 }
 
 .dynmap .playerlist .player.following .playericon > *,
 .dynmap .playerlist .player:hover .playericon > * {
-	visibility: hidden;
+    visibility: hidden;
+}
+
+
+/*******************
+ * players on the map
+ */
+
+.dynmap .playerName {
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+
+/*******************
+ * Compass
+ */
+
+.compass {
+    display: block;
+    position: absolute;
+    z-index: 10;
+
+    height: 830px;
+    width: 84px;
+
+    top: 10px;
+    right: 32px;
+
+    background-repeat: no-repeat;
+    background-image: url(compass.png);
 }

@@ -174,6 +174,19 @@ DynMap.prototype = {
 			});
 		});
 
+		// The clock
+		var largeclock = $('<div/>')
+			.addClass('largeclock')
+			.appendTo(container);
+		var clock = me.clock = clocks['timeofday'](
+			$('<div/>')
+			.appendTo(largeclock)
+		);
+		var clockdigital = me.clockdigital = clocks['digital'](
+			$('<div/>')
+			.appendTo(largeclock)
+		);
+		
 		// The Player List
 		var playerlist;
 		$('<fieldset/>')
@@ -181,19 +194,12 @@ DynMap.prototype = {
 			.append(me.playerlist = playerlist = $('<ul/>').addClass('playerlist'))
 			.appendTo(panel);
 		
-		// The clock
-		var clock = me.clock = clocks[me.options.clock](
-				$('<div/>')
-					.appendTo(panel)
-		);
-		
 		// The Compass
 		var compass = me.compass = new MinecraftCompass(
 				$('<div/>')
 					.addClass('compass')
-					.appendTo(panel)
+					.appendTo(container)
 		);
-		compass.initialize();
 		
 		// The chat
 		if (me.options.showchat == 'modal') {
@@ -270,6 +276,7 @@ DynMap.prototype = {
 			
 				me.lasttimestamp = update.timestamp;
 				me.clock.setTime(update.servertime);
+				me.clockdigital.setTime(update.servertime);
 
 				var typeVisibleMap = {};
 				var newmarkers = {};
@@ -300,7 +307,7 @@ DynMap.prototype = {
 						webchat: function() {
 							if (!me.options.showchat)
 						    	return;
-							me.onPlayerChat('[WEB] ' + update.playerName, update.message);
+							me.onPlayerChat('[WEB]' + update.playerName, update.message);
 						}
 					}, function(type) {
 						console.log('Unknown type ', value, '!');
