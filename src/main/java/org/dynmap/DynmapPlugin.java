@@ -98,6 +98,7 @@ public class DynmapPlugin extends JavaPlugin {
         messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
             @Override
             public void triggered(Message t) {
+                mapManager.pushUpdate(new Client.WebChatMessage(t.name, t.message));
                 log.info("[WEB]" + t.name + ": " + t.message);
                 getServer().broadcastMessage("[WEB]" + t.name + ": " + t.message);
             }

@@ -33,6 +33,17 @@ public class Client {
             this.message = message;
         }
     }
+    
+    public static class WebChatMessage {
+        public String type = "webchat";
+        public String playerName;
+        public String message;
+
+        public WebChatMessage(String playerName, String message) {
+            this.playerName = playerName;
+            this.message = message;
+        }
+    }
 
     public static class Tile {
         public String type = "tile";

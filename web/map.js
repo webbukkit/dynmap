@@ -296,6 +296,11 @@ DynMap.prototype = {
 							if (!me.options.showchat)
 						    	return;
 							me.onPlayerChat(update.playerName, update.message);
+						},
+						webchat: function() {
+							if (!me.options.showchat)
+						    	return;
+							me.onPlayerChat('[WEB] ' + update.playerName, update.message);
 						}
 					}, function(type) {
 						console.log('Unknown type ', value, '!');
