@@ -2,8 +2,10 @@ package org.dynmap;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -19,7 +21,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.Event.Listener;
 import org.dynmap.debug.Debug;
+import org.dynmap.debug.Debugger;
 import org.dynmap.debug.LogDebugger;
+import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.web.HttpServer;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
@@ -57,10 +61,10 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public void onEnable() {
-        Debug.addDebugger(new LogDebugger());
-
         configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
         configuration.load();
+        
+        loadDebuggers();
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         tilesDirectory.mkdirs();
@@ -144,5 +148,26 @@ public class DynmapPlugin extends JavaPlugin {
 
     public File getFile(String path) {
         return combinePaths(DynmapPlugin.dataRoot, path);
+    }
+    
+    protected void loadDebuggers() {
+        Object debuggersConfiguration = configuration.getProperty("debuggers");
+        Debug.clearDebuggers();
+        if (debuggersConfiguration != null) {
+            for(Object debuggerConfiguration : (List<?>)debuggersConfiguration) {
+                Map<?, ?> debuggerConfigurationMap = (Map<?, ?>)debuggerConfiguration;
+                try {
+                    Class<?> debuggerClass = Class.forName((String)debuggerConfigurationMap.get("class"));
+                    Constructor<?> constructor = debuggerClass.getConstructor(JavaPlugin.class, Map.class);
+                    Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfigurationMap);
+                    Debug.addDebugger(debugger);
+                } catch (Exception e) {
+                    log.severe("Error loading debugger: " + e);
+                    e.printStackTrace();
+                    continue;
+                }
+                
+            }
+        }
     }
 }

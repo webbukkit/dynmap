@@ -1,8 +1,14 @@
 package org.dynmap.debug;
 
-public class NullDebugger implements Debugger {
-    public static final NullDebugger instance = new NullDebugger();
+import java.util.Map;
+import org.bukkit.plugin.java.JavaPlugin;
 
+public class NullDebugger implements Debugger {
+    public static final NullDebugger instance = new NullDebugger(null, null);
+
+    public NullDebugger(JavaPlugin plugin, Map<String, Object> configuration) {
+    }
+    
     public void debug(String message) {
     }
 

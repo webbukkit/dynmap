@@ -1,6 +1,7 @@
 package org.dynmap.debug;
 
 import java.util.HashSet;
+import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ public class BukkitPlayerDebugger implements Debugger {
     private String undebugCommand;
     private String prepend;
 
-    public BukkitPlayerDebugger(JavaPlugin plugin) {
+    public BukkitPlayerDebugger(JavaPlugin plugin, Map<String, Object> configuration) {
         this.plugin = plugin;
 
         String name = "dynmap";

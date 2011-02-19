@@ -81,3 +81,8 @@ web:
       #      title: Cave
       #      name: cave
       #      prefix: ct
+
+# Enables debugging.
+#debuggers:
+#  - class: org.dynmap.debug.LogDebugger
+#  - class: org.dynmap.debug.BukkitPlayerDebugger
