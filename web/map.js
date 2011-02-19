@@ -210,7 +210,7 @@ DynMap.prototype = {
 				.attr({
 					id: 'chatinput',
 					type: 'text',
-					value: 'not working yet'
+					value: ''
 				})
 				.keydown(function(event) {
 					if (event.keyCode == '13') {
