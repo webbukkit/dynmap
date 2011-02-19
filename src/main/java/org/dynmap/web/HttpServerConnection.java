@@ -1,5 +1,6 @@
 package org.dynmap.web;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -116,9 +117,9 @@ public class HttpServerConnection extends Thread {
         try {
             socket.setSoTimeout(5000);
             InputStream in = socket.getInputStream();
-            OutputStream out = socket.getOutputStream();
+            BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream(), 40960);
             
-            printOut = new PrintStream(out);
+            printOut = new PrintStream(out, false);
             while (true) {
                 HttpRequest request = new HttpRequest();
                 
