@@ -8,7 +8,7 @@ function sendChat(message) {
 				var data = '{"name":"'+getip.ip+'","message":"'+message+'"}';
 				$.ajax({
 					type: 'POST',
-					url: '/up/sendmessage',
+					url: 'up/sendmessage',
 					data: data,
 					dataType: 'json',
 					success: function(response) {
