@@ -38,6 +38,7 @@ web:
     
     # showchat: modal/balloons
     showchat: modal
+    messagettl: 15000
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
     focuschatballoons: false
