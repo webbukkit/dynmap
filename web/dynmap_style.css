@@ -229,11 +229,11 @@ body {
 }
 
 .dynmap .sidebar .panel > .pin:hover {
-    background-image: url(window_pinned.png);
+    background-image: url(window_pinned_hover.png);
 }
 
 .dynmap .sidebar.pinned .panel > .pin:hover {
-    background-image: url(window_close.png);
+    background-image: url(window_close_hover.png);
 }
 
 .dynmap .sidebar.pinned .panel > .pin {
@@ -244,8 +244,8 @@ body {
 /*******************
  * Sidebar clock style
  */
-
-/*.dynmap .panel .clock {
+/*
+.dynmap .panel .clock {
     display: inline-block;
     height: 16px;
 
@@ -253,24 +253,25 @@ body {
     background-repeat: no-repeat;
     padding-left: 20px;
     margin-left: 8px;
-}*/
+}
+*/
 .clock {
-	position:relative;
-	bottom:12px;
-	text-align:center;
+	position: relative;
+	bottom: 16px;
+	text-align: center;
 }
 
-/*.clock.night {
-    background-image: url(clock_night.png);
+.clock.night {
+    /* background-image: url(clock_night.png); */
     color: #dff;
 }
 
 .clock.day {
-    background-image: url(clock_day.png);
+    /* background-image: url(clock_day.png); */
     color: #fd3;
-}*/
+}
 
-.clock.night, clock.day {
+.clock.night, .clock.day {
     -moz-transition: all 8s 8s linear;
     -webkit-transition: all 8s 8s linear;
     -o-transition: all 8s 8s linear;
@@ -295,8 +296,8 @@ body {
     margin: auto;
 }
 
-.timeofday { 
-    background-repeat: no-repeat; 
+.timeofday {
+    background-repeat: no-repeat;
 }
 
 .timeofday.sun {
@@ -397,9 +398,11 @@ body {
 .dynmap .playerlist .playerIcon {
     width: 16px;
     height: 16px;
-    margin: 0px 7px;
+
     display: block;
     float: left;
+
+    margin: 0px 4px 0px 2px;
 }
 
 .dynmap .playerlist .player.following {
@@ -431,6 +434,10 @@ body {
  */
 
 .dynmap .playerName {
+	position: absolute;
+	top: 0px;
+	left: 34px;
+
     color: #fff;
     background: rgba(0,0,0,0.6);
     padding: 2px;
@@ -449,12 +456,89 @@ body {
     position: absolute;
     z-index: 10;
 
-    height: 830px;
-    width: 84px;
-
     top: 10px;
     right: 32px;
+
+    height: 84px;
+    width: 83px;
 
     background-repeat: no-repeat;
     background-image: url(compass.png);
 }
+
+/*******************
+ * Chat
+ */
+
+.chat {
+	position: absolute;
+	bottom: 0px;
+	left: 14px;
+
+    border-color: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
+
+    border-style: solid;
+    border-width: 1px 1px 0px 1px;
+
+    -moz-border-radius: 3px 3px 0px 0px;
+    -webkit-border-radius: 3px 3px 0px 0px;
+    -o-border-radius: 3px 3px 0px 0px;
+    border-radius: 3px 3px 0px 0px;
+}
+
+.chatinput {
+
+	width: 608px;
+	height: 16px;
+
+	outline: none;
+	color: #fff;
+
+	border: 0px;
+	background: rgba(0, 0, 0, 0.6);
+	background: url(chat_cursor.png) rgba(0,0,0,0.6);
+	background-repeat: no-repeat;
+	background-position: 1px center;
+
+	margin: 4px;
+	padding: 1px 1px 1px 15px;
+}
+
+.messagelist {
+	color: white;
+	overflow: hidden;
+
+	width: 622px;
+	max-height: 198px;
+
+	margin: 4px 4px 0px 4px;
+	padding: 1px;
+}
+
+.messagerow {
+	position: relative;
+	max-height: 200px;
+
+	left: 0px;
+	bottom: 0px;
+
+	color: #fff;
+	font-weight: bold;
+}
+
+.messageicon {
+	position: relative;
+	top: 1px;
+	left: 0px;
+}
+
+.messagetext {
+	position: relative;
+	top: -3px;
+	left: 0px;
+}
+
+/* Chat Balloons */
+
+#content { color: #000; }
