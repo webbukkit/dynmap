@@ -35,8 +35,10 @@ public class DynmapPlayerListener extends PlayerListener {
                     mgr.touch(player.getLocation());
                     event.setCancelled(true);
                 } else if (split[1].equals("hide")) {
+                	Player player = event.getPlayer();
+                	player.sendMessage("You are now hidden on Dynmap.");
                     if (split.length == 2) {
-                        playerList.hide(event.getPlayer().getName());
+                        playerList.hide(player.getName());
                     } else {
                         for (int i = 2; i < split.length; i++) {
                             playerList.hide(split[i]);
@@ -44,8 +46,10 @@ public class DynmapPlayerListener extends PlayerListener {
                     }
                     event.setCancelled(true);
                 } else if (split[1].equals("show")) {
+                	Player player = event.getPlayer();
+                	player.sendMessage("You are now visible on Dynmap.");
                     if (split.length == 2) {
-                        playerList.show(event.getPlayer().getName());
+                        playerList.show(player.getName());
                     } else {
                         for (int i = 2; i < split.length; i++) {
                             playerList.show(split[i]);
@@ -54,8 +58,13 @@ public class DynmapPlayerListener extends PlayerListener {
                     event.setCancelled(true);
                 } else if (split[1].equals("fullrender")) {
                     Player player = event.getPlayer();
-                    mgr.renderFullWorld(player.getLocation());
-                    event.setCancelled(true);
+                    if (player.isOp() == true) {
+                    	player.sendMessage("Starting fullrender on this world...");
+                    	mgr.renderFullWorld(player.getLocation());
+                    	event.setCancelled(true);
+                    } else {
+                    	player.sendMessage("Only OPs are allowed to use this command!");
+                    }
                 }
             }
         }
