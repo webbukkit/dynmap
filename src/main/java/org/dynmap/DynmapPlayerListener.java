@@ -36,23 +36,25 @@ public class DynmapPlayerListener extends PlayerListener {
                     event.setCancelled(true);
                 } else if (split[1].equals("hide")) {
                 	Player player = event.getPlayer();
-                	player.sendMessage("You are now hidden on Dynmap.");
-                    if (split.length == 2) {
+                	if (split.length == 2) {
                         playerList.hide(player.getName());
+                        player.sendMessage("You are now hidden on Dynmap.");
                     } else {
-                        for (int i = 2; i < split.length; i++) {
+                    	for (int i = 2; i < split.length; i++) {
                             playerList.hide(split[i]);
+                            player.sendMessage(split[i] + " is now hidden on Dynmap.");
                         }
                     }
                     event.setCancelled(true);
                 } else if (split[1].equals("show")) {
                 	Player player = event.getPlayer();
-                	player.sendMessage("You are now visible on Dynmap.");
-                    if (split.length == 2) {
+                	if (split.length == 2) {
                         playerList.show(player.getName());
+                        player.sendMessage("You are now visible on Dynmap.");
                     } else {
-                        for (int i = 2; i < split.length; i++) {
+                    	for (int i = 2; i < split.length; i++) {
                             playerList.show(split[i]);
+                            player.sendMessage(split[i] + " is now visible on Dynmap.");
                         }
                     }
                     event.setCancelled(true);
