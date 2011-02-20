@@ -37,8 +37,6 @@ class JsonTimerTask extends TimerTask
 		long current = System.currentTimeMillis();
 
 		Client.Update update = new Client.Update();
-		update.timestamp = current;
-		update.servertime = world.getTime();
 
         update.timestamp = current;
         update.servertime = world.getTime() % 24000;

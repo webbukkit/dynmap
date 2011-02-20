@@ -159,7 +159,7 @@ public class MapManager {
     
     public boolean render(MapTile tile) {
         boolean result = tile.getMap().render(tile, getTileFile(tile));
-        pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+        pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename(), System.currentTimeMillis()));
         return result;
     }
     

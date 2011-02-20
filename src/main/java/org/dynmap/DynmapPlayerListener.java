@@ -67,6 +67,6 @@ public class DynmapPlayerListener extends PlayerListener {
      *            Relevant event details
      */
     public void onPlayerChat(PlayerChatEvent event) {
-        mgr.pushUpdate(new Client.ChatMessage(event.getPlayer().getName(), event.getMessage()));
+        mgr.pushUpdate(new Client.ChatMessage(event.getPlayer().getName(), event.getMessage(), System.currentTimeMillis()));
     }
 }

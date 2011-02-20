@@ -42,6 +42,9 @@ web:
     # Interval the browser should poll for updates.
     updaterate: 2000
     
+    # Handles the clientside updates differently only enable if using jsonfile
+    jsonfile: false
+    
     showchatballoons: true
     showplayerfacesonmap: true
     showplayerfacesinmenu: true

@@ -221,7 +221,6 @@ DynMap.prototype = {
 		$.getJSON(me.options.updateUrl + "world/" + me.world + "/" + me.lasttimestamp, function(update) {
 				me.alertbox.hide();
 			
-				me.lasttimestamp = update.timestamp;
 				me.clock.setTime(update.servertime);
 
 				var typeVisibleMap = {};
@@ -243,12 +242,16 @@ DynMap.prototype = {
 				$.each(update.updates, function(index, update) {
 					swtch(update.type, {
 						tile: function() {
-							me.onTileUpdated(update.name);
+							
+							if(me.lasttimestamp <= update.timestamp || !me.options.jsonfile)
+								me.onTileUpdated(update.name);
 						},
 						chat: function() {
 						    if (!me.options.showchatballoons)
 						    	return;
-							me.onPlayerChat(update.playerName, update.message);
+							
+							if(me.lasttimestamp <= update.timestamp  || !me.options.jsonfile)
+								me.onPlayerChat(update.playerName, update.message);
 						}
 					}, function(type) {
 						console.log('Unknown type ', value, '!');
@@ -265,6 +268,7 @@ DynMap.prototype = {
 						delete me.markers[m];
 					}
 				}
+				me.lasttimestamp = update.timestamp;
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}, function(request, statusText, ex) {
 				me.alertbox
