@@ -35,27 +35,38 @@ public class DynmapPlayerListener extends PlayerListener {
                     mgr.touch(player.getLocation());
                     event.setCancelled(true);
                 } else if (split[1].equals("hide")) {
-                    if (split.length == 2) {
-                        playerList.hide(event.getPlayer().getName());
+                	Player player = event.getPlayer();
+                	if (split.length == 2) {
+                        playerList.hide(player.getName());
+                        player.sendMessage("You are now hidden on Dynmap.");
                     } else {
-                        for (int i = 2; i < split.length; i++) {
+                    	for (int i = 2; i < split.length; i++) {
                             playerList.hide(split[i]);
+                            player.sendMessage(split[i] + " is now hidden on Dynmap.");
                         }
                     }
                     event.setCancelled(true);
                 } else if (split[1].equals("show")) {
-                    if (split.length == 2) {
-                        playerList.show(event.getPlayer().getName());
+                	Player player = event.getPlayer();
+                	if (split.length == 2) {
+                        playerList.show(player.getName());
+                        player.sendMessage("You are now visible on Dynmap.");
                     } else {
-                        for (int i = 2; i < split.length; i++) {
+                    	for (int i = 2; i < split.length; i++) {
                             playerList.show(split[i]);
+                            player.sendMessage(split[i] + " is now visible on Dynmap.");
                         }
                     }
                     event.setCancelled(true);
                 } else if (split[1].equals("fullrender")) {
                     Player player = event.getPlayer();
-                    mgr.renderFullWorld(player.getLocation());
-                    event.setCancelled(true);
+                    if (player.isOp() == true) {
+                    	player.sendMessage("Starting fullrender on this world...");
+                    	mgr.renderFullWorld(player.getLocation());
+                    	event.setCancelled(true);
+                    } else {
+                    	player.sendMessage("Only OPs are allowed to use this command!");
+                    }
                 }
             }
         }
