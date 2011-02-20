@@ -1,4 +1,4 @@
-#chat {
+.chat {
 	position:absolute;
 	bottom:0px;
 	left:14px;
@@ -20,14 +20,7 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
     border-radius: 3px 3px 0px 0px;
 }
-#chatcursor {
-	position:absolute;
-	left:5px;
-	bottom:5px;
-	color: white;
-	padding:0px;
-}
-#chatinput {
+.chatinput {
 	margin:4px;
 	width:608px;
 	height:12px;
@@ -36,17 +29,18 @@
 	color: white;
 	border: 0px;
 	background: rgba(0, 0, 0, 0.6);
+	background: url(chat_cursor.png) rgba(0,0,0,0.6); background-repeat: no-repeat; background-position:left;
+	outline: none;
 }
-#messagelist {
+.messagelist {
 	margin:4px 4px 0px 4px;
 	width:622px;
 	max-height:198px;
 	padding:1px;
 	color: white;
 	overflow:hidden;
-	display:none;
 }
-#messagerow {
+.messagerow {
 	position:relative;
 	left:0px;
 	bottom:0px;

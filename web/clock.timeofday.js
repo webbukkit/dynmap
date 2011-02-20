@@ -24,8 +24,8 @@ MinecraftTimeOfDay.prototype = {
 		this.elementmoon.addClass('timeofday');
 		this.elementmoon.addClass('moon');
 		this.elementmoon.html("&nbsp;&rlm;&nbsp;");
-		this.elementsun.css("background-position", (-120) + "px " + (-120) + "px");
-		this.elementmoon.css("background-position", (-120) + "px " + (-120) + "px");
+		this.elementsun.css("background-position", (-150) + "px " + (-150) + "px");
+		this.elementmoon.css("background-position", (-150) + "px " + (-150) + "px");
 		
 		return element;
 	},

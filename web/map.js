@@ -31,20 +31,6 @@ DynMapType.prototype = {
 	updateTileSize: function(zoom) {}
 };
 
-function MinecraftCompass(element) { this.element = element; }
-MinecraftCompass.prototype = {
-	element: null,
-	create: function(element) {
-		if (!element) element = $('<div/>');
-		this.element = element;
-		return element;
-	},
-	initialize: function() {
-		this.element.html("&nbsp;&rlm;&nbsp;");
-		this.element.height(120);
-	}
-};
-
 function DynMap(options) {
 	var me = this;
 	me.options = options;
@@ -195,21 +181,17 @@ DynMap.prototype = {
 			.appendTo(panel);
 		
 		// The Compass
-		var compass = me.compass = new MinecraftCompass(
-				$('<div/>')
-					.addClass('compass')
-					.appendTo(container)
-		);
+		var compass = $('<div/>')
+			.addClass('compass')
+			.appendTo(container)
 		
 		// The chat
 		if (me.options.showchat == 'modal') {
 			var chat = me.chat = $('<div/>')
 				.addClass('chat')
-				.attr({ id: 'chat' })
 				.appendTo(container);
 			var messagelist = me.messagelist = $('<div/>')
 				.addClass('messagelist')
-				.attr({ id: 'messagelist' })
 				.appendTo(chat);
 			var chatinput = me.chatinput = $('<input/>')
 				.addClass('chatinput')
@@ -225,10 +207,6 @@ DynMap.prototype = {
 						chatinput.val('');
 					}
 				})
-				.appendTo(chat);
-			var chatcursor = me.chatcursor = $('<span/>')
-				.attr({ id: 'chatcursor'})
-				.text('>_')
 				.appendTo(chat);
 		}
 		
@@ -313,6 +291,10 @@ DynMap.prototype = {
 					}, function(type) {
 						console.log('Unknown type ', value, '!');
 					});
+					/* remove older messages from chat*/
+					//var timestamp = event.timeStamp;
+					//var divs = $('div[rel]');
+					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
 	 
 				for(var m in me.markers) {
@@ -412,9 +394,11 @@ DynMap.prototype = {
 		} else if (me.options.showchat == 'modal') {
 			var me = this;
 			var messagelist = me.messagelist;
+			var timestamp = event.timeStamp;
 
 			var messageRow = $('<div/>')
 				.addClass('messagerow')
+				.attr({ "rel": timestamp})
 
 			var playerIconContainer = $('<span/>')
 				.addClass('messageicon')
@@ -447,6 +431,7 @@ DynMap.prototype = {
 
 			messageRow.append(playerIconContainer,playerNameContainer,playerMessageContainer);
 			//messageRow.append(playerIconContainer,playerWorldContainer,playerGroupContainer,playerNameContainer,playerMessageContainer);
+			setTimeout(function() { messageRow.remove(); }, me.options.messagettl);
 			messagelist.append(messageRow);
 			
 			me.messagelist.show();
