@@ -1,3 +1,13 @@
 name: dynmap
 main: org.dynmap.DynmapPlugin
 version: 0.1
+commands:
+  dynmap:
+    description: Controls Dynmap.
+    usage: |
+           /<command> hide - hides the player from the map.
+           /<command> hide TheDude - hides the player 'TheDude' from the map.
+           /<command> show - shows the player from the map.
+           /<command> show TheDude - shows the player 'TheDude' from the map.
+           /<command> render - Renders the tile at your location.
+           /<command> fullrender - (Attempts to) render entire world from your location.
