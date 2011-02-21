@@ -32,10 +32,10 @@ public class DynmapPlugin extends JavaPlugin {
 
     protected static final Logger log = Logger.getLogger("Minecraft");
 
-    private HttpServer webServer = null;
-    private MapManager mapManager = null;
-    private PlayerList playerList;
-    private Configuration configuration;
+    public HttpServer webServer = null;
+    public MapManager mapManager = null;
+    public PlayerList playerList;
+    public Configuration configuration;
 
     public static File tilesDirectory;
 
@@ -128,7 +128,7 @@ public class DynmapPlugin extends JavaPlugin {
         };
         getServer().getPluginManager().registerEvent(Event.Type.WORLD_LOADED, worldListener, Priority.Monitor, this);
 
-        PlayerListener playerListener = new DynmapPlayerListener(mapManager, playerList, configuration);
+        PlayerListener playerListener = new DynmapPlayerListener(this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Normal, this);
