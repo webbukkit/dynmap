@@ -16,10 +16,11 @@ import org.bukkit.entity.Player;
 public class PlayerList {
     private Server server;
     private HashSet<String> hiddenPlayerNames = new HashSet<String>();
-    private File hiddenPlayersFile = new File(DynmapPlugin.dataRoot, "hiddenplayers.txt");
+    private File hiddenPlayersFile;
 
-    public PlayerList(Server server) {
+    public PlayerList(Server server, File hiddenPlayersFile) {
         this.server = server;
+        this.hiddenPlayersFile = hiddenPlayersFile;
     }
 
     public void save() {

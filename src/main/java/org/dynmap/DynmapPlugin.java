@@ -41,12 +41,6 @@ public class DynmapPlugin extends JavaPlugin {
     private Configuration configuration;
 
     public static File tilesDirectory;
-    public static File dataRoot;
-
-    public DynmapPlugin(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
-        super(pluginLoader, instance, desc, folder, plugin, cLoader);
-        dataRoot = folder;
-    }
 
     public World getWorld() {
         return getServer().getWorlds().get(0);
@@ -69,7 +63,7 @@ public class DynmapPlugin extends JavaPlugin {
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         tilesDirectory.mkdirs();
         
-        playerList = new PlayerList(getServer());
+        playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"));
         playerList.load();
 
         mapManager = new MapManager(configuration);
@@ -148,7 +142,7 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public File getFile(String path) {
-        return combinePaths(DynmapPlugin.dataRoot, path);
+        return combinePaths(getDataFolder(), path);
     }
     
     protected void loadDebuggers() {
