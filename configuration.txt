@@ -19,18 +19,24 @@ disabledcommands:
   - fullrender
 
 # The maptypes Dynmap will use to render.
-maps:
-  - class: org.dynmap.kzedmap.KzedMap
-    renderers:
-      - class: org.dynmap.kzedmap.DefaultTileRenderer
-        prefix: t
-        maximumheight: 127
-      - class: org.dynmap.kzedmap.CaveTileRenderer
-        prefix: ct
-        maximumheight: 127
-      - class: org.dynmap.kzedmap.DefaultTileRenderer
-        prefix: nt
-        maximumheight: 64
+worlds:
+  - name: world
+    maps:
+      - class: org.dynmap.kzedmap.KzedMap
+        renderers:
+          - class: org.dynmap.kzedmap.DefaultTileRenderer
+            prefix: t
+            maximumheight: 127
+          - class: org.dynmap.kzedmap.CaveTileRenderer
+            prefix: ct
+            maximumheight: 127
+  - name: nether
+    maps:
+      - class: org.dynmap.kzedmap.KzedMap
+        renderers:
+          - class: org.dynmap.kzedmap.DefaultTileRenderer
+            prefix: nt
+            maximumheight: 64
 
 web:
     # Interval the browser should poll for updates.

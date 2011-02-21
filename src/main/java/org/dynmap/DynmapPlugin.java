@@ -9,21 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.player.PlayerListener;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
+import org.bukkit.event.world.WorldEvent;
+import org.bukkit.event.world.WorldListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.Event.Listener;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
-import org.dynmap.debug.LogDebugger;
-import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.web.HttpServer;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
@@ -66,7 +63,7 @@ public class DynmapPlugin extends JavaPlugin {
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"));
         playerList.load();
 
-        mapManager = new MapManager(configuration);
+        mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
 
         InetAddress bindAddress;
@@ -122,6 +119,14 @@ public class DynmapPlugin extends JavaPlugin {
         BlockListener blockListener = new DynmapBlockListener(mapManager);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Monitor, this);
+        
+        WorldListener worldListener = new WorldListener() {
+            @Override
+            public void onWorldLoaded(WorldEvent event) {
+                mapManager.activateWorld(event.getWorld());
+            }
+        };
+        getServer().getPluginManager().registerEvent(Event.Type.WORLD_LOADED, worldListener, Priority.Monitor, this);
 
         PlayerListener playerListener = new DynmapPlayerListener(mapManager, playerList, configuration);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
