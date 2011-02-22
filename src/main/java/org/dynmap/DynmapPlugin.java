@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockListener;
@@ -54,12 +58,12 @@ public class DynmapPlugin extends JavaPlugin {
     public void onEnable() {
         configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
         configuration.load();
-        
+
         loadDebuggers();
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         tilesDirectory.mkdirs();
-        
+
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"));
         playerList.load();
 
@@ -119,7 +123,7 @@ public class DynmapPlugin extends JavaPlugin {
         BlockListener blockListener = new DynmapBlockListener(mapManager);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Monitor, this);
-        
+
         WorldListener worldListener = new WorldListener() {
             @Override
             public void onWorldLoaded(WorldEvent event) {
@@ -129,7 +133,7 @@ public class DynmapPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.WORLD_LOADED, worldListener, Priority.Monitor, this);
 
         PlayerListener playerListener = new DynmapPlayerListener(this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
+        //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
@@ -149,15 +153,15 @@ public class DynmapPlugin extends JavaPlugin {
     public File getFile(String path) {
         return combinePaths(getDataFolder(), path);
     }
-    
+
     protected void loadDebuggers() {
         Object debuggersConfiguration = configuration.getProperty("debuggers");
         Debug.clearDebuggers();
         if (debuggersConfiguration != null) {
-            for(Object debuggerConfiguration : (List<?>)debuggersConfiguration) {
-                Map<?, ?> debuggerConfigurationMap = (Map<?, ?>)debuggerConfiguration;
+            for (Object debuggerConfiguration : (List<?>) debuggersConfiguration) {
+                Map<?, ?> debuggerConfigurationMap = (Map<?, ?>) debuggerConfiguration;
                 try {
-                    Class<?> debuggerClass = Class.forName((String)debuggerConfigurationMap.get("class"));
+                    Class<?> debuggerClass = Class.forName((String) debuggerConfigurationMap.get("class"));
                     Constructor<?> constructor = debuggerClass.getConstructor(JavaPlugin.class, Map.class);
                     Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfigurationMap);
                     Debug.addDebugger(debugger);
@@ -166,8 +170,66 @@ public class DynmapPlugin extends JavaPlugin {
                     e.printStackTrace();
                     continue;
                 }
-                
+
             }
         }
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if (!cmd.getName().equalsIgnoreCase("dynmap"))
+            return false;
+        Player player = null;
+        if (sender instanceof Player)
+            player = (Player) sender;
+        if (args.length > 0) {
+            if (args[0].equals("render")) {
+                if (sender instanceof Player) {
+                    mapManager.touch(((Player) sender).getLocation());
+                    return true;
+                }
+            } else if (args[0].equals("hide")) {
+                if (args.length == 1 && player != null) {
+                    playerList.hide(player.getName());
+                    sender.sendMessage("You are now hidden on Dynmap.");
+                    return true;
+                } else {
+                    for (int i = 1; i < args.length; i++) {
+                        playerList.hide(args[i]);
+                        sender.sendMessage(args[i] + " is now hidden on Dynmap.");
+                    }
+                    return true;
+                }
+            } else if (args[0].equals("show")) {
+                if (args.length == 1 && player != null) {
+                    playerList.show(player.getName());
+                    sender.sendMessage("You are now visible on Dynmap.");
+                    return true;
+                } else {
+                    for (int i = 1; i < args.length; i++) {
+                        playerList.show(args[i]);
+                        sender.sendMessage(args[i] + " is now visible on Dynmap.");
+                    }
+                    return true;
+                }
+            } else if (args[0].equals("fullrender")) {
+                if (player == null || player.isOp()) {
+                    if (args.length > 2) {
+                        for (int i = 1; i < args.length; i++) {
+                            World w = getServer().getWorld(args[i]);
+                            mapManager.renderFullWorld(new Location(w, 0, 0, 0));
+                        }
+                        return true;
+                    } else if (player != null) {
+                        mapManager.renderFullWorld(player.getLocation());
+                        return true;
+                    }
+                } else if (player != null) {
+                    player.sendMessage("Only OPs are allowed to use this command!");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
