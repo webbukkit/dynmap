@@ -1,4 +1,4 @@
-function CustomMarker(latlng,  map, oncreated, args) {
+function CustomMarker(latlng,  map, oncreated) {
 	google.maps.OverlayView.call(this);
 	
 	this.latlng_ = latlng;
@@ -8,7 +8,6 @@ function CustomMarker(latlng,  map, oncreated, args) {
 	this.setMap(map);
 	
 	this.oncreated = oncreated;
-	this.oncreatedargs = args;
 }
 
 CustomMarker.prototype = new google.maps.OverlayView();
@@ -29,7 +28,7 @@ CustomMarker.prototype.draw = function() {
 			google.maps.event.trigger(me, "click");
 		});
 
-		this.oncreated(div, this.oncreatedargs);
+		this.oncreated(div);
 		
 		// Then add the overlay to the DOM
 		var panes = this.getPanes();

@@ -377,6 +377,10 @@ body {
     border: 3px solid transparent;
 }
 
+.dynmap .playerlist .player.otherworld {
+	opacity: 0.5;
+}
+
 .dynmap .playerlist .player:hover {
     background: rgba(64,64,64,0.6);
 }

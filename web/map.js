@@ -31,6 +31,13 @@ DynMapType.prototype = {
 	updateTileSize: function(zoom) {}
 };
 
+function Location(world, x, y, z) {
+	this.world = world;
+	this.x = x;
+	this.y = y;
+	this.z = z;
+}
+
 function DynMap(options) {
 	var me = this;
 	me.options = options;
@@ -42,7 +49,7 @@ function DynMap(options) {
 DynMap.prototype = {
 	worlds: {},
 	registeredTiles: new Array(),
-	markers: new Array(),
+	players: {},
 	chatPopups: new Array(),
 	lasttimestamp: '0',
 	followingPlayer: '',
@@ -231,7 +238,7 @@ DynMap.prototype = {
 		
 		setTimeout(function() { me.update(); }, me.options.updaterate);
 	},
-	selectMap: function(map) {
+	selectMap: function(map, completed) {
 		if (!map) { throw "Cannot select map " + map; }
 		var me = this;
 		me.map.setMapTypeId('none');
@@ -240,9 +247,26 @@ DynMap.prototype = {
 		me.maptype.updateTileSize(me.map.zoom);
 		window.setTimeout(function() {
 			me.map.setMapTypeId(map.world.name + '.' + map.name);
+			if (completed) { completed(); }
 		}, 1);
 		$('.map', me.worldlist).removeClass('selected');
 		$(map.element).addClass('selected');
+	},
+	selectWorld: function(world, completed) {
+		var me = this;
+		if (typeof(world) == 'String') { world = me.worlds[world]; }
+		if (me.world == world) {
+			if (completed) { completed(); }
+			return;
+		}
+		me.selectMap(world.defaultmap, completed);
+	},
+	panTo: function(location, completed) {
+		var me = this;
+		me.selectWorld(location.world, function() {
+			var position = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
+			me.map.panTo(position);
+		});
 	},
 	update: function() {
 		var me = this;
@@ -257,21 +281,23 @@ DynMap.prototype = {
 				me.clock.setTime(update.servertime);
 				me.clockdigital.setTime(update.servertime);
 
-				var typeVisibleMap = {};
-				var newmarkers = {};
-				
-				$.each(update.players, function(index, player) {
-					var mi = {
-						id: 'player_' + player.name,
-						text: player.name,
-						type: 'player',
-						position: me.map.getProjection().fromWorldToLatLng(parseFloat(player.x), parseFloat(player.y), parseFloat(player.z)),
-						visible: true
-					};
-
-					me.updateMarker(mi);
-					newmarkers[mi.id] = mi;
+				var newplayers = {};
+				$.each(update.players, function(index, playerUpdate) {
+					var name = playerUpdate.name;
+					var player = me.players[name];
+					if (player) {
+						me.updatePlayer(player, playerUpdate);
+					} else {
+						me.addPlayer(playerUpdate);
+					}
+					newplayers[name] = player;
 				});
+				for(var name in me.players) {
+					var player = me.players[name];
+					if(!(name in newplayers)) {
+						me.removePlayer(player);
+					}
+				}
 				
 				$.each(update.updates, function(index, update) {
 					swtch(update.type, {
@@ -296,17 +322,7 @@ DynMap.prototype = {
 					//var divs = $('div[rel]');
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
-	 
-				for(var m in me.markers) {
-					var marker = me.markers[m];
-					if(!(m in newmarkers)) {
-						marker.remove(null);
-						if (marker.playerItem) {
-							marker.playerItem.remove();
-						}
-						delete me.markers[m];
-					}
-				}
+				
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}, function(request, statusText, ex) {
 				me.alertbox
@@ -353,11 +369,10 @@ DynMap.prototype = {
 	},
 	onPlayerChat: function(playerName, message) {
 		var me = this;
-		var markers = me.markers;
 		var chatPopups = this.chatPopups;
 		var map = me.map;
-		var mid = "player_" + playerName;
-		var playerMarker = markers[mid];
+		var player = me.players[playerName];
+		var playerMarker = player && player.marker;
 		if (me.options.showchat == 'balloons') {
 			if (playerMarker)
 			{
@@ -449,95 +464,103 @@ DynMap.prototype = {
 			tile.mapType.onTileUpdated(tile.tileElement, tileName);
 		}
 	},
-	updateMarker: function(mi) {
+	addPlayer: function(update) {
 		var me = this;
-		var markers = me.markers;
-		var map = me.map;
+		var player = me.players[update.name] = {
+				name: update.name,
+				location: new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z))
+		};
 		
-		if(mi.id in markers) {
-			var m = markers[mi.id];
-			m.toggle(mi.visible);
-			m.setPosition(mi.position);
-		} else {
-			var contentfun = function(div,mi) {
-				$(div)
-					.addClass('Marker')
-					.addClass(mi.type + 'Marker')
-					.append($('<img/>').attr({src: mi.type + '.png'}))
-					.append($('<span/>').text(mi.text));
-			};
-			if (mi.type == 'player') {
-				contentfun = function(div, mi) {
-					var playerImage;
-					$(div)
-						.addClass('Marker')
-						.addClass('playerMarker')
-						.append(playerImage = $('<img/>')
-								.attr({ src: 'player.png' }))
-						.append($('<span/>')
-							.addClass('playerName')
-							.text(mi.text))
-					if (me.options.showplayerfacesonmap) {
-						getMinecraftHead(mi.text, 32, function(head) {
-							$(head)
-								.addClass('playericon')
-								.prependTo(div);
-							playerImage.remove();
-						});
-					}
-				};
-			}
-			var marker = new CustomMarker(mi.position, map, contentfun, mi);
-			marker.markerType = mi.type;
+		// Create the player-marker.
+		markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
+		player.marker = new CustomMarker(markerPosition, me.map, function(div) {
+			var playerImage;
+			$(div)
+				.addClass('Marker')
+				.addClass('playerMarker')
+				.append(playerImage = $('<img/>')
+						.attr({ src: 'player.png' }))
+				.append($('<span/>')
+					.addClass('playerName')
+					.text(player.name));
 			
-			markers[mi.id] = marker;
-
-			if (mi.type == 'player') {
-				marker.playerItem = $('<li/>')
-					.addClass('player')
-					.append(marker.playerIconContainer = $('<span/>')
-							.addClass('playerIcon')
-							.append($('<img/>').attr({ src: 'player_face.png' }))
-							.attr({ title: 'Follow ' + mi.text })
-							.click(function() {
-								var follow = mi.id != me.followingPlayer;
-								me.followPlayer(follow ? mi.id : '')
-							}))
-					.append($('<a/>')
-							.attr({
-								href: '#',
-								title: 'Center on ' + mi.text
-								})
-							.text(mi.text)
-							)
-					.click(function(e) { map.panTo(markers[mi.id].getPosition()); })
-					.appendTo(me.playerlist);
-
-				if (me.options.showplayerfacesinmenu) {
-					getMinecraftHead(mi.text, 16, function(head) {
-						$('img', marker.playerIconContainer).remove();
-						marker.playerItem.icon = $(head)
-							.appendTo(marker.playerIconContainer);
-					});
-				}
+			if (me.options.showplayerfacesonmap) {
+				getMinecraftHead(player.name, 32, function(head) {
+					$(head)
+						.addClass('playericon')
+						.prependTo(div);
+					playerImage.remove();
+				});
 			}
-		}
+		});
 		
-		if(mi.id == me.followingPlayer) {
-			map.panTo(markers[mi.id].getPosition());
+		// Create the player-menu-item.
+		var playerIconContainer;
+		var menuitem = player.menuitem = $('<li/>')
+			.addClass('player')
+			.append(playerIconContainer = $('<span/>')
+					.addClass('playerIcon')
+					.append($('<img/>').attr({ src: 'player_face.png' }))
+					.attr({ title: 'Follow ' + player.name })
+					.click(function() {
+						var follow = player != me.followingPlayer;
+						me.followPlayer(follow ? player : null)
+					})
+					)
+			.append($('<a/>')
+					.attr({
+						href: '#',
+						title: 'Center on ' + player.name
+						})
+					.text(player.name)
+					)
+			.click(function(e) { me.panTo(player.location); })
+			.appendTo(me.playerlist);
+		if (me.options.showplayerfacesinmenu) {
+			getMinecraftHead(player.name, 16, function(head) {
+				$('img', playerIconContainer).remove();
+				$(head).appendTo(playerIconContainer);
+			});
 		}
 	},
-	followPlayer: function(name) {
+	updatePlayer: function(player, update) {
+		var me = this;
+		var location = player.location = new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z));
+		
+		// Update the marker.
+		markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
+		player.marker.toggle(me.world == location.world);
+		player.marker.setPosition(markerPosition);
+		
+		// Update menuitem.
+		player.menuitem.toggleClass('otherworld', me.world != location.world);
+		
+		if (player == me.followingPlayer) {
+			// Follow the updated player.
+			me.panTo(player.location);
+		}
+	},
+	removePlayer: function(player) {
+		var me = this;
+		
+		delete me.players[player.name];
+		
+		// Remove the marker.
+		player.marker.remove();
+		
+		// Remove menu item.
+		player.menuitem.remove();
+	},
+	followPlayer: function(player) {
 		var me = this;
 		$('.following', me.playerlist).removeClass('following');
 		
-		var m = me.markers[name];
-		if(m) {
-			$(m.playerItem).addClass('following');
-			me.map.panTo(m.getPosition());
+		if(player) {
+			$(player.menuitem).addClass('following');
+			me.panTo(player.location);
 		}
-		this.followingPlayer = name;
-	},
+		this.followingPlayer = player;
+	}
 	// TODO: Enable hash-links.
 /*	updateLink: function() {
 		var me = this;
