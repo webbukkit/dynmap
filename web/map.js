@@ -103,7 +103,7 @@ DynMap.prototype = {
 		};
 
 		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
-			me.followPlayer('');
+			me.followPlayer(null);
 		});
 		// TODO: Enable hash-links.
 		/*google.maps.event.addListener(map, 'zoom_changed', function() {
@@ -277,7 +277,9 @@ DynMap.prototype = {
 		$.getJSON(me.options.updateUrl + "world/" + me.world.name + "/" + me.lasttimestamp, function(update) {
 				me.alertbox.hide();
 			
-				me.lasttimestamp = update.timestamp;
+				if (!me.options.jsonfile)
+					me.lasttimestamp = update.timestamp;
+				
 				me.clock.setTime(update.servertime);
 				me.clockdigital.setTime(update.servertime);
 
@@ -303,19 +305,24 @@ DynMap.prototype = {
 				$.each(update.updates, function(index, update) {
 					swtch(update.type, {
 						tile: function() {
-							me.onTileUpdated(update.name);
+							
+							if(me.lasttimestamp <= update.timestamp || !me.options.jsonfile)
+								me.onTileUpdated(update.name);
 						},
 						chat: function() {
 							if (!me.options.showchat) {
 								return;
 							}
-							me.onPlayerChat(update.playerName, update.message);
+							if(me.lasttimestamp <= update.timestamp  || !me.options.jsonfile)
+								me.onPlayerChat(update.playerName, update.message);
 						},
 						webchat: function() {
 							if (!me.options.showchat) {
 								return;
 							}
-							me.onPlayerChat('[WEB]' + update.playerName, update.message);
+							
+							if(me.lasttimestamp <= update.timestamp  || !me.options.jsonfile)
+								me.onPlayerChat('[WEB]' + update.playerName, update.message);
 						}
 					}, function(type) {
 						console.log('Unknown type ', type, '!');
@@ -325,7 +332,6 @@ DynMap.prototype = {
 					//var divs = $('div[rel]');
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
-				
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}, function(request, statusText, ex) {
 				me.alertbox

@@ -23,7 +23,11 @@ public class Client {
         }
     }
 
-    public static class ChatMessage {
+    public static class Stamped {
+        public long timestamp = System.currentTimeMillis();
+    }
+    
+    public static class ChatMessage extends Stamped {
         public String type = "chat";
         public String playerName;
         public String message;
@@ -34,7 +38,7 @@ public class Client {
         }
     }
     
-    public static class WebChatMessage {
+    public static class WebChatMessage extends Stamped {
         public String type = "webchat";
         public String playerName;
         public String message;
@@ -45,7 +49,7 @@ public class Client {
         }
     }
 
-    public static class Tile {
+    public static class Tile extends Stamped {
         public String type = "tile";
         public String name;
 

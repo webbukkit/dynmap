@@ -15,6 +15,15 @@ webserver-bindaddress: 0.0.0.0
 # The TCP-port the webserver will listen on.
 webserver-port: 8123
 
+# Disables Webserver portion of Dynmap (Advanced users only)
+disable-webserver: false
+
+# Writes JSON to file in the webpath
+jsonfile: false
+
+# How often the json file gets written to(in seconds)
+jsonfile-interval: 1000
+
 # The maptypes Dynmap will use to render.
 worlds:
   - name: world
@@ -36,12 +45,16 @@ worlds:
             maximumheight: 64
 
 web:
+    # Handles the clientside updates differently only enable if using jsonfile
+    jsonfile: false
+
     # Interval the browser should poll for updates.
     updaterate: 2000
     
     # showchat: modal/balloons
     showchat: modal
     messagettl: 15000
+        
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
     focuschatballoons: false

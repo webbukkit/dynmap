@@ -1,6 +1,8 @@
 package org.dynmap;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -8,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.Timer;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -31,6 +34,7 @@ import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
 import org.dynmap.web.handlers.SendMessageHandler;
 import org.dynmap.web.handlers.SendMessageHandler.Message;
+import org.dynmap.web.Json;
 
 public class DynmapPlugin extends JavaPlugin {
 
@@ -40,6 +44,8 @@ public class DynmapPlugin extends JavaPlugin {
     public MapManager mapManager = null;
     public PlayerList playerList;
     public Configuration configuration;
+
+    public Timer timer;
 
     public static File tilesDirectory;
 
@@ -70,6 +76,19 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
 
+        loadWebserver();
+
+        if (configuration.getBoolean("jsonfile", false)) {
+            jsonConfig();
+            int jsonInterval = configuration.getInt("jsonfile-interval", 1) * 1000;
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
+        }
+
+        registerEvents();
+    }
+
+    public void loadWebserver() {
         InetAddress bindAddress;
         {
             String address = configuration.getString("webserver-bindaddress", "0.0.0.0");
@@ -105,8 +124,6 @@ public class DynmapPlugin extends JavaPlugin {
         } catch (IOException e) {
             log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
-
-        registerEvents();
     }
 
     public void onDisable() {
@@ -116,6 +133,11 @@ public class DynmapPlugin extends JavaPlugin {
             webServer.shutdown();
             webServer = null;
         }
+
+        if (timer != null) {
+            timer.cancel();
+        }
+
         Debug.clearDebuggers();
     }
 
@@ -231,5 +253,25 @@ public class DynmapPlugin extends JavaPlugin {
             }
         }
         return false;
+    }
+
+    private void jsonConfig() {
+        File outputFile;
+        Map<?, ?> clientConfig = (Map<?, ?>) configuration.getProperty("web");
+        File webpath = new File(configuration.getString("webpath", "web"), "dynmap_config.json");
+        if (webpath.isAbsolute())
+            outputFile = webpath;
+        else
+            outputFile = new File(getDataFolder(), webpath.toString());
+
+        try {
+            FileOutputStream fos = new FileOutputStream(outputFile);
+            fos.write(Json.stringifyJson(clientConfig).getBytes());
+            fos.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println("FileNotFoundException : " + ex);
+        } catch (IOException ioe) {
+            System.out.println("IOException : " + ioe);
+        }
     }
 }
