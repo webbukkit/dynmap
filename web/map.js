@@ -10,7 +10,7 @@ function splitArgs(s) {
 	var obj = {};
 	var index = 0;
 	$.each(arguments, function(argumentIndex, argument) {
-		if (!argumentIndex) return;
+		if (!argumentIndex) { return; }
 		var value = r[argumentIndex-1];
 		obj[argument] = value;
 	});
@@ -44,13 +44,13 @@ function DynMap(options) {
 	$.getJSON(me.options.updateUrl + 'configuration', function(configuration) {
 		me.configure(configuration);
 		me.initialize();
-	})
+	});
 }
 DynMap.prototype = {
 	worlds: {},
-	registeredTiles: new Array(),
+	registeredTiles: [],
 	players: {},
-	chatPopups: new Array(),
+	chatPopups: [],
 	lasttimestamp: '0',
 	followingPlayer: '',
 	configure: function(configuration) {
@@ -190,10 +190,10 @@ DynMap.prototype = {
 		// The Compass
 		var compass = $('<div/>')
 			.addClass('compass')
-			.appendTo(container)
+			.appendTo(container);
 		
 		// The chat
-		if (me.options.showchat == 'modal') {
+		if (me.options.showchat === 'modal') {
 			var chat = me.chat = $('<div/>')
 				.addClass('chat')
 				.appendTo(container);
@@ -208,7 +208,7 @@ DynMap.prototype = {
 					value: ''
 				})
 				.keydown(function(event) {
-					if (event.keyCode == '13') {
+					if (event.keyCode === '13') {
 						event.preventDefault();
 						sendChat(chatinput.val());
 						chatinput.val('');
@@ -254,8 +254,8 @@ DynMap.prototype = {
 	},
 	selectWorld: function(world, completed) {
 		var me = this;
-		if (typeof(world) == 'String') { world = me.worlds[world]; }
-		if (me.world == world) {
+		if (typeof(world) === 'String') { world = me.worlds[world]; }
+		if (me.world === world) {
 			if (completed) { completed(); }
 			return;
 		}
@@ -292,7 +292,8 @@ DynMap.prototype = {
 					}
 					newplayers[name] = player;
 				});
-				for(var name in me.players) {
+				var name;
+				for(name in me.players) {
 					var player = me.players[name];
 					if(!(name in newplayers)) {
 						me.removePlayer(player);
@@ -305,17 +306,19 @@ DynMap.prototype = {
 							me.onTileUpdated(update.name);
 						},
 						chat: function() {
-							if (!me.options.showchat)
-						    	return;
+							if (!me.options.showchat) {
+								return;
+							}
 							me.onPlayerChat(update.playerName, update.message);
 						},
 						webchat: function() {
-							if (!me.options.showchat)
-						    	return;
+							if (!me.options.showchat) {
+								return;
+							}
 							me.onPlayerChat('[WEB]' + update.playerName, update.message);
 						}
 					}, function(type) {
-						console.log('Unknown type ', value, '!');
+						console.log('Unknown type ', type, '!');
 					});
 					/* remove older messages from chat*/
 					//var timestamp = event.timeStamp;
@@ -356,7 +359,8 @@ DynMap.prototype = {
 		var POPUP_LIFE = 8000;
 		var d = new Date();
 		var now = d.getTime();
-		for (var popupIndex in this.chatPopups)
+		var popupIndex;
+		for (popupIndex in this.chatPopups)
 		{
 			var popup = this.chatPopups[popupIndex];
 			if (now - popup.popupTime > POPUP_LIFE)
@@ -373,26 +377,28 @@ DynMap.prototype = {
 		var map = me.map;
 		var player = me.players[playerName];
 		var playerMarker = player && player.marker;
-		if (me.options.showchat == 'balloons') {
+		if (me.options.showchat === 'balloons') {
 			if (playerMarker)
 			{
 				var popup = chatPopups[playerName];
-				if (!popup)
+				if (!popup) {
 					popup = { lines: [ message ] };
-				else
+				} else {
 					popup.lines[popup.lines.length] = message;
+				}
 	
 				var MAX_LINES = 5;
 				if (popup.lines.length > MAX_LINES)
 				{
 					popup.lines = popup.lines.slice(1);
 				}
-				htmlMessage = '<div id="content"><b>' + playerName + "</b><br/><br/>"
-				for (var line in popup.lines)
+				var htmlMessage = '<div id="content"><b>' + playerName + "</b><br/><br/>";
+				var line;
+				for (line in popup.lines)
 				{
 					htmlMessage = htmlMessage + popup.lines[line] + "<br/>";
 				}
-				htmlMessage = htmlMessage + "</div>"
+				htmlMessage = htmlMessage + "</div>";
 				var now = new Date();
 				popup.popupTime = now.getTime();
 				if (!popup.infoWindow) {
@@ -406,43 +412,40 @@ DynMap.prototype = {
 				popup.infoWindow.open(map, playerMarker);
 				this.chatPopups[playerName] = popup;
 			}
-		} else if (me.options.showchat == 'modal') {
-			var me = this;
+		} else if (me.options.showchat === 'modal') {
 			var messagelist = me.messagelist;
-			var timestamp = event.timeStamp;
 
 			var messageRow = $('<div/>')
-				.addClass('messagerow')
-				.attr({ "rel": timestamp})
+				.addClass('messagerow');
 
 			var playerIconContainer = $('<span/>')
-				.addClass('messageicon')
+				.addClass('messageicon');
 
-				if (me.options.showplayerfacesinmenu) {
-					getMinecraftHead(playerName, 16, function(head) {
-						messageRow.icon = $(head)
-							.addClass('playerIcon')
-							.appendTo(playerIconContainer);
-					});
-				}
+			if (me.options.showplayerfacesinmenu) {
+				getMinecraftHead(playerName, 16, function(head) {
+					messageRow.icon = $(head)
+						.addClass('playerIcon')
+						.appendTo(playerIconContainer);
+				});
+			}
 
-			if (playerName != 'Server') {
+			if (playerName !== 'Server') {
 				var playerWorldContainer = $('<span/>')
 				 .addClass('messagetext')
-				 .text('['+me.world+']')
+				 .text('['+me.world+']');
 	
 				var playerGroupContainer = $('<span/>')
 				 .addClass('messagetext')
-				 .text('[Group]')
+				 .text('[Group]');
 			}
 
 			var playerNameContainer = $('<span/>')
 				.addClass('messagetext')
-				.text(' '+playerName+': ')
+				.text(' '+playerName+': ');
 
 			var playerMessageContainer = $('<span/>')
 				.addClass('messagetext')
-				.text(message)
+				.text(message);
 
 			messageRow.append(playerIconContainer,playerNameContainer,playerMessageContainer);
 			//messageRow.append(playerIconContainer,playerWorldContainer,playerGroupContainer,playerNameContainer,playerMessageContainer);
@@ -470,9 +473,9 @@ DynMap.prototype = {
 				name: update.name,
 				location: new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z))
 		};
-		
+		var location = player.location;
 		// Create the player-marker.
-		markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
+		var markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
 		player.marker = new CustomMarker(markerPosition, me.map, function(div) {
 			var playerImage;
 			$(div)
@@ -503,8 +506,8 @@ DynMap.prototype = {
 					.append($('<img/>').attr({ src: 'player_face.png' }))
 					.attr({ title: 'Follow ' + player.name })
 					.click(function() {
-						var follow = player != me.followingPlayer;
-						me.followPlayer(follow ? player : null)
+						var follow = player !== me.followingPlayer;
+						me.followPlayer(follow ? player : null);
 					})
 					)
 			.append($('<a/>')
@@ -528,14 +531,14 @@ DynMap.prototype = {
 		var location = player.location = new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z));
 		
 		// Update the marker.
-		markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
-		player.marker.toggle(me.world == location.world);
+		var markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
+		player.marker.toggle(me.world === location.world);
 		player.marker.setPosition(markerPosition);
 		
 		// Update menuitem.
-		player.menuitem.toggleClass('otherworld', me.world != location.world);
+		player.menuitem.toggleClass('otherworld', me.world !== location.world);
 		
-		if (player == me.followingPlayer) {
+		if (player === me.followingPlayer) {
 			// Follow the updated player.
 			me.panTo(player.location);
 		}
@@ -572,4 +575,4 @@ DynMap.prototype = {
 			+ "&zoom=" + me.map.getZoom();
 			me.linkbox.data('link').val(a);
 	}*/
-}
+};
