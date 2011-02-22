@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.World;
+import org.dynmap.MapType;
 
 public class DynmapWorld {
     public World world;
