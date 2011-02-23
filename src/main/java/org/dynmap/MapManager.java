@@ -24,8 +24,6 @@ public class MapManager {
     public Map<String, DynmapWorld> worlds = new HashMap<String, DynmapWorld>();
     public Map<String, DynmapWorld> inactiveworlds = new HashMap<String, DynmapWorld>();
     
-    public PlayerList playerList;
-
     /* lock for our data structures */
     public static final Object lock = new Object();
 
