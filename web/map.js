@@ -208,7 +208,7 @@ DynMap.prototype = {
 					value: ''
 				})
 				.keydown(function(event) {
-					if (event.keyCode === 13) {
+					if (event.keyCode == '13') {
 						event.preventDefault();
 						sendChat(chatinput.val());
 						chatinput.val('');
