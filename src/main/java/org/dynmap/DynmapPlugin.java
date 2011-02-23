@@ -76,7 +76,9 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
 
-        loadWebserver();
+        if (!configuration.getBoolean("disable-webserver", false)) {
+            loadWebserver();
+        }
 
         if (configuration.getBoolean("jsonfile", false)) {
             jsonConfig();
