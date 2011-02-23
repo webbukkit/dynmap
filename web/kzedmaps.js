@@ -55,34 +55,18 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			tileSize = 128;
 			
 			// Helper functions.
-			var floor = Math.floor;
+			/*var floor = Math.floor;
 			var div = function(x,y){return floor(x/y);}
-			var mod = function(x,y){return ((x%y)+y)%y;};
+			var mod = function(x,y){return ((x%y)+y)%y;};*/
 
-			// Split the image up in ... segments (1*1 for zoom 1, 2*2 for zoom 2, 4*4 for zoom 3, etc).
-			var segments = Math.pow(2,zoom-1);
-			imgSize = segments*tileSize;
-			
-			// Calculate the location relative to the world of this segment.
-			var mapcoord = {x: div(coord.x,segments)*tileSize, y: div(coord.y,segments)*tileSize};
-			// Calculate the location relative to the image of this segment.
-			offset = {x: mod(coord.x,segments)*-tileSize, y: mod(coord.y,segments)*-tileSize};
-			
-			// The next couple of lines are somewhat of a hack, but makes it faster to render zoomed in tiles:
-			tileSize = imgSize;
-			
-			if (offset.x == 0 && offset.y == 0) {
-				tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y + '.png';
-			}
-			offset = {x: 0, y: 0};
-			// The next line is not:
-			//tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y;
+			imgSize = Math.pow(2, 6+zoom);
+			var mapcoord = {x: coord.x*tileSize, y: coord.y*tileSize};
+			tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y + '.png';
 		}
 		var img;
 		var tile = $('<div/>')
 			.addClass('tile')
 			.css({
-				overflow: 'hidden',
 				width: tileSize + 'px',
 				height: tileSize + 'px'
 			});
@@ -99,13 +83,15 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			img = $('<img/>')
 				.attr('src', this.dynmap.getTileUrl(tileName))
 				.error(function() { img.hide(); })
+				.bind('load', function() { img.show(); })
 				.css({
 					width: imgSize + 'px',
 					height: imgSize + 'px',
 					borderStyle: 'none',
-					marginLeft: offset.x + 'px',
-					marginTop: offset.y + 'px'
+					/*marginLeft: offset.x + 'px',
+					marginTop: offset.y + 'px'*/
 				})
+				.hide()
 				.appendTo(tile);
 			this.dynmap.registerTile(this, tileName, img);
 		} else {
@@ -114,7 +100,13 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 		return tile.get(0);
 	},
 	updateTileSize: function(zoom) {
-		//this.tileSize = new google.maps.Size(config.zoomSize[zoom], config.zoomSize[zoom]);
+		var size;
+		if (zoom == 0) {
+			size = 128;
+		} else {
+			size = Math.pow(2, 6+zoom);
+		}
+		this.tileSize = new google.maps.Size(size, size);
 	}
 });
 
