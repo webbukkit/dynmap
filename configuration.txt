@@ -61,10 +61,6 @@ web:
     joinmessage: "%playername% joined"
     quitmessage: "%playername% quit"
     
-    # The clock that is shown alongside the map.
-    clock: timeofday
-    #clock: digital
-    
     defaultworld: world
     worlds:
       - title: World
