@@ -22,7 +22,7 @@ disable-webserver: false
 jsonfile: false
 
 # How often the json file gets written to(in seconds)
-jsonfile-interval: 1000
+jsonfile-interval: 1
 
 # The maptypes Dynmap will use to render.
 worlds:
