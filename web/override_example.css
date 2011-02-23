@@ -2,16 +2,16 @@
  * This is the over-ride CSS file.
  *
  * if you know any CSS you can easily add any custom rules to change how
- * Dynmap looks for your particular install.
+ * Dynmap looks or behaves in your particular install.
  *
- * Simply uncomment the override.css in the index.html and rename this file
- * to override.css to use these custom rules.
+ * Simply uncomment the override.css in the index.html and rename THIS file
+ * to override.css to use these (or your) custom rules.
  *
  * By adding these rules here you can easily save your changes between updates.
  */
 
 
-/* IE : Use the alternate compass image */
+/* Use the alternate compass image */
 
 .compass {
     top: 20px;
@@ -21,4 +21,17 @@
     width: 50px;
 
     background-image: url(compass_alt.png);
+}
+
+/* These next two keep the DynMap sidebar open */
+
+.dynmap .sidebar {
+	margin-right: 0px;
+}
+
+/* And hide the hitbar along with the window controls */
+
+.dynmap .sidebar .hitbar,
+.dynmap .sidebar .panel > .pin {
+	display: none;
 }
