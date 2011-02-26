@@ -35,7 +35,7 @@ class JsonTimerTask extends TimerTask {
             update.timestamp = current;
             update.servertime = world.getTime() % 24000;
 
-            Player[] players = mapManager.playerList.getVisiblePlayers();
+            Player[] players = plugin.playerList.getVisiblePlayers();
             update.players = new Client.Player[players.length];
             for (int i = 0; i < players.length; i++) {
                 Player p = players[i];
