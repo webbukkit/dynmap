@@ -234,6 +234,7 @@ DynMap.prototype = {
 		
 		var alertbox = me.alertbox = $('<div/>')
 			.addClass('alertbox')
+			.hide()
 			.appendTo(container);
 		
 		me.selectMap(me.defaultworld.defaultmap);
