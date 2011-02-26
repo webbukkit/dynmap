@@ -10,6 +10,10 @@ public class HttpErrorHandler {
         response.getBody();
     }
     
+    public static void handleForbidden(HttpResponse response) throws IOException {
+        handle(response, 403, "Forbidden");
+    }
+    
     public static void handleNotFound(HttpResponse response) throws IOException {
         handle(response, 404, "Not found");
     }

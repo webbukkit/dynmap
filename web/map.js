@@ -44,6 +44,8 @@ function DynMap(options) {
 	$.getJSON(me.options.updateUrl + 'configuration', function(configuration) {
 		me.configure(configuration);
 		me.initialize();
+	}, function(status, statusMessage) {
+		alert('Could not retrieve configuration: ' + statusMessage);
 	});
 }
 DynMap.prototype = {
@@ -333,9 +335,9 @@ DynMap.prototype = {
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
 				setTimeout(function() { me.update(); }, me.options.updaterate);
-			}, function(request, statusText, ex) {
+			}, function(status, statusText, ex) {
 				me.alertbox
-					.text('Could not update map')
+					.text('Could not update map: ' + statusText)
 					.show();
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}

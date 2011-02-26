@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.dynmap.Client;
 import org.dynmap.MapManager;
 import org.dynmap.PlayerList;
+import org.dynmap.web.HttpErrorHandler;
 import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
@@ -34,15 +35,19 @@ public class ClientUpdateHandler implements HttpHandler {
         
         Matcher match = updatePathPattern.matcher(path);
         
-        if (!match.matches())
+        if (!match.matches()) {
+            HttpErrorHandler.handleForbidden(response);
             return;
+        }
         
         String worldName = match.group(1);
         String timeKey = match.group(2);
         
         World world = server.getWorld(worldName);
-        if (world == null)
+        if (world == null) {
+            HttpErrorHandler.handleNotFound(response);
             return;
+        }
         
         long current = System.currentTimeMillis();
         long since = 0;
