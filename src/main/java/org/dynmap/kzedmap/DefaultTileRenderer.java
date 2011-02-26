@@ -39,9 +39,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
         WritableRaster r = im.getRaster();
         boolean isempty = true;
 
-        int ix = KzedMap.anchorx + tile.px / 2 + tile.py / 2;
+        int ix = KzedMap.anchorx + tile.px / 2 + tile.py / 2 - (maximumHeight/2);
         int iy = maximumHeight;
-        int iz = KzedMap.anchorz + tile.px / 2 - tile.py / 2;
+        int iz = KzedMap.anchorz + tile.px / 2 - tile.py / 2 + (maximumHeight/2);
 
         int jx, jz;
 
