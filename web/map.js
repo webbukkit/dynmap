@@ -336,9 +336,9 @@ DynMap.prototype = {
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
 				setTimeout(function() { me.update(); }, me.options.updaterate);
-			}, function(status, statusText, ex) {
+			}, function(status, statusText, request) {
 				me.alertbox
-					.text('Could not update map: ' + statusText)
+					.text('Could not update map: ' + (statusText || 'Could not connect to server'))
 					.show();
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}
