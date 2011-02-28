@@ -491,7 +491,7 @@ DynMap.prototype = {
 				.addClass('Marker')
 				.addClass('playerMarker')
 				.append(playerImage = $('<img/>')
-						.attr({ src: 'player.png' }))
+						.attr({ src: 'images/player.png' }))
 				.append($('<span/>')
 					.addClass('playerName')
 					.text(player.name));
@@ -512,7 +512,7 @@ DynMap.prototype = {
 			.addClass('player')
 			.append(playerIconContainer = $('<span/>')
 					.addClass('playerIcon')
-					.append($('<img/>').attr({ src: 'player_face.png' }))
+					.append($('<img/>').attr({ src: 'images/player_face.png' }))
 					.attr({ title: 'Follow ' + player.name })
 					.click(function() {
 						var follow = player !== me.followingPlayer;
