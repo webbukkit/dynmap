@@ -25,4 +25,13 @@ public abstract class MapTile {
     public int hashCode() {
         return getFilename().hashCode() ^ getWorld().hashCode();
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MapTile) {
+            MapTile t = (MapTile)obj;
+            return getFilename().equals(t.getFilename()) && getWorld().equals(t.getWorld());
+        }
+        return super.equals(obj);
+    }
 }
