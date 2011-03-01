@@ -182,8 +182,8 @@ body {
 
     text-align: center;
 
-    background: url(sidebar_hint.png) rgb(0,0,0);
-    background: url(sidebar_hint.png) rgba(0,0,0,0.6);
+    background: url(images/sidebar_hint.png) rgb(0,0,0);
+    background: url(images/sidebar_hint.png) rgba(0,0,0,0.6);
     background-repeat: no-repeat;
     background-position:center;
 
@@ -223,19 +223,19 @@ body {
     width: 16px;
     height: 16px;
 
-    background-image: url(window_close.png);
+    background-image: url(images/window_close.png);
 }
 
 .dynmap .sidebar .panel > .pin:hover {
-    background-image: url(window_pinned_hover.png);
+    background-image: url(images/window_pinned_hover.png);
 }
 
 .dynmap .sidebar.pinned .panel > .pin:hover {
-    background-image: url(window_close_hover.png);
+    background-image: url(images/window_close_hover.png);
 }
 
 .dynmap .sidebar.pinned .panel > .pin {
-    background-image: url(window_pinned.png);
+    background-image: url(images/window_pinned.png);
 }
 
 
@@ -260,12 +260,12 @@ body {
 }
 
 .clock.night {
-    /* background-image: url(clock_night.png); */
+    /* background-image: url(images/clock_night.png); */
     color: #dff;
 }
 
 .clock.day {
-    /* background-image: url(clock_day.png); */
+    /* background-image: url(images/clock_day.png); */
     color: #fd3;
 }
 
@@ -299,11 +299,11 @@ body {
 }
 
 .timeofday.sun {
-    background-image: url(sun.png);
+    background-image: url(images/sun.png);
 }
 
 .timeofday.moon {
-    background-image: url(moon.png);
+    background-image: url(images/moon.png);
 }
 
 /*******************
@@ -418,11 +418,11 @@ body {
 }
 
 .dynmap .playerlist .player:hover .playericon {
-    background: url(player_follow_off.png) no-repeat;
+    background: url(images/player_follow_off.png) no-repeat;
 }
 
 .dynmap .playerlist .player.following .playericon {
-    background: url(player_follow_on.gif) no-repeat;
+    background: url(images/player_follow_on.gif) no-repeat;
 }
 
 .dynmap .playerlist .player.following .playericon > *,
@@ -465,7 +465,7 @@ body {
     width: 83px;
 
     background-repeat: no-repeat;
-    background-image: url(compass.png);
+    background-image: url(images/compass.png);
 }
 
 /*******************
@@ -499,7 +499,7 @@ body {
 
 	border: 0px;
 	background: rgba(0, 0, 0, 0.6);
-	background: url(chat_cursor.png) rgba(0,0,0,0.6);
+	background: url(images/chat_cursor.png) rgba(0,0,0,0.6);
 	background-repeat: no-repeat;
 	background-position: 1px center;
 
