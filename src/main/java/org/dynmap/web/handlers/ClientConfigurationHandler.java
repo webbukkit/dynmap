@@ -11,23 +11,26 @@ import org.dynmap.web.Json;
 
 public class ClientConfigurationHandler implements HttpHandler {
     private Map<?, ?> configuration;
+    private byte[] cachedConfiguration = null;
     public ClientConfigurationHandler(Map<?, ?> configuration) {
         this.configuration = configuration;
     }
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
-        String s = Json.stringifyJson(configuration);
-
-        byte[] bytes = s.getBytes();
+        if (cachedConfiguration == null) {
+            String s = Json.stringifyJson(configuration);
+    
+            cachedConfiguration = s.getBytes();
+        }
         String dateStr = new Date().toString();
         
         response.fields.put("Date", dateStr);
         response.fields.put("Content-Type", "text/plain");
         response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
         response.fields.put("Last-modified", dateStr);
-        response.fields.put("Content-Length", Integer.toString(bytes.length));
+        response.fields.put("Content-Length", Integer.toString(cachedConfiguration.length));
         BufferedOutputStream out = new BufferedOutputStream(response.getBody());
-        out.write(s.getBytes());
+        out.write(cachedConfiguration);
         out.flush();
     }
 }
