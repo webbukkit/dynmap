@@ -8,56 +8,55 @@ import java.util.List;
 
 public class Json {
     public static String stringifyJson(Object o) {
+        StringBuilder sb = new StringBuilder();
+        appendJson(o, sb);
+        return sb.toString();
+    }
+    
+    public static void appendJson(Object o, StringBuilder s) {
         if (o == null) {
-            return "null";
+            s.append("null");
         } else if (o instanceof Boolean) {
-            return ((Boolean) o) ? "true" : "false";
+            s.append(((Boolean) o) ? "true" : "false");
         } else if (o instanceof String) {
-            return "\"" + ((String)o).replace("\"", "\\\"") + "\"";
+            s.append("\"" + ((String)o).replace("\"", "\\\"") + "\"");
         } else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
-            return o.toString();
+            s.append(o.toString());
         } else if (o instanceof LinkedHashMap<?, ?>) {
             LinkedHashMap<?, ?> m = (LinkedHashMap<?, ?>) o;
-            StringBuilder sb = new StringBuilder();
-            sb.append("{");
+            s.append("{");
             boolean first = true;
             for (Object key : m.keySet()) {
                 if (first)
                     first = false;
                 else
-                    sb.append(",");
+                    s.append(",");
 
-                sb.append(stringifyJson(key));
-                sb.append(": ");
-                sb.append(stringifyJson(m.get(key)));
+                appendJson(key, s);
+                s.append(": ");
+                appendJson(m.get(key), s);
             }
-            sb.append("}");
-            return sb.toString();
+            s.append("}");
         } else if (o instanceof List<?>) {
             List<?> l = (List<?>) o;
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
+            s.append("[");
             int count = 0;
             for (int i = 0; i < l.size(); i++) {
-                if (count++ > 0) sb.append(",");
-                sb.append(stringifyJson(l.get(i)));
+                if (count++ > 0) s.append(",");
+                appendJson(l.get(i), s);
             }
-            sb.append("]");
-            return sb.toString();
+            s.append("]");
         } else if (o.getClass().isArray()) {
             int length = Array.getLength(o);
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
+            s.append("[");
             int count = 0;
             for (int i = 0; i < length; i++) {
-                if (count++ > 0) sb.append(",");
-                sb.append(stringifyJson(Array.get(o, i)));
+                if (count++ > 0) s.append(",");
+                appendJson(Array.get(o, i), s);
             }
-            sb.append("]");
-            return sb.toString();
+            s.append("]");
         } else if (o instanceof Object) /* TODO: Always true, maybe interface? */ {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{");
+            s.append("{");
             boolean first = true;
             
             Class<?> c = o.getClass();
@@ -77,15 +76,14 @@ public class Json {
                 if (first)
                     first = false;
                 else
-                    sb.append(",");
-                sb.append(stringifyJson(fieldName));
-                sb.append(": ");
-                sb.append(stringifyJson(fieldValue));
+                    s.append(",");
+                appendJson(fieldName, s);
+                s.append(": ");
+                appendJson(fieldValue, s);
             }
-            sb.append("}");
-            return sb.toString();
+            s.append("}");
         } else {
-            return "undefined";
+            s.append("undefined");
         }
     }
 }
