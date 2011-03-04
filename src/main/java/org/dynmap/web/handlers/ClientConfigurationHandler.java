@@ -7,6 +7,7 @@ import java.util.Map;
 import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
+import org.dynmap.web.HttpStatus;
 import org.dynmap.web.Json;
 
 public class ClientConfigurationHandler implements HttpHandler {
@@ -29,6 +30,8 @@ public class ClientConfigurationHandler implements HttpHandler {
         response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
         response.fields.put("Last-modified", dateStr);
         response.fields.put("Content-Length", Integer.toString(cachedConfiguration.length));
+        response.status = HttpStatus.OK;
+        
         BufferedOutputStream out = new BufferedOutputStream(response.getBody());
         out.write(cachedConfiguration);
         out.flush();

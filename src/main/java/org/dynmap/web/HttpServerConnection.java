@@ -95,9 +95,9 @@ public class HttpServerConnection extends Thread {
         out.append("HTTP/");
         out.append(response.version);
         out.append(" ");
-        out.append(String.valueOf(response.statusCode));
+        out.append(String.valueOf(response.status.getCode()));
         out.append(" ");
-        out.append(response.statusMessage);
+        out.append(response.status.getText());
         out.append("\r\n");
         for (Entry<String, String> field : response.fields.entrySet()) {
             out.append(field.getKey());
@@ -131,7 +131,7 @@ public class HttpServerConnection extends Thread {
                 long bound = -1;
                 BoundInputStream boundBody = null;
                 {
-                    String contentLengthStr = request.fields.get(HttpField.contentLength);
+                    String contentLengthStr = request.fields.get(HttpField.ContentLength);
                     if (contentLengthStr != null) {
                         try {
                             bound = Long.parseLong(contentLengthStr);

@@ -4,12 +4,12 @@ import java.io.InputStreamReader;
 import java.util.logging.Logger;
 
 import org.dynmap.Event;
-import org.dynmap.web.HttpErrorHandler;
 import org.dynmap.web.HttpField;
 import org.dynmap.web.HttpHandler;
-import org.dynmap.web.HttpMethods;
+import org.dynmap.web.HttpMethod;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
+import org.dynmap.web.HttpStatus;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -20,8 +20,9 @@ public class SendMessageHandler implements HttpHandler {
     public Event<Message> onMessageReceived = new Event<SendMessageHandler.Message>();
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
-        if (!request.method.equals(HttpMethods.Post)) {
-            HttpErrorHandler.handleMethodNotAllowed(response);
+        if (!request.method.equals(HttpMethod.Post)) {
+            response.status = HttpStatus.MethodNotAllowed;
+            response.fields.put(HttpField.Accept, HttpMethod.Post);
             return;
         }
 
@@ -34,7 +35,8 @@ public class SendMessageHandler implements HttpHandler {
         
         onMessageReceived.trigger(message);
         
-        response.fields.put(HttpField.contentLength, "0");
+        response.fields.put(HttpField.ContentLength, "0");
+        response.status = HttpStatus.OK;
         response.getBody();
     }
     public class Message {

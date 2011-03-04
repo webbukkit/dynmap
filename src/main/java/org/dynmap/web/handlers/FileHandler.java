@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.dynmap.web.HttpField;
 import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
+import org.dynmap.web.HttpStatus;
 
 public abstract class FileHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -64,17 +66,15 @@ public abstract class FileHandler implements HttpHandler {
             path = formatPath(path);
             fileInput = getFileInput(path, request, response);
             if (fileInput == null) {
-                response.statusCode = 404;
-                response.statusMessage = "Not found";
-                response.fields.put("Content-Length", "0");
-                response.getBody();
+                response.status = HttpStatus.NotFound;
                 return;
             }
     
             String extension = getExtension(path);
             String mimeType = getMimeTypeFromExtension(extension);
     
-            response.fields.put("Content-Type", mimeType);
+            response.fields.put(HttpField.ContentType, mimeType);
+            response.status = HttpStatus.OK;
             OutputStream out = response.getBody();
             try {
                 int readBytes;
