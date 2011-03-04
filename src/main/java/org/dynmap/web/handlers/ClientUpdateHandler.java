@@ -29,7 +29,7 @@ public class ClientUpdateHandler implements HttpHandler {
         this.server = server;
     }
 
-    Pattern updatePathPattern = Pattern.compile("world/([a-zA-Z0-9_]+)/([0-9]*)");
+    Pattern updatePathPattern = Pattern.compile("world/([a-zA-Z0-9_-\\.]+)/([0-9]*)");
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         
