@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -14,15 +15,24 @@ import java.util.Timer;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockDamageLevel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldEvent;
 import org.bukkit.event.world.WorldListener;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.Event.Listener;
@@ -44,6 +54,7 @@ public class DynmapPlugin extends JavaPlugin {
     public MapManager mapManager = null;
     public PlayerList playerList;
     public Configuration configuration;
+    public HashSet<String> enabledTriggers = new HashSet<String>();
 
     public Timer timer;
 
@@ -85,6 +96,11 @@ public class DynmapPlugin extends JavaPlugin {
             int jsonInterval = configuration.getInt("jsonfile-interval", 1) * 1000;
             timer = new Timer();
             timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
+        }
+
+        enabledTriggers.clear();
+        for (Object trigger : configuration.getList("render-triggers")) {
+            enabledTriggers.add((String) trigger);
         }
 
         registerEvents();
@@ -143,25 +159,89 @@ public class DynmapPlugin extends JavaPlugin {
         Debug.clearDebuggers();
     }
 
+    public boolean isTrigger(String s) {
+        return enabledTriggers.contains(s);
+    }
+    
     public void registerEvents() {
-        BlockListener blockListener = new DynmapBlockListener(mapManager);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACED, blockListener, Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Monitor, this);
+        final PluginManager pm = getServer().getPluginManager();
+        final MapManager mm = mapManager;
+        
+        // To trigger rendering.
+        {
+            BlockListener renderTrigger = new BlockListener() {
+                @Override
+                public void onBlockPlace(BlockPlaceEvent event) {
+                    mm.touch(event.getBlockPlaced().getLocation());
+                }
 
+                @Override
+                public void onBlockBreak(BlockBreakEvent event) {
+                    mm.touch(event.getBlock().getLocation());
+                }
+
+                @Override
+                public void onBlockDamage(BlockDamageEvent event) {
+                    if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
+                        mm.touch(event.getBlock().getLocation());
+                    }
+                }
+            };
+            if (isTrigger("blockplaced")) pm.registerEvent(Event.Type.BLOCK_PLACED, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("blockbroken")) pm.registerEvent(Event.Type.BLOCK_DAMAGED, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("blockbreak")) pm.registerEvent(Event.Type.BLOCK_BREAK, renderTrigger, Priority.Monitor, this);
+        }
+        {
+            PlayerListener renderTrigger = new PlayerListener() {
+                @Override
+                public void onPlayerJoin(PlayerEvent event) {
+                    mm.touch(event.getPlayer().getLocation());
+                }
+                @Override
+                public void onPlayerMove(PlayerMoveEvent event) {
+                    mm.touch(event.getPlayer().getLocation());
+                }
+            };
+            if (isTrigger("playerjoin")) pm.registerEvent(Event.Type.PLAYER_JOIN, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("playermove")) pm.registerEvent(Event.Type.PLAYER_MOVE, renderTrigger, Priority.Monitor, this);
+        }
+        {
+            WorldListener renderTrigger = new WorldListener() {
+                @Override
+                public void onChunkLoaded(ChunkLoadEvent event) {
+                    int x = event.getChunk().getX() * 16 + 8;
+                    int z = event.getChunk().getZ() * 16 + 8;
+                    mm.touch(new Location(event.getWorld(), x, 127, z));
+                }
+                
+                /*@Override
+                public void onChunkGenerated(ChunkLoadEvent event) {
+                    int x = event.getChunk().getX() * 16 + 8;
+                    int z = event.getChunk().getZ() * 16 + 8;
+                    mm.touch(new Location(event.getWorld(), x, 127, z));
+                }*/
+            };
+            if (isTrigger("chunkloaded")) pm.registerEvent(Event.Type.CHUNK_LOADED, renderTrigger, Priority.Monitor, this);
+            //if (isTrigger("chunkgenerated")) pm.registerEvent(Event.Type.CHUNK_GENERATED, renderTrigger, Priority.Monitor, this);
+        }
+        
+        // To link configuration to real loaded worlds.
         WorldListener worldListener = new WorldListener() {
             @Override
             public void onWorldLoaded(WorldEvent event) {
-                mapManager.activateWorld(event.getWorld());
+                mm.activateWorld(event.getWorld());
             }
         };
-        getServer().getPluginManager().registerEvent(Event.Type.WORLD_LOADED, worldListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.WORLD_LOADED, worldListener, Priority.Monitor, this);
 
+        // To handle webchat.
         PlayerListener playerListener = new DynmapPlayerListener(this);
         //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
+        pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
+
     }
 
     private static File combinePaths(File parent, String path) {

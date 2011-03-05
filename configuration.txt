@@ -3,6 +3,15 @@
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 
+render-triggers:
+#  - playermove
+#  - playerjoin
+  - blockplaced
+  - blockbroken
+#  - blockbreak
+#  - chunkgenerated
+#  - chunkloaded
+
 # The path where the tile-files are placed.
 tilespath: web/tiles
 
