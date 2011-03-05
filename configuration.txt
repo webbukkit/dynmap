@@ -106,7 +106,7 @@ web:
       #      title: Surface           # The name of the map that will be displayed.
       #      name: surface            # The actual name of the map (should be unique for this world).
       #      prefix: t                # The prefix of the tile-files that are generated.
-      #      icon: block_other.png    # Sets a custom icon for the map. (optional)
+      #      icon: images/block_other.png    # Sets a custom icon for the map. (optional)
       #    - type: KzedMapType
       #      title: Cave
       #      name: cave

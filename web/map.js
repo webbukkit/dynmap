@@ -158,7 +158,7 @@ DynMap.prototype = {
 					.append($('<a/>')
 							.attr({ title: map.title, href: '#' })
 							.addClass('maptype')
-							.css({ backgroundImage: 'url(' + (map.icon || 'block_' + map.name + '.png') + ')' })
+							.css({ backgroundImage: 'url(' + (map.icon || 'images/block_' + map.name + '.png') + ')' })
 							.text(map.title)
 							)
 					.click(function() {
