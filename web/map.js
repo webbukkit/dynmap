@@ -526,7 +526,10 @@ DynMap.prototype = {
 						})
 					.text(player.name)
 					)
-			.click(function(e) { me.panTo(player.location); })
+			.click(function(e) {
+				me.followPlayer(null);
+				me.panTo(player.location);
+			})
 			.appendTo(me.playerlist);
 		if (me.options.showplayerfacesinmenu) {
 			getMinecraftHead(player.name, 16, function(head) {
