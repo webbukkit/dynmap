@@ -21,6 +21,10 @@
       <outputDirectory>/dynmap/web</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/colorschemes</directory>
+      <outputDirectory>/dynmap/colorschemes</outputDirectory>
+    </fileSet>
+    <fileSet>
     	<directory>${project.basedir}</directory>
     	<outputDirectory>/dynmap/</outputDirectory>
     	<includes>

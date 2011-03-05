@@ -43,6 +43,7 @@ worlds:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
             prefix: t
             maximumheight: 127
+            colorscheme: default
           - class: org.dynmap.kzedmap.CaveTileRenderer
             prefix: ct
             maximumheight: 127
@@ -54,6 +55,7 @@ worlds:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
             prefix: nt
             maximumheight: 64
+            colorscheme: default
 
 web:
     # Handles the clientside updates differently only enable if using jsonfile

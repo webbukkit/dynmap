@@ -10,12 +10,14 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.bukkit.World;
+import org.dynmap.ColorScheme;
 import org.dynmap.debug.Debug;
 
 public class DefaultTileRenderer implements MapTileRenderer {
     protected static Color translucent = new Color(0, 0, 0, 0);
     private String name;
     protected int maximumHeight = 127;
+    private ColorScheme colorScheme;
 
     @Override
     public String getName() {
@@ -30,6 +32,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             if (maximumHeight > 127)
                 maximumHeight = 127;
         }
+        colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
     }
 
     public boolean render(KzedMapTile tile, File outputFile) {
@@ -132,7 +135,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             seq = (seq + 1) & 3;
 
             if (id != 0) {
-                Color[] colors = KzedMap.colors.get(id);
+                Color[] colors = colorScheme.colors.get(id);
                 if (colors != null) {
                     Color c = colors[seq];
                     if (c.getAlpha() > 0) {

@@ -58,6 +58,7 @@ public class DynmapPlugin extends JavaPlugin {
 
     public Timer timer;
 
+    public static File dataDirectory;
     public static File tilesDirectory;
 
     public World getWorld() {
@@ -73,11 +74,13 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public void onEnable() {
+        dataDirectory = this.getDataFolder();
+        
         configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
         configuration.load();
 
         loadDebuggers();
-
+        
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
             log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");

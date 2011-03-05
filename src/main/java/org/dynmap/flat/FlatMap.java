@@ -11,15 +11,17 @@ import javax.imageio.ImageIO;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.dynmap.ColorScheme;
 import org.dynmap.DynmapChunk;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
-import org.dynmap.kzedmap.KzedMap;
 
 public class FlatMap extends MapType {
+    private ColorScheme colorScheme;
 
     public FlatMap(Map<String, Object> configuration) {
+        colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
     }
 
     @Override
@@ -73,7 +75,7 @@ public class FlatMap extends MapType {
                 int mz = y + t.y * t.size;
                 int my = w.getHighestBlockYAt(mx, mz) - 1;
                 int blockType = w.getBlockTypeIdAt(mx, my, mz);
-                Color[] colors = KzedMap.colors.get(blockType);
+                Color[] colors = colorScheme.colors.get(blockType);
                 if (colors == null)
                     continue;
                 Color c = colors[0];
