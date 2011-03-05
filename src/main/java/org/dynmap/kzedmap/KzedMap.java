@@ -3,6 +3,7 @@ package org.dynmap.kzedmap;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -267,9 +269,11 @@ public class KzedMap extends MapType {
                 nc += 1;
             }
             scanner.close();
-        } catch (Exception e) {
-            Debug.error("Could not load colors", e);
+        } catch (RuntimeException e) {
+            log.log(Level.SEVERE, "Could not load colors", e);
             return null;
+        } catch (FileNotFoundException e) {
+            log.log(Level.SEVERE, "Could not load colors: file not found", e);
         }
         return colors;
     }

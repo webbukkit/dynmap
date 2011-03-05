@@ -39,7 +39,7 @@ public class SendMessageHandler implements HttpHandler {
         response.status = HttpStatus.OK;
         response.getBody();
     }
-    public class Message {
+    public static class Message {
         public String name;
         public String message;
     }

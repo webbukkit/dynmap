@@ -3,8 +3,10 @@ package org.dynmap.web;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.security.KeyStore.Entry;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Json {
     public static String stringifyJson(Object o) {
@@ -26,15 +28,15 @@ public class Json {
             LinkedHashMap<?, ?> m = (LinkedHashMap<?, ?>) o;
             s.append("{");
             boolean first = true;
-            for (Object key : m.keySet()) {
+            for (Map.Entry<?, ?> entry : m.entrySet()) {
                 if (first)
                     first = false;
                 else
                     s.append(",");
 
-                appendJson(key, s);
+                appendJson(entry.getKey(), s);
                 s.append(": ");
-                appendJson(m.get(key), s);
+                appendJson(entry.getValue(), s);
             }
             s.append("}");
         } else if (o instanceof List<?>) {

@@ -97,7 +97,7 @@ public class FlatMap extends MapType {
         return rendered;
     }
 
-    public class FlatMapTile extends MapTile {
+    public static class FlatMapTile extends MapTile {
 
         public int x;
         public int y;

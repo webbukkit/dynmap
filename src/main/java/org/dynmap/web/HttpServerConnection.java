@@ -115,6 +115,8 @@ public class HttpServerConnection extends Thread {
 
     public void run() {
         try {
+            if (socket == null)
+                return;
             socket.setSoTimeout(5000);
             InputStream in = socket.getInputStream();
             BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream(), 40960);
@@ -178,8 +180,10 @@ public class HttpServerConnection extends Thread {
                     return;
                 }
 
-                if (bound > 0) {
-                    boundBody.skip(bound);
+                if (bound > 0 && boundBody.skip(bound) < bound) {
+                    Debug.debug("Incoming stream was only read partially by handler '" + handler + "'.");
+                    //socket.close();
+                    //return;
                 }
                 
                 String connection = response.fields.get("Connection");

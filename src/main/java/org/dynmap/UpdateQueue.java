@@ -58,7 +58,7 @@ public class UpdateQueue {
         return updates;
     }
 
-    public class Update {
+    public static class Update {
         public long time;
         public Object obj;
 

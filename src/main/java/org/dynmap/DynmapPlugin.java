@@ -1,8 +1,8 @@
 package org.dynmap;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -10,12 +10,12 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockDamageLevel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -39,12 +39,12 @@ import org.dynmap.Event.Listener;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.web.HttpServer;
+import org.dynmap.web.Json;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
 import org.dynmap.web.handlers.SendMessageHandler;
 import org.dynmap.web.handlers.SendMessageHandler.Message;
-import org.dynmap.web.Json;
 
 public class DynmapPlugin extends JavaPlugin {
 
@@ -79,7 +79,9 @@ public class DynmapPlugin extends JavaPlugin {
         loadDebuggers();
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
-        tilesDirectory.mkdirs();
+        if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
+            log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
+        }
 
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"));
         playerList.load();
@@ -351,9 +353,9 @@ public class DynmapPlugin extends JavaPlugin {
             fos.write(Json.stringifyJson(clientConfig).getBytes());
             fos.close();
         } catch (FileNotFoundException ex) {
-            System.out.println("FileNotFoundException : " + ex);
+            log.log(Level.SEVERE, "Exception while writing JSON-configuration-file.", ex);
         } catch (IOException ioe) {
-            System.out.println("IOException : " + ioe);
+            log.log(Level.SEVERE, "Exception while writing JSON-configuration-file.", ioe);
         }
     }
 }
