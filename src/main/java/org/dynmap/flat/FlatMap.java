@@ -18,9 +18,11 @@ import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
 
 public class FlatMap extends MapType {
+    private String prefix;
     private ColorScheme colorScheme;
 
     public FlatMap(Map<String, Object> configuration) {
+        prefix = (String)configuration.get("prefix");
         colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
     }
 
@@ -100,13 +102,14 @@ public class FlatMap extends MapType {
     }
 
     public static class FlatMapTile extends MapTile {
-
+        FlatMap map;
         public int x;
         public int y;
         public int size;
 
         public FlatMapTile(World world, FlatMap map, int x, int y, int size) {
             super(world, map);
+            this.map = map;
             this.x = x;
             this.y = y;
             this.size = size;
@@ -114,7 +117,7 @@ public class FlatMap extends MapType {
 
         @Override
         public String getFilename() {
-            return "flat_" + size + "_" + x + "_" + y + ".png";
+            return map.prefix + "_" + size + "_" + x + "_" + y + ".png";
         }
     }
 }

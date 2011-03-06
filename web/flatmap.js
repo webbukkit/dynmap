@@ -11,17 +11,19 @@ FlatProjection.prototype = {
 		}
 };
 
-function FlatMapType(configuration) { $.extend(this, configuration); }
+function FlatMapType(configuration) {
+	$.extend(this, configuration); }
 FlatMapType.prototype = $.extend(new DynMapType(), {
 	constructor: FlatMapType,
 	projection: new FlatProjection(),
 	tileSize: new google.maps.Size(128.0, 128.0),
 	minZoom: 0,
 	maxZoom: 0,
+	prefix: null,
 	getTile: function(coord, zoom, doc) {
 		var tileName;
 		var tile = $('<img/>')
-			.attr('src', this.dynmap.getTileUrl(tileName = 'flat_128_' + coord.x + '_' + coord.y + '.png'))
+			.attr('src', this.dynmap.getTileUrl(tileName = this.prefix + '_128_' + coord.x + '_' + coord.y + '.png'))
 			.error(function() { tile.hide(); })
 			.bind('load', function() { tile.show(); })
 			.css({
