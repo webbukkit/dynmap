@@ -184,16 +184,8 @@ public class DynmapPlugin extends JavaPlugin {
                 public void onBlockBreak(BlockBreakEvent event) {
                     mm.touch(event.getBlock().getLocation());
                 }
-
-                @Override
-                public void onBlockDamage(BlockDamageEvent event) {
-                    if (event.getDamageLevel() == BlockDamageLevel.BROKEN) {
-                        mm.touch(event.getBlock().getLocation());
-                    }
-                }
             };
             if (isTrigger("blockplaced")) pm.registerEvent(Event.Type.BLOCK_PLACED, renderTrigger, Priority.Monitor, this);
-            if (isTrigger("blockbroken")) pm.registerEvent(Event.Type.BLOCK_DAMAGED, renderTrigger, Priority.Monitor, this);
             if (isTrigger("blockbreak")) pm.registerEvent(Event.Type.BLOCK_BREAK, renderTrigger, Priority.Monitor, this);
         }
         {
