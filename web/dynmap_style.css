@@ -2,23 +2,6 @@
  * Page setup
  */
 
-html {
-    height: 100%
-}
-
-body {
-    height: 100%;
-
-    font-family: sans-serif;
-    font-size: 11px;
-
-    color: #fff;
-    background: #000;
-
-    margin: 0px;
-    padding: 0px ;
-}
-
 .dynmap .map .tile img, img {
     image-rendering: -moz-crisp-edges;
     -ms-interpolation-mode: nearest-neighbor;
@@ -540,7 +523,3 @@ body {
 	top: -3px;
 	left: 0px;
 }
-
-/* Chat Balloons */
-
-#content { color: #000; }
