@@ -44,6 +44,8 @@ function DynMap(options) {
 	$.getJSON(me.options.updateUrl + 'configuration', function(configuration) {
 		me.configure(configuration);
 		me.initialize();
+	}, function(status, statusMessage) {
+		alert('Could not retrieve configuration: ' + statusMessage);
 	});
 }
 DynMap.prototype = {
@@ -156,7 +158,7 @@ DynMap.prototype = {
 					.append($('<a/>')
 							.attr({ title: map.title, href: '#' })
 							.addClass('maptype')
-							.css({ backgroundImage: 'url(' + (map.icon || 'block_' + map.name + '.png') + ')' })
+							.css({ backgroundImage: 'url(' + (map.icon || 'images/block_' + map.name + '.png') + ')' })
 							.text(map.title)
 							)
 					.click(function() {
@@ -208,7 +210,7 @@ DynMap.prototype = {
 					value: ''
 				})
 				.keydown(function(event) {
-					if (event.keyCode === '13') {
+					if (event.keyCode == '13') {
 						event.preventDefault();
 						sendChat(chatinput.val());
 						chatinput.val('');
@@ -232,6 +234,7 @@ DynMap.prototype = {
 		
 		var alertbox = me.alertbox = $('<div/>')
 			.addClass('alertbox')
+			.hide()
 			.appendTo(container);
 		
 		me.selectMap(me.defaultworld.defaultmap);
@@ -333,9 +336,9 @@ DynMap.prototype = {
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
 				setTimeout(function() { me.update(); }, me.options.updaterate);
-			}, function(request, statusText, ex) {
+			}, function(status, statusText, request) {
 				me.alertbox
-					.text('Could not update map')
+					.text('Could not update map: ' + (statusText || 'Could not connect to server'))
 					.show();
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}
@@ -488,7 +491,7 @@ DynMap.prototype = {
 				.addClass('Marker')
 				.addClass('playerMarker')
 				.append(playerImage = $('<img/>')
-						.attr({ src: 'player.png' }))
+						.attr({ src: 'images/player.png' }))
 				.append($('<span/>')
 					.addClass('playerName')
 					.text(player.name));
@@ -509,7 +512,7 @@ DynMap.prototype = {
 			.addClass('player')
 			.append(playerIconContainer = $('<span/>')
 					.addClass('playerIcon')
-					.append($('<img/>').attr({ src: 'player_face.png' }))
+					.append($('<img/>').attr({ src: 'images/player_face.png' }))
 					.attr({ title: 'Follow ' + player.name })
 					.click(function() {
 						var follow = player !== me.followingPlayer;
@@ -523,7 +526,10 @@ DynMap.prototype = {
 						})
 					.text(player.name)
 					)
-			.click(function(e) { me.panTo(player.location); })
+			.click(function(e) {
+				me.followPlayer(null);
+				me.panTo(player.location);
+			})
 			.appendTo(me.playerlist);
 		if (me.options.showplayerfacesinmenu) {
 			getMinecraftHead(player.name, 16, function(head) {

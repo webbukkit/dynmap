@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import org.dynmap.web.HttpField;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 
@@ -26,7 +27,7 @@ public class FilesystemHandler extends FileHandler {
             } catch (FileNotFoundException e) {
                 return null;
             }
-            response.fields.put("Content-Length", Long.toString(file.length()));
+            response.fields.put(HttpField.ContentLength, Long.toString(file.length()));
             return result;
         }
         return null;

@@ -8,8 +8,7 @@ import java.util.Map;
 public class HttpResponse {
     private HttpServerConnection connection;
     public String version = "1.1";
-    public int statusCode = 200;
-    public String statusMessage = "OK";
+    public HttpStatus status = null;
     public Map<String, String> fields = new HashMap<String, String>();
     
     private OutputStream body;

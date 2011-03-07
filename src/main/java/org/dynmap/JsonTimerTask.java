@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -14,6 +16,8 @@ import org.bukkit.util.config.Configuration;
 import org.dynmap.web.Json;
 
 class JsonTimerTask extends TimerTask {
+    protected static final Logger log = Logger.getLogger("Minecraft");
+    
     private final DynmapPlugin plugin;
     private Server server;
     private MapManager mapManager;
@@ -57,9 +61,9 @@ class JsonTimerTask extends TimerTask {
                 fos.write(Json.stringifyJson(update).getBytes());
                 fos.close();
             } catch (FileNotFoundException ex) {
-                System.out.println("FileNotFoundException : " + ex);
+                log.log(Level.SEVERE, "Exception while writing JSON-file.", ex);
             } catch (IOException ioe) {
-                System.out.println("IOException : " + ioe);
+                log.log(Level.SEVERE, "Exception while writing JSON-file.", ioe);
             }
         }
     }

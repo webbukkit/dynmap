@@ -39,29 +39,21 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 		var tileSize = 128;
 		var tileName;
 		var imgSize;
-		var offset = {x: 0, y: 0};
 		
 		var debugred;
 		var debugblue;
 		
 		if (zoom == 0) {
 			// Most zoomed out tiles.
-			
 			tileSize = 128;
 			imgSize = tileSize;
 			tileName = 'z' + this.prefix + '_' + (-coord.x * tileSize*2) + '_' + (coord.y * tileSize*2) + '.png';
 		} else {
 			// Other zoom levels.
 			tileSize = 128;
-			
-			// Helper functions.
-			/*var floor = Math.floor;
-			var div = function(x,y){return floor(x/y);}
-			var mod = function(x,y){return ((x%y)+y)%y;};*/
 
 			imgSize = Math.pow(2, 6+zoom);
-			var mapcoord = {x: coord.x*tileSize, y: coord.y*tileSize};
-			tileName = this.prefix + '_' + (-mapcoord.x) + '_' + mapcoord.y + '.png';
+			tileName = this.prefix + '_' + (-coord.x*tileSize) + '_' + (coord.y*tileSize) + '.png';
 		}
 		var img;
 		var tile = $('<div/>')
@@ -87,9 +79,7 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 				.css({
 					width: imgSize + 'px',
 					height: imgSize + 'px',
-					borderStyle: 'none',
-					/*marginLeft: offset.x + 'px',
-					marginTop: offset.y + 'px'*/
+					borderStyle: 'none'
 				})
 				.hide()
 				.appendTo(tile);

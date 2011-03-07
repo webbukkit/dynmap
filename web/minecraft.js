@@ -34,7 +34,7 @@ function createMinecraftHead(player,completed,failed) {
 			skinImage.src = 'http://www.minecraft.net/img/char.png';
 		}
 	};
-	skinImage.src = 'http://www.minecraft.net/skin/' + player + '.png';
+	skinImage.src = 'http://s3.amazonaws.com/MinecraftSkins/' + player + '.png';
 }
 
 function resizeImage(img,size) {

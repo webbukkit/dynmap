@@ -95,9 +95,9 @@ public class HttpServerConnection extends Thread {
         out.append("HTTP/");
         out.append(response.version);
         out.append(" ");
-        out.append(String.valueOf(response.statusCode));
+        out.append(String.valueOf(response.status.getCode()));
         out.append(" ");
-        out.append(response.statusMessage);
+        out.append(response.status.getText());
         out.append("\r\n");
         for (Entry<String, String> field : response.fields.entrySet()) {
             out.append(field.getKey());
@@ -115,6 +115,8 @@ public class HttpServerConnection extends Thread {
 
     public void run() {
         try {
+            if (socket == null)
+                return;
             socket.setSoTimeout(5000);
             InputStream in = socket.getInputStream();
             BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream(), 40960);
@@ -131,7 +133,7 @@ public class HttpServerConnection extends Thread {
                 long bound = -1;
                 BoundInputStream boundBody = null;
                 {
-                    String contentLengthStr = request.fields.get(HttpField.contentLength);
+                    String contentLengthStr = request.fields.get(HttpField.ContentLength);
                     if (contentLengthStr != null) {
                         try {
                             bound = Long.parseLong(contentLengthStr);
@@ -178,8 +180,10 @@ public class HttpServerConnection extends Thread {
                     return;
                 }
 
-                if (bound > 0) {
-                    boundBody.skip(bound);
+                if (bound > 0 && boundBody.skip(bound) < bound) {
+                    Debug.debug("Incoming stream was only read partially by handler '" + handler + "'.");
+                    //socket.close();
+                    //return;
                 }
                 
                 String connection = response.fields.get("Connection");

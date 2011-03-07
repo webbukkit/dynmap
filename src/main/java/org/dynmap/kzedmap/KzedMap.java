@@ -1,15 +1,10 @@
 package org.dynmap.kzedmap;
 
-import java.awt.Color;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -38,15 +33,10 @@ public class KzedMap extends MapType {
     public static final int anchory = 127;
     public static final int anchorz = 0;
 
-    public static java.util.Map<Integer, Color[]> colors;
     MapTileRenderer[] renderers;
     ZoomedTileRenderer zoomrenderer;
 
     public KzedMap(Map<String, Object> configuration) {
-        if (colors == null) {
-            colors = loadColorSet("colors.txt");
-        }
-
         renderers = loadRenderers(configuration);
         zoomrenderer = new ZoomedTileRenderer(configuration);
     }
@@ -222,55 +212,5 @@ public class KzedMap extends MapType {
         // return y - (zTileHeight + (y % zTileHeight));
         else
             return y - (y % zTileHeight);
-    }
-
-    public java.util.Map<Integer, Color[]> loadColorSet(String colorsetpath) {
-        java.util.Map<Integer, Color[]> colors = new HashMap<Integer, Color[]>();
-
-        InputStream stream;
-
-        try {
-            /* load colorset */
-            File cfile = new File(colorsetpath);
-            if (cfile.isFile()) {
-                Debug.debug("Loading colors from '" + colorsetpath + "'...");
-                stream = new FileInputStream(cfile);
-            } else {
-                Debug.debug("Loading colors from jar...");
-                stream = KzedMap.class.getResourceAsStream("/colors.txt");
-            }
-
-            Scanner scanner = new Scanner(stream);
-            int nc = 0;
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (line.startsWith("#") || line.equals("")) {
-                    continue;
-                }
-
-                String[] split = line.split("\t");
-                if (split.length < 17) {
-                    continue;
-                }
-
-                Integer id = new Integer(split[0]);
-
-                Color[] c = new Color[4];
-
-                /* store colors by raycast sequence number */
-                c[0] = new Color(Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]));
-                c[3] = new Color(Integer.parseInt(split[5]), Integer.parseInt(split[6]), Integer.parseInt(split[7]), Integer.parseInt(split[8]));
-                c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
-                c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
-
-                colors.put(id, c);
-                nc += 1;
-            }
-            scanner.close();
-        } catch (Exception e) {
-            Debug.error("Could not load colors", e);
-            return null;
-        }
-        return colors;
     }
 }

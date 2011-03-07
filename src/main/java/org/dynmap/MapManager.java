@@ -23,7 +23,7 @@ public class MapManager {
     
     public Map<String, DynmapWorld> worlds = new HashMap<String, DynmapWorld>();
     public Map<String, DynmapWorld> inactiveworlds = new HashMap<String, DynmapWorld>();
-    
+
     /* lock for our data structures */
     public static final Object lock = new Object();
 
@@ -107,7 +107,6 @@ public class MapManager {
                     }
                 }
                 found.remove(tile);
-                System.gc();
             }
 
             // Unload remaining chunks to clean-up.
@@ -202,7 +201,9 @@ public class MapManager {
             worldTileDirectory = new File(DynmapPlugin.tilesDirectory, tile.getWorld().getName());
             worldTileDirectories.put(world, worldTileDirectory);
         }
-        worldTileDirectory.mkdirs();
+        if (!worldTileDirectory.isDirectory() && !worldTileDirectory.mkdirs()) {
+            log.warning("Could not create directory for tiles ('" + worldTileDirectory + "').");
+        }
         return new File(worldTileDirectory, tile.getFilename()); 
     }
 
