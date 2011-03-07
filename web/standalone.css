@@ -1,8 +1,7 @@
-/*******************
- * Page setup
- */
+/* Standalone Document */
 
 html {
+    width: 100%;
     height: 100%
 }
 
@@ -22,3 +21,16 @@ body {
 /* Chat Balloons */
 
 #content { color: #000; }
+
+#mcmap {
+    height: 100%;
+}
+
+.dynmap .sidebar {
+    width: 200px; /* original width 200px */
+    margin-right: -203px; /* original margin 203px, sidebar width +2xborder 1px +1px to hide */
+}
+
+.dynmap .hitbar {
+    right: 200px; /* width of sidebar */
+}
