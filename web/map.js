@@ -202,7 +202,7 @@ DynMap.prototype = {
 			var messagelist = me.messagelist = $('<div/>')
 				.addClass('messagelist')
 				.appendTo(chat);
-			if (me.options.allowchat === 'true') {
+			if (me.options.allowchat === true) {
 				var chatinput = me.chatinput = $('<input/>')
 					.addClass('chatinput')
 					.attr({
