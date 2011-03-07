@@ -202,21 +202,23 @@ DynMap.prototype = {
 			var messagelist = me.messagelist = $('<div/>')
 				.addClass('messagelist')
 				.appendTo(chat);
-			var chatinput = me.chatinput = $('<input/>')
-				.addClass('chatinput')
-				.attr({
-					id: 'chatinput',
-					type: 'text',
-					value: ''
-				})
-				.keydown(function(event) {
-					if (event.keyCode == '13') {
-						event.preventDefault();
-						sendChat(chatinput.val());
-						chatinput.val('');
-					}
-				})
-				.appendTo(chat);
+			if (me.options.allowchat === 'true') {
+				var chatinput = me.chatinput = $('<input/>')
+					.addClass('chatinput')
+					.attr({
+						id: 'chatinput',
+						type: 'text',
+						value: ''
+					})
+					.keydown(function(event) {
+						if (event.keyCode == '13') {
+							event.preventDefault();
+							sendChat(chatinput.val());
+							chatinput.val('');
+						}
+					})
+					.appendTo(chat);
+			}
 		}
 		
 		// TODO: Enable hash-links.

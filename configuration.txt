@@ -69,6 +69,7 @@ web:
     
     # showchat: modal/balloons
     showchat: modal
+    allowchat: true
     messagettl: 15000
         
     showplayerfacesonmap: true
