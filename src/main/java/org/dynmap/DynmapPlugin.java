@@ -131,9 +131,9 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer()));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
 
-        SendMessageHandler messageHandler = new SendMessageHandler();
         boolean allowchat = configuration.getBoolean("allowchat", true);
         if (allowchat == true) {
+            SendMessageHandler messageHandler = new SendMessageHandler();
 	        messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
 	            @Override
 	            public void triggered(Message t) {
