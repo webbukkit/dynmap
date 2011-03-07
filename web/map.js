@@ -195,14 +195,14 @@ DynMap.prototype = {
 			.appendTo(container);
 		
 		// The chat
-		if (me.options.showchat === 'modal') {
+		if (me.options.showchatwindow) {
 			var chat = me.chat = $('<div/>')
 				.addClass('chat')
 				.appendTo(container);
 			var messagelist = me.messagelist = $('<div/>')
 				.addClass('messagelist')
 				.appendTo(chat);
-			if (me.options.allowchat === true) {
+			if (me.options.allowwebchat) {
 				var chatinput = me.chatinput = $('<input/>')
 					.addClass('chatinput')
 					.attr({
@@ -308,30 +308,22 @@ DynMap.prototype = {
 				}
 				
 				$.each(update.updates, function(index, update) {
-					swtch(update.type, {
-						tile: function() {
-							
-							if(me.lasttimestamp <= update.timestamp || !me.options.jsonfile)
+					// Only handle updates that are actually new.
+					if(!me.options.jsonfile || me.lasttimestamp <= update.timestamp) {
+						swtch(update.type, {
+							tile: function() {
 								me.onTileUpdated(update.name);
-						},
-						chat: function() {
-							if (!me.options.showchat) {
-								return;
-							}
-							if(me.lasttimestamp <= update.timestamp  || !me.options.jsonfile)
+							},
+							chat: function() {
 								me.onPlayerChat(update.playerName, update.message);
-						},
-						webchat: function() {
-							if (!me.options.showchat) {
-								return;
-							}
-							
-							if(me.lasttimestamp <= update.timestamp  || !me.options.jsonfile)
+							},
+							webchat: function() {
 								me.onPlayerChat('[WEB]' + update.playerName, update.message);
-						}
-					}, function(type) {
-						console.log('Unknown type ', type, '!');
-					});
+							}
+						}, function(type) {
+							console.log('Unknown type ', type, '!');
+						});
+					}
 					/* remove older messages from chat*/
 					//var timestamp = event.timeStamp;
 					//var divs = $('div[rel]');
@@ -371,11 +363,9 @@ DynMap.prototype = {
 		var d = new Date();
 		var now = d.getTime();
 		var popupIndex;
-		for (popupIndex in this.chatPopups)
-		{
+		for (popupIndex in this.chatPopups) {
 			var popup = this.chatPopups[popupIndex];
-			if (now - popup.popupTime > POPUP_LIFE)
-			{
+			if (now - popup.popupTime > POPUP_LIFE) {
 				popup.infoWindow.close();
 				popup.infoWindow = null;
 				delete this.chatPopups[popupIndex];
@@ -388,9 +378,8 @@ DynMap.prototype = {
 		var map = me.map;
 		var player = me.players[playerName];
 		var playerMarker = player && player.marker;
-		if (me.options.showchat === 'balloons') {
-			if (playerMarker)
-			{
+		if (me.options.showchatballoons) {
+			if (playerMarker) {
 				var popup = chatPopups[playerName];
 				if (!popup) {
 					popup = { lines: [ message ] };
@@ -399,14 +388,12 @@ DynMap.prototype = {
 				}
 	
 				var MAX_LINES = 5;
-				if (popup.lines.length > MAX_LINES)
-				{
+				if (popup.lines.length > MAX_LINES) {
 					popup.lines = popup.lines.slice(1);
 				}
 				var htmlMessage = '<div id="content"><b>' + playerName + "</b><br/><br/>";
 				var line;
-				for (line in popup.lines)
-				{
+				for (line in popup.lines) {
 					htmlMessage = htmlMessage + popup.lines[line] + "<br/>";
 				}
 				htmlMessage = htmlMessage + "</div>";
@@ -423,7 +410,8 @@ DynMap.prototype = {
 				popup.infoWindow.open(map, playerMarker);
 				this.chatPopups[playerName] = popup;
 			}
-		} else if (me.options.showchat === 'modal') {
+		}
+		if (me.options.showchatwindow) {
 			var messagelist = me.messagelist;
 
 			var messageRow = $('<div/>')

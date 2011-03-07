@@ -4,10 +4,10 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
 
-public class DynmapPlayerListener extends PlayerListener {
+public class DynmapPlayerChatListener extends PlayerListener {
     DynmapPlugin plugin;
 
-    public DynmapPlayerListener(DynmapPlugin plugin) {
+    public DynmapPlayerChatListener(DynmapPlugin plugin) {
         this.plugin = plugin;
     }
 

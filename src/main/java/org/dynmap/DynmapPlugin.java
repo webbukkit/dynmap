@@ -16,14 +16,12 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.BlockDamageLevel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerEvent;
@@ -75,12 +73,12 @@ public class DynmapPlugin extends JavaPlugin {
 
     public void onEnable() {
         dataDirectory = this.getDataFolder();
-        
+
         configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
         configuration.load();
 
         loadDebuggers();
-        
+
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
             log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
@@ -131,18 +129,17 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer()));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
 
-        boolean allowchat = configuration.getBoolean("allowchat", true);
-        if (allowchat == true) {
+        if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
             SendMessageHandler messageHandler = new SendMessageHandler();
-	        messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
-	            @Override
-	            public void triggered(Message t) {
-	                mapManager.pushUpdate(new Client.WebChatMessage(t.name, t.message));
-	                log.info("[WEB]" + t.name + ": " + t.message);
-	                getServer().broadcastMessage("[WEB]" + t.name + ": " + t.message);
-	            }
-	        });
-	        webServer.handlers.put("/up/sendmessage", messageHandler);
+            messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
+                @Override
+                public void triggered(Message t) {
+                    mapManager.pushUpdate(new Client.WebChatMessage(t.name, t.message));
+                    log.info("[WEB]" + t.name + ": " + t.message);
+                    getServer().broadcastMessage("[WEB]" + t.name + ": " + t.message);
+                }
+            });
+            webServer.handlers.put("/up/sendmessage", messageHandler);
         }
 
         try {
@@ -170,11 +167,11 @@ public class DynmapPlugin extends JavaPlugin {
     public boolean isTrigger(String s) {
         return enabledTriggers.contains(s);
     }
-    
+
     public void registerEvents() {
         final PluginManager pm = getServer().getPluginManager();
         final MapManager mm = mapManager;
-        
+
         // To trigger rendering.
         {
             BlockListener renderTrigger = new BlockListener() {
@@ -188,8 +185,10 @@ public class DynmapPlugin extends JavaPlugin {
                     mm.touch(event.getBlock().getLocation());
                 }
             };
-            if (isTrigger("blockplaced")) pm.registerEvent(Event.Type.BLOCK_PLACED, renderTrigger, Priority.Monitor, this);
-            if (isTrigger("blockbreak")) pm.registerEvent(Event.Type.BLOCK_BREAK, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("blockplaced"))
+                pm.registerEvent(Event.Type.BLOCK_PLACED, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("blockbreak"))
+                pm.registerEvent(Event.Type.BLOCK_BREAK, renderTrigger, Priority.Monitor, this);
         }
         {
             PlayerListener renderTrigger = new PlayerListener() {
@@ -197,13 +196,16 @@ public class DynmapPlugin extends JavaPlugin {
                 public void onPlayerJoin(PlayerEvent event) {
                     mm.touch(event.getPlayer().getLocation());
                 }
+
                 @Override
                 public void onPlayerMove(PlayerMoveEvent event) {
                     mm.touch(event.getPlayer().getLocation());
                 }
             };
-            if (isTrigger("playerjoin")) pm.registerEvent(Event.Type.PLAYER_JOIN, renderTrigger, Priority.Monitor, this);
-            if (isTrigger("playermove")) pm.registerEvent(Event.Type.PLAYER_MOVE, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("playerjoin"))
+                pm.registerEvent(Event.Type.PLAYER_JOIN, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("playermove"))
+                pm.registerEvent(Event.Type.PLAYER_MOVE, renderTrigger, Priority.Monitor, this);
         }
         {
             WorldListener renderTrigger = new WorldListener() {
@@ -213,18 +215,30 @@ public class DynmapPlugin extends JavaPlugin {
                     int z = event.getChunk().getZ() * 16 + 8;
                     mm.touch(new Location(event.getWorld(), x, 127, z));
                 }
-                
-                /*@Override
-                public void onChunkGenerated(ChunkLoadEvent event) {
-                    int x = event.getChunk().getX() * 16 + 8;
-                    int z = event.getChunk().getZ() * 16 + 8;
-                    mm.touch(new Location(event.getWorld(), x, 127, z));
-                }*/
+
+                /*
+                 * @Override public void onChunkGenerated(ChunkLoadEvent event)
+                 * { int x = event.getChunk().getX() * 16 + 8; int z =
+                 * event.getChunk().getZ() * 16 + 8; mm.touch(new
+                 * Location(event.getWorld(), x, 127, z)); }
+                 */
             };
-            if (isTrigger("chunkloaded")) pm.registerEvent(Event.Type.CHUNK_LOADED, renderTrigger, Priority.Monitor, this);
+            if (isTrigger("chunkloaded"))
+                pm.registerEvent(Event.Type.CHUNK_LOADED, renderTrigger, Priority.Monitor, this);
             //if (isTrigger("chunkgenerated")) pm.registerEvent(Event.Type.CHUNK_GENERATED, renderTrigger, Priority.Monitor, this);
         }
-        
+
+        // To announce when players have joined/quit/chatted.
+        if (configuration.getNode("web").getBoolean("showchatballoons", false) || configuration.getNode("web").getBoolean("showchatwindow", false)) {
+            // To handle webchat.
+            PlayerListener playerListener = new DynmapPlayerChatListener(this);
+            //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
+            pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Monitor, this);
+            pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Monitor, this);
+            pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
+            pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
+        }
+
         // To link configuration to real loaded worlds.
         WorldListener worldListener = new WorldListener() {
             @Override
@@ -233,15 +247,6 @@ public class DynmapPlugin extends JavaPlugin {
             }
         };
         pm.registerEvent(Event.Type.WORLD_LOADED, worldListener, Priority.Monitor, this);
-
-        // To handle webchat.
-        PlayerListener playerListener = new DynmapPlayerListener(this);
-        //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
-        pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Monitor, this);
-        pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Monitor, this);
-        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
-        pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
-
     }
 
     private static File combinePaths(File parent, String path) {
