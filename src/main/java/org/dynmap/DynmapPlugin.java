@@ -323,7 +323,7 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             } else if (args[0].equals("fullrender")) {
                 if (player == null || player.isOp()) {
-                    if (args.length > 2) {
+                    if (args.length > 1) {
                         for (int i = 1; i < args.length; i++) {
                             World w = getServer().getWorld(args[i]);
                             mapManager.renderFullWorld(new Location(w, 0, 0, 0));
