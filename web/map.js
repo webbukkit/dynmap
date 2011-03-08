@@ -517,7 +517,9 @@ DynMap.prototype = {
 					.text(player.name)
 					)
 			.click(function(e) {
-				me.followPlayer(null);
+				if (me.followingPlayer !== player) {
+					me.followPlayer(null);
+				}
 				me.panTo(player.location);
 			})
 			.appendTo(me.playerlist);
