@@ -133,7 +133,6 @@
     top: 0px;
     right: 0px;
 
-    width: 200px;
     height: 100%;
 
     background: rgb(0,0,0); /* FU IE */
@@ -141,8 +140,6 @@
     color: #fff;
 
     border-left: 1px solid rgba(0,0,0,0.5);
-
-    margin-right: -203px;
 
     -moz-transition: all 0.6s ease-in-out;
     -webkit-transition: all 0.6s ease-in-out;
@@ -154,10 +151,9 @@
 .dynmap .hitbar {
 
     display: block;
-    position: fixed;
+    position: absolute;
     z-index: 110;
 
-    right: 0px;
     top: 0px;
 
     height: 100%;
