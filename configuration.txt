@@ -67,13 +67,16 @@ web:
     # Interval the browser should poll for updates.
     updaterate: 2000
     
-    # showchat: modal/balloons
-    showchat: modal
+    showchatballoons: false
+    focuschatballoons: false
+    
+    showchatwindow: true
+    allowwebchat: true 
     messagettl: 15000
         
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
-    focuschatballoons: false
+    
     joinmessage: "%playername% joined"
     quitmessage: "%playername% quit"
     
