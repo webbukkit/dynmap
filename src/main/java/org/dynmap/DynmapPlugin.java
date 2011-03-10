@@ -134,9 +134,7 @@ public class DynmapPlugin extends JavaPlugin {
             messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                 @Override
                 public void triggered(Message t) {
-                    mapManager.pushUpdate(new Client.WebChatMessage(t.name, t.message));
-                    log.info("[WEB]" + t.name + ": " + t.message);
-                    getServer().broadcastMessage("[WEB]" + t.name + ": " + t.message);
+                    webChat(t.name, t.message);
                 }
             });
             webServer.handlers.put("/up/sendmessage", messageHandler);
@@ -345,7 +343,7 @@ public class DynmapPlugin extends JavaPlugin {
     private void jsonConfig() {
         File outputFile;
         Map<?, ?> clientConfig = (Map<?, ?>) configuration.getProperty("web");
-        File webpath = new File(configuration.getString("webpath", "web"), "dynmap_config.json");
+        File webpath = new File(configuration.getString("webpath", "web"), "standalone/dynmap_config.json");
         if (webpath.isAbsolute())
             outputFile = webpath;
         else
@@ -360,5 +358,12 @@ public class DynmapPlugin extends JavaPlugin {
         } catch (IOException ioe) {
             log.log(Level.SEVERE, "Exception while writing JSON-configuration-file.", ioe);
         }
+    }
+    
+    public void webChat(String name, String message)
+    {
+        mapManager.pushUpdate(new Client.WebChatMessage(name, message));
+        log.info("[WEB]" + name + ": " + message);
+        getServer().broadcastMessage("[WEB]" + name + ": " + message);
     }
 }

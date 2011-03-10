@@ -213,7 +213,7 @@ DynMap.prototype = {
 					.keydown(function(event) {
 						if (event.keyCode == '13') {
 							event.preventDefault();
-							sendChat(chatinput.val());
+							sendChat(me, chatinput.val());
 							chatinput.val('');
 						}
 					})
@@ -329,6 +329,7 @@ DynMap.prototype = {
 					//var divs = $('div[rel]');
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
+				me.lasttimestamp = update.timestamp;
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}, function(status, statusText, request) {
 				me.alertbox
