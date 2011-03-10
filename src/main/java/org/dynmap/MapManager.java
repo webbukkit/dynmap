@@ -161,16 +161,19 @@ public class MapManager {
         return result;
     }
     
-    public void touch(Location l) {
+    public int touch(Location l) {
         DynmapWorld world = worlds.get(l.getWorld().getName());
         if (world == null)
-            return;
+            return 0;
+        int invalidates = 0;
         for (int i = 0; i < world.maps.size(); i++) {
             MapTile[] tiles = world.maps.get(i).getTiles(l);
             for (int j = 0; j < tiles.length; j++) {
                 invalidateTile(tiles[j]);
+                invalidates++;
             }
         }
+        return invalidates;
     }
 
     public void invalidateTile(MapTile tile) {

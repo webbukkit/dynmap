@@ -292,7 +292,8 @@ public class DynmapPlugin extends JavaPlugin {
         if (args.length > 0) {
             if (args[0].equals("render")) {
                 if (sender instanceof Player) {
-                    mapManager.touch(((Player) sender).getLocation());
+                    int invalidates = mapManager.touch(((Player) sender).getLocation());
+                    sender.sendMessage("Queued " + invalidates + " tiles" + (invalidates == 0 ? " (world is not loaded?)" : "..."));
                     return true;
                 }
             } else if (args[0].equals("hide")) {
