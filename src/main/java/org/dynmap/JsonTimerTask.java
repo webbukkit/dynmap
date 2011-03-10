@@ -15,7 +15,6 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
-import org.dynmap.Event;
 import org.dynmap.web.Json;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,7 +23,7 @@ import org.json.simple.parser.ParseException;
 
 class JsonTimerTask extends TimerTask {
     protected static final Logger log = Logger.getLogger("Minecraft");
-    
+
     private final DynmapPlugin plugin;
     private Server server;
     private MapManager mapManager;
@@ -45,33 +44,30 @@ class JsonTimerTask extends TimerTask {
         File outputFile;
 
         //Handles Reading WebChat
-        if(configuration.getNode("web").getBoolean("allowwebchat", false))
-        {
+        if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
             File webChatPath = new File(this.configuration.getString("webpath", "web"), "standalone/dynmap_webchat.json");
             if (webChatPath.isAbsolute())
                 outputFile = webChatPath;
             else {
                 outputFile = new File(plugin.getDataFolder(), webChatPath.toString());
             }
-            if(webChatPath.exists() && lastTimestamp != 0)
-            {
+            if (webChatPath.exists() && lastTimestamp != 0) {
                 JSONArray jsonMsgs = null;
                 try {
                     FileReader inputFileReader = new FileReader(webChatPath);
                     jsonMsgs = (JSONArray) parser.parse(inputFileReader);
                     inputFileReader.close();
-                } catch(IOException ex){
+                } catch (IOException ex) {
                     log.log(Level.SEVERE, "Exception while reading JSON-file.", ex);
-                } catch(ParseException ex) {
+                } catch (ParseException ex) {
                     log.log(Level.SEVERE, "Exception while parsing JSON-file.", ex);
                 }
 
-                if(jsonMsgs != null) {
+                if (jsonMsgs != null) {
                     Iterator iter = jsonMsgs.iterator();
-                    while(iter.hasNext()) {
-                        JSONObject o = (JSONObject)iter.next();
-                        if(Long.parseLong(String.valueOf(o.get("timestamp"))) >= (lastTimestamp))
-                        {
+                    while (iter.hasNext()) {
+                        JSONObject o = (JSONObject) iter.next();
+                        if (Long.parseLong(String.valueOf(o.get("timestamp"))) >= (lastTimestamp)) {
                             plugin.webChat(String.valueOf(o.get("name")), String.valueOf(o.get("message")));
                         }
                     }

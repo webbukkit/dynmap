@@ -3,7 +3,6 @@ package org.dynmap.web;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.security.KeyStore.Entry;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;

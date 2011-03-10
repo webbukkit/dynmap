@@ -1,7 +1,6 @@
 package org.dynmap.flat;
 
 import java.awt.Color;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -23,8 +22,8 @@ public class FlatMap extends MapType {
     private ColorScheme colorScheme;
 
     public FlatMap(Map<String, Object> configuration) {
-        prefix = (String)configuration.get("prefix");
-        colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
+        prefix = (String) configuration.get("prefix");
+        colorScheme = ColorScheme.getScheme((String) configuration.get("colorscheme"));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class FlatMap extends MapType {
         boolean rendered = false;
         BufferedImage im = new BufferedImage(t.size, t.size, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = im.getRaster();
-        
+
         float[] hsb = new float[4];
         int[] pixel = new int[4];
 
@@ -87,25 +86,24 @@ public class FlatMap extends MapType {
                 Color c = colors[0];
                 if (c == null)
                     continue;
-                
-                
+
                 Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb);
-                
+
                 float normalheight = 64;
                 float below = Math.min(my, normalheight) / normalheight;
-                float above = 1.0f - Math.max(0, my - normalheight) / (128 - normalheight); 
-                
+                float above = 1.0f - Math.max(0, my - normalheight) / (128 - normalheight);
+
                 // Saturation will be changed when going higher.
                 hsb[1] *= above;
-                
+
                 // Brightness will change when going lower
                 hsb[2] *= below;
-                
+
                 int rgb = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
-                pixel[0] = (rgb&0xff0000) >> 16;
-                pixel[1] = (rgb&0x00ff00) >> 8;
-                pixel[2] = (rgb&0x0000ff)/* >> 0*/;
-                
+                pixel[0] = (rgb & 0xff0000) >> 16;
+                pixel[1] = (rgb & 0x00ff00) >> 8;
+                pixel[2] = (rgb & 0x0000ff)/* >> 0 */;
+
                 raster.setPixel(x, y, pixel);
                 rendered = true;
             }
