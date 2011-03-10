@@ -1,4 +1,4 @@
-function sendChat(message) {
+function sendChat(me, message) {
 	var ip;
 	$.ajax({
 		type: "GET",
@@ -13,6 +13,8 @@ function sendChat(message) {
 					dataType: 'json',
 					success: function(response) {
 						//handle response
+						if(response)
+							me.onPlayerChat('', response);
 				}
 			});
 		}
