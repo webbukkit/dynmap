@@ -76,8 +76,9 @@ public class AsynchronousQueue<T> {
 
             log.info("Stopping map renderer...");
 
+            oldThread.interrupt();
             try {
-                oldThread.join();
+                oldThread.join(1000);
             } catch (InterruptedException e) {
                 log.info("Waiting for map renderer to stop is interrupted");
             }
@@ -99,10 +100,12 @@ public class AsynchronousQueue<T> {
         }
     }
 
-    private void sleep(int time) {
+    private boolean sleep(int time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
+            return false;
         }
+        return true;
     }
 }
