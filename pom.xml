@@ -36,6 +36,13 @@
       	</plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>com.nijikokun.bukkit.Permissions.Permissions</groupId>
+      <artifactId>Permissions</artifactId>
+      <version>2.1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/../Permissions.jar</systemPath>
+    </dependency>
   	<dependency>
   	  <groupId>org.bukkit</groupId>
   	  <artifactId>bukkit</artifactId>
