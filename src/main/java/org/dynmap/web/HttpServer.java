@@ -14,7 +14,7 @@ public class HttpServer extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
     private ServerSocket sock = null;
-    private boolean running = false;
+    private Thread listeningThread;
 
     private InetAddress bindAddress;
     private int port;
@@ -28,14 +28,14 @@ public class HttpServer extends Thread {
 
     public void startServer() throws IOException {
         sock = new ServerSocket(port, 5, bindAddress);
-        running = true;
+        listeningThread = this;
         start();
         log.info("Dynmap WebServer started on " + bindAddress + ":" + port);
     }
 
     public void run() {
         try {
-            while (running) {
+            while (listeningThread == Thread.currentThread()) {
                 try {
                     Socket socket = sock.accept();
                     HttpServerConnection requestThread = new HttpServerConnection(socket, this);
@@ -45,20 +45,21 @@ public class HttpServer extends Thread {
                     break;
                 }
             }
-            log.info("map WebServer run() exiting");
+            log.info("Webserver shut down.");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Exception on WebServer-thread", ex);
         }
     }
 
     public void shutdown() {
+        log.info("Shutting down webserver...");
         try {
             if (sock != null) {
                 sock.close();
             }
         } catch (IOException e) {
-            log.info("map stop() got IOException while closing socket");
+            log.log(Level.INFO, "Exception while closing socket for webserver shutdown", e);
         }
-        running = false;
+        listeningThread = null;
     }
 }
