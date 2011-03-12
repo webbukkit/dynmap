@@ -1,6 +1,7 @@
 package org.dynmap.web.handlers;
 
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
@@ -32,8 +33,15 @@ public class ClientConfigurationHandler implements HttpHandler {
         response.fields.put("Content-Length", Integer.toString(cachedConfiguration.length));
         response.status = HttpStatus.OK;
         
-        BufferedOutputStream out = new BufferedOutputStream(response.getBody());
-        out.write(cachedConfiguration);
-        out.flush();
+        BufferedOutputStream out = null;
+        try {
+            out = new BufferedOutputStream(response.getBody());
+            out.write(cachedConfiguration);
+            out.flush();
+        }
+        finally 
+        {
+            out.close();
+        }
     }
 }
