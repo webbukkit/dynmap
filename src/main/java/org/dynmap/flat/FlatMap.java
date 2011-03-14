@@ -71,7 +71,6 @@ public class FlatMap extends MapType {
         BufferedImage im = new BufferedImage(t.size, t.size, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = im.getRaster();
 
-        float[] hsb = new float[4];
         int[] pixel = new int[4];
 
         for (int x = 0; x < t.size; x++)
@@ -87,23 +86,37 @@ public class FlatMap extends MapType {
                 if (c == null)
                     continue;
 
-                Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb);
+                boolean below = my < 64;
+                
+                // Make height range from 0 - 1 (1 - 0 for below and 0 - 1 above)
+                float height = (below ? 64 - my : my - 64) / 64.0f;
+                
+                // Defines the 'step' in coloring.
+                float step = 10 / 128.0f;
 
-                float normalheight = 64;
-                float below = Math.min(my, normalheight) / normalheight;
-                float above = 1.0f - Math.max(0, my - normalheight) / (128 - normalheight);
+                // The step applied to height.
+                float scale = ((int)(height/step))*step;
 
-                // Saturation will be changed when going higher.
-                hsb[1] *= above;
-
-                // Brightness will change when going lower
-                hsb[2] *= below;
-
-                int rgb = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
-                pixel[0] = (rgb & 0xff0000) >> 16;
-                pixel[1] = (rgb & 0x00ff00) >> 8;
-                pixel[2] = (rgb & 0x0000ff)/* >> 0 */;
-
+                // Make the smaller values change the color (slightly) more than the higher values.
+                scale = (float)Math.pow(scale, 1.1f);
+                
+                // Don't let the color go fully white or fully black.
+                scale *= 0.8f;
+                
+                pixel[0] = c.getRed();
+                pixel[1] = c.getGreen();
+                pixel[2] = c.getBlue();
+                
+                if (below) {
+                    pixel[0] -= pixel[0] * scale;
+                    pixel[1] -= pixel[1] * scale;
+                    pixel[2] -= pixel[2] * scale;
+                } else {
+                    pixel[0] += (255-pixel[0]) * scale;
+                    pixel[1] += (255-pixel[1]) * scale;
+                    pixel[2] += (255-pixel[2]) * scale;
+                }
+                
                 raster.setPixel(x, y, pixel);
                 rendered = true;
             }
