@@ -33,14 +33,8 @@ public class ClientConfigurationHandler implements HttpHandler {
         response.status = HttpStatus.OK;
         
         BufferedOutputStream out = null;
-        try {
-            out = new BufferedOutputStream(response.getBody());
-            out.write(cachedConfiguration);
-            out.flush();
-        }
-        finally 
-        {
-            out.close();
-        }
+        out = new BufferedOutputStream(response.getBody());
+        out.write(cachedConfiguration);
+        out.flush();
     }
 }

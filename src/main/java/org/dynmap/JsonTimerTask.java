@@ -64,7 +64,7 @@ class JsonTimerTask extends TimerTask {
                 }
 
                 if (jsonMsgs != null) {
-                    Iterator iter = jsonMsgs.iterator();
+                    Iterator<?> iter = jsonMsgs.iterator();
                     while (iter.hasNext()) {
                         JSONObject o = (JSONObject) iter.next();
                         if (Long.parseLong(String.valueOf(o.get("timestamp"))) >= (lastTimestamp)) {

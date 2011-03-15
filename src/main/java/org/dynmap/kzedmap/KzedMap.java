@@ -144,7 +144,7 @@ public class KzedMap extends MapType {
             KzedMapTile t = (KzedMapTile) tile;
             
             int ix = KzedMap.anchorx + t.px / 2 + t.py / 2;
-            int iy = 127;
+            //int iy = 127;
             int iz = KzedMap.anchorz + t.px / 2 - t.py / 2;
             
             int x1 = ix - KzedMap.tileHeight / 2;
