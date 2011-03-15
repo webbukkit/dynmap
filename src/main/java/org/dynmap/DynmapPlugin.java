@@ -77,6 +77,10 @@ public class DynmapPlugin extends JavaPlugin {
         return webServer;
     }
 
+    @Override
+    public void onLoad() {
+    }
+    
     public void onEnable() {
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
