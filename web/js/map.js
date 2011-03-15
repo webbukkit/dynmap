@@ -449,7 +449,7 @@ DynMap.prototype = {
 
 			messageRow.append(playerIconContainer,playerNameContainer,playerMessageContainer);
 			//messageRow.append(playerIconContainer,playerWorldContainer,playerGroupContainer,playerNameContainer,playerMessageContainer);
-			setTimeout(function() { messageRow.remove(); }, me.options.messagettl);
+			setTimeout(function() { messageRow.remove(); }, (me.options.messagettl * 1000));
 			messagelist.append(messageRow);
 			
 			me.messagelist.show();

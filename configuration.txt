@@ -72,8 +72,8 @@ web:
     
     showchatwindow: true
     allowwebchat: true
-    webchat-interval: 1000
-    messagettl: 15000
+    webchat-interval: 5
+    messagettl: 15
         
     showplayerfacesonmap: true
     showplayerfacesinmenu: true
