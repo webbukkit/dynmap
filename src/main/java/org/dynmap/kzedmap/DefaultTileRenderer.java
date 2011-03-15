@@ -14,7 +14,7 @@ import org.dynmap.ColorScheme;
 import org.dynmap.debug.Debug;
 
 public class DefaultTileRenderer implements MapTileRenderer {
-    protected static Color translucent = new Color(0, 0, 0, 0);
+    protected static final Color translucent = new Color(0, 0, 0, 0);
     private String name;
     protected int maximumHeight = 127;
     private ColorScheme colorScheme;
