@@ -71,7 +71,8 @@ web:
     focuschatballoons: false
     
     showchatwindow: true
-    allowwebchat: true 
+    allowwebchat: true
+    webchat-interval: 1000
     messagettl: 15000
         
     showplayerfacesonmap: true

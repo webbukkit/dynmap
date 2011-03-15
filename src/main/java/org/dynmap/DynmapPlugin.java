@@ -144,13 +144,16 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
 
         if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
-            SendMessageHandler messageHandler = new SendMessageHandler();
-            messageHandler.onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
-                @Override
-                public void triggered(Message t) {
-                    webChat(t.name, t.message);
-                }
-            });
+            SendMessageHandler messageHandler = new SendMessageHandler() {{
+                maximumMessageInterval = configuration.getNode("web").getInt("webchat-interval", 1000);
+                onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
+                    @Override
+                    public void triggered(Message t) {
+                        webChat(t.name, t.message);
+                    }
+                });
+            }};
+            
             webServer.handlers.put("/up/sendmessage", messageHandler);
         }
 
