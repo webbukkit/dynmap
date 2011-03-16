@@ -37,9 +37,9 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>com.nijikokun.bukkit.Permissions</groupId>
+      <groupId>com.nijikokun.bukkit</groupId>
       <artifactId>Permissions</artifactId>
-      <version>2.5.4</version>
+      <version>[2.5.4,)</version>
     </dependency>
   	<dependency>
   	  <groupId>org.bukkit</groupId>
