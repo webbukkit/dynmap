@@ -409,6 +409,61 @@
     visibility: hidden;
 }
 
+/*******************
+ * Playerlist Scrolling
+ */
+
+.panel .scrollup {
+    border: 1px solid rgba(64,64,64,0.6);
+	background: url(images/scrollup.png) rgba(32,32,32,0.6);
+
+	margin-bottom: 4px;
+}
+
+.panel .scrolldown {
+    border: 1px solid rgba(64,64,64,0.6);
+	background: url(images/scrolldown.png) rgba(32,32,32,0.6);
+
+	margin-top: 4px;
+}
+
+.panel .scrollup:hover, .panel .scrolldown:hover {
+    border: 1px solid rgba(128,128,128,0.6);
+	background: url(images/scrollup.png) rgba(64,64,64,0.6);
+}
+
+.panel .scrollup:active, .panel .scrolldown:active {
+    border: 1px solid rgba(255,255,255,0.5);
+	background: url(images/scrollup.png) rgba(128,128,128,0.5);
+}
+
+.panel .scrolldown:hover {
+    border: 1px solid rgba(128,128,128,0.6);
+	background: url(images/scrolldown.png) rgba(64,64,64,0.6);
+}
+
+.panel .scrolldown:active {
+    border: 1px solid rgba(255,255,255,0.5);
+	background: url(images/scrolldown.png) rgba(128,128,128,0.5);
+}
+
+.panel .scrollup, .panel .scrollup:active, .panel .scrollup:hover,
+.panel .scrolldown, .panel .scrolldown:active, .panel .scrolldown:hover {
+	height: 18px;
+	width: 100%;
+
+	background-repeat: no-repeat;
+	background-position: center;
+
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -o-border-radius: 2px;
+	border-radius: 2px;
+}
+
+.playerlist {
+	overflow:hidden;
+}
 
 /*******************
  * players on the map
