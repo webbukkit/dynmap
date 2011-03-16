@@ -145,7 +145,8 @@ public class DynmapPlugin extends JavaPlugin {
 
         if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
             SendMessageHandler messageHandler = new SendMessageHandler() {{
-                maximumMessageInterval = (int)(configuration.getNode("web").getDouble("webchat-interval", 1.0) * 1000);
+                maximumMessageInterval = (configuration.getNode("web").getInt("webchat-interval", 1) * 1000);
+				spamMessage = "\""+configuration.getNode("web").getString("spammessage", "You may only chat once every %interval% seconds.")+"\"";
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
                     public void triggered(Message t) {

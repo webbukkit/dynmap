@@ -1,6 +1,8 @@
 package org.dynmap.web.handlers;
 
+import java.io.BufferedOutputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,6 +25,7 @@ public class SendMessageHandler implements HttpHandler {
     public Event<Message> onMessageReceived = new Event<SendMessageHandler.Message>();
     
     public int maximumMessageInterval = 1000;
+	public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
     private LinkedList<WebUser> disallowedUserQueue = new LinkedList<WebUser>();
     private Object disallowedUsersLock = new Object();
@@ -65,9 +68,21 @@ public class SendMessageHandler implements HttpHandler {
                 disallowedUsers.put(user.name, user);
                 disallowedUserQueue.add(user);
             } else {
-                response.fields.put(HttpField.ContentLength, "0");
-                response.status = HttpStatus.Forbidden;
-                response.getBody();
+                spamMessage = spamMessage.replaceAll("%interval%", Integer.toString(maximumMessageInterval/1000));
+                byte[] stringBytes = spamMessage.getBytes();
+                String dateStr = new Date().toString();
+
+                response.fields.put("Date", dateStr);
+                response.fields.put("Content-Type", "text/plain");
+                response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
+                response.fields.put("Last-modified", dateStr);
+                response.fields.put("Content-Length", Integer.toString(stringBytes.length));
+                response.status = HttpStatus.OK;
+
+                BufferedOutputStream out = null;
+                out = new BufferedOutputStream(response.getBody());
+                out.write(stringBytes);
+                out.flush();
                 return;
             }
         }
