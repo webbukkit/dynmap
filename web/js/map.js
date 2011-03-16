@@ -213,8 +213,11 @@ DynMap.prototype = {
 					.keydown(function(event) {
 						if (event.keyCode == '13') {
 							event.preventDefault();
-							sendChat(me, chatinput.val());
-							chatinput.val('');
+							if(chatinput.val() != '')
+							{
+								sendChat(me, chatinput.val());
+								chatinput.val('');
+							}
 						}
 					})
 					.appendTo(chat);

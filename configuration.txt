@@ -80,6 +80,7 @@ web:
     
     joinmessage: "%playername% joined"
     quitmessage: "%playername% quit"
+    spammessage: "You may only chat once every %interval% seconds."
     
     defaultworld: world
     worlds:

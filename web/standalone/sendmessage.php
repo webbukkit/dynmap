@@ -1,10 +1,11 @@
 <?php
-$msginterval = 5; //In seconds - add this to dynmap web config??
-
 session_start();
+
+$config =  json_decode(file_get_contents('dynmap_config.json'), true);
+$msginterval = $config['webchat-interval'];
+
 if($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION['lastchat'] < time())
 {
-	$config =  json_decode(file_get_contents('dynmap_config.json'), true);
 	$micro = explode(' ', microtime());
 	$timestamp = $micro[1].round($micro[0]*1000);
 	
@@ -25,8 +26,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION['lastchat'] < time())
 }
 elseif($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION['lastchat'] > time())
 {
-	echo json_encode('You may only chat once every '.$msginterval.' seconds.');
+	echo json_encode(str_replace('%interval%', $msginterval, $config['spammessage']));
 }
-
 
 ?>
