@@ -3,8 +3,12 @@
   <groupId>org.dynmap</groupId>
   <artifactId>dynmap</artifactId>
   <version>0.13</version>
-  <name>DynamicMap</name>
-  <url>http://www.bukkit.org</url>
+  <name>dynmap</name>
+  <url>http://github.com/FrozenCow/dynmap/</url>
+  <issueManagement>
+  	<system>GitHub</system>
+  	<url>https://github.com/FrozenCow/dynmap/issues</url>
+  </issueManagement>
   <build>
       <plugins>
           <plugin>
