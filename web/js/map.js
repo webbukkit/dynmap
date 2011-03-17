@@ -20,6 +20,11 @@ function splitArgs(s) {
 function swtch(value, options, defaultOption) {
 	return (options[value] || defaultOption)(value);
 }
+(function( $ ){
+	$.fn.scrollHeight = function(height) {
+		return this[0].scrollHeight;
+	};
+})($);
 
 function DynMapType() { }
 DynMapType.prototype = {
@@ -217,10 +222,14 @@ DynMap.prototype = {
 			.append(downbtn)
 			.appendTo(panel);
 		
-		playerlist.height(sidebar.innerHeight() - (playerlist.offset().top - worldlist.offset().top) - 64); // here we need a fix to avoid the static value, but it works fine this way :P
-		$(window).resize(function() {
+		var updateHeight = function() {
 			playerlist.height(sidebar.innerHeight() - (playerlist.offset().top - worldlist.offset().top) - 64); // here we need a fix to avoid the static value, but it works fine this way :P
-		});
+			var scrollable = playerlist.scrollHeight() > playerlist.height();
+			upbtn.toggle(scrollable);
+			downbtn.toggle(scrollable);
+		};
+		updateHeight();
+		$(window).resize(updateHeight);
 		
 		// The Compass
 		var compass = $('<div/>')
@@ -490,7 +499,7 @@ DynMap.prototype = {
 			
 			me.messagelist.show();
 			//var scrollHeight = jQuery(me.messagelist).attr('scrollHeight');
-			var scrollHeight = me.messagelist[0].scrollHeight;
+			var scrollHeight = me.messagelist.scrollHeight();
 			messagelist.scrollTop(scrollHeight);
 		}
 	},
