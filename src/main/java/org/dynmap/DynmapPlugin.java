@@ -56,7 +56,6 @@ public class DynmapPlugin extends JavaPlugin {
     public PlayerList playerList;
     public Configuration configuration;
     public HashSet<String> enabledTriggers = new HashSet<String>();
-
     public PermissionProvider permissions;
 
     public Timer timer;
