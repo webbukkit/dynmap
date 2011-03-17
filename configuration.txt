@@ -8,8 +8,6 @@ render-triggers:
 #  - playerjoin
   - blockplaced
   - blockbreak
-#  - chunkgenerated
-#  - chunkloaded
 
 # The path where the tile-files are placed.
 tilespath: web/tiles
