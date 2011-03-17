@@ -47,7 +47,6 @@ import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
 import org.dynmap.web.handlers.SendMessageHandler;
-import org.dynmap.web.handlers.SendMessageHandler.Message;
 
 public class DynmapPlugin extends JavaPlugin {
     protected static final Logger log = Logger.getLogger("Minecraft");
