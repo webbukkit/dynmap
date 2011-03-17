@@ -182,12 +182,45 @@ DynMap.prototype = {
 			.appendTo(largeclock)
 		);
 		
+		// The scrollbuttons
+		// we need to show/hide them depending: if (me.playerlist.scrollHeight() > me.playerlist.innerHeight()) or something.
+		var upbtn = $('<div/>')
+		.addClass('scrollup')
+		.bind('mousedown mouseup', function(event){ 
+		    if(event.type == 'mousedown'){
+				playerlist.animate({"scrollTop": "-=300px"}, 3000, 'linear');
+		    }else{
+		        playerlist.stop(); 
+		    }
+		});
+		var downbtn = $('<div/>')
+		.addClass('scrolldown')
+		.bind('mousedown mouseup', function(event){ 
+		    if(event.type == 'mousedown'){ 
+				playerlist.animate({"scrollTop": "+=300px"}, 3000, 'linear');
+		    }else{ 
+		        playerlist.stop(); 
+		    }
+		});
+		
 		// The Player List
 		var playerlist;
 		$('<fieldset/>')
 			.append($('<legend/>').text('Players'))
-			.append(me.playerlist = playerlist = $('<ul/>').addClass('playerlist'))
+			.append(upbtn)
+			.append(me.playerlist = playerlist = $('<ul/>').addClass('playerlist')
+				.bind('mousewheel', function(event, delta){ 
+					this.scrollTop -= (delta * 10);
+					event.preventDefault();
+				})
+			)
+			.append(downbtn)
 			.appendTo(panel);
+		
+		playerlist.height(sidebar.innerHeight() - (playerlist.offset().top - worldlist.offset().top) - 64); // here we need a fix to avoid the static value, but it works fine this way :P
+		$(window).resize(function() {
+			playerlist.height(sidebar.innerHeight() - (playerlist.offset().top - worldlist.offset().top) - 64); // here we need a fix to avoid the static value, but it works fine this way :P
+		});
 		
 		// The Compass
 		var compass = $('<div/>')

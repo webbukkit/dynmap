@@ -418,6 +418,11 @@
 	background: url(images/scrollup.png) rgba(32,32,32,0.6);
 
 	margin-bottom: 4px;
+
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -o-border-radius: 2px;
+	border-radius: 2px;
 }
 
 .panel .scrolldown {
@@ -425,6 +430,11 @@
 	background: url(images/scrolldown.png) rgba(32,32,32,0.6);
 
 	margin-top: 4px;
+
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -o-border-radius: 2px;
+	border-radius: 2px;
 }
 
 .panel .scrollup:hover, .panel .scrolldown:hover {
@@ -454,11 +464,6 @@
 
 	background-repeat: no-repeat;
 	background-position: center;
-
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    -o-border-radius: 2px;
-	border-radius: 2px;
 }
 
 .playerlist {
