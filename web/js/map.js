@@ -499,8 +499,7 @@ DynMap.prototype = {
 			
 			me.messagelist.show();
 			//var scrollHeight = jQuery(me.messagelist).attr('scrollHeight');
-			var scrollHeight = me.messagelist.scrollHeight();
-			messagelist.scrollTop(scrollHeight);
+			me.messagelist.scrollTop(me.messagelist.scrollHeight());
 		}
 	},
 	onTileUpdated: function(tileName) {
