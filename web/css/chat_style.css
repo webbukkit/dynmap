@@ -29,7 +29,7 @@
 	color: white;
 	border: 0px;
 	background: rgba(0, 0, 0, 0.6);
-	background: url(images/chat_cursor.png) rgba(0,0,0,0.6); background-repeat: no-repeat; background-position:left;
+	background: url(../images/chat_cursor.png) rgba(0,0,0,0.6); background-repeat: no-repeat; background-position:left;
 	outline: none;
 }
 .messagelist {

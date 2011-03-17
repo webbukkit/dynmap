@@ -161,8 +161,8 @@
 
     text-align: center;
 
-    background: url(images/sidebar_hint.png) rgb(0,0,0);
-    background: url(images/sidebar_hint.png) rgba(0,0,0,0.6);
+    background: url(../images/sidebar_hint.png) rgb(0,0,0);
+    background: url(../images/sidebar_hint.png) rgba(0,0,0,0.6);
     background-repeat: no-repeat;
     background-position:center;
 
@@ -202,19 +202,19 @@
     width: 16px;
     height: 16px;
 
-    background-image: url(images/window_close.png);
+    background-image: url(../images/window_close.png);
 }
 
 .dynmap .sidebar .panel > .pin:hover {
-    background-image: url(images/window_pinned_hover.png);
+    background-image: url(../images/window_pinned_hover.png);
 }
 
 .dynmap .sidebar.pinned .panel > .pin:hover {
-    background-image: url(images/window_close_hover.png);
+    background-image: url(../images/window_close_hover.png);
 }
 
 .dynmap .sidebar.pinned .panel > .pin {
-    background-image: url(images/window_pinned.png);
+    background-image: url(../images/window_pinned.png);
 }
 
 
@@ -239,12 +239,12 @@
 }
 
 .clock.night {
-    /* background-image: url(images/clock_night.png); */
+    /* background-image: url(../images/clock_night.png); */
     color: #dff;
 }
 
 .clock.day {
-    /* background-image: url(images/clock_day.png); */
+    /* background-image: url(../images/clock_day.png); */
     color: #fd3;
 }
 
@@ -278,11 +278,11 @@
 }
 
 .timeofday.sun {
-    background-image: url(images/sun.png);
+    background-image: url(../images/sun.png);
 }
 
 .timeofday.moon {
-    background-image: url(images/moon.png);
+    background-image: url(../images/moon.png);
 }
 
 /*******************
@@ -397,11 +397,11 @@
 }
 
 .dynmap .playerlist .player:hover .playericon {
-    background: url(images/player_follow_off.png) no-repeat;
+    background: url(../images/player_follow_off.png) no-repeat;
 }
 
 .dynmap .playerlist .player.following .playericon {
-    background: url(images/player_follow_on.gif) no-repeat;
+    background: url(../images/player_follow_on.gif) no-repeat;
 }
 
 .dynmap .playerlist .player.following .playericon > *,
@@ -415,36 +415,36 @@
 
 .panel .scrollup {
     border: 1px solid rgba(64,64,64,0.6);
-	background: url(images/scrollup.png) rgba(32,32,32,0.6);
+	background: url(../images/scrollup.png) rgba(32,32,32,0.6);
 
 	margin-bottom: 4px;
 }
 
 .panel .scrolldown {
     border: 1px solid rgba(64,64,64,0.6);
-	background: url(images/scrolldown.png) rgba(32,32,32,0.6);
+	background: url(../images/scrolldown.png) rgba(32,32,32,0.6);
 
 	margin-top: 4px;
 }
 
 .panel .scrollup:hover, .panel .scrolldown:hover {
     border: 1px solid rgba(128,128,128,0.6);
-	background: url(images/scrollup.png) rgba(64,64,64,0.6);
+	background: url(../images/scrollup.png) rgba(64,64,64,0.6);
 }
 
 .panel .scrollup:active, .panel .scrolldown:active {
     border: 1px solid rgba(255,255,255,0.5);
-	background: url(images/scrollup.png) rgba(128,128,128,0.5);
+	background: url(../images/scrollup.png) rgba(128,128,128,0.5);
 }
 
 .panel .scrolldown:hover {
     border: 1px solid rgba(128,128,128,0.6);
-	background: url(images/scrolldown.png) rgba(64,64,64,0.6);
+	background: url(../images/scrolldown.png) rgba(64,64,64,0.6);
 }
 
 .panel .scrolldown:active {
     border: 1px solid rgba(255,255,255,0.5);
-	background: url(images/scrolldown.png) rgba(128,128,128,0.5);
+	background: url(../images/scrolldown.png) rgba(128,128,128,0.5);
 }
 
 .panel .scrollup, .panel .scrollup:active, .panel .scrollup:hover,
@@ -499,7 +499,7 @@
     width: 83px;
 
     background-repeat: no-repeat;
-    background-image: url(images/compass.png);
+    background-image: url(../images/compass.png);
 }
 
 /*******************
@@ -533,7 +533,7 @@
 
 	border: 0px;
 	background: rgba(0, 0, 0, 0.6);
-	background: url(images/chat_cursor.png) rgba(0,0,0,0.6);
+	background: url(../images/chat_cursor.png) rgba(0,0,0,0.6);
 	background-repeat: no-repeat;
 	background-position: 1px center;
 

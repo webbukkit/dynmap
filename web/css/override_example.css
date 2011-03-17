@@ -22,7 +22,7 @@
     height: 50px;
     width: 50px;
 
-    background-image: url(images/compass_alt.png);
+    background-image: url(../images/compass_alt.png);
 }
 
 /* These next two keep the DynMap sidebar open... */
