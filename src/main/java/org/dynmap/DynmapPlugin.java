@@ -63,10 +63,6 @@ public class DynmapPlugin extends JavaPlugin {
     public static File dataDirectory;
     public static File tilesDirectory;
 
-    public World getWorld() {
-        return getServer().getWorlds().get(0);
-    }
-
     public MapManager getMapManager() {
         return mapManager;
     }
