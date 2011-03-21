@@ -291,13 +291,24 @@ DynMap.prototype = {
 	selectMap: function(map, completed) {
 		if (!map) { throw "Cannot select map " + map; }
 		var me = this;
+		
+		if (me.maptype === map) {
+			return;
+		}
+		var worldChanged = me.world !== map.world;
 		me.map.setMapTypeId('none');
 		me.world = map.world;
 		me.maptype = map;
 		me.maptype.updateTileSize(me.map.zoom);
 		window.setTimeout(function() {
 			me.map.setMapTypeId(map.world.name + '.' + map.name);
-			if (completed) { completed(); }
+			if (completed) {
+				if (worldChanged) {
+					$(me).trigger('worldchanged');
+				}
+				$(me).trigger('mapchanged');
+				completed();
+			}
 		}, 1);
 		$('.map', me.worldlist).removeClass('selected');
 		$(map.element).addClass('selected');
@@ -323,16 +334,18 @@ DynMap.prototype = {
 		
 		// TODO: is there a better place for this?
 		this.cleanPopups();
-		
+
+		$(me).trigger('worldupdating');
 		$.getJSON(me.options.updateUrl + "world/" + me.world.name + "/" + me.lasttimestamp, function(update) {
 				me.alertbox.hide();
-			
-				if (!me.options.jsonfile)
+				
+				if (!me.options.jsonfile) {
 					me.lasttimestamp = update.timestamp;
+				}
 				
 				me.clock.setTime(update.servertime);
 				me.clockdigital.setTime(update.servertime);
-
+				
 				var newplayers = {};
 				$.each(update.players, function(index, playerUpdate) {
 					var name = playerUpdate.name;
@@ -355,6 +368,8 @@ DynMap.prototype = {
 				$.each(update.updates, function(index, update) {
 					// Only handle updates that are actually new.
 					if(!me.options.jsonfile || me.lasttimestamp <= update.timestamp) {
+						$(me).trigger('worldupdate', [ update ]);
+						
 						swtch(update.type, {
 							tile: function() {
 								me.onTileUpdated(update.name);
@@ -374,12 +389,17 @@ DynMap.prototype = {
 					//var divs = $('div[rel]');
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
+				
+				$(me).trigger('worldupdated', [ update ]);
+				
 				me.lasttimestamp = update.timestamp;
+				
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}, function(status, statusText, request) {
 				me.alertbox
 					.text('Could not update map: ' + (statusText || 'Could not connect to server'))
 					.show();
+				$(me).trigger('worldupdatefailed');
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}
 		);
@@ -517,6 +537,9 @@ DynMap.prototype = {
 				name: update.name,
 				location: new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z))
 		};
+		
+		$(me).trigger('playeradded', [ player ]);
+		
 		var location = player.location;
 		// Create the player-marker.
 		var markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
@@ -579,6 +602,8 @@ DynMap.prototype = {
 		var me = this;
 		var location = player.location = new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z));
 		
+		$(me).trigger('playerupdated', [ player ]);
+		
 		// Update the marker.
 		var markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
 		player.marker.toggle(me.world === location.world);
@@ -596,6 +621,8 @@ DynMap.prototype = {
 		var me = this;
 		
 		delete me.players[player.name];
+		
+		$(me).trigger('playerremoved', [ player ]);
 		
 		// Remove the marker.
 		player.marker.remove();
