@@ -1,8 +1,28 @@
 "use strict";
 //if (!console) console = { log: function() {} }; 
 
+var componentconstructors = {};
 var maptypes = {};
 var clocks = {};
+
+componentconstructors['testcomponent'] = function(dynmap, configuration) {
+	return {
+		dynmap: dynmap,
+		initialize: function() {
+			console.log('initialize');
+			$(dynmap).bind('worldchanged', function() { console.log('worldchanged'); });
+			$(dynmap).bind('mapchanged', function() { console.log('mapchanged'); });
+			$(dynmap).bind('zoomchanged', function() { console.log('zoomchanged'); });
+			$(dynmap).bind('worldupdating', function() { console.log('worldupdating'); });
+			$(dynmap).bind('worldupdate', function() { console.log('worldupdate'); });
+			$(dynmap).bind('worldupdated', function() { console.log('worldupdated'); });
+			$(dynmap).bind('worldupdatefailed', function() { console.log('worldupdatefailed'); });
+			$(dynmap).bind('playeradded', function() { console.log('playeradded'); });
+			$(dynmap).bind('playerremoved', function() { console.log('playerremoved'); });
+			$(dynmap).bind('playerupdated', function() { console.log('playerupdated'); });
+		}
+	};
+};
 
 function splitArgs(s) {
 	var r = s.split(' ');
@@ -54,6 +74,7 @@ function DynMap(options) {
 	});
 }
 DynMap.prototype = {
+	components: [],
 	worlds: {},
 	registeredTiles: [],
 	players: {},
@@ -107,18 +128,21 @@ DynMap.prototype = {
 		
 		map.zoom_changed = function() {
 			me.maptype.updateTileSize(me.map.zoom);
+			$(me).trigger('zoomchanged');
 		};
 
 		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 			me.followPlayer(null);
 		});
 		// TODO: Enable hash-links.
-		/*google.maps.event.addListener(map, 'zoom_changed', function() {
+		/*
+		google.maps.event.addListener(map, 'zoom_changed', function() {
 			me.updateLink();
 		});
 		google.maps.event.addListener(map, 'center_changed', function() {
 			me.updateLink();
-		});*/
+		});
+		*/
 
 		// Sidebar
 		var sidebar = me.sidebar = $('<div/>')
@@ -286,6 +310,13 @@ DynMap.prototype = {
 		
 		me.selectMap(me.defaultworld.defaultmap);
 		
+		$.each(me.options.components, function(index, configuration) {
+			me.components.push(componentconstructors[configuration.type](me, configuration));
+		});
+		$.each(me.components, function(index, component) {
+			component.initialize();
+		});
+		
 		setTimeout(function() { me.update(); }, me.options.updaterate);
 	},
 	selectMap: function(map, completed) {
@@ -302,11 +333,11 @@ DynMap.prototype = {
 		me.maptype.updateTileSize(me.map.zoom);
 		window.setTimeout(function() {
 			me.map.setMapTypeId(map.world.name + '.' + map.name);
+			if (worldChanged) {
+				$(me).trigger('worldchanged');
+			}
+			$(me).trigger('mapchanged');
 			if (completed) {
-				if (worldChanged) {
-					$(me).trigger('worldchanged');
-				}
-				$(me).trigger('mapchanged');
 				completed();
 			}
 		}, 1);

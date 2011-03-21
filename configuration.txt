@@ -80,6 +80,10 @@ web:
     quitmessage: "%playername% quit"
     spammessage: "You may only chat once every %interval% seconds."
     
+    components:
+      - type: testcomponent
+      - type: testcomponent
+    
     defaultworld: world
     worlds:
       - title: World
@@ -121,7 +125,6 @@ web:
       #      title: Cave
       #      name: cave
       #      prefix: ct
-
 # Enables debugging.
 #debuggers:
 #  - class: org.dynmap.debug.LogDebugger
