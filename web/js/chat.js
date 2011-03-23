@@ -1,7 +1,7 @@
 var ip;
 $.ajax({
 	type: "GET",
-	url: "http://jsonip.appspot.com/?callback=?",
+	url: "//jsonip.appspot.com/?callback=?",
 	dataType: "jsonp",
 	success: function(getip) { ip = getip.ip; }
 	});
