@@ -28,13 +28,13 @@ function createMinecraftHead(player,completed,failed) {
 		completed(headCanvas);
 	};
 	skinImage.onerror = function() {
-		if (skinImage.src == 'http://www.minecraft.net/img/char.png') {
+		if (skinImage.src == '//www.minecraft.net/img/char.png') {
 			failed();
 		} else {
-			skinImage.src = 'http://www.minecraft.net/img/char.png';
+			skinImage.src = '//www.minecraft.net/img/char.png';
 		}
 	};
-	skinImage.src = 'http://s3.amazonaws.com/MinecraftSkins/' + player + '.png';
+	skinImage.src = '//s3.amazonaws.com/MinecraftSkins/' + player + '.png';
 }
 
 function resizeImage(img,size) {
