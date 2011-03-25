@@ -34,12 +34,7 @@ function createMinecraftHead(player,completed,failed) {
 			skinImage.src = 'http://www.minecraft.net/img/char.png';
 		}
 	};
-	
-	if (player == 'Server' || player.substr(0, 5) == '[WEB]' || player == '') {
-		skinImage.src = 'http://www.minecraft.net/img/char.png';
-	} else {
-		skinImage.src = 'http://s3.amazonaws.com/MinecraftSkins/' + player + '.png';
-	}
+	skinImage.src = 'http://s3.amazonaws.com/MinecraftSkins/' + player + '.png';
 }
 
 function resizeImage(img,size) {
