@@ -37,6 +37,7 @@ public class ZoomedTileRenderer {
         try {
             zIm = ImageIO.read(zoomFile);
         } catch (IOException e) {
+        } catch (IndexOutOfBoundsException e) {
         }
 
         if (zIm == null) {
