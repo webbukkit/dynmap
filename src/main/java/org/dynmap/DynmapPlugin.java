@@ -26,12 +26,12 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.WorldEvent;
 import org.bukkit.event.world.WorldListener;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
@@ -192,14 +192,14 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             };
             if (isTrigger("blockplaced"))
-                pm.registerEvent(Event.Type.BLOCK_PLACED, renderTrigger, Priority.Monitor, this);
+                pm.registerEvent(Event.Type.BLOCK_PLACE, renderTrigger, Priority.Monitor, this);
             if (isTrigger("blockbreak"))
                 pm.registerEvent(Event.Type.BLOCK_BREAK, renderTrigger, Priority.Monitor, this);
         }
         {
             PlayerListener renderTrigger = new PlayerListener() {
                 @Override
-                public void onPlayerJoin(PlayerEvent event) {
+                public void onPlayerJoin(PlayerJoinEvent event) {
                     mm.touch(event.getPlayer().getLocation());
                 }
 
@@ -216,7 +216,7 @@ public class DynmapPlugin extends JavaPlugin {
         {
             WorldListener renderTrigger = new WorldListener() {
                 @Override
-                public void onChunkLoaded(ChunkLoadEvent event) {
+                public void onChunkLoad(ChunkLoadEvent event) {
                     int x = event.getChunk().getX() * 16 + 8;
                     int z = event.getChunk().getZ() * 16 + 8;
                     mm.touch(new Location(event.getWorld(), x, 127, z));
@@ -230,7 +230,7 @@ public class DynmapPlugin extends JavaPlugin {
                  */
             };
             if (isTrigger("chunkloaded"))
-                pm.registerEvent(Event.Type.CHUNK_LOADED, renderTrigger, Priority.Monitor, this);
+                pm.registerEvent(Event.Type.CHUNK_LOAD, renderTrigger, Priority.Monitor, this);
             //if (isTrigger("chunkgenerated")) pm.registerEvent(Event.Type.CHUNK_GENERATED, renderTrigger, Priority.Monitor, this);
         }
 
@@ -248,11 +248,11 @@ public class DynmapPlugin extends JavaPlugin {
         // To link configuration to real loaded worlds.
         WorldListener worldListener = new WorldListener() {
             @Override
-            public void onWorldLoaded(WorldEvent event) {
+            public void onWorldLoad(WorldLoadEvent event) {
                 mm.activateWorld(event.getWorld());
             }
         };
-        pm.registerEvent(Event.Type.WORLD_LOADED, worldListener, Priority.Monitor, this);
+        pm.registerEvent(Event.Type.WORLD_LOAD, worldListener, Priority.Monitor, this);
     }
 
     private static File combinePaths(File parent, String path) {
