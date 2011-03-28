@@ -368,6 +368,10 @@ DynMap.prototype = {
 
 		$(me).trigger('worldupdating');
 		$.getJSON(me.options.updateUrl + "world/" + me.world.name + "/" + me.lasttimestamp, function(update) {
+				if (!update) {
+					setTimeout(function() { me.update(); }, me.options.updaterate);
+					return;
+				}
 				me.alertbox.hide();
 				
 				if (!me.options.jsonfile) {
