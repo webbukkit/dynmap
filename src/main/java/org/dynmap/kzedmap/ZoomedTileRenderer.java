@@ -24,6 +24,7 @@ public class ZoomedTileRenderer {
         try {
             image = ImageIO.read(originalTile.file);
         } catch (IOException e) {
+        } catch (IndexOutOfBoundsException e) {
         }
         
         if (image == null) {
