@@ -38,7 +38,7 @@ function splitArgs(s) {
 }
 
 function swtch(value, options, defaultOption) {
-	return (options[value] || defaultOption)(value);
+	return (options[value] || defaultOption || function(){})(value);
 }
 (function( $ ){
 	$.fn.scrollHeight = function(height) {
@@ -362,9 +362,6 @@ DynMap.prototype = {
 	},
 	update: function() {
 		var me = this;
-		
-		// TODO: is there a better place for this?
-		this.cleanPopups();
 
 		$(me).trigger('worldupdating');
 		$.getJSON(me.options.updateUrl + "world/" + me.world.name + "/" + me.lasttimestamp, function(update) {
@@ -459,59 +456,12 @@ DynMap.prototype = {
 	unregisterTile: function(mapType, tileName) {
 		delete this.registeredTiles[tileName];
 	},
-	cleanPopups: function() {
-		var POPUP_LIFE = 8000;
-		var d = new Date();
-		var now = d.getTime();
-		var popupIndex;
-		for (popupIndex in this.chatPopups) {
-			var popup = this.chatPopups[popupIndex];
-			if (now - popup.popupTime > POPUP_LIFE) {
-				popup.infoWindow.close();
-				popup.infoWindow = null;
-				delete this.chatPopups[popupIndex];
-			}
-		}
-	},
 	onPlayerChat: function(playerName, message) {
 		var me = this;
 		var chatPopups = this.chatPopups;
 		var map = me.map;
 		var player = me.players[playerName];
 		var playerMarker = player && player.marker;
-		if (me.options.showchatballoons) {
-			if (playerMarker) {
-				var popup = chatPopups[playerName];
-				if (!popup) {
-					popup = { lines: [ message ] };
-				} else {
-					popup.lines[popup.lines.length] = message;
-				}
-	
-				var MAX_LINES = 5;
-				if (popup.lines.length > MAX_LINES) {
-					popup.lines = popup.lines.slice(1);
-				}
-				var htmlMessage = '<div id="content"><b>' + playerName + "</b><br/><br/>";
-				var line;
-				for (line in popup.lines) {
-					htmlMessage = htmlMessage + popup.lines[line] + "<br/>";
-				}
-				htmlMessage = htmlMessage + "</div>";
-				var now = new Date();
-				popup.popupTime = now.getTime();
-				if (!popup.infoWindow) {
-					popup.infoWindow = new google.maps.InfoWindow({
-						disableAutoPan: !(me.options.focuschatballoons || false),
-					    content: htmlMessage
-					});
-				} else {
-					popup.infoWindow.setContent(htmlMessage);
-				}
-				popup.infoWindow.open(map, playerMarker);
-				this.chatPopups[playerName] = popup;
-			}
-		}
 		if (me.options.showchatwindow) {
 			var messagelist = me.messagelist;
 

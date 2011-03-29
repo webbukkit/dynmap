@@ -81,8 +81,9 @@ web:
     spammessage: "You may only chat once every %interval% seconds."
     
     components:
-      - type: testcomponent
-      - type: testcomponent
+      - type: chat
+      - type: chatballoon
+        focuschatballoons: false
     
     defaultworld: world
     worlds:
