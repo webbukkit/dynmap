@@ -24,6 +24,24 @@ componentconstructors['testcomponent'] = function(dynmap, configuration) {
 	};
 };
 
+function loadjs(url, completed) {
+	var script = document.createElement('script');
+	script.setAttribute('src', url);
+	script.setAttribute('type', 'text/javascript');
+	var isloaded = false;
+	script.onload = function() {
+		if (isloaded) { return; }
+		isloaded = true;
+		completed();
+	};
+	
+	// Hack for IE, don't know whether this still applies to IE9.
+	script.onreadystatechange = function() {
+		script.onload();
+	};
+	document.head.appendChild(script);
+}
+
 function splitArgs(s) {
 	var r = s.split(' ');
 	delete arguments[0];
@@ -279,12 +297,19 @@ DynMap.prototype = {
 		
 		me.selectMap(me.defaultworld.defaultmap);
 		
+		var componentstoload = me.options.components.length;
 		$.each(me.options.components, function(index, configuration) {
-			var componentconstructor = componentconstructors[configuration.type];
-			me.components.push(new componentconstructor(me, configuration));
+			loadjs('js/' + configuration.type + '.js', function() {
+				var componentconstructor = componentconstructors[configuration.type];
+				me.components.push(new componentconstructor(me, configuration));
+				
+				componentstoload--;
+				if (componentstoload == 0) {
+					// Actually start updating once all components are loaded.
+					setTimeout(function() { me.update(); }, me.options.updaterate);
+				}
+			});
 		});
-		
-		setTimeout(function() { me.update(); }, me.options.updaterate);
 	},
 	selectMap: function(map, completed) {
 		if (!map) { throw "Cannot select map " + map; }
