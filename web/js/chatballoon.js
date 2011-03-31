@@ -29,7 +29,7 @@ componentconstructors['chatballoon'] = function(dynmap, configuration) {
 		htmlMessage = htmlMessage + "</div>";
 		if (!popup.infoWindow) {
 			popup.infoWindow = new google.maps.InfoWindow({
-				disableAutoPan: !(me.options.focuschatballoons || false),
+				disableAutoPan: !(configuration.focuschatballoons || false),
 			    content: htmlMessage
 			});
 		} else {

@@ -3,25 +3,19 @@
 
 var componentconstructors = {};
 var maptypes = {};
-var clocks = {};
 
 componentconstructors['testcomponent'] = function(dynmap, configuration) {
-	return {
-		dynmap: dynmap,
-		initialize: function() {
-			console.log('initialize');
-			$(dynmap).bind('worldchanged', function() { console.log('worldchanged'); });
-			$(dynmap).bind('mapchanged', function() { console.log('mapchanged'); });
-			$(dynmap).bind('zoomchanged', function() { console.log('zoomchanged'); });
-			$(dynmap).bind('worldupdating', function() { console.log('worldupdating'); });
-			$(dynmap).bind('worldupdate', function() { console.log('worldupdate'); });
-			$(dynmap).bind('worldupdated', function() { console.log('worldupdated'); });
-			$(dynmap).bind('worldupdatefailed', function() { console.log('worldupdatefailed'); });
-			$(dynmap).bind('playeradded', function() { console.log('playeradded'); });
-			$(dynmap).bind('playerremoved', function() { console.log('playerremoved'); });
-			$(dynmap).bind('playerupdated', function() { console.log('playerupdated'); });
-		}
-	};
+	console.log('initialize');
+	$(dynmap).bind('worldchanged', function() { console.log('worldchanged'); });
+	$(dynmap).bind('mapchanged', function() { console.log('mapchanged'); });
+	$(dynmap).bind('zoomchanged', function() { console.log('zoomchanged'); });
+	$(dynmap).bind('worldupdating', function() { console.log('worldupdating'); });
+	$(dynmap).bind('worldupdate', function() { console.log('worldupdate'); });
+	$(dynmap).bind('worldupdated', function() { console.log('worldupdated'); });
+	$(dynmap).bind('worldupdatefailed', function() { console.log('worldupdatefailed'); });
+	$(dynmap).bind('playeradded', function() { console.log('playeradded'); });
+	$(dynmap).bind('playerremoved', function() { console.log('playerremoved'); });
+	$(dynmap).bind('playerupdated', function() { console.log('playerupdated'); });
 };
 
 function loadjs(url, completed) {
@@ -214,19 +208,6 @@ DynMap.prototype = {
 					.appendTo(maplist);
 			});
 		});
-
-		// The clock
-		var largeclock = $('<div/>')
-			.addClass('largeclock')
-			.appendTo(container);
-		var clock = me.clock = clocks['timeofday'](
-			$('<div/>')
-			.appendTo(largeclock)
-		);
-		var clockdigital = me.clockdigital = clocks['digital'](
-			$('<div/>')
-			.appendTo(largeclock)
-		);
 		
 		// The scrollbuttons
 		// we need to show/hide them depending: if (me.playerlist.scrollHeight() > me.playerlist.innerHeight()) or something.
@@ -366,9 +347,6 @@ DynMap.prototype = {
 				if (!me.options.jsonfile) {
 					me.lasttimestamp = update.timestamp;
 				}
-				
-				me.clock.setTime(update.servertime);
-				me.clockdigital.setTime(update.servertime);
 				
 				var newplayers = {};
 				$.each(update.players, function(index, playerUpdate) {

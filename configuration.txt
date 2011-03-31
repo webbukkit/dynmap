@@ -89,6 +89,8 @@ web:
         messagettl: 5
       - type: playermarkers
         showplayerfaces: true
+      - type: digitalclock
+      #- type: timeofdayclock
     
     defaultworld: world
     worlds:

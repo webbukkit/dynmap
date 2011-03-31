@@ -232,27 +232,31 @@
     margin-left: 8px;
 }
 */
-.clock {
-	position: relative;
-	bottom: 16px;
+.largeclock.digitalclock {
+	text-align: center;
+	font-size: 50px;
+	font-weight: bold;
+}
+
+.digitalclock {
 	text-align: center;
 }
 
-.clock.night {
+.digitalclock.night {
     /* background-image: url(../images/clock_night.png); */
     color: #dff;
 }
 
-.clock.day {
+.digitalclock.day {
     /* background-image: url(../images/clock_day.png); */
     color: #fd3;
 }
 
-.clock.night, .clock.day {
-    -moz-transition: all 8s 8s linear;
-    -webkit-transition: all 8s 8s linear;
-    -o-transition: all 8s 8s linear;
-    transition: all 8s 8s linear;
+.digitalclock.night, .digitalclock.day {
+    -moz-transition: color 8s 8s linear;
+    -webkit-transition: color 8s 8s linear;
+    -o-transition: color 8s 8s linear;
+    transition: color 8s 8s linear;
 }
 
 
@@ -283,6 +287,11 @@
 
 .timeofday.moon {
     background-image: url(../images/moon.png);
+}
+
+.timeofday.digitalclock {
+	position: relative;
+	bottom: 16px;
 }
 
 /*******************
