@@ -22,41 +22,46 @@ componentconstructors['timeofdayclock'] = function(dynmap, configuration) {
 		.css('background-position', (-150) + 'px ' + (-150) + 'px')
 		.appendTo(sun);
 	
-	var clock = $('<div/>')
-		.addClass('timeofday')
-		.addClass('digitalclock')
-		.appendTo(element);
-	
-	var formatTime = function(time) {
-		var formatDigits = function(n, digits) {
-			var s = n.toString();
-			while (s.length < digits) {
-				s = '0' + s;
-			}
-			return s;
-		}
-		return formatDigits(time.hours, 2) + ':' + formatDigits(time.minutes, 2);
-	};
-	
-	var setTime = function(servertime) {
-		if (timeout != null) {
-			window.clearTimeout(timeout);
-			timeout = null;
-		}
-		var time = getMinecraftTime(servertime);
-		clock
-			.addClass(time.day ? 'day' : 'night')
-			.removeClass(time.night ? 'day' : 'night')
-			.text(formatTime(time));
+	if (configuration.showdigitalclock) {
+		var clock = $('<div/>')
+			.addClass('timeofday')
+			.addClass('digitalclock')
+			.appendTo(element);
 		
-		if (timeout == null) {
-			timeout = window.setTimeout(function() {
+		var formatTime = function(time) {
+			var formatDigits = function(n, digits) {
+				var s = n.toString();
+				while (s.length < digits) {
+					s = '0' + s;
+				}
+				return s;
+			}
+			return formatDigits(time.hours, 2) + ':' + formatDigits(time.minutes, 2);
+		};
+		
+		var setTime = function(servertime) {
+			if (timeout != null) {
+				window.clearTimeout(timeout);
 				timeout = null;
-				setTime(time.servertime+(1000/60));
-			}, 700);
-		}
-	};
-	
+			}
+			var time = getMinecraftTime(servertime);
+			clock
+				.addClass(time.day ? 'day' : 'night')
+				.removeClass(time.night ? 'day' : 'night')
+				.text(formatTime(time));
+			
+			if (timeout == null) {
+				timeout = window.setTimeout(function() {
+					timeout = null;
+					setTime(time.servertime+(1000/60));
+				}, 700);
+			}
+		};
+		
+		$(dynmap).bind('worldupdated', function(event, update) {
+			setTime(update.servertime);
+		});
+	}
 	$(dynmap).bind('worldupdated', function(event, update) {
 		var sunangle;
 		var time = update.servertime;
@@ -80,7 +85,5 @@ componentconstructors['timeofdayclock'] = function(dynmap, configuration) {
 		
 		sun.css('background-position', (-50 * Math.cos(sunangle)) + 'px ' + (-50 * Math.sin(sunangle)) + 'px');
 		moon.css('background-position', (-50 * Math.cos(moonangle)) + 'px ' + (-50 * Math.sin(moonangle)) + 'px');
-		
-		setTime(update.servertime);
 	});
 };
