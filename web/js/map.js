@@ -280,10 +280,8 @@ DynMap.prototype = {
 		me.selectMap(me.defaultworld.defaultmap);
 		
 		$.each(me.options.components, function(index, configuration) {
-			me.components.push(componentconstructors[configuration.type](me, configuration));
-		});
-		$.each(me.components, function(index, component) {
-			component.initialize();
+			var componentconstructor = componentconstructors[configuration.type];
+			me.components.push(new componentconstructor(me, configuration));
 		});
 		
 		setTimeout(function() { me.update(); }, me.options.updaterate);
