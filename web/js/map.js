@@ -435,30 +435,6 @@ DynMap.prototype = {
 		
 		$(me).trigger('playeradded', [ player ]);
 		
-		var location = player.location;
-		// Create the player-marker.
-		var markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
-		player.marker = new CustomMarker(markerPosition, me.map, function(div) {
-			var playerImage;
-			$(div)
-				.addClass('Marker')
-				.addClass('playerMarker')
-				.append(playerImage = $('<img/>')
-						.attr({ src: 'images/player.png' }))
-				.append($('<span/>')
-					.addClass('playerName')
-					.text(player.name));
-			
-			if (me.options.showplayerfacesonmap) {
-				getMinecraftHead(player.name, 32, function(head) {
-					$(head)
-						.addClass('playericon')
-						.prependTo(div);
-					playerImage.remove();
-				});
-			}
-		});
-		
 		// Create the player-menu-item.
 		var playerIconContainer;
 		var menuitem = player.menuitem = $('<li/>')
@@ -499,11 +475,6 @@ DynMap.prototype = {
 		
 		$(me).trigger('playerupdated', [ player ]);
 		
-		// Update the marker.
-		var markerPosition = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
-		player.marker.toggle(me.world === location.world);
-		player.marker.setPosition(markerPosition);
-		
 		// Update menuitem.
 		player.menuitem.toggleClass('otherworld', me.world !== location.world);
 		
@@ -518,9 +489,6 @@ DynMap.prototype = {
 		delete me.players[player.name];
 		
 		$(me).trigger('playerremoved', [ player ]);
-		
-		// Remove the marker.
-		player.marker.remove();
 		
 		// Remove menu item.
 		player.menuitem.remove();
