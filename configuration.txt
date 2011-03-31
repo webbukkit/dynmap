@@ -84,6 +84,9 @@ web:
       - type: chat
       - type: chatballoon
         focuschatballoons: false
+      - type: chatbox
+        showplayerfaces: true
+        messagettl: 5
     
     defaultworld: world
     worlds:

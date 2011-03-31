@@ -78,7 +78,6 @@ DynMap.prototype = {
 	worlds: {},
 	registeredTiles: [],
 	players: {},
-	chatPopups: [],
 	lasttimestamp: '0',
 	followingPlayer: '',
 	configure: function(configuration) {
@@ -260,36 +259,6 @@ DynMap.prototype = {
 			.addClass('compass')
 			.appendTo(container);
 		
-		// The chat
-		if (me.options.showchatwindow) {
-			var chat = me.chat = $('<div/>')
-				.addClass('chat')
-				.appendTo(container);
-			var messagelist = me.messagelist = $('<div/>')
-				.addClass('messagelist')
-				.appendTo(chat);
-			if (me.options.allowwebchat) {
-				var chatinput = me.chatinput = $('<input/>')
-					.addClass('chatinput')
-					.attr({
-						id: 'chatinput',
-						type: 'text',
-						value: ''
-					})
-					.keydown(function(event) {
-						if (event.keyCode == '13') {
-							event.preventDefault();
-							if(chatinput.val() != '')
-							{
-								sendChat(me, chatinput.val());
-								chatinput.val('');
-							}
-						}
-					})
-					.appendTo(chat);
-			}
-		}
-		
 		// TODO: Enable hash-links.
 		/*
 		var link;
@@ -405,15 +374,7 @@ DynMap.prototype = {
 						swtch(update.type, {
 							tile: function() {
 								me.onTileUpdated(update.name);
-							},
-							chat: function() {
-								me.onPlayerChat(update.playerName, update.message);
-							},
-							webchat: function() {
-								me.onPlayerChat('[WEB]' + update.playerName, update.message);
 							}
-						}, function(type) {
-							console.log('Unknown type ', type, '!');
 						});
 					}
 					/* remove older messages from chat*/
@@ -455,57 +416,6 @@ DynMap.prototype = {
 	},
 	unregisterTile: function(mapType, tileName) {
 		delete this.registeredTiles[tileName];
-	},
-	onPlayerChat: function(playerName, message) {
-		var me = this;
-		var chatPopups = this.chatPopups;
-		var map = me.map;
-		var player = me.players[playerName];
-		var playerMarker = player && player.marker;
-		if (me.options.showchatwindow) {
-			var messagelist = me.messagelist;
-
-			var messageRow = $('<div/>')
-				.addClass('messagerow');
-
-			var playerIconContainer = $('<span/>')
-				.addClass('messageicon');
-
-			if (me.options.showplayerfacesinmenu) {
-				getMinecraftHead(playerName, 16, function(head) {
-					messageRow.icon = $(head)
-						.addClass('playerIcon')
-						.appendTo(playerIconContainer);
-				});
-			}
-
-			if (playerName !== 'Server') {
-				var playerWorldContainer = $('<span/>')
-				 .addClass('messagetext')
-				 .text('['+me.world+']');
-	
-				var playerGroupContainer = $('<span/>')
-				 .addClass('messagetext')
-				 .text('[Group]');
-			}
-
-			var playerNameContainer = $('<span/>')
-				.addClass('messagetext')
-				.text(' '+playerName+': ');
-
-			var playerMessageContainer = $('<span/>')
-				.addClass('messagetext')
-				.text(message);
-
-			messageRow.append(playerIconContainer,playerNameContainer,playerMessageContainer);
-			//messageRow.append(playerIconContainer,playerWorldContainer,playerGroupContainer,playerNameContainer,playerMessageContainer);
-			setTimeout(function() { messageRow.remove(); }, (me.options.messagettl * 1000));
-			messagelist.append(messageRow);
-			
-			me.messagelist.show();
-			//var scrollHeight = jQuery(me.messagelist).attr('scrollHeight');
-			me.messagelist.scrollTop(me.messagelist.scrollHeight());
-		}
 	},
 	onTileUpdated: function(tileName) {
 		var me = this;
