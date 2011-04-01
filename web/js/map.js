@@ -33,7 +33,7 @@ function loadjs(url, completed) {
 	script.onreadystatechange = function() {
 		script.onload();
 	};
-	document.head.appendChild(script);
+	(document.head || document.getElementsByTagName('head')[0]).appendChild(script);
 }
 
 function splitArgs(s) {
