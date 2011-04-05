@@ -22,7 +22,7 @@ curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 // Make the call
 $body = curl_exec($session);
 
-header("Content-Type: ".curl_getinfo($session, CURLINFO_CONTENT_TYPE);
+header("Content-Type: ".curl_getinfo($session, CURLINFO_CONTENT_TYPE));
 
 echo $body;
 curl_close($session);
