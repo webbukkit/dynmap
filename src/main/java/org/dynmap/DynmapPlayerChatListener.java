@@ -20,14 +20,14 @@ public class DynmapPlayerChatListener extends PlayerListener {
 
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
-        String joinMessage = plugin.configuration.getString("joinmessage", "%playername% joined");
+        String joinMessage = plugin.configuration.getNode("web").getString("joinmessage", "%playername% joined");
         joinMessage = joinMessage.replaceAll("%playername%", event.getPlayer().getName());
         plugin.mapManager.pushUpdate(new Client.ChatMessage("Server", joinMessage));
     }
 
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
-        String quitMessage = plugin.configuration.getString("quitmessage", "%playername% quit");
+        String quitMessage = plugin.configuration.getNode("web").getString("quitmessage", "%playername% quit");
         quitMessage = quitMessage.replaceAll("%playername%", event.getPlayer().getName());
         plugin.mapManager.pushUpdate(new Client.ChatMessage("Server", quitMessage));
     }

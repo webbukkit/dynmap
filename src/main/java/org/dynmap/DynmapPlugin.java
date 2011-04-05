@@ -235,7 +235,7 @@ public class DynmapPlugin extends JavaPlugin {
         }
 
         // To announce when players have joined/quit/chatted.
-        if (configuration.getNode("web").getBoolean("showchatballoons", false) || configuration.getNode("web").getBoolean("showchatwindow", false)) {
+        if (configuration.getNode("web").getBoolean("allowchat", false)) {
             // To handle webchat.
             PlayerListener playerListener = new DynmapPlayerChatListener(this);
             //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);

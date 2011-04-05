@@ -67,21 +67,9 @@ public class SendMessageHandler implements HttpHandler {
                 disallowedUsers.put(user.name, user);
                 disallowedUserQueue.add(user);
             } else {
-                spamMessage = spamMessage.replaceAll("%interval%", Integer.toString(maximumMessageInterval/1000));
-                byte[] stringBytes = spamMessage.getBytes();
-                String dateStr = new Date().toString();
-
-                response.fields.put("Date", dateStr);
-                response.fields.put("Content-Type", "text/plain");
-                response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
-                response.fields.put("Last-modified", dateStr);
-                response.fields.put("Content-Length", Integer.toString(stringBytes.length));
-                response.status = HttpStatus.OK;
-
-                BufferedOutputStream out = null;
-                out = new BufferedOutputStream(response.getBody());
-                out.write(stringBytes);
-                out.flush();
+                response.fields.put("Content-Length", "0");
+                response.status = HttpStatus.Forbidden;
+                response.getBody();
                 return;
             }
         }

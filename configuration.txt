@@ -61,19 +61,14 @@ worlds:
 web:
     # Handles the clientside updates differently only enable if using jsonfile
     jsonfile: false
-
+    
     # Interval the browser should poll for updates.
     updaterate: 2000
     
-    showchatballoons: false
-    focuschatballoons: false
-    
-    showchatwindow: true
+    allowchat: true
     allowwebchat: true
     webchat-interval: 5
-    messagettl: 15
-        
-    showplayerfacesonmap: true
+    
     showplayerfacesinmenu: true
     
     joinmessage: "%playername% joined"

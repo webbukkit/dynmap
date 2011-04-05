@@ -34,6 +34,11 @@ componentconstructors['chat'] = function(dynmap, configuration) {
 					if(response) {
 						$(dynmap).trigger('chat', [{source: 'me', name: ip, text: message}]);
 					}
+				},
+				error: function(xhr) {
+					if (xhr.status === 403) {
+						$(dynmap).trigger('chat', [{source: 'me', name: 'Error', text: dynmap.options.spammessage.replace('%interval%', dynmap.options['webchat-interval'])}]);
+					}
 				}
 			});
 		});
