@@ -166,7 +166,7 @@ public class HttpServerConnection extends Thread {
                 }
                 
                 HttpResponse response = new HttpResponse(this, out);
-
+                
                 try {
                     handler.handle(relativePath, request, response);
                 } catch (IOException e) {
@@ -186,9 +186,11 @@ public class HttpServerConnection extends Thread {
                     //return;
                 }
                 
-                String connection = response.fields.get("Connection");
+                boolean isKeepalive = !"close".equals(request.fields.get(HttpField.Connection)) && !"close".equals(response.fields.get(HttpField.Connection));
+                
                 String contentLength = response.fields.get("Content-Length");
-                if (contentLength == null && connection == null) {
+                if (isKeepalive && contentLength == null) {
+                    // A handler has been a bad boy, but we're here to fix it.
                     response.fields.put("Content-Length", "0");
                     OutputStream responseBody = response.getBody();
 
@@ -201,7 +203,7 @@ public class HttpServerConnection extends Thread {
                     }
                 }
 
-                if (connection != null && connection.equals("close")) {
+                if (!isKeepalive) {
                     out.flush();
                     socket.close();
                     return;
