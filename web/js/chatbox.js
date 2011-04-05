@@ -27,6 +27,27 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			.appendTo(chat);
 	}
 	
+	var addrow = function(row) {
+		setTimeout(function() { row.remove(); }, (configuration.messagettl * 1000));
+		messagelist.append(row);
+		messagelist.show();
+		messagelist.scrollTop(messagelist.scrollHeight());
+	};
+	
+	$(dynmap).bind('playerjoin', function(event, playername) {
+		addrow($('<div/>')
+			.addClass('messagerow')
+			.text(dynmap.options.joinmessage.replace('%playername%', playername))
+			);
+	});
+	
+	$(dynmap).bind('playerquit', function(event, playername) {
+		addrow($('<div/>')
+			.addClass('messagerow')
+			.text(dynmap.options.quitmessage.replace('%playername%', playername))
+			);
+	});
+	
 	$(dynmap).bind('chat', function(event, message) {
 		var playerName = message.name;
 		var messageRow = $('<div/>')
@@ -59,12 +80,6 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			.text(message.text);
 
 		messageRow.append(playerIconContainer,playerNameContainer,playerMessageContainer);
-		//messageRow.append(playerIconContainer,playerWorldContainer,playerGroupContainer,playerNameContainer,playerMessageContainer);
-		setTimeout(function() { messageRow.remove(); }, (configuration.messagettl * 1000));
-		messagelist.append(messageRow);
-		
-		messagelist.show();
-		//var scrollHeight = jQuery(me.messagelist).attr('scrollHeight');
-		messagelist.scrollTop(messagelist.scrollHeight());
+		addrow(messageRow);
 	});
 };

@@ -375,6 +375,12 @@ DynMap.prototype = {
 						swtch(update.type, {
 							tile: function() {
 								me.onTileUpdated(update.name);
+							},
+							playerjoin: function() {
+								$(me).trigger('playerjoin', [ update.playerName ]);
+							},
+							playerquit: function() {
+								$(me).trigger('playerquit', [ update.playerName ]);
 							}
 						});
 					}

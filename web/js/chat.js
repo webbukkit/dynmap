@@ -12,10 +12,7 @@ componentconstructors['chat'] = function(dynmap, configuration) {
 	$(dynmap).bind('worldupdate', function(event, update) {
 		swtch(update.type, {
 			chat: function() {
-				$(dynmap).trigger('chat', [{source: 'player', name: update.playerName, text: update.message}]);
-			},
-			webchat: function() {
-				$(dynmap).trigger('chat', [{source: 'web', name: update.playerName, text: update.message}]);
+				$(dynmap).trigger('chat', [{source: update.source, name: update.playerName, text: update.message}]);
 			}
 		});
 	});

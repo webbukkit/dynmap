@@ -382,7 +382,7 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public void webChat(String name, String message) {
-        mapManager.pushUpdate(new Client.WebChatMessage(name, message));
+        mapManager.pushUpdate(new Client.ChatMessage("web", name, message));
         log.info("[WEB]" + name + ": " + message);
         getServer().broadcastMessage("[WEB]" + name + ": " + message);
     }

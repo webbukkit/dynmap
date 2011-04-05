@@ -29,23 +29,30 @@ public class Client {
     
     public static class ChatMessage extends Stamped {
         public String type = "chat";
+        public String source;
         public String playerName;
         public String message;
 
-        public ChatMessage(String playerName, String message) {
+        public ChatMessage(String source, String playerName, String message) {
+            this.source = source;
             this.playerName = playerName;
             this.message = message;
         }
     }
     
-    public static class WebChatMessage extends Stamped {
-        public String type = "webchat";
+    public static class PlayerJoinMessage extends Stamped {
+        public String type = "playerjoin";
         public String playerName;
-        public String message;
-
-        public WebChatMessage(String playerName, String message) {
+        public PlayerJoinMessage(String playerName) {
             this.playerName = playerName;
-            this.message = message;
+        }
+    }
+    
+    public static class PlayerQuitMessage extends Stamped {
+        public String type = "playerquit";
+        public String playerName;
+        public PlayerQuitMessage(String playerName) {
+            this.playerName = playerName;
         }
     }
 
