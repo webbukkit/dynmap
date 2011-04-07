@@ -282,8 +282,11 @@ DynMap.prototype = {
 		$.each(me.options.components, function(index, configuration) {
 			loadjs('js/' + configuration.type + '.js', function() {
 				var componentconstructor = componentconstructors[configuration.type];
-				me.components.push(new componentconstructor(me, configuration));
-				
+				if (componentconstructor) {
+					me.components.push(new componentconstructor(me, configuration));
+				} else {
+					// Could not load component. We'll ignore this for the moment.
+				}
 				componentstoload--;
 				if (componentstoload == 0) {
 					// Actually start updating once all components are loaded.

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -15,9 +16,12 @@ import org.dynmap.debug.Debug;
 
 public class DefaultTileRenderer implements MapTileRenderer {
     protected static final Color translucent = new Color(0, 0, 0, 0);
-    private String name;
+    protected String name;
     protected int maximumHeight = 127;
-    private ColorScheme colorScheme;
+    protected ColorScheme colorScheme;
+    
+    protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
+    protected Color highlightColor = new Color(255, 0, 0);
 
     @Override
     public String getName() {
@@ -135,6 +139,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
             seq = (seq + 1) & 3;
 
             if (id != 0) {
+                if (highlightBlocks.contains(id)) {
+                    return highlightColor;
+                }
                 Color[] colors = colorScheme.colors.get(id);
                 if (colors != null) {
                     Color c = colors[seq];

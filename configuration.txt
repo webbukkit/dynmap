@@ -43,6 +43,14 @@ worlds:
             prefix: t
             maximumheight: 127
             colorscheme: default
+          #- class: org.dynmap.kzedmap.HighlightTileRenderer
+          #  prefix: ht
+          #  maximumheight: 127
+          #  colorscheme: default
+          #  highlight: # For highlighting multiple block-types.
+          #    - 56 # Highlight diamond-ore
+          #    - 66 # Highlight minecart track
+          #  highlight: 56 # For highlighting a single block-type.
           - class: org.dynmap.kzedmap.CaveTileRenderer
             prefix: ct
             maximumheight: 127
@@ -101,6 +109,10 @@ web:
             title: Surface
             name: surface
             prefix: t
+          #- type: KzedMapType
+          #  title: Highlighted Map
+          #  name: highlight
+          #  prefix: ht
           - type: KzedMapType
             title: Cave
             name: cave
