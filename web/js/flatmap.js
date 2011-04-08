@@ -7,7 +7,7 @@ FlatProjection.prototype = {
 			return new google.maps.LatLng(point.x/128.0, point.y/128.0);
 		},
 		fromWorldToLatLng: function(x, y, z) {
-			return new google.maps.LatLng(x / 128.0, z / 128.0);
+			return new google.maps.LatLng(-z / 128.0, x / 128.0);
 		}
 };
 

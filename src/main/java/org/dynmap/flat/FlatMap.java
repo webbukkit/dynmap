@@ -117,7 +117,7 @@ public class FlatMap extends MapType {
                     pixel[2] += (255-pixel[2]) * scale;
                 }
                 
-                raster.setPixel(x, y, pixel);
+                raster.setPixel(t.size-y-1, x, pixel);
                 rendered = true;
             }
 
@@ -148,7 +148,7 @@ public class FlatMap extends MapType {
 
         @Override
         public String getFilename() {
-            return map.prefix + "_" + size + "_" + x + "_" + y + ".png";
+            return map.prefix + "_" + size + "_" + -(y+1) + "_" + x + ".png";
         }
     }
 }
