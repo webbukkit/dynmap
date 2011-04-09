@@ -302,6 +302,10 @@ DynMap.prototype = {
 		if (me.maptype === map) {
 			return;
 		}
+		if (me.maptype) {
+			$('.compass').removeClass('compass_' + me.maptype.name);
+		}
+		$('.compass').addClass('compass_' + map.name);
 		var worldChanged = me.world !== map.world;
 		me.map.setMapTypeId('none');
 		me.world = map.world;

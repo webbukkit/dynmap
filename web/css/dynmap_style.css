@@ -506,7 +506,7 @@
     position: absolute;
     z-index: 10;
 
-    top: 10px;
+    top: 20px;
     right: 32px;
 
     height: 84px;
@@ -514,6 +514,16 @@
 
     background-repeat: no-repeat;
     background-image: url(../images/compass.png);
+}
+
+.compass_flat {
+	top: 10px;
+	right: 21px;
+
+	height: 105px;
+	width: 105px;
+
+	background-image: url(../images/compass_flat.png);
 }
 
 /*******************
