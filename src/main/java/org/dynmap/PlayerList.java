@@ -76,9 +76,10 @@ public class PlayerList {
     public Player[] getVisiblePlayers(String worldName) {
         ArrayList<Player> visiblePlayers = new ArrayList<Player>();
         Player[] onlinePlayers = server.getOnlinePlayers();
+        boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
-            if (p.getWorld().getName().equals(worldName) && !(configuration.getBoolean("display-whitelist", false) ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
+            if (p.getWorld().getName().equals(worldName) && !(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
                 visiblePlayers.add(p);
             }
         }
@@ -90,9 +91,10 @@ public class PlayerList {
     public Player[] getVisiblePlayers() {
         ArrayList<Player> visiblePlayers = new ArrayList<Player>();
         Player[] onlinePlayers = server.getOnlinePlayers();
+        boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
-            if (!(configuration.getBoolean("display-whitelist", false) ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
+            if (!(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
                 visiblePlayers.add(p);
             }
         }
