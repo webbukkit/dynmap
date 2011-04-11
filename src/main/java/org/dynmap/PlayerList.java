@@ -53,12 +53,12 @@ public class PlayerList {
     }
 
     public void hide(String playerName) {
-        hiddenPlayerNames.add(playerName);
+        hiddenPlayerNames.add(playerName.toLowerCase());
         save();
     }
 
     public void show(String playerName) {
-        hiddenPlayerNames.remove(playerName);
+        hiddenPlayerNames.remove(playerName.toLowerCase());
         save();
     }
 
@@ -75,7 +75,7 @@ public class PlayerList {
         Player[] onlinePlayers = server.getOnlinePlayers();
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
-            if (p.getWorld().getName().equals(worldName) && !hiddenPlayerNames.contains(p.getName())) {
+            if (p.getWorld().getName().equals(worldName) && !hiddenPlayerNames.contains(p.getName().toLowerCase())) {
                 visiblePlayers.add(p);
             }
         }
@@ -89,7 +89,7 @@ public class PlayerList {
         Player[] onlinePlayers = server.getOnlinePlayers();
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
-            if (!hiddenPlayerNames.contains(p.getName())) {
+            if (!hiddenPlayerNames.contains(p.getName().toLowerCase())) {
                 visiblePlayers.add(p);
             }
         }
