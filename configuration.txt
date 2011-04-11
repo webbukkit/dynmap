@@ -1,5 +1,8 @@
 # All paths in this configuration file are relative to Dynmap's data-folder: minecraft_server/plugins/dynmap/
 
+# Treat hiddenplayers.txt as a whitelist for players to be shown on the map? (Default false)
+display-whitelist: false
+
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 

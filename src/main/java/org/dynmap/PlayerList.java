@@ -12,15 +12,18 @@ import java.util.Scanner;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.bukkit.util.config.Configuration;
 
 public class PlayerList {
     private Server server;
     private HashSet<String> hiddenPlayerNames = new HashSet<String>();
     private File hiddenPlayersFile;
+    private Configuration configuration;
 
-    public PlayerList(Server server, File hiddenPlayersFile) {
+    public PlayerList(Server server, File hiddenPlayersFile, Configuration configuration) {
         this.server = server;
         this.hiddenPlayersFile = hiddenPlayersFile;
+        this.configuration = configuration;
     }
 
     public void save() {
@@ -63,7 +66,7 @@ public class PlayerList {
     }
 
     public void setVisible(String playerName, boolean visible) {
-        if (visible)
+        if (visible ^ configuration.getBoolean("display-whitelist", false))
             show(playerName);
         else
             hide(playerName);
@@ -75,7 +78,7 @@ public class PlayerList {
         Player[] onlinePlayers = server.getOnlinePlayers();
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
-            if (p.getWorld().getName().equals(worldName) && !hiddenPlayerNames.contains(p.getName().toLowerCase())) {
+            if (p.getWorld().getName().equals(worldName) && !(configuration.getBoolean("display-whitelist", false) ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
                 visiblePlayers.add(p);
             }
         }
@@ -89,7 +92,7 @@ public class PlayerList {
         Player[] onlinePlayers = server.getOnlinePlayers();
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
-            if (!hiddenPlayerNames.contains(p.getName().toLowerCase())) {
+            if (!(configuration.getBoolean("display-whitelist", false) ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
                 visiblePlayers.add(p);
             }
         }

@@ -88,7 +88,7 @@ public class DynmapPlugin extends JavaPlugin {
             log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
         }
 
-        playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"));
+        playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
         playerList.load();
 
         mapManager = new MapManager(this, configuration);
@@ -320,13 +320,13 @@ public class DynmapPlugin extends JavaPlugin {
             } else if (c.equals("hide")) {
                 if (args.length == 1) {
                 	if(player != null && checkPlayerPermission(sender,"hide.self")) {
-	                    playerList.hide(player.getName());
+	                    playerList.setVisible(player.getName(),false);
 	                    sender.sendMessage("You are now hidden on Dynmap.");
 	                    return true;
                 	}
                 } else if (checkPlayerPermission(sender,"hide.others")) {
                     for (int i = 1; i < args.length; i++) {
-                        playerList.hide(args[i]);
+                        playerList.setVisible(args[i],false);
                         sender.sendMessage(args[i] + " is now hidden on Dynmap.");
                     }
                     return true;
@@ -334,13 +334,13 @@ public class DynmapPlugin extends JavaPlugin {
             } else if (c.equals("show")) {
                 if (args.length == 1) {
                 	if(player != null && checkPlayerPermission(sender,"show.self")) {
-	                    playerList.show(player.getName());
+	                    playerList.setVisible(player.getName(),true);
 	                    sender.sendMessage("You are now visible on Dynmap.");
 	                    return true;
                 	}
                 } else if (checkPlayerPermission(sender,"show.others")) {
                     for (int i = 1; i < args.length; i++) {
-                        playerList.show(args[i]);
+                        playerList.setVisible(args[i],true);
                         sender.sendMessage(args[i] + " is now visible on Dynmap.");
                     }
                     return true;
