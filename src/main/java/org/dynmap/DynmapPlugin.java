@@ -308,12 +308,8 @@ public class DynmapPlugin extends JavaPlugin {
             if (!commands.contains(c)) {
                 return false;
             }
-            if (!permissions.has(sender, c.toLowerCase())) {
-                sender.sendMessage("You don't have permission to use this command!");
-                return true;
-            }
 
-            if (c.equals("render")) {
+            if (c.equals("render") && checkPlayerPermission(sender,"render")) {
                 if (player != null) {
                     int invalidates = mapManager.touch(player.getLocation());
                     sender.sendMessage("Queued " + invalidates + " tiles" + (invalidates == 0
@@ -322,11 +318,13 @@ public class DynmapPlugin extends JavaPlugin {
                     return true;
                 }
             } else if (c.equals("hide")) {
-                if (args.length == 1 && player != null) {
-                    playerList.hide(player.getName());
-                    sender.sendMessage("You are now hidden on Dynmap.");
-                    return true;
-                } else {
+                if (args.length == 1) {
+                	if(player != null && checkPlayerPermission(sender,"hide.self")) {
+	                    playerList.hide(player.getName());
+	                    sender.sendMessage("You are now hidden on Dynmap.");
+	                    return true;
+                	}
+                } else if (checkPlayerPermission(sender,"hide.others")) {
                     for (int i = 1; i < args.length; i++) {
                         playerList.hide(args[i]);
                         sender.sendMessage(args[i] + " is now hidden on Dynmap.");
@@ -334,18 +332,20 @@ public class DynmapPlugin extends JavaPlugin {
                     return true;
                 }
             } else if (c.equals("show")) {
-                if (args.length == 1 && player != null) {
-                    playerList.show(player.getName());
-                    sender.sendMessage("You are now visible on Dynmap.");
-                    return true;
-                } else {
+                if (args.length == 1) {
+                	if(player != null && checkPlayerPermission(sender,"show.self")) {
+	                    playerList.show(player.getName());
+	                    sender.sendMessage("You are now visible on Dynmap.");
+	                    return true;
+                	}
+                } else if (checkPlayerPermission(sender,"show.others")) {
                     for (int i = 1; i < args.length; i++) {
                         playerList.show(args[i]);
                         sender.sendMessage(args[i] + " is now visible on Dynmap.");
                     }
                     return true;
                 }
-            } else if (c.equals("fullrender")) {
+            } else if (c.equals("fullrender") && checkPlayerPermission(sender,"fullrender")) {
                 if (args.length > 1) {
                     for (int i = 1; i < args.length; i++) {
                         World w = getServer().getWorld(args[i]);
@@ -357,9 +357,20 @@ public class DynmapPlugin extends JavaPlugin {
                     return true;
                 }
             }
+            return true;
         }
         return false;
     }
+
+	private boolean checkPlayerPermission(CommandSender sender,	String permission) {
+		if (!(sender instanceof Player)) {
+			return true;
+		} else if (!permissions.has(sender, permission.toLowerCase())) {
+			sender.sendMessage("You don't have permission to use this command!");
+			return false;
+		}
+		return true;
+	}
 
     private void jsonConfig() {
         File outputFile;
