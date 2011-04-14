@@ -26,7 +26,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION['lastchat'] < time())
 }
 elseif($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION['lastchat'] > time())
 {
-	echo json_encode(str_replace('%interval%', $msginterval, $config['spammessage']));
+	header('HTTP/1.1 403 Forbidden');
 }
 
 ?>

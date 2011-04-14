@@ -89,6 +89,7 @@ class JsonTimerTask extends TimerTask {
 
         //Handles Updates
         for (World world : this.server.getWorlds()) {
+			//Parse region file for multi world style
 			if(regions.getBoolean("useworldpath", false))
 				parseRegionFile(world.getName() + "/" + regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
 
@@ -126,11 +127,13 @@ class JsonTimerTask extends TimerTask {
             }
         }
         lastTimestamp = System.currentTimeMillis();
-		
+
+		//Parse regions file for non worlds style
 		if (!regions.getBoolean("useworldpath", false))
 			 parseRegionFile(regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml"));
     }
 
+	//handles parsing and writing region json files
 	private void parseRegionFile(String regionFile, String outputFileName)
 	{
 		File outputFile;
