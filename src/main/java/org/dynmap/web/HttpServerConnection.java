@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,6 +156,7 @@ public class HttpServerConnection extends Thread {
                     boolean directoryHandler = key.endsWith("/");
                     if (directoryHandler && request.path.startsWith(entry.getKey()) || !directoryHandler && request.path.equals(entry.getKey())) {
                         relativePath = request.path.substring(entry.getKey().length());
+                        relativePath = URLDecoder.decode(relativePath,"utf-8");
                         handler = entry.getValue();
                         break;
                     }

@@ -30,7 +30,7 @@ public class ClientUpdateHandler implements HttpHandler {
         this.server = server;
     }
 
-    Pattern updatePathPattern = Pattern.compile("world/([a-zA-Z0-9_\\-\\.]+)/([0-9]*)");
+    Pattern updatePathPattern = Pattern.compile("world/([^/]+)/([0-9]*)");
     private static final HttpStatus WorldNotFound = new HttpStatus(HttpStatus.NotFound.getCode(), "World Not Found"); 
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
