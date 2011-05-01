@@ -71,7 +71,7 @@ public class ClientUpdateHandler implements HttpHandler {
         for(int i=0;i<players.length;i++) {
             Player p = players[i];
             Location pl = p.getLocation();
-            update.players[i] = new Client.Player(p.getName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
+            update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
         }
         
         update.updates = mapManager.getWorldUpdates(worldName, since);
