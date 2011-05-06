@@ -98,19 +98,19 @@ web:
       #- type: digitalclock
       - type: timeofdayclock
         showdigitalclock: true
-      - type: regions
-        name: WorldGuard
-        useworldpath: true
-        filename: regions.yml
-        basenode: regions
-        use3dregions: true
-        infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname% - %priority% (%parent%)</span><br /> Owners <span style="font-weight:bold;">%playerowners% %groupowners%</span><br />Members <span style="font-weight:bold;">%playermembers% %groupmembers%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
-        regionstyle:
-          strokeColor: "#FF0000"
-          strokeOpacity: 0.8
-          strokeWeight: 3
-          fillColor: "#FF0000"
-          fillOpacity: 0.35
+      #- type: regions
+      #  name: WorldGuard
+      #  useworldpath: true
+      #  filename: regions.yml
+      #  basenode: regions
+      #  use3dregions: true
+      #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname% - %priority% (%parent%)</span><br /> Owners <span style="font-weight:bold;">%playerowners% %groupowners%</span><br />Members <span style="font-weight:bold;">%playermembers% %groupmembers%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
+      #  regionstyle:
+      #    strokeColor: "#FF0000"
+      #    strokeOpacity: 0.8
+      #    strokeWeight: 3
+      #    fillColor: "#FF0000"
+      #    fillOpacity: 0.35
     
     defaultworld: world
     worlds:
