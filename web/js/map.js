@@ -78,7 +78,7 @@ function Location(world, x, y, z) {
 function DynMap(options) {
 	var me = this;
 	me.options = options;
-	$.getJSON(me.options.updateUrl + 'configuration', function(configuration) {
+	$.getJSON(me.options.configurationUrl || (me.options.updateUrl + 'configuration'), function(configuration) {
 		me.configure(configuration);
 		me.initialize();
 	}, function(status, statusMessage) {
