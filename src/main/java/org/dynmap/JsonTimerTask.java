@@ -31,7 +31,7 @@ class JsonTimerTask extends TimerTask {
     private Server server;
     private MapManager mapManager;
     private Configuration configuration;
-	private ConfigurationNode regions;
+    private ConfigurationNode regions;
     private static final JSONParser parser = new JSONParser();
     private long lastTimestamp = 0;
 
@@ -40,14 +40,13 @@ class JsonTimerTask extends TimerTask {
         this.server = this.plugin.getServer();
         this.mapManager = this.plugin.getMapManager();
         this.configuration = config;
-		//this.regions = configuration.getNode("web").getNode("components").getNode("regions");
-		System.out.println();
-		for(ConfigurationNode type : configuration.getNodeList("web.components", null))
-			if(type.getString("type").equalsIgnoreCase("regions"))
-			{
-				this.regions = type;
-				break;
-			}
+        //this.regions = configuration.getNode("web").getNode("components").getNode("regions");
+        System.out.println();
+        for(ConfigurationNode type : configuration.getNodeList("web.components", null))
+            if(type.getString("type").equalsIgnoreCase("regions")) {
+                this.regions = type;
+                break;
+            }
     }
 
     public void run() {
@@ -89,9 +88,9 @@ class JsonTimerTask extends TimerTask {
 
         //Handles Updates
         for (World world : this.server.getWorlds()) {
-			//Parse region file for multi world style
-			if(regions.getBoolean("useworldpath", false))
-				parseRegionFile(world.getName() + "/" + regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
+            //Parse region file for multi world style
+            if(regions.getBoolean("useworldpath", false))
+                parseRegionFile(world.getName() + "/" + regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
 
             current = System.currentTimeMillis();
 
@@ -128,47 +127,47 @@ class JsonTimerTask extends TimerTask {
         }
         lastTimestamp = System.currentTimeMillis();
 
-		//Parse regions file for non worlds style
-		if (!regions.getBoolean("useworldpath", false))
-			 parseRegionFile(regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml"));
+        //Parse regions file for non worlds style
+        if (!regions.getBoolean("useworldpath", false))
+             parseRegionFile(regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml"));
     }
 
-	//handles parsing and writing region json files
-	private void parseRegionFile(String regionFile, String outputFileName)
-	{
-		File outputFile;
-		Configuration regionConfig = null;
-		if(regions.getBoolean("useworldpath", false))
-		{
-			if(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile).exists())
-				regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
-			else if(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile).exists())
-				regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile));
-		}
-		else
-			regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
-		//File didn't exist
-		if(regionConfig == null)
-			return;
-		regionConfig.load();
+    //handles parsing and writing region json files
+    private void parseRegionFile(String regionFile, String outputFileName)
+    {
+        File outputFile;
+        Configuration regionConfig = null;
+        if(regions.getBoolean("useworldpath", false))
+        {
+            if(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile).exists())
+                regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
+            else if(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile).exists())
+                regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile));
+        }
+        else
+            regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
+        //File didn't exist
+        if(regionConfig == null)
+            return;
+        regionConfig.load();
 
-		outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf("."))+".json";
+        outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf("."))+".json";
 
-		File webWorldPath = new File(this.configuration.getString("webpath", "web")+"/standalone/", outputFileName);
-		Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(regions.getString("basenode", "regions"));
-		if (webWorldPath.isAbsolute())
-			outputFile = webWorldPath;
-		else {
-			outputFile = new File(plugin.getDataFolder(), webWorldPath.toString());
-		}
-		try {
-			FileOutputStream fos = new FileOutputStream(outputFile);
-			fos.write(Json.stringifyJson(regionData).getBytes());
-			fos.close();
-		} catch (FileNotFoundException ex) {
-			log.log(Level.SEVERE, "Exception while writing JSON-file.", ex);
-		} catch (IOException ioe) {
-			log.log(Level.SEVERE, "Exception while writing JSON-file.", ioe);
-		}
-	}
+        File webWorldPath = new File(this.configuration.getString("webpath", "web")+"/standalone/", outputFileName);
+        Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(regions.getString("basenode", "regions"));
+        if (webWorldPath.isAbsolute())
+            outputFile = webWorldPath;
+        else {
+            outputFile = new File(plugin.getDataFolder(), webWorldPath.toString());
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(outputFile);
+            fos.write(Json.stringifyJson(regionData).getBytes());
+            fos.close();
+        } catch (FileNotFoundException ex) {
+            log.log(Level.SEVERE, "Exception while writing JSON-file.", ex);
+        } catch (IOException ioe) {
+            log.log(Level.SEVERE, "Exception while writing JSON-file.", ioe);
+        }
+    }
 }
