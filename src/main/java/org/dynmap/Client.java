@@ -6,6 +6,8 @@ public class Client {
     public static class Update {
         public long timestamp;
         public long servertime;
+        public boolean hasStorm;
+        public boolean isThundering;
         public Player[] players;
         public Object[] updates;
     }

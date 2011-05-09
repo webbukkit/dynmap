@@ -96,6 +96,8 @@ class JsonTimerTask extends TimerTask {
 
             update.timestamp = current;
             update.servertime = world.getTime() % 24000;
+            update.hasStorm = world.hasStorm();
+            update.isThundering = world.isThundering();
 
             Player[] players = plugin.playerList.getVisiblePlayers();
             update.players = new Client.Player[players.length];
