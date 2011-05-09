@@ -33,6 +33,12 @@ jsonfile: false
 # How often the json file gets written to(in seconds)
 jsonfile-interval: 1
 
+# Use timesliced fullrender - takes a bit longer, but much more polite for server
+timeslicerender: true
+
+# Period between tile renders for timesliced fullrender, in seconds
+timesliceinterval: 0.5
+
 # The maptypes Dynmap will use to render.
 worlds:
   - name: world
