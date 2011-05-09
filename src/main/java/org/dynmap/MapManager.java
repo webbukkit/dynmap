@@ -62,7 +62,7 @@ public class MapManager {
             if (bukkitWorld != null)
                 activateWorld(bukkitWorld);
         }
-        do_timesliced_render = configuration.getBoolean("timeslicerender", false);
+        do_timesliced_render = configuration.getBoolean("timeslicerender", true);
         timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
         
         scheduler = plugin.getServer().getScheduler();
