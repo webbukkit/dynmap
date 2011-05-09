@@ -295,6 +295,39 @@
 }
 
 /*******************
+ * Clock weather style
+ */
+
+.weather {
+    position: absolute;
+    top: 17px;
+    right: 5px;
+    width: 25px;
+    height: 23px;
+    display: block;
+    background-repeat: no-repeat;
+}
+
+.weather.sunny {
+    background-image: url(../images/weather_sunny.png);
+}
+
+.weather.stormy {
+    background-image: url(../images/weather_stormy.png);
+}
+.weather .thunder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 25px;
+    height: 25px;
+    display: none;
+    background-repeat: no-repeat;
+    background-image: url(../images/weather_thunder.png);
+}
+
+/*******************
  * map list-specific styling
  */
 

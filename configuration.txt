@@ -107,6 +107,7 @@ web:
       #- type: digitalclock
       - type: timeofdayclock
         showdigitalclock: true
+        #showweather: true
       #- type: regions
       #  name: WorldGuard
       #  useworldpath: true

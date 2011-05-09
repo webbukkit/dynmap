@@ -62,6 +62,27 @@ componentconstructors['timeofdayclock'] = function(dynmap, configuration) {
 			setTime(update.servertime);
 		});
 	}
+	if(configuration.showweather) {
+		var weather = $('<div/>')
+			.addClass('weather')
+			.appendTo(element);
+		
+		var thunder = $('<div/>')
+			.addClass('thunder')
+            .css('display','none')
+			.appendTo(weather);
+		
+		var setWeather = function(hasStorm, isThundering) {
+			weather
+				.addClass(hasStorm ? 'stormy' : 'sunny')
+				.removeClass(hasStorm ? 'sunny' : 'stormy');
+			thunder.css('display',isThundering ? 'block' : 'none');
+		};
+		
+		$(dynmap).bind('worldupdated', function(event, update) {
+			setWeather(update.hasStorm, update.isThundering);
+		});
+	}
 	$(dynmap).bind('worldupdated', function(event, update) {
 		var sunangle;
 		var time = update.servertime;
