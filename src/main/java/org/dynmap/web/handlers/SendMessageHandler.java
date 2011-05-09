@@ -1,8 +1,6 @@
 package org.dynmap.web.handlers;
 
-import java.io.BufferedOutputStream;
 import java.io.InputStreamReader;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Logger;
