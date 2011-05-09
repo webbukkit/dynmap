@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
@@ -153,6 +154,9 @@ public class DynmapPlugin extends JavaPlugin {
         } catch (IOException e) {
             log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
+        /* Print version info */
+        PluginDescriptionFile pdfFile = this.getDescription();
+        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
     }
 
     public void onDisable() {
