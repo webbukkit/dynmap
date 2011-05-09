@@ -128,7 +128,7 @@ class JsonTimerTask extends TimerTask {
         lastTimestamp = System.currentTimeMillis();
 
         //Parse regions file for non worlds style
-        if (null != regions)
+        if (regions != null)
             if (!regions.getBoolean("useworldpath", false))
                 parseRegionFile(regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml"));
     }
