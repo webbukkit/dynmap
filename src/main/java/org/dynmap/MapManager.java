@@ -151,7 +151,7 @@ public class MapManager {
             public void handle(MapTile t) {
             	if(do_sync_render)
             		scheduler.scheduleSyncDelayedTask(plug_in, 
-            			new FullWorldRenderState(t), (int)(timeslice_interval*20));
+            			new FullWorldRenderState(t), 1);
             	else
             		render(t);
             }
