@@ -6,6 +6,9 @@ display-whitelist: false
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 
+# Do render on main thread - may generate more server load, but safer and fixes broken tiles
+renderonsync: true
+
 render-triggers:
 #  - playermove
 #  - playerjoin
@@ -32,6 +35,12 @@ jsonfile: false
 
 # How often the json file gets written to(in seconds)
 jsonfile-interval: 1
+
+# Use timesliced fullrender - takes a bit longer, but much more polite for server
+timeslicerender: true
+
+# Period between tile renders for timesliced fullrender, in seconds
+timesliceinterval: 0.5
 
 # The maptypes Dynmap will use to render.
 worlds:
@@ -79,6 +88,9 @@ web:
     allowchat: true
     allowwebchat: true
     webchat-interval: 5
+    # If set to true, this enables a workaround for chat plugins like HeroChat that cancel chat messages
+    # as part of implementing channels and the like - set to false if seeing cancelled message is a problem
+    ignorechatcancel: true
     
     showplayerfacesinmenu: true
     

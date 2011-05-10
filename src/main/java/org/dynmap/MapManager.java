@@ -10,11 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.DynmapWorld;
+import org.dynmap.MapTile;
 import org.dynmap.debug.Debug;
+import org.bukkit.Chunk;
 
 public class MapManager {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -23,15 +29,131 @@ public class MapManager {
     
     public Map<String, DynmapWorld> worlds = new HashMap<String, DynmapWorld>();
     public Map<String, DynmapWorld> inactiveworlds = new HashMap<String, DynmapWorld>();
+    private BukkitScheduler scheduler;
+    private DynmapPlugin plug_in;
+    private boolean do_timesliced_render = false;
+    private double timeslice_interval = 0.0;
+    private boolean do_sync_render = false;	/* Do incremental renders on sync thread too */
+    /* Which timesliced renders are active */
+    private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
 
     /* lock for our data structures */
     public static final Object lock = new Object();
+
+    private class FullWorldRenderState implements Runnable {
+    	DynmapWorld world;	/* Which world are we rendering */
+    	Location loc;		/* Start location */
+    	int	map_index = -1;	/* Which map are we on */
+    	MapType map;
+        HashSet<MapTile> found = null;
+        HashSet<MapTile> rendered = null;
+        LinkedList<MapTile> renderQueue = null;
+        MapTile tile0 = null;
+        
+        /* Full world, all maps render */
+        FullWorldRenderState(DynmapWorld dworld, Location l) {
+        	world = dworld;
+        	loc = l;
+            found = new HashSet<MapTile>();
+            rendered = new HashSet<MapTile>();
+            renderQueue = new LinkedList<MapTile>();
+        }
+        
+        /* Single tile render - used for incremental renders */
+        FullWorldRenderState(MapTile t) {
+        	world = worlds.get(t.getWorld().getName());
+        	tile0 = t;
+        }
+        
+        public void run() {
+        	MapTile tile;
+        	
+        	if(tile0 == null) {	/* Not single tile render */
+        		/* If render queue is empty, start next map */
+        		if(renderQueue.isEmpty()) {
+        			found.clear();
+        			rendered.clear();
+        			map_index++;	/* Next map */
+        			if(map_index >= world.maps.size()) {	/* Last one done? */
+        				log.info("Full render finished.");
+        				active_renders.remove(world.world.getName());
+        				return;
+        			}
+        			map = world.maps.get(map_index);
+
+        			/* Now, prime the render queue */
+        			for (MapTile mt : map.getTiles(loc)) {
+        				if (!found.contains(mt)) {
+        					found.add(mt);
+        					renderQueue.add(mt);
+        				}
+        			}
+        		}
+        		tile = renderQueue.pollFirst();
+        	}
+        	else {	/* Else, single tile render */
+        		tile = tile0;
+        	}
+
+            DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
+            LinkedList<DynmapChunk> loadedChunks = new LinkedList<DynmapChunk>();
+            World w = world.world;
+            // Load the required chunks.
+            for (DynmapChunk chunk : requiredChunks) {
+                boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
+                boolean didload = w.loadChunk(chunk.x, chunk.z, false);
+                if ((!wasLoaded) && didload)
+                    loadedChunks.add(chunk);
+            }
+            if(tile0 != null) {	/* Single tile? */
+            	render(tile);	/* Just render */
+            }
+            else {
+            	if (render(tile)) {
+            		found.remove(tile);
+            		rendered.add(tile);
+            		for (MapTile adjTile : map.getAdjecentTiles(tile)) {
+            			if (!found.contains(adjTile) && !rendered.contains(adjTile)) {
+            				found.add(adjTile);
+            				renderQueue.add(adjTile);
+            			}
+            		}
+            	}
+            	found.remove(tile);
+            }
+            /* And unload what we loaded */
+            while (!loadedChunks.isEmpty()) {
+                DynmapChunk c = loadedChunks.pollFirst();
+                /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
+                 * when chunks are unloaded but not saved - removing them seems to do the trick */
+                Chunk cc = w.getChunkAt(c.x, c.z);
+                if(cc != null) {
+                	for(Entity e: cc.getEntities())
+                		e.remove();
+                }
+                /* Since we only remember ones we loaded, and we're synchronous, no player has 
+                 * moved, so it must be safe (also prevent chunk leak, which appears to happen
+                 * because isChunkInUse defined "in use" as being within 256 blocks of a player,
+                 * while the actual in-use chunk area for a player where the chunks are managed
+                 * by the MC base server is 21x21 (or about a 160 block radius) */
+                w.unloadChunk(c.x, c.z, false, false);	
+            }
+            if(tile0 == null) {	/* fullrender */
+            	/* Schedule the next tile to be worked */
+            	scheduler.scheduleSyncDelayedTask(plug_in, this, (int)(timeslice_interval*20));
+            }
+        }
+    }
 
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {
-                render(t);
+            	if(do_sync_render)
+            		scheduler.scheduleSyncDelayedTask(plug_in, 
+            			new FullWorldRenderState(t), 1);
+            	else
+            		render(t);
             }
         }, (int) (configuration.getDouble("renderinterval", 0.5) * 1000));
         
@@ -50,17 +172,41 @@ public class MapManager {
             if (bukkitWorld != null)
                 activateWorld(bukkitWorld);
         }
+        do_timesliced_render = configuration.getBoolean("timeslicerender", true);
+        timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
+        do_sync_render = configuration.getBoolean("renderonsync", true);
+        
+        scheduler = plugin.getServer().getScheduler();
+        plug_in = plugin;
         
         tileQueue.start();
     }
 
+    
+    
     void renderFullWorld(Location l) {
         DynmapWorld world = worlds.get(l.getWorld().getName());
         if (world == null) {
             log.severe("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
             return;
         }
+        if(do_timesliced_render) {
+        	String wname = l.getWorld().getName();
+        	FullWorldRenderState rndr = active_renders.get(wname);
+        	if(rndr != null) {
+        		log.info("Full world render of world '" + wname + "' already active.");
+        		return;
+        	}
+        	rndr = new FullWorldRenderState(world,l);	/* Make new activation record */
+        	active_renders.put(wname, rndr);	/* Add to active table */
+        	/* Schedule first tile to be worked */
+        	scheduler.scheduleSyncDelayedTask(plug_in, rndr, (int)(timeslice_interval*20));
+            log.info("Full render starting on world '" + wname + "' (timesliced)...");
+
+            return;
+        }
         World w = world.world;
+        
         log.info("Full render starting on world '" + w.getName() + "'...");
         for (MapType map : world.maps) {
             int requiredChunkCount = 200;

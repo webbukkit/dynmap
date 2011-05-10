@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
@@ -57,6 +58,7 @@ public class DynmapPlugin extends JavaPlugin {
     public Configuration configuration;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
+    public boolean ignore_chat_cancel;
 
     public Timer timer;
 
@@ -153,6 +155,9 @@ public class DynmapPlugin extends JavaPlugin {
         } catch (IOException e) {
             log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
+        /* Print version info */
+        PluginDescriptionFile pdfFile = this.getDescription();
+        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
     }
 
     public void onDisable() {
@@ -243,6 +248,7 @@ public class DynmapPlugin extends JavaPlugin {
             pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Monitor, this);
             pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
             pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
+            ignore_chat_cancel = configuration.getNode("web").getBoolean("ignorechatcancel", false);
         }
 
         // To link configuration to real loaded worlds.
@@ -349,11 +355,14 @@ public class DynmapPlugin extends JavaPlugin {
                 if (args.length > 1) {
                     for (int i = 1; i < args.length; i++) {
                         World w = getServer().getWorld(args[i]);
-                        mapManager.renderFullWorld(new Location(w, 0, 0, 0));
+                        if(w != null)
+                        	mapManager.renderFullWorld(new Location(w, 0, 0, 0));
                     }
                     return true;
                 } else if (player != null) {
-                    mapManager.renderFullWorld(player.getLocation());
+                	Location loc = player.getLocation();
+                	if(loc != null)
+                		mapManager.renderFullWorld(loc);
                     return true;
                 }
             }
@@ -396,5 +405,9 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager.pushUpdate(new Client.ChatMessage("web", name, message));
         log.info("[WEB]" + name + ": " + message);
         getServer().broadcastMessage("[WEB]" + name + ": " + message);
+    }
+    
+    public boolean ignoreChatCancel() {
+    	return ignore_chat_cancel;
     }
 }
