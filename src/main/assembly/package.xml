@@ -2,7 +2,6 @@
   <id>bin</id>
   <includeBaseDirectory>false</includeBaseDirectory>
   <formats>
-    <format>tar.bz2</format>
     <format>zip</format>
   </formats>
   <fileSets>
