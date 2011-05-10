@@ -58,6 +58,7 @@ public class DynmapPlugin extends JavaPlugin {
     public Configuration configuration;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
+    public boolean ignore_chat_cancel;
 
     public Timer timer;
 
@@ -247,6 +248,7 @@ public class DynmapPlugin extends JavaPlugin {
             pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Monitor, this);
             pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
             pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
+            ignore_chat_cancel = configuration.getNode("web").getBoolean("ignorechatcancel", false);
         }
 
         // To link configuration to real loaded worlds.
@@ -403,5 +405,9 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager.pushUpdate(new Client.ChatMessage("web", name, message));
         log.info("[WEB]" + name + ": " + message);
         getServer().broadcastMessage("[WEB]" + name + ": " + message);
+    }
+    
+    public boolean ignoreChatCancel() {
+    	return ignore_chat_cancel;
     }
 }

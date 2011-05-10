@@ -14,8 +14,11 @@ public class DynmapPlayerChatListener extends PlayerListener {
 
     @Override
     public void onPlayerChat(PlayerChatEvent event) {
-    	//MikePrimm - this breaks us with HeroChat and the like - not sure if a better solution...
-        //if(event.isCancelled()) return;
+    	//MikePrimm - this breaks us with HeroChat and the like - it's not ideal, but option for folks that need it helps
+        if(event.isCancelled()) {
+        	if(!plugin.ignoreChatCancel())
+        		return;
+        }
 
         plugin.mapManager.pushUpdate(new Client.ChatMessage("player", event.getPlayer().getDisplayName(), event.getMessage()));
     }
