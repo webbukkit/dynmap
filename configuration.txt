@@ -6,6 +6,9 @@ display-whitelist: false
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 
+# Do render on main thread - may generate more server load, but safer and fixes broken tiles
+renderonsync: true
+
 render-triggers:
 #  - playermove
 #  - playerjoin
