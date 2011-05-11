@@ -1,6 +1,8 @@
 package org.dynmap;
 
 import java.io.File;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.HashMap;
 
+import javax.imageio.ImageIO;
+import org.dynmap.kzedmap.KzedMapTile;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -20,12 +24,15 @@ import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapTile;
 import org.dynmap.debug.Debug;
+import org.dynmap.kzedmap.KzedMap;
+import org.dynmap.kzedmap.KzedZoomedMapTile;
 import org.bukkit.Chunk;
 
 public class MapManager {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
     public AsynchronousQueue<MapTile> tileQueue;
+    public AsynchronousQueue<ImageWriter> writeQueue;
     
     public Map<String, DynmapWorld> worlds = new HashMap<String, DynmapWorld>();
     public Map<String, DynmapWorld> inactiveworlds = new HashMap<String, DynmapWorld>();
@@ -39,6 +46,12 @@ public class MapManager {
 
     /* lock for our data structures */
     public static final Object lock = new Object();
+
+    public static MapManager mapman;	/* Our singleton */
+	
+    private static class ImageWriter {
+    	Runnable run;
+    }
 
     private class FullWorldRenderState implements Runnable {
     	DynmapWorld world;	/* Which world are we rendering */
@@ -146,6 +159,9 @@ public class MapManager {
     }
 
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
+    	
+    	mapman = this;
+    	
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {
@@ -156,6 +172,14 @@ public class MapManager {
             		render(t);
             }
         }, (int) (configuration.getDouble("renderinterval", 0.5) * 1000));
+        
+        this.writeQueue = new AsynchronousQueue<ImageWriter>(
+    		new Handler<ImageWriter>() {
+    			@Override
+    			public void handle(ImageWriter w) {
+    				w.run.run();
+    			}
+    		}, 10);
         
         for(Object worldConfigurationObj : (List<?>)configuration.getProperty("worlds")) {
             Map<?, ?> worldConfiguration = (Map<?, ?>)worldConfigurationObj;
@@ -180,6 +204,7 @@ public class MapManager {
         plug_in = plugin;
         
         tileQueue.start();
+        writeQueue.start();
     }
 
     
@@ -329,18 +354,20 @@ public class MapManager {
     
     public void startRendering() {
         tileQueue.start();
+    	writeQueue.start();
     }
     
     public void stopRendering() {
         tileQueue.stop();
+        writeQueue.stop();
     }
     
     public boolean render(MapTile tile) {
         boolean result = tile.getMap().render(tile, getTileFile(tile));
-        pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+        //Do update after async file write
+        
         return result;
-    }
-    
+    }    
     
     private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();
     private File getTileFile(MapTile tile) {
@@ -376,5 +403,11 @@ public class MapManager {
         if (world == null)
             return new Object[0];
         return world.updates.getUpdatedObjects(since);
+    }
+    
+    public void enqueueImageWrite(Runnable run) {
+    	ImageWriter handler = new ImageWriter();
+    	handler.run = run;
+    	writeQueue.push(handler);
     }
 }
