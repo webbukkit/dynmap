@@ -1,8 +1,6 @@
 package org.dynmap.web.handlers;
 
-import java.io.BufferedOutputStream;
 import java.io.InputStreamReader;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Logger;
@@ -24,7 +22,7 @@ public class SendMessageHandler implements HttpHandler {
     public Event<Message> onMessageReceived = new Event<SendMessageHandler.Message>();
     
     public int maximumMessageInterval = 1000;
-	public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
+    public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
     private LinkedList<WebUser> disallowedUserQueue = new LinkedList<WebUser>();
     private Object disallowedUsersLock = new Object();

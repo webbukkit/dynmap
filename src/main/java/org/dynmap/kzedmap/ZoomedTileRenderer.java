@@ -6,7 +6,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+
 import javax.imageio.ImageIO;
+
 import org.dynmap.debug.Debug;
 
 public class ZoomedTileRenderer {

@@ -64,6 +64,8 @@ public class ClientUpdateHandler implements HttpHandler {
         Client.Update update = new Client.Update();
         update.timestamp = current;
         update.servertime = world.getTime() % 24000;
+        update.hasStorm = world.hasStorm();
+        update.isThundering = world.isThundering();
         
         
         Player[] players = playerList.getVisiblePlayers();

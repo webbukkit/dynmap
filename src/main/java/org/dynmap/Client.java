@@ -1,9 +1,13 @@
 package org.dynmap;
 
+import org.bukkit.ChatColor;
+
 public class Client {
     public static class Update {
         public long timestamp;
         public long servertime;
+        public boolean hasStorm;
+        public boolean isThundering;
         public Player[] players;
         public Object[] updates;
     }
@@ -15,7 +19,7 @@ public class Client {
         public double x, y, z;
 
         public Player(String name, String world, double x, double y, double z) {
-            this.name = name.replaceAll("\u00A7[0-9a-fA-F]", "");
+            this.name = ChatColor.stripColor(name);
             this.world = world;
             this.x = x;
             this.y = y;
@@ -35,8 +39,8 @@ public class Client {
 
         public ChatMessage(String source, String playerName, String message) {
             this.source = source;
-            this.playerName = playerName.replaceAll("\u00A7[0-9a-fA-F]", "");
-            this.message = message.replaceAll("\u00A7[0-9a-fA-F]", "");
+            this.playerName = ChatColor.stripColor(playerName);
+            this.message = ChatColor.stripColor(message);
         }
     }
     
@@ -44,7 +48,7 @@ public class Client {
         public String type = "playerjoin";
         public String playerName;
         public PlayerJoinMessage(String playerName) {
-            this.playerName = playerName.replaceAll("\u00A7[0-9a-fA-F]", "");
+            this.playerName = ChatColor.stripColor(playerName);
         }
     }
     
@@ -52,7 +56,7 @@ public class Client {
         public String type = "playerquit";
         public String playerName;
         public PlayerQuitMessage(String playerName) {
-            this.playerName = playerName.replaceAll("\u00A7[0-9a-fA-F]", "");
+            this.playerName = ChatColor.stripColor(playerName);
         }
     }
 

@@ -138,7 +138,7 @@ public class DynmapPlugin extends JavaPlugin {
         if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
             SendMessageHandler messageHandler = new SendMessageHandler() {{
                 maximumMessageInterval = (configuration.getNode("web").getInt("webchat-interval", 1) * 1000);
-				spamMessage = "\""+configuration.getNode("web").getString("spammessage", "You may only chat once every %interval% seconds.")+"\"";
+                spamMessage = "\""+configuration.getNode("web").getString("spammessage", "You may only chat once every %interval% seconds.")+"\"";
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
                     public void triggered(Message t) {
@@ -325,11 +325,11 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             } else if (c.equals("hide")) {
                 if (args.length == 1) {
-                	if(player != null && checkPlayerPermission(sender,"hide.self")) {
-	                    playerList.setVisible(player.getName(),false);
-	                    sender.sendMessage("You are now hidden on Dynmap.");
-	                    return true;
-                	}
+                    if(player != null && checkPlayerPermission(sender,"hide.self")) {
+                        playerList.setVisible(player.getName(),false);
+                        sender.sendMessage("You are now hidden on Dynmap.");
+                        return true;
+                    }
                 } else if (checkPlayerPermission(sender,"hide.others")) {
                     for (int i = 1; i < args.length; i++) {
                         playerList.setVisible(args[i],false);
@@ -339,11 +339,11 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             } else if (c.equals("show")) {
                 if (args.length == 1) {
-                	if(player != null && checkPlayerPermission(sender,"show.self")) {
-	                    playerList.setVisible(player.getName(),true);
-	                    sender.sendMessage("You are now visible on Dynmap.");
-	                    return true;
-                	}
+                    if(player != null && checkPlayerPermission(sender,"show.self")) {
+                        playerList.setVisible(player.getName(),true);
+                        sender.sendMessage("You are now visible on Dynmap.");
+                        return true;
+                    }
                 } else if (checkPlayerPermission(sender,"show.others")) {
                     for (int i = 1; i < args.length; i++) {
                         playerList.setVisible(args[i],true);
@@ -371,15 +371,15 @@ public class DynmapPlugin extends JavaPlugin {
         return false;
     }
 
-	private boolean checkPlayerPermission(CommandSender sender,	String permission) {
-		if (!(sender instanceof Player)) {
-			return true;
-		} else if (!permissions.has(sender, permission.toLowerCase())) {
-			sender.sendMessage("You don't have permission to use this command!");
-			return false;
-		}
-		return true;
-	}
+    private boolean checkPlayerPermission(CommandSender sender,    String permission) {
+        if (!(sender instanceof Player)) {
+            return true;
+        } else if (!permissions.has(sender, permission.toLowerCase())) {
+            sender.sendMessage("You don't have permission to use this command!");
+            return false;
+        }
+        return true;
+    }
 
     private void jsonConfig() {
         File outputFile;
