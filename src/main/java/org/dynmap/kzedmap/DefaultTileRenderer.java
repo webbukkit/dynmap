@@ -11,7 +11,10 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.bukkit.World;
+import org.dynmap.Client;
 import org.dynmap.ColorScheme;
+import org.dynmap.MapManager;
+import org.dynmap.MapTile;
 import org.dynmap.debug.Debug;
 
 public class DefaultTileRenderer implements MapTileRenderer {
@@ -104,12 +107,28 @@ public class DefaultTileRenderer implements MapTileRenderer {
             iz--;
         }
 
-        /* save the generated tile */
-        saveImage(im, outputFile);
-        im.flush();
-        
-        tile.file = outputFile;
-        ((KzedMap) tile.getMap()).invalidateTile(new KzedZoomedMapTile(world, (KzedMap) tile.getMap(), tile));
+        /* Hand encoding and writing file off to MapManager */
+        final File fname = outputFile;
+        final KzedMapTile mtile = tile;
+        final BufferedImage img = im;
+        MapManager.mapman.enqueueImageWrite(new Runnable() {
+        	public void run() {
+        		Debug.debug("saving image " + fname.getPath());        
+        		try {
+        			ImageIO.write(img, "png", fname);
+        		} catch (IOException e) {
+        			Debug.error("Failed to save image: " + fname.getPath(), e);
+        		} catch (java.lang.NullPointerException e) {
+        			Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+        		}
+        		img.flush();
+        		mtile.file = fname;
+        		((KzedMap)mtile.getMap()).invalidateTile(
+        			new KzedZoomedMapTile(mtile.getWorld(), (KzedMap) mtile.getMap(), mtile));
+        		MapManager.mapman.pushUpdate(mtile.getWorld(), 
+    				new Client.Tile(mtile.getFilename()));        		
+        	}
+        });        
 
         return !isempty;
     }
@@ -168,19 +187,6 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     }
                 }
             }
-        }
-    }
-
-    /* save rendered tile, update zoom-out tile */
-    public void saveImage(BufferedImage im, File outputFile) {
-        Debug.debug("saving image " + outputFile.getPath());
-        /* save image */
-        try {
-            ImageIO.write(im, "png", outputFile);
-        } catch (IOException e) {
-            Debug.error("Failed to save image: " + outputFile.getPath(), e);
-        } catch (java.lang.NullPointerException e) {
-            Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
         }
     }
 }
