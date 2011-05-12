@@ -64,7 +64,6 @@ public class ColorScheme {
                 if (split.length < 17) {
                     continue;
                 }
-                System.out.println(split[0]);
                 Integer id;
                 Integer dat = null;
                 int idx = split[0].indexOf(':');
