@@ -180,6 +180,10 @@ public class MapManager {
     				w.run.run();
     			}
     		}, 10);
+
+        do_timesliced_render = configuration.getBoolean("timeslicerender", true);
+        timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
+        do_sync_render = configuration.getBoolean("renderonsync", true);
         
         for(Object worldConfigurationObj : (List<?>)configuration.getProperty("worlds")) {
             Map<?, ?> worldConfiguration = (Map<?, ?>)worldConfigurationObj;
@@ -196,9 +200,6 @@ public class MapManager {
             if (bukkitWorld != null)
                 activateWorld(bukkitWorld);
         }
-        do_timesliced_render = configuration.getBoolean("timeslicerender", true);
-        timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
-        do_sync_render = configuration.getBoolean("renderonsync", true);
         
         scheduler = plugin.getServer().getScheduler();
         plug_in = plugin;
@@ -370,7 +371,7 @@ public class MapManager {
     }    
     
     private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();
-    private File getTileFile(MapTile tile) {
+    public File getTileFile(MapTile tile) {
         World world = tile.getWorld();
         File worldTileDirectory = worldTileDirectories.get(world);
         if (worldTileDirectory == null) {
@@ -409,5 +410,9 @@ public class MapManager {
     	ImageWriter handler = new ImageWriter();
     	handler.run = run;
     	writeQueue.push(handler);
+    }
+    
+    public boolean doSyncRender() {
+    	return do_sync_render;
     }
 }
