@@ -126,6 +126,10 @@ web:
     worlds:
       - title: World
         name: world
+        center:
+          x: 0
+          y: 64
+          z: 0
         maps:
           - type: FlatMapType
             title: Flat
@@ -145,6 +149,10 @@ web:
             prefix: ct
       - title: Nether
         name: nether
+        center:
+          x: 0
+          y: 64
+          z: 0
         maps:
           - type: FlatMapType
             title: Flat
