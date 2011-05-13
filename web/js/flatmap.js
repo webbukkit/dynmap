@@ -1,13 +1,13 @@
 function FlatProjection() {}
 FlatProjection.prototype = {
 		fromLatLngToPoint: function(latLng) {
-			return new google.maps.Point(latLng.lat()*128.0, latLng.lng()*128.0);
+			return new google.maps.Point(latLng.lat()*config.tileWidth, latLng.lng()*config.tileHeight);
 		},
 		fromPointToLatLng: function(point) {
-			return new google.maps.LatLng(point.x/128.0, point.y/128.0);
+			return new google.maps.LatLng(point.x/config.tileWidth, point.y/config.tileHeight);
 		},
 		fromWorldToLatLng: function(x, y, z) {
-			return new google.maps.LatLng(-z / 128.0, x / 128.0);
+			return new google.maps.LatLng(-z / config.tileWidth, x / config.tileHeight);
 		}
 };
 
@@ -27,7 +27,7 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
         
         tileName = this.prefix + '_128_' + coord.x + '_' + coord.y + '.png';
         
-        imgSize = Math.pow(2, 6+zoom);
+        imgSize = Math.pow(2, 7+zoom);
 		var tile = $('<div/>')
 			.addClass('tile')
 			.css({
@@ -51,7 +51,7 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
 	},
 	updateTileSize: function(zoom) {
         var size;
-        size = Math.pow(2, 6+zoom);
+        size = Math.pow(2, 7+zoom);
         this.tileSize = new google.maps.Size(size, size);
 	}
 });
