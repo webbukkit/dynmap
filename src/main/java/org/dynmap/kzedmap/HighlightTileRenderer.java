@@ -23,14 +23,30 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected Color scan(World world, int x, int y, int z, int seq) {
+    protected Color scan(World world, int x, int y, int z, int seq, boolean isnether) {
         Color result = translucent;
+    	int top_nether_id = 0;
         for (;;) {
             if (y < 0) {
                 break;
             }
 
             int id = world.getBlockTypeIdAt(x, y, z);
+            if(isnether) {	/* Make bedrock ceiling into air in nether */
+            	if(id != 0) {
+            		/* Remember first color we see, in case we wind up solid */
+            		if(result == translucent) 
+            			if(colorScheme.colors[id] != null)
+            				result = colorScheme.colors[id][seq];
+        			id = 0;
+            	}
+            	else
+        			isnether = false;
+            }
+            byte data = 0;
+            if(colorScheme.datacolors[id] != null) {	/* If data colored */
+            	data = world.getBlockAt(x, y, z).getData();
+            }
 
             switch (seq) {
             case 0:
@@ -50,7 +66,11 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             seq = (seq + 1) & 3;
 
             if (id != 0) {
-                Color[] colors = colorScheme.colors.get(id);
+                Color[] colors;
+                if(data != 0)
+                	colors = colorScheme.datacolors[id][data];
+                else
+                	colors = colorScheme.colors[id];
                 if (colors != null) {
                     Color c = colors[seq];
 

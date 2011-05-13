@@ -88,6 +88,9 @@ web:
     allowchat: true
     allowwebchat: true
     webchat-interval: 5
+    # If set to true, this enables a workaround for chat plugins like HeroChat that cancel chat messages
+    # as part of implementing channels and the like - set to false if seeing cancelled message is a problem
+    ignorechatcancel: true
     
     showplayerfacesinmenu: true
     

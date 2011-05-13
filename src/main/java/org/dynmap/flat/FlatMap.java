@@ -11,8 +11,11 @@ import javax.imageio.ImageIO;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.dynmap.Client;
 import org.dynmap.ColorScheme;
 import org.dynmap.DynmapChunk;
+import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
@@ -20,10 +23,17 @@ import org.dynmap.debug.Debug;
 public class FlatMap extends MapType {
     private String prefix;
     private ColorScheme colorScheme;
-
+    private int maximumHeight = 127;
+    
     public FlatMap(Map<String, Object> configuration) {
         prefix = (String) configuration.get("prefix");
         colorScheme = ColorScheme.getScheme((String) configuration.get("colorscheme"));
+        Object o = configuration.get("maximumheight");
+        if (o != null) {
+            maximumHeight = Integer.parseInt(String.valueOf(o));
+            if (maximumHeight > 127)
+                maximumHeight = 127;
+        }
     }
 
     @Override
@@ -66,6 +76,7 @@ public class FlatMap extends MapType {
     public boolean render(MapTile tile, File outputFile) {
         FlatMapTile t = (FlatMapTile) tile;
         World w = t.getWorld();
+        boolean isnether = (w.getEnvironment() == Environment.NETHER) && (maximumHeight == 127);
 
         boolean rendered = false;
         BufferedImage im = new BufferedImage(t.size, t.size, BufferedImage.TYPE_INT_RGB);
@@ -77,11 +88,42 @@ public class FlatMap extends MapType {
             for (int y = 0; y < t.size; y++) {
                 int mx = x + t.x * t.size;
                 int mz = y + t.y * t.size;
-                int my = w.getHighestBlockYAt(mx, mz) - 1;
-                int blockType = w.getBlockTypeIdAt(mx, my, mz);
-                Color[] colors = colorScheme.colors.get(blockType);
+                int my;
+                int blockType;
+                if(isnether) {
+                	/* Scan until we hit air */
+                	my = 127;
+                	while((blockType = w.getBlockTypeIdAt(mx, my, mz)) != 0) {
+                		my--;
+                		if(my < 0) {	/* Solid - use top */
+                			my = 127;
+                			blockType = w.getBlockTypeIdAt(mx, my, mz);
+                			break;
+                		}
+                	}
+                	if(blockType == 0) {	/* Hit air - now find non-air */
+                    	while((blockType = w.getBlockTypeIdAt(mx, my, mz)) == 0) {
+                    		my--;
+                    		if(my < 0) {
+                    			my = 0;
+                    			break;
+                    		}
+                    	}
+                	}
+                }
+                else {
+                	my = w.getHighestBlockYAt(mx, mz) - 1;
+                	if(my > maximumHeight) my = maximumHeight;
+                	blockType = w.getBlockTypeIdAt(mx, my, mz);
+                }
+                byte data = 0;
+                Color[] colors = colorScheme.colors[blockType];
+                if(colorScheme.datacolors[blockType] != null) {
+            		data = w.getBlockAt(mx, my, mz).getData();
+            		colors = colorScheme.datacolors[blockType][data];
+                }
                 if (colors == null)
-                    continue;
+                    continue;                	
                 Color c = colors[0];
                 if (c == null)
                     continue;
@@ -120,15 +162,26 @@ public class FlatMap extends MapType {
                 raster.setPixel(t.size-y-1, x, pixel);
                 rendered = true;
             }
+        /* Hand encoding and writing file off to MapManager */
+        final File fname = outputFile;
+        final MapTile mtile = tile;
+        final BufferedImage img = im;
+        MapManager.mapman.enqueueImageWrite(new Runnable() {
+        	public void run() {
+        		Debug.debug("saving image " + fname.getPath());        
+        		try {
+        			ImageIO.write(img, "png", fname);
+        		} catch (IOException e) {
+        			Debug.error("Failed to save image: " + fname.getPath(), e);
+        		} catch (java.lang.NullPointerException e) {
+        			Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+        		}
+        		img.flush();
+        		MapManager.mapman.pushUpdate(mtile.getWorld(), 
+        				new Client.Tile(mtile.getFilename()));        		
+        	}
+        });
 
-        try {
-            ImageIO.write(im, "png", outputFile);
-        } catch (IOException e) {
-            Debug.error("Failed to save image: " + outputFile.getPath(), e);
-        } catch (java.lang.NullPointerException e) {
-            Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
-        }
-        im.flush();
         return rendered;
     }
 

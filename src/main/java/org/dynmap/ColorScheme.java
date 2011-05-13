@@ -17,11 +17,14 @@ public class ColorScheme {
     private static final HashMap<String, ColorScheme> cache = new HashMap<String, ColorScheme>();
     
     public String name;
-    public java.util.Map<Integer, Color[]> colors;
+    /* Switch to arrays - faster than map */ 
+    public Color[][] colors;	/* [blk-type][step] */
+    public Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
 
-    public ColorScheme(String name, java.util.Map<Integer, Color[]> colors) {
+    public ColorScheme(String name, Color[][] colors, Color[][][] datacolors) {
         this.name = name;
         this.colors = colors;
+        this.datacolors = datacolors;
     }
     
     private static File getColorSchemeDirectory() {
@@ -41,8 +44,10 @@ public class ColorScheme {
     
     public static ColorScheme loadScheme(String name) {
         File colorSchemeFile = new File(getColorSchemeDirectory(), name + ".txt");
-        java.util.Map<Integer, Color[]> colors = new HashMap<Integer, Color[]>();
+        Color[][] colors = new Color[256][];
+        Color[][][] datacolors = new Color[256][][];
         InputStream stream;
+        boolean enab_datacolor = MapManager.mapman.doSyncRender();
         try {
             Debug.debug("Loading colors from '" + colorSchemeFile + "'...");
             stream = new FileInputStream(colorSchemeFile);
@@ -59,9 +64,16 @@ public class ColorScheme {
                 if (split.length < 17) {
                     continue;
                 }
-
-                Integer id = new Integer(split[0]);
-
+                Integer id;
+                Integer dat = null;
+                int idx = split[0].indexOf(':');
+                if(idx > 0) {	/* ID:data - data color */
+                	id = new Integer(split[0].substring(0, idx));
+                	dat = new Integer(split[0].substring(idx+1));
+                }
+                else {
+                	id = new Integer(split[0]);
+                }
                 Color[] c = new Color[4];
 
                 /* store colors by raycast sequence number */
@@ -70,16 +82,44 @@ public class ColorScheme {
                 c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
                 c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
 
-                colors.put(id, c);
+                if(dat != null) {
+                	if(enab_datacolor) {
+                		Color[][] dcolor = datacolors[id];	/* Existing list? */
+                		if(dcolor == null) {
+                			dcolor = new Color[16][];			/* Make 16 index long list */
+                			datacolors[id] = dcolor;
+                		}
+                		if((dat >= 0) && (dat < 16)) {			/* Add color to list */
+                			dcolor[dat] = c;
+                		}
+                	}
+                	if(dat == 0) {	/* Index zero is base color too */
+                		colors[id] = c;
+                	}
+                }
+                else {
+                	colors[id] = c;
+                }
                 nc += 1;
             }
             scanner.close();
+            /* Last, push base color into any open slots in data colors list */
+            for(int k = 0; k < 256; k++) {
+            	Color[][] dc = datacolors[k];	/* see if data colors too */
+            	if(dc != null) {
+            		Color[] c = colors[k];
+            		for(int i = 0; i < 16; i++) {
+            			if(dc[i] == null)
+            				dc[i] = c;
+            		}
+            	}
+            }
         } catch (RuntimeException e) {
             log.log(Level.SEVERE, "Could not load colors '" + name + "' ('" + colorSchemeFile + "').", e);
             return null;
         } catch (FileNotFoundException e) {
             log.log(Level.SEVERE, "Could not load colors '" + name + "' ('" + colorSchemeFile + "'): File not found.", e);
         }
-        return new ColorScheme(name, colors);
+        return new ColorScheme(name, colors, datacolors);
     }
 }

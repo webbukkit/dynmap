@@ -18,25 +18,41 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
 	projection: new FlatProjection(),
 	tileSize: new google.maps.Size(128.0, 128.0),
 	minZoom: 0,
-	maxZoom: 0,
+	maxZoom: 3,
 	prefix: null,
 	getTile: function(coord, zoom, doc) {
-		var tileName;
-		var tile = $('<img/>')
-			.attr('src', this.dynmap.getTileUrl(tileName = this.prefix + '_128_' + coord.x + '_' + coord.y + '.png'))
-			.error(function() { tile.hide(); })
-			.bind('load', function() { tile.show(); })
+		var	tileSize = 128;
+        var imgSize;
+        var tileName;
+        
+        tileName = this.prefix + '_128_' + coord.x + '_' + coord.y + '.png';
+        
+        imgSize = Math.pow(2, 6+zoom);
+		var tile = $('<div/>')
+			.addClass('tile')
 			.css({
-				width: '128px',
-				height: '128px',
+				width: tileSize + 'px',
+				height: tileSize + 'px'
+			});		
+        var img = $('<img/>')
+			.attr('src', this.dynmap.getTileUrl(tileName))
+			.error(function() { img.hide(); })
+			.bind('load', function() { img.show(); })
+			.css({
+				width: imgSize +'px',
+				height: imgSize + 'px',
 				borderStyle: 'none'
 			})
-			.hide();
-		this.dynmap.registerTile(this, tileName, tile);
+			.hide()
+            .appendTo(tile);
+		this.dynmap.registerTile(this, tileName, img);
 		//this.dynmap.unregisterTile(this, tileName);
 		return tile.get(0);
 	},
 	updateTileSize: function(zoom) {
+        var size;
+        size = Math.pow(2, 6+zoom);
+        this.tileSize = new google.maps.Size(size, size);
 	}
 });
 
