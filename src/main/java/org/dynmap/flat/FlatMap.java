@@ -127,19 +127,19 @@ public class FlatMap extends MapType {
         final MapTile mtile = tile;
         final BufferedImage img = im;
         MapManager.mapman.enqueueImageWrite(new Runnable() {
-        	public void run() {
-        		Debug.debug("saving image " + fname.getPath());        
-        		try {
-        			ImageIO.write(img, "png", fname);
-        		} catch (IOException e) {
-        			Debug.error("Failed to save image: " + fname.getPath(), e);
-        		} catch (java.lang.NullPointerException e) {
-        			Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
-        		}
-        		img.flush();
-        		MapManager.mapman.pushUpdate(mtile.getWorld(), 
-        				new Client.Tile(mtile.getFilename()));        		
-        	}
+            public void run() {
+                Debug.debug("saving image " + fname.getPath());        
+                try {
+                    ImageIO.write(img, "png", fname);
+                } catch (IOException e) {
+                    Debug.error("Failed to save image: " + fname.getPath(), e);
+                } catch (java.lang.NullPointerException e) {
+                    Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+                }
+                img.flush();
+                MapManager.mapman.pushUpdate(mtile.getWorld(), 
+                        new Client.Tile(mtile.getFilename()));                
+            }
         });
 
         return rendered;

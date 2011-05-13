@@ -32,8 +32,8 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
 
             int id = world.getBlockTypeIdAt(x, y, z);
             byte data = 0;
-            if(colorScheme.datacolors[id] != null) {	/* If data colored */
-            	data = world.getBlockAt(x, y, z).getData();
+            if(colorScheme.datacolors[id] != null) {    /* If data colored */
+                data = world.getBlockAt(x, y, z).getData();
             }
 
             switch (seq) {
@@ -56,9 +56,9 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             if (id != 0) {
                 Color[] colors;
                 if(data != 0)
-                	colors = colorScheme.datacolors[id][data];
+                    colors = colorScheme.datacolors[id][data];
                 else
-                	colors = colorScheme.colors[id];
+                    colors = colorScheme.colors[id];
                 if (colors != null) {
                     Color c = colors[seq];
 

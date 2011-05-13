@@ -18,7 +18,7 @@ public class ColorScheme {
     
     public String name;
     /* Switch to arrays - faster than map */ 
-    public Color[][] colors;	/* [blk-type][step] */
+    public Color[][] colors;    /* [blk-type][step] */
     public Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
 
     public ColorScheme(String name, Color[][] colors, Color[][][] datacolors) {
@@ -67,12 +67,12 @@ public class ColorScheme {
                 Integer id;
                 Integer dat = null;
                 int idx = split[0].indexOf(':');
-                if(idx > 0) {	/* ID:data - data color */
-                	id = new Integer(split[0].substring(0, idx));
-                	dat = new Integer(split[0].substring(idx+1));
+                if(idx > 0) {    /* ID:data - data color */
+                    id = new Integer(split[0].substring(0, idx));
+                    dat = new Integer(split[0].substring(idx+1));
                 }
                 else {
-                	id = new Integer(split[0]);
+                    id = new Integer(split[0]);
                 }
                 Color[] c = new Color[4];
 
@@ -83,36 +83,36 @@ public class ColorScheme {
                 c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
 
                 if(dat != null) {
-                	if(enab_datacolor) {
-                		Color[][] dcolor = datacolors[id];	/* Existing list? */
-                		if(dcolor == null) {
-                			dcolor = new Color[16][];			/* Make 16 index long list */
-                			datacolors[id] = dcolor;
-                		}
-                		if((dat >= 0) && (dat < 16)) {			/* Add color to list */
-                			dcolor[dat] = c;
-                		}
-                	}
-                	if(dat == 0) {	/* Index zero is base color too */
-                		colors[id] = c;
-                	}
+                    if(enab_datacolor) {
+                        Color[][] dcolor = datacolors[id];    /* Existing list? */
+                        if(dcolor == null) {
+                            dcolor = new Color[16][];            /* Make 16 index long list */
+                            datacolors[id] = dcolor;
+                        }
+                        if((dat >= 0) && (dat < 16)) {            /* Add color to list */
+                            dcolor[dat] = c;
+                        }
+                    }
+                    if(dat == 0) {    /* Index zero is base color too */
+                        colors[id] = c;
+                    }
                 }
                 else {
-                	colors[id] = c;
+                    colors[id] = c;
                 }
                 nc += 1;
             }
             scanner.close();
             /* Last, push base color into any open slots in data colors list */
             for(int k = 0; k < 256; k++) {
-            	Color[][] dc = datacolors[k];	/* see if data colors too */
-            	if(dc != null) {
-            		Color[] c = colors[k];
-            		for(int i = 0; i < 16; i++) {
-            			if(dc[i] == null)
-            				dc[i] = c;
-            		}
-            	}
+                Color[][] dc = datacolors[k];    /* see if data colors too */
+                if(dc != null) {
+                    Color[] c = colors[k];
+                    for(int i = 0; i < 16; i++) {
+                        if(dc[i] == null)
+                            dc[i] = c;
+                    }
+                }
             }
         } catch (RuntimeException e) {
             log.log(Level.SEVERE, "Could not load colors '" + name + "' ('" + colorSchemeFile + "').", e);

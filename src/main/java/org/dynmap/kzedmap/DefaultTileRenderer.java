@@ -29,22 +29,22 @@ public class DefaultTileRenderer implements MapTileRenderer {
     protected Color highlightColor = new Color(255, 0, 0);
     
     private static final Color[] woolshades = {
-    	Color.WHITE,
-    	Color.ORANGE,
-    	Color.MAGENTA,
-    	new Color(51,204,255),
-    	Color.YELLOW,
-    	new Color(102,255,102),
-    	Color.PINK,
-    	Color.GRAY,
-    	Color.LIGHT_GRAY,
-    	Color.CYAN,
-    	new Color(255,0,255),
-    	Color.BLUE,
-    	new Color(102,51,51),
-    	Color.GREEN,
-    	Color.RED,
-    	Color.BLACK
+        Color.WHITE,
+        Color.ORANGE,
+        Color.MAGENTA,
+        new Color(51,204,255),
+        Color.YELLOW,
+        new Color(102,255,102),
+        Color.PINK,
+        Color.GRAY,
+        Color.LIGHT_GRAY,
+        Color.CYAN,
+        new Color(255,0,255),
+        Color.BLUE,
+        new Color(102,51,51),
+        Color.GREEN,
+        Color.RED,
+        Color.BLACK
     };
 
     @Override
@@ -132,88 +132,88 @@ public class DefaultTileRenderer implements MapTileRenderer {
         final File fname = outputFile;
         final KzedMapTile mtile = tile;
         final BufferedImage img = im;
-		final KzedZoomedMapTile zmtile = new KzedZoomedMapTile(mtile.getWorld(), 
-				(KzedMap) mtile.getMap(), mtile);
-		final File zoomFile = MapManager.mapman.getTileFile(zmtile);
-		
-		MapManager.mapman.enqueueImageWrite(new Runnable() {
-        	public void run() {
-        	    doFileWrites(fname, mtile, img, zmtile, zoomFile);
-        	}
+        final KzedZoomedMapTile zmtile = new KzedZoomedMapTile(mtile.getWorld(), 
+                (KzedMap) mtile.getMap(), mtile);
+        final File zoomFile = MapManager.mapman.getTileFile(zmtile);
+        
+        MapManager.mapman.enqueueImageWrite(new Runnable() {
+            public void run() {
+                doFileWrites(fname, mtile, img, zmtile, zoomFile);
+            }
         });        
 
         return !isempty;
     }
     
     private void doFileWrites(final File fname, final KzedMapTile mtile,
-    	final BufferedImage img, final KzedZoomedMapTile zmtile, final File zoomFile) {
-		Debug.debug("saving image " + fname.getPath());        
-		try {
-			ImageIO.write(img, "png", fname);
-		} catch (IOException e) {
-			Debug.error("Failed to save image: " + fname.getPath(), e);
-		} catch (java.lang.NullPointerException e) {
-			Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
-		}
-		mtile.file = fname;
-		// Since we've already got the new tile, and we're on an async thread, just
-		// make the zoomed tile here
-		int px = mtile.px;
-		int py = mtile.py;
-		int zpx = zmtile.getTileX();
-		int zpy = zmtile.getTileY();
+        final BufferedImage img, final KzedZoomedMapTile zmtile, final File zoomFile) {
+        Debug.debug("saving image " + fname.getPath());        
+        try {
+            ImageIO.write(img, "png", fname);
+        } catch (IOException e) {
+            Debug.error("Failed to save image: " + fname.getPath(), e);
+        } catch (java.lang.NullPointerException e) {
+            Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+        }
+        mtile.file = fname;
+        // Since we've already got the new tile, and we're on an async thread, just
+        // make the zoomed tile here
+        int px = mtile.px;
+        int py = mtile.py;
+        int zpx = zmtile.getTileX();
+        int zpy = zmtile.getTileY();
 
-		/* scaled size */
-		int scw = KzedMap.tileWidth / 2;
-		int sch = KzedMap.tileHeight / 2;
+        /* scaled size */
+        int scw = KzedMap.tileWidth / 2;
+        int sch = KzedMap.tileHeight / 2;
 
-		/* origin in zoomed-out tile */
-		int ox = 0;
-		int oy = 0;
+        /* origin in zoomed-out tile */
+        int ox = 0;
+        int oy = 0;
 
-		if (zpx != px)
-			ox = scw;
-		if (zpy != py)
-			oy = sch;
+        if (zpx != px)
+            ox = scw;
+        if (zpy != py)
+            oy = sch;
 
-		BufferedImage zIm = null;
-		try {
-			zIm = ImageIO.read(zoomFile);
-		} catch (IOException e) {
-		} catch (IndexOutOfBoundsException e) {
-		}
+        BufferedImage zIm = null;
+        try {
+            zIm = ImageIO.read(zoomFile);
+        } catch (IOException e) {
+        } catch (IndexOutOfBoundsException e) {
+        }
 
-		if (zIm == null) {
-			/* create new one */
-			zIm = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
-			Debug.debug("New zoom-out tile created " + zmtile.getFilename());
-		} else {
-			Debug.debug("Loaded zoom-out tile from " + zmtile.getFilename());
-		}
-		
-		/* blit scaled rendered tile onto zoom-out tile */
-		Graphics2D g2 = zIm.createGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g2.drawImage(img, ox, oy, scw, sch, null);
+        if (zIm == null) {
+            /* create new one */
+            zIm = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
+            Debug.debug("New zoom-out tile created " + zmtile.getFilename());
+        } else {
+            Debug.debug("Loaded zoom-out tile from " + zmtile.getFilename());
+        }
+        
+        /* blit scaled rendered tile onto zoom-out tile */
+        Graphics2D g2 = zIm.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(img, ox, oy, scw, sch, null);
 
-		img.flush();
+        img.flush();
 
-		/* save zoom-out tile */
-		
-		try {
-			ImageIO.write(zIm, "png", zoomFile);
-			Debug.debug("Saved zoom-out tile at " + zoomFile.getName());
-		} catch (IOException e) {
-			Debug.error("Failed to save zoom-out tile: " + zoomFile.getName(), e);
-		} catch (java.lang.NullPointerException e) {
-			Debug.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile.getName(), e);
-		}
-		zIm.flush();
-		/* Push updates for both files.*/
-		MapManager.mapman.pushUpdate(mtile.getWorld(), 
-			new Client.Tile(mtile.getFilename()));        		
-		MapManager.mapman.pushUpdate(zmtile.getWorld(), 
-				new Client.Tile(zmtile.getFilename()));        		    	
+        /* save zoom-out tile */
+        
+        try {
+            ImageIO.write(zIm, "png", zoomFile);
+            Debug.debug("Saved zoom-out tile at " + zoomFile.getName());
+        } catch (IOException e) {
+            Debug.error("Failed to save zoom-out tile: " + zoomFile.getName(), e);
+        } catch (java.lang.NullPointerException e) {
+            Debug.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile.getName(), e);
+        }
+        zIm.flush();
+        /* Push updates for both files.*/
+        MapManager.mapman.pushUpdate(mtile.getWorld(), 
+            new Client.Tile(mtile.getFilename()));                
+        MapManager.mapman.pushUpdate(zmtile.getWorld(), 
+                new Client.Tile(zmtile.getFilename()));                        
     }
     
 
@@ -224,8 +224,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
             int id = world.getBlockTypeIdAt(x, y, z);
             byte data = 0;
-            if(colorScheme.datacolors[id] != null) {	/* If data colored */
-            	data = world.getBlockAt(x, y, z).getData();
+            if(colorScheme.datacolors[id] != null) {    /* If data colored */
+                data = world.getBlockAt(x, y, z).getData();
             }
             switch (seq) {
             case 0:
@@ -250,9 +250,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 }
                 Color[] colors;
                 if(data != 0)
-                	colors = colorScheme.datacolors[id][data];
+                    colors = colorScheme.datacolors[id][data];
                 else
-                	colors = colorScheme.colors[id];
+                    colors = colorScheme.colors[id];
                 if (colors != null) {
                     Color c = colors[seq];
                     if (c.getAlpha() > 0) {
