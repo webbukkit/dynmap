@@ -1,6 +1,6 @@
 name: dynmap
 main: org.dynmap.DynmapPlugin
-version: 0.16-MikePrimm-4
+version: 0.16-MikePrimm-5
 commands:
   dynmap:
     description: Controls Dynmap.

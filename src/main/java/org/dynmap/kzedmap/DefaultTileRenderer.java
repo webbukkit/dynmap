@@ -12,7 +12,9 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.dynmap.Client;
 import org.dynmap.ColorScheme;
 import org.dynmap.MapManager;
@@ -28,25 +30,6 @@ public class DefaultTileRenderer implements MapTileRenderer {
     protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
     protected Color highlightColor = new Color(255, 0, 0);
     
-    private static final Color[] woolshades = {
-    	Color.WHITE,
-    	Color.ORANGE,
-    	Color.MAGENTA,
-    	new Color(51,204,255),
-    	Color.YELLOW,
-    	new Color(102,255,102),
-    	Color.PINK,
-    	Color.GRAY,
-    	Color.LIGHT_GRAY,
-    	Color.CYAN,
-    	new Color(255,0,255),
-    	Color.BLUE,
-    	new Color(102,51,51),
-    	Color.GREEN,
-    	Color.RED,
-    	Color.BLACK
-    };
-
     @Override
     public String getName() {
         return name;
@@ -65,6 +48,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
     public boolean render(KzedMapTile tile, File outputFile) {
         World world = tile.getWorld();
+        boolean isnether = (world.getEnvironment() == Environment.NETHER);
         BufferedImage im = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
 
         WritableRaster r = im.getRaster();
@@ -74,6 +58,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
         int iy = maximumHeight;
         int iz = KzedMap.anchorz + tile.px / 2 - tile.py / 2 + ((127-maximumHeight)/2);
 
+        /* Don't mess with existing height-clipped renders */
+        if(maximumHeight < 127)
+        	isnether = false;
+        
         int jx, jz;
 
         int x, y;
@@ -84,8 +72,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
             jz = iz;
 
             for (x = KzedMap.tileWidth - 1; x >= 0; x -= 2) {
-                Color c1 = scan(world, jx, iy, jz, 0);
-                Color c2 = scan(world, jx, iy, jz, 2);
+                Color c1 = scan(world, jx, iy, jz, 0, isnether);
+                Color c2 = scan(world, jx, iy, jz, 2, isnether);
                 isempty = isempty && c1 == translucent && c2 == translucent;
                 r.setPixel(x, y, new int[] {
                     c1.getRed(),
@@ -107,10 +95,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
             jz = iz - 1;
 
             for (x = KzedMap.tileWidth - 1; x >= 0; x -= 2) {
-                Color c1 = scan(world, jx, iy, jz, 2);
+                Color c1 = scan(world, jx, iy, jz, 2, isnether);
                 jx++;
                 jz++;
-                Color c2 = scan(world, jx, iy, jz, 0);
+                Color c2 = scan(world, jx, iy, jz, 0, isnether);
                 isempty = isempty && c1 == translucent && c2 == translucent;
                 r.setPixel(x, y, new int[] {
                     c1.getRed(),
@@ -217,13 +205,25 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
     
 
-    protected Color scan(World world, int x, int y, int z, int seq) {
+    protected Color scan(World world, int x, int y, int z, int seq, boolean isnether) {
+        Color result = translucent;
         for (;;) {
-            if (y < 0)
-                return translucent;
-
+            if (y < 0) {
+                return result;
+            }
             int id = world.getBlockTypeIdAt(x, y, z);
             byte data = 0;
+            if(isnether) {	/* Make bedrock ceiling into air in nether */
+            	if(id != 0) {
+            		/* Remember first color we see, in case we wind up solid */
+            		if(result == translucent) 
+            			if(colorScheme.colors[id] != null)
+            				result = colorScheme.colors[id][seq];
+        			id = 0;
+            	}
+            	else
+        			isnether = false;
+            }
             if(colorScheme.datacolors[id] != null) {	/* If data colored */
             	data = world.getBlockAt(x, y, z).getData();
             }
@@ -263,7 +263,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                         }
 
                         /* this block is transparent, so recurse */
-                        Color bg = scan(world, x, y, z, seq);
+                        Color bg = scan(world, x, y, z, seq, isnether);
 
                         int cr = c.getRed();
                         int cg = c.getGreen();
