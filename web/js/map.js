@@ -316,6 +316,11 @@ DynMap.prototype = {
 			if (worldChanged) {
 				$(me).trigger('worldchanged');
 			}
+			if (map.world.center) {
+				me.map.panTo(map.projection.fromWorldToLatLng(map.world.center.x||0,map.world.center.y||0,map.world.center.z||0));
+			} else {
+				me.map.panTo(map.projection.fromWorldToLatLng(0,64,0));
+			}
 			$(me).trigger('mapchanged');
 			if (completed) {
 				completed();

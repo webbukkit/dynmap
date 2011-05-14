@@ -360,13 +360,13 @@ public class DynmapPlugin extends JavaPlugin {
                     for (int i = 1; i < args.length; i++) {
                         World w = getServer().getWorld(args[i]);
                         if(w != null)
-                        	mapManager.renderFullWorld(new Location(w, 0, 0, 0));
+                            mapManager.renderFullWorld(new Location(w, 0, 0, 0));
                     }
                     return true;
                 } else if (player != null) {
-                	Location loc = player.getLocation();
-                	if(loc != null)
-                		mapManager.renderFullWorld(loc);
+                    Location loc = player.getLocation();
+                    if(loc != null)
+                        mapManager.renderFullWorld(loc);
                     return true;
                 }
             }

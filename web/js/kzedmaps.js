@@ -1,8 +1,8 @@
 function KzedProjection() {}
 KzedProjection.prototype = {
 		fromLatLngToPoint: function(latLng) {
-			var x = (latLng.lng() * config.tileWidth)|0;
-			var y = (latLng.lat() * config.tileHeight)|0;
+			var x = latLng.lng() * config.tileWidth;
+			var y = latLng.lat() * config.tileHeight;
 
 			return new google.maps.Point(x, y);
 		},
