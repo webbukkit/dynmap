@@ -58,6 +58,7 @@ public class DynmapPlugin extends JavaPlugin {
     public Configuration configuration;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
+    public HeroChatHandler hchand;
 
     public Timer timer;
 
@@ -106,6 +107,8 @@ public class DynmapPlugin extends JavaPlugin {
             timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
         }
 
+        hchand = new HeroChatHandler(configuration, this, getServer());
+        
         enabledTriggers.clear();
         for (Object trigger : configuration.getList("render-triggers")) {
             enabledTriggers.add((String) trigger);
