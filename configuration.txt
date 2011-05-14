@@ -75,7 +75,7 @@ worlds:
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
             prefix: nt
-            maximumheight: 64
+            maximumheight: 127
             colorscheme: default
 
 web:
@@ -88,6 +88,12 @@ web:
     allowchat: true
     allowwebchat: true
     webchat-interval: 5
+    # Set to true to enable HeroChat support
+    enableherochat: false
+    # Control which HeroChat channel messages from web are directed to 
+    herochatwebchannel: Global
+    # Control which channels are monitored and reported to the web
+    herochatchannels: [ Global ]
     
     showplayerfacesinmenu: true
     

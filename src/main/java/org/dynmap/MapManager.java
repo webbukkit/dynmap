@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.HashMap;
-
 import javax.imageio.ImageIO;
 import org.dynmap.kzedmap.KzedMapTile;
 import org.bukkit.Location;
@@ -47,10 +45,10 @@ public class MapManager {
     /* lock for our data structures */
     public static final Object lock = new Object();
 
-    public static MapManager mapman;    /* Our singleton */
-    
+    public static MapManager mapman;	/* Our singleton */
+	
     private static class ImageWriter {
-        Runnable run;
+    	Runnable run;
     }
 
     private class FullWorldRenderState implements Runnable {
@@ -159,9 +157,8 @@ public class MapManager {
     }
 
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
-        
+    	mapman = this;
         mapman = this;
-        
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {

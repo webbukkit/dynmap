@@ -14,7 +14,10 @@ public class DynmapPlayerChatListener extends PlayerListener {
 
     @Override
     public void onPlayerChat(PlayerChatEvent event) {
-        if(event.isCancelled()) return;
+        if(event.isCancelled()) {
+            return;
+        }
+
         plugin.mapManager.pushUpdate(new Client.ChatMessage("player", event.getPlayer().getDisplayName(), event.getMessage()));
     }
 

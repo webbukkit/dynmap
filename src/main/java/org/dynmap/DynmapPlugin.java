@@ -58,6 +58,7 @@ public class DynmapPlugin extends JavaPlugin {
     public Configuration configuration;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
+    public HeroChatHandler hchand;
 
     public Timer timer;
 
@@ -106,12 +107,18 @@ public class DynmapPlugin extends JavaPlugin {
             timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
         }
 
+        hchand = new HeroChatHandler(configuration, this, getServer());
+        
         enabledTriggers.clear();
         for (Object trigger : configuration.getList("render-triggers")) {
             enabledTriggers.add((String) trigger);
         }
 
         registerEvents();
+
+        /* Print version info */
+        PluginDescriptionFile pdfFile = this.getDescription();
+        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
     }
 
     public void loadWebserver() {
@@ -154,9 +161,6 @@ public class DynmapPlugin extends JavaPlugin {
         } catch (IOException e) {
             log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
-        /* Print version info */
-        PluginDescriptionFile pdfFile = this.getDescription();
-        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
     }
 
     public void onDisable() {

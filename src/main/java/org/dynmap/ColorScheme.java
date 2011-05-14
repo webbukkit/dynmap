@@ -18,7 +18,7 @@ public class ColorScheme {
     
     public String name;
     /* Switch to arrays - faster than map */ 
-    public Color[][] colors;    /* [blk-type][step] */
+    public Color[][] colors;	/* [blk-type][step] */
     public Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
 
     public ColorScheme(String name, Color[][] colors, Color[][][] datacolors) {
@@ -67,12 +67,12 @@ public class ColorScheme {
                 Integer id;
                 Integer dat = null;
                 int idx = split[0].indexOf(':');
-                if(idx > 0) {    /* ID:data - data color */
-                    id = new Integer(split[0].substring(0, idx));
-                    dat = new Integer(split[0].substring(idx+1));
+                if(idx > 0) {	/* ID:data - data color */
+                	id = new Integer(split[0].substring(0, idx));
+                	dat = new Integer(split[0].substring(idx+1));
                 }
                 else {
-                    id = new Integer(split[0]);
+                	id = new Integer(split[0]);
                 }
                 Color[] c = new Color[4];
 

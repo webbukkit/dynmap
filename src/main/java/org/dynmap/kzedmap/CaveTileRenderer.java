@@ -12,7 +12,7 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected Color scan(World world, int x, int y, int z, int seq) {
+    protected Color scan(World world, int x, int y, int z, int seq, boolean isnether) {
         boolean air = true;
 
         for (;;) {
@@ -20,6 +20,12 @@ public class CaveTileRenderer extends DefaultTileRenderer {
                 return translucent;
 
             int id = world.getBlockTypeIdAt(x, y, z);
+            if(isnether) {	/* Make ceiling into air in nether */
+            	if(id != 0)
+            		id = 0;
+            	else
+            		isnether = false;
+            }
 
             switch (seq) {
             case 0:
