@@ -75,7 +75,7 @@ worlds:
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
             prefix: nt
-            maximumheight: 64
+            maximumheight: 127
             colorscheme: default
 
 web:
@@ -88,9 +88,12 @@ web:
     allowchat: true
     allowwebchat: true
     webchat-interval: 5
-    # If set to true, this enables a workaround for chat plugins like HeroChat that cancel chat messages
-    # as part of implementing channels and the like - set to false if seeing cancelled message is a problem
-    ignorechatcancel: true
+    # Set to true to enable HeroChat support
+    enableherochat: false
+    # Control which HeroChat channel messages from web are directed to 
+    herochatwebchannel: Global
+    # Control which channels are monitored and reported to the web
+    herochatchannels: [ Global ]
     
     showplayerfacesinmenu: true
     
