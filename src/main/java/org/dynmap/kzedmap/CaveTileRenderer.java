@@ -14,7 +14,7 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     @Override
     protected Color scan(World world, int x, int y, int z, int seq, boolean isnether) {
         boolean air = true;
-
+        
         for (;;) {
             if (y < 0)
                 return translucent;

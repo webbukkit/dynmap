@@ -21,7 +21,7 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             highlightBlocks.add((Integer)highlightObj);
         }
     }
-
+    
     @Override
     protected Color scan(World world, int x, int y, int z, int seq, boolean isnether) {
         Color result = translucent;

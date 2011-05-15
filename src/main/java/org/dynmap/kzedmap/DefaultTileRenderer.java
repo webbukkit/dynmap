@@ -63,7 +63,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         	isnether = false;
         
         int jx, jz;
-
+        
         int x, y;
 
         /* draw the map */
