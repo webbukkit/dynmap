@@ -22,6 +22,7 @@ public class HeroChatHandler {
 
     private List<String> hcchannels;
     private String hcwebinputchannel;
+    private HeroChatChannel hcwebinputchan;
     private DynmapPlugin plugin;
 
     private class OurPluginListener extends ServerListener {
@@ -39,10 +40,8 @@ public class HeroChatHandler {
     /* Reflection-based access wrapper for ChannelChatEvent from HeroChat */
     private static class HeroChatChannelChatEvent {
         private static Class channelchatevent;
-        private static Method getchannel;
         private static Method getsource;
         private static Method getmessage;
-        private static Method iscancelled;
         private static boolean isgood = false;
         private Event evt;
 
@@ -51,14 +50,8 @@ public class HeroChatHandler {
             try {
                 channelchatevent = Class
                         .forName("com.herocraftonline.dthielke.herochat.event.ChannelChatEvent");
-                getchannel = channelchatevent.getMethod("getChannel",
-                        new Class[0]);
-                getsource = channelchatevent.getMethod("getSource",
-                        new Class[0]);
-                getmessage = channelchatevent.getMethod("getMessage",
-                        new Class[0]);
-                iscancelled = channelchatevent.getMethod("isCancelled",
-                        new Class[0]);
+                getsource = channelchatevent.getMethod("getSource", new Class[0]);
+                getmessage = channelchatevent.getMethod("getMessage", new Class[0]);
                 isgood = true;
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
@@ -72,18 +65,6 @@ public class HeroChatHandler {
 
         public static boolean isInstance(Event evt) {
             return channelchatevent.isInstance(evt);
-        }
-
-        public HeroChatChannel getChannel() {
-            try {
-                Object o;
-                o = getchannel.invoke(evt);
-                if (o != null) {
-                    return new HeroChatChannel(o);
-                }
-            } catch (Exception x) {
-            }
-            return null;
         }
 
         public String getSource() {
@@ -101,6 +82,49 @@ public class HeroChatHandler {
                 return null;
             }
         }
+    }
+
+    /* Reflection-based access wrapper for ChannelEvent from HeroChat */
+    private static class HeroChatChannelEvent {
+        private static Class channelevent;
+        private static Method getchannel;
+        private static Method iscancelled;
+        private static boolean isgood = false;
+        private Event evt;
+
+        @SuppressWarnings("unchecked")
+        public static boolean initialize() {
+            try {
+                channelevent = Class
+                        .forName("com.herocraftonline.dthielke.herochat.event.ChannelEvent");
+                getchannel = channelevent.getMethod("getChannel", new Class[0]);
+                iscancelled = channelevent.getMethod("isCancelled", new Class[0]);
+                isgood = true;
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
+            return isgood;
+        }
+
+        public HeroChatChannelEvent(Event evt) {
+            this.evt = evt;
+        }
+
+        public static boolean isInstance(Event evt) {
+            return channelevent.isInstance(evt);
+        }
+
+        public HeroChatChannel getChannel() {
+            try {
+                Object o;
+                o = getchannel.invoke(evt);
+                if (o != null) {
+                    return new HeroChatChannel(o);
+                }
+            } catch (Exception x) {
+            }
+            return null;
+        }
 
         public boolean isCancelled() {
             try {
@@ -115,6 +139,8 @@ public class HeroChatHandler {
     private static class HeroChatChannel {
         private static Class channel;
         private static Method getname;
+        private static Method getnick;
+        private static Method sendmessage;
         private static boolean isgood = false;
         private Object chan;
 
@@ -123,10 +149,14 @@ public class HeroChatHandler {
             try {
                 channel = Class
                         .forName("com.herocraftonline.dthielke.herochat.channels.Channel");
-                getname = channel.getMethod("getName", new Class[0]);
+                getname = channel.getMethod("getName");
+                getnick = channel.getMethod("getNick", new Class[0]);
+                sendmessage = channel.getMethod("sendMessage", new Class[] { 
+                    String.class, String.class, String.class, boolean.class } );
                 isgood = true;
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
+                System.out.println(nsmx);
             }
             return isgood;
         }
@@ -135,15 +165,26 @@ public class HeroChatHandler {
             this.chan = chan;
         }
 
-        public static boolean isInstance(Object obj) {
-            return channel.isInstance(obj);
-        }
-
         public String getName() {
             try {
                 return (String) getname.invoke(chan);
             } catch (Exception x) {
                 return null;
+            }
+        }
+
+        public String getNick() {
+            try {
+                return (String) getnick.invoke(chan);
+            } catch (Exception x) {
+                return null;
+            }
+        }
+
+        public void sendMessage(String source, String msg, String format, boolean sentByPlayer) {
+            try {
+                sendmessage.invoke(chan, source, msg, format, sentByPlayer);
+            } catch (Exception x) {
             }
         }
     }
@@ -154,16 +195,32 @@ public class HeroChatHandler {
          */
         @Override
         public void onCustomEvent(Event event) {
-            if (HeroChatChannelChatEvent.isInstance(event)) {
-                HeroChatChannelChatEvent cce = new HeroChatChannelChatEvent(
-                        event);
-                if (cce.isCancelled())
+            if (HeroChatChannelEvent.isInstance(event)) {
+                HeroChatChannelEvent ce = new HeroChatChannelEvent(event);
+                /* Snoop for our web channel - we'll need it, and we'll see it before it matters,
+                 * since anyone that joins the channel will give us an event (and reflection on
+                 * the plugin class to get the manager didn't work, due to a dependency on the IRC
+                 * plugin that may not be present....)
+                 */
+                HeroChatChannel c = ce.getChannel();
+                /* If channel name or nickname matches out web channel, remember it */
+                if((c != null) && (hcwebinputchannel != null) &&
+                        ((c.getName().equals(hcwebinputchannel)) ||
+                        c.getNick().equals(hcwebinputchannel))) {
+                    hcwebinputchan = c;
+                }
+                if (ce.isCancelled())
                     return;
-                HeroChatChannel c = cce.getChannel();
-                if (hcchannels.contains(c.getName())) {
-                    plugin.mapManager.pushUpdate(new Client.ChatMessage(
-                            "player", "[" + c.getName() + "] "
+                if (HeroChatChannelChatEvent.isInstance(event)) {
+                    HeroChatChannelChatEvent cce = new HeroChatChannelChatEvent(
+                        event);
+                    /* Match on name or nickname of channel */
+                    if (hcchannels.contains(c.getName()) ||
+                            hcchannels.contains(c.getNick())) {
+                        plugin.mapManager.pushUpdate(new Client.ChatMessage(
+                            "player", "[" + c.getNick() + "] "
                                     + cce.getSource(), cce.getMessage()));
+                    }
                 }
             }
         }
@@ -188,16 +245,38 @@ public class HeroChatHandler {
 
     private void activateHeroChat(Plugin herochat) {
         if (HeroChatChannelChatEvent.initialize() == false) {
-            log.severe("[dynmap] Cannot load HeroChat event class!");
+            log.severe("[dynmap] Cannot load HeroChat chat event class!");
             return;
         }
         if (HeroChatChannel.initialize() == false) {
             log.severe("[dynmap] Cannot load HeroChat channel class!");
             return;
         }
+        if (HeroChatChannelEvent.initialize() == false) {
+            log.severe("[dynmap] Cannot load HeroChat channel event class!");
+            return;
+        }
+        
         /* Register event handler */
         plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT,
                 new OurEventListener(), Event.Priority.Monitor, plugin);
         log.info("[dynmap] HeroChat integration active");
+    }
+    /**
+     * Send message from web to appropriate HeroChat channel
+     * @param sender - sender ID
+     * @param message - message
+     * @return true if herochat is handling this, false if not
+     */
+    public boolean sendWebMessageToHeroChat(String sender, String message) {
+        if(hcwebinputchannel != null) { /* Are we handling them? */
+            if(hcwebinputchan != null) {    /* Have we seen it yet?  Maybe no if nobody has logged on or
+                                             * joined it, but then who would see it anyway?
+                                             */
+                hcwebinputchan.sendMessage(sender, message, "{default}", false);
+            }
+            return true;
+        }
+        return false;
     }
 }
