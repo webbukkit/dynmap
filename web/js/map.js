@@ -386,7 +386,7 @@ DynMap.prototype = {
 						
 						swtch(update.type, {
 							tile: function() {
-								me.onTileUpdated(update.name);
+								me.onTileUpdated(update.name,update.timestamp);
 							},
 							playerjoin: function() {
 								$(me).trigger('playerjoin', [ update.playerName ]);
@@ -436,12 +436,12 @@ DynMap.prototype = {
 	unregisterTile: function(mapType, tileName) {
 		delete this.registeredTiles[tileName];
 	},
-	onTileUpdated: function(tileName) {
+	onTileUpdated: function(tileName,timestamp) {
 		var me = this;
 		var tile = this.registeredTiles[tileName];
 		
 		if (tile) {
-			tile.lastseen = this.lasttimestamp;
+			tile.lastseen = timestamp;
 			tile.mapType.onTileUpdated(tile.tileElement, tileName);
 		}
 	},

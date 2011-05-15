@@ -115,6 +115,10 @@ public class DynmapPlugin extends JavaPlugin {
         }
 
         registerEvents();
+        
+        /* Print version info */
+        PluginDescriptionFile pdfFile = this.getDescription();
+        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
     }
 
     public void loadWebserver() {
@@ -157,9 +161,7 @@ public class DynmapPlugin extends JavaPlugin {
         } catch (IOException e) {
             log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
-        /* Print version info */
-        PluginDescriptionFile pdfFile = this.getDescription();
-        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
+
     }
 
     public void onDisable() {
@@ -405,6 +407,8 @@ public class DynmapPlugin extends JavaPlugin {
     public void webChat(String name, String message) {
         mapManager.pushUpdate(new Client.ChatMessage("web", name, message));
         log.info("[WEB]" + name + ": " + message);
-        getServer().broadcastMessage("[WEB]" + name + ": " + message);
+        /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
+        if(hchand.sendWebMessageToHeroChat(name, message) == false) 
+            getServer().broadcastMessage("[WEB]" + name + ": " + message);
     }
 }
