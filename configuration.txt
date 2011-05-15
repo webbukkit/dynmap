@@ -75,7 +75,7 @@ worlds:
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
             prefix: nt
-            maximumheight: 64
+            maximumheight: 127
             colorscheme: default
 
 web:

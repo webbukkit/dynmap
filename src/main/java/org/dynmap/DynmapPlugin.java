@@ -115,6 +115,10 @@ public class DynmapPlugin extends JavaPlugin {
         }
 
         registerEvents();
+        
+        /* Print version info */
+        PluginDescriptionFile pdfFile = this.getDescription();
+        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
     }
 
     public void loadWebserver() {
@@ -157,9 +161,7 @@ public class DynmapPlugin extends JavaPlugin {
         } catch (IOException e) {
             log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
-        /* Print version info */
-        PluginDescriptionFile pdfFile = this.getDescription();
-        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
+
     }
 
     public void onDisable() {
