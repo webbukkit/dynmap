@@ -135,7 +135,7 @@ public class FlatMap extends MapType {
                 
                 // Defines the 'step' in coloring.
                 float step = 10 / 128.0f;
-
+              
                 // The step applied to height.
                 float scale = ((int)(height/step))*step;
 
