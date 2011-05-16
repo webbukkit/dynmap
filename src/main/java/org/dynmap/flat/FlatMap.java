@@ -1,6 +1,6 @@
 package org.dynmap.flat;
 
-import java.awt.Color;
+import org.dynmap.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;

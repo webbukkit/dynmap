@@ -1,6 +1,6 @@
 package org.dynmap.kzedmap;
 
-import java.awt.Color;
+import org.dynmap.Color;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +23,8 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
     }
     
     @Override
-    protected Color scan(World world, int x, int y, int z, int seq, boolean isnether) {
-        Color result = translucent;
+    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result) {
+        result.setTransparent();
     	int top_nether_id = 0;
         for (;;) {
             if (y < 0) {
@@ -35,9 +35,9 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             if(isnether) {	/* Make bedrock ceiling into air in nether */
             	if(id != 0) {
             		/* Remember first color we see, in case we wind up solid */
-            		if(result == translucent) 
+            		if(result.isTransparent()) 
             			if(colorScheme.colors[id] != null)
-            				result = colorScheme.colors[id][seq];
+            				result.setColor(colorScheme.colors[id][seq]);
         			id = 0;
             	}
             	else
@@ -75,7 +75,8 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
                     Color c = colors[seq];
 
                     if (highlightBlocks.contains(id)) {
-                        return c;
+                        result.setColor(c);
+                        return;
                     }
 
                     if (c.getAlpha() > 0) {
@@ -88,26 +89,22 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
                         
                         // No need to blend if result is opaque.
                         if (result.getAlpha() < 255) { 
-                            Color bg = c;
-                            c = result;
-                            
-                            int cr = c.getRed();
-                            int cg = c.getGreen();
-                            int cb = c.getBlue();
-                            int ca = c.getAlpha();
+                            int cr = result.getRed();
+                            int cg = result.getGreen();
+                            int cb = result.getBlue();
+                            int ca = result.getAlpha();
                             cr *= ca;
                             cg *= ca;
                             cb *= ca;
                             int na = 255 - ca;
     
-                            result = new Color((bg.getRed() * na + cr) >> 8, (bg.getGreen() * na + cg) >> 8, (bg.getBlue() * na + cb) >> 8,
-                                Math.min(255, bg.getAlpha()+c.getAlpha()) // Not really correct, but gets the job done without recursion while still looking ok.
+                            result.setRGBA((c.getRed() * na + cr) >> 8, (c.getGreen() * na + cg) >> 8, (c.getBlue() * na + cb) >> 8,
+                                Math.min(255, c.getAlpha()+ca) // Not really correct, but gets the job done without recursion while still looking ok.
                                 );
                         }
                     }
                 }
             }
         }
-        return result;
     }
 }
