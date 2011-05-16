@@ -33,16 +33,16 @@ public abstract class FileHandler implements HttpHandler {
             return m;
         return "application/octet-steam";
     }
-    
+
     protected abstract InputStream getFileInput(String path, HttpRequest request, HttpResponse response);
-    
+
     protected String getExtension(String path) {
         int dotindex = path.lastIndexOf('.');
         if (dotindex > 0)
             return path.substring(dotindex);
         return null;
     }
-    
+
     protected final String formatPath(String path) {
         int qmark = path.indexOf('?');
         if (qmark >= 0)
@@ -54,11 +54,11 @@ public abstract class FileHandler implements HttpHandler {
             path = getDefaultFilename(path);
         return path;
     }
-    
+
     protected String getDefaultFilename(String path) {
         return path + "index.html";
     }
-    
+
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         InputStream fileInput = null;
@@ -69,10 +69,10 @@ public abstract class FileHandler implements HttpHandler {
                 response.status = HttpStatus.NotFound;
                 return;
             }
-    
+
             String extension = getExtension(path);
             String mimeType = getMimeTypeFromExtension(extension);
-    
+
             response.fields.put(HttpField.ContentType, mimeType);
             response.status = HttpStatus.OK;
             OutputStream out = response.getBody();

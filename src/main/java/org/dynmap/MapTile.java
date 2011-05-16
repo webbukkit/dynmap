@@ -9,7 +9,7 @@ public abstract class MapTile {
     public World getWorld() {
         return world;
     }
-    
+
     public MapType getMap() {
         return map;
     }
@@ -20,12 +20,12 @@ public abstract class MapTile {
         this.world = world;
         this.map = map;
     }
-    
+
     @Override
     public int hashCode() {
         return getFilename().hashCode() ^ getWorld().hashCode();
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof MapTile) {

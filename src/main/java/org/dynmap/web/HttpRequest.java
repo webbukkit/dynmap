@@ -9,5 +9,5 @@ public class HttpRequest {
     public String path;
     public String version;
     public Map<String, String> fields = new HashMap<String, String>();
-    public InputStream body;    
+    public InputStream body;
 }

@@ -33,7 +33,7 @@ public class MapManager {
 
     public AsynchronousQueue<MapTile> tileQueue;
     public AsynchronousQueue<ImageWriter> writeQueue;
-    
+
     public Map<String, DynmapWorld> worlds = new HashMap<String, DynmapWorld>();
     public Map<String, DynmapWorld> inactiveworlds = new HashMap<String, DynmapWorld>();
     private BukkitScheduler scheduler;
@@ -48,7 +48,7 @@ public class MapManager {
     public static final Object lock = new Object();
 
     public static MapManager mapman;    /* Our singleton */
-    
+
     private static class ImageWriter {
         Runnable run;
     }
@@ -62,7 +62,7 @@ public class MapManager {
         HashSet<MapTile> rendered = null;
         LinkedList<MapTile> renderQueue = null;
         MapTile tile0 = null;
-        
+
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l) {
             world = dworld;
@@ -71,16 +71,16 @@ public class MapManager {
             rendered = new HashSet<MapTile>();
             renderQueue = new LinkedList<MapTile>();
         }
-        
+
         /* Single tile render - used for incremental renders */
         FullWorldRenderState(MapTile t) {
             world = worlds.get(t.getWorld().getName());
             tile0 = t;
         }
-        
+
         public void run() {
             MapTile tile;
-            
+
             if(tile0 == null) {    /* Not single tile render */
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
@@ -144,12 +144,12 @@ public class MapManager {
                     for(Entity e: cc.getEntities())
                         e.remove();
                 }
-                /* Since we only remember ones we loaded, and we're synchronous, no player has 
+                /* Since we only remember ones we loaded, and we're synchronous, no player has
                  * moved, so it must be safe (also prevent chunk leak, which appears to happen
                  * because isChunkInUse defined "in use" as being within 256 blocks of a player,
                  * while the actual in-use chunk area for a player where the chunks are managed
                  * by the MC base server is 21x21 (or about a 160 block radius) */
-                w.unloadChunk(c.x, c.z, false, false);    
+                w.unloadChunk(c.x, c.z, false, false);
             }
             if(tile0 == null) {    /* fullrender */
                 /* Schedule the next tile to be worked */
@@ -159,20 +159,20 @@ public class MapManager {
     }
 
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
-        
+
         mapman = this;
-        
+
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {
                 if(do_sync_render)
-                    scheduler.scheduleSyncDelayedTask(plug_in, 
+                    scheduler.scheduleSyncDelayedTask(plug_in,
                         new FullWorldRenderState(t), 1);
                 else
                     render(t);
             }
         }, (int) (configuration.getDouble("renderinterval", 0.5) * 1000));
-        
+
         this.writeQueue = new AsynchronousQueue<ImageWriter>(
             new Handler<ImageWriter>() {
                 @Override
@@ -184,7 +184,7 @@ public class MapManager {
         do_timesliced_render = configuration.getBoolean("timeslicerender", true);
         timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
         do_sync_render = configuration.getBoolean("renderonsync", true);
-        
+
         for(Object worldConfigurationObj : (List<?>)configuration.getProperty("worlds")) {
             Map<?, ?> worldConfiguration = (Map<?, ?>)worldConfigurationObj;
             String worldName = (String)worldConfiguration.get("name");
@@ -195,21 +195,21 @@ public class MapManager {
                 }
             }
             inactiveworlds.put(worldName, world);
-            
+
             World bukkitWorld = plugin.getServer().getWorld(worldName);
             if (bukkitWorld != null)
                 activateWorld(bukkitWorld);
         }
-        
+
         scheduler = plugin.getServer().getScheduler();
         plug_in = plugin;
-        
+
         tileQueue.start();
         writeQueue.start();
     }
 
-    
-    
+
+
     void renderFullWorld(Location l) {
         DynmapWorld world = worlds.get(l.getWorld().getName());
         if (world == null) {
@@ -232,7 +232,7 @@ public class MapManager {
             return;
         }
         World w = world.world;
-        
+
         log.info("Full render starting on world '" + w.getName() + "'...");
         for (MapType map : world.maps) {
             int requiredChunkCount = 200;
@@ -303,7 +303,7 @@ public class MapManager {
             log.info("Activated world '" + w.getName() + "' in Dynmap.");
         }
     }
-    
+
     private MapType[] loadMapTypes(List<?> mapConfigurations) {
         Event.Listener<MapTile> invalitateListener = new Event.Listener<MapTile>() {
             @Override
@@ -332,7 +332,7 @@ public class MapManager {
         mapTypes.toArray(result);
         return result;
     }
-    
+
     public int touch(Location l) {
         DynmapWorld world = worlds.get(l.getWorld().getName());
         if (world == null)
@@ -352,24 +352,24 @@ public class MapManager {
         Debug.debug("Invalidating tile " + tile.getFilename());
         tileQueue.push(tile);
     }
-    
+
     public void startRendering() {
         tileQueue.start();
         writeQueue.start();
     }
-    
+
     public void stopRendering() {
         tileQueue.stop();
         writeQueue.stop();
     }
-    
+
     public boolean render(MapTile tile) {
         boolean result = tile.getMap().render(tile, getTileFile(tile));
         //Do update after async file write
-        
+
         return result;
-    }    
-    
+    }
+
     private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();
     public File getTileFile(MapTile tile) {
         World world = tile.getWorld();
@@ -381,7 +381,7 @@ public class MapManager {
         if (!worldTileDirectory.isDirectory() && !worldTileDirectory.mkdirs()) {
             log.warning("Could not create directory for tiles ('" + worldTileDirectory + "').");
         }
-        return new File(worldTileDirectory, tile.getFilename()); 
+        return new File(worldTileDirectory, tile.getFilename());
     }
 
     public void pushUpdate(Object update) {
@@ -389,29 +389,29 @@ public class MapManager {
             world.updates.pushUpdate(update);
         }
     }
-    
+
     public void pushUpdate(World world, Object update) {
         pushUpdate(world.getName(), update);
     }
-    
+
     public void pushUpdate(String worldName, Object update) {
         DynmapWorld world = worlds.get(worldName);
         world.updates.pushUpdate(update);
     }
-    
+
     public Object[] getWorldUpdates(String worldName, long since) {
         DynmapWorld world = worlds.get(worldName);
         if (world == null)
             return new Object[0];
         return world.updates.getUpdatedObjects(since);
     }
-    
+
     public void enqueueImageWrite(Runnable run) {
         ImageWriter handler = new ImageWriter();
         handler.run = run;
         writeQueue.push(handler);
     }
-    
+
     public boolean doSyncRender() {
         return do_sync_render;
     }

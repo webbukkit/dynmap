@@ -21,10 +21,10 @@ public class HttpServerConnection extends Thread {
 
     private static Pattern requestHeaderLine = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+HTTP/(.+)$");
     private static Pattern requestHeaderField = Pattern.compile("^([^:]+):\\s*(.+)$");
-    
+
     private Socket socket;
     private HttpServer server;
-    
+
     private PrintStream printOut;
     private StringWriter sw = new StringWriter();
     private Matcher requestHeaderLineMatcher;
@@ -45,7 +45,7 @@ public class HttpServerConnection extends Thread {
                 sw.append(c);
         }
     }
-    
+
     private final String readLine(InputStream in) throws IOException {
         readLine(in, sw);
         String r = sw.toString();
@@ -55,16 +55,16 @@ public class HttpServerConnection extends Thread {
 
     private final boolean readRequestHeader(InputStream in, HttpRequest request) throws IOException {
         String statusLine = readLine(in);
-        
+
         if (statusLine == null)
             return false;
-        
+
         if (requestHeaderLineMatcher == null) {
             requestHeaderLineMatcher = requestHeaderLine.matcher(statusLine);
         } else {
             requestHeaderLineMatcher.reset(statusLine);
         }
-        
+
         Matcher m = requestHeaderLineMatcher;
         if (!m.matches())
             return false;
@@ -79,7 +79,7 @@ public class HttpServerConnection extends Thread {
             } else {
                 requestHeaderFieldMatcher.reset(line);
             }
-            
+
             m = requestHeaderFieldMatcher;
             // Warning: unknown lines are ignored.
             if (m.matches()) {
@@ -109,7 +109,7 @@ public class HttpServerConnection extends Thread {
         out.append("\r\n");
         out.flush();
     }
-    
+
     public final void writeResponseHeader(HttpResponse response) throws IOException {
         writeResponseHeader(printOut, response);
     }
@@ -121,16 +121,16 @@ public class HttpServerConnection extends Thread {
             socket.setSoTimeout(5000);
             InputStream in = socket.getInputStream();
             BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream(), 40960);
-            
+
             printOut = new PrintStream(out, false);
             while (true) {
                 HttpRequest request = new HttpRequest();
-                
+
                 if (!readRequestHeader(in, request)) {
                     socket.close();
                     return;
                 }
-                
+
                 long bound = -1;
                 BoundInputStream boundBody = null;
                 {
@@ -166,9 +166,9 @@ public class HttpServerConnection extends Thread {
                     socket.close();
                     return;
                 }
-                
+
                 HttpResponse response = new HttpResponse(this, out);
-                
+
                 try {
                     handler.handle(relativePath, request, response);
                 } catch (IOException e) {
@@ -187,9 +187,9 @@ public class HttpServerConnection extends Thread {
                     //socket.close();
                     //return;
                 }
-                
+
                 boolean isKeepalive = !"close".equals(request.fields.get(HttpField.Connection)) && !"close".equals(response.fields.get(HttpField.Connection));
-                
+
                 String contentLength = response.fields.get("Content-Length");
                 if (isKeepalive && contentLength == null) {
                     // A handler has been a bad boy, but we're here to fix it.

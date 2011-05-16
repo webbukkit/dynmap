@@ -15,9 +15,9 @@ import org.dynmap.debug.Debug;
 public class ColorScheme {
     protected static final Logger log = Logger.getLogger("Minecraft");
     private static final HashMap<String, ColorScheme> cache = new HashMap<String, ColorScheme>();
-    
+
     public String name;
-    /* Switch to arrays - faster than map */ 
+    /* Switch to arrays - faster than map */
     public Color[][] colors;    /* [blk-type][step] */
     public Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
 
@@ -26,11 +26,11 @@ public class ColorScheme {
         this.colors = colors;
         this.datacolors = datacolors;
     }
-    
+
     private static File getColorSchemeDirectory() {
         return new File(DynmapPlugin.dataDirectory, "colorschemes");
     }
-    
+
     public static ColorScheme getScheme(String name) {
         if (name == null)
             name = "default";
@@ -41,7 +41,7 @@ public class ColorScheme {
         }
         return scheme;
     }
-    
+
     public static ColorScheme loadScheme(String name) {
         File colorSchemeFile = new File(getColorSchemeDirectory(), name + ".txt");
         Color[][] colors = new Color[256][];

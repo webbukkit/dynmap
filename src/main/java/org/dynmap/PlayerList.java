@@ -87,7 +87,7 @@ public class PlayerList {
         visiblePlayers.toArray(result);
         return result;
     }
-    
+
     public Player[] getVisiblePlayers() {
         ArrayList<Player> visiblePlayers = new ArrayList<Player>();
         Player[] onlinePlayers = server.getOnlinePlayers();

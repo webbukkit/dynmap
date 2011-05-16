@@ -10,7 +10,7 @@ public class HttpResponse {
     public String version = "1.1";
     public HttpStatus status = null;
     public Map<String, String> fields = new HashMap<String, String>();
-    
+
     private OutputStream body;
     public OutputStream getBody() throws IOException {
         if (body != null) {
@@ -21,7 +21,7 @@ public class HttpResponse {
         }
         return null;
     }
-    
+
     public HttpResponse(HttpServerConnection connection, OutputStream body) {
         this.connection = connection;
         this.body = body;

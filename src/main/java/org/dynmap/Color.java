@@ -7,9 +7,9 @@ package org.dynmap;
 public class Color {
     /* RGBA value */
     private int val;
-    
+
     public static final int TRANSPARENT = 0;
-    
+
     public Color(int red, int green, int blue, int alpha) {
         setRGBA(red, green, blue, alpha);
     }

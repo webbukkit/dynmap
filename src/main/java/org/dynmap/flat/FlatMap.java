@@ -24,7 +24,7 @@ public class FlatMap extends MapType {
     private String prefix;
     private ColorScheme colorScheme;
     private int maximumHeight = 127;
-    
+
     public FlatMap(Map<String, Object> configuration) {
         prefix = (String) configuration.get("prefix");
         colorScheme = ColorScheme.getScheme((String) configuration.get("colorscheme"));
@@ -91,36 +91,36 @@ public class FlatMap extends MapType {
                 int my;
                 int blockType;
                 if(isnether) {
-                	/* Scan until we hit air */
-                	my = 127;
-                	while((blockType = w.getBlockTypeIdAt(mx, my, mz)) != 0) {
-                		my--;
-                		if(my < 0) {	/* Solid - use top */
-                			my = 127;
-                			blockType = w.getBlockTypeIdAt(mx, my, mz);
-                			break;
-                		}
-                	}
-                	if(blockType == 0) {	/* Hit air - now find non-air */
-                    	while((blockType = w.getBlockTypeIdAt(mx, my, mz)) == 0) {
-                    		my--;
-                    		if(my < 0) {
-                    			my = 0;
-                    			break;
-                    		}
-                    	}
-                	}
+                    /* Scan until we hit air */
+                    my = 127;
+                    while((blockType = w.getBlockTypeIdAt(mx, my, mz)) != 0) {
+                        my--;
+                        if(my < 0) {    /* Solid - use top */
+                            my = 127;
+                            blockType = w.getBlockTypeIdAt(mx, my, mz);
+                            break;
+                        }
+                    }
+                    if(blockType == 0) {    /* Hit air - now find non-air */
+                        while((blockType = w.getBlockTypeIdAt(mx, my, mz)) == 0) {
+                            my--;
+                            if(my < 0) {
+                                my = 0;
+                                break;
+                            }
+                        }
+                    }
                 }
                 else {
-                	my = w.getHighestBlockYAt(mx, mz) - 1;
-                	if(my > maximumHeight) my = maximumHeight;
-                	blockType = w.getBlockTypeIdAt(mx, my, mz);
+                    my = w.getHighestBlockYAt(mx, mz) - 1;
+                    if(my > maximumHeight) my = maximumHeight;
+                    blockType = w.getBlockTypeIdAt(mx, my, mz);
                 }
                 byte data = 0;
                 Color[] colors = colorScheme.colors[blockType];
                 if(colorScheme.datacolors[blockType] != null) {
-            		data = w.getBlockAt(mx, my, mz).getData();
-            		colors = colorScheme.datacolors[blockType][data];
+                    data = w.getBlockAt(mx, my, mz).getData();
+                    colors = colorScheme.datacolors[blockType][data];
                 }
                 if (colors == null)
                     continue;
@@ -129,26 +129,26 @@ public class FlatMap extends MapType {
                     continue;
 
                 boolean below = my < 64;
-                
+
                 // Make height range from 0 - 1 (1 - 0 for below and 0 - 1 above)
                 float height = (below ? 64 - my : my - 64) / 64.0f;
-                
+
                 // Defines the 'step' in coloring.
                 float step = 10 / 128.0f;
-              
+
                 // The step applied to height.
                 float scale = ((int)(height/step))*step;
 
                 // Make the smaller values change the color (slightly) more than the higher values.
                 scale = (float)Math.pow(scale, 1.1f);
-                
+
                 // Don't let the color go fully white or fully black.
                 scale *= 0.8f;
-                
+
                 pixel[0] = c.getRed();
                 pixel[1] = c.getGreen();
                 pixel[2] = c.getBlue();
-                
+
                 if (below) {
                     pixel[0] -= pixel[0] * scale;
                     pixel[1] -= pixel[1] * scale;
@@ -158,7 +158,7 @@ public class FlatMap extends MapType {
                     pixel[1] += (255-pixel[1]) * scale;
                     pixel[2] += (255-pixel[2]) * scale;
                 }
-                
+
                 raster.setPixel(t.size-y-1, x, pixel);
                 rendered = true;
             }
@@ -167,19 +167,19 @@ public class FlatMap extends MapType {
         final MapTile mtile = tile;
         final BufferedImage img = im;
         MapManager.mapman.enqueueImageWrite(new Runnable() {
-        	public void run() {
-        		Debug.debug("saving image " + fname.getPath());        
-        		try {
-        			ImageIO.write(img, "png", fname);
-        		} catch (IOException e) {
-        			Debug.error("Failed to save image: " + fname.getPath(), e);
-        		} catch (java.lang.NullPointerException e) {
-        			Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
-        		}
-        		img.flush();
-        		MapManager.mapman.pushUpdate(mtile.getWorld(), 
-        				new Client.Tile(mtile.getFilename()));        		
-        	}
+            public void run() {
+                Debug.debug("saving image " + fname.getPath());
+                try {
+                    ImageIO.write(img, "png", fname);
+                } catch (IOException e) {
+                    Debug.error("Failed to save image: " + fname.getPath(), e);
+                } catch (java.lang.NullPointerException e) {
+                    Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+                }
+                img.flush();
+                MapManager.mapman.pushUpdate(mtile.getWorld(),
+                        new Client.Tile(mtile.getFilename()));
+            }
         });
 
         return rendered;

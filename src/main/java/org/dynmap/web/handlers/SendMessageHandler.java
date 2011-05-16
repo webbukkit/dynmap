@@ -17,16 +17,16 @@ import org.json.simple.parser.JSONParser;
 
 public class SendMessageHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
-    
+
     private static final JSONParser parser = new JSONParser();
     public Event<Message> onMessageReceived = new Event<SendMessageHandler.Message>();
-    
+
     public int maximumMessageInterval = 1000;
     public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
     private LinkedList<WebUser> disallowedUserQueue = new LinkedList<WebUser>();
     private Object disallowedUsersLock = new Object();
-    
+
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         if (!request.method.equals(HttpMethod.Post)) {
@@ -36,14 +36,14 @@ public class SendMessageHandler implements HttpHandler {
         }
 
         InputStreamReader reader = new InputStreamReader(request.body);
-        
+
         JSONObject o = (JSONObject)parser.parse(reader);
         final Message message = new Message();
         message.name = String.valueOf(o.get("name"));
         message.message = String.valueOf(o.get("message"));
 
         final long now = System.currentTimeMillis();
-        
+
         synchronized(disallowedUsersLock) {
             // Allow users that  user that are now allowed to send messages.
             while (!disallowedUserQueue.isEmpty()) {
@@ -55,7 +55,7 @@ public class SendMessageHandler implements HttpHandler {
                     break;
                 }
             }
-            
+
             WebUser user = disallowedUsers.get(message.name);
             if (user == null) {
                 user = new WebUser() {{
@@ -71,14 +71,14 @@ public class SendMessageHandler implements HttpHandler {
                 return;
             }
         }
-        
+
         onMessageReceived.trigger(message);
-        
+
         response.fields.put(HttpField.ContentLength, "0");
         response.status = HttpStatus.OK;
         response.getBody();
     }
-    
+
     public static class Message {
         public String name;
         public String message;

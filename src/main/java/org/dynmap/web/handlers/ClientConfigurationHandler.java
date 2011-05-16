@@ -20,18 +20,18 @@ public class ClientConfigurationHandler implements HttpHandler {
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         if (cachedConfiguration == null) {
             String s = Json.stringifyJson(configuration);
-    
+
             cachedConfiguration = s.getBytes();
         }
         String dateStr = new Date().toString();
-        
+
         response.fields.put("Date", dateStr);
         response.fields.put("Content-Type", "text/plain");
         response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
         response.fields.put("Last-modified", dateStr);
         response.fields.put("Content-Length", Integer.toString(cachedConfiguration.length));
         response.status = HttpStatus.OK;
-        
+
         BufferedOutputStream out = null;
         out = new BufferedOutputStream(response.getBody());
         out.write(cachedConfiguration);

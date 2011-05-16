@@ -21,7 +21,7 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             highlightBlocks.add((Integer)highlightObj);
         }
     }
-    
+
     @Override
     protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result) {
         result.setTransparent();
@@ -31,20 +31,20 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             }
 
             int id = world.getBlockTypeIdAt(x, y, z);
-            if(isnether) {	/* Make bedrock ceiling into air in nether */
-            	if(id != 0) {
-            		/* Remember first color we see, in case we wind up solid */
-            		if(result.isTransparent()) 
-            			if(colorScheme.colors[id] != null)
-            				result.setColor(colorScheme.colors[id][seq]);
-        			id = 0;
-            	}
-            	else
-        			isnether = false;
+            if(isnether) {    /* Make bedrock ceiling into air in nether */
+                if(id != 0) {
+                    /* Remember first color we see, in case we wind up solid */
+                    if(result.isTransparent())
+                        if(colorScheme.colors[id] != null)
+                            result.setColor(colorScheme.colors[id][seq]);
+                    id = 0;
+                }
+                else
+                    isnether = false;
             }
             byte data = 0;
-            if(colorScheme.datacolors[id] != null) {	/* If data colored */
-            	data = world.getBlockAt(x, y, z).getData();
+            if(colorScheme.datacolors[id] != null) {    /* If data colored */
+                data = world.getBlockAt(x, y, z).getData();
             }
 
             switch (seq) {
@@ -67,9 +67,9 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             if (id != 0) {
                 Color[] colors;
                 if(data != 0)
-                	colors = colorScheme.datacolors[id][data];
+                    colors = colorScheme.datacolors[id][data];
                 else
-                	colors = colorScheme.colors[id];
+                    colors = colorScheme.colors[id];
                 if (colors != null) {
                     Color c = colors[seq];
 
@@ -85,9 +85,9 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
                          * if (c.getAlpha() == 255) { return c; }
                          */
                         /* this block is transparent, so recurse */
-                        
+
                         // No need to blend if result is opaque.
-                        if (result.getAlpha() < 255) { 
+                        if (result.getAlpha() < 255) {
                             int cr = result.getRed();
                             int cg = result.getGreen();
                             int cb = result.getBlue();
@@ -96,7 +96,7 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
                             cg *= ca;
                             cb *= ca;
                             int na = 255 - ca;
-    
+
                             result.setRGBA((c.getRed() * na + cr) >> 8, (c.getGreen() * na + cg) >> 8, (c.getBlue() * na + cb) >> 8,
                                 Math.min(255, c.getAlpha()+ca) // Not really correct, but gets the job done without recursion while still looking ok.
                                 );

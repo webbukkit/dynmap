@@ -13,7 +13,7 @@ public class UpdateQueue {
 
     public void pushUpdate(Object obj) {
         synchronized (lock) {
-        	/* Do inside lock - prevent delay between time and actual work */
+            /* Do inside lock - prevent delay between time and actual work */
             long now = System.currentTimeMillis();
             long deadline = now - maxUpdateAge;
             ListIterator<Update> i = updateQueue.listIterator(0);
@@ -49,7 +49,7 @@ public class UpdateQueue {
                     break;
                 }
             }
-            
+
             // Reverse output.
             updates = new Object[tmpupdates.size()];
             for (int i = 0; i < updates.length; i++) {

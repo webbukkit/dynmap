@@ -72,7 +72,7 @@ public class DynmapPlugin extends JavaPlugin {
     public HttpServer getWebServer() {
         return webServer;
     }
-    
+
     public void onEnable() {
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
@@ -108,14 +108,14 @@ public class DynmapPlugin extends JavaPlugin {
         }
 
         hchand = new HeroChatHandler(configuration, this, getServer());
-        
+
         enabledTriggers.clear();
         for (Object trigger : configuration.getList("render-triggers")) {
             enabledTriggers.add((String) trigger);
         }
 
         registerEvents();
-        
+
         /* Print version info */
         PluginDescriptionFile pdfFile = this.getDescription();
         log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
@@ -152,7 +152,7 @@ public class DynmapPlugin extends JavaPlugin {
                     }
                 });
             }};
-            
+
             webServer.handlers.put("/up/sendmessage", messageHandler);
         }
 
@@ -408,7 +408,7 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager.pushUpdate(new Client.ChatMessage("web", name, message));
         log.info("[WEB]" + name + ": " + message);
         /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
-        if(hchand.sendWebMessageToHeroChat(name, message) == false) 
+        if(hchand.sendWebMessageToHeroChat(name, message) == false)
             getServer().broadcastMessage("[WEB]" + name + ": " + message);
     }
 }

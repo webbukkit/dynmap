@@ -9,7 +9,7 @@ public class KzedMapTile extends MapTile {
     public KzedMap map;
     public MapTileRenderer renderer;
     public int px, py;
-    
+
     // Hack.
     public File file = null;
 
