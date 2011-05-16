@@ -374,8 +374,8 @@ public class DynmapPlugin extends JavaPlugin {
         return false;
     }
 
-    private boolean checkPlayerPermission(CommandSender sender,    String permission) {
-        if (!(sender instanceof Player)) {
+    private boolean checkPlayerPermission(CommandSender sender, String permission) {
+        if (!(sender instanceof Player) || sender.isOp()) {
             return true;
         } else if (!permissions.has(sender, permission.toLowerCase())) {
             sender.sendMessage("You don't have permission to use this command!");
