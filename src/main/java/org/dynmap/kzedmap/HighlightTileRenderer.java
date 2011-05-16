@@ -25,7 +25,6 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
     @Override
     protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result) {
         result.setTransparent();
-    	int top_nether_id = 0;
         for (;;) {
             if (y < 0) {
                 break;
