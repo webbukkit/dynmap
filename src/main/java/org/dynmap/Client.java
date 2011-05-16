@@ -30,7 +30,7 @@ public class Client {
     public static class Stamped {
         public long timestamp = System.currentTimeMillis();
     }
-    
+
     public static class ChatMessage extends Stamped {
         public String type = "chat";
         public String source;
@@ -43,7 +43,7 @@ public class Client {
             this.message = ChatColor.stripColor(message);
         }
     }
-    
+
     public static class PlayerJoinMessage extends Stamped {
         public String type = "playerjoin";
         public String playerName;
@@ -51,7 +51,7 @@ public class Client {
             this.playerName = ChatColor.stripColor(playerName);
         }
     }
-    
+
     public static class PlayerQuitMessage extends Stamped {
         public String type = "playerquit";
         public String playerName;

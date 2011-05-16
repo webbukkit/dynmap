@@ -13,7 +13,7 @@ public class Json {
         appendJson(o, sb);
         return sb.toString();
     }
-    
+
     public static void appendJson(Object o, StringBuilder s) {
         if (o == null) {
             s.append("null");
@@ -59,7 +59,7 @@ public class Json {
         } else if (o instanceof Object) /* TODO: Always true, maybe interface? */ {
             s.append("{");
             boolean first = true;
-            
+
             Class<?> c = o.getClass();
             for(Field field : c.getFields()) {
                 if (!Modifier.isPublic(field.getModifiers()))
@@ -73,7 +73,7 @@ public class Json {
                 } catch (IllegalAccessException e) {
                     continue;
                 }
-                
+
                 if (first)
                     first = false;
                 else

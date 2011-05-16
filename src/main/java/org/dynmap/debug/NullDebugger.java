@@ -9,7 +9,7 @@ public class NullDebugger implements Debugger {
 
     public NullDebugger(JavaPlugin plugin, Map<String, Object> configuration) {
     }
-    
+
     public void debug(String message) {
     }
 

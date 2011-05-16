@@ -151,7 +151,7 @@ public class HeroChatHandler {
                         .forName("com.herocraftonline.dthielke.herochat.channels.Channel");
                 getname = channel.getMethod("getName");
                 getnick = channel.getMethod("getNick", new Class[0]);
-                sendmessage = channel.getMethod("sendMessage", new Class[] { 
+                sendmessage = channel.getMethod("sendMessage", new Class[] {
                     String.class, String.class, String.class, boolean.class } );
                 isgood = true;
             } catch (ClassNotFoundException cnfx) {
@@ -256,7 +256,7 @@ public class HeroChatHandler {
             log.severe("[dynmap] Cannot load HeroChat channel event class!");
             return;
         }
-        
+
         /* Register event handler */
         plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT,
                 new OurEventListener(), Event.Priority.Monitor, plugin);

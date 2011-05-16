@@ -8,15 +8,15 @@ public class Debug {
     public synchronized static void addDebugger(Debugger d) {
         debuggers.add(d);
     }
-    
+
     public synchronized static void removeDebugger(Debugger d) {
         debuggers.remove(d);
     }
-    
+
     public synchronized static void clearDebuggers() {
         debuggers.clear();
     }
-    
+
     public synchronized static void debug(String message) {
         for(int i = 0; i < debuggers.size(); i++) debuggers.get(i).debug(message);
     }

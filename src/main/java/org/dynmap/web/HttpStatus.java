@@ -3,20 +3,20 @@ package org.dynmap.web;
 public final class HttpStatus {
     private int code;
     private String text;
-    
+
     public int getCode() {
         return code;
     }
-    
+
     public String getText() {
         return text;
     }
-    
+
     public HttpStatus(int code, String text) {
         this.code = code;
         this.text = text;
     }
-    
+
     // Reference: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
     public static final HttpStatus Continue = new HttpStatus(100, "Continue");
     public static final HttpStatus SwitchingProtocols = new HttpStatus(101, "Switching Protocols");

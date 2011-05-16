@@ -20,11 +20,11 @@ public class CaveTileRenderer extends DefaultTileRenderer {
                 return;
 
             int id = world.getBlockTypeIdAt(x, y, z);
-            if(isnether) {	/* Make ceiling into air in nether */
-            	if(id != 0)
-            		id = 0;
-            	else
-            		isnether = false;
+            if(isnether) {    /* Make ceiling into air in nether */
+                if(id != 0)
+                    id = 0;
+                else
+                    isnether = false;
             }
 
             switch (seq) {
