@@ -110,8 +110,12 @@ public class DynmapPlugin extends JavaPlugin {
         hchand = new HeroChatHandler(configuration, this, getServer());
 
         enabledTriggers.clear();
-        for (Object trigger : configuration.getList("render-triggers")) {
-            enabledTriggers.add((String) trigger);
+        List<Object> triggers = configuration.getList("render-triggers");
+        if (triggers != null)
+        {
+            for (Object trigger : triggers) {
+                enabledTriggers.add((String) trigger);
+            }
         }
 
         registerEvents();
