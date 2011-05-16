@@ -1,6 +1,6 @@
 package org.dynmap.kzedmap;
 
-import java.awt.Color;
+import org.dynmap.Color;
 import java.util.Map;
 
 import org.bukkit.World;
@@ -12,14 +12,20 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected Color scan(World world, int x, int y, int z, int seq) {
+    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result) {
         boolean air = true;
-
+        result.setTransparent();
         for (;;) {
             if (y < 0)
-                return translucent;
+                return;
 
             int id = world.getBlockTypeIdAt(x, y, z);
+            if(isnether) {	/* Make ceiling into air in nether */
+            	if(id != 0)
+            		id = 0;
+            	else
+            		isnether = false;
+            }
 
             switch (seq) {
             case 0:
@@ -87,7 +93,8 @@ public class CaveTileRenderer extends DefaultTileRenderer {
                 cg = cg * mult / 256;
                 cb = cb * mult / 256;
 
-                return new Color(cr, cg, cb);
+                result.setRGBA(cr, cg, cb, 255);
+                return;
             }
         }
     }

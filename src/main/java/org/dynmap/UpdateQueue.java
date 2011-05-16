@@ -11,10 +11,11 @@ public class UpdateQueue {
 
     private static final int maxUpdateAge = 120000;
 
-    public synchronized void pushUpdate(Object obj) {
-        long now = System.currentTimeMillis();
-        long deadline = now - maxUpdateAge;
+    public void pushUpdate(Object obj) {
         synchronized (lock) {
+        	/* Do inside lock - prevent delay between time and actual work */
+            long now = System.currentTimeMillis();
+            long deadline = now - maxUpdateAge;
             ListIterator<Update> i = updateQueue.listIterator(0);
             while (i.hasNext()) {
                 Update u = i.next();
@@ -27,11 +28,11 @@ public class UpdateQueue {
 
     private ArrayList<Object> tmpupdates = new ArrayList<Object>();
 
-    public synchronized Object[] getUpdatedObjects(long since) {
-        long now = System.currentTimeMillis();
-        long deadline = now - maxUpdateAge;
+    public Object[] getUpdatedObjects(long since) {
         Object[] updates;
         synchronized (lock) {
+            long now = System.currentTimeMillis();
+            long deadline = now - maxUpdateAge;
             tmpupdates.clear();
             Iterator<Update> it = updateQueue.descendingIterator();
             while (it.hasNext()) {

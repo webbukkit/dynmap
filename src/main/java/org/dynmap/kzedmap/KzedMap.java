@@ -138,6 +138,26 @@ public class KzedMap extends MapType {
         onTileInvalidated.trigger(tile);
     }
 
+    /**
+     * Test if point x,z is inside rectangle with corner at r0x,r0z and with
+     * size vectors s1x,s1z and s2x,s2z
+     * 
+     */
+    private boolean testPointInRectangle(int x, int z, int r0x, int r0z, int s1x, int s1z,
+            int s2x, int s2z) {
+        int xr = x - r0x;
+        int zr = z - r0z;   /* Get position relative to rectangle corner */
+        int dots1 = xr*s1x + zr*s1z;
+        int dots2 = xr*s2x + zr*s2z;
+        /* If dot product of relative point and each side is between zero and dot product
+         * of each side and itself, we're inside 
+         */
+        if((dots1 >= 0) && (dots1 <= (s1x*s1x+s1z*s1z)) &&
+                (dots2 >= 0) && (dots2 <= (s2x*s2x+s2z*s2z))) {
+            return true;
+        }
+        return false;
+    }
     @Override
     public DynmapChunk[] getRequiredChunks(MapTile tile) {
         if (tile instanceof KzedMapTile) {
@@ -155,13 +175,43 @@ public class KzedMap extends MapType {
 
             int x, z;
 
+            /* Actual pattern of chunks needed is create by the slanted
+             * square prism corresponding to the render path of the tile.
+             * Top of prism (corresponding to y=127) is diamond shape from
+             * ix, iz to ix+64,iz+64 to ix+128,iz to ix+64,iz-64
+             * Bottom is same shape, offset by -64 on x, +64 on z (net
+             * render path to y=0), correspond to ix-64, iz+64 to
+             * ix,iz+128 to ix+64,iz+64 to ix,iz.  Projection of
+             * the prism on to the x,z plane (which is all that matters for
+             * chunks) yields a diagonal rectangular area from ix-64(x1),iz+64 
+             * to ix,iz+128(z2) to ix+128(x2),iz to ix+64,iz-64(z1).  
+             * Chunks outside this are not needed - we scan a simple rectangle
+             * (chunk grid aligned) and skip adding the ones that are outside. 
+             * This results in 42% less chunks being loaded.
+             */
             ArrayList<DynmapChunk> chunks = new ArrayList<DynmapChunk>();
+
             for (x = x1; x < x2; x += 16) {
                 for (z = z1; z < z2; z += 16) {
+                    /* If any of the chunk corners are inside the rectangle, we need it */
+                    if((!testPointInRectangle(x, z, x1, iz + KzedMap.tileWidth/2,
+                            KzedMap.tileWidth/2, KzedMap.tileHeight/2,
+                            KzedMap.tileWidth, -KzedMap.tileHeight)) &&
+                        (!testPointInRectangle(x+15, z, x1, iz + KzedMap.tileWidth/2,
+                            KzedMap.tileWidth/2, KzedMap.tileHeight/2,
+                            KzedMap.tileWidth, -KzedMap.tileHeight)) &&
+                        (!testPointInRectangle(x+15, z+15, x1, iz + KzedMap.tileWidth/2,
+                            KzedMap.tileWidth/2, KzedMap.tileHeight/2,
+                            KzedMap.tileWidth, -KzedMap.tileHeight)) &&
+                        (!testPointInRectangle(x, z+15, x1, iz + KzedMap.tileWidth/2,
+                            KzedMap.tileWidth/2, KzedMap.tileHeight/2,
+                            KzedMap.tileWidth, -KzedMap.tileHeight)))
+                        continue;
                     DynmapChunk chunk = new DynmapChunk(x / 16, z / 16);
                     chunks.add(chunk);
                 }
             }
+            
             DynmapChunk[] result = new DynmapChunk[chunks.size()];
             chunks.toArray(result);
             return result;
