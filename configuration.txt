@@ -10,6 +10,7 @@ renderinterval: 1
 renderonsync: true
 
 render-triggers:
+#  - chunkloaded
 #  - playermove
 #  - playerjoin
   - blockplaced
