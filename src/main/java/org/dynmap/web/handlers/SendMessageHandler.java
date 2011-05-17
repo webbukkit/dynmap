@@ -17,6 +17,7 @@ import org.json.simple.parser.JSONParser;
 
 public class SendMessageHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     private static final JSONParser parser = new JSONParser();
     public Event<Message> onMessageReceived = new Event<SendMessageHandler.Message>();

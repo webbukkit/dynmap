@@ -15,6 +15,7 @@ import org.dynmap.web.HttpStatus;
 
 public abstract class FileHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
     private byte[] readBuffer = new byte[40960];
 
     private static Map<String, String> mimes = new HashMap<String, String>();

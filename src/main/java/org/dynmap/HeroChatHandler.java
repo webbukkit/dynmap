@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 
 public class HeroChatHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     private static final String DEF_CHANNEL = "Global";
     private static final List<String> DEF_CHANNELS = Collections
@@ -156,7 +157,7 @@ public class HeroChatHandler {
                 isgood = true;
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
-                System.out.println(nsmx);
+                log.severe(LOG_PREFIX + nsmx);
             }
             return isgood;
         }
@@ -229,7 +230,7 @@ public class HeroChatHandler {
     public HeroChatHandler(Configuration cfg, DynmapPlugin plugin, Server server) {
         /* If we're enabling hero chat support */
         if (cfg.getNode("web").getBoolean("enableherochat", false)) {
-            log.info("[dynmap] HeroChat support configured");
+            log.info(LOG_PREFIX + "HeroChat support configured");
             this.plugin = plugin;
             /* Now, get the monitored channel list */
             hcchannels = cfg.getNode("web").getStringList("herochatchannels",
@@ -245,22 +246,22 @@ public class HeroChatHandler {
 
     private void activateHeroChat(Plugin herochat) {
         if (HeroChatChannelChatEvent.initialize() == false) {
-            log.severe("[dynmap] Cannot load HeroChat chat event class!");
+            log.severe(LOG_PREFIX + "Cannot load HeroChat chat event class!");
             return;
         }
         if (HeroChatChannel.initialize() == false) {
-            log.severe("[dynmap] Cannot load HeroChat channel class!");
+            log.severe(LOG_PREFIX + "Cannot load HeroChat channel class!");
             return;
         }
         if (HeroChatChannelEvent.initialize() == false) {
-            log.severe("[dynmap] Cannot load HeroChat channel event class!");
+            log.severe(LOG_PREFIX + "Cannot load HeroChat channel event class!");
             return;
         }
 
         /* Register event handler */
         plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT,
                 new OurEventListener(), Event.Priority.Monitor, plugin);
-        log.info("[dynmap] HeroChat integration active");
+        log.info(LOG_PREFIX + "HeroChat integration active");
     }
     /**
      * Send message from web to appropriate HeroChat channel
