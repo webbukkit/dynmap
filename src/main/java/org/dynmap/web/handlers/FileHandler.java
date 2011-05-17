@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -12,7 +13,6 @@ import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.HttpStatus;
-import java.util.LinkedList;
 
 public abstract class FileHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
