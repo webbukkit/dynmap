@@ -129,6 +129,7 @@ web:
       #    fillColor: "#FF0000"
       #    fillOpacity: 0.35
     
+    defaultzoom: 0
     defaultworld: world
     worlds:
       - title: World
