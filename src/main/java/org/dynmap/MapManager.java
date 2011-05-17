@@ -1,8 +1,6 @@
 package org.dynmap;
 
 import java.io.File;
-import java.io.IOException;
-import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,24 +10,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.HashMap;
 
-import javax.imageio.ImageIO;
-import org.dynmap.kzedmap.KzedMapTile;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.config.ConfigurationNode;
-import org.dynmap.DynmapWorld;
-import org.dynmap.MapTile;
 import org.dynmap.debug.Debug;
-import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.KzedZoomedMapTile;
-import org.bukkit.Chunk;
 
 public class MapManager {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     public AsynchronousQueue<MapTile> tileQueue;
     public AsynchronousQueue<ImageWriter> writeQueue;
@@ -88,7 +80,7 @@ public class MapManager {
                     rendered.clear();
                     map_index++;    /* Next map */
                     if(map_index >= world.maps.size()) {    /* Last one done? */
-                        log.info("Full render finished.");
+                        log.info(LOG_PREFIX + "Full render finished.");
                         active_renders.remove(world.world.getName());
                         return;
                     }
@@ -213,27 +205,27 @@ public class MapManager {
     void renderFullWorld(Location l) {
         DynmapWorld world = worlds.get(l.getWorld().getName());
         if (world == null) {
-            log.severe("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
+            log.severe(LOG_PREFIX + "Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
             return;
         }
         if(do_timesliced_render) {
             String wname = l.getWorld().getName();
             FullWorldRenderState rndr = active_renders.get(wname);
             if(rndr != null) {
-                log.info("Full world render of world '" + wname + "' already active.");
+                log.info(LOG_PREFIX + "Full world render of world '" + wname + "' already active.");
                 return;
             }
             rndr = new FullWorldRenderState(world,l);    /* Make new activation record */
             active_renders.put(wname, rndr);    /* Add to active table */
             /* Schedule first tile to be worked */
             scheduler.scheduleSyncDelayedTask(plug_in, rndr, (int)(timeslice_interval*20));
-            log.info("Full render starting on world '" + wname + "' (timesliced)...");
+            log.info(LOG_PREFIX + "Full render starting on world '" + wname + "' (timesliced)...");
 
             return;
         }
         World w = world.world;
 
-        log.info("Full render starting on world '" + w.getName() + "'...");
+        log.info(LOG_PREFIX + "Full render starting on world '" + w.getName() + "'...");
         for (MapType map : world.maps) {
             int requiredChunkCount = 200;
             HashSet<MapTile> found = new HashSet<MapTile>();
@@ -287,7 +279,7 @@ public class MapManager {
                 w.unloadChunk(c.x, c.z, false, true);
             }
         }
-        log.info("Full render finished.");
+        log.info(LOG_PREFIX + "Full render finished.");
     }
 
     public void activateWorld(World w) {
@@ -300,7 +292,7 @@ public class MapManager {
         if (world != null) {
             world.world = w;
             worlds.put(w.getName(), world);
-            log.info("Activated world '" + w.getName() + "' in Dynmap.");
+            log.info(LOG_PREFIX + "Activated world '" + w.getName() + "' in Dynmap.");
         }
     }
 
@@ -317,14 +309,14 @@ public class MapManager {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> configuredMap = (Map<String, Object>) configuredMapObj;
                 String typeName = (String) configuredMap.get("class");
-                log.info("Loading map '" + typeName.toString() + "'...");
+                log.info(LOG_PREFIX + "Loading map '" + typeName.toString() + "'...");
                 Class<?> mapTypeClass = Class.forName(typeName);
                 Constructor<?> constructor = mapTypeClass.getConstructor(Map.class);
                 MapType mapType = (MapType) constructor.newInstance(configuredMap);
                 mapType.onTileInvalidated.addListener(invalitateListener);
                 mapTypes.add(mapType);
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Error loading maptype", e);
+                log.log(Level.SEVERE, LOG_PREFIX + "Error loading maptype", e);
                 e.printStackTrace();
             }
         }
@@ -379,7 +371,7 @@ public class MapManager {
             worldTileDirectories.put(world, worldTileDirectory);
         }
         if (!worldTileDirectory.isDirectory() && !worldTileDirectory.mkdirs()) {
-            log.warning("Could not create directory for tiles ('" + worldTileDirectory + "').");
+            log.warning(LOG_PREFIX + "Could not create directory for tiles ('" + worldTileDirectory + "').");
         }
         return new File(worldTileDirectory, tile.getFilename());
     }

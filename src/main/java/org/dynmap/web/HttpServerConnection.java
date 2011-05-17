@@ -18,6 +18,7 @@ import org.dynmap.debug.Debug;
 
 public class HttpServerConnection extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     private static Pattern requestHeaderLine = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+HTTP/(.+)$");
     private static Pattern requestHeaderField = Pattern.compile("^([^:]+):\\s*(.+)$");
@@ -174,7 +175,7 @@ public class HttpServerConnection extends Thread {
                 } catch (IOException e) {
                     throw e;
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "HttpHandler '" + handler + "' has thown an exception", e);
+                    log.log(Level.SEVERE, LOG_PREFIX + "HttpHandler '" + handler + "' has thown an exception", e);
                     if (socket != null) {
                         out.flush();
                         socket.close();
@@ -228,7 +229,7 @@ public class HttpServerConnection extends Thread {
                 } catch (IOException ex) {
                 }
             }
-            log.log(Level.SEVERE, "Exception while handling request: ", e);
+            log.log(Level.SEVERE, LOG_PREFIX + "Exception while handling request: ", e);
             e.printStackTrace();
             return;
         }

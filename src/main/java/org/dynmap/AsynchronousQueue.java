@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 public class AsynchronousQueue<T> {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     private Object lock = new Object();
     private Thread thread;
@@ -62,7 +63,7 @@ public class AsynchronousQueue<T> {
             try {
                 thread.setPriority(Thread.MIN_PRIORITY);
             } catch (SecurityException e) {
-                log.info("Failed to set minimum priority for worker thread!");
+                log.info(LOG_PREFIX + "Failed to set minimum priority for worker thread!");
             }
         }
     }
@@ -74,13 +75,13 @@ public class AsynchronousQueue<T> {
             Thread oldThread = thread;
             thread = null;
 
-            log.info("Stopping map renderer...");
+            log.info(LOG_PREFIX + "Stopping map renderer...");
 
             oldThread.interrupt();
             try {
                 oldThread.join(1000);
             } catch (InterruptedException e) {
-                log.info("Waiting for map renderer to stop is interrupted");
+                log.info(LOG_PREFIX + "Waiting for map renderer to stop is interrupted");
             }
         }
     }
@@ -96,7 +97,7 @@ public class AsynchronousQueue<T> {
             }
 
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "Exception on rendering-thread", ex);
+            log.log(Level.SEVERE, LOG_PREFIX + "Exception on rendering-thread", ex);
         }
     }
 

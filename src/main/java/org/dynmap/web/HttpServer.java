@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 public class HttpServer extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     private ServerSocket sock = null;
     private Thread listeningThread;
@@ -30,7 +31,7 @@ public class HttpServer extends Thread {
         sock = new ServerSocket(port, 5, bindAddress);
         listeningThread = this;
         start();
-        log.info("Dynmap WebServer started on " + bindAddress + ":" + port);
+        log.info(LOG_PREFIX + "Dynmap WebServer started on " + bindAddress + ":" + port);
     }
 
     public void run() {
@@ -41,24 +42,24 @@ public class HttpServer extends Thread {
                     HttpServerConnection requestThread = new HttpServerConnection(socket, this);
                     requestThread.start();
                 } catch (IOException e) {
-                    log.info("map WebServer.run() stops with IOException");
+                    log.info(LOG_PREFIX + "map WebServer.run() stops with IOException");
                     break;
                 }
             }
-            log.info("Webserver shut down.");
+            log.info(LOG_PREFIX + "Webserver shut down.");
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "Exception on WebServer-thread", ex);
+            log.log(Level.SEVERE, LOG_PREFIX + "Exception on WebServer-thread", ex);
         }
     }
 
     public void shutdown() {
-        log.info("Shutting down webserver...");
+        log.info(LOG_PREFIX + "Shutting down webserver...");
         try {
             if (sock != null) {
                 sock.close();
             }
         } catch (IOException e) {
-            log.log(Level.INFO, "Exception while closing socket for webserver shutdown", e);
+            log.log(Level.INFO, LOG_PREFIX + "Exception while closing socket for webserver shutdown", e);
         }
         listeningThread = null;
     }

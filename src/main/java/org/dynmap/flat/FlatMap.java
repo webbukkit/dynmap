@@ -1,6 +1,5 @@
 package org.dynmap.flat;
 
-import org.dynmap.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -13,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.dynmap.Client;
+import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.DynmapChunk;
 import org.dynmap.MapManager;

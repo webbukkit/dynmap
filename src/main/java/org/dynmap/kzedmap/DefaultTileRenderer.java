@@ -1,6 +1,5 @@
 package org.dynmap.kzedmap;
 
-import org.dynmap.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -12,13 +11,12 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.dynmap.Client;
+import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.MapManager;
-import org.dynmap.MapTile;
 import org.dynmap.debug.Debug;
 
 public class DefaultTileRenderer implements MapTileRenderer {
