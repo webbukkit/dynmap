@@ -1,11 +1,11 @@
 package org.dynmap.kzedmap;
 
-import org.dynmap.Color;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.World;
+import org.dynmap.Color;
 
 public class HighlightTileRenderer extends DefaultTileRenderer {
     protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();

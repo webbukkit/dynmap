@@ -16,6 +16,7 @@ import org.dynmap.debug.Debug;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     /* dimensions of a map tile */
     public static final int tileWidth = 128;
@@ -49,7 +50,7 @@ public class KzedMap extends MapType {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> configuredRenderer = (Map<String, Object>) configuredRendererObj;
                 String typeName = (String) configuredRenderer.get("class");
-                log.info("Loading renderer '" + typeName.toString() + "'...");
+                log.info(LOG_PREFIX + "Loading renderer '" + typeName.toString() + "'...");
                 Class<?> mapTypeClass = Class.forName(typeName);
                 Constructor<?> constructor = mapTypeClass.getConstructor(Map.class);
                 MapTileRenderer mapTileRenderer = (MapTileRenderer) constructor.newInstance(configuredRenderer);

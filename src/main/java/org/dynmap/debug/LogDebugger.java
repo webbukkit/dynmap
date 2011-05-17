@@ -8,24 +8,24 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class LogDebugger implements Debugger {
     protected static final Logger log = Logger.getLogger("Minecraft");
-    private static String prepend = "dynmap: ";
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     public LogDebugger(JavaPlugin plugin, Map<String, Object> configuration) {
     }
 
     @Override
     public void debug(String message) {
-        log.info(prepend + message);
+        log.info(LOG_PREFIX + message);
     }
 
     @Override
     public void error(String message) {
-        log.log(Level.SEVERE, prepend + message);
+        log.log(Level.SEVERE, LOG_PREFIX + message);
     }
 
     @Override
     public void error(String message, Throwable thrown) {
-        log.log(Level.SEVERE, prepend + message);
+        log.log(Level.SEVERE, LOG_PREFIX + message);
         thrown.printStackTrace();
     }
 

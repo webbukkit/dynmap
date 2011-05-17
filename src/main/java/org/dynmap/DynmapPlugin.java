@@ -51,6 +51,7 @@ import org.dynmap.web.handlers.SendMessageHandler;
 
 public class DynmapPlugin extends JavaPlugin {
     protected static final Logger log = Logger.getLogger("Minecraft");
+    protected static final String LOG_PREFIX = "[dynmap] ";
 
     public HttpServer webServer = null;
     public MapManager mapManager = null;
@@ -87,7 +88,7 @@ public class DynmapPlugin extends JavaPlugin {
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
-            log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
+            log.warning(LOG_PREFIX + "Could not create directory for tiles ('" + tilesDirectory + "').");
         }
 
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
@@ -122,7 +123,7 @@ public class DynmapPlugin extends JavaPlugin {
 
         /* Print version info */
         PluginDescriptionFile pdfFile = this.getDescription();
-        log.info("[dynmap] version " + pdfFile.getVersion() + " is enabled" );
+        log.info(LOG_PREFIX + "version " + pdfFile.getVersion() + " is enabled" );
     }
 
     public void loadWebserver() {
@@ -163,7 +164,7 @@ public class DynmapPlugin extends JavaPlugin {
         try {
             webServer.startServer();
         } catch (IOException e) {
-            log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
+            log.severe(LOG_PREFIX + "Failed to start WebServer on " + bindAddress + ":" + port + "!");
         }
 
     }
@@ -294,7 +295,7 @@ public class DynmapPlugin extends JavaPlugin {
                     Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfigurationMap);
                     Debug.addDebugger(debugger);
                 } catch (Exception e) {
-                    log.severe("Error loading debugger: " + e);
+                    log.severe(LOG_PREFIX + "Error loading debugger: " + e);
                     e.printStackTrace();
                     continue;
                 }
@@ -402,15 +403,15 @@ public class DynmapPlugin extends JavaPlugin {
             fos.write(Json.stringifyJson(clientConfig).getBytes());
             fos.close();
         } catch (FileNotFoundException ex) {
-            log.log(Level.SEVERE, "Exception while writing JSON-configuration-file.", ex);
+            log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-configuration-file.", ex);
         } catch (IOException ioe) {
-            log.log(Level.SEVERE, "Exception while writing JSON-configuration-file.", ioe);
+            log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-configuration-file.", ioe);
         }
     }
 
     public void webChat(String name, String message) {
         mapManager.pushUpdate(new Client.ChatMessage("web", name, message));
-        log.info("[WEB]" + name + ": " + message);
+        log.info(LOG_PREFIX + "[WEB]" + name + ": " + message);
         /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
         if(hchand.sendWebMessageToHeroChat(name, message) == false)
             getServer().broadcastMessage("[WEB]" + name + ": " + message);
