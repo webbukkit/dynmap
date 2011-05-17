@@ -125,7 +125,7 @@ DynMap.prototype = {
 			.appendTo(container);
 		
 		var map = this.map = new google.maps.Map(mapContainer.get(0), {
-			zoom: 1,
+			zoom: me.options.defaultzoom || 0,
 			center: new google.maps.LatLng(0, 1),
 			navigationControl: true,
 			navigationControlOptions: {
