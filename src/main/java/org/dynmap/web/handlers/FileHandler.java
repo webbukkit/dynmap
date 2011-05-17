@@ -12,11 +12,17 @@ import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.HttpStatus;
+import java.util.LinkedList;
 
 public abstract class FileHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
     protected static final String LOG_PREFIX = "[dynmap] ";
-    private byte[] readBuffer = new byte[40960];
+    //BUG-this breaks re-entrancy of this handler, which is called from multiple threads (one per request)
+    //private byte[] readBuffer = new byte[40960];
+    //Replace with pool of buffers
+    private LinkedList<byte[]> bufferpool = new LinkedList<byte[]>();
+    private Object lock = new Object();
+    private static final int MAX_FREE_IN_POOL = 2;
 
     private static Map<String, String> mimes = new HashMap<String, String>();
     static {
@@ -60,6 +66,24 @@ public abstract class FileHandler implements HttpHandler {
         return path + "index.html";
     }
 
+    private byte[] allocateReadBuffer() {
+        byte[] buf;
+        synchronized(lock) {
+            buf = bufferpool.poll();
+        }
+        if(buf == null) {
+            buf = new byte[40960];
+        }
+        return buf;
+    }
+    
+    private void freeReadBuffer(byte[] buf) {
+        synchronized(lock) {
+            if(bufferpool.size() < MAX_FREE_IN_POOL)
+                bufferpool.push(buf);
+        }
+    }
+    
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         InputStream fileInput = null;
@@ -77,6 +101,7 @@ public abstract class FileHandler implements HttpHandler {
             response.fields.put(HttpField.ContentType, mimeType);
             response.status = HttpStatus.OK;
             OutputStream out = response.getBody();
+            byte[] readBuffer = allocateReadBuffer();            
             try {
                 int readBytes;
                 while ((readBytes = fileInput.read(readBuffer)) > 0) {
@@ -85,6 +110,8 @@ public abstract class FileHandler implements HttpHandler {
             } catch (IOException e) {
                 fileInput.close();
                 throw e;
+            } finally {
+                freeReadBuffer(readBuffer);
             }
             fileInput.close();
         } catch (Exception e) {
