@@ -1,8 +1,6 @@
 package org.dynmap;
 
 import java.io.File;
-import java.io.IOException;
-import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,21 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.HashMap;
 
-import javax.imageio.ImageIO;
-import org.dynmap.kzedmap.KzedMapTile;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.config.ConfigurationNode;
-import org.dynmap.DynmapWorld;
-import org.dynmap.MapTile;
 import org.dynmap.debug.Debug;
-import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.KzedZoomedMapTile;
-import org.bukkit.Chunk;
 
 public class MapManager {
     protected static final Logger log = Logger.getLogger("Minecraft");

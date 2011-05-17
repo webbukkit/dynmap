@@ -1,17 +1,17 @@
 package org.dynmap;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.event.CustomEventListener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.util.config.Configuration;
 import org.bukkit.event.Event;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
-import java.util.List;
-import java.util.Collections;
-import java.lang.reflect.Method;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.util.config.Configuration;
 
 public class HeroChatHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
