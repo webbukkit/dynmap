@@ -5,12 +5,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.dynmap.ConfigurationNode;
 
 public class LogDebugger implements Debugger {
     protected static final Logger log = Logger.getLogger("Minecraft");
     protected static final String LOG_PREFIX = "[dynmap] ";
 
-    public LogDebugger(JavaPlugin plugin, Map<String, Object> configuration) {
+    public LogDebugger(JavaPlugin plugin, ConfigurationNode configuration) {
     }
 
     @Override

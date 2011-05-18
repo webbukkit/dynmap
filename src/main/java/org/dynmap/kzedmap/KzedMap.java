@@ -9,7 +9,9 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
@@ -37,32 +39,14 @@ public class KzedMap extends MapType {
     MapTileRenderer[] renderers;
     ZoomedTileRenderer zoomrenderer;
 
-    public KzedMap(Map<String, Object> configuration) {
-        renderers = loadRenderers(configuration);
+    public KzedMap(ConfigurationNode configuration) {
+        log.info(LOG_PREFIX + "Loading renderers for map '" + getClass().toString() + "'...");
+        List<MapTileRenderer> renderers = configuration.<MapTileRenderer>createInstances("renderers", new Class<?>[0], new Object[0]);
+        this.renderers = new MapTileRenderer[renderers.size()];
+        renderers.toArray(this.renderers);
+        log.info(LOG_PREFIX + "Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
+        
         zoomrenderer = new ZoomedTileRenderer(configuration);
-    }
-
-    private MapTileRenderer[] loadRenderers(Map<String, Object> configuration) {
-        List<?> configuredRenderers = (List<?>) configuration.get("renderers");
-        ArrayList<MapTileRenderer> renderers = new ArrayList<MapTileRenderer>();
-        for (Object configuredRendererObj : configuredRenderers) {
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> configuredRenderer = (Map<String, Object>) configuredRendererObj;
-                String typeName = (String) configuredRenderer.get("class");
-                log.info(LOG_PREFIX + "Loading renderer '" + typeName.toString() + "'...");
-                Class<?> mapTypeClass = Class.forName(typeName);
-                Constructor<?> constructor = mapTypeClass.getConstructor(Map.class);
-                MapTileRenderer mapTileRenderer = (MapTileRenderer) constructor.newInstance(configuredRenderer);
-                renderers.add(mapTileRenderer);
-            } catch (Exception e) {
-                Debug.error("Error loading renderer", e);
-                e.printStackTrace();
-            }
-        }
-        MapTileRenderer[] result = new MapTileRenderer[renderers.size()];
-        renderers.toArray(result);
-        return result;
     }
 
     @Override
