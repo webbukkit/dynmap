@@ -177,7 +177,7 @@ public class ConfigurationNode implements Map<String, Object> {
         List<ConfigurationNode> nodes = getNodes(path);
         List<T> instances = new ArrayList<T>();
         for(ConfigurationNode node : nodes) {
-            T instance = node.createInstance(constructorParameters, constructorArguments);
+            T instance = node.<T>createInstance(constructorParameters, constructorArguments);
             if (instance != null) {
                 instances.add(instance);
             }
