@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -22,9 +20,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 class JsonTimerTask extends TimerTask {
-    protected static final Logger log = Logger.getLogger("Minecraft");
-    protected static final String LOG_PREFIX = "[dynmap] ";
-
     private final DynmapPlugin plugin;
     private Server server;
     private MapManager mapManager;
@@ -65,9 +60,9 @@ class JsonTimerTask extends TimerTask {
                     jsonMsgs = (JSONArray) parser.parse(inputFileReader);
                     inputFileReader.close();
                 } catch (IOException ex) {
-                    log.log(Level.SEVERE, LOG_PREFIX + "Exception while reading JSON-file.", ex);
+                    Log.severe("Exception while reading JSON-file.", ex);
                 } catch (ParseException ex) {
-                    log.log(Level.SEVERE, LOG_PREFIX + "Exception while parsing JSON-file.", ex);
+                    Log.severe("Exception while parsing JSON-file.", ex);
                 }
 
                 if (jsonMsgs != null) {
@@ -119,9 +114,9 @@ class JsonTimerTask extends TimerTask {
                 fos.write(Json.stringifyJson(update).getBytes());
                 fos.close();
             } catch (FileNotFoundException ex) {
-                log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ex);
+                Log.severe("Exception while writing JSON-file.", ex);
             } catch (IOException ioe) {
-                log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ioe);
+                Log.severe("Exception while writing JSON-file.", ioe);
             }
         }
         lastTimestamp = System.currentTimeMillis();
@@ -165,9 +160,9 @@ class JsonTimerTask extends TimerTask {
             fos.write(Json.stringifyJson(regionData).getBytes());
             fos.close();
         } catch (FileNotFoundException ex) {
-            log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ex);
+            Log.severe("Exception while writing JSON-file.", ex);
         } catch (IOException ioe) {
-            log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ioe);
+            Log.severe("Exception while writing JSON-file.", ioe);
         }
     }
 }

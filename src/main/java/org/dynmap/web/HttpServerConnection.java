@@ -9,11 +9,11 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dynmap.Log;
 import org.dynmap.debug.Debug;
 
 public class HttpServerConnection extends Thread {
@@ -175,7 +175,7 @@ public class HttpServerConnection extends Thread {
                 } catch (IOException e) {
                     throw e;
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, LOG_PREFIX + "HttpHandler '" + handler + "' has thown an exception", e);
+                    Log.severe("HttpHandler '" + handler + "' has thown an exception", e);
                     if (socket != null) {
                         out.flush();
                         socket.close();
@@ -229,7 +229,7 @@ public class HttpServerConnection extends Thread {
                 } catch (IOException ex) {
                 }
             }
-            log.log(Level.SEVERE, LOG_PREFIX + "Exception while handling request: ", e);
+            Log.severe("Exception while handling request: ", e);
             e.printStackTrace();
             return;
         }

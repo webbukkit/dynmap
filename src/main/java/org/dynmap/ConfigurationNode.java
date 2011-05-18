@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 public class ConfigurationNode implements Map<String, Object> {
     public Map<String, Object> entries;
@@ -168,7 +167,7 @@ public class ConfigurationNode implements Map<String, Object> {
             return t;
         } catch (Exception e) {
             // TODO: Remove reference to MapManager.
-            MapManager.log.log(Level.SEVERE, MapManager.LOG_PREFIX + "Error loading maptype", e);
+            Log.severe("Error loading maptype", e);
             e.printStackTrace();
         }
         return null;
