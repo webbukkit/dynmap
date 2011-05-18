@@ -38,7 +38,7 @@ jsonfile: false
 jsonfile-interval: 1
 
 # Output player health for web usage
-health-in-json: true
+health-in-json: false
 
 # Use timesliced fullrender - takes a bit longer, but much more polite for server
 timeslicerender: true
@@ -114,7 +114,7 @@ web:
         messagettl: 5
       - type: playermarkers
         showplayerfaces: true
-        showplayerhealth: true
+        showplayerhealth: false
       #- type: digitalclock
       - type: timeofdayclock
         showdigitalclock: true
