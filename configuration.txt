@@ -37,6 +37,9 @@ jsonfile: false
 # How often the json file gets written to(in seconds)
 jsonfile-interval: 1
 
+# Output player health for web usage
+health-in-json: true
+
 # Use timesliced fullrender - takes a bit longer, but much more polite for server
 timeslicerender: true
 

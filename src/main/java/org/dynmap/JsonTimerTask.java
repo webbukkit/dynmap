@@ -51,6 +51,7 @@ class JsonTimerTask extends TimerTask {
         long jsonInterval = configuration.getInt("jsonfile-interval", 1) * 1000;
         long current = System.currentTimeMillis();
         File outputFile;
+        boolean showHealth = configuration.getBoolean("health-in-json", false);
 
         //Handles Reading WebChat
         if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
@@ -105,7 +106,7 @@ class JsonTimerTask extends TimerTask {
             for (int i = 0; i < players.length; i++) {
                 Player p = players[i];
                 Location pl = p.getLocation();
-                update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
+                update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), showHealth?p.getHealth():-1);
             }
 
             update.updates = mapManager.getWorldUpdates(world.getName(), current - (jsonInterval + 10000));
