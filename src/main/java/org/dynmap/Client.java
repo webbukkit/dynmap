@@ -17,14 +17,21 @@ public class Client {
         public String name;
         public String world;
         public double x, y, z;
-        public int health;
 
-        public Player(String name, String world, double x, double y, double z, int health) {
+        public Player(String name, String world, double x, double y, double z) {
             this.name = ChatColor.stripColor(name);
             this.world = world;
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+    }
+
+    public static class PlayerHealth extends Player {
+        public int health;
+
+        public PlayerHealth(String name, String world, double x, double y, double z, int health) {
+            super(name, world, x, y, z);
             this.health = health;
         }
     }
