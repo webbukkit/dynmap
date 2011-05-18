@@ -133,7 +133,7 @@ public class MapManager {
                 found.remove(tile);
                 rendercnt++;
                 if((rendercnt % 100) == 0) {
-                    log.info("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
+                    log.info(LOG_PREFIX + "Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
                             w.getName() + "' in progress - " + rendercnt + " tiles rendered, " + renderQueue.size() + " tiles pending.");
                 }
             }
