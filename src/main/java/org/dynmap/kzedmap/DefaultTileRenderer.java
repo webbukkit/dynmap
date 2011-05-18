@@ -7,7 +7,6 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -16,6 +15,7 @@ import org.bukkit.World.Environment;
 import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
 
@@ -33,7 +33,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         return name;
     }
 
-    public DefaultTileRenderer(Map<String, Object> configuration) {
+    public DefaultTileRenderer(ConfigurationNode configuration) {
         name = (String) configuration.get("prefix");
         Object o = configuration.get("maximumheight");
         if (o != null) {

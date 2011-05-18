@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -14,6 +13,7 @@ import org.bukkit.World.Environment;
 import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
@@ -25,7 +25,7 @@ public class FlatMap extends MapType {
     private ColorScheme colorScheme;
     private int maximumHeight = 127;
 
-    public FlatMap(Map<String, Object> configuration) {
+    public FlatMap(ConfigurationNode configuration) {
         prefix = (String) configuration.get("prefix");
         colorScheme = ColorScheme.getScheme((String) configuration.get("colorscheme"));
         Object o = configuration.get("maximumheight");

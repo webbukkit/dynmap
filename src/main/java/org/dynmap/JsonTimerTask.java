@@ -8,15 +8,11 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.web.Json;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,23 +20,20 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 class JsonTimerTask extends TimerTask {
-    protected static final Logger log = Logger.getLogger("Minecraft");
-    protected static final String LOG_PREFIX = "[dynmap] ";
-
     private final DynmapPlugin plugin;
     private Server server;
     private MapManager mapManager;
-    private Configuration configuration;
+    private ConfigurationNode configuration;
     private ConfigurationNode regions;
     private static final JSONParser parser = new JSONParser();
     private long lastTimestamp = 0;
 
-    public JsonTimerTask(DynmapPlugin instance, Configuration config) {
+    public JsonTimerTask(DynmapPlugin instance, ConfigurationNode config) {
         this.plugin = instance;
         this.server = this.plugin.getServer();
         this.mapManager = this.plugin.getMapManager();
         this.configuration = config;
-        for(ConfigurationNode type : configuration.getNodeList("web.components", null))
+        for(ConfigurationNode type : configuration.getNodes("web/components"))
             if(type.getString("type").equalsIgnoreCase("regions")) {
                 this.regions = type;
                 break;
@@ -48,7 +41,7 @@ class JsonTimerTask extends TimerTask {
     }
 
     public void run() {
-        long jsonInterval = configuration.getInt("jsonfile-interval", 1) * 1000;
+        long jsonInterval = configuration.getInteger("jsonfile-interval", 1) * 1000;
         long current = System.currentTimeMillis();
         File outputFile;
         boolean showHealth = configuration.getBoolean("health-in-json", false);
@@ -68,9 +61,9 @@ class JsonTimerTask extends TimerTask {
                     jsonMsgs = (JSONArray) parser.parse(inputFileReader);
                     inputFileReader.close();
                 } catch (IOException ex) {
-                    log.log(Level.SEVERE, LOG_PREFIX + "Exception while reading JSON-file.", ex);
+                    Log.severe("Exception while reading JSON-file.", ex);
                 } catch (ParseException ex) {
-                    log.log(Level.SEVERE, LOG_PREFIX + "Exception while parsing JSON-file.", ex);
+                    Log.severe("Exception while parsing JSON-file.", ex);
                 }
 
                 if (jsonMsgs != null) {
@@ -125,9 +118,9 @@ class JsonTimerTask extends TimerTask {
                 fos.write(Json.stringifyJson(update).getBytes());
                 fos.close();
             } catch (FileNotFoundException ex) {
-                log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ex);
+                Log.severe("Exception while writing JSON-file.", ex);
             } catch (IOException ioe) {
-                log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ioe);
+                Log.severe("Exception while writing JSON-file.", ioe);
             }
         }
         lastTimestamp = System.currentTimeMillis();
@@ -142,16 +135,16 @@ class JsonTimerTask extends TimerTask {
     private void parseRegionFile(String regionFile, String outputFileName)
     {
         File outputFile;
-        Configuration regionConfig = null;
+        org.bukkit.util.config.Configuration regionConfig = null;
         if(regions.getBoolean("useworldpath", false))
         {
             if(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile).exists())
-                regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
+                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
             else if(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile).exists())
-                regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile));
+                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile));
         }
         else
-            regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
+            regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
         //File didn't exist
         if(regionConfig == null)
             return;
@@ -171,9 +164,9 @@ class JsonTimerTask extends TimerTask {
             fos.write(Json.stringifyJson(regionData).getBytes());
             fos.close();
         } catch (FileNotFoundException ex) {
-            log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ex);
+            Log.severe("Exception while writing JSON-file.", ex);
         } catch (IOException ioe) {
-            log.log(Level.SEVERE, LOG_PREFIX + "Exception while writing JSON-file.", ioe);
+            Log.severe("Exception while writing JSON-file.", ioe);
         }
     }
 }

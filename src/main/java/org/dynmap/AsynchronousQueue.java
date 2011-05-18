@@ -4,13 +4,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class AsynchronousQueue<T> {
-    protected static final Logger log = Logger.getLogger("Minecraft");
-    protected static final String LOG_PREFIX = "[dynmap] ";
-
     private Object lock = new Object();
     private Thread thread;
     private LinkedList<T> queue = new LinkedList<T>();
@@ -63,7 +58,7 @@ public class AsynchronousQueue<T> {
             try {
                 thread.setPriority(Thread.MIN_PRIORITY);
             } catch (SecurityException e) {
-                log.info(LOG_PREFIX + "Failed to set minimum priority for worker thread!");
+                Log.info("Failed to set minimum priority for worker thread!");
             }
         }
     }
@@ -75,13 +70,13 @@ public class AsynchronousQueue<T> {
             Thread oldThread = thread;
             thread = null;
 
-            log.info(LOG_PREFIX + "Stopping map renderer...");
+            Log.info("Stopping map renderer...");
 
             oldThread.interrupt();
             try {
                 oldThread.join(1000);
             } catch (InterruptedException e) {
-                log.info(LOG_PREFIX + "Waiting for map renderer to stop is interrupted");
+                Log.info("Waiting for map renderer to stop is interrupted");
             }
         }
     }
@@ -97,7 +92,7 @@ public class AsynchronousQueue<T> {
             }
 
         } catch (Exception ex) {
-            log.log(Level.SEVERE, LOG_PREFIX + "Exception on rendering-thread", ex);
+            Log.severe("Exception on rendering-thread", ex);
         }
     }
 

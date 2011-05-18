@@ -1,13 +1,12 @@
 package org.dynmap.kzedmap;
 
-import java.util.Map;
-
 import org.bukkit.World;
 import org.dynmap.Color;
+import org.dynmap.ConfigurationNode;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
 
-    public CaveTileRenderer(Map<String, Object> configuration) {
+    public CaveTileRenderer(ConfigurationNode configuration) {
         super(configuration);
     }
 

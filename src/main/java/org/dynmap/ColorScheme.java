@@ -6,14 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.dynmap.debug.Debug;
 
 public class ColorScheme {
-    protected static final Logger log = Logger.getLogger("Minecraft");
-    protected static final String LOG_PREFIX = "[dynmap] ";
     private static final HashMap<String, ColorScheme> cache = new HashMap<String, ColorScheme>();
 
     public String name;
@@ -115,10 +111,10 @@ public class ColorScheme {
                 }
             }
         } catch (RuntimeException e) {
-            log.log(Level.SEVERE, LOG_PREFIX + "Could not load colors '" + name + "' ('" + colorSchemeFile + "').", e);
+            Log.severe("Could not load colors '" + name + "' ('" + colorSchemeFile + "').", e);
             return null;
         } catch (FileNotFoundException e) {
-            log.log(Level.SEVERE, LOG_PREFIX + "Could not load colors '" + name + "' ('" + colorSchemeFile + "'): File not found.", e);
+            Log.severe("Could not load colors '" + name + "' ('" + colorSchemeFile + "'): File not found.", e);
         }
         return new ColorScheme(name, colors, datacolors);
     }

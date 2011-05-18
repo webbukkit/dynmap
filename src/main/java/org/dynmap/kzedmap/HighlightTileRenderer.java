@@ -2,23 +2,19 @@ package org.dynmap.kzedmap;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.World;
 import org.dynmap.Color;
+import org.dynmap.ConfigurationNode;
 
 public class HighlightTileRenderer extends DefaultTileRenderer {
     protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
 
-    public HighlightTileRenderer(Map<String, Object> configuration) {
+    public HighlightTileRenderer(ConfigurationNode configuration) {
         super(configuration);
-        Object highlightObj = configuration.get("highlight");
-        if (highlightObj instanceof List<?>) {
-            for(Object o : (List<?>)highlightObj) {
-                highlightBlocks.add((Integer)o);
-            }
-        } else if (highlightObj instanceof Integer) {
-            highlightBlocks.add((Integer)highlightObj);
+        List<Integer> highlight = configuration.<Integer>getList("highlight");
+        for(Integer i : highlight) {
+            highlightBlocks.add(i);
         }
     }
 

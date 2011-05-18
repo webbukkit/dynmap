@@ -3,7 +3,6 @@ package org.dynmap.web;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +22,8 @@ public class Json {
             s.append("\"" + ((String)o).replace("\"", "\\\"") + "\"");
         } else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
             s.append(o.toString());
-        } else if (o instanceof LinkedHashMap<?, ?>) {
-            LinkedHashMap<?, ?> m = (LinkedHashMap<?, ?>) o;
+        } else if (o instanceof Map<?, ?>) {
+            Map<?, ?> m = (Map<?, ?>) o;
             s.append("{");
             boolean first = true;
             for (Map.Entry<?, ?> entry : m.entrySet()) {
