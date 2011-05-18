@@ -69,7 +69,7 @@ public class MapManager {
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
-                        log.info(LOG_PREFIX + "Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
+                        log.info("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
                                  world.world.getName() + "' completed - " + rendercnt + " tiles rendered.");
                     }                	
                     found.clear();
@@ -124,7 +124,7 @@ public class MapManager {
                 found.remove(tile);
                 rendercnt++;
                 if((rendercnt % 100) == 0) {
-                    log.info(LOG_PREFIX + "Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
+                    log.info("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
                             w.getName() + "' in progress - " + rendercnt + " tiles rendered, " + renderQueue.size() + " tiles pending.");
                 }
             }
