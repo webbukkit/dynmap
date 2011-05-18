@@ -22,6 +22,12 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 					playerImage.remove();
 				});
 			}
+			if (configuration.showplayerhealth) {
+				player.healthBar = $('<div/>')
+					.addClass('playerHealth')
+					.css('width', (player.health/2*9) + 'px')
+					.appendTo(div);
+			}
 		});
 	});
 	$(dynmap).bind('playerremoved', function(event, player) {
@@ -33,5 +39,8 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		var markerPosition = dynmap.map.getProjection().fromWorldToLatLng(player.location.x, player.location.y, player.location.z);
 		player.marker.toggle(dynmap.world === player.location.world);
 		player.marker.setPosition(markerPosition);
+		// Update health
+		if (configuration.showplayerhealth)
+			player.healthBar.css('width', (player.health/2*9) + 'px');
 	});
 };

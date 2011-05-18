@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.util.config.Configuration;
 import org.dynmap.Client;
 import org.dynmap.MapManager;
 import org.dynmap.PlayerList;
@@ -23,11 +24,13 @@ public class ClientUpdateHandler implements HttpHandler {
     private MapManager mapManager;
     private PlayerList playerList;
     private Server server;
+    private boolean showHealth;
 
-    public ClientUpdateHandler(MapManager mapManager, PlayerList playerList, Server server) {
+    public ClientUpdateHandler(MapManager mapManager, PlayerList playerList, Server server, boolean showHealth) {
         this.mapManager = mapManager;
         this.playerList = playerList;
         this.server = server;
+        this.showHealth = showHealth;
     }
 
     Pattern updatePathPattern = Pattern.compile("world/([^/]+)/([0-9]*)");
@@ -73,7 +76,10 @@ public class ClientUpdateHandler implements HttpHandler {
         for(int i=0;i<players.length;i++) {
             Player p = players[i];
             Location pl = p.getLocation();
-            update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
+            if(showHealth)
+                update.players[i] = new Client.PlayerHealth(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), p.getHealth());
+            else
+                update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ());
         }
 
         update.updates = mapManager.getWorldUpdates(worldName, since);

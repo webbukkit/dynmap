@@ -529,6 +529,19 @@
     border-radius: 3px;
 }
 
+.dynmap .playerHealth {
+	position: absolute;
+	bottom: 3px;
+	left: 34px;
+	height: 11px;
+
+	background: url(../images/heart.png) rgba(0,0,0,0.6) repeat-x left center;
+	padding: 1px 0;
+
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
 
 /*******************
  * Compass

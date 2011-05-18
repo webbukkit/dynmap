@@ -27,6 +27,15 @@ public class Client {
         }
     }
 
+    public static class PlayerHealth extends Player {
+        public int health;
+
+        public PlayerHealth(String name, String world, double x, double y, double z, int health) {
+            super(name, world, x, y, z);
+            this.health = health;
+        }
+    }
+
     public static class Stamped {
         public long timestamp = System.currentTimeMillis();
     }
