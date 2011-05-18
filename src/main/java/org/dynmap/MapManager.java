@@ -54,6 +54,7 @@ public class MapManager {
         HashSet<MapTile> rendered = null;
         LinkedList<MapTile> renderQueue = null;
         MapTile tile0 = null;
+        int rendercnt = 0;
 
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l) {
@@ -76,8 +77,13 @@ public class MapManager {
             if(tile0 == null) {    /* Not single tile render */
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
+                    if(map_index >= 0) { /* Finished a map? */
+                        log.info(LOG_PREFIX + "Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
+                                 world.world.getName() + "' completed - " + rendercnt + " tiles rendered.");
+                    }                	
                     found.clear();
                     rendered.clear();
+                    rendercnt = 0;
                     map_index++;    /* Next map */
                     if(map_index >= world.maps.size()) {    /* Last one done? */
                         log.info(LOG_PREFIX + "Full render finished.");
@@ -125,6 +131,11 @@ public class MapManager {
                     }
                 }
                 found.remove(tile);
+                rendercnt++;
+                if((rendercnt % 100) == 0) {
+                    log.info("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
+                            w.getName() + "' in progress - " + rendercnt + " tiles rendered, " + renderQueue.size() + " tiles pending.");
+                }
             }
             /* And unload what we loaded */
             while (!loadedChunks.isEmpty()) {
