@@ -452,7 +452,8 @@ DynMap.prototype = {
 		var me = this;
 		var player = me.players[update.name] = {
 				name: update.name,
-				location: new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z))
+				location: new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z)),
+				health: update.health
 		};
 		
 		$(me).trigger('playeradded', [ player ]);
@@ -494,6 +495,7 @@ DynMap.prototype = {
 	updatePlayer: function(player, update) {
 		var me = this;
 		var location = player.location = new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z));
+		player.health = update.health;
 		
 		$(me).trigger('playerupdated', [ player ]);
 		
