@@ -16,7 +16,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.debug.Debug;
 
 public class MapManager {
@@ -188,15 +187,24 @@ public class MapManager {
         timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
         do_sync_render = configuration.getBoolean("renderonsync", true);
 
-        for(Object worldConfigurationObj : (List<?>)configuration.getProperty("worlds")) {
-            Map<?, ?> worldConfiguration = (Map<?, ?>)worldConfigurationObj;
-            String worldName = (String)worldConfiguration.get("name");
+        for(ConfigurationNode worldConfiguration : configuration.getNodes("worlds")) {
+            String worldName = worldConfiguration.getString("name");
             DynmapWorld world = new DynmapWorld();
-            if (worldConfiguration.get("maps") != null) {
-                for(MapType map : loadMapTypes((List<?>)worldConfiguration.get("maps"))) {
-                    world.maps.add(map);
+            
+            Event.Listener<MapTile> invalitateListener = new Event.Listener<MapTile>() {
+                @Override
+                public void triggered(MapTile t) {
+                    invalidateTile(t);
                 }
+            };
+            
+            log.info(LOG_PREFIX + "Loading maps of world '" + worldName + "'...");
+            for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
+                map.onTileInvalidated.addListener(invalitateListener);
+                world.maps.add(map);
             }
+            log.info(LOG_PREFIX + "Loaded " + world.maps.size() + " maps of world '" + worldName + "'.");
+            
             inactiveworlds.put(worldName, world);
 
             World bukkitWorld = plugin.getServer().getWorld(worldName);
@@ -305,35 +313,6 @@ public class MapManager {
             worlds.put(w.getName(), world);
             log.info(LOG_PREFIX + "Activated world '" + w.getName() + "' in Dynmap.");
         }
-    }
-
-    private MapType[] loadMapTypes(List<?> mapConfigurations) {
-        Event.Listener<MapTile> invalitateListener = new Event.Listener<MapTile>() {
-            @Override
-            public void triggered(MapTile t) {
-                invalidateTile(t);
-            }
-        };
-        ArrayList<MapType> mapTypes = new ArrayList<MapType>();
-        for (Object configuredMapObj : mapConfigurations) {
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> configuredMap = (Map<String, Object>) configuredMapObj;
-                String typeName = (String) configuredMap.get("class");
-                log.info(LOG_PREFIX + "Loading map '" + typeName.toString() + "'...");
-                Class<?> mapTypeClass = Class.forName(typeName);
-                Constructor<?> constructor = mapTypeClass.getConstructor(Map.class);
-                MapType mapType = (MapType) constructor.newInstance(configuredMap);
-                mapType.onTileInvalidated.addListener(invalitateListener);
-                mapTypes.add(mapType);
-            } catch (Exception e) {
-                log.log(Level.SEVERE, LOG_PREFIX + "Error loading maptype", e);
-                e.printStackTrace();
-            }
-        }
-        MapType[] result = new MapType[mapTypes.size()];
-        mapTypes.toArray(result);
-        return result;
     }
 
     public int touch(Location l) {

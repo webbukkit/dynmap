@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,6 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
 import org.dynmap.Event.Listener;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
@@ -56,7 +57,7 @@ public class DynmapPlugin extends JavaPlugin {
     public HttpServer webServer = null;
     public MapManager mapManager = null;
     public PlayerList playerList;
-    public Configuration configuration;
+    public ConfigurationNode configuration;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
     public HeroChatHandler hchand;
@@ -65,7 +66,7 @@ public class DynmapPlugin extends JavaPlugin {
 
     public static File dataDirectory;
     public static File tilesDirectory;
-
+    
     public MapManager getMapManager() {
         return mapManager;
     }
@@ -81,8 +82,9 @@ public class DynmapPlugin extends JavaPlugin {
 
         dataDirectory = this.getDataFolder();
 
-        configuration = new Configuration(new File(this.getDataFolder(), "configuration.txt"));
-        configuration.load();
+        org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "configuration.txt"));
+        bukkitConfiguration.load();
+        configuration = new ConfigurationNode(bukkitConfiguration);
 
         loadDebuggers();
 
@@ -103,7 +105,7 @@ public class DynmapPlugin extends JavaPlugin {
 
         if (configuration.getBoolean("jsonfile", false)) {
             jsonConfig();
-            int jsonInterval = configuration.getInt("jsonfile-interval", 1) * 1000;
+            int jsonInterval = configuration.getInteger("jsonfile-interval", 1) * 1000;
             timer = new Timer();
             timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
         }
@@ -111,7 +113,7 @@ public class DynmapPlugin extends JavaPlugin {
         hchand = new HeroChatHandler(configuration, this, getServer());
 
         enabledTriggers.clear();
-        List<Object> triggers = configuration.getList("render-triggers");
+        List<String> triggers = configuration.getStrings("render-triggers", new ArrayList<String>());
         if (triggers != null)
         {
             for (Object trigger : triggers) {
@@ -138,17 +140,17 @@ public class DynmapPlugin extends JavaPlugin {
                 bindAddress = null;
             }
         }
-        int port = configuration.getInt("webserver-port", 8123);
+        int port = configuration.getInteger("webserver-port", 8123);
 
         webServer = new HttpServer(bindAddress, port);
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web"))));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer()));
-        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler((Map<?, ?>) configuration.getProperty("web")));
+        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(configuration.getNode("web")));
 
         if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
             SendMessageHandler messageHandler = new SendMessageHandler() {{
-                maximumMessageInterval = (configuration.getNode("web").getInt("webchat-interval", 1) * 1000);
+                maximumMessageInterval = (configuration.getNode("web").getInteger("webchat-interval", 1) * 1000);
                 spamMessage = "\""+configuration.getNode("web").getString("spammessage", "You may only chat once every %interval% seconds.")+"\"";
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
@@ -284,22 +286,18 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     protected void loadDebuggers() {
-        Object debuggersConfiguration = configuration.getProperty("debuggers");
+        List<ConfigurationNode> debuggersConfiguration = configuration.getNodes("debuggers");
         Debug.clearDebuggers();
-        if (debuggersConfiguration != null) {
-            for (Object debuggerConfiguration : (List<?>) debuggersConfiguration) {
-                Map<?, ?> debuggerConfigurationMap = (Map<?, ?>) debuggerConfiguration;
-                try {
-                    Class<?> debuggerClass = Class.forName((String) debuggerConfigurationMap.get("class"));
-                    Constructor<?> constructor = debuggerClass.getConstructor(JavaPlugin.class, Map.class);
-                    Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfigurationMap);
-                    Debug.addDebugger(debugger);
-                } catch (Exception e) {
-                    log.severe(LOG_PREFIX + "Error loading debugger: " + e);
-                    e.printStackTrace();
-                    continue;
-                }
-
+        for (ConfigurationNode debuggerConfiguration : debuggersConfiguration) {
+            try {
+                Class<?> debuggerClass = Class.forName((String) debuggerConfiguration.getString("class"));
+                Constructor<?> constructor = debuggerClass.getConstructor(JavaPlugin.class, Map.class);
+                Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfiguration);
+                Debug.addDebugger(debugger);
+            } catch (Exception e) {
+                log.severe(LOG_PREFIX + "Error loading debugger: " + e);
+                e.printStackTrace();
+                continue;
             }
         }
     }
@@ -391,7 +389,7 @@ public class DynmapPlugin extends JavaPlugin {
 
     private void jsonConfig() {
         File outputFile;
-        Map<?, ?> clientConfig = (Map<?, ?>) configuration.getProperty("web");
+        ConfigurationNode clientConfig = configuration.getNode("web");
         File webpath = new File(configuration.getString("webpath", "web"), "standalone/dynmap_config.json");
         if (webpath.isAbsolute())
             outputFile = webpath;

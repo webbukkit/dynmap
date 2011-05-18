@@ -12,15 +12,14 @@ import java.util.Scanner;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 public class PlayerList {
     private Server server;
     private HashSet<String> hiddenPlayerNames = new HashSet<String>();
     private File hiddenPlayersFile;
-    private Configuration configuration;
+    private ConfigurationNode configuration;
 
-    public PlayerList(Server server, File hiddenPlayersFile, Configuration configuration) {
+    public PlayerList(Server server, File hiddenPlayersFile, ConfigurationNode configuration) {
         this.server = server;
         this.hiddenPlayersFile = hiddenPlayersFile;
         this.configuration = configuration;

@@ -15,8 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.web.Json;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -30,17 +28,17 @@ class JsonTimerTask extends TimerTask {
     private final DynmapPlugin plugin;
     private Server server;
     private MapManager mapManager;
-    private Configuration configuration;
+    private ConfigurationNode configuration;
     private ConfigurationNode regions;
     private static final JSONParser parser = new JSONParser();
     private long lastTimestamp = 0;
 
-    public JsonTimerTask(DynmapPlugin instance, Configuration config) {
+    public JsonTimerTask(DynmapPlugin instance, ConfigurationNode config) {
         this.plugin = instance;
         this.server = this.plugin.getServer();
         this.mapManager = this.plugin.getMapManager();
         this.configuration = config;
-        for(ConfigurationNode type : configuration.getNodeList("web.components", null))
+        for(ConfigurationNode type : configuration.getNodes("web/components"))
             if(type.getString("type").equalsIgnoreCase("regions")) {
                 this.regions = type;
                 break;
@@ -48,7 +46,7 @@ class JsonTimerTask extends TimerTask {
     }
 
     public void run() {
-        long jsonInterval = configuration.getInt("jsonfile-interval", 1) * 1000;
+        long jsonInterval = configuration.getInteger("jsonfile-interval", 1) * 1000;
         long current = System.currentTimeMillis();
         File outputFile;
 
@@ -138,16 +136,16 @@ class JsonTimerTask extends TimerTask {
     private void parseRegionFile(String regionFile, String outputFileName)
     {
         File outputFile;
-        Configuration regionConfig = null;
+        org.bukkit.util.config.Configuration regionConfig = null;
         if(regions.getBoolean("useworldpath", false))
         {
             if(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile).exists())
-                regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
+                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
             else if(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile).exists())
-                regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile));
+                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile));
         }
         else
-            regionConfig = new Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
+            regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
         //File didn't exist
         if(regionConfig == null)
             return;
