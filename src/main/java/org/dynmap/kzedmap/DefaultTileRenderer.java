@@ -187,7 +187,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         Graphics2D g2 = zIm.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g2.drawImage(img, ox, oy, scw, sch, null);
-
+        g2.dispose();	/* Supposed to speed up non-heap memory recovery */
+        
         img.flush();
 
         /* save zoom-out tile */
