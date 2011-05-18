@@ -94,7 +94,10 @@ web:
     # Control which HeroChat channel messages from web are directed to 
     herochatwebchannel: Global
     # Control which channels are monitored and reported to the web
-    herochatchannels: [ Global ]
+    herochatchannels:
+      - Global
+      #- Trade
+      #- Haggle
     
     showplayerfacesinmenu: true
     
