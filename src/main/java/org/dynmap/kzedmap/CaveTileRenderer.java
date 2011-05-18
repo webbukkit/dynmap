@@ -1,7 +1,5 @@
 package org.dynmap.kzedmap;
 
-import java.util.Map;
-
 import org.bukkit.World;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;

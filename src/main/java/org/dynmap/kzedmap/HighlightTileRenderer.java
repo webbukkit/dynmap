@@ -2,7 +2,6 @@ package org.dynmap.kzedmap;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.World;
 import org.dynmap.Color;

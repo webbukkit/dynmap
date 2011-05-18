@@ -1,15 +1,10 @@
 package org.dynmap;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -19,9 +14,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.dynmap.debug.Debug;
 
 public class MapManager {
-    protected static final Logger log = Logger.getLogger("Minecraft");
-    protected static final String LOG_PREFIX = "[dynmap] ";
-
     public AsynchronousQueue<MapTile> tileQueue;
     public AsynchronousQueue<ImageWriter> writeQueue;
 
@@ -85,7 +77,7 @@ public class MapManager {
                     rendercnt = 0;
                     map_index++;    /* Next map */
                     if(map_index >= world.maps.size()) {    /* Last one done? */
-                        log.info(LOG_PREFIX + "Full render finished.");
+                        Log.info("Full render finished.");
                         active_renders.remove(world.world.getName());
                         return;
                     }
@@ -198,12 +190,12 @@ public class MapManager {
                 }
             };
             
-            log.info(LOG_PREFIX + "Loading maps of world '" + worldName + "'...");
+            Log.info("Loading maps of world '" + worldName + "'...");
             for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
                 map.onTileInvalidated.addListener(invalitateListener);
                 world.maps.add(map);
             }
-            log.info(LOG_PREFIX + "Loaded " + world.maps.size() + " maps of world '" + worldName + "'.");
+            Log.info("Loaded " + world.maps.size() + " maps of world '" + worldName + "'.");
             
             inactiveworlds.put(worldName, world);
 
@@ -224,27 +216,27 @@ public class MapManager {
     void renderFullWorld(Location l) {
         DynmapWorld world = worlds.get(l.getWorld().getName());
         if (world == null) {
-            log.severe(LOG_PREFIX + "Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
+            Log.severe("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
             return;
         }
         if(do_timesliced_render) {
             String wname = l.getWorld().getName();
             FullWorldRenderState rndr = active_renders.get(wname);
             if(rndr != null) {
-                log.info(LOG_PREFIX + "Full world render of world '" + wname + "' already active.");
+                Log.info("Full world render of world '" + wname + "' already active.");
                 return;
             }
             rndr = new FullWorldRenderState(world,l);    /* Make new activation record */
             active_renders.put(wname, rndr);    /* Add to active table */
             /* Schedule first tile to be worked */
             scheduler.scheduleSyncDelayedTask(plug_in, rndr, (int)(timeslice_interval*20));
-            log.info(LOG_PREFIX + "Full render starting on world '" + wname + "' (timesliced)...");
+            Log.info("Full render starting on world '" + wname + "' (timesliced)...");
 
             return;
         }
         World w = world.world;
 
-        log.info(LOG_PREFIX + "Full render starting on world '" + w.getName() + "'...");
+        Log.info("Full render starting on world '" + w.getName() + "'...");
         for (MapType map : world.maps) {
             int requiredChunkCount = 200;
             HashSet<MapTile> found = new HashSet<MapTile>();
@@ -298,7 +290,7 @@ public class MapManager {
                 w.unloadChunk(c.x, c.z, false, true);
             }
         }
-        log.info(LOG_PREFIX + "Full render finished.");
+        Log.info("Full render finished.");
     }
 
     public void activateWorld(World w) {
@@ -311,7 +303,7 @@ public class MapManager {
         if (world != null) {
             world.world = w;
             worlds.put(w.getName(), world);
-            log.info(LOG_PREFIX + "Activated world '" + w.getName() + "' in Dynmap.");
+            Log.info("Activated world '" + w.getName() + "' in Dynmap.");
         }
     }
 
@@ -361,7 +353,7 @@ public class MapManager {
             worldTileDirectories.put(world, worldTileDirectory);
         }
         if (!worldTileDirectory.isDirectory() && !worldTileDirectory.mkdirs()) {
-            log.warning(LOG_PREFIX + "Could not create directory for tiles ('" + worldTileDirectory + "').");
+            Log.warning("Could not create directory for tiles ('" + worldTileDirectory + "').");
         }
         return new File(worldTileDirectory, tile.getFilename());
     }

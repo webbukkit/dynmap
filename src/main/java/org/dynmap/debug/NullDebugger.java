@@ -1,7 +1,5 @@
 package org.dynmap.debug;
 
-import java.util.Map;
-
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.ConfigurationNode;
 

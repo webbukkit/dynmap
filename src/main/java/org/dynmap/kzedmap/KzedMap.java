@@ -1,20 +1,17 @@
 package org.dynmap.kzedmap;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
-import org.dynmap.MapManager;
+import org.dynmap.Log;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
-import org.dynmap.debug.Debug;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -40,11 +37,11 @@ public class KzedMap extends MapType {
     ZoomedTileRenderer zoomrenderer;
 
     public KzedMap(ConfigurationNode configuration) {
-        log.info(LOG_PREFIX + "Loading renderers for map '" + getClass().toString() + "'...");
+        Log.info("Loading renderers for map '" + getClass().toString() + "'...");
         List<MapTileRenderer> renderers = configuration.<MapTileRenderer>createInstances("renderers", new Class<?>[0], new Object[0]);
         this.renderers = new MapTileRenderer[renderers.size()];
         renderers.toArray(this.renderers);
-        log.info(LOG_PREFIX + "Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
+        Log.info("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
         
         zoomrenderer = new ZoomedTileRenderer(configuration);
     }
