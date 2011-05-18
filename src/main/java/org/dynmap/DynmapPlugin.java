@@ -139,7 +139,7 @@ public class DynmapPlugin extends JavaPlugin {
         webServer = new HttpServer(bindAddress, port);
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web"))));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
-        webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer()));
+        webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer(), configuration.getBoolean("health-in-json", false)));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(configuration.getNode("web")));
 
         if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
