@@ -307,6 +307,7 @@ DynMap.prototype = {
 		}
 		$('.compass').addClass('compass_' + map.name);
 		var worldChanged = me.world !== map.world;
+		var projectionChanged = me.map.getProjection() !== map.projection;
 		me.map.setMapTypeId('none');
 		me.world = map.world;
 		me.maptype = map;
@@ -316,10 +317,12 @@ DynMap.prototype = {
 			if (worldChanged) {
 				$(me).trigger('worldchanged');
 			}
-			if (map.world.center) {
-				me.map.panTo(map.projection.fromWorldToLatLng(map.world.center.x||0,map.world.center.y||0,map.world.center.z||0));
-			} else {
-				me.map.panTo(map.projection.fromWorldToLatLng(0,64,0));
+			if (projectionChanged || worldChanged) {
+				if (map.world.center) {
+					me.map.panTo(map.projection.fromWorldToLatLng(map.world.center.x||0,map.world.center.y||64,map.world.center.z||0));
+				} else {
+					me.map.panTo(map.projection.fromWorldToLatLng(0,64,0));
+				}
 			}
 			$(me).trigger('mapchanged');
 			if (completed) {
