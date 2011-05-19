@@ -38,13 +38,14 @@ import org.dynmap.debug.Debugger;
 import org.dynmap.permissions.NijikokunPermissions;
 import org.dynmap.permissions.OpPermissions;
 import org.dynmap.permissions.PermissionProvider;
+import org.dynmap.regions.RegionHandler;
 import org.dynmap.web.HttpServer;
 import org.dynmap.web.Json;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
-import org.dynmap.web.handlers.RegionHandler;
 import org.dynmap.web.handlers.SendMessageHandler;
+import org.json.simple.JSONObject;
 
 public class DynmapPlugin extends JavaPlugin {
     public HttpServer webServer = null;
@@ -83,11 +84,6 @@ public class DynmapPlugin extends JavaPlugin {
 
         loadDebuggers();
 
-        // Load components.
-        for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapPlugin.class }, new Object[] { this })) {
-            componentManager.add(component);
-        }
-
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
             Log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
@@ -120,8 +116,15 @@ public class DynmapPlugin extends JavaPlugin {
                 enabledTriggers.add((String) trigger);
             }
         }
+        
+        // Load components.
+        for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapPlugin.class }, new Object[] { this })) {
+            componentManager.add(component);
+        }
 
         registerEvents();
+
+        startWebserver();
 
         /* Print version info */
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -146,20 +149,12 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web"))));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer(), configuration.getBoolean("health-in-json", false)));
-        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(this, configuration.getNode("web")));
-        /* See if regions configuration branch is present */
-        for(ConfigurationNode type : configuration.getNodes("web/components")) {
-            if(type.getString("type").equalsIgnoreCase("regions")) {
-                String fname = type.getString("filename", "regions.yml");
-                fname = "/standalone/" + fname.substring(0, fname.lastIndexOf('.')) + "_"; /* Find our path base */
-                webServer.handlers.put(fname + "*", new RegionHandler(type));
-            }
-        }
+        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(this));
         
-        if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
+        if (configuration.getBoolean("allowwebchat", false)) {
             SendMessageHandler messageHandler = new SendMessageHandler() {{
-                maximumMessageInterval = (configuration.getNode("web").getInteger("webchat-interval", 1) * 1000);
-                spamMessage = "\""+configuration.getNode("web").getString("spammessage", "You may only chat once every %interval% seconds.")+"\"";
+                maximumMessageInterval = (configuration.getInteger("webchat-interval", 1) * 1000);
+                spamMessage = "\""+configuration.getString("spammessage", "You may only chat once every %interval% seconds.")+"\"";
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
                     public void triggered(Message t) {
@@ -170,13 +165,14 @@ public class DynmapPlugin extends JavaPlugin {
 
             webServer.handlers.put("/up/sendmessage", messageHandler);
         }
-
+    }
+    
+    public void startWebserver() {
         try {
             webServer.startServer();
         } catch (IOException e) {
-            Log.severe("Failed to start WebServer on " + bindAddress + ":" + port + "!");
+            Log.severe("Failed to start WebServer on " + webServer.getAddress() + ":" + webServer.getPort() + "!");
         }
-
     }
 
     public void onDisable() {
@@ -259,7 +255,7 @@ public class DynmapPlugin extends JavaPlugin {
         }
 
         // To announce when players have joined/quit/chatted.
-        if (configuration.getNode("web").getBoolean("allowchat", false)) {
+        if (configuration.getBoolean("allowchat", false)) {
             // To handle webchat.
             PlayerListener playerListener = new DynmapPlayerChatListener(this);
             //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
@@ -397,7 +393,8 @@ public class DynmapPlugin extends JavaPlugin {
 
     private void jsonConfig() {
         File outputFile;
-        ConfigurationNode clientConfig = configuration.getNode("web");
+        JSONObject clientConfiguration = new JSONObject();
+        events.trigger("buildclientconfiguration", clientConfiguration);
         File webpath = new File(configuration.getString("webpath", "web"), "standalone/dynmap_config.json");
         if (webpath.isAbsolute())
             outputFile = webpath;
@@ -406,7 +403,7 @@ public class DynmapPlugin extends JavaPlugin {
 
         try {
             FileOutputStream fos = new FileOutputStream(outputFile);
-            fos.write(Json.stringifyJson(clientConfig).getBytes());
+            fos.write(clientConfiguration.toJSONString().getBytes());
             fos.close();
         } catch (FileNotFoundException ex) {
             Log.severe("Exception while writing JSON-configuration-file.", ex);

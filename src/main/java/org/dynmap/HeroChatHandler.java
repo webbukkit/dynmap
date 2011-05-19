@@ -239,15 +239,13 @@ public class HeroChatHandler {
 
     public HeroChatHandler(ConfigurationNode cfg, DynmapPlugin plugin, Server server) {
         /* If we're enabling hero chat support */
-        if (cfg.getNode("web").getBoolean("enableherochat", false)) {
+        if (cfg.getBoolean("enableherochat", false)) {
             Log.info("HeroChat support configured");
             this.plugin = plugin;
             /* Now, get the monitored channel list */
-            hcchannels = cfg.getStrings("web/herochatchannels",
-                    DEF_CHANNELS);
+            hcchannels = cfg.getStrings("herochatchannels", DEF_CHANNELS);
             /* And get channel to send web messages */
-            hcwebinputchannel = cfg.getNode("web").getString(
-                    "herochatwebchannel", DEF_CHANNEL);
+            hcwebinputchannel = cfg.getString("herochatwebchannel", DEF_CHANNEL);
             Plugin hc = server.getPluginManager().getPlugin("HeroChat");
             if(hc != null) {
                 activateHeroChat(hc);

@@ -14,15 +14,24 @@ public class ClientComponent extends Component {
         super(plugin, configuration);
         plugin.events.addListener("buildclientconfiguration", new Event.Listener<JSONObject>() {
             @Override
-            public void triggered(JSONObject t) {
-                JSONObject o = convertMap(configuration);
-                o.remove("class");
-                a(t, "components", o);
+            public void triggered(JSONObject root) {
+                buildClientConfiguration(root);
             }
         });
     }
     
-    JSONObject convertMap(Map<String, ?> m) {
+    protected void buildClientConfiguration(JSONObject root) {
+        JSONObject o = createClientConfiguration();
+        a(root, "components", o);
+    }
+    
+    protected JSONObject createClientConfiguration() {
+        JSONObject o = convertMap(configuration);
+        o.remove("class");
+        return o;
+    }
+    
+    protected static final JSONObject convertMap(Map<String, ?> m) {
         JSONObject o = new JSONObject();
         for(Map.Entry<String, ?> entry : m.entrySet()) {
             s(o, entry.getKey(), convert(entry.getValue()));
@@ -30,7 +39,7 @@ public class ClientComponent extends Component {
         return o;
     }
     
-    JSONArray convertList(List<?> l) {
+    protected static final JSONArray convertList(List<?> l) {
         JSONArray o = new JSONArray();
         for(Object entry : l) {
             o.add(convert(entry));
@@ -38,7 +47,7 @@ public class ClientComponent extends Component {
         return o;
     }
     
-    Object convert(Object o) {
+    protected static final Object convert(Object o) {
         if (o instanceof Map<?, ?>) {
             return convertMap((Map<String, ?>)o);
         } else if (o instanceof List<?>) {

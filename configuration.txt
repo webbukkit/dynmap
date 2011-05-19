@@ -21,7 +21,7 @@ components:
     type: timeofdayclock
     showdigitalclock: true
     #showweather: true
-  #- class: org.dynmap.ClientComponent
+  #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
   #  name: WorldGuard
   #  useworldpath: true

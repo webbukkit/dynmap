@@ -13,11 +13,9 @@ import org.json.simple.JSONObject;
 
 public class ClientConfigurationHandler implements HttpHandler {
     private DynmapPlugin plugin;
-    private Map<?, ?> configuration;
     private byte[] cachedConfiguration = null;
-    public ClientConfigurationHandler(DynmapPlugin plugin, Map<?, ?> configuration) {
+    public ClientConfigurationHandler(DynmapPlugin plugin) {
         this.plugin = plugin;
-        this.configuration = configuration;
     }
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {

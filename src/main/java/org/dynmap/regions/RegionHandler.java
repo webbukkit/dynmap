@@ -1,4 +1,4 @@
-package org.dynmap.web.handlers;
+package org.dynmap.regions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,6 +11,8 @@ import org.dynmap.ConfigurationNode;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.Json;
+import org.dynmap.web.handlers.FileHandler;
+
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 

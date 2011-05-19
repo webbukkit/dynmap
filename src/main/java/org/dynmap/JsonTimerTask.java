@@ -33,11 +33,6 @@ class JsonTimerTask extends TimerTask {
         this.server = this.plugin.getServer();
         this.mapManager = this.plugin.getMapManager();
         this.configuration = config;
-        for(ConfigurationNode type : configuration.getNode("web").getNodes("components"))
-            if(type.getString("type").equalsIgnoreCase("regions")) {
-                this.regions = type;
-                break;
-            }
     }
 
     public void run() {
@@ -79,16 +74,13 @@ class JsonTimerTask extends TimerTask {
         }
 
         //Handles Updates
-        for (World world : this.server.getWorlds()) {
-            //Parse region file for multi world style
-            if (regions != null)
-                if (regions.getBoolean("useworldpath", false))
-                    parseRegionFile(world.getName() + "/" + regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
-
+        for (DynmapWorld dynmapWorld : plugin.mapManager.worlds.values()) {
+            World world = dynmapWorld.world;
             current = System.currentTimeMillis();
 
             Client.Update update = new Client.Update();
-
+            WorldUpdate worldUpdate = new WorldUpdate(dynmapWorld, update);
+            plugin.events.trigger("buildingupdate", worldUpdate);
             update.timestamp = current;
             update.servertime = world.getTime() % 24000;
             update.hasStorm = world.hasStorm();
@@ -105,6 +97,8 @@ class JsonTimerTask extends TimerTask {
 
             update.updates = mapManager.getWorldUpdates(world.getName(), current - (jsonInterval + 10000));
 
+            plugin.events.trigger("buildupdate", worldUpdate);
+
             File webWorldPath = new File(this.configuration.getString("webpath", "web"), "standalone/dynmap_" + world.getName() + ".json");
             if (webWorldPath.isAbsolute())
                 outputFile = webWorldPath;
@@ -120,51 +114,10 @@ class JsonTimerTask extends TimerTask {
             } catch (IOException ioe) {
                 Log.severe("Exception while writing JSON-file.", ioe);
             }
+            plugin.events.<Object>trigger("updatewritten", worldUpdate);
         }
         lastTimestamp = System.currentTimeMillis();
-
-        //Parse regions file for non worlds style
-        if (regions != null)
-            if (!regions.getBoolean("useworldpath", false))
-                parseRegionFile(regions.getString("filename", "regions.yml"), regions.getString("filename", "regions.yml"));
-    }
-
-    //handles parsing and writing region json files
-    private void parseRegionFile(String regionFile, String outputFileName)
-    {
-        File outputFile;
-        org.bukkit.util.config.Configuration regionConfig = null;
-        if(regions.getBoolean("useworldpath", false))
-        {
-            if(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile).exists())
-                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
-            else if(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile).exists())
-                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard")+"/worlds", regionFile));
-        }
-        else
-            regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regions.getString("name", "WorldGuard"), regionFile));
-        //File didn't exist
-        if(regionConfig == null)
-            return;
-        regionConfig.load();
-
-        outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf("."))+".json";
-
-        File webWorldPath = new File(this.configuration.getString("webpath", "web")+"/standalone/", outputFileName);
-        Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(regions.getString("basenode", "regions"));
-        if (webWorldPath.isAbsolute())
-            outputFile = webWorldPath;
-        else {
-            outputFile = new File(plugin.getDataFolder(), webWorldPath.toString());
-        }
-        try {
-            FileOutputStream fos = new FileOutputStream(outputFile);
-            fos.write(Json.stringifyJson(regionData).getBytes());
-            fos.close();
-        } catch (FileNotFoundException ex) {
-            Log.severe("Exception while writing JSON-file.", ex);
-        } catch (IOException ioe) {
-            Log.severe("Exception while writing JSON-file.", ioe);
-        }
+        
+        plugin.events.<Object>trigger("updateswritten", null);
     }
 }
