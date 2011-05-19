@@ -1,5 +1,8 @@
 # All paths in this configuration file are relative to Dynmap's data-folder: minecraft_server/plugins/dynmap/
 
+components:
+  - class: org.dynmap.TestComponent
+    stuff: "this is some stuff"
 # Treat hiddenplayers.txt as a whitelist for players to be shown on the map? (Default false)
 display-whitelist: false
 

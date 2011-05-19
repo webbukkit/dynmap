@@ -56,6 +56,7 @@ public class DynmapPlugin extends JavaPlugin {
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
     public HeroChatHandler hchand;
+    public ComponentManager componentManager = new ComponentManager();
 
     public Timer timer;
 
@@ -82,6 +83,11 @@ public class DynmapPlugin extends JavaPlugin {
         configuration = new ConfigurationNode(bukkitConfiguration);
 
         loadDebuggers();
+        
+        // Load components.
+        for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapPlugin.class }, new Object[] { this })) {
+            componentManager.add(component);
+        }
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
