@@ -16,6 +16,7 @@ import org.dynmap.Log;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.MapChunkCache;
+import org.json.simple.JSONObject;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -300,4 +301,11 @@ public class KzedMap extends MapType {
             }
         }
     }    
+    
+    @Override
+    public void buildClientConfiguration(JSONObject worldObject) {
+        for(MapTileRenderer renderer : renderers) {
+            renderer.buildClientConfiguration(worldObject);
+        }
+    }
 }

@@ -34,6 +34,14 @@ public class MapManager {
         Runnable run;
     }
 
+    public DynmapWorld getWorld(String name) {
+        DynmapWorld world = worlds.get(name);
+        if(world == null) {
+            world = inactiveworlds.get(name);
+        }
+        return world;
+    }
+    
     private class FullWorldRenderState implements Runnable {
         DynmapWorld world;    /* Which world are we rendering */
         Location loc;        /* Start location */

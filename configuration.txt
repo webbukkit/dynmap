@@ -1,8 +1,43 @@
 # All paths in this configuration file are relative to Dynmap's data-folder: minecraft_server/plugins/dynmap/
 
 components:
-  - class: org.dynmap.TestComponent
-    stuff: "this is some stuff"
+  - class: org.dynmap.ClientConfigurationComponent
+  - class: org.dynmap.ClientComponent
+    type: chat
+  - class: org.dynmap.ClientComponent
+    type: chatballoon
+    focuschatballoons: false
+  - class: org.dynmap.ClientComponent
+    type: chatbox
+    showplayerfaces: true
+    messagettl: 5
+  - class: org.dynmap.ClientComponent
+    type: playermarkers
+    showplayerfaces: true
+    showplayerhealth: false
+  #- class: org.dynmap.ClientComponent
+  #  type: digitalclock
+  - class: org.dynmap.ClientComponent
+    type: timeofdayclock
+    showdigitalclock: true
+    #showweather: true
+  #- class: org.dynmap.ClientComponent
+  #  type: regions
+  #  name: WorldGuard
+  #  useworldpath: true
+  #  filename: regions.yml
+  #  basenode: regions
+  #  use3dregions: true
+  #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname% - %priority% (%parent%)</span><br /> Owners <span style="font-weight:bold;">%playerowners% %groupowners%</span><br />Members <span style="font-weight:bold;">%playermembers% %groupmembers%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
+  #  regionstyle:
+  #    strokeColor: "#FF0000"
+  #    strokeOpacity: 0.8
+  #    strokeWeight: 3
+  #    fillColor: "#FF0000"
+  #    fillOpacity: 0.35
+  #- class: org.dynmap.TestComponent
+  #  stuff: "This is some configuration-value"
+
 # Treat hiddenplayers.txt as a whitelist for players to be shown on the map? (Default false)
 display-whitelist: false
 
@@ -49,16 +84,46 @@ timeslicerender: true
 # Period between tile renders for timesliced fullrender, in seconds
 timesliceinterval: 0.5
 
+# Interval the browser should poll for updates.
+updaterate: 2000
+
+allowchat: true
+allowwebchat: true
+webchat-interval: 5
+# Set to true to enable HeroChat support
+enableherochat: false
+# Control which HeroChat channel messages from web are directed to 
+herochatwebchannel: Global
+# Control which channels are monitored and reported to the web
+herochatchannels:
+  - Global
+  #- Trade
+  #- Haggle
+
+showplayerfacesinmenu: true
+
+joinmessage: "%playername% joined"
+quitmessage: "%playername% quit"
+spammessage: "You may only chat once every %interval% seconds."
+
+defaultzoom: 0
+defaultworld: world
+
 # The maptypes Dynmap will use to render.
 worlds:
   - name: world
+    title: "World"
     maps:
       - class: org.dynmap.flat.FlatMap
+        name: flat
+        title: "Flat"
         prefix: flat
         colorscheme: default
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
+            name: surface
+            title: "Surface"
             prefix: t
             maximumheight: 127
             colorscheme: default
@@ -73,128 +138,27 @@ worlds:
           #    - 66 # Highlight minecart track
           #  highlight: 56 # For highlighting a single block-type.
           - class: org.dynmap.kzedmap.CaveTileRenderer
+            name: cave
+            title: "Cave"
             prefix: ct
             maximumheight: 127
   - name: nether
+    title: "Nether"
     maps:
       - class: org.dynmap.flat.FlatMap
+        name: flat
+        title: "Flat"
         prefix: flat
         colorscheme: default
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
+            name: nether
+            title: "Surface"
             prefix: nt
             maximumheight: 127
             colorscheme: default
 
-web:
-    # Handles the clientside updates differently only enable if using jsonfile
-    jsonfile: false
-    
-    # Interval the browser should poll for updates.
-    updaterate: 2000
-    
-    allowchat: true
-    allowwebchat: true
-    webchat-interval: 5
-    # Set to true to enable HeroChat support
-    enableherochat: false
-    # Control which HeroChat channel messages from web are directed to 
-    herochatwebchannel: Global
-    # Control which channels are monitored and reported to the web
-    herochatchannels:
-      - Global
-      #- Trade
-      #- Haggle
-    
-    showplayerfacesinmenu: true
-    
-    joinmessage: "%playername% joined"
-    quitmessage: "%playername% quit"
-    spammessage: "You may only chat once every %interval% seconds."
-    
-    components:
-      - type: chat
-      - type: chatballoon
-        focuschatballoons: false
-      - type: chatbox
-        showplayerfaces: true
-        messagettl: 5
-      - type: playermarkers
-        showplayerfaces: true
-        showplayerhealth: false
-      #- type: digitalclock
-      - type: timeofdayclock
-        showdigitalclock: true
-        #showweather: true
-      #- type: regions
-      #  name: WorldGuard
-      #  useworldpath: true
-      #  filename: regions.yml
-      #  basenode: regions
-      #  use3dregions: true
-      #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname% - %priority% (%parent%)</span><br /> Owners <span style="font-weight:bold;">%playerowners% %groupowners%</span><br />Members <span style="font-weight:bold;">%playermembers% %groupmembers%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
-      #  regionstyle:
-      #    strokeColor: "#FF0000"
-      #    strokeOpacity: 0.8
-      #    strokeWeight: 3
-      #    fillColor: "#FF0000"
-      #    fillOpacity: 0.35
-    
-    defaultzoom: 0
-    defaultworld: world
-    worlds:
-      - title: World
-        name: world
-        center:
-          x: 0
-          y: 64
-          z: 0
-        maps:
-          - type: FlatMapType
-            title: Flat
-            name: flat
-            prefix: flat
-          - type: KzedMapType
-            title: Surface
-            name: surface
-            prefix: t
-          #- type: KzedMapType
-          #  title: Highlighted Map
-          #  name: highlight
-          #  prefix: ht
-          - type: KzedMapType
-            title: Cave
-            name: cave
-            prefix: ct
-      - title: Nether
-        name: nether
-        center:
-          x: 0
-          y: 64
-          z: 0
-        maps:
-          - type: FlatMapType
-            title: Flat
-            name: flat
-            prefix: flat
-          - type: KzedMapType
-            title: Surface
-            name: nether
-            prefix: nt
-      # Example:
-      #- title: Other World           # With what name the world is displayed.
-      #  name: world_other            # The actual name of the world (equal to your directory-name).
-      #  maps:
-      #    - type: KzedMapType        # The type (or perspective) of the map. At the moment, there are no others than KzedMapType.
-      #      title: Surface           # The name of the map that will be displayed.
-      #      name: surface            # The actual name of the map (should be unique for this world).
-      #      prefix: t                # The prefix of the tile-files that are generated.
-      #      icon: images/block_other.png    # Sets a custom icon for the map. (optional)
-      #    - type: KzedMapType
-      #      title: Cave
-      #      name: cave
-      #      prefix: ct
 # Enables debugging.
 #debuggers:
 #  - class: org.dynmap.debug.LogDebugger

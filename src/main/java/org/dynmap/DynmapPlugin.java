@@ -20,8 +20,6 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -45,8 +43,8 @@ import org.dynmap.web.Json;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
-import org.dynmap.web.handlers.SendMessageHandler;
 import org.dynmap.web.handlers.RegionHandler;
+import org.dynmap.web.handlers.SendMessageHandler;
 
 public class DynmapPlugin extends JavaPlugin {
     public HttpServer webServer = null;
@@ -57,6 +55,7 @@ public class DynmapPlugin extends JavaPlugin {
     public PermissionProvider permissions;
     public HeroChatHandler hchand;
     public ComponentManager componentManager = new ComponentManager();
+    public Events events = new Events();
 
     public Timer timer;
 
@@ -70,7 +69,7 @@ public class DynmapPlugin extends JavaPlugin {
     public HttpServer getWebServer() {
         return webServer;
     }
-
+    
     public void onEnable() {
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
@@ -83,7 +82,7 @@ public class DynmapPlugin extends JavaPlugin {
         configuration = new ConfigurationNode(bukkitConfiguration);
 
         loadDebuggers();
-        
+
         // Load components.
         for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapPlugin.class }, new Object[] { this })) {
             componentManager.add(component);
@@ -147,7 +146,7 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web"))));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer(), configuration.getBoolean("health-in-json", false)));
-        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(configuration.getNode("web")));
+        webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(this, configuration.getNode("web")));
         /* See if regions configuration branch is present */
         for(ConfigurationNode type : configuration.getNodes("web/components")) {
             if(type.getString("type").equalsIgnoreCase("regions")) {
@@ -217,9 +216,9 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             };
             if (isTrigger("blockplaced"))
-                pm.registerEvent(Event.Type.BLOCK_PLACE, renderTrigger, Priority.Monitor, this);
+                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PLACE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             if (isTrigger("blockbreak"))
-                pm.registerEvent(Event.Type.BLOCK_BREAK, renderTrigger, Priority.Monitor, this);
+                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BREAK, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
         }
         {
             PlayerListener renderTrigger = new PlayerListener() {
@@ -234,9 +233,9 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             };
             if (isTrigger("playerjoin"))
-                pm.registerEvent(Event.Type.PLAYER_JOIN, renderTrigger, Priority.Monitor, this);
+                pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_JOIN, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             if (isTrigger("playermove"))
-                pm.registerEvent(Event.Type.PLAYER_MOVE, renderTrigger, Priority.Monitor, this);
+                pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_MOVE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
         }
         {
             WorldListener renderTrigger = new WorldListener() {
@@ -255,7 +254,7 @@ public class DynmapPlugin extends JavaPlugin {
                  */
             };
             if (isTrigger("chunkloaded"))
-                pm.registerEvent(Event.Type.CHUNK_LOAD, renderTrigger, Priority.Monitor, this);
+                pm.registerEvent(org.bukkit.event.Event.Type.CHUNK_LOAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             //if (isTrigger("chunkgenerated")) pm.registerEvent(Event.Type.CHUNK_GENERATED, renderTrigger, Priority.Monitor, this);
         }
 
@@ -264,10 +263,10 @@ public class DynmapPlugin extends JavaPlugin {
             // To handle webchat.
             PlayerListener playerListener = new DynmapPlayerChatListener(this);
             //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
-            pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Monitor, this);
-            pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Monitor, this);
-            pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
-            pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Monitor, this);
+            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_CHAT, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
+            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_LOGIN, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
+            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_JOIN, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
+            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_QUIT, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
         }
 
         // To link configuration to real loaded worlds.
@@ -277,7 +276,7 @@ public class DynmapPlugin extends JavaPlugin {
                 mm.activateWorld(event.getWorld());
             }
         };
-        pm.registerEvent(Event.Type.WORLD_LOAD, worldListener, Priority.Monitor, this);
+        pm.registerEvent(org.bukkit.event.Event.Type.WORLD_LOAD, worldListener, org.bukkit.event.Event.Priority.Monitor, this);
     }
 
     private static File combinePaths(File parent, String path) {

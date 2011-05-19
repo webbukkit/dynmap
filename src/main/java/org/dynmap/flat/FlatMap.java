@@ -1,5 +1,8 @@
 package org.dynmap.flat;
 
+import static org.dynmap.JSONUtils.a;
+import static org.dynmap.JSONUtils.s;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -21,13 +24,16 @@ import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.MapChunkCache;
+import org.json.simple.JSONObject;
 
 public class FlatMap extends MapType {
+    private ConfigurationNode configuration;
     private String prefix;
     private ColorScheme colorScheme;
     private int maximumHeight = 127;
 
     public FlatMap(ConfigurationNode configuration) {
+        this.configuration = configuration;
         prefix = (String) configuration.get("prefix");
         colorScheme = ColorScheme.getScheme((String) configuration.get("colorscheme"));
         Object o = configuration.get("maximumheight");
@@ -205,5 +211,16 @@ public class FlatMap extends MapType {
         public String getFilename() {
             return map.prefix + "_" + size + "_" + -(y+1) + "_" + x + ".png";
         }
+    }
+    
+    @Override
+    public void buildClientConfiguration(JSONObject worldObject) {
+        ConfigurationNode c = configuration;
+        JSONObject o = new JSONObject();
+        s(o, "type", "FlatMapType");
+        s(o, "name", c.getString("name"));
+        s(o, "title", c.getString("title"));
+        s(o, "prefix", c.getString("prefix"));
+        a(worldObject, "maps", o);
     }
 }

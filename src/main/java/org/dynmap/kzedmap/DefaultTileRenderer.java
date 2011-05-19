@@ -1,5 +1,10 @@
 package org.dynmap.kzedmap;
 
+import static org.dynmap.JSONUtils.a;
+import static org.dynmap.JSONUtils.s;
+
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -17,10 +22,12 @@ import org.dynmap.ConfigurationNode;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.MapChunkCache;
+import org.json.simple.JSONObject;
 
 public class DefaultTileRenderer implements MapTileRenderer {
     protected static final Color translucent = new Color(0, 0, 0, 0);
     protected String name;
+    protected ConfigurationNode configuration;
     protected int maximumHeight = 127;
     protected ColorScheme colorScheme;
 
@@ -34,6 +41,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
 
     public DefaultTileRenderer(ConfigurationNode configuration) {
+        this.configuration = configuration;
         name = (String) configuration.get("prefix");
         Object o = configuration.get("maximumheight");
         if (o != null) {
@@ -355,5 +363,16 @@ public class DefaultTileRenderer implements MapTileRenderer {
         if(scale < 256)
             c.setRGBA((c.getRed() * scale) >> 8, (c.getGreen() * scale) >> 8, 
                 (c.getBlue() * scale) >> 8, c.getAlpha());
+    }
+
+    @Override
+    public void buildClientConfiguration(JSONObject worldObject) {
+        ConfigurationNode c = configuration;
+        JSONObject o = new JSONObject();
+        s(o, "type", "KzedMapType");
+        s(o, "name", c.getString("name"));
+        s(o, "title", c.getString("title"));
+        s(o, "prefix", c.getString("prefix"));
+        a(worldObject, "maps", o);
     }
 }
