@@ -161,6 +161,13 @@ public class HttpServerConnection extends Thread {
                         handler = entry.getValue();
                         break;
                     }
+                    /* Wildcard handler for non-directory matches */
+                    else if(key.endsWith("*") && request.path.startsWith(key.substring(0, key.length()-1))) {                        relativePath = request.path.substring(entry.getKey().length());
+                        relativePath = request.path.substring(entry.getKey().length()-1);
+                        relativePath = URLDecoder.decode(relativePath,"utf-8");
+                        handler = entry.getValue();
+                        break;
+                    }
                 }
 
                 if (handler == null) {
