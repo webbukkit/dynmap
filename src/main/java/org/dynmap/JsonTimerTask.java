@@ -33,7 +33,7 @@ class JsonTimerTask extends TimerTask {
         this.server = this.plugin.getServer();
         this.mapManager = this.plugin.getMapManager();
         this.configuration = config;
-        for(ConfigurationNode type : configuration.getNodes("web/components"))
+        for(ConfigurationNode type : configuration.getNode("web").getNodes("components"))
             if(type.getString("type").equalsIgnoreCase("regions")) {
                 this.regions = type;
                 break;

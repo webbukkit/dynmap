@@ -132,10 +132,11 @@ public class ConfigurationNode implements Map<String, Object> {
     }
     
     public List<ConfigurationNode> getNodes(String path) {
-        Object o = getObject(path);
-        if (!(o instanceof List<?>)) {
+        List<Object> o = getList(path);
+
+        if(o == null)
             return new ArrayList<ConfigurationNode>();
-        }
+        
         ArrayList<ConfigurationNode> nodes = new ArrayList<ConfigurationNode>();
         for(Object i : (List<?>)o) {
             if (i instanceof Map<?, ?>) {
