@@ -27,7 +27,7 @@ public class ConfigurationNode implements Map<String, Object> {
         int separator = path.indexOf('/');
         if (separator < 0)
             return get(path);
-        String localKey = path.substring(0, separator - 1);
+        String localKey = path.substring(0, separator);
         Object subvalue = get(localKey);
         if (subvalue == null)
             return null;
