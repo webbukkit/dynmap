@@ -46,6 +46,7 @@ import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
 import org.dynmap.web.handlers.SendMessageHandler;
+import org.dynmap.web.handlers.RegionHandler;
 
 public class DynmapPlugin extends JavaPlugin {
     public HttpServer webServer = null;
@@ -141,7 +142,15 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
         webServer.handlers.put("/up/", new ClientUpdateHandler(mapManager, playerList, getServer(), configuration.getBoolean("health-in-json", false)));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(configuration.getNode("web")));
-
+        /* See if regions configuration branch is present */
+        for(ConfigurationNode type : configuration.getNode("web").getNodes("components")) {
+            if(type.getString("type").equalsIgnoreCase("regions")) {
+                String fname = type.getString("filename", "regions.yml");
+                fname = "/standalone/" + fname.substring(0, fname.lastIndexOf('.')) + "_"; /* Find our path base */
+                webServer.handlers.put(fname + "*", new RegionHandler(type));
+            }
+        }
+        
         if (configuration.getNode("web").getBoolean("allowwebchat", false)) {
             SendMessageHandler messageHandler = new SendMessageHandler() {{
                 maximumMessageInterval = (configuration.getNode("web").getInteger("webchat-interval", 1) * 1000);
