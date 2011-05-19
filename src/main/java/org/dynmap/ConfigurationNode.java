@@ -157,9 +157,11 @@ public class ConfigurationNode implements Map<String, Object> {
             Class<?> mapTypeClass = Class.forName(typeName);
         
             Class<?>[] constructorParameterWithConfiguration = new Class<?>[constructorParameters.length+1];
+            for(int i = 0; i < constructorParameters.length; i++) { constructorParameterWithConfiguration[i] = constructorParameters[i]; }
             constructorParameterWithConfiguration[constructorParameterWithConfiguration.length-1] = ConfigurationNode.class;
             
             Object[] constructorArgumentsWithConfiguration = new Object[constructorArguments.length+1];
+            for(int i = 0; i < constructorArguments.length; i++) { constructorArgumentsWithConfiguration[i] = constructorArguments[i]; }
             constructorArgumentsWithConfiguration[constructorArgumentsWithConfiguration.length-1] = this;
             Constructor<?> constructor = mapTypeClass.getConstructor(constructorParameterWithConfiguration);
             @SuppressWarnings("unchecked")
