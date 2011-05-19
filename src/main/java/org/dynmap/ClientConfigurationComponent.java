@@ -19,9 +19,6 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "allowchat", c.getBoolean("allowchat", true));
                 s(t, "allowwebchat", c.getBoolean("allowwebchat", true));
                 s(t, "webchat-interval", c.getFloat("webchat-interval", 5.0f));
-                s(t, "enableherochat", c.getBoolean("enableherochat", false));
-                s(t, "herochatwebchannel", c.getString("herochatwebchannel", "Global"));
-                s(t, "herochatchannels", l(c.getStrings("herochatchannels", null)));
                 s(t, "showplayerfacesinmenu", c.getBoolean("showplayerfacesinmenu", true));
                 s(t, "joinmessage", c.getString("joinmessage", "%playername% joined"));
                 s(t, "quitmessage", c.getString("joinmessage", "%playername% quit"));

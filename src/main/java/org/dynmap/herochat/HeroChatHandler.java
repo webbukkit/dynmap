@@ -1,4 +1,4 @@
-package org.dynmap;
+package org.dynmap.herochat;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -11,6 +11,11 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
+import org.dynmap.Client;
+import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapPlugin;
+import org.dynmap.Log;
+import org.dynmap.Client.ChatMessage;
 
 public class HeroChatHandler {
     private static final String DEF_CHANNEL = "Global";
@@ -239,22 +244,20 @@ public class HeroChatHandler {
 
     public HeroChatHandler(ConfigurationNode cfg, DynmapPlugin plugin, Server server) {
         /* If we're enabling hero chat support */
-        if (cfg.getBoolean("enableherochat", false)) {
-            Log.info("HeroChat support configured");
-            this.plugin = plugin;
-            /* Now, get the monitored channel list */
-            hcchannels = cfg.getStrings("herochatchannels", DEF_CHANNELS);
-            /* And get channel to send web messages */
-            hcwebinputchannel = cfg.getString("herochatwebchannel", DEF_CHANNEL);
-            Plugin hc = server.getPluginManager().getPlugin("HeroChat");
-            if(hc != null) {
-                activateHeroChat(hc);
-            }
-            else {
-                /* Set up to hear when HeroChat is enabled */
-                server.getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
-                    new OurPluginListener(), Event.Priority.Normal, plugin);
-            }
+        Log.info("HeroChat support configured");
+        this.plugin = plugin;
+        /* Now, get the monitored channel list */
+        hcchannels = cfg.getStrings("herochatchannels", DEF_CHANNELS);
+        /* And get channel to send web messages */
+        hcwebinputchannel = cfg.getString("herochatwebchannel", DEF_CHANNEL);
+        Plugin hc = server.getPluginManager().getPlugin("HeroChat");
+        if(hc != null) {
+            activateHeroChat(hc);
+        }
+        else {
+            /* Set up to hear when HeroChat is enabled */
+            server.getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
+                new OurPluginListener(), Event.Priority.Normal, plugin);
         }
     }
 

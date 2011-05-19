@@ -54,7 +54,6 @@ public class DynmapPlugin extends JavaPlugin {
     public ConfigurationNode configuration;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
-    public HeroChatHandler hchand;
     public ComponentManager componentManager = new ComponentManager();
     public Events events = new Events();
 
@@ -105,8 +104,6 @@ public class DynmapPlugin extends JavaPlugin {
             timer = new Timer();
             timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
         }
-
-        hchand = new HeroChatHandler(configuration, this, getServer());
 
         enabledTriggers.clear();
         List<String> triggers = configuration.getStrings("render-triggers", new ArrayList<String>());
@@ -415,8 +412,7 @@ public class DynmapPlugin extends JavaPlugin {
     public void webChat(String name, String message) {
         mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
         Log.info("[WEB]" + name + ": " + message);
-        /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
-        if(hchand.sendWebMessageToHeroChat(name, message) == false)
-            getServer().broadcastMessage("[WEB]" + name + ": " + message);
+        ChatEvent event = new ChatEvent("web", name, message);
+        events.trigger("webchat", event);
     }
 }
