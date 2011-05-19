@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
+import org.dynmap.Armor;
 import org.dynmap.Client;
 import org.dynmap.MapManager;
 import org.dynmap.PlayerList;
@@ -76,7 +76,11 @@ public class ClientUpdateHandler implements HttpHandler {
         for(int i=0;i<players.length;i++) {
             Player p = players[i];
             Location pl = p.getLocation();
-            update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), showHealth?p.getHealth():-1);
+            int playerArmor = 0;
+            if(showHealth) {
+                playerArmor = Armor.getArmorPoints(p);
+            }
+            update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), showHealth?p.getHealth():null, showHealth?playerArmor:null);
         }
 
         update.updates = mapManager.getWorldUpdates(worldName, since);
