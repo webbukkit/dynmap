@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.Client;
+import org.dynmap.DynmapPlugin;
 import org.dynmap.MapManager;
 import org.dynmap.PlayerList;
 import org.dynmap.web.HttpField;
@@ -19,17 +20,16 @@ import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.HttpStatus;
 import org.dynmap.web.Json;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import static org.dynmap.JSONUtils.*;
 
 public class ClientUpdateHandler implements HttpHandler {
-    private MapManager mapManager;
-    private PlayerList playerList;
-    private Server server;
+    private DynmapPlugin plugin;
     private boolean showHealth;
 
-    public ClientUpdateHandler(MapManager mapManager, PlayerList playerList, Server server, boolean showHealth) {
-        this.mapManager = mapManager;
-        this.playerList = playerList;
-        this.server = server;
+    public ClientUpdateHandler(DynmapPlugin plugin, boolean showHealth) {
+        this.plugin = plugin;
         this.showHealth = showHealth;
     }
 
@@ -48,7 +48,7 @@ public class ClientUpdateHandler implements HttpHandler {
         String worldName = match.group(1);
         String timeKey = match.group(2);
 
-        World world = server.getWorld(worldName);
+        World world = plugin.getServer().getWorld(worldName);
         if (world == null) {
             response.status = WorldNotFound;
             return;
@@ -64,26 +64,45 @@ public class ClientUpdateHandler implements HttpHandler {
             }
         }
 
-        Client.Update update = new Client.Update();
-        update.timestamp = current;
-        update.servertime = world.getTime() % 24000;
-        update.hasStorm = world.hasStorm();
-        update.isThundering = world.isThundering();
+        JSONObject u = new JSONObject();
+        //plugin.events.trigger("buildclientupdate", update);
+        s(u, "timestamp", current);
+        s(u, "servertime", world.getTime() % 24000);
+        s(u, "hasStorm", world.hasStorm());
+        s(u, "isThundering", world.isThundering());
 
-
-        Player[] players = playerList.getVisiblePlayers();
-        update.players = new Client.Player[players.length];
+        s(u, "players", new JSONArray());
+        Player[] players = plugin.playerList.getVisiblePlayers();
         for(int i=0;i<players.length;i++) {
             Player p = players[i];
             Location pl = p.getLocation();
-            update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), showHealth?p.getHealth():-1,
-                    p.getName());
+            JSONObject jp = new JSONObject();
+            s(jp, "type", "player");
+            s(jp, "name", p.getDisplayName());
+            s(jp, "account", p.getName());
+            s(jp, "world", p.getWorld().getName());
+            s(jp, "x", pl.getX());
+            s(jp, "y", pl.getY());
+            s(jp, "z", pl.getZ());
+            if (showHealth) {
+                s(jp, "health", p.getHealth());
+            }
+            a(u, "players", jp);
         }
 
-        update.updates = mapManager.getWorldUpdates(worldName, since);
+        s(u, "updates", new JSONArray());
+        for(Object update : plugin.mapManager.getWorldUpdates(worldName, since)) {
+            if (update instanceof Client.Tile) {
+                Client.Tile tile = (Client.Tile)update;
+                JSONObject t = new JSONObject();
+                s(t, "type", "tile");
+                s(t, "timestamp", tile.timestamp);
+                s(t, "name", tile.name);
+                a(u, "updates", t);
+            }
+        }
 
-
-        byte[] bytes = Json.stringifyJson(update).getBytes();
+        byte[] bytes = u.toJSONString().getBytes();
 
         String dateStr = new Date().toString();
         response.fields.put(HttpField.Date, dateStr);
