@@ -19,6 +19,7 @@ import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
+import org.dynmap.MapChunkCache;
 
 public class FlatMap extends MapType {
     private String prefix;
@@ -73,7 +74,7 @@ public class FlatMap extends MapType {
     }
 
     @Override
-    public boolean render(MapTile tile, File outputFile) {
+    public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         FlatMapTile t = (FlatMapTile) tile;
         World w = t.getWorld();
         boolean isnether = (w.getEnvironment() == Environment.NETHER) && (maximumHeight == 127);
@@ -93,16 +94,16 @@ public class FlatMap extends MapType {
                 if(isnether) {
                     /* Scan until we hit air */
                     my = 127;
-                    while((blockType = w.getBlockTypeIdAt(mx, my, mz)) != 0) {
+                    while((blockType = cache.getBlockTypeID(mx, my, mz)) != 0) {
                         my--;
                         if(my < 0) {    /* Solid - use top */
                             my = 127;
-                            blockType = w.getBlockTypeIdAt(mx, my, mz);
+                            blockType = cache.getBlockTypeID(mx, my, mz);
                             break;
                         }
                     }
                     if(blockType == 0) {    /* Hit air - now find non-air */
-                        while((blockType = w.getBlockTypeIdAt(mx, my, mz)) == 0) {
+                        while((blockType = cache.getBlockTypeID(mx, my, mz)) == 0) {
                             my--;
                             if(my < 0) {
                                 my = 0;
@@ -112,14 +113,14 @@ public class FlatMap extends MapType {
                     }
                 }
                 else {
-                    my = w.getHighestBlockYAt(mx, mz) - 1;
+                    my = cache.getHighestBlockYAt(mx, mz) - 1;
                     if(my > maximumHeight) my = maximumHeight;
-                    blockType = w.getBlockTypeIdAt(mx, my, mz);
+                    blockType = cache.getBlockTypeID(mx, my, mz);
                 }
                 byte data = 0;
                 Color[] colors = colorScheme.colors[blockType];
                 if(colorScheme.datacolors[blockType] != null) {
-                    data = w.getBlockAt(mx, my, mz).getData();
+                    data = cache.getBlockData(mx, my, mz);
                     colors = colorScheme.datacolors[blockType][data];
                 }
                 if (colors == null)

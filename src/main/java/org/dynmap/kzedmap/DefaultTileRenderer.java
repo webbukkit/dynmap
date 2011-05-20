@@ -18,6 +18,7 @@ import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
+import org.dynmap.MapChunkCache;
 
 public class DefaultTileRenderer implements MapTileRenderer {
     protected static final Color translucent = new Color(0, 0, 0, 0);
@@ -44,7 +45,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
     }
 
-    public boolean render(KzedMapTile tile, File outputFile) {
+    public boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile) {
         World world = tile.getWorld();
         boolean isnether = (world.getEnvironment() == Environment.NETHER);
         BufferedImage im = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
@@ -73,8 +74,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
             jz = iz;
 
             for (x = KzedMap.tileWidth - 1; x >= 0; x -= 2) {
-                scan(world, jx, iy, jz, 0, isnether, c1);
-                scan(world, jx, iy, jz, 2, isnether, c2);
+                scan(world, jx, iy, jz, 0, isnether, c1, cache);
+                scan(world, jx, iy, jz, 2, isnether, c2, cache);
                 if(c1.isTransparent() == false) {
                     rgb[0] = c1.getRed(); rgb[1] = c1.getGreen(); rgb[2] = c1.getBlue();
                     r.setPixel(x, y, rgb);
@@ -97,10 +98,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
             jz = iz - 1;
 
             for (x = KzedMap.tileWidth - 1; x >= 0; x -= 2) {
-                scan(world, jx, iy, jz, 2, isnether, c1);
+                scan(world, jx, iy, jz, 2, isnether, c1, cache);
                 jx++;
                 jz++;
-                scan(world, jx, iy, jz, 0, isnether, c2);
+                scan(world, jx, iy, jz, 0, isnether, c2, cache);
                 if(c1.isTransparent() == false) {
                     rgb[0] = c1.getRed(); rgb[1] = c1.getGreen(); rgb[2] = c1.getBlue();
                     r.setPixel(x, y, rgb);
@@ -210,13 +211,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
 
 
-    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result) {
+    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
+            MapChunkCache cache) {
         result.setTransparent();
         for (;;) {
             if (y < 0) {
                 return;
             }
-            int id = world.getBlockTypeIdAt(x, y, z);
+            int id = cache.getBlockTypeID(x, y, z);
             byte data = 0;
             if(isnether) {    /* Make bedrock ceiling into air in nether */
                 if(id != 0) {
@@ -230,7 +232,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     isnether = false;
             }
             if(colorScheme.datacolors[id] != null) {    /* If data colored */
-                data = world.getBlockAt(x, y, z).getData();
+                data = cache.getBlockData(x, y, z);
             }
             switch (seq) {
             case 0:
@@ -270,7 +272,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                         }
 
                         /* this block is transparent, so recurse */
-                        scan(world, x, y, z, seq, isnether, result);
+                        scan(world, x, y, z, seq, isnether, result, cache);
 
                         int cr = c.getRed();
                         int cg = c.getGreen();

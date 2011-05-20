@@ -12,6 +12,7 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.MapChunkCache;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -203,12 +204,12 @@ public class KzedMap extends MapType {
     }
 
     @Override
-    public boolean render(MapTile tile, File outputFile) {
+    public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         if (tile instanceof KzedZoomedMapTile) {
-            zoomrenderer.render((KzedZoomedMapTile) tile, outputFile);
+            zoomrenderer.render(cache, (KzedZoomedMapTile) tile, outputFile);
             return true;
         } else if (tile instanceof KzedMapTile) {
-            return ((KzedMapTile) tile).renderer.render((KzedMapTile) tile, outputFile);
+            return ((KzedMapTile) tile).renderer.render(cache, (KzedMapTile) tile, outputFile);
         }
         return false;
     }

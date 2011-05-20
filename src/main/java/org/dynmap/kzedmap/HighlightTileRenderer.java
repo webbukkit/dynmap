@@ -1,6 +1,7 @@
 package org.dynmap.kzedmap;
 
 import java.util.HashSet;
+import org.dynmap.MapChunkCache;
 import java.util.List;
 
 import org.bukkit.World;
@@ -19,14 +20,15 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result) {
+    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
+            MapChunkCache cache) {
         result.setTransparent();
         for (;;) {
             if (y < 0) {
                 break;
             }
 
-            int id = world.getBlockTypeIdAt(x, y, z);
+            int id = cache.getBlockTypeID(x, y, z);
             if(isnether) {    /* Make bedrock ceiling into air in nether */
                 if(id != 0) {
                     /* Remember first color we see, in case we wind up solid */
@@ -40,7 +42,7 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             }
             byte data = 0;
             if(colorScheme.datacolors[id] != null) {    /* If data colored */
-                data = world.getBlockAt(x, y, z).getData();
+                data = cache.getBlockData(x, y, z);
             }
 
             switch (seq) {
