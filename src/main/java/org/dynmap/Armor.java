@@ -12,11 +12,12 @@ public class Armor {
         double baseArmorPoints = 0;
         ItemStack inventory[] = player.getInventory().getArmorContents();
         for(int i=0;i<inventory.length;i++) {
-            if(inventory[i].getDurability() < 0)
+            final int durability = inventory[i].getDurability();
+            if(durability < 0)
                 continue;
             final int maxDurability = inventory[i].getType().getMaxDurability();
             baseDurability += maxDurability;
-            currentDurability += maxDurability - inventory[i].getDurability();
+            currentDurability += maxDurability - durability;
             baseArmorPoints += armorPoints[i];
         }
         return (int)(2*baseArmorPoints*currentDurability/baseDurability);

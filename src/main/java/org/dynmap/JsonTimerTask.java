@@ -99,11 +99,13 @@ class JsonTimerTask extends TimerTask {
             for (int i = 0; i < players.length; i++) {
                 Player p = players[i];
                 Location pl = p.getLocation();
-                int playerArmor = 0;
+                int playerArmor = -1;
+                int playerHealth = -1;
                 if(showHealth) {
                     playerArmor = Armor.getArmorPoints(p);
+                    playerHealth = p.getHealth();
                 }
-                update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), showHealth?p.getHealth():null, showHealth?playerArmor:null);
+                update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), playerHealth, playerArmor);
             }
 
             update.updates = mapManager.getWorldUpdates(world.getName(), current - (jsonInterval + 10000));
