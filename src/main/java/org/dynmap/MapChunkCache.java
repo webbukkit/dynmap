@@ -186,7 +186,7 @@ public class MapChunkCache {
         if(snaparray != null) {
             CraftChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
             if(ss == null) {
-                return 0;
+                return 1;
             }
             else
                 return ss.getHighestBlockYAt(x & 0xF, z & 0xF);
