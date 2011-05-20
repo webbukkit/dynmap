@@ -104,6 +104,8 @@ class JsonTimerTask extends TimerTask {
                 if(showHealth) {
                     playerArmor = Armor.getArmorPoints(p);
                     playerHealth = p.getHealth();
+                    if(playerHealth<0)
+                        playerHealth = 0;
                 }
                 update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), playerHealth, playerArmor);
             }
