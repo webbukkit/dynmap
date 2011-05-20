@@ -94,14 +94,12 @@ public class CraftChunkSnapshot {
     }
     
     public int getHighestBlockYAt(int x, int z) {
-        int off = x << 11 | z << 7 | 127;
+        int off = x << 11 | z << 7 | 126;
         int i;
-        for(i = 127; (i >= 0); i--, off--) {
+        for(i = 127; (i >= 2); i--, off--) {
             if(buf[off] != 0) {
-                if(i < 127) i++;
                 break;
             }
-                
         }
         return i;
     }
