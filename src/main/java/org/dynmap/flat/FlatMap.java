@@ -19,6 +19,7 @@ import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
+import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.MapChunkCache;
 
 public class FlatMap extends MapType {
@@ -80,7 +81,7 @@ public class FlatMap extends MapType {
         boolean isnether = (w.getEnvironment() == Environment.NETHER) && (maximumHeight == 127);
 
         boolean rendered = false;
-        BufferedImage im = new BufferedImage(t.size, t.size, BufferedImage.TYPE_INT_RGB);
+        BufferedImage im = KzedMap.allocateBufferedImage(t.size, t.size);
         WritableRaster raster = im.getRaster();
 
         int[] pixel = new int[4];
@@ -177,7 +178,7 @@ public class FlatMap extends MapType {
                 } catch (java.lang.NullPointerException e) {
                     Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
                 }
-                img.flush();
+                KzedMap.freeBufferedImage(img);
                 MapManager.mapman.pushUpdate(mtile.getWorld(),
                         new Client.Tile(mtile.getFilename()));
             }

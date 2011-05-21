@@ -1,7 +1,5 @@
 package org.dynmap.kzedmap;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -62,8 +60,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
     public boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile) {
         World world = tile.getWorld();
         boolean isnether = (world.getEnvironment() == Environment.NETHER);
-        BufferedImage im = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
-        BufferedImage zim = new BufferedImage(KzedMap.tileWidth/2, KzedMap.tileHeight/2, BufferedImage.TYPE_INT_RGB);
+        BufferedImage im = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
+        BufferedImage zim = KzedMap.allocateBufferedImage(KzedMap.tileWidth/2, KzedMap.tileHeight/2);
         WritableRaster r = im.getRaster();
         WritableRaster zr = zim.getRaster();
         boolean isempty = true;
@@ -208,9 +206,11 @@ public class DefaultTileRenderer implements MapTileRenderer {
         } catch (IndexOutOfBoundsException e) {
         }
 
+        boolean zIm_allocated = false;
         if (zIm == null) {
             /* create new one */
-            zIm = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
+            zIm = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
+            zIm_allocated = true;
             Debug.debug("New zoom-out tile created " + zmtile.getFilename());
         } else {
             Debug.debug("Loaded zoom-out tile from " + zmtile.getFilename());
@@ -219,7 +219,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         /* blit scaled rendered tile onto zoom-out tile */
         WritableRaster zim = zIm.getRaster();
         zim.setRect(ox, oy, zimg.getRaster());        
-        zimg.flush();
+        KzedMap.freeBufferedImage(zimg);
 
         /* save zoom-out tile */
 
@@ -231,7 +231,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
         } catch (java.lang.NullPointerException e) {
             Debug.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile.getName(), e);
         }
-        zIm.flush();
+        if(zIm_allocated)
+            KzedMap.freeBufferedImage(zIm);
+        else
+            zIm.flush();
         /* Push updates for both files.*/
         MapManager.mapman.pushUpdate(mtile.getWorld(),
             new Client.Tile(mtile.getFilename()));
