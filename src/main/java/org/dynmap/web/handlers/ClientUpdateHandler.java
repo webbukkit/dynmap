@@ -11,7 +11,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.Client;
+import org.dynmap.ClientUpdateEvent;
 import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapWorld;
 import org.dynmap.MapManager;
 import org.dynmap.PlayerList;
 import org.dynmap.web.HttpField;
@@ -26,11 +28,9 @@ import static org.dynmap.JSONUtils.*;
 
 public class ClientUpdateHandler implements HttpHandler {
     private DynmapPlugin plugin;
-    private boolean showHealth;
-
-    public ClientUpdateHandler(DynmapPlugin plugin, boolean showHealth) {
+    
+    public ClientUpdateHandler(DynmapPlugin plugin) {
         this.plugin = plugin;
-        this.showHealth = showHealth;
     }
 
     Pattern updatePathPattern = Pattern.compile("world/([^/]+)/([0-9]*)");
@@ -48,12 +48,11 @@ public class ClientUpdateHandler implements HttpHandler {
         String worldName = match.group(1);
         String timeKey = match.group(2);
 
-        World world = plugin.getServer().getWorld(worldName);
-        if (world == null) {
+        DynmapWorld dynmapWorld = plugin.mapManager.getWorld(worldName);
+        if (dynmapWorld == null || dynmapWorld.world == null) {
             response.status = WorldNotFound;
             return;
         }
-
         long current = System.currentTimeMillis();
         long since = 0;
 
@@ -65,42 +64,8 @@ public class ClientUpdateHandler implements HttpHandler {
         }
 
         JSONObject u = new JSONObject();
-        //plugin.events.trigger("buildclientupdate", update);
         s(u, "timestamp", current);
-        s(u, "servertime", world.getTime() % 24000);
-        s(u, "hasStorm", world.hasStorm());
-        s(u, "isThundering", world.isThundering());
-
-        s(u, "players", new JSONArray());
-        Player[] players = plugin.playerList.getVisiblePlayers();
-        for(int i=0;i<players.length;i++) {
-            Player p = players[i];
-            Location pl = p.getLocation();
-            JSONObject jp = new JSONObject();
-            s(jp, "type", "player");
-            s(jp, "name", p.getDisplayName());
-            s(jp, "account", p.getName());
-            s(jp, "world", p.getWorld().getName());
-            s(jp, "x", pl.getX());
-            s(jp, "y", pl.getY());
-            s(jp, "z", pl.getZ());
-            if (showHealth) {
-                s(jp, "health", p.getHealth());
-            }
-            a(u, "players", jp);
-        }
-
-        s(u, "updates", new JSONArray());
-        for(Object update : plugin.mapManager.getWorldUpdates(worldName, since)) {
-            if (update instanceof Client.Tile) {
-                Client.Tile tile = (Client.Tile)update;
-                JSONObject t = new JSONObject();
-                s(t, "type", "tile");
-                s(t, "timestamp", tile.timestamp);
-                s(t, "name", tile.name);
-                a(u, "updates", t);
-            }
-        }
+        plugin.events.trigger("buildclientupdate", new ClientUpdateEvent(since, dynmapWorld, u));
 
         byte[] bytes = u.toJSONString().getBytes();
 

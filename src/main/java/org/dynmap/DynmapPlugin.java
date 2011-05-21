@@ -94,16 +94,7 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
 
-        if (!configuration.getBoolean("disable-webserver", false)) {
-            loadWebserver();
-        }
-
-        if (configuration.getBoolean("jsonfile", false)) {
-            jsonConfig();
-            int jsonInterval = configuration.getInteger("jsonfile-interval", 1) * 1000;
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new JsonTimerTask(this, configuration), jsonInterval, jsonInterval);
-        }
+        loadWebserver();
 
         enabledTriggers.clear();
         List<String> triggers = configuration.getStrings("render-triggers", new ArrayList<String>());
@@ -121,11 +112,15 @@ public class DynmapPlugin extends JavaPlugin {
 
         registerEvents();
 
-        startWebserver();
+        if (!configuration.getBoolean("disable-webserver", false)) {
+            startWebserver();
+        }
 
         /* Print version info */
         PluginDescriptionFile pdfFile = this.getDescription();
         Log.info("version " + pdfFile.getVersion() + " is enabled" );
+        
+        events.<Object>trigger("initialized", null);
     }
 
     public void loadWebserver() {
@@ -145,7 +140,6 @@ public class DynmapPlugin extends JavaPlugin {
         webServer = new HttpServer(bindAddress, port);
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web"))));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
-        webServer.handlers.put("/up/", new ClientUpdateHandler(this, configuration.getBoolean("health-in-json", false)));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(this));
         
         if (configuration.getBoolean("allowwebchat", false)) {
@@ -386,27 +380,6 @@ public class DynmapPlugin extends JavaPlugin {
             return false;
         }
         return true;
-    }
-
-    private void jsonConfig() {
-        File outputFile;
-        JSONObject clientConfiguration = new JSONObject();
-        events.trigger("buildclientconfiguration", clientConfiguration);
-        File webpath = new File(configuration.getString("webpath", "web"), "standalone/dynmap_config.json");
-        if (webpath.isAbsolute())
-            outputFile = webpath;
-        else
-            outputFile = new File(getDataFolder(), webpath.toString());
-
-        try {
-            FileOutputStream fos = new FileOutputStream(outputFile);
-            fos.write(clientConfiguration.toJSONString().getBytes());
-            fos.close();
-        } catch (FileNotFoundException ex) {
-            Log.severe("Exception while writing JSON-configuration-file.", ex);
-        } catch (IOException ioe) {
-            Log.severe("Exception while writing JSON-configuration-file.", ioe);
-        }
     }
 
     public void webChat(String name, String message) {

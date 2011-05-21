@@ -2,6 +2,13 @@
 
 components:
   - class: org.dynmap.ClientConfigurationComponent
+  
+  - class: org.dynmap.InternalClientUpdateComponent
+    sendhealth: true
+  #- class: org.dynmap.JsonFileClientUpdateComponent
+  #  sendhealth: true
+  #  interval: 1
+  
   - class: org.dynmap.SimpleWebChatComponent
   #- class: org.dynmap.herochat.HeroWebChatComponent
   #  # Control which HeroChat channel messages from web are directed to 
@@ -11,6 +18,7 @@ components:
   #    - Global
   #    #- Trade
   #    #- Haggle
+  
   - class: org.dynmap.ClientComponent
     type: chat
   - class: org.dynmap.ClientComponent
@@ -23,7 +31,7 @@ components:
   - class: org.dynmap.ClientComponent
     type: playermarkers
     showplayerfaces: true
-    showplayerhealth: false
+    showplayerhealth: true
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent

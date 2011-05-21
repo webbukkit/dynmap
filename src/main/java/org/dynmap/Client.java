@@ -1,41 +1,29 @@
 package org.dynmap;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.bukkit.ChatColor;
+import org.json.simple.JSONAware;
+import org.json.simple.JSONStreamAware;
 
 public class Client {
-    public static class Update {
-        public long timestamp;
-        public long servertime;
-        public boolean hasStorm;
-        public boolean isThundering;
-        public Player[] players;
-        public Object[] updates;
-    }
+    public static class Update implements JSONAware, JSONStreamAware {
+        public long timestamp = System.currentTimeMillis();
 
-    public static class Player {
-        public String type = "player";
-        public String name;
-        public String world;
-        public double x, y, z;
-        public int health;
-        public String account;
+        @Override
+        public String toJSONString() {
+            return org.dynmap.web.Json.stringifyJson(this);
+        }
 
-        public Player(String name, String world, double x, double y, double z, int health, String account) {
-            this.name = ChatColor.stripColor(name);
-            this.world = world;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.health = health;
-            this.account = account;
+        @Override
+        public void writeJSONString(Writer w) throws IOException {
+            // TODO: This isn't the best...
+            w.write(toJSONString());
         }
     }
 
-    public static class Stamped {
-        public long timestamp = System.currentTimeMillis();
-    }
-
-    public static class ChatMessage extends Stamped {
+    public static class ChatMessage extends Update {
         public String type = "chat";
         public String source;
         public String playerName;
@@ -51,7 +39,7 @@ public class Client {
         }
     }
 
-    public static class PlayerJoinMessage extends Stamped {
+    public static class PlayerJoinMessage extends Update {
         public String type = "playerjoin";
         public String playerName;
         public String account;
@@ -61,7 +49,7 @@ public class Client {
         }
     }
 
-    public static class PlayerQuitMessage extends Stamped {
+    public static class PlayerQuitMessage extends Update {
         public String type = "playerquit";
         public String playerName;
         public String account;
@@ -71,7 +59,7 @@ public class Client {
         }
     }
 
-    public static class Tile extends Stamped {
+    public static class Tile extends Update {
         public String type = "tile";
         public String name;
 

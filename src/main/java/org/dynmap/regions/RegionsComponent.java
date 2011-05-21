@@ -8,11 +8,11 @@ import java.util.Map;
 
 import org.bukkit.World;
 import org.dynmap.ClientComponent;
+import org.dynmap.ClientUpdateEvent;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Event;
 import org.dynmap.Log;
-import org.dynmap.WorldUpdate;
 import org.dynmap.web.Json;
 
 public class RegionsComponent extends ClientComponent {
@@ -27,15 +27,15 @@ public class RegionsComponent extends ClientComponent {
         // For external webserver.
         //Parse region file for multi world style
         if (configuration.getBoolean("useworldpath", false)) {
-            plugin.events.addListener("updatewritten", new Event.Listener<WorldUpdate>() {
+            plugin.events.addListener("clientupdatewritten", new Event.Listener<ClientUpdateEvent>() {
                 @Override
-                public void triggered(WorldUpdate t) {
+                public void triggered(ClientUpdateEvent t) {
                     World world = t.world.world;
                     parseRegionFile(world.getName() + "/" + configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
                 }
             });
         } else {
-            plugin.events.addListener("updateswritten", new Event.Listener<Object>() {
+            plugin.events.addListener("clientupdateswritten", new Event.Listener<Object>() {
                 @Override
                 public void triggered(Object t) {
                     parseRegionFile(configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml"));
