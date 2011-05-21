@@ -15,7 +15,6 @@ import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
-import org.dynmap.Client.ChatMessage;
 
 public class HeroChatHandler {
     private static final String DEF_CHANNEL = "Global";

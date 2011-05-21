@@ -15,13 +15,10 @@ public class ClientConfigurationComponent extends Component {
             public void triggered(JSONObject t) {
                 ConfigurationNode c = plugin.configuration;
                 s(t, "updaterate", c.getFloat("updaterate", 1.0f));
-                s(t, "allowchat", c.getBoolean("allowchat", true));
-                s(t, "allowwebchat", c.getBoolean("allowwebchat", true));
-                s(t, "webchat-interval", c.getFloat("webchat-interval", 5.0f));
                 s(t, "showplayerfacesinmenu", c.getBoolean("showplayerfacesinmenu", true));
                 s(t, "joinmessage", c.getString("joinmessage", "%playername% joined"));
-                s(t, "quitmessage", c.getString("joinmessage", "%playername% quit"));
-                s(t, "spammessage", c.getString("joinmessage", "You may only chat once every %interval% seconds."));
+                s(t, "quitmessage", c.getString("quitmessage", "%playername% quit"));
+                s(t, "spammessage", c.getString("spammessage", "You may only chat once every %interval% seconds."));
                 
                 for(ConfigurationNode wn : plugin.configuration.getNodes("worlds")) {
                     DynmapWorld world = plugin.mapManager.getWorld(wn.getString("name"));

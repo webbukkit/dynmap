@@ -141,21 +141,6 @@ public class DynmapPlugin extends JavaPlugin {
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web"))));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(this));
-        
-        if (configuration.getBoolean("allowwebchat", false)) {
-            SendMessageHandler messageHandler = new SendMessageHandler() {{
-                maximumMessageInterval = (configuration.getInteger("webchat-interval", 1) * 1000);
-                spamMessage = "\""+configuration.getString("spammessage", "You may only chat once every %interval% seconds.")+"\"";
-                onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
-                    @Override
-                    public void triggered(Message t) {
-                        webChat(t.name, t.message);
-                    }
-                });
-            }};
-
-            webServer.handlers.put("/up/sendmessage", messageHandler);
-        }
     }
     
     public void startWebserver() {
@@ -243,17 +228,6 @@ public class DynmapPlugin extends JavaPlugin {
             if (isTrigger("chunkloaded"))
                 pm.registerEvent(org.bukkit.event.Event.Type.CHUNK_LOAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             //if (isTrigger("chunkgenerated")) pm.registerEvent(Event.Type.CHUNK_GENERATED, renderTrigger, Priority.Monitor, this);
-        }
-
-        // To announce when players have joined/quit/chatted.
-        if (configuration.getBoolean("allowchat", false)) {
-            // To handle webchat.
-            PlayerListener playerListener = new DynmapPlayerChatListener(this);
-            //getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
-            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_CHAT, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
-            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_LOGIN, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
-            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_JOIN, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
-            pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_QUIT, playerListener, org.bukkit.event.Event.Priority.Monitor, this);
         }
 
         // To link configuration to real loaded worlds.
@@ -380,12 +354,5 @@ public class DynmapPlugin extends JavaPlugin {
             return false;
         }
         return true;
-    }
-
-    public void webChat(String name, String message) {
-        mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
-        Log.info("[WEB]" + name + ": " + message);
-        ChatEvent event = new ChatEvent("web", name, message);
-        events.trigger("webchat", event);
     }
 }

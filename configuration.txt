@@ -5,11 +5,15 @@ components:
   
   - class: org.dynmap.InternalClientUpdateComponent
     sendhealth: true
+    allowwebchat: true
+    webchat-interval: 5
   #- class: org.dynmap.JsonFileClientUpdateComponent
+  #  writeinterval: 1
   #  sendhealth: true
-  #  interval: 1
+  #  allowwebchat: false
   
   - class: org.dynmap.SimpleWebChatComponent
+    allowchat: true
   #- class: org.dynmap.herochat.HeroWebChatComponent
   #  # Control which HeroChat channel messages from web are directed to 
   #  herochatwebchannel: Global

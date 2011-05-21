@@ -26,13 +26,16 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected long jsonInterval;
     protected long lastTimestamp = 0;
     protected JSONParser parser = new JSONParser();
-    public JsonFileClientUpdateComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
+    public JsonFileClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
-        jsonInterval = (long)(configuration.getFloat("interval", 1) * 1000);
+        jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
         task = new TimerTask() {
             @Override
             public void run() {
                 writeUpdates();
+                if (configuration.getBoolean("allowwebchat", false)) {
+                    handleWebChat();
+                }
             }
         };
         timer = new Timer();
@@ -132,10 +135,20 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 while (iter.hasNext()) {
                     JSONObject o = (JSONObject) iter.next();
                     if (Long.parseLong(String.valueOf(o.get("timestamp"))) >= (lastTimestamp)) {
-                        plugin.webChat(String.valueOf(o.get("name")), String.valueOf(o.get("message")));
+                        String name = String.valueOf(o.get("name"));
+                        String message = String.valueOf(o.get("message"));
+                        webChat(name, message);
                     }
                 }
             }
         }
+    }
+    
+    protected void webChat(String name, String message) {
+        // TODO: Change null to something meaningful.
+        plugin.mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
+        Log.info("[WEB]" + name + ": " + message);
+        ChatEvent event = new ChatEvent("web", name, message);
+        plugin.events.trigger("webchat", event);
     }
 }
