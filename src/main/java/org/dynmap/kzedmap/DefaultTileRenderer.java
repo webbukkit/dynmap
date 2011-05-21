@@ -29,6 +29,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
     protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
     protected Color highlightColor = new Color(255, 0, 0);
 
+    protected int   shadowscale[];  /* index=skylight level, value = 256 * scaling value */
     @Override
     public String getName() {
         return name;
@@ -41,6 +42,19 @@ public class DefaultTileRenderer implements MapTileRenderer {
             maximumHeight = Integer.parseInt(String.valueOf(o));
             if (maximumHeight > 127)
                 maximumHeight = 127;
+        }
+        o = configuration.get("shadowstrength");
+        if(o != null) {
+            double shadowweight = Double.parseDouble(String.valueOf(o));
+            if(shadowweight > 0.0) {
+                shadowscale = new int[16];
+                for(int i = 0; i < 16; i++) {
+                    double v = 256.0 * (1.0 - (shadowweight * (15-i) / 15.0));
+                    shadowscale[i] = (int)v;
+                    if(shadowscale[i] > 256) shadowscale[i] = 256;
+                    if(shadowscale[i] < 0) shadowscale[i] = 0;
+                }
+            }
         }
         colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
     }
@@ -210,9 +224,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 new Client.Tile(zmtile.getFilename()));
     }
 
-
     protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
             MapChunkCache cache) {
+        scan(world, x, y, z, seq, isnether, result, cache, 15);
+    }
+    
+    private void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
+            MapChunkCache cache, int lightlevel) {
+        int newlightlevel = 15;
         result.setTransparent();
         for (;;) {
             if (y < 0) {
@@ -234,6 +253,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
             if(colorScheme.datacolors[id] != null) {    /* If data colored */
                 data = cache.getBlockData(x, y, z);
             }
+            if(shadowscale != null) {
+                newlightlevel = cache.getBlockSkyLight(x, y, z); /* Remember this - light path for next block */
+            }
+
             switch (seq) {
             case 0:
                 x--;
@@ -268,16 +291,25 @@ public class DefaultTileRenderer implements MapTileRenderer {
                         if (c.getAlpha() == 255) {
                             /* it's opaque - the ray ends here */
                             result.setColor(c);
+                            if(lightlevel < 15) {  /* Not full light? */
+                                shadowColor(result, lightlevel);
+                            }
                             return;
                         }
 
                         /* this block is transparent, so recurse */
-                        scan(world, x, y, z, seq, isnether, result, cache);
+                        scan(world, x, y, z, seq, isnether, result, cache, newlightlevel);
 
                         int cr = c.getRed();
                         int cg = c.getGreen();
                         int cb = c.getBlue();
                         int ca = c.getAlpha();
+                        if(lightlevel < 15) {
+                            int scale = shadowscale[lightlevel];
+                            cr = (cr * scale) >> 8;
+                            cg = (cg * scale) >> 8;
+                            cb = (cb * scale) >> 8;
+                        }
                         cr *= ca;
                         cg *= ca;
                         cb *= ca;
@@ -287,6 +319,15 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     }
                 }
             }
+            lightlevel = newlightlevel; /* Advance - next block uses last block's light */
         }
+    }
+    private final void shadowColor(Color c, int lightlevel) {
+        int scale = shadowscale[lightlevel];
+        if(scale == 0)
+            c.setRGBA(0, 0, 0, c.getAlpha());
+        else if(scale < 256)
+            c.setRGBA((c.getRed() * scale) >> 8, (c.getGreen() * scale) >> 8, 
+                (c.getBlue() * scale) >> 8, c.getAlpha());
     }
 }

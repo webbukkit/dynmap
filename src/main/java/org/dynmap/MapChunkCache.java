@@ -89,8 +89,8 @@ public class MapChunkCache {
                         Object cc = gethandle.invoke(c);
                         byte[] buf = new byte[32768 + 16384 + 16384 + 16384];   /* Get big enough buffer for whole chunk */
                         getchunkdata.invoke(cc, buf, 0, 0, 0, 16, 128, 16, 0);
-                        snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = 
-                            new CraftChunkSnapshot(chunk.x, chunk.z, buf); 
+                        CraftChunkSnapshot ss = new CraftChunkSnapshot(chunk.x, chunk.z, buf); 
+                        snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
                     } catch (Exception x) {
                     }
                 }
@@ -193,6 +193,21 @@ public class MapChunkCache {
         }
         else {
             return w.getHighestBlockYAt(x, z);
+        }
+    }
+    /* Get sky light level
+     */
+    public int getBlockSkyLight(int x, int y, int z) {
+        if(snaparray != null) {
+            CraftChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+            if(ss == null) {
+                return 15;
+            }
+            else
+                return ss.getBlockSkyLight(x & 0xF, y, z & 0xF);
+        }
+        else {
+            return 15;
         }
     }
 }

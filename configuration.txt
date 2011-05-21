@@ -59,6 +59,8 @@ worlds:
             prefix: t
             maximumheight: 127
             colorscheme: default
+            # Add shadows to world (based on top-down shadows from chunk data)
+            # shadowstrength: 1.0
           #- class: org.dynmap.kzedmap.HighlightTileRenderer
           #  prefix: ht
           #  maximumheight: 127
