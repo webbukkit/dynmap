@@ -18,14 +18,16 @@ public class Client {
         public String world;
         public double x, y, z;
         public int health;
+        public String account;
 
-        public Player(String name, String world, double x, double y, double z, int health) {
+        public Player(String name, String world, double x, double y, double z, int health, String account) {
             this.name = ChatColor.stripColor(name);
             this.world = world;
             this.x = x;
             this.y = y;
             this.z = z;
             this.health = health;
+            this.account = account;
         }
     }
 
