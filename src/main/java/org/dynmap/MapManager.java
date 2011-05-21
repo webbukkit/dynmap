@@ -21,9 +21,7 @@ public class MapManager {
     public Map<String, DynmapWorld> inactiveworlds = new HashMap<String, DynmapWorld>();
     private BukkitScheduler scheduler;
     private DynmapPlugin plug_in;
-    private boolean do_timesliced_render = false;
     private double timeslice_interval = 0.0;
-    private boolean do_sync_render = false;    /* Do incremental renders on sync thread too */
     /* Which timesliced renders are active */
     private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
 
@@ -96,22 +94,14 @@ public class MapManager {
             else {    /* Else, single tile render */
                 tile = tile0;
             }
-
             DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
-            LinkedList<DynmapChunk> loadedChunks = new LinkedList<DynmapChunk>();
+            MapChunkCache cache = new MapChunkCache(world.world, requiredChunks);
             World w = world.world;
-            // Load the required chunks.
-            for (DynmapChunk chunk : requiredChunks) {
-                boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
-                boolean didload = w.loadChunk(chunk.x, chunk.z, false);
-                if ((!wasLoaded) && didload)
-                    loadedChunks.add(chunk);
-            }
             if(tile0 != null) {    /* Single tile? */
-                render(tile);    /* Just render */
+                render(cache, tile);    /* Just render */
             }
             else {
-                if (render(tile)) {
+                if (render(cache, tile)) {
                     found.remove(tile);
                     rendered.add(tile);
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
@@ -129,22 +119,7 @@ public class MapManager {
                 }
             }
             /* And unload what we loaded */
-            while (!loadedChunks.isEmpty()) {
-                DynmapChunk c = loadedChunks.pollFirst();
-                /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
-                 * when chunks are unloaded but not saved - removing them seems to do the trick */
-                Chunk cc = w.getChunkAt(c.x, c.z);
-                if(cc != null) {
-                    for(Entity e: cc.getEntities())
-                        e.remove();
-                }
-                /* Since we only remember ones we loaded, and we're synchronous, no player has
-                 * moved, so it must be safe (also prevent chunk leak, which appears to happen
-                 * because isChunkInUse defined "in use" as being within 256 blocks of a player,
-                 * while the actual in-use chunk area for a player where the chunks are managed
-                 * by the MC base server is 21x21 (or about a 160 block radius) */
-                w.unloadChunk(c.x, c.z, false, false);
-            }
+            cache.unloadChunks();
             if(tile0 == null) {    /* fullrender */
                 /* Schedule the next tile to be worked */
                 scheduler.scheduleSyncDelayedTask(plug_in, this, (int)(timeslice_interval*20));
@@ -159,11 +134,8 @@ public class MapManager {
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {
-                if(do_sync_render)
-                    scheduler.scheduleSyncDelayedTask(plug_in,
-                        new FullWorldRenderState(t), 1);
-                else
-                    render(t);
+                scheduler.scheduleSyncDelayedTask(plug_in,
+                    new FullWorldRenderState(t), 1);
             }
         }, (int) (configuration.getDouble("renderinterval", 0.5) * 1000));
 
@@ -175,9 +147,7 @@ public class MapManager {
                 }
             }, 10);
 
-        do_timesliced_render = configuration.getBoolean("timeslicerender", true);
         timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
-        do_sync_render = configuration.getBoolean("renderonsync", true);
 
         for(ConfigurationNode worldConfiguration : configuration.getNodes("worlds")) {
             String worldName = worldConfiguration.getString("name");
@@ -219,78 +189,17 @@ public class MapManager {
             Log.severe("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
             return;
         }
-        if(do_timesliced_render) {
-            String wname = l.getWorld().getName();
-            FullWorldRenderState rndr = active_renders.get(wname);
-            if(rndr != null) {
-                Log.info("Full world render of world '" + wname + "' already active.");
-                return;
-            }
-            rndr = new FullWorldRenderState(world,l);    /* Make new activation record */
-            active_renders.put(wname, rndr);    /* Add to active table */
-            /* Schedule first tile to be worked */
-            scheduler.scheduleSyncDelayedTask(plug_in, rndr, (int)(timeslice_interval*20));
-            Log.info("Full render starting on world '" + wname + "' (timesliced)...");
-
+        String wname = l.getWorld().getName();
+        FullWorldRenderState rndr = active_renders.get(wname);
+        if(rndr != null) {
+            Log.info("Full world render of world '" + wname + "' already active.");
             return;
         }
-        World w = world.world;
-
-        Log.info("Full render starting on world '" + w.getName() + "'...");
-        for (MapType map : world.maps) {
-            int requiredChunkCount = 200;
-            HashSet<MapTile> found = new HashSet<MapTile>();
-            HashSet<MapTile> rendered = new HashSet<MapTile>();
-            LinkedList<MapTile> renderQueue = new LinkedList<MapTile>();
-            LinkedList<DynmapChunk> loadedChunks = new LinkedList<DynmapChunk>();
-
-            for (MapTile tile : map.getTiles(l)) {
-                if (!found.contains(tile)) {
-                    found.add(tile);
-                    renderQueue.add(tile);
-                }
-            }
-            while (!renderQueue.isEmpty()) {
-                MapTile tile = renderQueue.pollFirst();
-
-                DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
-
-                if (requiredChunks.length > requiredChunkCount)
-                    requiredChunkCount = requiredChunks.length;
-                // Unload old chunks.
-                while (loadedChunks.size() >= requiredChunkCount - requiredChunks.length) {
-                    DynmapChunk c = loadedChunks.pollFirst();
-                    w.unloadChunk(c.x, c.z, false, true);
-                }
-
-                // Load the required chunks.
-                for (DynmapChunk chunk : requiredChunks) {
-                    boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
-                    w.loadChunk(chunk.x, chunk.z, false);
-                    if (!wasLoaded)
-                        loadedChunks.add(chunk);
-                }
-
-                if (render(tile)) {
-                    found.remove(tile);
-                    rendered.add(tile);
-                    for (MapTile adjTile : map.getAdjecentTiles(tile)) {
-                        if (!found.contains(adjTile) && !rendered.contains(adjTile)) {
-                            found.add(adjTile);
-                            renderQueue.add(adjTile);
-                        }
-                    }
-                }
-                found.remove(tile);
-            }
-
-            // Unload remaining chunks to clean-up.
-            while (!loadedChunks.isEmpty()) {
-                DynmapChunk c = loadedChunks.pollFirst();
-                w.unloadChunk(c.x, c.z, false, true);
-            }
-        }
-        Log.info("Full render finished.");
+        rndr = new FullWorldRenderState(world,l);    /* Make new activation record */
+        active_renders.put(wname, rndr);    /* Add to active table */
+        /* Schedule first tile to be worked */
+        scheduler.scheduleSyncDelayedTask(plug_in, rndr, (int)(timeslice_interval*20));
+        Log.info("Full render starting on world '" + wname + "' (timesliced)...");
     }
 
     public void activateWorld(World w) {
@@ -337,8 +246,8 @@ public class MapManager {
         writeQueue.stop();
     }
 
-    public boolean render(MapTile tile) {
-        boolean result = tile.getMap().render(tile, getTileFile(tile));
+    public boolean render(MapChunkCache cache, MapTile tile) {
+        boolean result = tile.getMap().render(cache, tile, getTileFile(tile));
         //Do update after async file write
 
         return result;
@@ -387,6 +296,6 @@ public class MapManager {
     }
 
     public boolean doSyncRender() {
-        return do_sync_render;
+        return true;
     }
 }
