@@ -14,7 +14,6 @@ public class ClientConfigurationComponent extends Component {
             @Override
             public void triggered(JSONObject t) {
                 ConfigurationNode c = plugin.configuration;
-                s(t, "jsonfile", c.getBoolean("jsonfile", false));
                 s(t, "updaterate", c.getFloat("updaterate", 1.0f));
                 s(t, "allowchat", c.getBoolean("allowchat", true));
                 s(t, "allowwebchat", c.getBoolean("allowwebchat", true));

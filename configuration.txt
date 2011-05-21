@@ -86,15 +86,6 @@ webserver-port: 8123
 # Disables Webserver portion of Dynmap (Advanced users only)
 disable-webserver: false
 
-# Writes JSON to file in the webpath
-jsonfile: false
-
-# How often the json file gets written to(in seconds)
-jsonfile-interval: 1
-
-# Output player health for web usage
-health-in-json: false
-
 # Use timesliced fullrender - takes a bit longer, but much more polite for server
 timeslicerender: true
 
