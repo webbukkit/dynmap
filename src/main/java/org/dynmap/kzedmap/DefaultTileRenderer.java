@@ -63,8 +63,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
         World world = tile.getWorld();
         boolean isnether = (world.getEnvironment() == Environment.NETHER);
         BufferedImage im = new BufferedImage(KzedMap.tileWidth, KzedMap.tileHeight, BufferedImage.TYPE_INT_RGB);
-
+        BufferedImage zim = new BufferedImage(KzedMap.tileWidth/2, KzedMap.tileHeight/2, BufferedImage.TYPE_INT_RGB);
         WritableRaster r = im.getRaster();
+        WritableRaster zr = zim.getRaster();
         boolean isempty = true;
 
         int ix = KzedMap.anchorx + tile.px / 2 + tile.py / 2 - ((127-maximumHeight)/2);
@@ -81,7 +82,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
         Color c1 = new Color();
         Color c2 = new Color();
-        int[] rgb = new int[3];
+        int[] rgb = new int[3*KzedMap.tileWidth];
+        int[] zrgb = new int[3*KzedMap.tileWidth/2];
         /* draw the map */
         for (y = 0; y < KzedMap.tileHeight;) {
             jx = ix;
@@ -90,20 +92,26 @@ public class DefaultTileRenderer implements MapTileRenderer {
             for (x = KzedMap.tileWidth - 1; x >= 0; x -= 2) {
                 scan(world, jx, iy, jz, 0, isnether, c1, cache);
                 scan(world, jx, iy, jz, 2, isnether, c2, cache);
-                if(c1.isTransparent() == false) {
-                    rgb[0] = c1.getRed(); rgb[1] = c1.getGreen(); rgb[2] = c1.getBlue();
-                    r.setPixel(x, y, rgb);
-                    isempty = false;
-                }
-                if(c2.isTransparent() == false) {
-                    rgb[0] = c2.getRed(); rgb[1] = c2.getGreen(); rgb[2] = c2.getBlue();
-                    r.setPixel(x - 1, y, rgb);
-                    isempty = false;
-                }
 
+                rgb[3*x] = c1.getRed(); 
+                rgb[3*x+1] = c1.getGreen(); 
+                rgb[3*x+2] = c1.getBlue();
+                rgb[3*x-3] = c2.getRed(); 
+                rgb[3*x-2] = c2.getGreen(); 
+                rgb[3*x-1] = c2.getBlue();
+
+                isempty = isempty && c1.isTransparent() && c2.isTransparent();
+                
                 jx++;
                 jz++;
 
+            }
+            r.setPixels(0, y, KzedMap.tileWidth, 1, rgb);
+            /* Sum up zoomed pixels - bilinar filter */
+            for(x = 0; x < KzedMap.tileWidth / 2; x++) {
+                zrgb[3*x] = rgb[6*x] + rgb[6*x+3];
+                zrgb[3*x+1] = rgb[6*x+1] + rgb[6*x+4];
+                zrgb[3*x+2] = rgb[6*x+2] + rgb[6*x+5];                
             }
 
             y++;
@@ -116,19 +124,25 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 jx++;
                 jz++;
                 scan(world, jx, iy, jz, 0, isnether, c2, cache);
-                if(c1.isTransparent() == false) {
-                    rgb[0] = c1.getRed(); rgb[1] = c1.getGreen(); rgb[2] = c1.getBlue();
-                    r.setPixel(x, y, rgb);
-                    isempty = false;
-                }
-                if(c2.isTransparent() == false) {
-                    rgb[0] = c2.getRed(); rgb[1] = c2.getGreen(); rgb[2] = c2.getBlue();
 
-                    r.setPixel(x - 1, y, rgb);
-                    isempty = false;
-                }
+                rgb[3*x] = c1.getRed(); 
+                rgb[3*x+1] = c1.getGreen(); 
+                rgb[3*x+2] = c1.getBlue();
+                rgb[3*x-3] = c2.getRed(); 
+                rgb[3*x-2] = c2.getGreen(); 
+                rgb[3*x-1] = c2.getBlue();
+
+                isempty = isempty && c1.isTransparent() && c2.isTransparent();
             }
-
+            r.setPixels(0, y, KzedMap.tileWidth, 1, rgb);
+            /* Finish summing values for zoomed pixels */
+            for(x = 0; x < KzedMap.tileWidth / 2; x++) {
+                zrgb[3*x] = (zrgb[3*x] + rgb[6*x] + rgb[6*x+3]) >> 2;
+                zrgb[3*x+1] = (zrgb[3*x+1] + rgb[6*x+1] + rgb[6*x+4]) >> 2;
+                zrgb[3*x+2] = (zrgb[3*x+2] + rgb[6*x+2] + rgb[6*x+5]) >> 2;          
+            }
+            zr.setPixels(0, y/2, KzedMap.tileWidth/2, 1, zrgb);
+            
             y++;
 
             ix++;
@@ -139,13 +153,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
         final File fname = outputFile;
         final KzedMapTile mtile = tile;
         final BufferedImage img = im;
+        final BufferedImage zimg = zim;
         final KzedZoomedMapTile zmtile = new KzedZoomedMapTile(mtile.getWorld(),
                 (KzedMap) mtile.getMap(), mtile);
         final File zoomFile = MapManager.mapman.getTileFile(zmtile);
 
         MapManager.mapman.enqueueImageWrite(new Runnable() {
             public void run() {
-                doFileWrites(fname, mtile, img, zmtile, zoomFile);
+                doFileWrites(fname, mtile, img, zmtile, zoomFile, zimg);
             }
         });
 
@@ -153,7 +168,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
 
     private void doFileWrites(final File fname, final KzedMapTile mtile,
-        final BufferedImage img, final KzedZoomedMapTile zmtile, final File zoomFile) {
+        final BufferedImage img, final KzedZoomedMapTile zmtile, final File zoomFile,
+        final BufferedImage zimg) {
         Debug.debug("saving image " + fname.getPath());
         try {
             ImageIO.write(img, "png", fname);
@@ -162,6 +178,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         } catch (java.lang.NullPointerException e) {
             Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
         }
+        img.flush();
+        
         mtile.file = fname;
         // Since we've already got the new tile, and we're on an async thread, just
         // make the zoomed tile here
@@ -199,12 +217,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
         }
 
         /* blit scaled rendered tile onto zoom-out tile */
-        Graphics2D g2 = zIm.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(img, ox, oy, scw, sch, null);
-        g2.dispose();	/* Supposed to speed up non-heap memory recovery */
-        
-        img.flush();
+        WritableRaster zim = zIm.getRaster();
+        zim.setRect(ox, oy, zimg.getRaster());        
+        zimg.flush();
 
         /* save zoom-out tile */
 
@@ -226,12 +241,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
     protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
             MapChunkCache cache) {
-        scan(world, x, y, z, seq, isnether, result, cache, 15);
-    }
-    
-    private void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
-            MapChunkCache cache, int lightlevel) {
-        int newlightlevel = 15;
+        int lightlevel = 15;
         result.setTransparent();
         for (;;) {
             if (y < 0) {
@@ -250,13 +260,29 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 else
                     isnether = false;
             }
-            if(colorScheme.datacolors[id] != null) {    /* If data colored */
-                data = cache.getBlockData(x, y, z);
+            if(id != 0) {       /* No update needed for air */
+                if(colorScheme.datacolors[id] != null) {    /* If data colored */
+                    data = cache.getBlockData(x, y, z);
+                }
+                if((shadowscale != null) && (y < 127)) {
+                    /* Find light level of previous chunk */
+                    switch(seq) {
+                        case 0:
+                            lightlevel = cache.getBlockSkyLight(x, y+1, z); 
+                            break;
+                        case 1:
+                            lightlevel = cache.getBlockSkyLight(x+1, y, z); 
+                            break;
+                        case 2:
+                            lightlevel = cache.getBlockSkyLight(x, y+1, z);
+                            break;
+                        case 3:
+                            lightlevel = cache.getBlockSkyLight(x, y, z-1);
+                            break;
+                    }
+                }
             }
-            if(shadowscale != null) {
-                newlightlevel = cache.getBlockSkyLight(x, y, z); /* Remember this - light path for next block */
-            }
-
+            
             switch (seq) {
             case 0:
                 x--;
@@ -298,7 +324,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                         }
 
                         /* this block is transparent, so recurse */
-                        scan(world, x, y, z, seq, isnether, result, cache, newlightlevel);
+                        scan(world, x, y, z, seq, isnether, result, cache);
 
                         int cr = c.getRed();
                         int cg = c.getGreen();
@@ -319,14 +345,11 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     }
                 }
             }
-            lightlevel = newlightlevel; /* Advance - next block uses last block's light */
         }
     }
     private final void shadowColor(Color c, int lightlevel) {
         int scale = shadowscale[lightlevel];
-        if(scale == 0)
-            c.setRGBA(0, 0, 0, c.getAlpha());
-        else if(scale < 256)
+        if(scale < 256)
             c.setRGBA((c.getRed() * scale) >> 8, (c.getGreen() * scale) >> 8, 
                 (c.getBlue() * scale) >> 8, c.getAlpha());
     }
