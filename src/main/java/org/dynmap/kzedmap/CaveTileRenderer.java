@@ -1,6 +1,7 @@
 package org.dynmap.kzedmap;
 
 import org.bukkit.World;
+import org.dynmap.MapChunkCache;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 
@@ -11,14 +12,15 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result) {
+    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
+            MapChunkCache cache) {
         boolean air = true;
         result.setTransparent();
         for (;;) {
             if (y < 0)
                 return;
 
-            int id = world.getBlockTypeIdAt(x, y, z);
+            int id = cache.getBlockTypeID(x, y, z);
             if(isnether) {    /* Make ceiling into air in nether */
                 if(id != 0)
                     id = 0;
