@@ -529,17 +529,45 @@
     border-radius: 3px;
 }
 
-.dynmap .playerHealth {
+.dynmap .healthContainer {
+	display: block;
 	position: absolute;
-	bottom: 3px;
+	bottom: 0;
 	left: 34px;
-	height: 11px;
 
-	background: url(../images/heart.png) rgba(0,0,0,0.6) repeat-x left center;
-	padding: 1px 0;
+	width: 50px;
+
+	background: rgba(0,0,0,0.6);
+	padding: 2px;
 
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+}
+
+.dynmap .playerHealth {
+	height: 7px;
+
+	background: url(../images/heart.png) repeat-x left center;
+}
+
+.dynmap .playerHealthBackground {
+	height: 7px;
+	width: 50px;
+
+	background: url(../images/heart_depleted.png) repeat-x left center;
+}
+
+.dynmap .playerArmor {
+	height: 7px;
+
+	background: url(../images/armor.png) repeat-x left center;
+}
+
+.dynmap .playerArmorBackground {
+	height: 7px;
+	width: 50px;
+
+	background: url(../images/armor_depleted.png) repeat-x left center;
 }
 
 
