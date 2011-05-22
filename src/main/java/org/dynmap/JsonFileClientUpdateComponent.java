@@ -86,14 +86,13 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     
     protected void writeUpdates() {
         File outputFile;
-
         //Handles Updates
         for (DynmapWorld dynmapWorld : plugin.mapManager.worlds.values()) {
             World world = dynmapWorld.world;
 
             JSONObject update = new JSONObject();
             update.put("timestamp", currentTimestamp);
-            ClientUpdateEvent clientUpdate = new ClientUpdateEvent(lastTimestamp, dynmapWorld, update);
+            ClientUpdateEvent clientUpdate = new ClientUpdateEvent(currentTimestamp - 30000, dynmapWorld, update);
             plugin.events.trigger("buildclientupdate", clientUpdate);
 
             outputFile = getStandaloneFile("dynmap_" + world.getName() + ".json");
