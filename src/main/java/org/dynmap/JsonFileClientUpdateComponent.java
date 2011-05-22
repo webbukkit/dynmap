@@ -54,15 +54,19 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         });
     }
     
+    protected File getStandaloneFile(String filename) {
+        File webpath = new File(plugin.configuration.getString("webpath", "web"), "standalone/" + filename);
+        if (webpath.isAbsolute())
+            return webpath;
+        else
+            return new File(plugin.getDataFolder(), webpath.toString());
+    }
+    
     protected void writeConfiguration() {
         File outputFile;
         JSONObject clientConfiguration = new JSONObject();
         plugin.events.trigger("buildclientconfiguration", clientConfiguration);
-        File webpath = new File(plugin.configuration.getString("webpath", "web"), "standalone/dynmap_config.json");
-        if (webpath.isAbsolute())
-            outputFile = webpath;
-        else
-            outputFile = new File(plugin.getDataFolder(), webpath.toString());
+        outputFile = getStandaloneFile("dynmap_config.json");
 
         try {
             FileOutputStream fos = new FileOutputStream(outputFile);
@@ -89,12 +93,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             ClientUpdateEvent clientUpdate = new ClientUpdateEvent(current, dynmapWorld, update);
             plugin.events.trigger("buildclientupdate", clientUpdate);
 
-            File webWorldPath = new File(this.configuration.getString("webpath", "web"), "standalone/dynmap_" + world.getName() + ".json");
-            if (webWorldPath.isAbsolute())
-                outputFile = webWorldPath;
-            else {
-                outputFile = new File(plugin.getDataFolder(), webWorldPath.toString());
-            }
+            outputFile = getStandaloneFile("dynmap_" + world.getName() + ".json");
             try {
                 FileOutputStream fos = new FileOutputStream(outputFile);
                 fos.write(Json.stringifyJson(update).getBytes());
@@ -112,11 +111,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     }
     
     protected void handleWebChat() {
-        File webPath = new File(configuration.getString("webpath", "web"));
-        if (!webPath.isAbsolute()) {
-            webPath = new File(plugin.getDataFolder(), webPath.toString());
-        }
-        File webchatFile = new File(webPath, "standalone/dynmap_webchat.json");
+        File webchatFile = getStandaloneFile("dynmap_webchat.json");
         
         if (webchatFile.exists() && lastTimestamp != 0) {
             JSONArray jsonMsgs = null;
