@@ -147,4 +147,10 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         ChatEvent event = new ChatEvent("web", name, message);
         plugin.events.trigger("webchat", event);
     }
+    
+    @Override
+    public void dispose() {
+        super.dispose();
+        timer.cancel();
+    }
 }

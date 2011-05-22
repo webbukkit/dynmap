@@ -57,8 +57,6 @@ public class DynmapPlugin extends JavaPlugin {
     public ComponentManager componentManager = new ComponentManager();
     public Events events = new Events();
 
-    public Timer timer;
-
     public static File dataDirectory;
     public static File tilesDirectory;
     
@@ -70,10 +68,11 @@ public class DynmapPlugin extends JavaPlugin {
         return webServer;
     }
     
+    @Override
     public void onEnable() {
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
-            permissions = new OpPermissions(new String[] { "fullrender" });
+            permissions = new OpPermissions(new String[] { "fullrender", "reload" });
 
         dataDirectory = this.getDataFolder();
 
@@ -109,6 +108,7 @@ public class DynmapPlugin extends JavaPlugin {
         for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapPlugin.class }, new Object[] { this })) {
             componentManager.add(component);
         }
+        Log.info("Loaded " + componentManager.components.size() + " components.");
 
         registerEvents();
 
@@ -151,7 +151,15 @@ public class DynmapPlugin extends JavaPlugin {
         }
     }
 
+    @Override
     public void onDisable() {
+        int componentCount = componentManager.components.size();
+        for(Component component : componentManager.components) {
+            component.dispose();
+        }
+        componentManager.clear();
+        Log.info("Unloaded " + componentCount + " components.");
+        
         mapManager.stopRendering();
 
         if (webServer != null) {
@@ -159,13 +167,9 @@ public class DynmapPlugin extends JavaPlugin {
             webServer = null;
         }
 
-        if (timer != null) {
-            timer.cancel();
-        }
-
         Debug.clearDebuggers();
     }
-
+    
     public boolean isTrigger(String s) {
         return enabledTriggers.contains(s);
     }
@@ -275,7 +279,8 @@ public class DynmapPlugin extends JavaPlugin {
         "render",
         "hide",
         "show",
-        "fullrender" }));
+        "fullrender",
+        "reload" }));
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -340,6 +345,12 @@ public class DynmapPlugin extends JavaPlugin {
                         mapManager.renderFullWorld(loc);
                     return true;
                 }
+            } else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
+                sender.sendMessage("Reloading Dynmap...");
+                onDisable();
+                onEnable();
+                sender.sendMessage("Dynmap reloaded");
+                return true;
             }
             return true;
         }

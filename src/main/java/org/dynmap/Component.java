@@ -7,4 +7,7 @@ public abstract class Component {
         this.plugin = plugin;
         this.configuration = configuration;
     }
+    
+    public void dispose() {
+    }
 }

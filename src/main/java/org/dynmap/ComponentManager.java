@@ -33,6 +33,11 @@ public class ComponentManager {
         }
     }
     
+    public void clear() {
+        componentLookup.clear();
+        components.clear();
+    }
+    
     public Iterable<Component> getComponents(Class<Component> c) {
         List<Component> list = componentLookup.get(c.toString());
         if (list == null)
