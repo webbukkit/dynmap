@@ -45,6 +45,7 @@ public class ClientUpdateComponent extends Component {
             s(jp, "z", pl.getZ());
             if (configuration.getBoolean("sendhealth", false)) {
                 s(jp, "health", p.getHealth());
+                s(jp, "armor", Armor.getArmorPoints(p));
             }
             a(u, "players", jp);
         }

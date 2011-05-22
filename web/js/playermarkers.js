@@ -15,7 +15,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 					.text(player.name));
 			
 			if (configuration.showplayerfaces) {
-				getMinecraftHead(player.account, 32, function(head) {
+				getMinecraftHead(player.name, 32, function(head) {
 					$(head)
 						.addClass('playericon')
 						.prependTo(div);
@@ -23,10 +23,28 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				});
 			}
 			if (configuration.showplayerhealth) {
-				player.healthBar = $('<div/>')
-					.addClass('playerHealth')
-					.css('width', (player.health/2*9) + 'px')
+				player.healthContainer = $('<div/>')
+					.addClass('healthContainer')
 					.appendTo(div);
+				if (player.health !== undefined && player.armor !== undefined) {
+					player.healthBar = $('<div/>')
+						.addClass('playerHealth')
+						.css('width', (player.health/2*5) + 'px');
+					player.armorBar = $('<div/>')
+						.addClass('playerArmor')
+						.css('width', (player.armor/2*5) + 'px');
+
+					$('<div/>')
+						.addClass('playerHealthBackground')
+						.append(player.healthBar)
+						.appendTo(player.healthContainer);
+					$('<div/>')
+						.addClass('playerArmorBackground')
+						.append(player.armorBar)
+						.appendTo(player.healthContainer);
+				} else {
+					player.healthContainer.css('display','none');
+				}
 			}
 		});
 	});
@@ -40,7 +58,14 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		player.marker.toggle(dynmap.world === player.location.world);
 		player.marker.setPosition(markerPosition);
 		// Update health
-		if (configuration.showplayerhealth)
-			player.healthBar.css('width', (player.health/2*9) + 'px');
+		if (configuration.showplayerhealth) {
+			if (player.health !== undefined && player.armor !== undefined) {
+				player.healthContainer.css('display','block');
+				player.healthBar.css('width', (player.health/2*5) + 'px');
+				player.armorBar.css('width', (player.armor/2*5) + 'px');
+			} else {
+				player.healthContainer.css('display','none');
+			}
+		}
 	});
 };
