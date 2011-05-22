@@ -99,10 +99,6 @@ timesliceinterval: 0.5
 # Interval the browser should poll for updates.
 updaterate: 2000
 
-allowchat: true
-allowwebchat: true
-webchat-interval: 5
-
 showplayerfacesinmenu: true
 
 joinmessage: "%playername% joined"
