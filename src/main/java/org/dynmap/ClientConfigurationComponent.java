@@ -26,7 +26,7 @@ public class ClientConfigurationComponent extends Component {
                     s(wo, "name", wn.getString("name"));
                     s(wo, "title", wn.getString("title"));
                     s(wo, "center/x", wn.getFloat("center/x", 0.0f));
-                    s(wo, "center/y", wn.getFloat("center/y", 0.0f));
+                    s(wo, "center/y", wn.getFloat("center/y", 64.0f));
                     s(wo, "center/z", wn.getFloat("center/z", 0.0f));
                     a(t, "worlds", wo);
                     

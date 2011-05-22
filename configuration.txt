@@ -116,6 +116,10 @@ defaultworld: world
 worlds:
   - name: world
     title: "World"
+    center:
+      x: 0
+      y: 64
+      z: 0
     maps:
       - class: org.dynmap.flat.FlatMap
         name: flat
@@ -147,6 +151,10 @@ worlds:
             maximumheight: 127
   - name: nether
     title: "Nether"
+    center:
+      x: 0
+      y: 64
+      z: 0
     maps:
       - class: org.dynmap.flat.FlatMap
         name: flat
