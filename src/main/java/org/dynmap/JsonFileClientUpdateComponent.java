@@ -28,12 +28,13 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected JSONParser parser = new JSONParser();
     public JsonFileClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
+        final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
         task = new TimerTask() {
             @Override
             public void run() {
                 writeUpdates();
-                if (configuration.getBoolean("allowwebchat", false)) {
+                if (allowwebchat) {
                     handleWebChat();
                 }
             }
@@ -44,6 +45,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             @Override
             public void triggered(JSONObject t) {
                 s(t, "jsonfile", true);
+                s(t, "allowwebchat", allowwebchat);
             }
         });
         plugin.events.addListener("initialized", new Event.Listener<Object>() {
