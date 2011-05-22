@@ -7,7 +7,7 @@ public class Log {
     protected static final Logger log = Logger.getLogger("Minecraft");
     protected static final String LOG_PREFIX = "[dynmap] ";
     public static void info(String msg) {
-        log.info(LOG_PREFIX + msg);
+        log.log(Level.INFO, LOG_PREFIX + msg);
     }
     public static void severe(Exception e) {
         log.log(Level.SEVERE, LOG_PREFIX + "Exception occured: ", e);
