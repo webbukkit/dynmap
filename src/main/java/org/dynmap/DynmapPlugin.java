@@ -1,8 +1,7 @@
 package org.dynmap;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -13,10 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -80,6 +78,8 @@ public class DynmapPlugin extends JavaPlugin {
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
 
+        processWorldTemplates(configuration);
+        
         loadDebuggers();
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
@@ -365,5 +365,78 @@ public class DynmapPlugin extends JavaPlugin {
             return false;
         }
         return true;
+    }
+    /* Prepare for sky worlds... */
+    private static final String[] templateworldtypes = { "normal", "nether" };
+    private static final Environment[] templateworldenv = { Environment.NORMAL, Environment.NETHER };
+    
+    private void processWorldTemplates(ConfigurationNode node) {
+        ConfigurationNode template = node.getNode("template");
+        if(template == null)
+            return;
+        List<ConfigurationNode> worlds = node.getNodes("worlds");
+        boolean worldsupdated = false;        
+        /* Initialize even if no worlds section */
+        if(worlds == null) {
+            worlds = new ArrayList<ConfigurationNode>();
+            worldsupdated = true;
+        }
+        /* Iternate by world type - so that order in templateworldtypes drives our default order */
+        for(int wtype = 0; wtype < templateworldtypes.length; wtype++) {
+            ConfigurationNode typetemplate = template.getNode(templateworldtypes[wtype]);
+            if(typetemplate == null)
+                continue;
+            for(World w : getServer().getWorlds()) {    /* Roll through worlds */
+                String wn = w.getName();                
+                /* Find node for this world, if any */
+                ConfigurationNode world = null;
+                int index;
+                for(index = 0; index < worlds.size(); index++) {
+                    ConfigurationNode ww = worlds.get(index);
+                    if(wn.equals(ww.getString("name", ""))) {
+                        world = ww;
+                        break;
+                    }
+                }
+                /* Check type of world - skip if not right for current template */
+                if(w.getEnvironment() != templateworldenv[wtype])
+                    continue;
+                /* World not found - need to use template */
+                if(world == null) {
+                    ConfigurationNode newworldnode = new ConfigurationNode(new HashMap<String,Object>(typetemplate));   /* Copy it */
+                    newworldnode.put("name", w.getName());
+                    newworldnode.put("title", w.getName());
+                    worlds.add(newworldnode);
+                    worldsupdated = true;
+                    Log.info("World '" + w.getName() + "' configuration inherited from template");
+                }
+                else {  /* Else, definition is there, but may be incomplete */
+                    boolean wupd = false;
+                    List<ConfigurationNode> tempmaps = typetemplate.getList("maps");
+                    if((tempmaps != null) && (world.getNode("maps") == null)) {    /* World with no maps section */
+                        world.put("maps", tempmaps);
+                        Log.info("World '" + w.getName() + "' configuration inherited maps from template");
+                        wupd = true;
+                    }
+                    ConfigurationNode tempcenter = typetemplate.getNode("center");
+                    if((tempcenter != null) && (world.getNode("center") == null)) {   /* World with no center */
+                        world.put("center", new ConfigurationNode(new HashMap<String,Object>(tempcenter)));
+                        Log.info("World '" + w.getName() + "' configuration inherited center from template");
+                        wupd = true;                    
+                    }
+                    if(world.getString("title", null) == null) {
+                        world.put("title", w.getName());
+                        wupd = true;                    
+                    }
+                    if(wupd) {
+                        worldsupdated = true;
+                        worlds.set(index, world);
+                    }
+                }
+            }
+        }
+        if(worldsupdated) {
+            node.put("worlds", worlds);
+        }
     }
 }
