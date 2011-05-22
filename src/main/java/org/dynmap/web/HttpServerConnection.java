@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.dynmap.Log;
 import org.dynmap.debug.Debug;
+import java.net.InetSocketAddress;
 
 public class HttpServerConnection extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -120,13 +121,14 @@ public class HttpServerConnection extends Thread {
             if (socket == null)
                 return;
             socket.setSoTimeout(5000);
+            InetSocketAddress rmtaddr = (InetSocketAddress)socket.getRemoteSocketAddress(); /* Get remote address */
             InputStream in = socket.getInputStream();
             BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream(), 40960);
 
             printOut = new PrintStream(out, false);
             while (true) {
                 HttpRequest request = new HttpRequest();
-
+                request.rmtaddr = rmtaddr;
                 if (!readRequestHeader(in, request)) {
                     socket.close();
                     return;

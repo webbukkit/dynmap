@@ -38,6 +38,7 @@ public class HeroChatHandler {
         private static Class channelchatevent;
         private static Method getsource;
         private static Method getmessage;
+        private static Method issentbyplayer;
         private static boolean isgood = false;
         private Event evt;
 
@@ -48,6 +49,7 @@ public class HeroChatHandler {
                         .forName("com.herocraftonline.dthielke.herochat.event.ChannelChatEvent");
                 getsource = channelchatevent.getMethod("getSource", new Class[0]);
                 getmessage = channelchatevent.getMethod("getMessage", new Class[0]);
+                issentbyplayer = channelchatevent.getMethod("isSentByPlayer", new Class[0]);
                 isgood = true;
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
@@ -76,6 +78,14 @@ public class HeroChatHandler {
                 return (String) getmessage.invoke(evt);
             } catch (Exception x) {
                 return null;
+            }
+        }
+        
+        public boolean isSentByPlayer() {
+            try {
+                return (Boolean) issentbyplayer.invoke(evt);
+            } catch (Exception x) {
+                return true;
             }
         }
     }
@@ -213,9 +223,15 @@ public class HeroChatHandler {
                     /* Match on name or nickname of channel */
                     if (hcchannels.contains(c.getName()) ||
                             hcchannels.contains(c.getNick())) {
-                        plugin.mapManager.pushUpdate(new Client.ChatMessage(
-                            "player", "[" + c.getNick() + "] "
-                                    + cce.getSource(), cce.getMessage()));
+                        if(cce.isSentByPlayer()) {  /* Player message? */
+                            org.bukkit.entity.Player p = plugin.getServer().getPlayer(cce.getSource());
+                            if(p != null)
+                                plugin.mapManager.pushUpdate(new Client.ChatMessage("player", 
+                                                                                    c.getNick(),
+                                                                                    p.getDisplayName(),
+                                                                                    cce.getMessage(),
+                                                                                    p.getName()));
+                        }
                     }
                 }
             }

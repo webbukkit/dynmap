@@ -411,7 +411,7 @@ public class DynmapPlugin extends JavaPlugin {
     }
 
     public void webChat(String name, String message) {
-        mapManager.pushUpdate(new Client.ChatMessage("web", name, message));
+        mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
         Log.info("[WEB]" + name + ": " + message);
         /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
         if(hchand.sendWebMessageToHeroChat(name, message) == false)

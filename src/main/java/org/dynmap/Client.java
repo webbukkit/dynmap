@@ -40,27 +40,34 @@ public class Client {
         public String source;
         public String playerName;
         public String message;
-
-        public ChatMessage(String source, String playerName, String message) {
+        public String account;
+        public String channel;
+        public ChatMessage(String source, String channel, String playerName, String message, String playeraccount) {
             this.source = source;
             this.playerName = ChatColor.stripColor(playerName);
             this.message = ChatColor.stripColor(message);
+            this.account = playeraccount;
+            this.channel = channel;
         }
     }
 
     public static class PlayerJoinMessage extends Stamped {
         public String type = "playerjoin";
         public String playerName;
-        public PlayerJoinMessage(String playerName) {
+        public String account;
+        public PlayerJoinMessage(String playerName, String playeraccount) {
             this.playerName = ChatColor.stripColor(playerName);
+            this.account = playeraccount;
         }
     }
 
     public static class PlayerQuitMessage extends Stamped {
         public String type = "playerquit";
         public String playerName;
-        public PlayerQuitMessage(String playerName) {
+        public String account;
+        public PlayerQuitMessage(String playerName, String playeraccount) {
             this.playerName = ChatColor.stripColor(playerName);
+            this.account = playeraccount;
         }
     }
 
