@@ -24,6 +24,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected TimerTask task;
     protected Timer timer;
     protected long jsonInterval;
+    protected long currentTimestamp = 0;
     protected long lastTimestamp = 0;
     protected JSONParser parser = new JSONParser();
     public JsonFileClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
@@ -33,10 +34,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         task = new TimerTask() {
             @Override
             public void run() {
+                currentTimestamp = System.currentTimeMillis();
                 writeUpdates();
                 if (allowwebchat) {
                     handleWebChat();
                 }
+                lastTimestamp = currentTimestamp;
             }
         };
         timer = new Timer();
@@ -82,16 +85,14 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     }
     
     protected void writeUpdates() {
-        long current = System.currentTimeMillis();
         File outputFile;
 
         //Handles Updates
         for (DynmapWorld dynmapWorld : plugin.mapManager.worlds.values()) {
             World world = dynmapWorld.world;
-            current = System.currentTimeMillis();
 
             JSONObject update = new JSONObject();
-            update.put("timestamp", current);
+            update.put("timestamp", currentTimestamp);
             ClientUpdateEvent clientUpdate = new ClientUpdateEvent(lastTimestamp, dynmapWorld, update);
             plugin.events.trigger("buildclientupdate", clientUpdate);
 
@@ -107,7 +108,6 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             }
             plugin.events.<ClientUpdateEvent>trigger("clientupdatewritten", clientUpdate);
         }
-        lastTimestamp = System.currentTimeMillis();
         
         plugin.events.<Object>trigger("clientupdateswritten", null);
     }
