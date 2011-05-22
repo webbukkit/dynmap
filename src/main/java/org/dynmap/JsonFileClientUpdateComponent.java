@@ -92,7 +92,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 
             JSONObject update = new JSONObject();
             update.put("timestamp", current);
-            ClientUpdateEvent clientUpdate = new ClientUpdateEvent(current, dynmapWorld, update);
+            ClientUpdateEvent clientUpdate = new ClientUpdateEvent(lastTimestamp, dynmapWorld, update);
             plugin.events.trigger("buildclientupdate", clientUpdate);
 
             outputFile = getStandaloneFile("dynmap_" + world.getName() + ".json");
