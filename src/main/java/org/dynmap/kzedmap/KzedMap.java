@@ -1,7 +1,10 @@
 package org.dynmap.kzedmap;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -12,6 +15,7 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.MapChunkCache;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -32,9 +36,16 @@ public class KzedMap extends MapType {
     public static final int anchorx = 0;
     public static final int anchory = 127;
     public static final int anchorz = 0;
-
+    
     MapTileRenderer[] renderers;
     ZoomedTileRenderer zoomrenderer;
+
+    /* BufferedImage cache - we use the same things a lot... */
+    private static Object lock = new Object();
+    private static HashMap<Long, LinkedList<BufferedImage>> imgcache = 
+        new HashMap<Long, LinkedList<BufferedImage>>(); /* Indexed by resolution - X<<32+Y */
+    private static int[] zerobuf = new int[128];
+    private static final int CACHE_LIMIT = 10;
 
     public KzedMap(ConfigurationNode configuration) {
         Log.info("Loading renderers for map '" + getClass().toString() + "'...");
@@ -203,12 +214,12 @@ public class KzedMap extends MapType {
     }
 
     @Override
-    public boolean render(MapTile tile, File outputFile) {
+    public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         if (tile instanceof KzedZoomedMapTile) {
-            zoomrenderer.render((KzedZoomedMapTile) tile, outputFile);
+            zoomrenderer.render(cache, (KzedZoomedMapTile) tile, outputFile);
             return true;
         } else if (tile instanceof KzedMapTile) {
-            return ((KzedMapTile) tile).renderer.render((KzedMapTile) tile, outputFile);
+            return ((KzedMapTile) tile).renderer.render(cache, (KzedMapTile) tile, outputFile);
         }
         return false;
     }
@@ -245,4 +256,48 @@ public class KzedMap extends MapType {
         else
             return y - (y % zTileHeight);
     }
+
+    /**
+     * Allocate buffered image from pool, if possible
+     * @param x - x dimension
+     * @param y - y dimension
+     */
+    public static BufferedImage allocateBufferedImage(int x, int y) {
+        BufferedImage img = null;
+        synchronized(lock) {
+            long k = (x<<16) + y;
+            LinkedList<BufferedImage> ll = imgcache.get(k);
+            if(ll != null) {
+                img = ll.poll();
+            }
+        }
+        if(img != null) {   /* Got it - reset it for use */
+            if(zerobuf.length < x)
+                zerobuf = new int[x];
+            img.setRGB(0, 0, x, y, zerobuf, 0, 0);
+        }
+        else {
+            img = new BufferedImage(x, y, BufferedImage.TYPE_INT_RGB);
+        }
+        return img;
+    }
+    
+    /**
+     * Return buffered image to pool
+     */
+    public static void freeBufferedImage(BufferedImage img) {
+        img.flush();
+        synchronized(lock) {
+            long k = (img.getWidth()<<16) + img.getHeight();
+            LinkedList<BufferedImage> ll = imgcache.get(k);
+            if(ll == null) {
+                ll = new LinkedList<BufferedImage>();
+                imgcache.put(k, ll);
+            }
+            if(ll.size() < CACHE_LIMIT) {
+                ll.add(img);
+                img = null;
+            }
+        }
+    }    
 }

@@ -40,7 +40,8 @@ public class SendMessageHandler implements HttpHandler {
 
         JSONObject o = (JSONObject)parser.parse(reader);
         final Message message = new Message();
-        message.name = String.valueOf(o.get("name"));
+        //message.name = String.valueOf(o.get("name")); //Can't trust client....we don't need to on internal web server
+        message.name = request.rmtaddr.getAddress().getHostAddress();
         message.message = String.valueOf(o.get("message"));
 
         final long now = System.currentTimeMillis();

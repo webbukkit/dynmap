@@ -454,7 +454,8 @@ DynMap.prototype = {
 				name: update.name,
 				location: new Location(me.worlds[update.world], parseFloat(update.x), parseFloat(update.y), parseFloat(update.z)),
 				health: update.health,
-				armor: update.armor
+				armor: update.armor,
+                account: update.account
 		};
 		
 		$(me).trigger('playeradded', [ player ]);
@@ -487,7 +488,7 @@ DynMap.prototype = {
 			})
 			.appendTo(me.playerlist);
 		if (me.options.showplayerfacesinmenu) {
-			getMinecraftHead(player.name, 16, function(head) {
+			getMinecraftHead(player.account, 16, function(head) {
 				$('img', playerIconContainer).remove();
 				$(head).appendTo(playerIconContainer);
 			});

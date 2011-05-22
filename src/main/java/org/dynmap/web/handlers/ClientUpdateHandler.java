@@ -84,7 +84,7 @@ public class ClientUpdateHandler implements HttpHandler {
                 if(playerHealth<0)
                     playerHealth = 0;
             }
-            update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), playerHealth, playerArmor);
+            update.players[i] = new Client.Player(p.getDisplayName(), pl.getWorld().getName(), pl.getX(), pl.getY(), pl.getZ(), playerHealth, playerArmor, p.getName());
         }
 
         update.updates = mapManager.getWorldUpdates(worldName, since);

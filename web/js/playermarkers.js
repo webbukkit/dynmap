@@ -15,7 +15,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 					.text(player.name));
 			
 			if (configuration.showplayerfaces) {
-				getMinecraftHead(player.name, 32, function(head) {
+				getMinecraftHead(player.account, 32, function(head) {
 					$(head)
 						.addClass('playericon')
 						.prependTo(div);

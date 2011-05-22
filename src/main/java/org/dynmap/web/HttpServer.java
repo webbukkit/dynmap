@@ -29,7 +29,7 @@ public class HttpServer extends Thread {
     }
 
     public void startServer() throws IOException {
-        sock = new ServerSocket(port, 5, bindAddress);
+        sock = new ServerSocket(port, 50, bindAddress); /* 5 too low - more than a couple users during render will get connect errors on some tile loads */
         listeningThread = this;
         start();
         Log.info("Dynmap WebServer started on " + bindAddress + ":" + port);

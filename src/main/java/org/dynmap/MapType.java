@@ -13,5 +13,5 @@ public abstract class MapType {
 
     public abstract DynmapChunk[] getRequiredChunks(MapTile tile);
 
-    public abstract boolean render(MapTile tile, File outputFile);
+    public abstract boolean render(MapChunkCache cache, MapTile tile, File outputFile);
 }
