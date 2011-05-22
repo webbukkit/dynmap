@@ -50,20 +50,29 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	
 	$(dynmap).bind('chat', function(event, message) {
 		var playerName = message.name;
+        var playerAccount = message.account;
 		var messageRow = $('<div/>')
 			.addClass('messagerow');
 
 		var playerIconContainer = $('<span/>')
 			.addClass('messageicon');
 
-		if (message.source === 'player' && configuration.showplayerfaces) {
-			getMinecraftHead(playerName, 16, function(head) {
+		if (message.source === 'player' && configuration.showplayerfaces &&
+            playerAccount) {
+			getMinecraftHead(playerAccount, 16, function(head) {
 				messageRow.icon = $(head)
 					.addClass('playerIcon')
 					.appendTo(playerIconContainer);
 			});
 		}
 
+        var playerChannelContainer = '';
+        if (message.channel) {
+            playerChannelContainer = $('<span/>').addClass('messagetext')
+            .text('[' + message.channel + '] ')
+            .appendTo(messageRow);
+        }
+            
 		if (message.source === 'player' && configuration.showworld) {
 			var playerWorldContainer = $('<span/>')
 			 .addClass('messagetext')
@@ -79,7 +88,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			.addClass('messagetext')
 			.text(message.text);
 
-		messageRow.append(playerIconContainer,playerNameContainer,playerMessageContainer);
+		messageRow.append(playerIconContainer,playerChannelContainer,playerNameContainer,playerMessageContainer);
 		addrow(messageRow);
 	});
 };
