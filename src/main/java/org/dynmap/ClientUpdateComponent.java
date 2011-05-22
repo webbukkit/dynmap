@@ -3,6 +3,7 @@ package org.dynmap;
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -37,7 +38,7 @@ public class ClientUpdateComponent extends Component {
             Location pl = p.getLocation();
             JSONObject jp = new JSONObject();
             s(jp, "type", "player");
-            s(jp, "name", p.getDisplayName());
+            s(jp, "name", ChatColor.stripColor(p.getDisplayName()));
             s(jp, "account", p.getName());
             s(jp, "world", p.getWorld().getName());
             s(jp, "x", pl.getX());
