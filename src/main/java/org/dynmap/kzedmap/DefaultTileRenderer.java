@@ -372,6 +372,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         s(o, "type", "KzedMapType");
         s(o, "name", c.getString("name"));
         s(o, "title", c.getString("title"));
+        s(o, "icon", c.getString("icon"));
         s(o, "prefix", c.getString("prefix"));
         a(worldObject, "maps", o);
     }

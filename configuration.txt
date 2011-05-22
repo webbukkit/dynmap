@@ -136,6 +136,8 @@ worlds:
             colorscheme: default
             # Add shadows to world (based on top-down shadows from chunk data)
             # shadowstrength: 1.0
+            # Sets the icon to 'images/block_custom.png'
+            # icon: custom
           #- class: org.dynmap.kzedmap.HighlightTileRenderer
           #  prefix: ht
           #  maximumheight: 127
