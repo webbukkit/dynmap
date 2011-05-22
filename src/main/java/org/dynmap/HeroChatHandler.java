@@ -10,6 +10,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
+import java.lang.reflect.Field;
 
 public class HeroChatHandler {
     private static final String DEF_CHANNEL = "Global";
@@ -18,8 +19,8 @@ public class HeroChatHandler {
 
     private List<String> hcchannels;
     private String hcwebinputchannel;
-    private HeroChatChannel hcwebinputchan;
     private DynmapPlugin plugin;
+    private HeroChatChannel hcwebinputchan;
 
     private class OurPluginListener extends ServerListener {
         @Override
@@ -38,6 +39,7 @@ public class HeroChatHandler {
         private static Class channelchatevent;
         private static Method getsource;
         private static Method getmessage;
+        private static Method issentbyplayer;
         private static boolean isgood = false;
         private Event evt;
 
@@ -48,6 +50,7 @@ public class HeroChatHandler {
                         .forName("com.herocraftonline.dthielke.herochat.event.ChannelChatEvent");
                 getsource = channelchatevent.getMethod("getSource", new Class[0]);
                 getmessage = channelchatevent.getMethod("getMessage", new Class[0]);
+                issentbyplayer = channelchatevent.getMethod("isSentByPlayer", new Class[0]);
                 isgood = true;
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
@@ -76,6 +79,14 @@ public class HeroChatHandler {
                 return (String) getmessage.invoke(evt);
             } catch (Exception x) {
                 return null;
+            }
+        }
+        
+        public boolean isSentByPlayer() {
+            try {
+                return (Boolean) issentbyplayer.invoke(evt);
+            } catch (Exception x) {
+                return true;
             }
         }
     }
@@ -199,23 +210,27 @@ public class HeroChatHandler {
                  * plugin that may not be present....)
                  */
                 HeroChatChannel c = ce.getChannel();
-                /* If channel name or nickname matches out web channel, remember it */
-                if((c != null) && (hcwebinputchannel != null) &&
-                        ((c.getName().equals(hcwebinputchannel)) ||
-                        c.getNick().equals(hcwebinputchannel))) {
-                    hcwebinputchan = c;
-                }
                 if (ce.isCancelled())
                     return;
+                if((hcwebinputchannel != null) && ((hcwebinputchannel.equals(c.getName())) ||
+                        (hcwebinputchannel.equals(c.getNick())))) {
+                    hcwebinputchan = c;
+                }                
                 if (HeroChatChannelChatEvent.isInstance(event)) {
                     HeroChatChannelChatEvent cce = new HeroChatChannelChatEvent(
                         event);
                     /* Match on name or nickname of channel */
                     if (hcchannels.contains(c.getName()) ||
                             hcchannels.contains(c.getNick())) {
-                        plugin.mapManager.pushUpdate(new Client.ChatMessage(
-                            "player", "[" + c.getNick() + "] "
-                                    + cce.getSource(), cce.getMessage()));
+                        if(cce.isSentByPlayer()) {  /* Player message? */
+                            org.bukkit.entity.Player p = plugin.getServer().getPlayer(cce.getSource());
+                            if(p != null)
+                                plugin.mapManager.pushUpdate(new Client.ChatMessage("player", 
+                                                                                    c.getNick(),
+                                                                                    p.getDisplayName(),
+                                                                                    cce.getMessage(),
+                                                                                    p.getName()));
+                        }
                     }
                 }
             }
@@ -233,9 +248,15 @@ public class HeroChatHandler {
             /* And get channel to send web messages */
             hcwebinputchannel = cfg.getNode("web").getString(
                     "herochatwebchannel", DEF_CHANNEL);
-            /* Set up to hear when HeroChat is enabled */
-            server.getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
+            Plugin hc = server.getPluginManager().getPlugin("HeroChat");
+            if(hc != null) {
+                activateHeroChat(hc);
+            }
+            else {
+                /* Set up to hear when HeroChat is enabled */
+                server.getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
                     new OurPluginListener(), Event.Priority.Normal, plugin);
+            }
         }
     }
 
@@ -252,7 +273,6 @@ public class HeroChatHandler {
             Log.severe("Cannot load HeroChat channel event class!");
             return;
         }
-
         /* Register event handler */
         plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT,
                 new OurEventListener(), Event.Priority.Monitor, plugin);
