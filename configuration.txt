@@ -108,10 +108,12 @@ spammessage: "You may only chat once every %interval% seconds."
 defaultzoom: 0
 defaultworld: world
 
-# The maptypes Dynmap will use to render.
-worlds:
-  - name: world
-    title: "World"
+# template world - this is used for worlds that exist but aren't defined in the worlds section.
+# Also, it supplies the "maps" section for worlds lacking a maps section, and the "center"
+# for worlds lacking a "center" section.
+template:
+  # Template for normal world
+  normal:
     center:
       x: 0
       y: 64
@@ -147,8 +149,8 @@ worlds:
             title: "Cave"
             prefix: ct
             maximumheight: 127
-  - name: nether
-    title: "Nether"
+  # Nether world template
+  nether:
     center:
       x: 0
       y: 64
@@ -167,6 +169,76 @@ worlds:
             prefix: nt
             maximumheight: 127
             colorscheme: default
+
+
+# The maptypes Dynmap will use to render.
+worlds:
+  # Worlds can be handled by templates, based on world type
+  # To override, provide name and title here.  Any other sections that are provided will
+  #   be used instead of the template's value (center, maps).
+  #- name: world
+  #  title: "World"
+  #   Rest of comes from template - uncomment to tailor for world specifically
+  #  center:
+  #    x: 0
+  #    y: 64
+  #    z: 0
+  #  maps:
+  #    - class: org.dynmap.flat.FlatMap
+  #      name: flat
+  #      title: "Flat"
+  #      prefix: flat
+  #      colorscheme: default
+  #    - class: org.dynmap.kzedmap.KzedMap
+  #      renderers:
+  #        - class: org.dynmap.kzedmap.DefaultTileRenderer
+  #          name: surface
+  #          title: "Surface"
+  #          prefix: t
+  #          maximumheight: 127
+  #          colorscheme: default
+  #          # Add shadows to world (based on top-down shadows from chunk data)
+  #          # shadowstrength: 1.0
+  #          # Sets the icon to 'images/block_custom.png'
+  #          # icon: custom
+  #        #- class: org.dynmap.kzedmap.HighlightTileRenderer
+  #        #  prefix: ht
+  #        #  maximumheight: 127
+  #        #  colorscheme: default
+  #        #  highlight: # For highlighting multiple block-types.
+  #        #    - 56 # Highlight diamond-ore
+  #        #    - 66 # Highlight minecart track
+  #        #  highlight: 56 # For highlighting a single block-type.
+  #        - class: org.dynmap.kzedmap.CaveTileRenderer
+  #          name: cave
+  #          title: "Cave"
+  #          prefix: ct
+  #          maximumheight: 127
+  #
+  # To just label world, and inherit rest from template, just provide name and title
+  #-name: world2
+  # title: "Second World"
+  #
+  #- name: nether
+  #  title: "Nether"
+  #  center:
+  #    x: 0
+  #    y: 64
+  #    z: 0
+  #  maps:
+  #    - class: org.dynmap.flat.FlatMap
+  #      name: flat
+  #      title: "Flat"
+  #      prefix: flat
+  #      colorscheme: default
+  #    - class: org.dynmap.kzedmap.KzedMap
+  #      renderers:
+  #        - class: org.dynmap.kzedmap.DefaultTileRenderer
+  #          name: nether
+  #          title: "Surface"
+  #          prefix: nt
+  #          maximumheight: 127
+  #          colorscheme: default
 
 # Enables debugging.
 #debuggers:
