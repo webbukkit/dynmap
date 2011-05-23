@@ -219,8 +219,8 @@ worlds:
   #          maximumheight: 127
   #
   # To just label world, and inherit rest from template, just provide name and title
-  #-name: world2
-  # title: "Second World"
+  #- name: world2
+  #  title: "Second World"
   #
   #- name: nether
   #  title: "Nether"
