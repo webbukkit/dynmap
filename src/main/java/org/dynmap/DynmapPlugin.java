@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
