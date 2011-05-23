@@ -30,20 +30,14 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.dynmap.Event.Listener;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.permissions.NijikokunPermissions;
 import org.dynmap.permissions.OpPermissions;
 import org.dynmap.permissions.PermissionProvider;
-import org.dynmap.regions.RegionHandler;
 import org.dynmap.web.HttpServer;
-import org.dynmap.web.Json;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
-import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
-import org.dynmap.web.handlers.SendMessageHandler;
-import org.json.simple.JSONObject;
 
 public class DynmapPlugin extends JavaPlugin {
     public HttpServer webServer = null;
@@ -54,6 +48,8 @@ public class DynmapPlugin extends JavaPlugin {
     public PermissionProvider permissions;
     public ComponentManager componentManager = new ComponentManager();
     public Events events = new Events();
+    /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
+    public boolean is_reload = false;
 
     public static File dataDirectory;
     public static File tilesDirectory;
@@ -347,8 +343,10 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             } else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
                 sender.sendMessage("Reloading Dynmap...");
+                is_reload = true;
                 onDisable();
                 onEnable();
+                is_reload = false;
                 sender.sendMessage("Dynmap reloaded");
                 return true;
             }
@@ -413,13 +411,13 @@ public class DynmapPlugin extends JavaPlugin {
                 else {  /* Else, definition is there, but may be incomplete */
                     boolean wupd = false;
                     List<ConfigurationNode> tempmaps = typetemplate.getList("maps");
-                    if((tempmaps != null) && (world.getNode("maps") == null)) {    /* World with no maps section */
+                    if((tempmaps != null) && (world.get("maps") == null)) {    /* World with no maps section */
                         world.put("maps", tempmaps);
                         Log.info("World '" + w.getName() + "' configuration inherited maps from template");
                         wupd = true;
                     }
                     ConfigurationNode tempcenter = typetemplate.getNode("center");
-                    if((tempcenter != null) && (world.getNode("center") == null)) {   /* World with no center */
+                    if((tempcenter != null) && (world.get("center") == null)) {   /* World with no center */
                         world.put("center", new ConfigurationNode(new HashMap<String,Object>(tempcenter)));
                         Log.info("World '" + w.getName() + "' configuration inherited center from template");
                         wupd = true;                    
@@ -438,5 +436,9 @@ public class DynmapPlugin extends JavaPlugin {
         if(worldsupdated) {
             node.put("worlds", worlds);
         }
+    }
+    
+    public boolean isReload() {
+        return is_reload;
     }
 }
