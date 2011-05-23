@@ -379,13 +379,18 @@ public class DynmapPlugin extends JavaPlugin {
             worlds = new ArrayList<ConfigurationNode>();
             worldsupdated = true;
         }
+        List<String> hiddenworlds = node.getStrings("hiddenworlds", Collections.EMPTY_LIST);
+
         /* Iternate by world type - so that order in templateworldtypes drives our default order */
         for(int wtype = 0; wtype < templateworldtypes.length; wtype++) {
             ConfigurationNode typetemplate = template.getNode(templateworldtypes[wtype]);
             if(typetemplate == null)
                 continue;
             for(World w : getServer().getWorlds()) {    /* Roll through worlds */
-                String wn = w.getName();                
+                String wn = w.getName();
+                /* Skip processing on hidden worlds */
+                if(hiddenworlds.contains(wn))
+                	continue;
                 /* Find node for this world, if any */
                 ConfigurationNode world = null;
                 int index;
