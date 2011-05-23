@@ -169,7 +169,10 @@ template:
             prefix: nt
             maximumheight: 127
             colorscheme: default
-
+# This list of worlds will be hidden - they will not be automatically initialized by templates
+hiddenworlds:
+  - MyHiddenWorld
+  - AnotherHiddenWorld
 
 # The maptypes Dynmap will use to render.
 worlds:
