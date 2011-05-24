@@ -1,9 +1,12 @@
 package org.dynmap;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Chunk;
@@ -17,8 +20,8 @@ public class MapManager {
     public AsynchronousQueue<MapTile> tileQueue;
     public AsynchronousQueue<ImageWriter> writeQueue;
 
-    public Map<String, DynmapWorld> worlds = new HashMap<String, DynmapWorld>();
-    public Map<String, DynmapWorld> inactiveworlds = new HashMap<String, DynmapWorld>();
+    public List<DynmapWorld> worlds = new ArrayList<DynmapWorld>();
+    public Map<String, DynmapWorld> worldsLookup = new HashMap<String, DynmapWorld>();
     private BukkitScheduler scheduler;
     private DynmapPlugin plug_in;
     private double timeslice_interval = 0.0;
@@ -35,11 +38,12 @@ public class MapManager {
     }
 
     public DynmapWorld getWorld(String name) {
-        DynmapWorld world = worlds.get(name);
-        if(world == null) {
-            world = inactiveworlds.get(name);
-        }
+        DynmapWorld world = worldsLookup.get(name);
         return world;
+    }
+    
+    public Collection<DynmapWorld> getWorlds() {
+        return worlds;
     }
     
     private class FullWorldRenderState implements Runnable {
@@ -64,7 +68,7 @@ public class MapManager {
 
         /* Single tile render - used for incremental renders */
         FullWorldRenderState(MapTile t) {
-            world = worlds.get(t.getWorld().getName());
+            world = getWorld(t.getWorld().getName());
             tile0 = t;
         }
 
@@ -136,7 +140,7 @@ public class MapManager {
     }
 
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
-
+        plug_in = plugin;
         mapman = this;
 
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
@@ -157,42 +161,18 @@ public class MapManager {
 
         timeslice_interval = configuration.getDouble("timesliceinterval", 0.5);
 
-        for(ConfigurationNode worldConfiguration : configuration.getNodes("worlds")) {
-            String worldName = worldConfiguration.getString("name");
-            DynmapWorld world = new DynmapWorld();
-            
-            Event.Listener<MapTile> invalitateListener = new Event.Listener<MapTile>() {
-                @Override
-                public void triggered(MapTile t) {
-                    invalidateTile(t);
-                }
-            };
-            
-            Log.info("Loading maps of world '" + worldName + "'...");
-            for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
-                map.onTileInvalidated.addListener(invalitateListener);
-                world.maps.add(map);
-            }
-            Log.info("Loaded " + world.maps.size() + " maps of world '" + worldName + "'.");
-            
-            inactiveworlds.put(worldName, world);
-
-            World bukkitWorld = plugin.getServer().getWorld(worldName);
-            if (bukkitWorld != null)
-                activateWorld(bukkitWorld);
-        }
-
         scheduler = plugin.getServer().getScheduler();
-        plug_in = plugin;
 
         tileQueue.start();
         writeQueue.start();
+        
+        for (World world : plug_in.getServer().getWorlds()) {
+            activateWorld(world);
+        }
     }
 
-
-
     void renderFullWorld(Location l) {
-        DynmapWorld world = worlds.get(l.getWorld().getName());
+        DynmapWorld world = getWorld(l.getWorld().getName());
         if (world == null) {
             Log.severe("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
             return;
@@ -211,21 +191,36 @@ public class MapManager {
     }
 
     public void activateWorld(World w) {
-        DynmapWorld world = inactiveworlds.get(w.getName());
-        if (world == null) {
-            world = worlds.get(w.getName());
-        } else {
-            inactiveworlds.remove(w.getName());
+        ConfigurationNode worldConfiguration = plug_in.getWorldConfiguration(w);
+        if (!worldConfiguration.getBoolean("enabled", false)) {
+            Log.info("World '" + w.getName() + "' disabled");
+            return;
         }
-        if (world != null) {
-            world.world = w;
-            worlds.put(w.getName(), world);
-            Log.info("Activated world '" + w.getName() + "' in Dynmap.");
+        String worldName = w.getName();
+        
+        Event.Listener<MapTile> invalitateListener = new Event.Listener<MapTile>() {
+            @Override
+            public void triggered(MapTile t) {
+                invalidateTile(t);
+            }
+        };
+        
+        DynmapWorld dynmapWorld = new DynmapWorld();
+        dynmapWorld.world = w;
+        dynmapWorld.configuration = worldConfiguration;
+        Log.info("Loading maps of world '" + worldName + "'...");
+        for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
+            map.onTileInvalidated.addListener(invalitateListener);
+            dynmapWorld.maps.add(map);
         }
+        Log.info("Loaded " + dynmapWorld.maps.size() + " maps of world '" + worldName + "'.");
+        worlds.add(dynmapWorld);
+        worldsLookup.put(w.getName(), dynmapWorld);
+        plug_in.events.trigger("worldactivated", dynmapWorld);
     }
 
     public int touch(Location l) {
-        DynmapWorld world = worlds.get(l.getWorld().getName());
+        DynmapWorld world = getWorld(l.getWorld().getName());
         if (world == null)
             return 0;
         int invalidates = 0;
@@ -276,7 +271,7 @@ public class MapManager {
     }
 
     public void pushUpdate(Object update) {
-        for(DynmapWorld world : worlds.values()) {
+        for(DynmapWorld world : getWorlds()) {
             world.updates.pushUpdate(update);
         }
     }
@@ -286,12 +281,12 @@ public class MapManager {
     }
 
     public void pushUpdate(String worldName, Object update) {
-        DynmapWorld world = worlds.get(worldName);
+        DynmapWorld world = getWorld(worldName);
         world.updates.pushUpdate(update);
     }
 
     public Object[] getWorldUpdates(String worldName, long since) {
-        DynmapWorld world = worlds.get(worldName);
+        DynmapWorld world = getWorld(worldName);
         if (world == null)
             return new Object[0];
         return world.updates.getUpdatedObjects(since);

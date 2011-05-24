@@ -74,8 +74,6 @@ public class DynmapPlugin extends JavaPlugin {
         org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "configuration.txt"));
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
-
-        processWorldTemplates(configuration);
         
         loadDebuggers();
 
@@ -150,20 +148,24 @@ public class DynmapPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        int componentCount = componentManager.components.size();
-        for(Component component : componentManager.components) {
-            component.dispose();
+        if (componentManager != null) {
+            int componentCount = componentManager.components.size();
+            for(Component component : componentManager.components) {
+                component.dispose();
+            }
+            componentManager.clear();
+            Log.info("Unloaded " + componentCount + " components.");
         }
-        componentManager.clear();
-        Log.info("Unloaded " + componentCount + " components.");
         
-        mapManager.stopRendering();
+        if (mapManager != null) {
+            mapManager.stopRendering();
+        }
 
         if (webServer != null) {
             webServer.shutdown();
             webServer = null;
         }
-
+        
         Debug.clearDebuggers();
     }
     
@@ -344,10 +346,7 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             } else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
                 sender.sendMessage("Reloading Dynmap...");
-                is_reload = true;
-                onDisable();
-                onEnable();
-                is_reload = false;
+                reload();
                 sender.sendMessage("Dynmap reloaded");
                 return true;
             }
@@ -365,86 +364,67 @@ public class DynmapPlugin extends JavaPlugin {
         }
         return true;
     }
-    /* Prepare for sky worlds... */
-    private static final String[] templateworldtypes = { "normal", "nether" };
-    private static final Environment[] templateworldenv = { Environment.NORMAL, Environment.NETHER };
-    
-    private void processWorldTemplates(ConfigurationNode node) {
-        ConfigurationNode template = node.getNode("template");
-        if(template == null)
-            return;
-        List<ConfigurationNode> worlds = node.getNodes("worlds");
-        boolean worldsupdated = false;        
-        /* Initialize even if no worlds section */
-        if(worlds == null) {
-            worlds = new ArrayList<ConfigurationNode>();
-            worldsupdated = true;
-        }
-        List<String> hiddenworlds = node.getStrings("hiddenworlds", Collections.EMPTY_LIST);
 
-        /* Iternate by world type - so that order in templateworldtypes drives our default order */
-        for(int wtype = 0; wtype < templateworldtypes.length; wtype++) {
-            ConfigurationNode typetemplate = template.getNode(templateworldtypes[wtype]);
-            if(typetemplate == null)
-                continue;
-            for(World w : getServer().getWorlds()) {    /* Roll through worlds */
-                String wn = w.getName();
-                /* Skip processing on hidden worlds */
-                if(hiddenworlds.contains(wn))
-                	continue;
-                /* Find node for this world, if any */
-                ConfigurationNode world = null;
-                int index;
-                for(index = 0; index < worlds.size(); index++) {
-                    ConfigurationNode ww = worlds.get(index);
-                    if(wn.equals(ww.getString("name", ""))) {
-                        world = ww;
-                        break;
-                    }
-                }
-                /* Check type of world - skip if not right for current template */
-                if(w.getEnvironment() != templateworldenv[wtype])
-                    continue;
-                /* World not found - need to use template */
-                if(world == null) {
-                    ConfigurationNode newworldnode = new ConfigurationNode(new HashMap<String,Object>(typetemplate));   /* Copy it */
-                    newworldnode.put("name", w.getName());
-                    newworldnode.put("title", w.getName());
-                    worlds.add(newworldnode);
-                    worldsupdated = true;
-                    Log.info("World '" + w.getName() + "' configuration inherited from template");
-                }
-                else {  /* Else, definition is there, but may be incomplete */
-                    boolean wupd = false;
-                    List<ConfigurationNode> tempmaps = typetemplate.getList("maps");
-                    if((tempmaps != null) && (world.get("maps") == null)) {    /* World with no maps section */
-                        world.put("maps", tempmaps);
-                        Log.info("World '" + w.getName() + "' configuration inherited maps from template");
-                        wupd = true;
-                    }
-                    ConfigurationNode tempcenter = typetemplate.getNode("center");
-                    if((tempcenter != null) && (world.get("center") == null)) {   /* World with no center */
-                        world.put("center", new ConfigurationNode(new HashMap<String,Object>(tempcenter)));
-                        Log.info("World '" + w.getName() + "' configuration inherited center from template");
-                        wupd = true;                    
-                    }
-                    if(world.getString("title", null) == null) {
-                        world.put("title", w.getName());
-                        wupd = true;                    
-                    }
-                    if(wupd) {
-                        worldsupdated = true;
-                        worlds.set(index, world);
-                    }
-                }
+    public ConfigurationNode getWorldConfiguration(World world) {
+        ConfigurationNode finalConfiguration = new ConfigurationNode();
+        finalConfiguration.put("name", world.getName());
+        finalConfiguration.put("title", world.getName());
+        
+        ConfigurationNode worldConfiguration = getWorldConfigurationNode(world.getName());
+        
+        // Get the template.
+        ConfigurationNode templateConfiguration = null;
+        if (worldConfiguration != null) {
+            String templateName = worldConfiguration.getString("template");
+            if (templateName != null) {
+                templateConfiguration = getTemplateConfigurationNode(templateName);
             }
         }
-        if(worldsupdated) {
-            node.put("worlds", worlds);
+        
+        // Template not found, using default template.
+        if (templateConfiguration == null) {
+            templateConfiguration = getDefaultTemplateConfigurationNode(world);
         }
+        
+        // Merge the finalConfiguration, templateConfiguration and worldConfiguration.
+        finalConfiguration.extend(templateConfiguration);
+        finalConfiguration.extend(worldConfiguration);
+        
+        Log.info("Configuration of world " + world.getName());
+        for(Map.Entry<String, Object> e : finalConfiguration.entrySet()) {
+            Log.info(e.getKey() + ": " + e.getValue());
+        }
+        
+        return finalConfiguration;
     }
     
-    public boolean isReload() {
-        return is_reload;
+    private ConfigurationNode getDefaultTemplateConfigurationNode(World world) {
+        Environment environment = world.getEnvironment();
+        String environmentName = environment.name().toLowerCase();
+        Log.info("Using environment as template: " + environmentName);
+        return getTemplateConfigurationNode(environmentName);
+    }
+    
+    private ConfigurationNode getWorldConfigurationNode(String worldName) {
+        for(ConfigurationNode worldNode : configuration.getNodes("worlds")) {
+            if (worldName.equals(worldNode.getString("name"))) {
+                return worldNode;
+            }
+        }
+        return new ConfigurationNode();
+    }
+    
+    private ConfigurationNode getTemplateConfigurationNode(String templateName) {
+        ConfigurationNode templatesNode = configuration.getNode("templates");
+        if (templatesNode != null) {
+            return templatesNode.getNode(templateName);
+        }
+        return null;
+    }
+    
+    public void reload() {
+        PluginManager pluginManager = getServer().getPluginManager();
+        pluginManager.disablePlugin(this);
+        pluginManager.enablePlugin(this);
     }
 }
