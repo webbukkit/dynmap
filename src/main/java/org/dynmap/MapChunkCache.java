@@ -20,9 +20,164 @@ public class MapChunkCache {
     private int x_min, x_max, z_min, z_max;
     private int x_dim;
     
-    private CraftChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
+    private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     private LinkedList<DynmapChunk> loadedChunks = new LinkedList<DynmapChunk>();
 
+    /**
+     * Iterator for traversing map chunk cache (base is for non-snapshot)
+     */
+    public class MapIterator {
+        public int x, y, z;  
+        MapIterator(int x0, int y0, int z0) {
+            initialize(x0, y0, z0);
+        }
+        public void initialize(int x0, int y0, int z0) {
+            this.x = x0;
+            this.y = y0;
+            this.z = z0;            
+        }
+        public int getBlockTypeID() {
+            return w.getBlockTypeIdAt(x, y, z);
+        }
+        public int getBlockData() {
+            return w.getBlockAt(x, y, z).getData();
+        }
+        public int getHighestBlockYAt() {
+            return w.getHighestBlockYAt(x, z);
+        }
+        public int getBlockSkyLight() {
+            return 15;
+        }
+        public int getBlockEmittedLight() {
+            return 0;
+        }
+        public void incrementX() {
+            x++;
+        }
+        public void decrementX() {
+            x--;
+        }
+        public void incrementY() {
+            y++;
+        }
+        public void decrementY() {
+            y--;
+        }
+        public void incrementZ() {
+            z++;
+        }
+        public void decrementZ() {
+            z--;
+        }
+        public void setY(int y) {
+            this.y = y;
+        }
+     }
+
+    /**
+     * Iterator for snapshot mode
+     */
+    public class SnapshotMapIterator extends MapIterator {
+        private ChunkSnapshot snap;
+        private int x4, z4;
+    
+        public SnapshotMapIterator(int x0, int y0, int z0) {
+            super(x0, y0, z0);
+        }
+        public void initialize(int x0, int y0, int z0) {
+            super.initialize(x0, y0, z0);
+            try {
+                snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+            } catch (ArrayIndexOutOfBoundsException aioobx) {
+                snap = EMPTY;
+            }
+            x4 = x0 & 0xF;
+            z4 = z0 & 0xF;
+        }
+        public int getBlockTypeID() {
+            return snap.getBlockTypeId(x4, y, z4);
+        }
+        public int getBlockData() {
+            return snap.getBlockData(x4, y, z4);
+        }
+        public int getHighestBlockYAt() {
+            return snap.getHighestBlockYAt(x4, z4);
+        }
+        public int getBlockSkyLight() {
+            return snap.getBlockSkyLight(x4, y, z4);
+        }
+        public int getBlockEmittedLight() {
+            return snap.getBlockEmittedLight(x4, y, z4);
+        }
+        public void incrementX() {
+            x++; x4 = x & 0xF;
+            if(x4 == 0) {  /* Next chunk? */
+                try {
+                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+                } catch (ArrayIndexOutOfBoundsException aioobx) {
+                    snap = EMPTY;
+                }
+            }
+        }
+        public void decrementX() {
+            x--; x4 = x & 0xF;
+            if(x4 == 15) {  /* Next chunk? */
+                try {
+                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+                } catch (ArrayIndexOutOfBoundsException aioobx) {
+                    snap = EMPTY;
+                }
+            }
+        }
+        public void incrementY() {
+            y++;
+        }
+        public void decrementY() {
+            y--;
+        }
+        public void incrementZ() {
+            z++; z4 = z & 0xF;
+            if(z4 == 0) {  /* Next chunk? */
+                try {
+                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+                } catch (ArrayIndexOutOfBoundsException aioobx) {
+                    snap = EMPTY;
+                }
+            }
+        }
+        public void decrementZ() {
+            z--; z4 = z & 0xF;
+            if(z4 == 15) {  /* Next chunk? */
+                try {
+                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+                } catch (ArrayIndexOutOfBoundsException aioobx) {
+                    snap = EMPTY;
+                }
+            }
+        }
+    }
+    /**
+     * Chunk cache for representing unloaded chunk
+     */
+    private static class EmptyChunk implements ChunkSnapshot {
+        public final int getBlockTypeId(int x, int y, int z) {
+            return 0;
+        }
+        public final int getBlockData(int x, int y, int z) {
+            return 0;
+        }
+        public final int getBlockSkyLight(int x, int y, int z) {
+            return 15;
+        }
+        public final int getBlockEmittedLight(int x, int y, int z) {
+            return 0;
+        }
+        public final int getHighestBlockYAt(int x, int z) {
+            return 1;
+        }
+    }
+    
+    private static final EmptyChunk EMPTY = new EmptyChunk();
     /**
      * Create chunk cache container
      * @param w - world
@@ -75,7 +230,7 @@ public class MapChunkCache {
                 Log.info("Chunk snapshot support disabled");
         }
         if(gethandle != null) {  /* We can use caching */
-            snaparray = new CraftChunkSnapshot[x_dim * (z_max-z_min+1)];
+            snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
         }
         if(snaparray != null) {
             // Load the required chunks.
@@ -109,6 +264,10 @@ public class MapChunkCache {
                      * by the MC base server is 21x21 (or about a 160 block radius) */
                     w.unloadChunk(chunk.x, chunk.z, false, false);
                 }
+            }
+            for(int i = 0; i < snaparray.length; i++) {
+                if(snaparray[i] == null)
+                    snaparray[i] = EMPTY;
             }
         }
         else {  /* Else, load and keep them loaded for now */
@@ -154,11 +313,8 @@ public class MapChunkCache {
      */
     public int getBlockTypeID(int x, int y, int z) {
         if(snaparray != null) {
-            CraftChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-            if(ss == null)
-                return 0;
-            else
-                return ss.getBlockTypeId(x & 0xF, y, z & 0xF);
+            ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+            return ss.getBlockTypeId(x & 0xF, y, z & 0xF);
         }
         else {
             return w.getBlockTypeIdAt(x, y, z);
@@ -169,11 +325,8 @@ public class MapChunkCache {
      */
     public byte getBlockData(int x, int y, int z) {
         if(snaparray != null) {
-            CraftChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-            if(ss == null)
-                return 0;
-            else
-                return (byte)ss.getBlockData(x & 0xF, y, z & 0xF);
+            ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+            return (byte)ss.getBlockData(x & 0xF, y, z & 0xF);
         }
         else {
             return w.getBlockAt(x, y, z).getData();
@@ -184,12 +337,8 @@ public class MapChunkCache {
      */
     public int getHighestBlockYAt(int x, int z) {
         if(snaparray != null) {
-            CraftChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-            if(ss == null) {
-                return 1;
-            }
-            else
-                return ss.getHighestBlockYAt(x & 0xF, z & 0xF);
+            ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+            return ss.getHighestBlockYAt(x & 0xF, z & 0xF);
         }
         else {
             return w.getHighestBlockYAt(x, z);
@@ -199,15 +348,31 @@ public class MapChunkCache {
      */
     public int getBlockSkyLight(int x, int y, int z) {
         if(snaparray != null) {
-            CraftChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-            if(ss == null) {
-                return 15;
-            }
-            else
-                return ss.getBlockSkyLight(x & 0xF, y, z & 0xF);
+            ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+            return ss.getBlockSkyLight(x & 0xF, y, z & 0xF);
         }
         else {
             return 15;
         }
+    }
+    /* Get emitted light level
+     */
+    public int getBlockEmittedLight(int x, int y, int z) {
+        if(snaparray != null) {
+            ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+            return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
+        }
+        else {
+            return 0;
+        }
+    }
+    /**
+     * Get cache iterator
+     */
+    public MapIterator getIterator(int x, int y, int z) {
+        if(snaparray != null)
+            return new SnapshotMapIterator(x, y, z);
+        else
+            return new MapIterator(x, y, z);
     }
 }

@@ -19,6 +19,7 @@ import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.MapChunkCache;
@@ -35,6 +36,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
     protected Color highlightColor = new Color(255, 0, 0);
 
     protected int   shadowscale[];  /* index=skylight level, value = 256 * scaling value */
+    protected int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
     @Override
     public String getName() {
         return name;
@@ -54,12 +56,25 @@ public class DefaultTileRenderer implements MapTileRenderer {
             double shadowweight = Double.parseDouble(String.valueOf(o));
             if(shadowweight > 0.0) {
                 shadowscale = new int[16];
-                for(int i = 0; i < 16; i++) {
-                    double v = 256.0 * (1.0 - (shadowweight * (15-i) / 15.0));
+                shadowscale[15] = 256;
+                /* Normal brightness weight in MC is a 20% relative dropoff per step */
+                for(int i = 14; i >= 0; i--) {
+                    double v = shadowscale[i+1] * (1.0 - (0.2 * shadowweight));
                     shadowscale[i] = (int)v;
                     if(shadowscale[i] > 256) shadowscale[i] = 256;
                     if(shadowscale[i] < 0) shadowscale[i] = 0;
                 }
+            }
+        }
+        o = configuration.get("ambientlight");
+        if(o != null) {
+            int v = Integer.parseInt(String.valueOf(o));
+            lightscale = new int[16];
+            for(int i = 0; i < 16; i++) {
+                if(i < (15-v))
+                    lightscale[i] = 0;
+                else
+                    lightscale[i] = i - (15-v);
             }
         }
         colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
@@ -86,6 +101,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
         int x, y;
 
+        MapChunkCache.MapIterator mapiter = cache.getIterator(ix, iy, iz);
+        
         Color c1 = new Color();
         Color c2 = new Color();
         int[] rgb = new int[3*KzedMap.tileWidth];
@@ -96,8 +113,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
             jz = iz;
 
             for (x = KzedMap.tileWidth - 1; x >= 0; x -= 2) {
-                scan(world, jx, iy, jz, 0, isnether, c1, cache);
-                scan(world, jx, iy, jz, 2, isnether, c2, cache);
+                mapiter.initialize(jx, iy, jz);   
+                scan(world, 0, isnether, c1, mapiter);
+                mapiter.initialize(jx, iy, jz);   
+                scan(world, 2, isnether, c2, mapiter);
 
                 rgb[3*x] = c1.getRed(); 
                 rgb[3*x+1] = c1.getGreen(); 
@@ -126,10 +145,12 @@ public class DefaultTileRenderer implements MapTileRenderer {
             jz = iz - 1;
 
             for (x = KzedMap.tileWidth - 1; x >= 0; x -= 2) {
-                scan(world, jx, iy, jz, 2, isnether, c1, cache);
+                mapiter.initialize(jx, iy, jz);   
+                scan(world, 2, isnether, c1, mapiter);
                 jx++;
                 jz++;
-                scan(world, jx, iy, jz, 0, isnether, c2, cache);
+                mapiter.initialize(jx, iy, jz);   
+                scan(world, 0, isnether, c2, mapiter);
 
                 rgb[3*x] = c1.getRed(); 
                 rgb[3*x+1] = c1.getGreen(); 
@@ -250,16 +271,16 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 new Client.Tile(zmtile.getFilename()));
     }
 
-    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
-            MapChunkCache cache) {
+    protected void scan(World world, int seq, boolean isnether, final Color result,
+            MapChunkCache.MapIterator mapiter) {
         int lightlevel = 15;
         result.setTransparent();
         for (;;) {
-            if (y < 0) {
+            if (mapiter.y < 0) {
                 return;
             }
-            int id = cache.getBlockTypeID(x, y, z);
-            byte data = 0;
+            int id = mapiter.getBlockTypeID();
+            int data = 0;
             if(isnether) {    /* Make bedrock ceiling into air in nether */
                 if(id != 0) {
                     /* Remember first color we see, in case we wind up solid */
@@ -273,22 +294,38 @@ public class DefaultTileRenderer implements MapTileRenderer {
             }
             if(id != 0) {       /* No update needed for air */
                 if(colorScheme.datacolors[id] != null) {    /* If data colored */
-                    data = cache.getBlockData(x, y, z);
+                    data = mapiter.getBlockData();
                 }
-                if((shadowscale != null) && (y < 127)) {
+                if((shadowscale != null) && (mapiter.y < 127)) {
                     /* Find light level of previous chunk */
                     switch(seq) {
                         case 0:
-                            lightlevel = cache.getBlockSkyLight(x, y+1, z); 
+                        case 2:
+                            mapiter.incrementY();
+                            lightlevel = mapiter.getBlockSkyLight();
+                            if(lightscale != null)
+                                lightlevel = lightscale[lightlevel];
+                            if(lightlevel < 15)
+                                lightlevel = Math.max(mapiter.getBlockEmittedLight(), lightlevel);
+                            mapiter.decrementY(); 
                             break;
                         case 1:
-                            lightlevel = cache.getBlockSkyLight(x+1, y, z); 
-                            break;
-                        case 2:
-                            lightlevel = cache.getBlockSkyLight(x, y+1, z);
+                            mapiter.incrementX();
+                            lightlevel = mapiter.getBlockSkyLight();
+                            if(lightscale != null)
+                                lightlevel = lightscale[lightlevel];
+                            if(lightlevel < 15)
+                                lightlevel = Math.max(mapiter.getBlockEmittedLight(), lightlevel);
+                            mapiter.decrementX(); 
                             break;
                         case 3:
-                            lightlevel = cache.getBlockSkyLight(x, y, z-1);
+                            mapiter.decrementZ();
+                            lightlevel = mapiter.getBlockSkyLight();
+                            if(lightscale != null)
+                                lightlevel = lightscale[lightlevel];
+                            if(lightlevel < 15)
+                                lightlevel = Math.max(mapiter.getBlockEmittedLight(), lightlevel);
+                            mapiter.incrementZ();
                             break;
                     }
                 }
@@ -296,16 +333,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
             
             switch (seq) {
             case 0:
-                x--;
+                mapiter.decrementX();
                 break;
             case 1:
-                y--;
+            case 3:
+                mapiter.decrementY();
                 break;
             case 2:
-                z++;
-                break;
-            case 3:
-                y--;
+                mapiter.incrementZ();
                 break;
             }
 
@@ -335,7 +370,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                         }
 
                         /* this block is transparent, so recurse */
-                        scan(world, x, y, z, seq, isnether, result, cache);
+                        scan(world, seq, isnether, result, mapiter);
 
                         int cr = c.getRed();
                         int cg = c.getGreen();
