@@ -57,6 +57,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 writeConfiguration();
             }
         });
+        plugin.events.addListener("worldactivated", new Event.Listener<DynmapWorld>() {
+            @Override
+            public void triggered(DynmapWorld t) {
+                writeConfiguration();
+            }
+        });
     }
     
     protected File getStandaloneFile(String filename) {
@@ -87,7 +93,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected void writeUpdates() {
         File outputFile;
         //Handles Updates
-        for (DynmapWorld dynmapWorld : plugin.mapManager.worlds.values()) {
+        for (DynmapWorld dynmapWorld : plugin.mapManager.getWorlds()) {
             World world = dynmapWorld.world;
 
             JSONObject update = new JSONObject();

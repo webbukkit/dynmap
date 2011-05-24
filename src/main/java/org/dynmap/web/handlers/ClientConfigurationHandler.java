@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapWorld;
+import org.dynmap.Event;
 import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
@@ -16,6 +18,12 @@ public class ClientConfigurationHandler implements HttpHandler {
     private byte[] cachedConfiguration = null;
     public ClientConfigurationHandler(DynmapPlugin plugin) {
         this.plugin = plugin;
+        plugin.events.addListener("worldactivated", new Event.Listener<DynmapWorld>() {
+            @Override
+            public void triggered(DynmapWorld t) {
+                cachedConfiguration = null;
+            }
+        });
     }
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {

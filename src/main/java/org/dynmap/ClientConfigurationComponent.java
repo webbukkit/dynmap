@@ -19,9 +19,12 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "joinmessage", c.getString("joinmessage", "%playername% joined"));
                 s(t, "quitmessage", c.getString("quitmessage", "%playername% quit"));
                 s(t, "spammessage", c.getString("spammessage", "You may only chat once every %interval% seconds."));
+                s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
                 
-                for(ConfigurationNode wn : plugin.configuration.getNodes("worlds")) {
-                    DynmapWorld world = plugin.mapManager.getWorld(wn.getString("name"));
+                DynmapWorld defaultWorld = null;
+                for(DynmapWorld world : plugin.mapManager.getWorlds()) {
+                    if (defaultWorld == null) defaultWorld = world;
+                    ConfigurationNode wn = world.configuration;
                     JSONObject wo = new JSONObject();
                     s(wo, "name", wn.getString("name"));
                     s(wo, "title", wn.getString("title"));
@@ -34,6 +37,7 @@ public class ClientConfigurationComponent extends Component {
                         mt.buildClientConfiguration(wo);
                     }
                 }
+                s(t, "defaultworld", c.getString("defaultworld", defaultWorld == null ? "world" : defaultWorld.world.getName()));
             }
         });
     }

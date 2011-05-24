@@ -10,6 +10,11 @@ import java.util.Set;
 
 public class ConfigurationNode implements Map<String, Object> {
     public Map<String, Object> entries;
+    
+    public ConfigurationNode() {
+        entries = new HashMap<String, Object>();
+    }
+    
     public ConfigurationNode(org.bukkit.util.config.ConfigurationNode node) {
         entries = new HashMap<String, Object>();
         for(String key : node.getKeys(null)) {
@@ -18,6 +23,9 @@ public class ConfigurationNode implements Map<String, Object> {
     }
     
     public ConfigurationNode(Map<String, Object> map) {
+        if (map == null) {
+            throw new IllegalArgumentException();
+        }
         entries = map;
     }
     
@@ -150,6 +158,28 @@ public class ConfigurationNode implements Map<String, Object> {
             }
         }
         return nodes;
+    }
+    
+    public void extend(Map<String, Object> other) {
+        if (other != null)
+            extendMap(this, other);
+    }
+    
+    private final static void extendMap(Map<String, Object> left, Map<String, Object> right) {
+        ConfigurationNode original = new ConfigurationNode(left);
+        for(Map.Entry<String, Object> entry : right.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof Map<?, ?>) {
+                ConfigurationNode subnode = original.getNode(key);
+                if (subnode == null) {
+                    original.put(key, subnode = new ConfigurationNode());
+                }
+                extendMap(subnode, (Map<String, Object>)value);
+            } else {
+                original.put(key, value);
+            }
+        }
     }
     
     public <T> T createInstance(Class<?>[] constructorParameters, Object[] constructorArguments) {

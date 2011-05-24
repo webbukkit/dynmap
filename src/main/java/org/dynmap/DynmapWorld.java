@@ -9,4 +9,5 @@ public class DynmapWorld {
     public World world;
     public List<MapType> maps = new ArrayList<MapType>();
     public UpdateQueue updates = new UpdateQueue();
+    public ConfigurationNode configuration;
 }

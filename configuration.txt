@@ -111,9 +111,10 @@ defaultworld: world
 # template world - this is used for worlds that exist but aren't defined in the worlds section.
 # Also, it supplies the "maps" section for worlds lacking a maps section, and the "center"
 # for worlds lacking a "center" section.
-template:
+templates:
   # Template for normal world
   normal:
+    enabled: true
     center:
       x: 0
       y: 64
@@ -151,6 +152,7 @@ template:
             maximumheight: 127
   # Nether world template
   nether:
+    enabled: true
     center:
       x: 0
       y: 64
@@ -170,14 +172,17 @@ template:
             maximumheight: 127
             colorscheme: default
 
-
 # The maptypes Dynmap will use to render.
 worlds:
   # Worlds can be handled by templates, based on world type
-  # To override, provide name and title here.  Any other sections that are provided will
-  #   be used instead of the template's value (center, maps).
+  # You can override the properties of the template by specifying them in this section
+  #    for example 'Title: "My Awesome World"'
   #- name: world
   #  title: "World"
+  #   Use 'enabled: false' to disable a certain world.
+  #  enabled: false
+  #   Use 'template: mycustomtemplate' to use the properties specified in the template 'mycustomtemplate' to this world. Default it is set to the environment-name (normal or nether).
+  #  template: mycustomtemplate
   #   Rest of comes from template - uncomment to tailor for world specifically
   #  center:
   #    x: 0
@@ -216,8 +221,8 @@ worlds:
   #          maximumheight: 127
   #
   # To just label world, and inherit rest from template, just provide name and title
-  #-name: world2
-  # title: "Second World"
+  #- name: world2
+  #  title: "Second World"
   #
   #- name: nether
   #  title: "Nether"
