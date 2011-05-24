@@ -31,7 +31,8 @@ public class FlatMap extends MapType {
     private String prefix;
     private ColorScheme colorScheme;
     private int maximumHeight = 127;
-
+    private int ambientlight = 15;;
+    private int shadowscale[] = null;
     public FlatMap(ConfigurationNode configuration) {
         this.configuration = configuration;
         prefix = (String) configuration.get("prefix");
@@ -41,6 +42,25 @@ public class FlatMap extends MapType {
             maximumHeight = Integer.parseInt(String.valueOf(o));
             if (maximumHeight > 127)
                 maximumHeight = 127;
+        }
+        o = configuration.get("shadowstrength");
+        if(o != null) {
+            double shadowweight = Double.parseDouble(String.valueOf(o));
+            if(shadowweight > 0.0) {
+                shadowscale = new int[16];
+                shadowscale[15] = 256;
+                /* Normal brightness weight in MC is a 20% relative dropoff per step */
+                for(int i = 14; i >= 0; i--) {
+                    double v = shadowscale[i+1] * (1.0 - (0.2 * shadowweight));
+                    shadowscale[i] = (int)v;
+                    if(shadowscale[i] > 256) shadowscale[i] = 256;
+                    if(shadowscale[i] < 0) shadowscale[i] = 0;
+                }
+            }
+        }
+        o = configuration.get("ambientlight");
+        if(o != null) {
+            ambientlight = Integer.parseInt(String.valueOf(o));
         }
     }
 
@@ -92,42 +112,40 @@ public class FlatMap extends MapType {
 
         int[] pixel = new int[4];
 
-        for (int x = 0; x < t.size; x++)
-            for (int y = 0; y < t.size; y++) {
-                int mx = x + t.x * t.size;
-                int mz = y + t.y * t.size;
-                int my;
+        MapChunkCache.MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
+        for (int x = 0; x < t.size; x++) {
+            mapiter.initialize(t.x * t.size + x, 127, t.y * t.size);
+            for (int y = 0; y < t.size; y++, mapiter.incrementZ()) {
                 int blockType;
                 if(isnether) {
-                    /* Scan until we hit air */
-                    my = 127;
-                    while((blockType = cache.getBlockTypeID(mx, my, mz)) != 0) {
-                        my--;
-                        if(my < 0) {    /* Solid - use top */
-                            my = 127;
-                            blockType = cache.getBlockTypeID(mx, my, mz);
+                    while((blockType = mapiter.getBlockTypeID()) != 0) {
+                        mapiter.decrementY();
+                        if(mapiter.y < 0) {    /* Solid - use top */
+                            mapiter.setY(127);
+                            blockType = mapiter.getBlockTypeID();
                             break;
                         }
                     }
                     if(blockType == 0) {    /* Hit air - now find non-air */
-                        while((blockType = cache.getBlockTypeID(mx, my, mz)) == 0) {
-                            my--;
-                            if(my < 0) {
-                                my = 0;
+                        while((blockType = mapiter.getBlockTypeID()) == 0) {
+                            mapiter.decrementY();
+                            if(mapiter.y < 0) {
+                                mapiter.setY(0);
                                 break;
                             }
                         }
                     }
                 }
                 else {
-                    my = cache.getHighestBlockYAt(mx, mz) - 1;
+                    int my = mapiter.getHighestBlockYAt() - 1;
                     if(my > maximumHeight) my = maximumHeight;
-                    blockType = cache.getBlockTypeID(mx, my, mz);
+                    mapiter.setY(my);
+                    blockType = mapiter.getBlockTypeID();
                 }
-                byte data = 0;
+                int data = 0;
                 Color[] colors = colorScheme.colors[blockType];
                 if(colorScheme.datacolors[blockType] != null) {
-                    data = cache.getBlockData(mx, my, mz);
+                    data = mapiter.getBlockData();
                     colors = colorScheme.datacolors[blockType][data];
                 }
                 if (colors == null)
@@ -136,40 +154,51 @@ public class FlatMap extends MapType {
                 if (c == null)
                     continue;
 
-                boolean below = my < 64;
-
-                // Make height range from 0 - 1 (1 - 0 for below and 0 - 1 above)
-                float height = (below ? 64 - my : my - 64) / 64.0f;
-
-                // Defines the 'step' in coloring.
-                float step = 10 / 128.0f;
-
-                // The step applied to height.
-                float scale = ((int)(height/step))*step;
-
-                // Make the smaller values change the color (slightly) more than the higher values.
-                scale = (float)Math.pow(scale, 1.1f);
-
-                // Don't let the color go fully white or fully black.
-                scale *= 0.8f;
-
                 pixel[0] = c.getRed();
                 pixel[1] = c.getGreen();
                 pixel[2] = c.getBlue();
 
-                if (below) {
-                    pixel[0] -= pixel[0] * scale;
-                    pixel[1] -= pixel[1] * scale;
-                    pixel[2] -= pixel[2] * scale;
-                } else {
-                    pixel[0] += (255-pixel[0]) * scale;
-                    pixel[1] += (255-pixel[1]) * scale;
-                    pixel[2] += (255-pixel[2]) * scale;
+                /* If ambient light less than 15, do scaling */
+                if((shadowscale != null) && (ambientlight < 15)) {
+                    if(mapiter.y < 127) 
+                        mapiter.incrementY();
+                    int light = Math.max(ambientlight, mapiter.getBlockEmittedLight());
+                    pixel[0] = (pixel[0] * shadowscale[light]) >> 8;
+                    pixel[1] = (pixel[1] * shadowscale[light]) >> 8;
+                    pixel[2] = (pixel[2] * shadowscale[light]) >> 8;
                 }
+                else {  /* Only do height keying if we're not messing with ambient light */
+                    boolean below = mapiter.y < 64;
 
+                    // Make height range from 0 - 1 (1 - 0 for below and 0 - 1 above)
+                    float height = (below ? 64 - mapiter.y : mapiter.y - 64) / 64.0f;
+
+                    // Defines the 'step' in coloring.
+                    float step = 10 / 128.0f;
+
+                    // The step applied to height.
+                    float scale = ((int)(height/step))*step;
+
+                    // Make the smaller values change the color (slightly) more than the higher values.
+                    scale = (float)Math.pow(scale, 1.1f);
+
+                    // Don't let the color go fully white or fully black.
+                    scale *= 0.8f;
+
+                    if (below) {
+                        pixel[0] -= pixel[0] * scale;
+                        pixel[1] -= pixel[1] * scale;
+                        pixel[2] -= pixel[2] * scale;
+                    } else {
+                        pixel[0] += (255-pixel[0]) * scale;
+                        pixel[1] += (255-pixel[1]) * scale;
+                        pixel[2] += (255-pixel[2]) * scale;
+                    }
+                }
                 raster.setPixel(t.size-y-1, x, pixel);
                 rendered = true;
             }
+        }
         /* Hand encoding and writing file off to MapManager */
         final File fname = outputFile;
         final MapTile mtile = tile;
