@@ -23,6 +23,9 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				});
 			}
 			if (configuration.showplayerhealth) {
+                if(!configuration.showplayerfaces) /* Need 32 high */
+                    playerImage.css('margin-bottom','16px');
+                    
 				player.healthContainer = $('<div/>')
 					.addClass('healthContainer')
 					.appendTo(div);
