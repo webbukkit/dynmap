@@ -214,7 +214,26 @@ public class MapManager {
             dynmapWorld.maps.add(map);
         }
         Log.info("Loaded " + dynmapWorld.maps.size() + " maps of world '" + worldName + "'.");
-        worlds.add(dynmapWorld);
+        
+        // TODO: Make this less... weird...
+        // Insert the world on the same spot as in the configuration.
+        HashMap<String, Integer> indexLookup = new HashMap<String, Integer>();
+        List<ConfigurationNode> nodes = plug_in.configuration.getNodes("worlds");
+        for (int i = 0; i < nodes.size(); i++) {
+            ConfigurationNode node = nodes.get(i);
+            indexLookup.put(node.getString("name"), i);
+        }
+        int worldIndex = indexLookup.get(worldName);
+        int insertIndex;
+        for(insertIndex = 0; insertIndex < worlds.size(); insertIndex++) {
+            Integer nextWorldIndex = indexLookup.get(worlds.get(insertIndex).world.getName());
+            if (nextWorldIndex == null || worldIndex < nextWorldIndex.intValue()) {
+                break;
+            }
+        }
+        worlds.add(insertIndex, dynmapWorld);
+        
+        
         worldsLookup.put(w.getName(), dynmapWorld);
         plug_in.events.trigger("worldactivated", dynmapWorld);
     }
