@@ -224,7 +224,7 @@ worlds:
   #- name: world2
   #  title: "Second World"
   #
-  #nether
+  #nether:
   #  title: "Nether"
   #  center:
   #    x: 0
