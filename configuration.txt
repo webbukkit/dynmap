@@ -125,6 +125,9 @@ templates:
         title: "Flat"
         prefix: flat
         colorscheme: default
+        # To render a world as a "night view", set shadowstrength and ambientlight
+        # shadowstrength: 1.0
+        # ambientlight: 4
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -135,6 +138,8 @@ templates:
             colorscheme: default
             # Add shadows to world (based on top-down shadows from chunk data)
             # shadowstrength: 1.0
+            # To render a world as a "night view", set shadowstrength and ambientlight
+            # ambientlight: 4
             # Sets the icon to 'images/block_custom.png'
             # icon: custom
           #- class: org.dynmap.kzedmap.HighlightTileRenderer
@@ -181,6 +186,13 @@ worlds:
   #  title: "World"
   #   Use 'enabled: false' to disable a certain world.
   #  enabled: false
+  #  fullrenderlocations:
+  #    - x: 10000
+  #      y: 64
+  #      z: 20000
+  #    - x: -15000
+  #      y: 64
+  #      z: -5000
   #   Use 'template: mycustomtemplate' to use the properties specified in the template 'mycustomtemplate' to this world. Default it is set to the environment-name (normal or nether).
   #  template: mycustomtemplate
   #   Rest of comes from template - uncomment to tailor for world specifically
@@ -194,6 +206,9 @@ worlds:
   #      title: "Flat"
   #      prefix: flat
   #      colorscheme: default
+  #      # To render a world as a "night view", set shadowstrength and ambientlight
+  #      # shadowstrength: 1.0
+  #      # ambientlight: 4
   #    - class: org.dynmap.kzedmap.KzedMap
   #      renderers:
   #        - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -204,6 +219,8 @@ worlds:
   #          colorscheme: default
   #          # Add shadows to world (based on top-down shadows from chunk data)
   #          # shadowstrength: 1.0
+  #          # To render a world as a "night view", set shadowstrength and ambientlight
+  #          # ambientlight: 4
   #          # Sets the icon to 'images/block_custom.png'
   #          # icon: custom
   #        #- class: org.dynmap.kzedmap.HighlightTileRenderer
