@@ -1,9 +1,33 @@
 var config = {
-        tileUrl:     'tiles/',
-        updateUrl:   'up/',                                   // For Apache and lighttpd
-//      updateUrl:   'up.php?path=',                          // For Apache and lighttpd without ability to natively proxy
-//      updateUrl:   'up.aspx?path=',                         // For IIS
-//      configurationUrl: 'standalone/dynmap_config.json',    // For some standalone setups.
-		tileWidth: 128,
-		tileHeight: 128
+	// For internal server or proxying webserver.
+	url : {
+		configuration : 'up/configuration',
+		update : 'up/world/{world}/{timestamp}',
+		sendmessage : 'up/sendmessage'
+	},
+
+	// For proxying webserver through php.
+	// url: {
+	// configuration: 'up.php?path=configuration',
+	// update: 'up.php?path=world/{world}/?{timestamp}',
+	// sendmessage: 'up.php?path=sendmessage'
+	// },
+
+	// For proxying webserver through aspx.
+	// url: {
+	// configuration: 'up.aspx?path=configuration',
+	// update: 'up.aspx?path=world/{world}/?{timestamp}',
+	// sendmessage: 'up.aspx?path=sendmessage'
+	// },
+
+	// For standalone (jsonfile) webserver.
+	// url: {
+	// configuration: 'standalone/dynmap_config.json',
+	// update: 'standalone/dynmap_{world}.json',
+	// sendmessage: 'standalone/sendmessage.php'
+	// },
+
+	tileUrl : 'tiles/',
+	tileWidth : 128,
+	tileHeight : 128
 };

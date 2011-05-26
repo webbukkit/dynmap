@@ -78,7 +78,7 @@ function Location(world, x, y, z) {
 function DynMap(options) {
 	var me = this;
 	me.options = options;
-	$.getJSON(me.options.configurationUrl || (me.options.updateUrl + 'configuration'), function(configuration) {
+	$.getJSON(me.options.url.configuration, function(configuration) {
 		me.configure(configuration);
 		me.initialize();
 	}, function(status, statusMessage) {
@@ -92,6 +92,13 @@ DynMap.prototype = {
 	players: {},
 	lasttimestamp: '0',
 	followingPlayer: '',
+	formatUrl: function(name, options) {
+		var url = this.options.url[name];
+		$.each(options, function(n,v) {
+			url = url.replace("{" + n + "}", v);
+		});
+		return url;
+	},
 	configure: function(configuration) {
 		var me = this;
 		$.extend(me.options, configuration);
@@ -352,7 +359,7 @@ DynMap.prototype = {
 		var me = this;
 
 		$(me).trigger('worldupdating');
-		$.getJSON(me.options.updateUrl + "world/" + me.world.name + "/" + me.lasttimestamp, function(update) {
+		$.getJSON(me.formatUrl('update', { world: me.world.name, timestamp: me.lasttimestamp }), function(update) {
 				if (!update) {
 					setTimeout(function() { me.update(); }, me.options.updaterate);
 					return;
