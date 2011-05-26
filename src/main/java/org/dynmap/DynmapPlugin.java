@@ -406,11 +406,9 @@ public class DynmapPlugin extends JavaPlugin {
     }
     
     private ConfigurationNode getWorldConfigurationNode(String worldName) {
-        for(ConfigurationNode worldNode : configuration.getNodes("worlds")) {
-            if (worldName.equals(worldNode.getString("name"))) {
-                return worldNode;
-            }
-        }
+        ConfigurationNode worlds = configuration.getNode("worlds");
+        if (worlds != null)
+            return configuration.getNode("worlds").getNode(worldName);
         return new ConfigurationNode();
     }
     

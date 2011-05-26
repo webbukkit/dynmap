@@ -182,13 +182,13 @@ worlds:
   # Worlds can be handled by templates, based on world type
   # You can override the properties of the template by specifying them in this section
   #    for example 'Title: "My Awesome World"'
-  #- name: world
+  #world:
   #  title: "World"
-  #   Use 'enabled: false' to disable a certain world.
+  #  # Use 'enabled: false' to disable a certain world.
   #  enabled: false
-  #   Use 'template: mycustomtemplate' to use the properties specified in the template 'mycustomtemplate' to this world. Default it is set to the environment-name (normal or nether).
+  #  # Use 'template: mycustomtemplate' to use the properties specified in the template 'mycustomtemplate' to this world. Default it is set to the environment-name (normal or nether).
   #  template: mycustomtemplate
-  #   Rest of comes from template - uncomment to tailor for world specifically
+  #  # Rest of comes from template - uncomment to tailor for world specifically
   #  center:
   #    x: 0
   #    y: 64
@@ -234,7 +234,7 @@ worlds:
   #- name: world2
   #  title: "Second World"
   #
-  #- name: nether
+  #nether:
   #  title: "Nether"
   #  center:
   #    x: 0
