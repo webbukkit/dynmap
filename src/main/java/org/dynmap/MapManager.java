@@ -223,16 +223,20 @@ public class MapManager {
             ConfigurationNode node = nodes.get(i);
             indexLookup.put(node.getString("name"), i);
         }
-        int worldIndex = indexLookup.get(worldName);
-        int insertIndex;
-        for(insertIndex = 0; insertIndex < worlds.size(); insertIndex++) {
-            Integer nextWorldIndex = indexLookup.get(worlds.get(insertIndex).world.getName());
-            if (nextWorldIndex == null || worldIndex < nextWorldIndex.intValue()) {
-                break;
-            }
+        Integer worldIndex = indexLookup.get(worldName);
+        if(worldIndex == null) {
+        	worlds.add(dynmapWorld);	/* Put at end if no world section */
         }
-        worlds.add(insertIndex, dynmapWorld);
-        
+        else {
+        	int insertIndex;
+        	for(insertIndex = 0; insertIndex < worlds.size(); insertIndex++) {
+        		Integer nextWorldIndex = indexLookup.get(worlds.get(insertIndex).world.getName());
+        		if (nextWorldIndex == null || worldIndex < nextWorldIndex.intValue()) {
+        			break;
+       			}
+        	}
+        	worlds.add(insertIndex, dynmapWorld);
+        }
         
         worldsLookup.put(w.getName(), dynmapWorld);
         plug_in.events.trigger("worldactivated", dynmapWorld);
