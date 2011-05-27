@@ -16,6 +16,8 @@ public abstract class MapTile {
 
     public abstract String getFilename();
 
+    public abstract String getDayFilename();
+
     public MapTile(World world, MapType map) {
         this.world = world;
         this.map = map;

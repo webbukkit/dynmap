@@ -5,7 +5,7 @@ package org.dynmap;
  * of them during rendering
  */
 public class Color {
-    /* RGBA value */
+    /* ARGB value */
     private int val;
 
     public static final int TRANSPARENT = 0;
@@ -20,16 +20,16 @@ public class Color {
         setTransparent();
     }
     public final int getRed() {
-        return (val >> 24) & 0xFF;
-    }
-    public final int getGreen() {
         return (val >> 16) & 0xFF;
     }
-    public final int getBlue() {
+    public final int getGreen() {
         return (val >> 8) & 0xFF;
     }
+    public final int getBlue() {
+        return val & 0xFF;
+    }
     public final int getAlpha() {
-        return (val & 0xFF);
+        return ((val >> 24) & 0xFF);
     }
     public final boolean isTransparent() {
         return (val == TRANSPARENT);
@@ -41,6 +41,15 @@ public class Color {
         val = c.val;
     }
     public final void setRGBA(int red, int green, int blue, int alpha) {
-        val = ((red & 0xFF) << 24) | ((green & 0xFF) << 16) | ((blue & 0xFF) << 8) | (alpha & 0xFF);
+        val = ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF);
+    }
+    public final int getARGB() {
+        return val;
+    }
+    public final void setARGB(int c) {
+        val = c;
+    }
+    public final int getComponent(int idx) {
+        return 0xFF & (val >> ((3-idx)*8));
     }
 }

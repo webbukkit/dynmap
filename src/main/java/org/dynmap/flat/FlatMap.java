@@ -108,8 +108,7 @@ public class FlatMap extends MapType {
 
         boolean rendered = false;
         BufferedImage im = KzedMap.allocateBufferedImage(t.size, t.size);
-        WritableRaster raster = im.getRaster();
-
+        Color rslt = new Color();
         int[] pixel = new int[4];
 
         MapChunkCache.MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
@@ -195,7 +194,8 @@ public class FlatMap extends MapType {
                         pixel[2] += (255-pixel[2]) * scale;
                     }
                 }
-                raster.setPixel(t.size-y-1, x, pixel);
+                rslt.setRGBA(pixel[0], pixel[1], pixel[2], 255);
+                im.setRGB(t.size-y-1, x, rslt.getARGB());
                 rendered = true;
             }
         }
@@ -239,6 +239,10 @@ public class FlatMap extends MapType {
         @Override
         public String getFilename() {
             return map.prefix + "_" + size + "_" + -(y+1) + "_" + x + ".png";
+        }
+        @Override
+        public String getDayFilename() {
+            return map.prefix + "_day_" + size + "_" + -(y+1) + "_" + x + ".png";
         }
     }
     

@@ -12,7 +12,7 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected void scan(World world, int seq, boolean isnether, final Color result,
+    protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
             MapChunkCache.MapIterator mapiter) {
         boolean air = true;
         result.setTransparent();

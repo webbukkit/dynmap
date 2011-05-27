@@ -27,6 +27,11 @@ public class KzedMapTile extends MapTile {
     }
 
     @Override
+    public String getDayFilename() {
+        return renderer.getName() + "_day_" + px + "_" + py + ".png";
+    }
+
+    @Override
     public int hashCode() {
         return getFilename().hashCode() ^ getWorld().hashCode();
     }
