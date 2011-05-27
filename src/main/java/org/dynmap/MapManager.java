@@ -48,7 +48,7 @@ public class MapManager {
     
     private class FullWorldRenderState implements Runnable {
         DynmapWorld world;    /* Which world are we rendering */
-        Location loc;        /* Start location */
+        Location loc;        
         int    map_index = -1;    /* Which map are we on */
         MapType map;
         HashSet<MapTile> found = null;
@@ -98,6 +98,16 @@ public class MapManager {
                         if (!found.contains(mt)) {
                             found.add(mt);
                             renderQueue.add(mt);
+                        }
+                    }
+                    if(world.seedloc != null) {
+                        for(Location seed : world.seedloc) {
+                            for (MapTile mt : map.getTiles(seed)) {
+                                if (!found.contains(mt)) {
+                                    found.add(mt);
+                                    renderQueue.add(mt);
+                                }
+                            }
                         }
                     }
                 }
@@ -215,6 +225,15 @@ public class MapManager {
         }
         Log.info("Loaded " + dynmapWorld.maps.size() + " maps of world '" + worldName + "'.");
         
+        List<ConfigurationNode> loclist = worldConfiguration.getNodes("fullrenderlocations");
+        dynmapWorld.seedloc = new ArrayList<Location>();
+        if(loclist != null) {
+            for(ConfigurationNode loc : loclist) {
+                Location lx = new Location(w, loc.getDouble("x", 0), loc.getDouble("y", 64), loc.getDouble("z", 0));
+                dynmapWorld.seedloc.add(lx);
+            }
+        }
+    
         // TODO: Make this less... weird...
         // Insert the world on the same spot as in the configuration.
         HashMap<String, Integer> indexLookup = new HashMap<String, Integer>();
@@ -237,7 +256,6 @@ public class MapManager {
         	}
         	worlds.add(insertIndex, dynmapWorld);
         }
-        
         worldsLookup.put(w.getName(), dynmapWorld);
         plug_in.events.trigger("worldactivated", dynmapWorld);
     }

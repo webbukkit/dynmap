@@ -278,7 +278,7 @@ public class KzedMap extends MapType {
             img.setRGB(0, 0, x, y, zerobuf, 0, 0);
         }
         else {
-            img = new BufferedImage(x, y, BufferedImage.TYPE_INT_RGB);
+            img = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
         }
         return img;
     }

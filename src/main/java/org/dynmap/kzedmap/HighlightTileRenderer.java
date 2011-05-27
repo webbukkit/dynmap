@@ -20,15 +20,15 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
-            MapChunkCache cache) {
+    protected void scan(World world,int seq, boolean isnether, final Color result, final Color result_day,
+            MapChunkCache.MapIterator mapiter) {
         result.setTransparent();
         for (;;) {
-            if (y < 0) {
+            if (mapiter.y < 0) {
                 break;
             }
 
-            int id = cache.getBlockTypeID(x, y, z);
+            int id = mapiter.getBlockTypeID();
             if(isnether) {    /* Make bedrock ceiling into air in nether */
                 if(id != 0) {
                     /* Remember first color we see, in case we wind up solid */
@@ -40,23 +40,21 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
                 else
                     isnether = false;
             }
-            byte data = 0;
+            int data = 0;
             if(colorScheme.datacolors[id] != null) {    /* If data colored */
-                data = cache.getBlockData(x, y, z);
+                data = mapiter.getBlockData();
             }
 
             switch (seq) {
             case 0:
-                x--;
+                mapiter.decrementX();
                 break;
             case 1:
-                y--;
+            case 3:
+                mapiter.decrementY();
                 break;
             case 2:
-                z++;
-                break;
-            case 3:
-                y--;
+                mapiter.incrementZ();
                 break;
             }
 
