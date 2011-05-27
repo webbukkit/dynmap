@@ -12,15 +12,15 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected void scan(World world, int x, int y, int z, int seq, boolean isnether, final Color result,
-            MapChunkCache cache) {
+    protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
+            MapChunkCache.MapIterator mapiter) {
         boolean air = true;
         result.setTransparent();
         for (;;) {
-            if (y < 0)
+            if (mapiter.y < 0)
                 return;
 
-            int id = cache.getBlockTypeID(x, y, z);
+            int id = mapiter.getBlockTypeID();
             if(isnether) {    /* Make ceiling into air in nether */
                 if(id != 0)
                     id = 0;
@@ -30,16 +30,14 @@ public class CaveTileRenderer extends DefaultTileRenderer {
 
             switch (seq) {
             case 0:
-                x--;
+                mapiter.decrementX();
                 break;
             case 1:
-                y--;
+            case 3:
+                mapiter.decrementY();
                 break;
             case 2:
-                z++;
-                break;
-            case 3:
-                y--;
+                mapiter.incrementZ();
                 break;
             }
 
@@ -65,12 +63,12 @@ public class CaveTileRenderer extends DefaultTileRenderer {
                 int cr, cg, cb;
                 int mult = 256;
 
-                if (y < 64) {
+                if (mapiter.y < 64) {
                     cr = 0;
-                    cg = 64 + y * 3;
-                    cb = 255 - y * 4;
+                    cg = 64 + mapiter.y * 3;
+                    cb = 255 - mapiter.y * 4;
                 } else {
-                    cr = (y - 64) * 4;
+                    cr = (mapiter.y - 64) * 4;
                     cg = 255;
                     cb = 0;
                 }
