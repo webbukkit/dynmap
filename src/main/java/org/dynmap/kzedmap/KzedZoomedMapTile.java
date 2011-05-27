@@ -9,6 +9,11 @@ public class KzedZoomedMapTile extends MapTile {
         return "z" + originalTile.renderer.getName() + "_" + getTileX() + "_" + getTileY() + ".png";
     }
 
+    @Override
+    public String getDayFilename() {
+        return "z" + originalTile.renderer.getName() + "_day_" + getTileX() + "_" + getTileY() + ".png";
+    }
+
     public KzedMapTile originalTile;
 
     public KzedZoomedMapTile(World world, KzedMap map, KzedMapTile original) {
