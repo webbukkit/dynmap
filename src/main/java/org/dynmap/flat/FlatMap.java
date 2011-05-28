@@ -32,6 +32,8 @@ public class FlatMap extends MapType {
     private int maximumHeight = 127;
     private int ambientlight = 15;;
     private int shadowscale[] = null;
+    private boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
+
     public FlatMap(ConfigurationNode configuration) {
         this.configuration = configuration;
         prefix = (String) configuration.get("prefix");
@@ -61,6 +63,7 @@ public class FlatMap extends MapType {
         if(o != null) {
             ambientlight = Integer.parseInt(String.valueOf(o));
         }
+        night_and_day = configuration.getBoolean("night-and-day", false);
     }
 
     @Override
@@ -107,8 +110,12 @@ public class FlatMap extends MapType {
 
         boolean rendered = false;
         BufferedImage im = KzedMap.allocateBufferedImage(t.size, t.size);
+        BufferedImage im_day = null;
+        if(night_and_day)
+            im_day = KzedMap.allocateBufferedImage(t.size, t.size);
         Color rslt = new Color();
-        int[] pixel = new int[4];
+        int[] pixel = new int[3];
+        int[] pixel_day = new int[3];
 
         MapChunkCache.MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
         for (int x = 0; x < t.size; x++) {
@@ -160,6 +167,11 @@ public class FlatMap extends MapType {
                 if((shadowscale != null) && (ambientlight < 15)) {
                     if(mapiter.y < 127) 
                         mapiter.incrementY();
+                    if(night_and_day) { /* Use unscaled color for day (no shadows from above) */
+                        pixel_day[0] = pixel[0];    
+                        pixel_day[1] = pixel[1];
+                        pixel_day[2] = pixel[2];
+                    }
                     int light = Math.max(ambientlight, mapiter.getBlockEmittedLight());
                     pixel[0] = (pixel[0] * shadowscale[light]) >> 8;
                     pixel[1] = (pixel[1] * shadowscale[light]) >> 8;
@@ -192,9 +204,19 @@ public class FlatMap extends MapType {
                         pixel[1] += (255-pixel[1]) * scale;
                         pixel[2] += (255-pixel[2]) * scale;
                     }
+                    if(night_and_day) {
+                        pixel_day[0] = pixel[0];
+                        pixel_day[1] = pixel[1];
+                        pixel_day[2] = pixel[2];
+                    }
+                        
                 }
                 rslt.setRGBA(pixel[0], pixel[1], pixel[2], 255);
                 im.setRGB(t.size-y-1, x, rslt.getARGB());
+                if(night_and_day) {
+                    rslt.setRGBA(pixel_day[0], pixel_day[1], pixel_day[2], 255);
+                    im_day.setRGB(t.size-y-1, x, rslt.getARGB());
+                }
                 rendered = true;
             }
         }
@@ -208,7 +230,21 @@ public class FlatMap extends MapType {
         }
         KzedMap.freeBufferedImage(im);
         MapManager.mapman.pushUpdate(tile.getWorld(),
-                new Client.Tile(tile.getFilename()));
+                                     new Client.Tile(tile.getFilename()));
+        if(night_and_day) {
+            File dayfile = new File(outputFile.getParent(), tile.getDayFilename());
+            Debug.debug("saving image " + dayfile.getPath());
+            try {
+                ImageIO.write(im_day, "png", dayfile);
+            } catch (IOException e) {
+                Debug.error("Failed to save image: " + dayfile.getPath(), e);
+            } catch (java.lang.NullPointerException e) {
+                Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
+            }
+            KzedMap.freeBufferedImage(im_day);
+            MapManager.mapman.pushUpdate(tile.getWorld(),
+                                         new Client.Tile(tile.getDayFilename()));
+        }
         
         return rendered;
     }
