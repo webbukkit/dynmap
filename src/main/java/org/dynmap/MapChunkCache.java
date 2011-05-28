@@ -1,6 +1,7 @@
 package org.dynmap;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import org.bukkit.World;
 import org.bukkit.Chunk;
@@ -13,6 +14,7 @@ public class MapChunkCache {
     private World w;
     private static Method getchunkdata = null;
     private static Method gethandle = null;
+    private static Field heightmap = null;
     private static boolean initialized = false;
     
     private int x_min, x_max, z_min, z_max;
@@ -26,7 +28,6 @@ public class MapChunkCache {
     public class MapIterator {
         public int x, y, z;  
         private ChunkSnapshot snap;
-        private int x4, z4;
 
         MapIterator(int x0, int y0, int z0) {
             initialize(x0, y0, z0);
@@ -40,27 +41,25 @@ public class MapChunkCache {
             } catch (ArrayIndexOutOfBoundsException aioobx) {
                 snap = EMPTY;
             }
-            x4 = x0 & 0xF;
-            z4 = z0 & 0xF;
         }
         public final int getBlockTypeID() {
-            return snap.getBlockTypeId(x4, y, z4);
+            return snap.getBlockTypeId(x & 0xF, y, z & 0xF);
         }
         public final int getBlockData() {
-            return snap.getBlockData(x4, y, z4);
+            return snap.getBlockData(x & 0xF, y, z & 0xF);
         }
         public final int getHighestBlockYAt() {
-            return snap.getHighestBlockYAt(x4, z4);
+            return snap.getHighestBlockYAt(x & 0xF, z & 0xF);
         }
         public final int getBlockSkyLight() {
-            return snap.getBlockSkyLight(x4, y, z4);
+            return snap.getBlockSkyLight(x & 0xF, y, z & 0xF);
         }
         public final int getBlockEmittedLight() {
-            return snap.getBlockEmittedLight(x4, y, z4);
+            return snap.getBlockEmittedLight(x & 0xF, y, z & 0xF);
         }
         public final void incrementX() {
-            x++; x4 = x & 0xF;
-            if(x4 == 0) {  /* Next chunk? */
+            x++;
+            if((x & 0xF) == 0) {  /* Next chunk? */
                 try {
                     snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
                 } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -69,8 +68,8 @@ public class MapChunkCache {
             }
         }
         public final void decrementX() {
-            x--; x4 = x & 0xF;
-            if(x4 == 15) {  /* Next chunk? */
+            x--;
+            if((x & 0xF) == 15) {  /* Next chunk? */
                 try {
                     snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
                 } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -85,8 +84,8 @@ public class MapChunkCache {
             y--;
         }
         public final void incrementZ() {
-            z++; z4 = z & 0xF;
-            if(z4 == 0) {  /* Next chunk? */
+            z++;
+            if((z & 0xF) == 0) {  /* Next chunk? */
                 try {
                     snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
                 } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -95,8 +94,8 @@ public class MapChunkCache {
             }
         }
         public final void decrementZ() {
-            z--; z4 = z & 0xF;
-            if(z4 == 15) {  /* Next chunk? */
+            z--;
+            if((z & 0xF) == 15) {  /* Next chunk? */
                 try {
                     snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
                 } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -171,10 +170,12 @@ public class MapChunkCache {
                 Class c = Class.forName("net.minecraft.server.Chunk");
                 getchunkdata = c.getDeclaredMethod("a", new Class[] { byte[].class, int.class, 
                     int.class, int.class, int.class, int.class, int.class, int.class });
+                heightmap = c.getDeclaredField("h");
                 c = Class.forName("org.bukkit.craftbukkit.CraftChunk");
                 gethandle = c.getDeclaredMethod("getHandle", new Class[0]);
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
+            } catch (NoSuchFieldException nsfx) {
             }
             initialized = true;
             if(gethandle != null)
@@ -197,7 +198,10 @@ public class MapChunkCache {
                         Object cc = gethandle.invoke(c);
                         byte[] buf = new byte[32768 + 16384 + 16384 + 16384];   /* Get big enough buffer for whole chunk */
                         getchunkdata.invoke(cc, buf, 0, 0, 0, 16, 128, 16, 0);
-                        CraftChunkSnapshot ss = new CraftChunkSnapshot(chunk.x, chunk.z, buf); 
+                        byte[] h = (byte[])heightmap.get(cc);
+                        byte[] hmap = new byte[256];
+                        System.arraycopy(h, 0, hmap, 0, 256);
+                        CraftChunkSnapshot ss = new CraftChunkSnapshot(chunk.x, chunk.z, buf, hmap); 
                         snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
                     } catch (Exception x) {
                     }
