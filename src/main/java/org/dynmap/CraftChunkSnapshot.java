@@ -7,7 +7,7 @@ package org.dynmap;
 public class CraftChunkSnapshot implements ChunkSnapshot {
 	private final int x, z;
 	private final byte[] buf;	/* Flat buffer in uncompressed chunk file format */
-	
+	private final byte[] hmap; /* Highest Y map */
 	private static final int BLOCKDATA_OFF = 32768;
 	private static final int BLOCKLIGHT_OFF = BLOCKDATA_OFF + 16384;
 	private static final int SKYLIGHT_OFF = BLOCKLIGHT_OFF + 16384;
@@ -15,10 +15,11 @@ public class CraftChunkSnapshot implements ChunkSnapshot {
 	/**
 	 * Constructor
 	 */
-	CraftChunkSnapshot(int x, int z, byte[] buf) {
+	CraftChunkSnapshot(int x, int z, byte[] buf, byte[] hmap) {
 		this.x = x;
 		this.z = z;
 		this.buf = buf;
+		this.hmap = hmap;
 	}
 	
 	/**
@@ -94,13 +95,6 @@ public class CraftChunkSnapshot implements ChunkSnapshot {
     }
     
     public int getHighestBlockYAt(int x, int z) {
-        int off = x << 11 | z << 7 | 126;
-        int i;
-        for(i = 127; (i >= 2); i--, off--) {
-            if(buf[off] != 0) {
-                break;
-            }
-        }
-        return i;
+        return hmap[z << 4 | x] & 255;        
     }
 }
