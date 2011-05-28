@@ -134,6 +134,8 @@ templates:
             # shadowstrength: 1.0
             # To render a world as a "night view", set shadowstrength and ambientlight
             # ambientlight: 4
+            # To render both night and day versions of tiles (when ambientlight is set), set true
+            # night-and-day: true
             # Sets the icon to 'images/block_custom.png'
             # icon: custom
           #- class: org.dynmap.kzedmap.HighlightTileRenderer
@@ -216,6 +218,8 @@ worlds:
   #          # shadowstrength: 1.0
   #          # To render a world as a "night view", set shadowstrength and ambientlight
   #          # ambientlight: 4
+  #          # To render both night and day versions of tiles (when ambientlight is set), set true
+  #          # night-and-day: true
   #          # Sets the icon to 'images/block_custom.png'
   #          # icon: custom
   #        #- class: org.dynmap.kzedmap.HighlightTileRenderer
