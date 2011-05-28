@@ -1,7 +1,6 @@
 package org.dynmap;
 
 import java.io.File;
-import java.util.HashMap;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -12,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -300,35 +298,30 @@ public class DynmapPlugin extends JavaPlugin {
                     sender.sendMessage("Queued " + invalidates + " tiles" + (invalidates == 0
                             ? " (world is not loaded?)"
                             : "..."));
-                    return true;
                 }
             } else if (c.equals("hide")) {
                 if (args.length == 1) {
                     if(player != null && checkPlayerPermission(sender,"hide.self")) {
                         playerList.setVisible(player.getName(),false);
                         sender.sendMessage("You are now hidden on Dynmap.");
-                        return true;
                     }
                 } else if (checkPlayerPermission(sender,"hide.others")) {
                     for (int i = 1; i < args.length; i++) {
                         playerList.setVisible(args[i],false);
                         sender.sendMessage(args[i] + " is now hidden on Dynmap.");
                     }
-                    return true;
                 }
             } else if (c.equals("show")) {
                 if (args.length == 1) {
                     if(player != null && checkPlayerPermission(sender,"show.self")) {
                         playerList.setVisible(player.getName(),true);
                         sender.sendMessage("You are now visible on Dynmap.");
-                        return true;
                     }
                 } else if (checkPlayerPermission(sender,"show.others")) {
                     for (int i = 1; i < args.length; i++) {
                         playerList.setVisible(args[i],true);
                         sender.sendMessage(args[i] + " is now visible on Dynmap.");
                     }
-                    return true;
                 }
             } else if (c.equals("fullrender") && checkPlayerPermission(sender,"fullrender")) {
                 if (args.length > 1) {
@@ -336,19 +329,20 @@ public class DynmapPlugin extends JavaPlugin {
                         World w = getServer().getWorld(args[i]);
                         if(w != null)
                             mapManager.renderFullWorld(new Location(w, 0, 0, 0));
+                        else
+                            sender.sendMessage("World '" + args[i] + "' not defined/loaded");
                     }
-                    return true;
                 } else if (player != null) {
                     Location loc = player.getLocation();
                     if(loc != null)
                         mapManager.renderFullWorld(loc);
-                    return true;
+                } else {
+                    sender.sendMessage("World name is required");
                 }
             } else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
                 sender.sendMessage("Reloading Dynmap...");
                 reload();
                 sender.sendMessage("Dynmap reloaded");
-                return true;
             }
             return true;
         }

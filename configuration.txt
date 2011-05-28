@@ -65,9 +65,6 @@ display-whitelist: false
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 
-# Do render on main thread - may generate more server load, but safer and fixes broken tiles
-renderonsync: true
-
 render-triggers:
 #  - chunkloaded
 #  - playermove
@@ -90,11 +87,8 @@ webserver-port: 8123
 # Disables Webserver portion of Dynmap (Advanced users only)
 disable-webserver: false
 
-# Use timesliced fullrender - takes a bit longer, but much more polite for server
-timeslicerender: true
-
-# Period between tile renders for timesliced fullrender, in seconds
-timesliceinterval: 0.5
+# Period between tile renders for fullrender, in seconds (non-zero to pace fullrenders, lessen CPU load)
+timesliceinterval: 0.0
 
 # Interval the browser should poll for updates.
 updaterate: 2000
