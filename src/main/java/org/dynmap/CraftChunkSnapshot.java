@@ -20,6 +20,9 @@ public class CraftChunkSnapshot implements ChunkSnapshot {
 		this.z = z;
 		this.buf = buf;
 		this.hmap = hmap;
+		for(int i = 0; i < 256; i++)
+		    if(hmap[i] < 1)
+		        hmap[i] = 1;
 	}
 	
 	/**
@@ -95,6 +98,6 @@ public class CraftChunkSnapshot implements ChunkSnapshot {
     }
     
     public int getHighestBlockYAt(int x, int z) {
-        return hmap[z << 4 | x] & 255;        
+        return hmap[z << 4 | x] & 255;
     }
 }
