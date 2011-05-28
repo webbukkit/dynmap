@@ -122,6 +122,7 @@ public class FlatMap extends MapType {
             mapiter.initialize(t.x * t.size + x, 127, t.y * t.size);
             for (int y = 0; y < t.size; y++, mapiter.incrementZ()) {
                 int blockType;
+                mapiter.setY(127);
                 if(isnether) {
                     while((blockType = mapiter.getBlockTypeID()) != 0) {
                         mapiter.decrementY();
