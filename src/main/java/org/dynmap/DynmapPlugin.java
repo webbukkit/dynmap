@@ -261,7 +261,7 @@ public class DynmapPlugin extends JavaPlugin {
         for (ConfigurationNode debuggerConfiguration : debuggersConfiguration) {
             try {
                 Class<?> debuggerClass = Class.forName((String) debuggerConfiguration.getString("class"));
-                Constructor<?> constructor = debuggerClass.getConstructor(JavaPlugin.class, Map.class);
+                Constructor<?> constructor = debuggerClass.getConstructor(JavaPlugin.class, ConfigurationNode.class);
                 Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfiguration);
                 Debug.addDebugger(debugger);
             } catch (Exception e) {
