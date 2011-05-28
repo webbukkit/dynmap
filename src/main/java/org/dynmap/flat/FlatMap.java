@@ -4,7 +4,6 @@ import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -199,26 +198,18 @@ public class FlatMap extends MapType {
                 rendered = true;
             }
         }
-        /* Hand encoding and writing file off to MapManager */
-        final File fname = outputFile;
-        final MapTile mtile = tile;
-        final BufferedImage img = im;
-        MapManager.mapman.enqueueImageWrite(new Runnable() {
-            public void run() {
-                Debug.debug("saving image " + fname.getPath());
-                try {
-                    ImageIO.write(img, "png", fname);
-                } catch (IOException e) {
-                    Debug.error("Failed to save image: " + fname.getPath(), e);
-                } catch (java.lang.NullPointerException e) {
-                    Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
-                }
-                KzedMap.freeBufferedImage(img);
-                MapManager.mapman.pushUpdate(mtile.getWorld(),
-                        new Client.Tile(mtile.getFilename()));
-            }
-        });
-
+        Debug.debug("saving image " + outputFile.getPath());
+        try {
+            ImageIO.write(im, "png", outputFile);
+        } catch (IOException e) {
+            Debug.error("Failed to save image: " + outputFile.getPath(), e);
+        } catch (java.lang.NullPointerException e) {
+            Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
+        }
+        KzedMap.freeBufferedImage(im);
+        MapManager.mapman.pushUpdate(tile.getWorld(),
+                new Client.Tile(tile.getFilename()));
+        
         return rendered;
     }
 

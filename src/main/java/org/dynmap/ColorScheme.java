@@ -43,7 +43,6 @@ public class ColorScheme {
         Color[][] colors = new Color[256][];
         Color[][][] datacolors = new Color[256][][];
         InputStream stream;
-        boolean enab_datacolor = MapManager.mapman.doSyncRender();
         try {
             Debug.debug("Loading colors from '" + colorSchemeFile + "'...");
             stream = new FileInputStream(colorSchemeFile);
@@ -79,15 +78,13 @@ public class ColorScheme {
                 c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
 
                 if(dat != null) {
-                    if(enab_datacolor) {
-                        Color[][] dcolor = datacolors[id];    /* Existing list? */
-                        if(dcolor == null) {
-                            dcolor = new Color[16][];            /* Make 16 index long list */
-                            datacolors[id] = dcolor;
-                        }
-                        if((dat >= 0) && (dat < 16)) {            /* Add color to list */
-                            dcolor[dat] = c;
-                        }
+                    Color[][] dcolor = datacolors[id];    /* Existing list? */
+                    if(dcolor == null) {
+                        dcolor = new Color[16][];            /* Make 16 index long list */
+                        datacolors[id] = dcolor;
+                    }
+                    if((dat >= 0) && (dat < 16)) {            /* Add color to list */
+                        dcolor[dat] = c;
                     }
                     if(dat == 0) {    /* Index zero is base color too */
                         colors[id] = c;

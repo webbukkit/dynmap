@@ -2,11 +2,7 @@ package org.dynmap.kzedmap;
 
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
-
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -19,7 +15,6 @@ import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
-import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.MapChunkCache;
@@ -226,21 +221,11 @@ public class DefaultTileRenderer implements MapTileRenderer {
         }
 
         /* Hand encoding and writing file off to MapManager */
-        final File fname = outputFile;
-        final KzedMapTile mtile = tile;
-        final BufferedImage img = im;
-        final BufferedImage zimg = zim;
-        final BufferedImage img_day = im_day;
-        final BufferedImage zimg_day = zim_day;
-        final KzedZoomedMapTile zmtile = new KzedZoomedMapTile(mtile.getWorld(),
-                (KzedMap) mtile.getMap(), mtile);
-        final File zoomFile = MapManager.mapman.getTileFile(zmtile);
+        KzedZoomedMapTile zmtile = new KzedZoomedMapTile(tile.getWorld(),
+                (KzedMap) tile.getMap(), tile);
+        File zoomFile = MapManager.mapman.getTileFile(zmtile);
 
-        MapManager.mapman.enqueueImageWrite(new Runnable() {
-            public void run() {
-                doFileWrites(fname, mtile, img, img_day, zmtile, zoomFile, zimg, zimg_day);
-            }
-        });
+        doFileWrites(outputFile, tile, im, im_day, zmtile, zoomFile, zim, zim_day);
 
         return !isempty;
     }
