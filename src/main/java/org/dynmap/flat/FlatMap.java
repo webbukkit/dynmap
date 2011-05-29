@@ -2,8 +2,10 @@ package org.dynmap.flat;
 
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
-
+import java.awt.image.DataBufferInt;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 
@@ -22,6 +24,7 @@ import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
+import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.MapChunkCache;
 import org.json.simple.JSONObject;
 
@@ -109,14 +112,17 @@ public class FlatMap extends MapType {
         boolean isnether = (w.getEnvironment() == Environment.NETHER) && (maximumHeight == 127);
 
         boolean rendered = false;
-        BufferedImage im = KzedMap.allocateBufferedImage(t.size, t.size);
-        BufferedImage im_day = null;
-        if(night_and_day)
-            im_day = KzedMap.allocateBufferedImage(t.size, t.size);
         Color rslt = new Color();
         int[] pixel = new int[3];
         int[] pixel_day = new int[3];
-
+        KzedBufferedImage im = KzedMap.allocateBufferedImage(t.size, t.size);
+        int[] argb_buf = im.argb_buf;
+        KzedBufferedImage im_day = null;
+        int[] argb_buf_day = null;
+        if(night_and_day) {
+            im_day = KzedMap.allocateBufferedImage(t.size, t.size);
+            argb_buf_day = im_day.argb_buf;
+        }
         MapChunkCache.MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
         for (int x = 0; x < t.size; x++) {
             mapiter.initialize(t.x * t.size + x, 127, t.y * t.size);
@@ -144,6 +150,8 @@ public class FlatMap extends MapType {
                 }
                 else {
                     int my = mapiter.getHighestBlockYAt() - 1;
+                    if(my < 0)  /* If hole to bottom, all air */
+                        continue;
                     if(my > maximumHeight) my = maximumHeight;
                     mapiter.setY(my);
                     blockType = mapiter.getBlockTypeID();
@@ -213,38 +221,39 @@ public class FlatMap extends MapType {
                         
                 }
                 rslt.setRGBA(pixel[0], pixel[1], pixel[2], 255);
-                im.setRGB(t.size-y-1, x, rslt.getARGB());
+                argb_buf[(t.size-y-1) + (x*t.size)] = rslt.getARGB();
                 if(night_and_day) {
                     rslt.setRGBA(pixel_day[0], pixel_day[1], pixel_day[2], 255);
-                    im_day.setRGB(t.size-y-1, x, rslt.getARGB());
+                    argb_buf_day[(t.size-y-1) + (x*t.size)] = rslt.getARGB();
                 }
                 rendered = true;
             }
         }
+        /* Wrap buffer as buffered image */
         Debug.debug("saving image " + outputFile.getPath());
         try {
-            ImageIO.write(im, "png", outputFile);
+            ImageIO.write(im.buf_img, "png", outputFile);
         } catch (IOException e) {
             Debug.error("Failed to save image: " + outputFile.getPath(), e);
         } catch (java.lang.NullPointerException e) {
             Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
         }
         KzedMap.freeBufferedImage(im);
-        MapManager.mapman.pushUpdate(tile.getWorld(),
-                                     new Client.Tile(tile.getFilename()));
+        MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+
+        /* If day too, handle it */
         if(night_and_day) {
             File dayfile = new File(outputFile.getParent(), tile.getDayFilename());
             Debug.debug("saving image " + dayfile.getPath());
             try {
-                ImageIO.write(im_day, "png", dayfile);
+                ImageIO.write(im_day.buf_img, "png", dayfile);
             } catch (IOException e) {
                 Debug.error("Failed to save image: " + dayfile.getPath(), e);
             } catch (java.lang.NullPointerException e) {
                 Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
             }
             KzedMap.freeBufferedImage(im_day);
-            MapManager.mapman.pushUpdate(tile.getWorld(),
-                                         new Client.Tile(tile.getDayFilename()));
+            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
         }
         
         return rendered;

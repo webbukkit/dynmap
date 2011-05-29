@@ -18,6 +18,7 @@ import org.dynmap.ConfigurationNode;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.MapChunkCache;
+import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.json.simple.JSONObject;
 
 public class DefaultTileRenderer implements MapTileRenderer {
@@ -80,12 +81,12 @@ public class DefaultTileRenderer implements MapTileRenderer {
     public boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile) {
         World world = tile.getWorld();
         boolean isnether = (world.getEnvironment() == Environment.NETHER);
-        BufferedImage im = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
-        BufferedImage zim = KzedMap.allocateBufferedImage(KzedMap.tileWidth/2, KzedMap.tileHeight/2);
+        KzedBufferedImage im = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
+        KzedBufferedImage zim = KzedMap.allocateBufferedImage(KzedMap.tileWidth/2, KzedMap.tileHeight/2);
         boolean isempty = true;
         
-        BufferedImage im_day = null;
-        BufferedImage zim_day = null;
+        KzedBufferedImage im_day = null;
+        KzedBufferedImage zim_day = null;
         if(night_and_day) {
             im_day = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
             zim_day = KzedMap.allocateBufferedImage(KzedMap.tileWidth/2, KzedMap.tileHeight/2);
@@ -107,8 +108,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         
         Color c1 = new Color();
         Color c2 = new Color();
-        int[] argb = new int[KzedMap.tileWidth];
-        int[] zargb = new int[4*KzedMap.tileWidth/2];
+        int[] argb = im.argb_buf;
+        int[] zargb = zim.argb_buf;
         Color c1_day = null;
         Color c2_day = null;
         int[] argb_day = null;
@@ -116,9 +117,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
         if(night_and_day) {
             c1_day = new Color();
             c2_day = new Color();
-            argb_day = new int[KzedMap.tileWidth];
-            zargb_day = new int[4*KzedMap.tileWidth/2];
+            argb_day = im_day.argb_buf;
+            zargb_day = zim_day.argb_buf;
         }
+        int rowoff = 0;
         /* draw the map */
         for (y = 0; y < KzedMap.tileHeight;) {
             jx = ix;
@@ -130,12 +132,12 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 mapiter.initialize(jx, iy, jz);   
                 scan(world, 2, isnether, c2, c2_day, mapiter);
 
-                argb[x] = c1.getARGB();
-                argb[x-1] = c2.getARGB();
+                argb[rowoff+x] = c1.getARGB();
+                argb[rowoff+x-1] = c2.getARGB();
                 
                 if(night_and_day) {
-                    argb_day[x] = c1_day.getARGB(); 
-                    argb_day[x-1] = c2_day.getARGB();
+                    argb_day[rowoff+x] = c1_day.getARGB(); 
+                    argb_day[rowoff+x-1] = c2_day.getARGB();
                 }
                 
                 isempty = isempty && c1.isTransparent() && c2.isTransparent();
@@ -144,26 +146,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 jz++;
 
             }
-            im.setRGB(0, y, KzedMap.tileWidth, 1, argb, 0, KzedMap.tileWidth);
-            if(night_and_day)
-                im_day.setRGB(0, y, KzedMap.tileWidth, 1, argb_day, 0, KzedMap.tileWidth);
-            /* Sum up zoomed pixels - bilinar filter */
-            for(x = 0; x < KzedMap.tileWidth / 2; x++) {
-                c1.setARGB(argb[2*x]);
-                c2.setARGB(argb[2*x+1]);
-                for(int i = 0; i < 4; i++)
-                    zargb[4*x+i] = c1.getComponent(i) + c2.getComponent(i);
-            }
-            if(night_and_day) {
-                for(x = 0; x < KzedMap.tileWidth / 2; x++) {
-                    c1.setARGB(argb_day[2*x]);
-                    c2.setARGB(argb_day[2*x+1]);
-                    for(int i = 0; i < 4; i++)
-                        zargb_day[4*x+i] = c1.getComponent(i) + c2.getComponent(i);
-                }   
-            }
             
             y++;
+            rowoff += KzedMap.tileWidth;
 
             jx = ix;
             jz = iz - 1;
@@ -176,48 +161,26 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 mapiter.initialize(jx, iy, jz);   
                 scan(world, 0, isnether, c2, c2_day, mapiter);
 
-                argb[x] = c1.getARGB();
-                argb[x-1] = c2.getARGB(); 
+                argb[rowoff+x] = c1.getARGB();
+                argb[rowoff+x-1] = c2.getARGB(); 
 
                 if(night_and_day) {
-                    argb_day[x] = c1_day.getARGB();
-                    argb_day[x-1] = c2_day.getARGB(); 
+                    argb_day[rowoff+x] = c1_day.getARGB();
+                    argb_day[rowoff+x-1] = c2_day.getARGB(); 
                 }
 
                 isempty = isempty && c1.isTransparent() && c2.isTransparent();
-            }
-            im.setRGB(0, y, KzedMap.tileWidth, 1, argb, 0, KzedMap.tileWidth);
-            if(night_and_day)
-                im_day.setRGB(0, y, KzedMap.tileWidth, 1, argb_day, 0, KzedMap.tileWidth);
-                
-            /* Finish summing values for zoomed pixels */
-            /* Sum up zoomed pixels - bilinar filter */
-            for(x = 0; x < KzedMap.tileWidth / 2; x++) {
-                c1.setARGB(argb[2*x]);
-                c2.setARGB(argb[2*x+1]);
-                for(int i = 0; i < 4; i++)
-                    zargb[4*x+i] = (zargb[4*x+i] + c1.getComponent(i) + c2.getComponent(i)) >> 2;
-                c1.setRGBA(zargb[4*x+1], zargb[4*x+2], zargb[4*x+3], zargb[4*x]);
-                zargb[x] = c1.getARGB();
-            }
-            if(night_and_day) {
-                for(x = 0; x < KzedMap.tileWidth / 2; x++) {
-                    c1.setARGB(argb_day[2*x]);
-                    c2.setARGB(argb_day[2*x+1]);
-                    for(int i = 0; i < 4; i++)
-                        zargb_day[4*x+i] = (zargb_day[4*x+i] + c1.getComponent(i) + c2.getComponent(i)) >> 2;
-                    c1.setRGBA(zargb_day[4*x+1], zargb_day[4*x+2], zargb_day[4*x+3], zargb_day[4*x]);
-                    zargb_day[x] = c1.getARGB();
-                }   
-            }
-            zim.setRGB(0, y/2, KzedMap.tileWidth/2, 1, zargb, 0, KzedMap.tileWidth/2);
-            if(night_and_day)
-                zim_day.setRGB(0, y/2, KzedMap.tileWidth/2, 1, zargb_day, 0, KzedMap.tileWidth/2);
-                
+            }                
             y++;
+            rowoff += KzedMap.tileWidth;
 
             ix++;
             iz--;
+        }
+        /* Now, compute zoomed tile - bilinear filter 2x2 -> 1x1 */
+        doScaleWithBilinear(argb, zargb, KzedMap.tileWidth, KzedMap.tileHeight);
+        if(night_and_day) {
+            doScaleWithBilinear(argb_day, zargb_day, KzedMap.tileWidth, KzedMap.tileHeight);
         }
 
         /* Hand encoding and writing file off to MapManager */
@@ -230,13 +193,37 @@ public class DefaultTileRenderer implements MapTileRenderer {
         return !isempty;
     }
 
+    private void doScaleWithBilinear(int[] argb, int[] zargb, int width, int height) {
+        Color c1 = new Color();
+        /* Now, compute zoomed tile - bilinear filter 2x2 -> 1x1 */
+        for(int y = 0; y < height; y += 2) {
+            for(int x = 0; x < width; x += 2) {
+                int red = 0;
+                int green = 0;
+                int blue = 0;
+                int alpha = 0;
+                for(int yy = y; yy < y+2; yy++) {
+                    for(int xx = x; xx < x+2; xx++) {
+                        c1.setARGB(argb[(yy*width)+xx]);
+                        red += c1.getRed();
+                        green += c1.getGreen();
+                        blue += c1.getBlue();
+                        alpha += c1.getAlpha();
+                    }
+                }
+                c1.setRGBA(red>>2, green>>2, blue>>2, alpha>>2);
+                zargb[(y*width/4) + (x/2)] = c1.getARGB();
+            }
+        }
+    }
+
     private void doFileWrites(final File fname, final KzedMapTile mtile,
-        final BufferedImage img, final BufferedImage img_day, 
+        final KzedBufferedImage img, final KzedBufferedImage img_day, 
         final KzedZoomedMapTile zmtile, final File zoomFile,
-        final BufferedImage zimg, final BufferedImage zimg_day) {
+        final KzedBufferedImage zimg, final KzedBufferedImage zimg_day) {
         Debug.debug("saving image " + fname.getPath());
         try {
-            ImageIO.write(img, "png", fname);
+            ImageIO.write(img.buf_img, "png", fname);
         } catch (IOException e) {
             Debug.error("Failed to save image: " + fname.getPath(), e);
         } catch (java.lang.NullPointerException e) {
@@ -247,7 +234,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             File dfname = new File(fname.getParent(), mtile.getDayFilename());
             Debug.debug("saving image " + dfname.getPath());
             try {
-                ImageIO.write(img_day, "png", dfname);
+                ImageIO.write(img_day.buf_img, "png", dfname);
             } catch (IOException e) {
                 Debug.error("Failed to save image: " + dfname.getPath(), e);
             } catch (java.lang.NullPointerException e) {
@@ -277,6 +264,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             oy = sch;
 
         BufferedImage zIm = null;
+        KzedBufferedImage kzIm = null;
         try {
             zIm = ImageIO.read(zoomFile);
         } catch (IOException e) {
@@ -286,7 +274,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         boolean zIm_allocated = false;
         if (zIm == null) {
             /* create new one */
-            zIm = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
+            kzIm = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
+            zIm = kzIm.buf_img;
             zIm_allocated = true;
             Debug.debug("New zoom-out tile created " + zmtile.getFilename());
         } else {
@@ -294,8 +283,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         }
 
         /* blit scaled rendered tile onto zoom-out tile */
-        int[] pix = zimg.getRGB(0, 0, KzedMap.tileWidth/2, KzedMap.tileHeight/2, null, 0, KzedMap.tileWidth/2);
-        zIm.setRGB(ox, oy, KzedMap.tileWidth/2, KzedMap.tileHeight/2, pix, 0, KzedMap.tileWidth/2);
+        zIm.setRGB(ox, oy, KzedMap.tileWidth/2, KzedMap.tileHeight/2, zimg.argb_buf, 0, KzedMap.tileWidth/2);
         KzedMap.freeBufferedImage(zimg);
 
         /* save zoom-out tile */
@@ -309,7 +297,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             Debug.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile.getName(), e);
         }
         if(zIm_allocated)
-            KzedMap.freeBufferedImage(zIm);
+            KzedMap.freeBufferedImage(kzIm);
         else
             zIm.flush();
         
@@ -317,6 +305,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             File zoomFile_day = new File(zoomFile.getParent(), zmtile.getDayFilename());
             
             zIm = null;
+            kzIm = null;
             try {
                 zIm = ImageIO.read(zoomFile_day);
             } catch (IOException e) {
@@ -326,7 +315,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
             zIm_allocated = false;
             if (zIm == null) {
                 /* create new one */
-                zIm = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
+                kzIm = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
+                zIm = kzIm.buf_img;
                 zIm_allocated = true;
                 Debug.debug("New zoom-out tile created " + zmtile.getFilename());
             } else {
@@ -334,8 +324,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             }
 
             /* blit scaled rendered tile onto zoom-out tile */
-            pix = zimg_day.getRGB(0, 0, KzedMap.tileWidth/2, KzedMap.tileHeight/2, null, 0, KzedMap.tileWidth/2);
-            zIm.setRGB(ox, oy, KzedMap.tileWidth/2, KzedMap.tileHeight/2, pix, 0, KzedMap.tileWidth/2);
+            zIm.setRGB(ox, oy, KzedMap.tileWidth/2, KzedMap.tileHeight/2, zimg_day.argb_buf, 0, KzedMap.tileWidth/2);
             KzedMap.freeBufferedImage(zimg_day);
 
             /* save zoom-out tile */
@@ -349,7 +338,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 Debug.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile_day.getName(), e);
             }
             if(zIm_allocated)
-                KzedMap.freeBufferedImage(zIm);
+                KzedMap.freeBufferedImage(kzIm);
             else
                 zIm.flush();
         }
