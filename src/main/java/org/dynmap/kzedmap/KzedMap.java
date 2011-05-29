@@ -293,8 +293,8 @@ public class KzedMap extends MapType {
             img.width = x;
             img.height = y;
             img.argb_buf = new int[x*y];
-            img.buf_img = createBufferedImage(img.argb_buf, img.width, img.height);
         }
+        img.buf_img = createBufferedImage(img.argb_buf, img.width, img.height);
         return img;
     }
     
@@ -303,6 +303,7 @@ public class KzedMap extends MapType {
      */
     public static void freeBufferedImage(KzedBufferedImage img) {
         img.buf_img.flush();
+        img.buf_img = null; /* Toss bufferedimage - seems to hold on to other memory */
         synchronized(lock) {
             long k = (img.width<<16) + img.height;
             LinkedList<KzedBufferedImage> ll = imgcache.get(k);
