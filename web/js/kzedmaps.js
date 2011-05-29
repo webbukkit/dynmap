@@ -43,17 +43,21 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 		var debugred;
 		var debugblue;
 		
+        var dnprefix = '';
+        if(this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].nightandday && this.dynmap.serverday)
+            dnprefix = '_day';
+
 		if (zoom == 0) {
 			// Most zoomed out tiles.
 			tileSize = 128;
 			imgSize = tileSize;
-			tileName = 'z' + this.prefix + '_' + (-coord.x * tileSize*2) + '_' + (coord.y * tileSize*2) + '.png';
+			tileName = 'z' + this.prefix + dnprefix + '_' + (-coord.x * tileSize*2) + '_' + (coord.y * tileSize*2) + '.png';
 		} else {
 			// Other zoom levels.
 			tileSize = 128;
 
 			imgSize = Math.pow(2, 6+zoom);
-			tileName = this.prefix + '_' + (-coord.x*tileSize) + '_' + (coord.y*tileSize) + '.png';
+			tileName = this.prefix + dnprefix + '_' + (-coord.x*tileSize) + '_' + (coord.y*tileSize) + '.png';
 		}
 		var img;
 		var tile = $('<div/>')

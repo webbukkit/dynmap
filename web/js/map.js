@@ -91,6 +91,8 @@ DynMap.prototype = {
 	registeredTiles: [],
 	players: {},
 	lasttimestamp: '0',
+    servertime: 0,
+    serverday: false,
 	followingPlayer: '',
 	formatUrl: function(name, options) {
 		var url = this.options.url[name];
@@ -369,7 +371,23 @@ DynMap.prototype = {
 				if (!me.options.jsonfile) {
 					me.lasttimestamp = update.timestamp;
 				}
-				
+                
+                me.servertime = update.servertime;
+                var oldday = me.serverday;
+                if(me.servertime > 23100 || me.servertime < 12900)
+                    me.serverday = true;
+                else
+                    me.serverday = false;
+                if(me.serverday != oldday) {
+                    var mtid = me.map.mapTypeId;
+                    if(me.map.mapTypes[mtid].nightandday) {
+                        me.map.setMapTypeId('none');
+                        window.setTimeout(function() {
+                            me.map.setMapTypeId(mtid);
+                        }, 1);
+                    }
+                }
+                    
 				var newplayers = {};
 				$.each(update.players, function(index, playerUpdate) {
 					var name = playerUpdate.name;

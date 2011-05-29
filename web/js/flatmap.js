@@ -25,8 +25,11 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
         var imgSize;
         var tileName;
         
-        tileName = this.prefix + '_128_' + coord.x + '_' + coord.y + '.png';
-        
+        var dnprefix = '';
+        if(this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].nightandday && this.dynmap.serverday)
+            dnprefix = '_day';
+            
+        tileName = this.prefix + dnprefix + '_128_' + coord.x + '_' + coord.y + '.png';
         imgSize = Math.pow(2, 7+zoom);
 		var tile = $('<div/>')
 			.addClass('tile')
