@@ -12,4 +12,5 @@ public class DynmapWorld {
     public UpdateQueue updates = new UpdateQueue();
     public ConfigurationNode configuration;
     public List<Location> seedloc;
+    public int servertime;
 }

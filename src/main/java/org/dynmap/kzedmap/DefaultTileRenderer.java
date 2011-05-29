@@ -360,6 +360,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         int lightlevel = 15;
         int lightlevel_day = 15;
         result.setTransparent();
+        if(result_day != null)
+            result_day.setTransparent();
         for (;;) {
             if (mapiter.y < 0) {
                 return;
