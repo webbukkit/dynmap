@@ -67,4 +67,14 @@ public class Client {
             this.name = name;
         }
     }
+
+    public static class DayNight extends Update {
+        public String type = "daynight";
+        public boolean isday;
+
+        public DayNight(boolean isday) {
+            this.isday = isday;
+        }
+    }
+
 }

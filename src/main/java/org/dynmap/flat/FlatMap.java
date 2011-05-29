@@ -292,6 +292,7 @@ public class FlatMap extends MapType {
         s(o, "title", c.getString("title"));
         s(o, "icon", c.getString("icon"));
         s(o, "prefix", c.getString("prefix"));
+        s(o, "nightandday", c.getBoolean("night-and-day",false));
         a(worldObject, "maps", o);
     }
 }

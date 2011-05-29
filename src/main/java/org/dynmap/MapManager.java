@@ -162,6 +162,21 @@ public class MapManager {
         }
     }
 
+    private class CheckWorldTimes implements Runnable {
+        public void run() {
+            for(DynmapWorld w : worlds) {
+                int new_servertime = (int)(w.world.getTime() % 24000);
+                /* Check if we went from night to day */
+                boolean wasday = w.servertime >= 0 && w.servertime < 13700;
+                boolean isday = new_servertime >= 0 && new_servertime < 13700;
+                w.servertime = new_servertime;
+                if(wasday != isday) {
+                    MapManager.mapman.pushUpdate(w.world, new Client.DayNight(isday));            
+                }
+            }
+        }
+    }
+    
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
         plug_in = plugin;
         mapman = this;
@@ -183,6 +198,9 @@ public class MapManager {
         for (World world : plug_in.getServer().getWorlds()) {
             activateWorld(world);
         }
+        
+        scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
+        
     }
 
     void renderFullWorld(Location l) {
@@ -234,6 +252,7 @@ public class MapManager {
         
         List<ConfigurationNode> loclist = worldConfiguration.getNodes("fullrenderlocations");
         dynmapWorld.seedloc = new ArrayList<Location>();
+        dynmapWorld.servertime = (int)(w.getTime() % 24000);
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {
                 Location lx = new Location(w, loc.getDouble("x", 0), loc.getDouble("y", 64), loc.getDouble("z", 0));
