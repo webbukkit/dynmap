@@ -14,6 +14,7 @@ public class MapChunkCache {
     private World w;
     private static Method getchunkdata = null;
     private static Method gethandle = null;
+    private static Method poppreservedchunk = null;
     private static Field heightmap = null;
     private static boolean initialized = false;
     
@@ -177,6 +178,13 @@ public class MapChunkCache {
             } catch (NoSuchMethodException nsmx) {
             } catch (NoSuchFieldException nsfx) {
             }
+            /* Get CraftWorld.popPreservedChunk(x,z) - reduces memory bloat from map traversals (optional) */
+            try {
+                Class c = Class.forName("org.bukkit.craftbukkit.CraftWorld");
+                poppreservedchunk = c.getDeclaredMethod("popPreservedChunk", new Class[] { int.class, int.class });
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
             initialized = true;
             if(gethandle != null)
                 Log.info("Chunk snapshot support enabled");
@@ -220,6 +228,13 @@ public class MapChunkCache {
                      * while the actual in-use chunk area for a player where the chunks are managed
                      * by the MC base server is 21x21 (or about a 160 block radius) */
                     w.unloadChunk(chunk.x, chunk.z, false, false);
+                    /* And pop preserved chunk - this is a bad leak in Bukkit for map traversals like us */
+                    try {
+                        if(poppreservedchunk != null)
+                            poppreservedchunk.invoke(w, chunk.x, chunk.z);
+                    } catch (Exception x) {
+                        Log.severe("Cannot pop preserved chunk - " + x.toString());
+                    }
                 }
             }
         }
