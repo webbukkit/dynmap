@@ -149,12 +149,17 @@ public class FlatMap extends MapType {
                     }
                 }
                 else {
-                    int my = mapiter.getHighestBlockYAt() - 1;
-                    if(my < 0)  /* If hole to bottom, all air */
-                        continue;
+                    int my = mapiter.getHighestBlockYAt();
                     if(my > maximumHeight) my = maximumHeight;
                     mapiter.setY(my);
                     blockType = mapiter.getBlockTypeID();
+                    if(blockType == 0) {    /* If air, go down one - fixes ice */
+                        my--;
+                        if(my < 0)
+                            continue;
+                        mapiter.setY(my);
+                        blockType = mapiter.getBlockTypeID();
+                    }
                 }
                 int data = 0;
                 Color[] colors = colorScheme.colors[blockType];
