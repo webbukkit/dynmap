@@ -136,7 +136,9 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 Iterator<?> iter = jsonMsgs.iterator();
                 while (iter.hasNext()) {
                     JSONObject o = (JSONObject) iter.next();
-                    if (Long.parseLong(String.valueOf(o.get("timestamp"))) >= (lastTimestamp)) {
+                    String ts = String.valueOf(o.get("timestamp"));
+                    if(ts.equals("null")) ts = "0";
+                    if (Long.parseLong(ts) >= (lastTimestamp)) {
                         String name = String.valueOf(o.get("name"));
                         String message = String.valueOf(o.get("message"));
                         webChat(name, message);
