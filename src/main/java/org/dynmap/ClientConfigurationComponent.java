@@ -20,6 +20,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "quitmessage", c.getString("quitmessage", "%playername% quit"));
                 s(t, "spammessage", c.getString("spammessage", "You may only chat once every %interval% seconds."));
                 s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
+                s(t, "sidebaropened", c.getBoolean("sidebaropened", false));
                 
                 DynmapWorld defaultWorld = null;
                 for(DynmapWorld world : plugin.mapManager.getWorlds()) {
