@@ -95,6 +95,9 @@ updaterate: 2000
 
 showplayerfacesinmenu: true
 
+# Set sidebaropened: true to pin menu sidebar opened
+#sidebaropened: true
+
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
