@@ -104,6 +104,8 @@ showplayerfacesinmenu: true
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
+webprefix: "¤2[WEB] "
+websuffix: "¤f"
 
 defaultzoom: 0
 defaultworld: world
