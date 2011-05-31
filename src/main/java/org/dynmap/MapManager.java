@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Callable;
@@ -15,6 +16,7 @@ import java.util.concurrent.Future;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.command.CommandSender;
 import org.dynmap.debug.Debug;
 
 public class MapManager {
@@ -27,15 +29,25 @@ public class MapManager {
     private long timeslice_int = 0; /* In milliseconds */
     /* Which fullrenders are active */
     private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
-
+    /* Tile hash manager */
+    public TileHashManager hashman;
     /* lock for our data structures */
     public static final Object lock = new Object();
 
     public static MapManager mapman;    /* Our singleton */
 
     /* Thread pool for processing renders */
-    private ScheduledThreadPoolExecutor renderpool;
+    private DynmapScheduledThreadPoolExecutor renderpool;
     private static final int POOL_SIZE = 3;    
+
+    private HashMap<String, MapStats> mapstats = new HashMap<String, MapStats>();
+    
+    private static class MapStats {
+        int loggedcnt;
+        int renderedcnt;
+        int updatedcnt;
+        int transparentcnt;
+    }
 
     public DynmapWorld getWorld(String name) {
         DynmapWorld world = worldsLookup.get(name);
@@ -46,6 +58,21 @@ public class MapManager {
         return worlds;
     }
     
+    private class DynmapScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor {
+        DynmapScheduledThreadPoolExecutor() {
+            super(POOL_SIZE);
+        }
+
+        protected void afterExecute(Runnable r, Throwable x) {
+            if(r instanceof FullWorldRenderState) {
+                ((FullWorldRenderState)r).cleanup();
+            }
+            if(x != null) {
+                Log.severe("Exception during render job: " + r);
+                x.printStackTrace();
+            }
+        }
+    }
     /* This always runs on render pool threads - no bukkit calls from here */ 
     private class FullWorldRenderState implements Runnable {
         DynmapWorld world;    /* Which world are we rendering */
@@ -56,6 +83,7 @@ public class MapManager {
         HashSet<MapTile> rendered = null;
         LinkedList<MapTile> renderQueue = null;
         MapTile tile0 = null;
+        MapTile tile = null;
         int rendercnt = 0;
 
         /* Full world, all maps render */
@@ -73,8 +101,18 @@ public class MapManager {
             tile0 = t;
         }
 
+        public String toString() {
+            return "world=" + world.world.getName() + ", map=" + map + " tile=" + tile;
+        }
+        
+        public void cleanup() {
+            if(tile0 == null) {
+                synchronized(lock) {
+                    active_renders.remove(world.world.getName());
+                }
+            }
+        }
         public void run() {
-            MapTile tile;
             long tstart = System.currentTimeMillis();
             
             if(tile0 == null) {    /* Not single tile render */
@@ -90,9 +128,7 @@ public class MapManager {
                     map_index++;    /* Next map */
                     if(map_index >= world.maps.size()) {    /* Last one done? */
                         Log.info("Full render of '" + world.world.getName() + "' finished.");
-                        synchronized(lock) {
-                            active_renders.remove(world.world.getName());
-                        }
+                        cleanup();
                         return;
                     }
                     map = world.maps.get(map_index);
@@ -125,6 +161,7 @@ public class MapManager {
             DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
             MapChunkCache cache = createMapChunkCache(w, requiredChunks);
             if(cache == null) {
+                cleanup();
                 return; /* Cancelled/aborted */
             }
             if(tile0 != null) {    /* Single tile? */
@@ -158,6 +195,9 @@ public class MapManager {
                 else {  /* Schedule to run ASAP */
                     renderpool.execute(this);
                 }
+            }
+            else {
+                cleanup();
             }
         }
     }
@@ -193,6 +233,8 @@ public class MapManager {
 
         scheduler = plugin.getServer().getScheduler();
 
+        hashman = new TileHashManager(DynmapPlugin.tilesDirectory, configuration.getBoolean("enabletilehash", true));
+        
         tileQueue.start();
         
         for (World world : plug_in.getServer().getWorlds()) {
@@ -308,7 +350,7 @@ public class MapManager {
 
     public void startRendering() {
         tileQueue.start();
-        renderpool = new ScheduledThreadPoolExecutor(POOL_SIZE);
+        renderpool = new DynmapScheduledThreadPoolExecutor();
     }
 
     public void stopRendering() {
@@ -378,5 +420,66 @@ public class MapManager {
             Log.info("createMapChunk - " + x);
             return null;
         }
+    }
+    /**
+     *  Update map tile statistics
+     */
+    public void updateStatistics(MapTile tile, String subtype, boolean rendered, boolean updated, boolean transparent) {
+        synchronized(lock) {
+            String k = tile.getKey();
+            if(subtype != null)
+                k += "." + subtype;
+            MapStats ms = mapstats.get(k);
+            if(ms == null) {
+                ms = new MapStats();
+                mapstats.put(k, ms);
+            }
+            ms.loggedcnt++;
+            if(rendered)
+                ms.renderedcnt++;
+            if(updated)
+                ms.updatedcnt++;
+            if(transparent)
+                ms.transparentcnt++;
+        }
+    }
+    /**
+     * Print statistics command
+     */
+    public void printStats(CommandSender sender, String prefix) {
+        sender.sendMessage("Tile Render Statistics:");
+        MapStats tot = new MapStats();
+        synchronized(lock) {
+            for(String k: new TreeSet<String>(mapstats.keySet())) {
+                if((prefix != null) && !k.startsWith(prefix))
+                    continue;
+                MapStats ms = mapstats.get(k);
+                sender.sendMessage("  " + k + ": processed=" + ms.loggedcnt + ", rendered=" + ms.renderedcnt + 
+                               ", updated=" + ms.updatedcnt + ", transparent=" + ms.transparentcnt);
+                tot.loggedcnt += ms.loggedcnt;
+                tot.renderedcnt += ms.renderedcnt;
+                tot.updatedcnt += ms.updatedcnt;
+                tot.transparentcnt += ms.transparentcnt;
+            }
+        }
+        sender.sendMessage("  TOTALS: processed=" + tot.loggedcnt + ", rendered=" + tot.renderedcnt + 
+                           ", updated=" + tot.updatedcnt + ", transparent=" + tot.transparentcnt);
+    }
+    /**
+     * Reset statistics
+     */
+    public void resetStats(CommandSender sender, String prefix) {
+        synchronized(lock) {
+            for(String k : mapstats.keySet()) {
+                if((prefix != null) && !k.startsWith(prefix))
+                    continue;
+                MapStats ms = mapstats.get(k);
+                ms.loggedcnt = 0;
+                ms.renderedcnt = 0;
+                ms.updatedcnt = 0;
+                ms.transparentcnt = 0;
+            }
+        }
+        sender.sendMessage("Tile Render Statistics reset");
     }
 }

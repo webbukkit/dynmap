@@ -18,4 +18,6 @@ public abstract class MapType {
     
     public void buildClientConfiguration(JSONObject worldObject) {
     }
+    
+    public abstract String getName();
 }

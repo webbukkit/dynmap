@@ -277,7 +277,9 @@ public class DynmapPlugin extends JavaPlugin {
         "hide",
         "show",
         "fullrender",
-        "reload" }));
+        "reload",
+        "stats",
+        "resetstats" }));
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -343,6 +345,16 @@ public class DynmapPlugin extends JavaPlugin {
                 sender.sendMessage("Reloading Dynmap...");
                 reload();
                 sender.sendMessage("Dynmap reloaded");
+            } else if (c.equals("stats") && checkPlayerPermission(sender, "stats")) {
+                if(args.length == 1)
+                    mapManager.printStats(sender, null);
+                else
+                    mapManager.printStats(sender, args[1]);
+            } else if (c.equals("resetstats") && checkPlayerPermission(sender, "resetstats")) {
+                if(args.length == 1)
+                    mapManager.resetStats(sender, null);
+                else
+                    mapManager.resetStats(sender, args[1]);
             }
             return true;
         }
