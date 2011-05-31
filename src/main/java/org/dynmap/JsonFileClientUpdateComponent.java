@@ -127,15 +127,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     
     protected void handleWebChat() {
         File webchatFile = getStandaloneFile("dynmap_webchat.json");
-        File webchatTempFile = getStandaloneFile("dynmap_webchat.json.new");
         if (webchatFile.exists() && lastTimestamp != 0) {
             JSONArray jsonMsgs = null;
             try {
-                FileReader inputFileReader = new FileReader(webchatTempFile);
+                FileReader inputFileReader = new FileReader(webchatFile);
                 jsonMsgs = (JSONArray) parser.parse(inputFileReader);
                 inputFileReader.close();
-                webchatFile.delete();
-                webchatTempFile.renameTo(webchatFile);
             } catch (IOException ex) {
                 Log.severe("Exception while reading JSON-file.", ex);
             } catch (ParseException ex) {
