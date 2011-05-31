@@ -24,7 +24,7 @@ public class HeroWebChatComponent extends Component {
             public void triggered(ChatEvent t) {
                 /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
                 if (!handler.sendWebMessageToHeroChat(t.name, t.message)) {
-                    plugin.getServer().broadcastMessage(plugin.configuration.getString("webprefix", "[WEB] ") + t.name + ": " + t.message);
+                    plugin.getServer().broadcastMessage(plugin.configuration.getString("webprefix", "¤2[WEB] ") + t.name + ": " + plugin.configuration.getString("websuffix", "¤f") + t.message);
                 }
             }
         });
