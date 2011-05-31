@@ -20,6 +20,7 @@ import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.MapManager;
+import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
@@ -234,35 +235,63 @@ public class FlatMap extends MapType {
                 rendered = true;
             }
         }
-        /* Wrap buffer as buffered image */
-        Debug.debug("saving image " + outputFile.getPath());
-        try {
-            ImageIO.write(im.buf_img, "png", outputFile);
-        } catch (IOException e) {
-            Debug.error("Failed to save image: " + outputFile.getPath(), e);
-        } catch (java.lang.NullPointerException e) {
-            Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
+        /* Test to see if we're unchanged from older tile */
+        TileHashManager hashman = MapManager.mapman.hashman;
+        long crc = hashman.calculateTileHash(argb_buf);
+        boolean tile_update = false;
+        if((!outputFile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), null, t.x, t.y))) {
+            /* Wrap buffer as buffered image */
+            Debug.debug("saving image " + outputFile.getPath());
+            try {
+                ImageIO.write(im.buf_img, "png", outputFile);
+            } catch (IOException e) {
+                Debug.error("Failed to save image: " + outputFile.getPath(), e);
+            } catch (java.lang.NullPointerException e) {
+                Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
+            }
+            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+            hashman.updateHashCode(tile.getKey(), null, t.x, t.y, crc);
+            tile_update = true;
+        }
+        else {
+            Debug.debug("skipping image " + outputFile.getPath() + " - hash match");
         }
         KzedMap.freeBufferedImage(im);
-        MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+        MapManager.mapman.updateStatistics(tile, null, true, tile_update, !rendered);
 
         /* If day too, handle it */
         if(night_and_day) {
             File dayfile = new File(outputFile.getParent(), tile.getDayFilename());
-            Debug.debug("saving image " + dayfile.getPath());
-            try {
-                ImageIO.write(im_day.buf_img, "png", dayfile);
-            } catch (IOException e) {
-                Debug.error("Failed to save image: " + dayfile.getPath(), e);
-            } catch (java.lang.NullPointerException e) {
-                Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
+
+            crc = hashman.calculateTileHash(argb_buf_day);
+            if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
+                Debug.debug("saving image " + dayfile.getPath());
+                try {
+                    ImageIO.write(im_day.buf_img, "png", dayfile);
+                } catch (IOException e) {
+                    Debug.error("Failed to save image: " + dayfile.getPath(), e);
+                } catch (java.lang.NullPointerException e) {
+                    Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
+                }
+                MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
+                hashman.updateHashCode(tile.getKey(), "day", t.x, t.y, crc);
+                tile_update = true;
+            }
+            else {
+                Debug.debug("skipping image " + dayfile.getPath() + " - hash match");
+                tile_update = false;
             }
             KzedMap.freeBufferedImage(im_day);
-            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
+            MapManager.mapman.updateStatistics(tile, "day", true, tile_update, !rendered);
         }
         
         return rendered;
     }
+    
+    public String getName() {
+        return prefix;
+    }
+
 
     public static class FlatMapTile extends MapTile {
         FlatMap map;
@@ -285,6 +314,9 @@ public class FlatMap extends MapType {
         @Override
         public String getDayFilename() {
             return map.prefix + "_day_" + size + "_" + -(y+1) + "_" + x + ".png";
+        }
+        public String toString() {
+            return getWorld().getName() + ":" + getFilename();
         }
     }
     

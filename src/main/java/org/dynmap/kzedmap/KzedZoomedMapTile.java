@@ -56,4 +56,10 @@ public class KzedZoomedMapTile extends MapTile {
         }
         return super.equals(obj);
     }
+    
+
+    public String getKey() {
+        return getWorld().getName() + ".z" + originalTile.renderer.getName();
+    }
+
 }

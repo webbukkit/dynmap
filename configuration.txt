@@ -65,6 +65,9 @@ display-whitelist: false
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 
+# Tile hashing is used to minimize tile file updates when no changes have occurred - set to false to disable
+enabletilehash: true
+
 render-triggers:
 #  - chunkloaded
 #  - playermove
