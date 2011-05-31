@@ -48,6 +48,10 @@ public class KzedMapTile extends MapTile {
         return o.px == px && o.py == py && o.getWorld().equals(getWorld());
     }
 
+    public String getKey() {
+        return getWorld().getName() + "." + renderer.getName();
+    }
+
     public String toString() {
         return getWorld().getName() + ":" + getFilename();
     }

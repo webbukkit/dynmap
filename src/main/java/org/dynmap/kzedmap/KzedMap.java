@@ -317,7 +317,11 @@ public class KzedMap extends MapType {
             }
         }
     }    
-    
+
+    public String getName() {
+        return "KzedMap";
+    }
+
     @Override
     public void buildClientConfiguration(JSONObject worldObject) {
         for(MapTileRenderer renderer : renderers) {

@@ -36,4 +36,8 @@ public abstract class MapTile {
         }
         return super.equals(obj);
     }
+    
+    public String getKey() {
+        return world.getName() + "." + map.getName();
+    }
 }

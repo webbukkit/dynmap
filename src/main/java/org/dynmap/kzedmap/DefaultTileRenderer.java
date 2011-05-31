@@ -16,6 +16,7 @@ import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.MapManager;
+import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.MapChunkCache;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
@@ -188,7 +189,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 (KzedMap) tile.getMap(), tile);
         File zoomFile = MapManager.mapman.getTileFile(zmtile);
 
-        doFileWrites(outputFile, tile, im, im_day, zmtile, zoomFile, zim, zim_day);
+        doFileWrites(outputFile, tile, im, im_day, zmtile, zoomFile, zim, zim_day, !isempty);
 
         return !isempty;
     }
@@ -220,49 +221,83 @@ public class DefaultTileRenderer implements MapTileRenderer {
     private void doFileWrites(final File fname, final KzedMapTile mtile,
         final KzedBufferedImage img, final KzedBufferedImage img_day, 
         final KzedZoomedMapTile zmtile, final File zoomFile,
-        final KzedBufferedImage zimg, final KzedBufferedImage zimg_day) {
-        Debug.debug("saving image " + fname.getPath());
-        try {
-            ImageIO.write(img.buf_img, "png", fname);
-        } catch (IOException e) {
-            Debug.error("Failed to save image: " + fname.getPath(), e);
-        } catch (java.lang.NullPointerException e) {
-            Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+        final KzedBufferedImage zimg, final KzedBufferedImage zimg_day, boolean rendered) {
+
+        /* Get coordinates of zoomed tile */
+        int ox = (mtile.px == zmtile.getTileX())?0:KzedMap.tileWidth/2;
+        int oy = (mtile.py == zmtile.getTileY())?0:KzedMap.tileHeight/2;
+
+        /* Test to see if we're unchanged from older tile */
+        TileHashManager hashman = MapManager.mapman.hashman;
+        long crc = hashman.calculateTileHash(img.argb_buf);
+        boolean updated_fname = false;
+        if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), null, mtile.px, mtile.py))) {
+            Debug.debug("saving image " + fname.getPath());
+            try {
+                ImageIO.write(img.buf_img, "png", fname);
+            } catch (IOException e) {
+                Debug.error("Failed to save image: " + fname.getPath(), e);
+            } catch (java.lang.NullPointerException e) {
+                Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+            }
+            MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getFilename()));
+            hashman.updateHashCode(mtile.getKey(), null, mtile.px, mtile.py, crc);
+            updated_fname = true;
         }
         KzedMap.freeBufferedImage(img);
+        MapManager.mapman.updateStatistics(mtile, null, true, updated_fname, !rendered);
+
+        mtile.file = fname;
+
+        boolean updated_dfname = false;
+        File dfname = new File(fname.getParent(), mtile.getDayFilename());
         if(img_day != null) {
-            File dfname = new File(fname.getParent(), mtile.getDayFilename());
-            Debug.debug("saving image " + dfname.getPath());
-            try {
-                ImageIO.write(img_day.buf_img, "png", dfname);
-            } catch (IOException e) {
-                Debug.error("Failed to save image: " + dfname.getPath(), e);
-            } catch (java.lang.NullPointerException e) {
-                Debug.error("Failed to save image (NullPointerException): " + dfname.getPath(), e);
+            crc = hashman.calculateTileHash(img.argb_buf);
+            if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", mtile.px, mtile.py))) {
+                Debug.debug("saving image " + dfname.getPath());
+                try {
+                    ImageIO.write(img_day.buf_img, "png", dfname);
+                } catch (IOException e) {
+                    Debug.error("Failed to save image: " + dfname.getPath(), e);
+                } catch (java.lang.NullPointerException e) {
+                    Debug.error("Failed to save image (NullPointerException): " + dfname.getPath(), e);
+                }
+                MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getDayFilename()));
+                hashman.updateHashCode(mtile.getKey(), "day", mtile.px, mtile.py, crc);
+                updated_dfname = true;
             }
             KzedMap.freeBufferedImage(img_day);
+            MapManager.mapman.updateStatistics(mtile, "day", true, updated_dfname, !rendered);
         }
-        mtile.file = fname;
+        
         // Since we've already got the new tile, and we're on an async thread, just
         // make the zoomed tile here
-        int px = mtile.px;
-        int py = mtile.py;
-        int zpx = zmtile.getTileX();
-        int zpy = zmtile.getTileY();
+        boolean ztile_updated = false;
+        if(updated_fname || (!zoomFile.exists())) {
+            saveZoomedTile(zmtile, zoomFile, zimg, ox, oy);
+            MapManager.mapman.pushUpdate(zmtile.getWorld(),
+                                         new Client.Tile(zmtile.getFilename()));
+            ztile_updated = true;
+        }
+        KzedMap.freeBufferedImage(zimg);
+        MapManager.mapman.updateStatistics(zmtile, null, true, ztile_updated, !rendered);
+        
+        if(zimg_day != null) {
+            File zoomFile_day = new File(zoomFile.getParent(), zmtile.getDayFilename());
+            ztile_updated = false;
+            if(updated_dfname || (!zoomFile_day.exists())) {
+                saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy);
+                MapManager.mapman.pushUpdate(zmtile.getWorld(),
+                                             new Client.Tile(zmtile.getDayFilename()));            
+                ztile_updated = true;
+            }
+            KzedMap.freeBufferedImage(zimg_day);
+            MapManager.mapman.updateStatistics(zmtile, "day", true, ztile_updated, !rendered);
+        }
+    }
 
-        /* scaled size */
-        int scw = KzedMap.tileWidth / 2;
-        int sch = KzedMap.tileHeight / 2;
-
-        /* origin in zoomed-out tile */
-        int ox = 0;
-        int oy = 0;
-
-        if (zpx != px)
-            ox = scw;
-        if (zpy != py)
-            oy = sch;
-
+    private void saveZoomedTile(final KzedZoomedMapTile zmtile, final File zoomFile,
+            final KzedBufferedImage zimg, int ox, int oy) {
         BufferedImage zIm = null;
         KzedBufferedImage kzIm = null;
         try {
@@ -284,7 +319,6 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
         /* blit scaled rendered tile onto zoom-out tile */
         zIm.setRGB(ox, oy, KzedMap.tileWidth/2, KzedMap.tileHeight/2, zimg.argb_buf, 0, KzedMap.tileWidth/2);
-        KzedMap.freeBufferedImage(zimg);
 
         /* save zoom-out tile */
 
@@ -300,61 +334,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
             KzedMap.freeBufferedImage(kzIm);
         else
             zIm.flush();
-        
-        if(zimg_day != null) {
-            File zoomFile_day = new File(zoomFile.getParent(), zmtile.getDayFilename());
-            
-            zIm = null;
-            kzIm = null;
-            try {
-                zIm = ImageIO.read(zoomFile_day);
-            } catch (IOException e) {
-            } catch (IndexOutOfBoundsException e) {
-            }
 
-            zIm_allocated = false;
-            if (zIm == null) {
-                /* create new one */
-                kzIm = KzedMap.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
-                zIm = kzIm.buf_img;
-                zIm_allocated = true;
-                Debug.debug("New zoom-out tile created " + zmtile.getFilename());
-            } else {
-                Debug.debug("Loaded zoom-out tile from " + zmtile.getFilename());
-            }
-
-            /* blit scaled rendered tile onto zoom-out tile */
-            zIm.setRGB(ox, oy, KzedMap.tileWidth/2, KzedMap.tileHeight/2, zimg_day.argb_buf, 0, KzedMap.tileWidth/2);
-            KzedMap.freeBufferedImage(zimg_day);
-
-            /* save zoom-out tile */
-
-            try {
-                ImageIO.write(zIm, "png", zoomFile_day);
-                Debug.debug("Saved zoom-out tile at " + zoomFile_day.getName());
-            } catch (IOException e) {
-                Debug.error("Failed to save zoom-out tile: " + zoomFile_day.getName(), e);
-            } catch (java.lang.NullPointerException e) {
-                Debug.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile_day.getName(), e);
-            }
-            if(zIm_allocated)
-                KzedMap.freeBufferedImage(kzIm);
-            else
-                zIm.flush();
-        }
-        /* Push updates for both files.*/
-        MapManager.mapman.pushUpdate(mtile.getWorld(),
-            new Client.Tile(mtile.getFilename()));
-        MapManager.mapman.pushUpdate(zmtile.getWorld(),
-                new Client.Tile(zmtile.getFilename()));
-        if(img_day != null) {
-            MapManager.mapman.pushUpdate(mtile.getWorld(),
-                                         new Client.Tile(mtile.getDayFilename()));
-            MapManager.mapman.pushUpdate(zmtile.getWorld(),
-                                         new Client.Tile(zmtile.getDayFilename()));            
-        }
     }
-
     protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
             MapChunkCache.MapIterator mapiter) {
         int lightlevel = 15;
