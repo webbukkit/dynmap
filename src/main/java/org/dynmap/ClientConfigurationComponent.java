@@ -19,6 +19,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "joinmessage", c.getString("joinmessage", "%playername% joined"));
                 s(t, "quitmessage", c.getString("quitmessage", "%playername% quit"));
                 s(t, "spammessage", c.getString("spammessage", "You may only chat once every %interval% seconds."));
+                s(t, "webprefix", c.getString("webprefix", "[WEB] "));
                 s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
                 s(t, "sidebaropened", c.getBoolean("sidebaropened", false));
                 
