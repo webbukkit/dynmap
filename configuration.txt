@@ -104,8 +104,8 @@ showplayerfacesinmenu: true
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
-webprefix: "ค2[WEB] "
-websuffix: "คf"
+webprefix: "ยง2[WEB] "
+websuffix: "ยงf"
 
 defaultzoom: 0
 defaultworld: world
