@@ -75,14 +75,18 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     
     protected void writeConfiguration() {
         File outputFile;
+        File outputTempFile;
         JSONObject clientConfiguration = new JSONObject();
         plugin.events.trigger("buildclientconfiguration", clientConfiguration);
         outputFile = getStandaloneFile("dynmap_config.json");
+        outputTempFile = getStandaloneFile("dynmap_config.json.new");
 
         try {
-            FileOutputStream fos = new FileOutputStream(outputFile);
+            FileOutputStream fos = new FileOutputStream(outputTempFile);
             fos.write(clientConfiguration.toJSONString().getBytes());
             fos.close();
+            outputFile.delete();
+            outputTempFile.renameTo(outputFile);
         } catch (FileNotFoundException ex) {
             Log.severe("Exception while writing JSON-configuration-file.", ex);
         } catch (IOException ioe) {
@@ -92,6 +96,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     
     protected void writeUpdates() {
         File outputFile;
+        File outputTempFile;
         //Handles Updates
         for (DynmapWorld dynmapWorld : plugin.mapManager.getWorlds()) {
             World world = dynmapWorld.world;
@@ -102,10 +107,13 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             plugin.events.trigger("buildclientupdate", clientUpdate);
 
             outputFile = getStandaloneFile("dynmap_" + world.getName() + ".json");
+            outputTempFile = getStandaloneFile("dynmap_" + world.getName() + ".json.new");
             try {
-                FileOutputStream fos = new FileOutputStream(outputFile);
+                FileOutputStream fos = new FileOutputStream(outputTempFile);
                 fos.write(Json.stringifyJson(update).getBytes());
                 fos.close();
+                outputFile.delete();
+                outputTempFile.renameTo(outputFile);
             } catch (FileNotFoundException ex) {
                 Log.severe("Exception while writing JSON-file.", ex);
             } catch (IOException ioe) {
@@ -119,13 +127,15 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     
     protected void handleWebChat() {
         File webchatFile = getStandaloneFile("dynmap_webchat.json");
-        
+        File webchatTempFile = getStandaloneFile("dynmap_webchat.json.new");
         if (webchatFile.exists() && lastTimestamp != 0) {
             JSONArray jsonMsgs = null;
             try {
-                FileReader inputFileReader = new FileReader(webchatFile);
+                FileReader inputFileReader = new FileReader(webchatTempFile);
                 jsonMsgs = (JSONArray) parser.parse(inputFileReader);
                 inputFileReader.close();
+                webchatFile.delete();
+                webchatTempFile.renameTo(webchatFile);
             } catch (IOException ex) {
                 Log.severe("Exception while reading JSON-file.", ex);
             } catch (ParseException ex) {
