@@ -28,6 +28,7 @@ public class FilesystemHandler extends FileHandler {
             try {
                 result = new FileInputStream(file);
             } catch (FileNotFoundException e) {
+                FileLockManager.releaseReadLock(file);
                 return null;
             }
             response.fields.put(HttpField.ContentLength, Long.toString(file.length()));
