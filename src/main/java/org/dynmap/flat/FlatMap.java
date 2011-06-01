@@ -347,10 +347,10 @@ public class FlatMap extends MapType {
                         pixel[1] = c.getGreen();
                         pixel[2] = c.getBlue();
                         pixel[3] = c.getAlpha();
-                        /* Recurse to resolve color here */
-                        process_transparent(pixel, pixel_day, mapiter);
                     }
                 }
+                /* Recurse to resolve color here */
+                process_transparent(pixel, pixel_day, mapiter);
             }
         }
         /* Blend colors from behind block and block, based on alpha */
