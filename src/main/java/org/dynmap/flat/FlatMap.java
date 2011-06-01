@@ -310,6 +310,9 @@ public class FlatMap extends MapType {
         if(pixel_day != null) {
             r_day = pixel[0]; g_day = pixel[1]; b_day = pixel[2]; a_day = pixel[3];
         }
+        /* Scale alpha to be proportional to iso view (where we go through 4 blocks to go sqrt(6) or 2.45 units of distance */
+        if(a < 255)
+            a = a_day = 255 - ((255-a)*(255-a) >> 8);
         /* Handle lighting on cube */
         if((shadowscale != null) && (ambientlight < 15)) {
             boolean did_inc = false;
