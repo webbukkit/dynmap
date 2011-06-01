@@ -113,15 +113,17 @@ public abstract class FileHandler implements HttpHandler {
                     out.write(readBuffer, 0, readBytes);
                 }
             } catch (IOException e) {
-                fileInput.close();
                 throw e;
             } finally {
                 freeReadBuffer(readBuffer);
+                if(fileInput != null) {
+                    closeFileInput(path, fileInput);
+                    fileInput = null;
+                }
             }
-            closeFileInput(path, fileInput);
         } catch (Exception e) {
             if (fileInput != null) {
-                try { fileInput.close(); } catch (IOException ex) { }
+                try { closeFileInput(path, fileInput); fileInput = null; } catch (IOException ex) { }
             }
             throw e;
         }
