@@ -20,6 +20,7 @@ import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.MapChunkCache;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
+import org.dynmap.utils.FileLockManager;
 import org.json.simple.JSONObject;
 
 public class DefaultTileRenderer implements MapTileRenderer {
@@ -228,6 +229,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         int oy = (mtile.py == zmtile.getTileY())?0:KzedMap.tileHeight/2;
 
         /* Test to see if we're unchanged from older tile */
+        FileLockManager.getWriteLock(fname);
         TileHashManager hashman = MapManager.mapman.hashman;
         long crc = hashman.calculateTileHash(img.argb_buf);
         boolean updated_fname = false;
@@ -245,6 +247,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             updated_fname = true;
         }
         KzedMap.freeBufferedImage(img);
+        FileLockManager.releaseWriteLock(fname);
         MapManager.mapman.updateStatistics(mtile, null, true, updated_fname, !rendered);
 
         mtile.file = fname;
@@ -252,6 +255,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         boolean updated_dfname = false;
         File dfname = new File(fname.getParent(), mtile.getDayFilename());
         if(img_day != null) {
+            FileLockManager.getWriteLock(dfname);
             crc = hashman.calculateTileHash(img.argb_buf);
             if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", mtile.px, mtile.py))) {
                 Debug.debug("saving image " + dfname.getPath());
@@ -267,12 +271,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 updated_dfname = true;
             }
             KzedMap.freeBufferedImage(img_day);
+            FileLockManager.releaseWriteLock(dfname);
             MapManager.mapman.updateStatistics(mtile, "day", true, updated_dfname, !rendered);
         }
         
         // Since we've already got the new tile, and we're on an async thread, just
         // make the zoomed tile here
         boolean ztile_updated = false;
+        FileLockManager.getWriteLock(zoomFile);
         if(updated_fname || (!zoomFile.exists())) {
             saveZoomedTile(zmtile, zoomFile, zimg, ox, oy);
             MapManager.mapman.pushUpdate(zmtile.getWorld(),
@@ -280,11 +286,13 @@ public class DefaultTileRenderer implements MapTileRenderer {
             ztile_updated = true;
         }
         KzedMap.freeBufferedImage(zimg);
+        FileLockManager.releaseWriteLock(zoomFile);
         MapManager.mapman.updateStatistics(zmtile, null, true, ztile_updated, !rendered);
         
         if(zimg_day != null) {
             File zoomFile_day = new File(zoomFile.getParent(), zmtile.getDayFilename());
             ztile_updated = false;
+            FileLockManager.getWriteLock(zoomFile_day);
             if(updated_dfname || (!zoomFile_day.exists())) {
                 saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy);
                 MapManager.mapman.pushUpdate(zmtile.getWorld(),
@@ -292,6 +300,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 ztile_updated = true;
             }
             KzedMap.freeBufferedImage(zimg_day);
+            FileLockManager.releaseWriteLock(zoomFile_day);
             MapManager.mapman.updateStatistics(zmtile, "day", true, ztile_updated, !rendered);
         }
     }
