@@ -72,7 +72,7 @@ public class FileLockManager {
                 }
                 else {  /* Write lock in place */
                     try {
-                        lock.wait(); 
+                        lock.wait();
                     } catch (InterruptedException ix) {
                         Log.severe("getReadLock(" + fn + ") interrupted");
                     }

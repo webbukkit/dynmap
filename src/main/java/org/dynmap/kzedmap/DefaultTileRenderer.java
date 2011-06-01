@@ -36,6 +36,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
     protected int   shadowscale[];  /* index=skylight level, value = 256 * scaling value */
     protected int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
     protected boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
+    protected boolean transparency; /* Is transparency support active? */
     @Override
     public String getName() {
         return name;
@@ -78,6 +79,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         }
         colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
         night_and_day = configuration.getBoolean("night-and-day", false);
+        transparency = configuration.getBoolean("transparency", true);  /* Default on */
     }
 
     public boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile) {
@@ -438,10 +440,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 if (colors != null) {
                     Color c = colors[seq];
                     if (c.getAlpha() > 0) {
-                        /* we found something that isn't transparent! */
-                        if (c.getAlpha() == 255) {
+                        /* we found something that isn't transparent, or not doing transparency */
+                        if ((!transparency) || (c.getAlpha() == 255)) {
                             /* it's opaque - the ray ends here */
-                            result.setColor(c);
+                            result.setARGB(c.getARGB() | 0xFF000000);
                             if(lightlevel < 15) {  /* Not full light? */
                                 shadowColor(result, lightlevel);
                             }

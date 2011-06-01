@@ -130,6 +130,8 @@ templates:
         # To render a world as a "night view", set shadowstrength and ambientlight
         # shadowstrength: 1.0
         # ambientlight: 4
+        # Option to turn on transparency support (off by default) - slows render
+        # transparency: true
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -144,6 +146,8 @@ templates:
             # ambientlight: 4
             # To render both night and day versions of tiles (when ambientlight is set), set true
             # night-and-day: true
+            # Option to turn off transparency support (on by default) - speeds render
+            # transparency: false
             # Sets the icon to 'images/block_custom.png'
             # icon: custom
           #- class: org.dynmap.kzedmap.HighlightTileRenderer
@@ -214,6 +218,8 @@ worlds:
   #      # To render a world as a "night view", set shadowstrength and ambientlight
   #      # shadowstrength: 1.0
   #      # ambientlight: 4
+  #      # Option to turn on transparency support (off by default) - slows render
+  #      # transparency: true
   #    - class: org.dynmap.kzedmap.KzedMap
   #      renderers:
   #        - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -228,6 +234,8 @@ worlds:
   #          # ambientlight: 4
   #          # To render both night and day versions of tiles (when ambientlight is set), set true
   #          # night-and-day: true
+  #          # Option to turn off transparency support (on by default) - speeds render
+  #          # transparency: false
   #          # Sets the icon to 'images/block_custom.png'
   #          # icon: custom
   #        #- class: org.dynmap.kzedmap.HighlightTileRenderer
