@@ -27,6 +27,7 @@ import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.MapChunkCache;
+import org.dynmap.utils.FileLockManager;
 import org.json.simple.JSONObject;
 
 public class FlatMap extends MapType {
@@ -236,6 +237,7 @@ public class FlatMap extends MapType {
             }
         }
         /* Test to see if we're unchanged from older tile */
+        FileLockManager.getWriteLock(outputFile);
         TileHashManager hashman = MapManager.mapman.hashman;
         long crc = hashman.calculateTileHash(argb_buf);
         boolean tile_update = false;
@@ -257,12 +259,13 @@ public class FlatMap extends MapType {
             Debug.debug("skipping image " + outputFile.getPath() + " - hash match");
         }
         KzedMap.freeBufferedImage(im);
+        FileLockManager.releaseWriteLock(outputFile);
         MapManager.mapman.updateStatistics(tile, null, true, tile_update, !rendered);
 
         /* If day too, handle it */
         if(night_and_day) {
             File dayfile = new File(outputFile.getParent(), tile.getDayFilename());
-
+            FileLockManager.getWriteLock(dayfile);
             crc = hashman.calculateTileHash(argb_buf_day);
             if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
                 Debug.debug("saving image " + dayfile.getPath());
@@ -282,6 +285,7 @@ public class FlatMap extends MapType {
                 tile_update = false;
             }
             KzedMap.freeBufferedImage(im_day);
+            FileLockManager.releaseWriteLock(dayfile);
             MapManager.mapman.updateStatistics(tile, "day", true, tile_update, !rendered);
         }
         
