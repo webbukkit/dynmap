@@ -67,11 +67,11 @@ public class ClientUpdateHandler implements HttpHandler {
         s(u, "timestamp", current);
         plugin.events.trigger("buildclientupdate", new ClientUpdateEvent(since, dynmapWorld, u));
 
-        byte[] bytes = u.toJSONString().getBytes();
+        byte[] bytes = u.toJSONString().getBytes("UTF-8");
 
         String dateStr = new Date().toString();
         response.fields.put(HttpField.Date, dateStr);
-        response.fields.put(HttpField.ContentType, "text/plain");
+        response.fields.put(HttpField.ContentType, "text/plain; charset=utf-8");
         response.fields.put(HttpField.Expires, "Thu, 01 Dec 1994 16:00:00 GMT");
         response.fields.put(HttpField.LastModified, dateStr);
         response.fields.put(HttpField.ContentLength, Integer.toString(bytes.length));
