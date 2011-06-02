@@ -27,6 +27,7 @@ import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.MapChunkCache;
+import org.dynmap.utils.FileLockManager;
 import org.json.simple.JSONObject;
 
 public class FlatMap extends MapType {
@@ -37,7 +38,8 @@ public class FlatMap extends MapType {
     private int ambientlight = 15;;
     private int shadowscale[] = null;
     private boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
-
+    protected boolean transparency;
+    
     public FlatMap(ConfigurationNode configuration) {
         this.configuration = configuration;
         prefix = (String) configuration.get("prefix");
@@ -68,6 +70,7 @@ public class FlatMap extends MapType {
             ambientlight = Integer.parseInt(String.valueOf(o));
         }
         night_and_day = configuration.getBoolean("night-and-day", false);
+        transparency = configuration.getBoolean("transparency", false);  /* Default off */
     }
 
     @Override
@@ -114,8 +117,8 @@ public class FlatMap extends MapType {
 
         boolean rendered = false;
         Color rslt = new Color();
-        int[] pixel = new int[3];
-        int[] pixel_day = new int[3];
+        int[] pixel = new int[4];
+        int[] pixel_day = null;
         KzedBufferedImage im = KzedMap.allocateBufferedImage(t.size, t.size);
         int[] argb_buf = im.argb_buf;
         KzedBufferedImage im_day = null;
@@ -123,6 +126,7 @@ public class FlatMap extends MapType {
         if(night_and_day) {
             im_day = KzedMap.allocateBufferedImage(t.size, t.size);
             argb_buf_day = im_day.argb_buf;
+            pixel_day = new int[4];
         }
         MapChunkCache.MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
         for (int x = 0; x < t.size; x++) {
@@ -177,20 +181,27 @@ public class FlatMap extends MapType {
                 pixel[0] = c.getRed();
                 pixel[1] = c.getGreen();
                 pixel[2] = c.getBlue();
-
+                pixel[3] = c.getAlpha();
+                
+                /* If transparency needed, process it */
+                if(transparency && (pixel[3] < 255)) {
+                    process_transparent(pixel, pixel_day, mapiter);
+                }
                 /* If ambient light less than 15, do scaling */
-                if((shadowscale != null) && (ambientlight < 15)) {
+                else if((shadowscale != null) && (ambientlight < 15)) {
                     if(mapiter.y < 127) 
                         mapiter.incrementY();
                     if(night_and_day) { /* Use unscaled color for day (no shadows from above) */
                         pixel_day[0] = pixel[0];    
                         pixel_day[1] = pixel[1];
                         pixel_day[2] = pixel[2];
+                        pixel_day[3] = 255;
                     }
                     int light = Math.max(ambientlight, mapiter.getBlockEmittedLight());
                     pixel[0] = (pixel[0] * shadowscale[light]) >> 8;
                     pixel[1] = (pixel[1] * shadowscale[light]) >> 8;
                     pixel[2] = (pixel[2] * shadowscale[light]) >> 8;
+                    pixel[3] = 255;
                 }
                 else {  /* Only do height keying if we're not messing with ambient light */
                     boolean below = mapiter.y < 64;
@@ -214,28 +225,32 @@ public class FlatMap extends MapType {
                         pixel[0] -= pixel[0] * scale;
                         pixel[1] -= pixel[1] * scale;
                         pixel[2] -= pixel[2] * scale;
+                        pixel[3] = 255;
                     } else {
                         pixel[0] += (255-pixel[0]) * scale;
                         pixel[1] += (255-pixel[1]) * scale;
                         pixel[2] += (255-pixel[2]) * scale;
+                        pixel[3] = 255;
                     }
                     if(night_and_day) {
                         pixel_day[0] = pixel[0];
                         pixel_day[1] = pixel[1];
                         pixel_day[2] = pixel[2];
+                        pixel_day[3] = 255;
                     }
                         
                 }
-                rslt.setRGBA(pixel[0], pixel[1], pixel[2], 255);
+                rslt.setRGBA(pixel[0], pixel[1], pixel[2], pixel[3]);
                 argb_buf[(t.size-y-1) + (x*t.size)] = rslt.getARGB();
                 if(night_and_day) {
-                    rslt.setRGBA(pixel_day[0], pixel_day[1], pixel_day[2], 255);
+                    rslt.setRGBA(pixel_day[0], pixel_day[1], pixel_day[2], pixel[3]);
                     argb_buf_day[(t.size-y-1) + (x*t.size)] = rslt.getARGB();
                 }
                 rendered = true;
             }
         }
         /* Test to see if we're unchanged from older tile */
+        FileLockManager.getWriteLock(outputFile);
         TileHashManager hashman = MapManager.mapman.hashman;
         long crc = hashman.calculateTileHash(argb_buf);
         boolean tile_update = false;
@@ -257,12 +272,13 @@ public class FlatMap extends MapType {
             Debug.debug("skipping image " + outputFile.getPath() + " - hash match");
         }
         KzedMap.freeBufferedImage(im);
+        FileLockManager.releaseWriteLock(outputFile);
         MapManager.mapman.updateStatistics(tile, null, true, tile_update, !rendered);
 
         /* If day too, handle it */
         if(night_and_day) {
             File dayfile = new File(outputFile.getParent(), tile.getDayFilename());
-
+            FileLockManager.getWriteLock(dayfile);
             crc = hashman.calculateTileHash(argb_buf_day);
             if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
                 Debug.debug("saving image " + dayfile.getPath());
@@ -282,12 +298,85 @@ public class FlatMap extends MapType {
                 tile_update = false;
             }
             KzedMap.freeBufferedImage(im_day);
+            FileLockManager.releaseWriteLock(dayfile);
             MapManager.mapman.updateStatistics(tile, "day", true, tile_update, !rendered);
         }
         
         return rendered;
     }
-    
+    private void process_transparent(int[] pixel, int[] pixel_day, MapChunkCache.MapIterator mapiter) {
+        int r = pixel[0], g = pixel[1], b = pixel[2], a = pixel[3];
+        int r_day = 0, g_day = 0, b_day = 0, a_day = 0;
+        if(pixel_day != null) {
+            r_day = pixel[0]; g_day = pixel[1]; b_day = pixel[2]; a_day = pixel[3];
+        }
+        /* Scale alpha to be proportional to iso view (where we go through 4 blocks to go sqrt(6) or 2.45 units of distance */
+        if(a < 255)
+            a = a_day = 255 - ((255-a)*(255-a) >> 8);
+        /* Handle lighting on cube */
+        if((shadowscale != null) && (ambientlight < 15)) {
+            boolean did_inc = false;
+            if(mapiter.y < 127) {
+                mapiter.incrementY();
+                did_inc = true;
+            }
+            if(night_and_day) { /* Use unscaled color for day (no shadows from above) */
+                r_day = r; g_day = g; b_day = b; a_day = a;
+            }
+            int light = Math.max(ambientlight, mapiter.getBlockEmittedLight());
+            r = (r * shadowscale[light]) >> 8;
+            g = (g * shadowscale[light]) >> 8;
+            b = (b * shadowscale[light]) >> 8;
+            if(did_inc)
+                mapiter.decrementY();
+        }
+        if(a < 255) {   /* If not opaque */
+            pixel[0] = pixel[1] = pixel[2] = pixel[3] = 0;
+            if(pixel_day != null) 
+                pixel_day[0] = pixel_day[1] = pixel_day[2] = pixel_day[3] = 0;
+            mapiter.decrementY();
+            if(mapiter.y >= 0) {
+                int blockType = mapiter.getBlockTypeID();
+                int data = 0;
+                Color[] colors = colorScheme.colors[blockType];
+                if(colorScheme.datacolors[blockType] != null) {
+                    data = mapiter.getBlockData();
+                    colors = colorScheme.datacolors[blockType][data];
+                }
+                if (colors != null) {
+                    Color c = colors[0];
+                    if (c != null) {
+                        pixel[0] = c.getRed();
+                        pixel[1] = c.getGreen();
+                        pixel[2] = c.getBlue();
+                        pixel[3] = c.getAlpha();
+                    }
+                }
+                /* Recurse to resolve color here */
+                process_transparent(pixel, pixel_day, mapiter);
+            }
+        }
+        /* Blend colors from behind block and block, based on alpha */
+        r *= a;
+        g *= a;
+        b *= a;
+        int na = 255 - a;
+        pixel[0] = (pixel[0] * na + r) >> 8;
+        pixel[1] = (pixel[1] * na + g) >> 8;
+        pixel[2] = (pixel[2] * na + b) >> 8;
+        pixel[3] = 255;
+        if(pixel_day != null) {
+            r_day *= a_day;
+            g_day *= a_day;
+            b_day *= a_day;
+            na = 255 - a_day;
+            pixel_day[0] = (pixel_day[0] * na + r_day) >> 8;
+            pixel_day[1] = (pixel_day[1] * na + g_day) >> 8;
+            pixel_day[2] = (pixel_day[2] * na + b_day) >> 8;
+            pixel_day[3] = 255;
+        }
+    }
+
     public String getName() {
         return prefix;
     }

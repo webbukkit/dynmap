@@ -13,6 +13,7 @@ import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.HttpStatus;
+import org.dynmap.utils.FileLockManager;
 
 public abstract class FileHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
@@ -42,6 +43,10 @@ public abstract class FileHandler implements HttpHandler {
     }
 
     protected abstract InputStream getFileInput(String path, HttpRequest request, HttpResponse response);
+    
+    protected void closeFileInput(String path, InputStream in) throws IOException {
+        in.close();
+    }
 
     protected String getExtension(String path) {
         int dotindex = path.lastIndexOf('.');
@@ -108,15 +113,17 @@ public abstract class FileHandler implements HttpHandler {
                     out.write(readBuffer, 0, readBytes);
                 }
             } catch (IOException e) {
-                fileInput.close();
                 throw e;
             } finally {
                 freeReadBuffer(readBuffer);
+                if(fileInput != null) {
+                    closeFileInput(path, fileInput);
+                    fileInput = null;
+                }
             }
-            fileInput.close();
         } catch (Exception e) {
             if (fileInput != null) {
-                try { fileInput.close(); } catch (IOException ex) { }
+                try { closeFileInput(path, fileInput); fileInput = null; } catch (IOException ex) { }
             }
             throw e;
         }
