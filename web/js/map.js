@@ -93,6 +93,7 @@ DynMap.prototype = {
 	lasttimestamp: '0',
     servertime: 0,
     serverday: false,
+    inittime: new Date().getTime(),
 	followingPlayer: '',
 	formatUrl: function(name, options) {
 		var url = this.options.url[name];
@@ -165,35 +166,35 @@ DynMap.prototype = {
 		*/
 
 		// Sidebar
-        var panel;
-        var sidebar;
-        var pinbutton;
-        if(!me.options.sidebaropened) {
-            sidebar = me.sidebar = $('<div/>')
-                .addClass('sidebar')
-                .appendTo(container);
+		var panel;
+		var sidebar;
+		var pinbutton;
+		if(!me.options.sidebaropened) {
+			sidebar = me.sidebar = $('<div/>')
+				.addClass('sidebar')
+				.appendTo(container);
+
+			panel = $('<div/>')
+				.addClass('panel')
+				.appendTo(sidebar);
 		
-            panel = $('<div/>')
-                .addClass('panel')
-                .appendTo(sidebar);
-		
-            // Pin button.
-            pinbutton = $('<div/>')
-                .addClass('pin')
-                .click(function() {
-                    sidebar.toggleClass('pinned');
-                })
-                .appendTo(panel);
+			// Pin button.
+			pinbutton = $('<div/>')
+				.addClass('pin')
+				.click(function() {
+					sidebar.toggleClass('pinned');
+				})
+				.appendTo(panel);
 		}
-        else {
-            sidebar = me.sidebar = $('<div/>')
-                .addClass('sidebar pinned')
-                .appendTo(container);
-		
-            panel = $('<div/>')
-                .addClass('panel')
-                .appendTo(sidebar);
-        }
+		else {
+			sidebar = me.sidebar = $('<div/>')
+				.addClass('sidebar pinned')
+				.appendTo(container);
+
+			panel = $('<div/>')
+				.addClass('panel')
+				.appendTo(sidebar);
+		}
         
 		// Worlds
 		var worldlist;
@@ -387,12 +388,12 @@ DynMap.prototype = {
 					me.lasttimestamp = update.timestamp;
 				}
 
-                me.servertime = update.servertime;                
-                var oldday = me.serverday;
-                if(me.servertime > 23100 || me.servertime < 12900)
-                    me.serverday = true;
-                else
-                    me.serverday = false;
+				me.servertime = update.servertime;                
+				var oldday = me.serverday;
+				if(me.servertime > 23100 || me.servertime < 12900)
+					me.serverday = true;
+				else
+					me.serverday = false;
                     
 				var newplayers = {};
 				$.each(update.players, function(index, playerUpdate) {
@@ -436,15 +437,15 @@ DynMap.prototype = {
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
 
-                if(me.serverday != oldday) {
-                    var mtid = me.map.mapTypeId;
-                    if(me.map.mapTypes[mtid].nightandday) {
-                        me.map.setMapTypeId('none');
-                        window.setTimeout(function() {
-                            me.map.setMapTypeId(mtid);
-                        }, 1);
-                    }
-                }
+				if(me.serverday != oldday) {
+					var mtid = me.map.mapTypeId;
+					if(me.map.mapTypes[mtid].nightandday) {
+						me.map.setMapTypeId('none');
+						window.setTimeout(function() {
+							me.map.setMapTypeId(mtid);
+						}, 1);
+					}
+				}
 				
 				$(me).trigger('worldupdated', [ update ]);
 				
@@ -467,7 +468,7 @@ DynMap.prototype = {
 		if(tile) {
 			return me.options.tileUrl + me.world.name + '/' + tileName + '?' + tile.lastseen;
 		} else {
-			return me.options.tileUrl + me.world.name + '/' + tileName + '?0';
+			return me.options.tileUrl + me.world.name + '/' + tileName + '?' + me.inittime; /* Browser cache fix on reload */
 		}
 	},
 	registerTile: function(mapType, tileName, tile) {
