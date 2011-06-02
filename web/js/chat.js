@@ -21,7 +21,7 @@ componentconstructors['chat'] = function(dynmap, configuration) {
 	if (dynmap.options.allowwebchat) {
 		// Accepts 'sendchat'-events to send chat messages to the server.
 		$(dynmap).bind('sendchat', function(event, message) {
-			var data = '{"name":"'+ip+'","message":"'+message+'"}';
+			var data = '{"name":'+JSON.stringify(ip)+',"message":'+JSON.stringify(message)+'}';
 			$.ajax({
 				type: 'POST',
 				url: 'up/sendmessage',
