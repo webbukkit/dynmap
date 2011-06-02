@@ -33,12 +33,12 @@ public class ClientConfigurationHandler implements HttpHandler {
             
             String s = configurationObject.toJSONString();
 
-            cachedConfiguration = s.getBytes();
+            cachedConfiguration = s.getBytes("UTF-8");
         }
         String dateStr = new Date().toString();
 
         response.fields.put("Date", dateStr);
-        response.fields.put("Content-Type", "text/plain");
+        response.fields.put("Content-Type", "text/plain; charset=utf-8");
         response.fields.put("Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
         response.fields.put("Last-modified", dateStr);
         response.fields.put("Content-Length", Integer.toString(cachedConfiguration.length));

@@ -1,6 +1,7 @@
 package org.dynmap.web.handlers;
 
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Logger;
@@ -21,7 +22,7 @@ public class SendMessageHandler implements HttpHandler {
 
     private static final JSONParser parser = new JSONParser();
     public Event<Message> onMessageReceived = new Event<SendMessageHandler.Message>();
-
+    private Charset cs_utf8 = Charset.forName("UTF-8");
     public int maximumMessageInterval = 1000;
     public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
@@ -36,7 +37,7 @@ public class SendMessageHandler implements HttpHandler {
             return;
         }
 
-        InputStreamReader reader = new InputStreamReader(request.body);
+        InputStreamReader reader = new InputStreamReader(request.body, cs_utf8);
 
         JSONObject o = (JSONObject)parser.parse(reader);
         final Message message = new Message();
