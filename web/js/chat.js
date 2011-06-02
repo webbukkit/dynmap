@@ -24,7 +24,7 @@ componentconstructors['chat'] = function(dynmap, configuration) {
 			var data = '{"name":"'+ip+'","message":"'+message+'"}';
 			$.ajax({
 				type: 'POST',
-				url: 'up/sendmessage',
+				url: dynmap.options.url.sendmessage,
 				data: data,
 				dataType: 'json',
 				success: function(response) {
