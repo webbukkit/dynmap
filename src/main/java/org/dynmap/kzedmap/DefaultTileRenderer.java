@@ -235,7 +235,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
         TileHashManager hashman = MapManager.mapman.hashman;
         long crc = hashman.calculateTileHash(img.argb_buf);
         boolean updated_fname = false;
-        if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), null, mtile.px, mtile.py))) {
+        int tx = mtile.px/KzedMap.tileWidth;
+        int ty = mtile.py/KzedMap.tileHeight;
+        if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), null, tx, ty))) {
             Debug.debug("saving image " + fname.getPath());
             try {
                 ImageIO.write(img.buf_img, "png", fname);
@@ -245,7 +247,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
             }
             MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getFilename()));
-            hashman.updateHashCode(mtile.getKey(), null, mtile.px, mtile.py, crc);
+            hashman.updateHashCode(mtile.getKey(), null, tx, ty, crc);
             updated_fname = true;
         }
         KzedMap.freeBufferedImage(img);
@@ -259,7 +261,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         if(img_day != null) {
             FileLockManager.getWriteLock(dfname);
             crc = hashman.calculateTileHash(img.argb_buf);
-            if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", mtile.px, mtile.py))) {
+            if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", tx, ty))) {
                 Debug.debug("saving image " + dfname.getPath());
                 try {
                     ImageIO.write(img_day.buf_img, "png", dfname);
@@ -269,7 +271,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     Debug.error("Failed to save image (NullPointerException): " + dfname.getPath(), e);
                 }
                 MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getDayFilename()));
-                hashman.updateHashCode(mtile.getKey(), "day", mtile.px, mtile.py, crc);
+                hashman.updateHashCode(mtile.getKey(), "day", tx, ty, crc);
                 updated_dfname = true;
             }
             KzedMap.freeBufferedImage(img_day);
