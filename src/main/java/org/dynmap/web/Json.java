@@ -6,6 +6,8 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 public class Json {
     public static String stringifyJson(Object o) {
         StringBuilder sb = new StringBuilder();
@@ -19,7 +21,7 @@ public class Json {
         } else if (o instanceof Boolean) {
             s.append(((Boolean) o) ? "true" : "false");
         } else if (o instanceof String) {
-            s.append("\"" + ((String)o).replace("\"", "\\\"") + "\"");
+            s.append("\"" + JSONObject.escape((String)o) + "\"");
         } else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
             s.append(o.toString());
         } else if (o instanceof Map<?, ?>) {

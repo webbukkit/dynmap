@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.Reader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Timer;
@@ -18,7 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import static org.dynmap.JSONUtils.*;
-
+import java.nio.charset.Charset;
 
 public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected TimerTask task;
@@ -27,6 +30,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected long currentTimestamp = 0;
     protected long lastTimestamp = 0;
     protected JSONParser parser = new JSONParser();
+    private Charset cs_utf8 = Charset.forName("UTF-8");
     public JsonFileClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
         final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
@@ -83,7 +87,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 
         try {
             FileOutputStream fos = new FileOutputStream(outputTempFile);
-            fos.write(clientConfiguration.toJSONString().getBytes());
+            fos.write(clientConfiguration.toJSONString().getBytes("UTF-8"));
             fos.close();
             outputFile.delete();
             outputTempFile.renameTo(outputFile);
@@ -110,7 +114,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             outputTempFile = getStandaloneFile("dynmap_" + world.getName() + ".json.new");
             try {
                 FileOutputStream fos = new FileOutputStream(outputTempFile);
-                fos.write(Json.stringifyJson(update).getBytes());
+                fos.write(Json.stringifyJson(update).getBytes("UTF-8"));
                 fos.close();
                 outputFile.delete();
                 outputTempFile.renameTo(outputFile);
@@ -130,7 +134,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         if (webchatFile.exists() && lastTimestamp != 0) {
             JSONArray jsonMsgs = null;
             try {
-                FileReader inputFileReader = new FileReader(webchatFile);
+                Reader inputFileReader = new InputStreamReader(new FileInputStream(webchatFile), cs_utf8);
                 jsonMsgs = (JSONArray) parser.parse(inputFileReader);
                 inputFileReader.close();
             } catch (IOException ex) {
