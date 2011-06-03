@@ -295,6 +295,8 @@ public class MapManager {
         List<ConfigurationNode> loclist = worldConfiguration.getNodes("fullrenderlocations");
         dynmapWorld.seedloc = new ArrayList<Location>();
         dynmapWorld.servertime = (int)(w.getTime() % 24000);
+        dynmapWorld.sendposition = worldConfiguration.getBoolean("sendposition", true);
+        dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {
                 Location lx = new Location(w, loc.getDouble("x", 0), loc.getDouble("y", 64), loc.getDouble("z", 0));
