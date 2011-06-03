@@ -5,11 +5,13 @@ components:
   
   - class: org.dynmap.InternalClientUpdateComponent
     sendhealth: true
+    sendposition: true
     allowwebchat: true
     webchat-interval: 5
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
+  #  sendposition: true
   #  allowwebchat: false
   
   - class: org.dynmap.SimpleWebChatComponent
@@ -130,6 +132,8 @@ templates:
         # To render a world as a "night view", set shadowstrength and ambientlight
         # shadowstrength: 1.0
         # ambientlight: 4
+        # To render both night and day versions of tiles (when ambientlight is set), set true
+        # night-and-day: true
         # Option to turn on transparency support (off by default) - slows render
         # transparency: true
       - class: org.dynmap.kzedmap.KzedMap
@@ -218,6 +222,8 @@ worlds:
   #      # To render a world as a "night view", set shadowstrength and ambientlight
   #      # shadowstrength: 1.0
   #      # ambientlight: 4
+  #      # To render both night and day versions of tiles (when ambientlight is set), set true
+  #      # night-and-day: true
   #      # Option to turn on transparency support (off by default) - slows render
   #      # transparency: true
   #    - class: org.dynmap.kzedmap.KzedMap

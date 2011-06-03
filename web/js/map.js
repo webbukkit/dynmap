@@ -7,6 +7,7 @@ var maptypes = {};
 componentconstructors['testcomponent'] = function(dynmap, configuration) {
 	console.log('initialize');
 	$(dynmap).bind('worldchanged', function() { console.log('worldchanged'); });
+	$(dynmap).bind('mapchanging', function() { console.log('mapchanging'); });
 	$(dynmap).bind('mapchanged', function() { console.log('mapchanged'); });
 	$(dynmap).bind('zoomchanged', function() { console.log('zoomchanged'); });
 	$(dynmap).bind('worldupdating', function() { console.log('worldupdating'); });
@@ -327,6 +328,7 @@ DynMap.prototype = {
 		if (me.maptype === map) {
 			return;
 		}
+		$(me).trigger('mapchanging');
 		if (me.maptype) {
 			$('.compass').removeClass('compass_' + me.maptype.name);
 		}
@@ -443,7 +445,7 @@ DynMap.prototype = {
 						me.map.setMapTypeId('none');
 						window.setTimeout(function() {
 							me.map.setMapTypeId(mtid);
-						}, 1);
+						}, 0.1);
 					}
 				}
 				
