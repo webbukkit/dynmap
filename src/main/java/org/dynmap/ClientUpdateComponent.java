@@ -40,13 +40,28 @@ public class ClientUpdateComponent extends Component {
             s(jp, "type", "player");
             s(jp, "name", ChatColor.stripColor(p.getDisplayName()));
             s(jp, "account", p.getName());
-            s(jp, "world", p.getWorld().getName());
-            s(jp, "x", pl.getX());
-            s(jp, "y", pl.getY());
-            s(jp, "z", pl.getZ());
-            if (configuration.getBoolean("sendhealth", false)) {
+            /* Don't leak player location for world not visible on maps, or if sendposition disbaled */
+            boolean player_visible = MapManager.mapman.worldsLookup.containsKey(p.getWorld().getName());
+            if(configuration.getBoolean("sendpositon", true) && player_visible) {
+                s(jp, "world", p.getWorld().getName());
+                s(jp, "x", pl.getX());
+                s(jp, "y", pl.getY());
+                s(jp, "z", pl.getZ());
+            }
+            else {
+                s(jp, "world", "-some-other-bogus-world-");
+                s(jp, "x", 0.0);
+                s(jp, "y", 64.0);
+                s(jp, "z", 0.0);
+            }
+            /* Only send health if enabled AND we're on visible world */
+            if (configuration.getBoolean("sendhealth", false) && player_visible) {
                 s(jp, "health", p.getHealth());
                 s(jp, "armor", Armor.getArmorPoints(p));
+            }
+            else {
+                s(jp, "health", 0);
+                s(jp, "armor", 0);
             }
             a(u, "players", jp);
         }
