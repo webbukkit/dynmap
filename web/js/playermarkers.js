@@ -58,8 +58,8 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 	$(dynmap).bind('playerupdated', function(event, player) {
 		// Update the marker.
 		var markerPosition = dynmap.map.getProjection().fromWorldToLatLng(player.location.x, player.location.y, player.location.z);
-		player.marker.toggle(dynmap.world === player.location.world);
 		player.marker.setPosition(markerPosition);
+		player.marker.toggle(dynmap.world === player.location.world);
 		// Update health
 		if (configuration.showplayerhealth) {
 			if (player.health !== undefined && player.armor !== undefined) {
@@ -69,6 +69,25 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			} else {
 				player.healthContainer.css('display','none');
 			}
+		}
+	});
+    // Remove marker on start of map change
+	$(dynmap).bind('mapchanging', function(event) {
+		var name;
+		for(name in dynmap.players) {
+			var player = dynmap.players[name];
+			// Turn off marker - let update turn it back on 
+			player.marker.toggle(false);
+		}
+	});
+    // Remove marker on map change - let update place it again
+	$(dynmap).bind('mapchanged', function(event) {
+		var name;
+		for(name in dynmap.players) {
+			var player = dynmap.players[name];
+			var markerPosition = dynmap.map.getProjection().fromWorldToLatLng(player.location.x, player.location.y, player.location.z);
+			player.marker.setPosition(markerPosition);
+			player.marker.toggle(dynmap.world === player.location.world);
 		}
 	});
 };
