@@ -247,7 +247,7 @@ worlds:
   #   Use 'enabled: false' to disable a certain world.
   #  enabled: false
   #   Use sendposition: false to prevent player positions from showing when on this world (if sendposition is globally enabled)
-  #  sendpositon: false
+  #  sendposition: false
   #   Use sendhealth: false ot prevent player health from showing when on this world (if sendhealth is globally enabled)
   #  sendhealth: false
   #  # If world isn't contiguous chunks (due to teleporting, for example), fullrender needs to be given other locations to scan for tiles on each patch of chunks
