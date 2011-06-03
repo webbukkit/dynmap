@@ -136,6 +136,12 @@ templates:
         # night-and-day: true
         # Option to turn on transparency support (off by default) - slows render
         # transparency: true
+        # Background color for map during the day
+        # backgroundday: "#153E7E"
+        # Background color for map during the night
+        # backgroundnight: "#000000"        
+        # Backgrounc color for map (independent of night/day)
+        # background: "#000000"
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -152,6 +158,12 @@ templates:
             # night-and-day: true
             # Option to turn off transparency support (on by default) - speeds render
             # transparency: false
+            # Background color for map during the day
+            # backgroundday: "#153E7E"
+            # Background color for map during the night
+            # backgroundnight: "#000000"        
+            # Backgrounc color for map (independent of night/day)
+            # background: "#000000"
             # Sets the icon to 'images/block_custom.png'
             # icon: custom
           #- class: org.dynmap.kzedmap.HighlightTileRenderer
@@ -180,6 +192,8 @@ templates:
         title: "Flat"
         prefix: flat
         colorscheme: default
+        # Map background color (day or night)
+        background: "#300806"
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -188,6 +202,40 @@ templates:
             prefix: nt
             maximumheight: 127
             colorscheme: default
+            # Map background color (day or night)
+            background: "#300806"
+  # Skylands world template
+  skylands:
+    enabled: true
+    center:
+      x: 0
+      y: 64
+      z: 0
+    maps:
+      - class: org.dynmap.flat.FlatMap
+        name: flat
+        title: "Flat"
+        prefix: flat
+        colorscheme: default
+        # Background color for map during the day
+        backgroundday: "#153E7E"
+        # Background color for map during the night
+        backgroundnight: "#000000"        
+      - class: org.dynmap.kzedmap.KzedMap
+        renderers:
+          - class: org.dynmap.kzedmap.DefaultTileRenderer
+            name: skylands
+            title: "Surface"
+            prefix: st
+            maximumheight: 127
+            colorscheme: default
+            # Background color for map during the day
+            backgroundday: "#153E7E"
+            # Background color for map during the night
+            backgroundnight: "#000000"        
+            night-and-day: true
+            shadowstrength: 1.0
+            ambientlight: 4
 
 # The maptypes Dynmap will use to render.
 worlds:
@@ -226,6 +274,12 @@ worlds:
   #      # night-and-day: true
   #      # Option to turn on transparency support (off by default) - slows render
   #      # transparency: true
+  #      # Background color for map during the day
+  #      # backgroundday: "#153E7E"
+  #      # Background color for map during the night
+  #      # backgroundnight: "#000000"        
+  #      # Backgrounc color for map (independent of night/day)
+  #      # background: "#000000"
   #    - class: org.dynmap.kzedmap.KzedMap
   #      renderers:
   #        - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -242,6 +296,12 @@ worlds:
   #          # night-and-day: true
   #          # Option to turn off transparency support (on by default) - speeds render
   #          # transparency: false
+  #          # Background color for map during the day
+  #          # backgroundday: "#153E7E"
+  #          # Background color for map during the night
+  #          # backgroundnight: "#000000"        
+  #          # Backgrounc color for map (independent of night/day)
+  #          # background: "#000000"
   #          # Sets the icon to 'images/block_custom.png'
   #          # icon: custom
   #        #- class: org.dynmap.kzedmap.HighlightTileRenderer
