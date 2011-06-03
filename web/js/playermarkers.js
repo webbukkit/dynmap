@@ -2,11 +2,12 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 	var me = this;
 	$(dynmap).bind('playeradded', function(event, player) {
 		// Create the player-marker.
-		var markerPosition = null;
-		if(dynmap.world === player.location.world)
-			markerPosition = dynmap.map.getProjection().fromWorldToLatLng(player.location.x, player.location.y, player.location.z);
+		var markerPosition = dynmap.map.getProjection().fromWorldToLatLng(player.location.x, player.location.y, player.location.z);
 		player.marker = new CustomMarker(markerPosition, dynmap.map, function(div) {
 			var playerImage;
+			
+			player.marker.toggle(dynmap.world === player.location.world);
+			
 			$(div)
 				.addClass('Marker')
 				.addClass('playerMarker')
@@ -52,7 +53,6 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				}
 			}
 		});
-		
 	});
 	$(dynmap).bind('playerremoved', function(event, player) {
 		// Remove the marker.
@@ -80,7 +80,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		for(name in dynmap.players) {
 			var player = dynmap.players[name];
 			// Turn off marker - let update turn it back on 
-			player.marker.toggle(false);
+			player.marker.hide();
 		}
 	});
     // Remove marker on map change - let update place it again
