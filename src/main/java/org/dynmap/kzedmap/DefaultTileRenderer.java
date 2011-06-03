@@ -518,7 +518,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
         s(o, "title", c.getString("title"));
         s(o, "icon", c.getString("icon"));
         s(o, "prefix", c.getString("prefix"));
+        s(o, "background", c.getString("background"));
         s(o, "nightandday", c.getBoolean("night-and-day", false));
+        s(o, "backgroundday", c.getString("backgroundday"));
+        s(o, "backgroundnight", c.getString("backgroundnight"));
         a(worldObject, "maps", o);
     }
 }
