@@ -358,6 +358,7 @@ DynMap.prototype = {
 		}, 1);
 		$('.map', me.worldlist).removeClass('selected');
 		$(map.element).addClass('selected');
+		me.updateBackground();
 	},
 	selectWorld: function(world, completed) {
 		var me = this;
@@ -440,6 +441,7 @@ DynMap.prototype = {
 				});
 
 				if(me.serverday != oldday) {
+					me.updateBackground();				
 					var mtid = me.map.mapTypeId;
 					if(me.map.mapTypes[mtid].nightandday) {
 						me.map.setMapTypeId('none');
@@ -573,7 +575,24 @@ DynMap.prototype = {
 			me.panTo(player.location);
 		}
 		this.followingPlayer = player;
-	}
+	},
+	updateBackground: function() {
+		var me = this;
+		var col = "#000000";
+		if(me.serverday) {
+			if(me.maptype.backgroundday)
+				col = me.maptype.backgroundday;
+			else if(me.maptype.background)
+				col = me.maptype.background;
+		}
+		else {
+			if(me.maptype.backgroundnight)
+				col = me.maptype.backgroundnight;
+			else if(me.maptype.background)
+				col = me.maptype.background;
+		}
+		$('.map').css('background', col);
+	}	
 	// TODO: Enable hash-links.
 /*	updateLink: function() {
 		var me = this;
