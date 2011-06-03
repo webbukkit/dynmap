@@ -13,4 +13,6 @@ public class DynmapWorld {
     public ConfigurationNode configuration;
     public List<Location> seedloc;
     public int servertime;
+    public boolean sendposition;
+    public boolean sendhealth;
 }

@@ -91,7 +91,7 @@ DynMap.prototype = {
 	worlds: {},
 	registeredTiles: [],
 	players: {},
-	lasttimestamp: '0',
+	lasttimestamp: new Date().getUTCMilliseconds(), /* Pseudorandom - prevent cached '?0' */
     servertime: 0,
     serverday: false,
     inittime: new Date().getTime(),
