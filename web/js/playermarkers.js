@@ -5,6 +5,9 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		var markerPosition = dynmap.map.getProjection().fromWorldToLatLng(player.location.x, player.location.y, player.location.z);
 		player.marker = new CustomMarker(markerPosition, dynmap.map, function(div) {
 			var playerImage;
+			
+			player.marker.toggle(dynmap.world === player.location.world);
+			
 			$(div)
 				.addClass('Marker')
 				.addClass('playerMarker')
@@ -58,8 +61,8 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 	$(dynmap).bind('playerupdated', function(event, player) {
 		// Update the marker.
 		var markerPosition = dynmap.map.getProjection().fromWorldToLatLng(player.location.x, player.location.y, player.location.z);
-		player.marker.setPosition(markerPosition);
 		player.marker.toggle(dynmap.world === player.location.world);
+		player.marker.setPosition(markerPosition);
 		// Update health
 		if (configuration.showplayerhealth) {
 			if (player.health !== undefined && player.armor !== undefined) {
@@ -77,7 +80,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		for(name in dynmap.players) {
 			var player = dynmap.players[name];
 			// Turn off marker - let update turn it back on 
-			player.marker.toggle(false);
+			player.marker.hide();
 		}
 	});
     // Remove marker on map change - let update place it again
