@@ -509,6 +509,8 @@
 	top: 0px;
 	left: 34px;
 
+	white-space: nowrap;
+
     color: #fff;
     background: rgba(0,0,0,0.6);
     padding: 2px;
