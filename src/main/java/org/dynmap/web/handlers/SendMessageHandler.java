@@ -41,8 +41,14 @@ public class SendMessageHandler implements HttpHandler {
 
         JSONObject o = (JSONObject)parser.parse(reader);
         final Message message = new Message();
-        //message.name = String.valueOf(o.get("name")); //Can't trust client....we don't need to on internal web server
-        message.name = request.rmtaddr.getAddress().getHostAddress();
+        /* If proxied client address, get original */
+        if(request.fields.containsKey("X-Forwarded-For"))
+            message.name = request.fields.get("X-Forwarded-For");
+        /* If from loopback, we're probably getting from proxy - need to trust client */
+        else if(request.rmtaddr.getAddress().isLoopbackAddress())
+            message.name = String.valueOf(o.get("name"));
+        else
+            message.name = request.rmtaddr.getAddress().getHostAddress();
         message.message = String.valueOf(o.get("message"));
 
         final long now = System.currentTimeMillis();
