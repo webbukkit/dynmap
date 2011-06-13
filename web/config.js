@@ -9,14 +9,14 @@ var config = {
 	// For proxying webserver through php.
 	// url: {
 	// configuration: 'up.php?path=configuration',
-	// update: 'up.php?path=world/{world}/?{timestamp}',
+	// update: 'up.php?path=world/{world}/{timestamp}',
 	// sendmessage: 'up.php?path=sendmessage'
 	// },
 
 	// For proxying webserver through aspx.
 	// url: {
 	// configuration: 'up.aspx?path=configuration',
-	// update: 'up.aspx?path=world/{world}/?{timestamp}',
+	// update: 'up.aspx?path=world/{world}/{timestamp}',
 	// sendmessage: 'up.aspx?path=sendmessage'
 	// },
 
