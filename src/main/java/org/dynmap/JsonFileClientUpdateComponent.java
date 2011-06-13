@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.Reader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,11 +31,17 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected long currentTimestamp = 0;
     protected long lastTimestamp = 0;
     protected JSONParser parser = new JSONParser();
+    private Boolean hidewebchatip;
+
+    private HashMap<String,String> useralias = new HashMap<String,String>();
+    private int aliasindex = 1;
+    
     private Charset cs_utf8 = Charset.forName("UTF-8");
     public JsonFileClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
         final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
+        hidewebchatip = configuration.getBoolean("hidewebchatip", false);
         task = new TimerTask() {
             @Override
             public void run() {
@@ -151,6 +158,15 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                     if(ts.equals("null")) ts = "0";
                     if (Long.parseLong(ts) >= (lastTimestamp)) {
                         String name = String.valueOf(o.get("name"));
+                        if(hidewebchatip) {
+                            String n = useralias.get(name);
+                            if(n == null) { /* Make ID */
+                                n = String.format("web-%03d", aliasindex);
+                                aliasindex++;
+                                useralias.put(name, n);
+                            }
+                            name = n;
+                        }
                         String message = String.valueOf(o.get("message"));
                         webChat(name, message);
                     }
