@@ -24,11 +24,14 @@ public class SendMessageHandler implements HttpHandler {
     public Event<Message> onMessageReceived = new Event<SendMessageHandler.Message>();
     private Charset cs_utf8 = Charset.forName("UTF-8");
     public int maximumMessageInterval = 1000;
+    public boolean hideip = false;
     public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
     private LinkedList<WebUser> disallowedUserQueue = new LinkedList<WebUser>();
     private Object disallowedUsersLock = new Object();
-
+    private HashMap<String,String> useralias = new HashMap<String,String>();
+    private int aliasindex = 1;
+    
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
         if (!request.method.equals(HttpMethod.Post)) {
@@ -49,6 +52,17 @@ public class SendMessageHandler implements HttpHandler {
             message.name = String.valueOf(o.get("name"));
         else
             message.name = request.rmtaddr.getAddress().getHostAddress();
+        if(hideip) {    /* If hiding IP, find or assign alias */
+            synchronized(disallowedUsersLock) {
+                String n = useralias.get(message.name);
+                if(n == null) { /* Make ID */
+                    n = String.format("web-%03d", aliasindex);
+                    aliasindex++;
+                    useralias.put(message.name, n);
+                }
+                message.name = n;
+            }
+        }
         message.message = String.valueOf(o.get("message"));
 
         final long now = System.currentTimeMillis();
