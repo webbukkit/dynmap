@@ -12,6 +12,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
     public InternalClientUpdateComponent(DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
         final Boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
+        final Boolean hidewebchatip = configuration.getBoolean("hidewebchatip", false);
         final float webchatInterval = configuration.getFloat("webchat-interval", 1);
         final String spammessage = plugin.configuration.getString("spammessage", "You may only chat once every %interval% seconds.");
 
@@ -29,6 +30,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
             SendMessageHandler messageHandler = new SendMessageHandler() {{
                 maximumMessageInterval = (int)(webchatInterval * 1000);
                 spamMessage = "\""+spammessage+"\"";
+                hideip = hidewebchatip;
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
                     public void triggered(Message t) {

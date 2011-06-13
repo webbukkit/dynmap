@@ -8,11 +8,13 @@ components:
     sendposition: true
     allowwebchat: true
     webchat-interval: 5
+    hidewebchatip: false
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
   #  sendposition: true
   #  allowwebchat: false
+  #  hidewebchatip: false
   
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
