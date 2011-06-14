@@ -188,7 +188,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         }
 
         /* Hand encoding and writing file off to MapManager */
-        KzedZoomedMapTile zmtile = new KzedZoomedMapTile(tile.getWorld(),
+        KzedZoomedMapTile zmtile = new KzedZoomedMapTile(tile.getDynmapWorld(),
                 (KzedMap) tile.getMap(), tile);
         File zoomFile = MapManager.mapman.getTileFile(zmtile);
 
@@ -239,6 +239,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         int ty = mtile.py/KzedMap.tileHeight;
         if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), null, tx, ty))) {
             Debug.debug("saving image " + fname.getPath());
+            if(!fname.getParentFile().exists())
+                fname.getParentFile().mkdirs();
             try {
                 ImageIO.write(img.buf_img, "png", fname);
             } catch (IOException e) {
@@ -263,6 +265,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
             crc = hashman.calculateTileHash(img.argb_buf);
             if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", tx, ty))) {
                 Debug.debug("saving image " + dfname.getPath());
+                if(!dfname.getParentFile().exists())
+                    dfname.getParentFile().mkdirs();
                 try {
                     ImageIO.write(img_day.buf_img, "png", dfname);
                 } catch (IOException e) {
@@ -334,6 +338,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         zIm.setRGB(ox, oy, KzedMap.tileWidth/2, KzedMap.tileHeight/2, zimg.argb_buf, 0, KzedMap.tileWidth/2);
 
         /* save zoom-out tile */
+        if(!zoomFile.getParentFile().exists())
+            zoomFile.getParentFile().mkdirs();
 
         try {
             ImageIO.write(zIm, "png", zoomFile);

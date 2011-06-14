@@ -15,4 +15,5 @@ public class DynmapWorld {
     public int servertime;
     public boolean sendposition;
     public boolean sendhealth;
+    public boolean bigworld;    /* If true, deeper directory hierarchy */
 }

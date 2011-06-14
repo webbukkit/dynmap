@@ -1,5 +1,6 @@
 package org.dynmap.flat;
 
+import org.dynmap.DynmapWorld;
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 import java.awt.image.DataBufferInt;
@@ -75,13 +76,14 @@ public class FlatMap extends MapType {
 
     @Override
     public MapTile[] getTiles(Location l) {
-        return new MapTile[] { new FlatMapTile(l.getWorld(), this, (int) Math.floor(l.getBlockX() / 128.0), (int) Math.floor(l.getBlockZ() / 128.0), 128) };
+        DynmapWorld w = MapManager.mapman.getWorld(l.getWorld().getName());
+        return new MapTile[] { new FlatMapTile(w, this, (int) Math.floor(l.getBlockX() / 128.0), (int) Math.floor(l.getBlockZ() / 128.0), 128) };
     }
 
     @Override
     public MapTile[] getAdjecentTiles(MapTile tile) {
         FlatMapTile t = (FlatMapTile) tile;
-        World w = t.getWorld();
+        DynmapWorld w = t.getDynmapWorld();
         int x = t.x;
         int y = t.y;
         int s = t.size;
@@ -257,6 +259,8 @@ public class FlatMap extends MapType {
         if((!outputFile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), null, t.x, t.y))) {
             /* Wrap buffer as buffered image */
             Debug.debug("saving image " + outputFile.getPath());
+            if(!outputFile.getParentFile().exists())
+                outputFile.getParentFile().mkdirs();
             try {
                 ImageIO.write(im.buf_img, "png", outputFile);
             } catch (IOException e) {
@@ -282,6 +286,8 @@ public class FlatMap extends MapType {
             crc = hashman.calculateTileHash(argb_buf_day);
             if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
                 Debug.debug("saving image " + dayfile.getPath());
+                if(!dayfile.getParentFile().exists())
+                    dayfile.getParentFile().mkdirs();
                 try {
                     ImageIO.write(im_day.buf_img, "png", dayfile);
                 } catch (IOException e) {
@@ -387,8 +393,10 @@ public class FlatMap extends MapType {
         public int x;
         public int y;
         public int size;
+        private String fname;
+        private String fname_day;
 
-        public FlatMapTile(World world, FlatMap map, int x, int y, int size) {
+        public FlatMapTile(DynmapWorld world, FlatMap map, int x, int y, int size) {
             super(world, map);
             this.map = map;
             this.x = x;
@@ -398,11 +406,23 @@ public class FlatMap extends MapType {
 
         @Override
         public String getFilename() {
-            return map.prefix + "_" + size + "_" + -(y+1) + "_" + x + ".png";
+            if(fname == null) {
+                if(world.bigworld)
+                    fname = map.prefix + "/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + size + "_" + -(y+1) + "_" + x + ".png";
+                else
+                    fname = map.prefix + "_" + size + "_" + -(y+1) + "_" + x + ".png";
+            }
+            return fname;
         }
         @Override
         public String getDayFilename() {
-            return map.prefix + "_day_" + size + "_" + -(y+1) + "_" + x + ".png";
+            if(fname_day == null) {
+                if(world.bigworld)
+                    fname_day = map.prefix + "_day/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + size + "_" + -(y+1) + "_" + x + ".png";
+                else
+                    fname_day = map.prefix + "_day_" + size + "_" + -(y+1) + "_" + x + ".png";
+            }
+            return fname_day;
         }
         public String toString() {
             return getWorld().getName() + ":" + getFilename();

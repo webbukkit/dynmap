@@ -3,10 +3,14 @@ package org.dynmap;
 import org.bukkit.World;
 
 public abstract class MapTile {
-    private World world;
+    protected DynmapWorld world;
     private MapType map;
 
     public World getWorld() {
+        return world.world;
+    }
+
+    public DynmapWorld getDynmapWorld() {
         return world;
     }
 
@@ -18,7 +22,7 @@ public abstract class MapTile {
 
     public abstract String getDayFilename();
 
-    public MapTile(World world, MapType map) {
+    public MapTile(DynmapWorld world, MapType map) {
         this.world = world;
         this.map = map;
     }
@@ -38,6 +42,6 @@ public abstract class MapTile {
     }
     
     public String getKey() {
-        return world.getName() + "." + map.getName();
+        return world.world.getName() + "." + map.getName();
     }
 }
