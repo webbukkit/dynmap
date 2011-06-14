@@ -3,7 +3,6 @@ package org.dynmap;
 import org.dynmap.Event.Listener;
 import org.dynmap.web.handlers.ClientUpdateHandler;
 import org.dynmap.web.handlers.SendMessageHandler;
-import org.dynmap.web.handlers.SendMessageHandler.Message;
 import org.json.simple.JSONObject;
 import static org.dynmap.JSONUtils.*;
 

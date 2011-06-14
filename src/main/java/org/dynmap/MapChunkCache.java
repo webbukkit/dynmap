@@ -2,7 +2,6 @@ package org.dynmap;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.util.LinkedList;
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Entity;
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
 public class MapChunkCache {
-    private World w;
     private static Method getchunkdata = null;
     private static Method gethandle = null;
     private static Method poppreservedchunk = null;
@@ -164,7 +162,6 @@ public class MapChunkCache {
             }
             x_dim = x_max - x_min + 1;            
         }
-        this.w = w;
     
         if(!initialized) {
             try {

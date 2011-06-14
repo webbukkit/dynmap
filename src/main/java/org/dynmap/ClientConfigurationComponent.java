@@ -1,7 +1,6 @@
 package org.dynmap;
 
 import static org.dynmap.JSONUtils.a;
-import static org.dynmap.JSONUtils.l;
 import static org.dynmap.JSONUtils.s;
 
 import org.dynmap.Event.Listener;
@@ -33,6 +32,7 @@ public class ClientConfigurationComponent extends Component {
                     s(wo, "center/x", wn.getFloat("center/x", 0.0f));
                     s(wo, "center/y", wn.getFloat("center/y", 64.0f));
                     s(wo, "center/z", wn.getFloat("center/z", 0.0f));
+                    s(wo, "bigworld", world.bigworld);
                     a(t, "worlds", wo);
                     
                     for(MapType mt : world.maps) {
