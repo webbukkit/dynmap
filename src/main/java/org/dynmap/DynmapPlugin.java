@@ -18,8 +18,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.block.SnowFormEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -180,11 +183,35 @@ public class DynmapPlugin extends JavaPlugin {
             BlockListener renderTrigger = new BlockListener() {
                 @Override
                 public void onBlockPlace(BlockPlaceEvent event) {
+                    if(event.isCancelled())
+                        return;
                     mm.touch(event.getBlockPlaced().getLocation());
                 }
 
                 @Override
                 public void onBlockBreak(BlockBreakEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    mm.touch(event.getBlock().getLocation());
+                }
+                @Override
+                public void onSnowForm(SnowFormEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    mm.touch(event.getBlock().getLocation());        
+                }
+
+                @Override
+                public void onLeavesDecay(LeavesDecayEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    mm.touch(event.getBlock().getLocation());                
+                }
+                
+                @Override
+                public void onBlockBurn(BlockBurnEvent event) {
+                    if(event.isCancelled())
+                        return;
                     mm.touch(event.getBlock().getLocation());
                 }
             };
@@ -192,6 +219,12 @@ public class DynmapPlugin extends JavaPlugin {
                 pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PLACE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             if (isTrigger("blockbreak"))
                 pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BREAK, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            if (isTrigger("snowform"))
+                pm.registerEvent(org.bukkit.event.Event.Type.SNOW_FORM, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            if (isTrigger("leavesdecay"))
+                pm.registerEvent(org.bukkit.event.Event.Type.LEAVES_DECAY, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            if (isTrigger("blockburn"))
+                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BURN, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
         }
         {
             PlayerListener renderTrigger = new PlayerListener() {
