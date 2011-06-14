@@ -2,8 +2,6 @@ package org.dynmap.kzedmap;
 
 import org.dynmap.DynmapWorld;
 import java.io.File;
-
-import org.bukkit.World;
 import org.dynmap.MapTile;
 
 public class KzedMapTile extends MapTile {

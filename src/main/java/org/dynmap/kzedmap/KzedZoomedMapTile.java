@@ -1,7 +1,6 @@
 package org.dynmap.kzedmap;
 
 import org.dynmap.DynmapWorld;
-import org.bukkit.World;
 import org.dynmap.MapTile;
 
 public class KzedZoomedMapTile extends MapTile {
