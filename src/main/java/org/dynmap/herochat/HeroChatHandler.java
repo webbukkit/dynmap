@@ -10,7 +10,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
-import java.lang.reflect.Field;
 import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapPlugin;
@@ -40,6 +39,7 @@ public class HeroChatHandler {
 
     /* Reflection-based access wrapper for ChannelChatEvent from HeroChat */
     private static class HeroChatChannelChatEvent {
+        @SuppressWarnings("rawtypes")
         private static Class channelchatevent;
         private static Method getsource;
         private static Method getmessage;
@@ -97,6 +97,7 @@ public class HeroChatHandler {
 
     /* Reflection-based access wrapper for ChannelEvent from HeroChat */
     private static class HeroChatChannelEvent {
+        @SuppressWarnings("rawtypes")
         private static Class channelevent;
         private static Method getchannel;
         private static Method iscancelled;
@@ -148,6 +149,7 @@ public class HeroChatHandler {
 
     /* Reflection-based access wrapper for Channel from HeroChat */
     private static class HeroChatChannel {
+        @SuppressWarnings("rawtypes")
         private static Class channel;
         private static Method getname;
         private static Method getnick;

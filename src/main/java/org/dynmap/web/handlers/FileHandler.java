@@ -13,7 +13,6 @@ import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.HttpStatus;
-import org.dynmap.utils.FileLockManager;
 
 public abstract class FileHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");

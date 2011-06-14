@@ -165,6 +165,7 @@ public class MapChunkCache {
     
         if(!initialized) {
             try {
+                @SuppressWarnings("rawtypes")
                 Class c = Class.forName("net.minecraft.server.Chunk");
                 getchunkdata = c.getDeclaredMethod("a", new Class[] { byte[].class, int.class, 
                     int.class, int.class, int.class, int.class, int.class, int.class });
@@ -177,6 +178,7 @@ public class MapChunkCache {
             }
             /* Get CraftWorld.popPreservedChunk(x,z) - reduces memory bloat from map traversals (optional) */
             try {
+                @SuppressWarnings("rawtypes")
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftWorld");
                 poppreservedchunk = c.getDeclaredMethod("popPreservedChunk", new Class[] { int.class, int.class });
             } catch (ClassNotFoundException cnfx) {

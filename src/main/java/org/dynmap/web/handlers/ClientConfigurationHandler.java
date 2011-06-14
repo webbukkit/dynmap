@@ -2,8 +2,6 @@ package org.dynmap.web.handlers;
 
 import java.io.BufferedOutputStream;
 import java.util.Date;
-import java.util.Map;
-
 import org.dynmap.DynmapPlugin;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Event;

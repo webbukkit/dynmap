@@ -29,6 +29,7 @@ public class ConfigurationNode implements Map<String, Object> {
         entries = map;
     }
     
+    @SuppressWarnings("unchecked")
     public Object getObject(String path) {
         if (path.isEmpty())
             return entries;
@@ -60,6 +61,7 @@ public class ConfigurationNode implements Map<String, Object> {
         return o;
     }
     
+    @SuppressWarnings("unchecked")
     public <T> T getGeneric(String path, T def) {
         Object o = getObject(path, def);
         try {
@@ -112,6 +114,7 @@ public class ConfigurationNode implements Map<String, Object> {
         return o.toString();
     }
     
+    @SuppressWarnings("unchecked")
     public <T> List<T> getList(String path) {
         try {
             List<T> list = (List<T>)getObject(path, null);
@@ -139,6 +142,7 @@ public class ConfigurationNode implements Map<String, Object> {
         return new ConfigurationNode(v);
     }
     
+    @SuppressWarnings("unchecked")
     public List<ConfigurationNode> getNodes(String path) {
         List<Object> o = getList(path);
 
@@ -165,6 +169,7 @@ public class ConfigurationNode implements Map<String, Object> {
             extendMap(this, other);
     }
     
+    @SuppressWarnings("unchecked")
     private final static void extendMap(Map<String, Object> left, Map<String, Object> right) {
         ConfigurationNode original = new ConfigurationNode(left);
         for(Map.Entry<String, Object> entry : right.entrySet()) {
