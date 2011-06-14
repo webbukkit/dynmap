@@ -1,5 +1,6 @@
 package org.dynmap.kzedmap;
 
+import org.dynmap.DynmapWorld;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import org.bukkit.World;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
+import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.MapChunkCache;
@@ -45,7 +47,6 @@ public class KzedMap extends MapType {
     public static final int anchorz = 0;
     
     MapTileRenderer[] renderers;
-    ZoomedTileRenderer zoomrenderer;
 
     /* BufferedImage with direct access to its ARGB-formatted data buffer */
     public static class KzedBufferedImage {
@@ -67,13 +68,11 @@ public class KzedMap extends MapType {
         this.renderers = new MapTileRenderer[renderers.size()];
         renderers.toArray(this.renderers);
         Log.info("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
-        
-        zoomrenderer = new ZoomedTileRenderer(configuration);
     }
 
     @Override
     public MapTile[] getTiles(Location l) {
-        World world = l.getWorld();
+        DynmapWorld world = MapManager.mapman.getWorld(l.getWorld().getName());
 
         int x = l.getBlockX();
         int y = l.getBlockY();
@@ -124,7 +123,7 @@ public class KzedMap extends MapType {
     public MapTile[] getAdjecentTiles(MapTile tile) {
         if (tile instanceof KzedMapTile) {
             KzedMapTile t = (KzedMapTile) tile;
-            World world = tile.getWorld();
+            DynmapWorld world = tile.getDynmapWorld();
             MapTileRenderer renderer = t.renderer;
             return new MapTile[] {
                 new KzedMapTile(world, this, renderer, t.px - tileWidth, t.py),
@@ -135,7 +134,7 @@ public class KzedMap extends MapType {
         return new MapTile[0];
     }
 
-    public void addTile(ArrayList<MapTile> tiles, World world, int px, int py) {
+    public void addTile(ArrayList<MapTile> tiles, DynmapWorld world, int px, int py) {
         for (int i = 0; i < renderers.length; i++) {
             tiles.add(new KzedMapTile(world, this, renderers[i], px, py));
         }
@@ -229,10 +228,7 @@ public class KzedMap extends MapType {
 
     @Override
     public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
-        if (tile instanceof KzedZoomedMapTile) {
-            zoomrenderer.render(cache, (KzedZoomedMapTile) tile, outputFile);
-            return true;
-        } else if (tile instanceof KzedMapTile) {
+        if (tile instanceof KzedMapTile) {
             return ((KzedMapTile) tile).renderer.render(cache, (KzedMapTile) tile, outputFile);
         }
         return false;
