@@ -78,6 +78,9 @@ render-triggers:
 #  - playerjoin
   - blockplaced
   - blockbreak
+  - snowform
+  - leavesdecay
+  - blockburn
 
 # The path where the tile-files are placed.
 tilespath: web/tiles
