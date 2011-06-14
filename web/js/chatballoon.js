@@ -10,6 +10,9 @@ componentconstructors['chatballoon'] = function(dynmap, configuration) {
 		if (!playerMarker) {
 			return;
 		}
+		if (player.location.world != dynmap.world) {
+			return;
+		}
 		var popup = me.chatpopups[message.name];
 		if (!popup) {
 			popup = { lines: [ message.text ] };
