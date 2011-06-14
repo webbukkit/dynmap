@@ -5,24 +5,14 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-import org.dynmap.Client;
 import org.dynmap.ClientUpdateEvent;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.DynmapWorld;
-import org.dynmap.MapManager;
-import org.dynmap.PlayerList;
 import org.dynmap.web.HttpField;
 import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.HttpStatus;
-import org.dynmap.web.Json;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import static org.dynmap.JSONUtils.*;
 

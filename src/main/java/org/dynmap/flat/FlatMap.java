@@ -3,10 +3,6 @@ package org.dynmap.flat;
 import org.dynmap.DynmapWorld;
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
-import java.awt.image.DataBufferInt;
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 

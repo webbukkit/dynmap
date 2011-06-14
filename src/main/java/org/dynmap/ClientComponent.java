@@ -39,6 +39,7 @@ public class ClientComponent extends Component {
         return o;
     }
     
+    @SuppressWarnings("unchecked")
     protected static final JSONArray convertList(List<?> l) {
         JSONArray o = new JSONArray();
         for(Object entry : l) {
@@ -47,6 +48,7 @@ public class ClientComponent extends Component {
         return o;
     }
     
+    @SuppressWarnings("unchecked")
     protected static final Object convert(Object o) {
         if (o instanceof Map<?, ?>) {
             return convertMap((Map<String, ?>)o);

@@ -102,6 +102,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         }
     }
     
+    @SuppressWarnings("unchecked")
     protected void writeUpdates() {
         File outputFile;
         File outputTempFile;
