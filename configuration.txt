@@ -78,6 +78,9 @@ render-triggers:
 #  - playerjoin
   - blockplaced
   - blockbreak
+  - snowform
+  - leavesdecay
+  - blockburn
 
 # The path where the tile-files are placed.
 tilespath: web/tiles
@@ -121,6 +124,8 @@ templates:
   # Template for normal world
   normal:
     enabled: true
+    # If bigworld set to true, use alternate directory layout better suited to large worlds
+    # bigworld: true
     center:
       x: 0
       y: 64
@@ -184,6 +189,8 @@ templates:
   # Nether world template
   nether:
     enabled: true
+    # If bigworld set to true, use alternate directory layout better suited to large worlds
+    # bigworld: true
     center:
       x: 0
       y: 64
@@ -209,6 +216,8 @@ templates:
   # Skylands world template
   skylands:
     enabled: true
+    # If bigworld set to true, use alternate directory layout better suited to large worlds
+    # bigworld: true
     center:
       x: 0
       y: 64
@@ -267,6 +276,8 @@ worlds:
   #    x: 0
   #    y: 64
   #    z: 0
+  #  # If bigworld set to true, use alternate directory layout better suited to large worlds
+  #  # bigworld: true
   #  maps:
   #    - class: org.dynmap.flat.FlatMap
   #      name: flat

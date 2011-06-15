@@ -1,22 +1,39 @@
 package org.dynmap.kzedmap;
 
-import org.bukkit.World;
+import org.dynmap.DynmapWorld;
 import org.dynmap.MapTile;
 
 public class KzedZoomedMapTile extends MapTile {
+    private String fname;
+    private String fname_day;
+
     @Override
     public String getFilename() {
-        return "z" + originalTile.renderer.getName() + "_" + getTileX() + "_" + getTileY() + ".png";
+        if(fname == null) {
+            if(world.bigworld)
+                fname = "z" + originalTile.renderer.getName() + "/" + (getTileX()>>12) + '_' + 
+                    (getTileY() >> 12) + '/' + getTileX() + "_" + getTileY() + ".png";
+            else
+                fname = "z" + originalTile.renderer.getName() + "_" + getTileX() + "_" + getTileY() + ".png";
+        }
+        return fname;
     }
 
     @Override
     public String getDayFilename() {
-        return "z" + originalTile.renderer.getName() + "_day_" + getTileX() + "_" + getTileY() + ".png";
+        if(fname_day == null) {
+            if(world.bigworld)
+                fname_day = "z" + originalTile.renderer.getName() + "_day/" + (getTileX()>>12) + '_' + 
+                    (getTileY() >> 12) + '/' + getTileX() + "_" + getTileY() + ".png";
+            else
+                fname_day = "z" + originalTile.renderer.getName() + "_day_" + getTileX() + "_" + getTileY() + ".png";
+        }
+        return fname_day;
     }
 
     public KzedMapTile originalTile;
 
-    public KzedZoomedMapTile(World world, KzedMap map, KzedMapTile original) {
+    public KzedZoomedMapTile(DynmapWorld world, KzedMap map, KzedMapTile original) {
         super(world, map);
         this.originalTile = original;
     }

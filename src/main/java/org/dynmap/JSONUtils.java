@@ -25,6 +25,7 @@ public class JSONUtils {
     }
     
     // Sets a value on the specified path. If JSONObjects inside the path are missing, they'll be created.
+    @SuppressWarnings("unchecked")
     public static void s(JSONObject o, String path, Object value) {
         int index = path.indexOf('/');
         if (index == -1) {
@@ -45,6 +46,7 @@ public class JSONUtils {
     }
     
     // Adds a value to the list at the specified path. If the list does not exist, it will be created.
+    @SuppressWarnings("unchecked")
     public static void a(JSONObject o, String path, Object value) {
         Object oo = g(o, path);
         JSONArray array;
@@ -58,6 +60,7 @@ public class JSONUtils {
     }
     
     // Simply creates a JSONArray.
+    @SuppressWarnings("unchecked")
     public static JSONArray l(Object... items) {
         JSONArray arr = new JSONArray();
         for(Object item : items) {

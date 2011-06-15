@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class Events {
     public Map<String, Event<?>> events = new HashMap<String, Event<?>>();
+    @SuppressWarnings("unchecked")
     public <T> void addListener(String eventName, Event.Listener<T> listener) {
         Event<?> genericEvent = events.get(eventName);
         Event<T> event = null;
@@ -16,6 +17,7 @@ public class Events {
         event.addListener(listener);
     }
     
+    @SuppressWarnings("unchecked")
     public <T> void removeListener(String eventName, Event.Listener<T> listener) {
         Event<?> genericEvent = events.get(eventName);
         Event<T> event = null;
@@ -25,6 +27,7 @@ public class Events {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public <T> void trigger(String eventName, T argument) {
         Event<?> genericEvent = events.get(eventName);
         if (genericEvent == null)

@@ -1,19 +1,20 @@
 package org.dynmap.kzedmap;
 
+import org.dynmap.DynmapWorld;
 import java.io.File;
-
-import org.bukkit.World;
 import org.dynmap.MapTile;
 
 public class KzedMapTile extends MapTile {
     public KzedMap map;
     public MapTileRenderer renderer;
     public int px, py;
+    private String fname;
+    private String fname_day;
 
     // Hack.
     public File file = null;
 
-    public KzedMapTile(World world, KzedMap map, MapTileRenderer renderer, int px, int py) {
+    public KzedMapTile(DynmapWorld world, KzedMap map, MapTileRenderer renderer, int px, int py) {
         super(world, map);
         this.map = map;
         this.renderer = renderer;
@@ -23,12 +24,24 @@ public class KzedMapTile extends MapTile {
 
     @Override
     public String getFilename() {
-        return renderer.getName() + "_" + px + "_" + py + ".png";
+        if(fname == null) {
+            if(world.bigworld)        
+                fname = renderer.getName() + "/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
+            else
+                fname = renderer.getName() + "_" + px + "_" + py + ".png";            
+        }
+        return fname;
     }
 
     @Override
     public String getDayFilename() {
-        return renderer.getName() + "_day_" + px + "_" + py + ".png";
+        if(fname_day == null) {
+            if(world.bigworld)        
+                fname_day = renderer.getName() + "_day/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
+            else
+                fname_day = renderer.getName() + "_day_" + px + "_" + py + ".png";            
+        }
+        return fname_day;
     }
 
     @Override

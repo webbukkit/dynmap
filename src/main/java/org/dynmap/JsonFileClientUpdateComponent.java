@@ -3,7 +3,6 @@ package org.dynmap;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.Reader;
@@ -13,9 +12,7 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.dynmap.web.Json;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -105,6 +102,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         }
     }
     
+    @SuppressWarnings("unchecked")
     protected void writeUpdates() {
         File outputFile;
         File outputTempFile;
