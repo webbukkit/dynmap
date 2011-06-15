@@ -3,6 +3,7 @@ package org.dynmap;
 import java.io.File;
 
 import org.bukkit.Location;
+import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 
 public abstract class MapType {

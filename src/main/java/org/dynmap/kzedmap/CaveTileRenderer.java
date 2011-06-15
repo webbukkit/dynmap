@@ -1,9 +1,9 @@
 package org.dynmap.kzedmap;
 
 import org.bukkit.World;
-import org.dynmap.MapChunkCache;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.utils.MapIterator;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
 
@@ -13,11 +13,11 @@ public class CaveTileRenderer extends DefaultTileRenderer {
 
     @Override
     protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
-            MapChunkCache.MapIterator mapiter) {
+        MapIterator mapiter) {
         boolean air = true;
         result.setTransparent();
         for (;;) {
-            if (mapiter.y < 0)
+            if (mapiter.getY() < 0)
                 return;
 
             int id = mapiter.getBlockTypeID();
@@ -63,12 +63,12 @@ public class CaveTileRenderer extends DefaultTileRenderer {
                 int cr, cg, cb;
                 int mult = 256;
 
-                if (mapiter.y < 64) {
+                if (mapiter.getY() < 64) {
                     cr = 0;
-                    cg = 64 + mapiter.y * 3;
-                    cb = 255 - mapiter.y * 4;
+                    cg = 64 + mapiter.getY() * 3;
+                    cb = 255 - mapiter.getY() * 4;
                 } else {
-                    cr = (mapiter.y - 64) * 4;
+                    cr = (mapiter.getY() - 64) * 4;
                     cg = 255;
                     cb = 0;
                 }

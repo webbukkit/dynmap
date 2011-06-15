@@ -1,12 +1,12 @@
 package org.dynmap.kzedmap;
 
 import java.util.HashSet;
-import org.dynmap.MapChunkCache;
 import java.util.List;
 
 import org.bukkit.World;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.utils.MapIterator;
 
 public class HighlightTileRenderer extends DefaultTileRenderer {
     protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
@@ -21,10 +21,10 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
 
     @Override
     protected void scan(World world,int seq, boolean isnether, final Color result, final Color result_day,
-            MapChunkCache.MapIterator mapiter) {
+            MapIterator mapiter) {
         result.setTransparent();
         for (;;) {
-            if (mapiter.y < 0) {
+            if (mapiter.getY() < 0) {
                 break;
             }
 
