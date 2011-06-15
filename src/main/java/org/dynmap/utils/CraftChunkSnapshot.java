@@ -1,10 +1,11 @@
-package org.dynmap;
+package org.dynmap.utils;
+
 
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks
  * Purpose is to allow clean, efficient copy of a chunk data to be made, and then handed off for processing in another thread (e.g. map rendering)
  */
-public class CraftChunkSnapshot implements ChunkSnapshot {
+public class CraftChunkSnapshot implements LegacyChunkSnapshot {
 	private final int x, z;
 	private final byte[] buf;	/* Flat buffer in uncompressed chunk file format */
 	private final byte[] hmap; /* Highest Y map */

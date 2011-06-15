@@ -2,10 +2,6 @@ package org.dynmap.flat;
 
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
-import java.awt.image.DataBufferInt;
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 
@@ -26,8 +22,9 @@ import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
-import org.dynmap.MapChunkCache;
 import org.dynmap.utils.FileLockManager;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
 
 public class FlatMap extends MapType {
@@ -128,7 +125,7 @@ public class FlatMap extends MapType {
             argb_buf_day = im_day.argb_buf;
             pixel_day = new int[4];
         }
-        MapChunkCache.MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
+        MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
         for (int x = 0; x < t.size; x++) {
             mapiter.initialize(t.x * t.size + x, 127, t.y * t.size);
             for (int y = 0; y < t.size; y++, mapiter.incrementZ()) {
@@ -137,7 +134,7 @@ public class FlatMap extends MapType {
                 if(isnether) {
                     while((blockType = mapiter.getBlockTypeID()) != 0) {
                         mapiter.decrementY();
-                        if(mapiter.y < 0) {    /* Solid - use top */
+                        if(mapiter.getY() < 0) {    /* Solid - use top */
                             mapiter.setY(127);
                             blockType = mapiter.getBlockTypeID();
                             break;
@@ -146,7 +143,7 @@ public class FlatMap extends MapType {
                     if(blockType == 0) {    /* Hit air - now find non-air */
                         while((blockType = mapiter.getBlockTypeID()) == 0) {
                             mapiter.decrementY();
-                            if(mapiter.y < 0) {
+                            if(mapiter.getY() < 0) {
                                 mapiter.setY(0);
                                 break;
                             }
@@ -189,7 +186,7 @@ public class FlatMap extends MapType {
                 }
                 /* If ambient light less than 15, do scaling */
                 else if((shadowscale != null) && (ambientlight < 15)) {
-                    if(mapiter.y < 127) 
+                    if(mapiter.getY() < 127) 
                         mapiter.incrementY();
                     if(night_and_day) { /* Use unscaled color for day (no shadows from above) */
                         pixel_day[0] = pixel[0];    
@@ -204,10 +201,10 @@ public class FlatMap extends MapType {
                     pixel[3] = 255;
                 }
                 else {  /* Only do height keying if we're not messing with ambient light */
-                    boolean below = mapiter.y < 64;
+                    boolean below = mapiter.getY() < 64;
 
                     // Make height range from 0 - 1 (1 - 0 for below and 0 - 1 above)
-                    float height = (below ? 64 - mapiter.y : mapiter.y - 64) / 64.0f;
+                    float height = (below ? 64 - mapiter.getY() : mapiter.getY() - 64) / 64.0f;
 
                     // Defines the 'step' in coloring.
                     float step = 10 / 128.0f;
@@ -304,7 +301,7 @@ public class FlatMap extends MapType {
         
         return rendered;
     }
-    private void process_transparent(int[] pixel, int[] pixel_day, MapChunkCache.MapIterator mapiter) {
+    private void process_transparent(int[] pixel, int[] pixel_day, MapIterator mapiter) {
         int r = pixel[0], g = pixel[1], b = pixel[2], a = pixel[3];
         int r_day = 0, g_day = 0, b_day = 0, a_day = 0;
         if(pixel_day != null) {
@@ -316,7 +313,7 @@ public class FlatMap extends MapType {
         /* Handle lighting on cube */
         if((shadowscale != null) && (ambientlight < 15)) {
             boolean did_inc = false;
-            if(mapiter.y < 127) {
+            if(mapiter.getY() < 127) {
                 mapiter.incrementY();
                 did_inc = true;
             }
@@ -335,7 +332,7 @@ public class FlatMap extends MapType {
             if(pixel_day != null) 
                 pixel_day[0] = pixel_day[1] = pixel_day[2] = pixel_day[3] = 0;
             mapiter.decrementY();
-            if(mapiter.y >= 0) {
+            if(mapiter.getY() >= 0) {
                 int blockType = mapiter.getBlockTypeID();
                 int data = 0;
                 Color[] colors = colorScheme.colors[blockType];

@@ -16,7 +16,7 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
-import org.dynmap.MapChunkCache;
+import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DataBuffer;
@@ -45,7 +45,6 @@ public class KzedMap extends MapType {
     public static final int anchorz = 0;
     
     MapTileRenderer[] renderers;
-    ZoomedTileRenderer zoomrenderer;
 
     /* BufferedImage with direct access to its ARGB-formatted data buffer */
     public static class KzedBufferedImage {
@@ -67,8 +66,6 @@ public class KzedMap extends MapType {
         this.renderers = new MapTileRenderer[renderers.size()];
         renderers.toArray(this.renderers);
         Log.info("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
-        
-        zoomrenderer = new ZoomedTileRenderer(configuration);
     }
 
     @Override
@@ -229,10 +226,7 @@ public class KzedMap extends MapType {
 
     @Override
     public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
-        if (tile instanceof KzedZoomedMapTile) {
-            zoomrenderer.render(cache, (KzedZoomedMapTile) tile, outputFile);
-            return true;
-        } else if (tile instanceof KzedMapTile) {
+        if (tile instanceof KzedMapTile) {
             return ((KzedMapTile) tile).renderer.render(cache, (KzedMapTile) tile, outputFile);
         }
         return false;

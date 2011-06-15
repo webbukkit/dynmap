@@ -1,7 +1,8 @@
 package org.dynmap.kzedmap;
 
 import java.io.File;
-import org.dynmap.MapChunkCache;
+
+import org.dynmap.utils.MapChunkCache;
 
 import org.json.simple.JSONObject;
 

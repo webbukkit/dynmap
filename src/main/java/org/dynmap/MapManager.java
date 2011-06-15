@@ -18,6 +18,9 @@ import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
 import org.dynmap.debug.Debug;
+import org.dynmap.utils.LegacyMapChunkCache;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.NewMapChunkCache;
 
 public class MapManager {
     public AsynchronousQueue<MapTile> tileQueue;
@@ -406,13 +409,24 @@ public class MapManager {
         return world.updates.getUpdatedObjects(since);
     }
 
+    private static boolean use_legacy = false;
     /**
      * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
      */
     public MapChunkCache createMapChunkCache(final World w, final DynmapChunk[] chunks) {
         Callable<MapChunkCache> job = new Callable<MapChunkCache>() {
             public MapChunkCache call() {
-                return new MapChunkCache(w, chunks);
+                MapChunkCache c = null;
+                try {
+                    if(!use_legacy)
+                        c = new NewMapChunkCache();
+                } catch (NoClassDefFoundError ncdfe) {
+                    use_legacy = true;
+                }
+                if(c == null)
+                    c = new LegacyMapChunkCache();
+                c.loadChunks(w, chunks);
+                return c;
             }
         };
         Future<MapChunkCache> rslt = scheduler.callSyncMethod(plug_in, job);

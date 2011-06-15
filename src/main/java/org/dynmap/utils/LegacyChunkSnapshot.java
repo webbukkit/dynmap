@@ -1,10 +1,10 @@
-package org.dynmap;
+package org.dynmap.utils;
 
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks
  * Purpose is to allow clean, efficient copy of a chunk data to be made, and then handed off for processing in another thread (e.g. map rendering)
  */
-public interface ChunkSnapshot {
+public interface LegacyChunkSnapshot {
     /**
      * Get block type for block at corresponding coordinate in the chunk
      * 
