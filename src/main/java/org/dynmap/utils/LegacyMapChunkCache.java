@@ -1,15 +1,19 @@
-package org.dynmap;
+package org.dynmap.utils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
+import org.dynmap.DynmapChunk;
+import org.dynmap.Log;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
-public class MapChunkCache {
+public class LegacyMapChunkCache implements MapChunkCache {
+    private World w;
     private static Method getchunkdata = null;
     private static Method gethandle = null;
     private static Method poppreservedchunk = null;
@@ -19,16 +23,16 @@ public class MapChunkCache {
     private int x_min, x_max, z_min, z_max;
     private int x_dim;
     
-    private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
+    private LegacyChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     
     /**
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
-    public class MapIterator {
-        public int x, y, z;  
-        private ChunkSnapshot snap;
+    public class OurMapIterator implements MapIterator {
+        private int x, y, z;  
+        private LegacyChunkSnapshot snap;
 
-        MapIterator(int x0, int y0, int z0) {
+        OurMapIterator(int x0, int y0, int z0) {
             initialize(x0, y0, z0);
         }
         public final void initialize(int x0, int y0, int z0) {
@@ -105,12 +109,15 @@ public class MapChunkCache {
         public final void setY(int y) {
             this.y = y;
         }
+        public final int getY() {
+            return y;
+        }
      }
 
     /**
      * Chunk cache for representing unloaded chunk
      */
-    private static class EmptyChunk implements ChunkSnapshot {
+    private static class EmptyChunk implements LegacyChunkSnapshot {
         public final int getBlockTypeId(int x, int y, int z) {
             return 0;
         }
@@ -129,6 +136,12 @@ public class MapChunkCache {
     }
     
     private static final EmptyChunk EMPTY = new EmptyChunk();
+    
+    /**
+     * Construct empty cache
+     */
+    public LegacyMapChunkCache() {
+    }
     /**
      * Create chunk cache container
      * @param w - world
@@ -138,7 +151,7 @@ public class MapChunkCache {
      * @param z_max - maximum chunk z coordinate
      */
     @SuppressWarnings({ "unchecked" })
-    public MapChunkCache(World w, DynmapChunk[] chunks) {
+    public void loadChunks(World w, DynmapChunk[] chunks) {
         /* Compute range */
         if(chunks.length == 0) {
             this.x_min = 0;
@@ -162,10 +175,10 @@ public class MapChunkCache {
             }
             x_dim = x_max - x_min + 1;            
         }
+        this.w = w;
     
         if(!initialized) {
             try {
-                @SuppressWarnings("rawtypes")
                 Class c = Class.forName("net.minecraft.server.Chunk");
                 getchunkdata = c.getDeclaredMethod("a", new Class[] { byte[].class, int.class, 
                     int.class, int.class, int.class, int.class, int.class, int.class });
@@ -178,7 +191,6 @@ public class MapChunkCache {
             }
             /* Get CraftWorld.popPreservedChunk(x,z) - reduces memory bloat from map traversals (optional) */
             try {
-                @SuppressWarnings("rawtypes")
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftWorld");
                 poppreservedchunk = c.getDeclaredMethod("popPreservedChunk", new Class[] { int.class, int.class });
             } catch (ClassNotFoundException cnfx) {
@@ -192,7 +204,7 @@ public class MapChunkCache {
                 return;
             }
         }
-        snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
+        snaparray = new LegacyChunkSnapshot[x_dim * (z_max-z_min+1)];
         if(gethandle != null) {
             // Load the required chunks.
             for (DynmapChunk chunk : chunks) {
@@ -258,39 +270,39 @@ public class MapChunkCache {
      * Get block ID at coordinates
      */
     public int getBlockTypeID(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+        LegacyChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getBlockTypeId(x & 0xF, y, z & 0xF);
     }
     /**
      * Get block data at coordiates
      */
     public byte getBlockData(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+        LegacyChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return (byte)ss.getBlockData(x & 0xF, y, z & 0xF);
     }
     /* Get highest block Y
      * 
      */
     public int getHighestBlockYAt(int x, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+        LegacyChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getHighestBlockYAt(x & 0xF, z & 0xF);
     }
     /* Get sky light level
      */
     public int getBlockSkyLight(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+        LegacyChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getBlockSkyLight(x & 0xF, y, z & 0xF);
     }
     /* Get emitted light level
      */
     public int getBlockEmittedLight(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+        LegacyChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
     }
     /**
      * Get cache iterator
      */
     public MapIterator getIterator(int x, int y, int z) {
-        return new MapIterator(x, y, z);
+        return new OurMapIterator(x, y, z);
     }
 }

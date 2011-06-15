@@ -18,9 +18,10 @@ import org.dynmap.ConfigurationNode;
 import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
-import org.dynmap.MapChunkCache;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.utils.FileLockManager;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
 
 public class DefaultTileRenderer implements MapTileRenderer {
@@ -108,7 +109,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
         int x, y;
 
-        MapChunkCache.MapIterator mapiter = cache.getIterator(ix, iy, iz);
+        MapIterator mapiter = cache.getIterator(ix, iy, iz);
         
         Color c1 = new Color();
         Color c2 = new Color();
@@ -356,14 +357,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
     }
     protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
-            MapChunkCache.MapIterator mapiter) {
+            MapIterator mapiter) {
         int lightlevel = 15;
         int lightlevel_day = 15;
         result.setTransparent();
         if(result_day != null)
             result_day.setTransparent();
         for (;;) {
-            if (mapiter.y < 0) {
+            if (mapiter.getY() < 0) {
                 return;
             }
             int id = mapiter.getBlockTypeID();
@@ -383,7 +384,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 if(colorScheme.datacolors[id] != null) {    /* If data colored */
                     data = mapiter.getBlockData();
                 }
-                if((shadowscale != null) && (mapiter.y < 127)) {
+                if((shadowscale != null) && (mapiter.getY() < 127)) {
                     /* Find light level of previous chunk */
                     switch(seq) {
                         case 0:
