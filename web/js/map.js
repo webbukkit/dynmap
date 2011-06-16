@@ -145,7 +145,7 @@ DynMap.prototype = {
 			scaleControl: false,
 			mapTypeControl: false,
 			streetViewControl: false,
-			backgroundColor: 'none'
+			backgroundColor: '#000000'
 		});
 		
 		map.zoom_changed = function() {
