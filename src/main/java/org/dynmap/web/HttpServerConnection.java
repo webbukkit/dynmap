@@ -121,6 +121,7 @@ public class HttpServerConnection extends Thread {
             if (socket == null)
                 return;
             socket.setSoTimeout(5000);
+            socket.setTcpNoDelay(true);
             InetSocketAddress rmtaddr = (InetSocketAddress)socket.getRemoteSocketAddress(); /* Get remote address */
             InputStream in = socket.getInputStream();
             BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream(), 40960);
