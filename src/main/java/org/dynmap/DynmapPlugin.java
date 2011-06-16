@@ -363,14 +363,14 @@ public class DynmapPlugin extends JavaPlugin {
                     for (int i = 1; i < args.length; i++) {
                         World w = getServer().getWorld(args[i]);
                         if(w != null)
-                            mapManager.renderFullWorld(new Location(w, 0, 0, 0));
+                            mapManager.renderFullWorld(new Location(w, 0, 0, 0),sender);
                         else
                             sender.sendMessage("World '" + args[i] + "' not defined/loaded");
                     }
                 } else if (player != null) {
                     Location loc = player.getLocation();
                     if(loc != null)
-                        mapManager.renderFullWorld(loc);
+                        mapManager.renderFullWorld(loc, sender);
                 } else {
                     sender.sendMessage("World name is required");
                 }

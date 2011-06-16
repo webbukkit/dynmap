@@ -88,14 +88,16 @@ public class MapManager {
         MapTile tile0 = null;
         MapTile tile = null;
         int rendercnt = 0;
+        CommandSender sender;
 
         /* Full world, all maps render */
-        FullWorldRenderState(DynmapWorld dworld, Location l) {
+        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender) {
             world = dworld;
             loc = l;
             found = new HashSet<MapTile>();
             rendered = new HashSet<MapTile>();
             renderQueue = new LinkedList<MapTile>();
+            this.sender = sender;
         }
 
         /* Single tile render - used for incremental renders */
@@ -122,7 +124,7 @@ public class MapManager {
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
-                        Log.info("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
+                        sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
                                  world.world.getName() + "' completed - " + rendercnt + " tiles rendered.");
                     }                	
                     found.clear();
@@ -130,7 +132,7 @@ public class MapManager {
                     rendercnt = 0;
                     map_index++;    /* Next map */
                     if(map_index >= world.maps.size()) {    /* Last one done? */
-                        Log.info("Full render of '" + world.world.getName() + "' finished.");
+                        sender.sendMessage("Full render of '" + world.world.getName() + "' finished.");
                         cleanup();
                         return;
                     }
@@ -184,7 +186,7 @@ public class MapManager {
                 found.remove(tile);
                 rendercnt++;
                 if((rendercnt % 100) == 0) {
-                    Log.info("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
+                    sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
                             w.getName() + "' in progress - " + rendercnt + " tiles rendered, " + renderQueue.size() + " tiles pending.");
                 }
             }
@@ -248,10 +250,10 @@ public class MapManager {
         
     }
 
-    void renderFullWorld(Location l) {
+    void renderFullWorld(Location l, CommandSender sender) {
         DynmapWorld world = getWorld(l.getWorld().getName());
         if (world == null) {
-            Log.severe("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
+            sender.sendMessage("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
             return;
         }
         String wname = l.getWorld().getName();
@@ -259,15 +261,15 @@ public class MapManager {
         synchronized(lock) {
             rndr = active_renders.get(wname);
             if(rndr != null) {
-                Log.info("Full world render of world '" + wname + "' already active.");
+                sender.sendMessage("Full world render of world '" + wname + "' already active.");
                 return;
             }
-            rndr = new FullWorldRenderState(world,l);    /* Make new activation record */
+            rndr = new FullWorldRenderState(world,l,sender);    /* Make new activation record */
             active_renders.put(wname, rndr);    /* Add to active table */
         }
         /* Schedule first tile to be worked */
         renderpool.execute(rndr);
-        Log.info("Full render starting on world '" + wname + "'...");
+        sender.sendMessage("Full render starting on world '" + wname + "'...");
     }
 
     public void activateWorld(World w) {
