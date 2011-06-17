@@ -136,6 +136,8 @@ templates:
         title: "Flat"
         prefix: flat
         colorscheme: default
+        # The textured setting makes the flat render toning much more consistent with the other maps: set to 'false' for the original flat texture
+        textured: true
   #      # To render a world as a "night view", set shadowstrength and ambientlight
   #      shadowstrength: 1.0
   #      ambientlight: 4
@@ -204,6 +206,8 @@ templates:
         colorscheme: default
         # Map background color (day or night)
         background: "#300806"
+        # The textured setting makes the flat render toning much more consistent with the other maps: set to 'false' for the original flat texture
+        textured: true
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -233,6 +237,8 @@ templates:
         backgroundday: "#153E7E"
         # Background color for map during the night
         backgroundnight: "#000000"        
+        # The textured setting makes the flat render toning much more consistent with the other maps: set to 'false' for the original flat texture
+        textured: true
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -297,6 +303,8 @@ worlds:
   #      title: "Flat"
   #      prefix: flat
   #      colorscheme: default
+  #      # The textured setting makes the flat render toning much more consistent with the other maps: set to 'false' for the original flat texture
+  #      textured: true
   #      # To render a world as a "night view", set shadowstrength and ambientlight
   #      shadowstrength: 1.0
   #      ambientlight: 4
@@ -364,6 +372,8 @@ worlds:
   #      title: "Flat"
   #      prefix: flat
   #      colorscheme: default
+  #      # The textured setting makes the flat render toning much more consistent with the other maps: set to 'false' for the original flat texture
+  #      textured: true
   #    - class: org.dynmap.kzedmap.KzedMap
   #      renderers:
   #        - class: org.dynmap.kzedmap.DefaultTileRenderer
