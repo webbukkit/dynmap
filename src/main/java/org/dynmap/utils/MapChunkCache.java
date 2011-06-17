@@ -3,6 +3,14 @@ import org.bukkit.World;
 import org.dynmap.DynmapChunk;
 
 public interface MapChunkCache {
+    public enum HiddenChunkStyle {
+        FILL_AIR,
+        FILL_STONE_PLAIN,
+        FILL_OCEAN
+    };
+    public static class VisibilityLimit {
+        public int x0, x1, z0, z1;
+    }
     /**
      * Load chunks into cache
      * @param w - world
@@ -37,4 +45,14 @@ public interface MapChunkCache {
      * Get cache iterator
      */
     public MapIterator getIterator(int x, int y, int z);
+    /**
+     * Set hidden chunk style (default is FILL_AIR)
+     */
+    public void setHiddenFillStyle(HiddenChunkStyle style);
+    /**
+     * Add visible area limit - can be called more than once 
+     * Needs to be set before chunks are loaded
+     * Coordinates are block coordinates
+     */
+    public void setVisibleRange(VisibilityLimit limit);
 }

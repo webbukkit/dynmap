@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.Location;
+import org.dynmap.utils.MapChunkCache;
 
 public class DynmapWorld {
     public World world;
@@ -12,6 +13,8 @@ public class DynmapWorld {
     public UpdateQueue updates = new UpdateQueue();
     public ConfigurationNode configuration;
     public List<Location> seedloc;
+    public List<MapChunkCache.VisibilityLimit> visibility_limits;
+    public MapChunkCache.HiddenChunkStyle hiddenchunkstyle;
     public int servertime;
     public boolean sendposition;
     public boolean sendhealth;
