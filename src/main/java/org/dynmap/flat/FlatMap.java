@@ -37,6 +37,7 @@ public class FlatMap extends MapType {
     private int shadowscale[] = null;
     private boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
     protected boolean transparency;
+    private boolean textured = false;
     
     public FlatMap(ConfigurationNode configuration) {
         this.configuration = configuration;
@@ -69,6 +70,7 @@ public class FlatMap extends MapType {
         }
         night_and_day = configuration.getBoolean("night-and-day", false);
         transparency = configuration.getBoolean("transparency", false);  /* Default off */
+        textured = configuration.getBoolean("textured", false);
     }
 
     @Override
@@ -173,7 +175,13 @@ public class FlatMap extends MapType {
                 }
                 if (colors == null)
                     continue;
-                Color c = colors[0];
+                Color c;
+                if(textured && (((x+y) & 0x01) == 1)) {
+                    c = colors[2];                    
+                }
+                else {
+                    c = colors[0];
+                }
                 if (c == null)
                     continue;
 
