@@ -1,19 +1,20 @@
 package org.dynmap.utils;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.lang.reflect.Field;
-import java.util.LinkedList;
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 
+import java.util.List;
+
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
 public class LegacyMapChunkCache implements MapChunkCache {
-    private World w;
     private static Method getchunkdata = null;
     private static Method gethandle = null;
     private static Method poppreservedchunk = null;
@@ -22,6 +23,8 @@ public class LegacyMapChunkCache implements MapChunkCache {
     
     private int x_min, x_max, z_min, z_max;
     private int x_dim;
+    private HiddenChunkStyle hidestyle = HiddenChunkStyle.FILL_AIR;
+    private List<VisibilityLimit> visible_limits = null;
     
     private LegacyChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     
@@ -115,7 +118,7 @@ public class LegacyMapChunkCache implements MapChunkCache {
      }
 
     /**
-     * Chunk cache for representing unloaded chunk
+     * Chunk cache for representing unloaded chunk (or air chunk)
      */
     private static class EmptyChunk implements LegacyChunkSnapshot {
         public final int getBlockTypeId(int x, int y, int z) {
@@ -131,11 +134,42 @@ public class LegacyMapChunkCache implements MapChunkCache {
             return 0;
         }
         public final int getHighestBlockYAt(int x, int z) {
-            return 1;
+            return 0;
         }
     }
-    
+
+    /**
+     * Chunk cache for representing hidden chunk as stone
+     */
+    private static class PlainChunk implements LegacyChunkSnapshot {
+        private int fillid;
+        PlainChunk(int fillid) { this.fillid = fillid; }
+        
+        public final int getBlockTypeId(int x, int y, int z) {
+            if(y < 64)
+                return fillid;
+            return 0;
+        }
+        public final int getBlockData(int x, int y, int z) {
+            return 0;
+        }
+        public final int getBlockSkyLight(int x, int y, int z) {
+            if(y < 64)
+                return 0;
+            return 15;
+        }
+        public final int getBlockEmittedLight(int x, int y, int z) {
+            return 0;
+        }
+        public final int getHighestBlockYAt(int x, int z) {
+            return 64;
+        }
+    }
+
     private static final EmptyChunk EMPTY = new EmptyChunk();
+    private static final PlainChunk STONE = new PlainChunk(1);
+    private static final PlainChunk OCEAN = new PlainChunk(9);
+    
     
     /**
      * Construct empty cache
@@ -175,7 +209,6 @@ public class LegacyMapChunkCache implements MapChunkCache {
             }
             x_dim = x_max - x_min + 1;            
         }
-        this.w = w;
     
         if(!initialized) {
             try {
@@ -208,22 +241,43 @@ public class LegacyMapChunkCache implements MapChunkCache {
         if(gethandle != null) {
             // Load the required chunks.
             for (DynmapChunk chunk : chunks) {
+                boolean vis = true;
+                if(visible_limits != null) {
+                    vis = false;
+                    for(VisibilityLimit limit : visible_limits) {
+                        if((chunk.x >= limit.x0) && (chunk.x <= limit.x1) && (chunk.z >= limit.z0) && (chunk.z <= limit.z1)) {
+                            vis = true;
+                            break;
+                        }
+                    }
+                }
                 boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
                 boolean didload = w.loadChunk(chunk.x, chunk.z, false);
                 /* If it did load, make cache of it */
                 if(didload) {
-                    Chunk c = w.getChunkAt(chunk.x, chunk.z);
-                    try {
-                        Object cc = gethandle.invoke(c);
-                        byte[] buf = new byte[32768 + 16384 + 16384 + 16384];   /* Get big enough buffer for whole chunk */
-                        getchunkdata.invoke(cc, buf, 0, 0, 0, 16, 128, 16, 0);
-                        byte[] h = (byte[])heightmap.get(cc);
-                        byte[] hmap = new byte[256];
-                        System.arraycopy(h, 0, hmap, 0, 256);
-                        CraftChunkSnapshot ss = new CraftChunkSnapshot(chunk.x, chunk.z, buf, hmap); 
-                        snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
-                    } catch (Exception x) {
+                    LegacyChunkSnapshot ss = null;
+                    if(!vis) {
+                        if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
+                            ss = STONE;
+                        else if(hidestyle == HiddenChunkStyle.FILL_OCEAN)
+                            ss = OCEAN;
+                        else
+                            ss = EMPTY;
                     }
+                    else {
+                        Chunk c = w.getChunkAt(chunk.x, chunk.z);
+                        try {
+                            Object cc = gethandle.invoke(c);
+                            byte[] buf = new byte[32768 + 16384 + 16384 + 16384];   /* Get big enough buffer for whole chunk */
+                            getchunkdata.invoke(cc, buf, 0, 0, 0, 16, 128, 16, 0);
+                            byte[] h = (byte[])heightmap.get(cc);
+                            byte[] hmap = new byte[256];
+                            System.arraycopy(h, 0, hmap, 0, 256);
+                            ss = new CraftChunkSnapshot(chunk.x, chunk.z, buf, hmap); 
+                        } catch (Exception x) {
+                        }
+                    }
+                    snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
                 }
                 if ((!wasLoaded) && didload) {
                     /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
@@ -304,5 +358,34 @@ public class LegacyMapChunkCache implements MapChunkCache {
      */
     public MapIterator getIterator(int x, int y, int z) {
         return new OurMapIterator(x, y, z);
+    }
+    /**
+     * Set hidden chunk style (default is FILL_AIR)
+     */
+    public void setHiddenFillStyle(HiddenChunkStyle style) {
+        this.hidestyle = style;
+    }
+    /**
+     * Add visible area limit - can be called more than once 
+     * Needs to be set before chunks are loaded
+     * Coordinates are block coordinates
+     */
+    public void setVisibleRange(VisibilityLimit lim) {
+        VisibilityLimit limit = new VisibilityLimit();
+        if(lim.x0 > lim.x1) {
+            limit.x0 = (lim.x1 >> 4); limit.x1 = ((lim.x0+15) >> 4);
+        }
+        else {
+            limit.x0 = (lim.x0 >> 4); limit.x1 = ((lim.x1+15) >> 4);
+        }
+        if(lim.z0 > lim.z1) {
+            limit.z0 = (lim.z1 >> 4); limit.z1 = ((lim.z0+15) >> 4);
+        }
+        else {
+            limit.z0 = (lim.z0 >> 4); limit.z1 = ((lim.z1+15) >> 4);
+        }
+        if(visible_limits == null)
+            visible_limits = new ArrayList<VisibilityLimit>();
+        visible_limits.add(limit);
     }
 }

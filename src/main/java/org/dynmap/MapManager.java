@@ -164,7 +164,7 @@ public class MapManager {
             World w = world.world;
             /* Fetch chunk cache from server thread */
             DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
-            MapChunkCache cache = createMapChunkCache(w, requiredChunks);
+            MapChunkCache cache = createMapChunkCache(world, requiredChunks);
             if(cache == null) {
                 cleanup();
                 return; /* Cancelled/aborted */
@@ -309,6 +309,29 @@ public class MapManager {
                 dynmapWorld.seedloc.add(lx);
             }
         }
+        /* Load visibility limits, if any are defined */
+        List<ConfigurationNode> vislimits = worldConfiguration.getNodes("visibilitylimits");
+        if(vislimits != null) {
+            dynmapWorld.visibility_limits = new ArrayList<MapChunkCache.VisibilityLimit>();
+            for(ConfigurationNode vis : vislimits) {
+                MapChunkCache.VisibilityLimit lim = new MapChunkCache.VisibilityLimit();
+                lim.x0 = vis.getInteger("x0", 0);
+                lim.x1 = vis.getInteger("x1", 0);
+                lim.z0 = vis.getInteger("z0", 0);
+                lim.z1 = vis.getInteger("z1", 0);
+                dynmapWorld.visibility_limits.add(lim);
+                /* Also, add a seed location for the middle of each visible area */
+                dynmapWorld.seedloc.add(new Location(w, (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
+            }            
+        }
+        String hiddenchunkstyle = worldConfiguration.getString("hidestyle", "stone");
+        if(hiddenchunkstyle.equals("air"))
+            dynmapWorld.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_AIR;
+        else if(hiddenchunkstyle.equals("ocean"))
+            dynmapWorld.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_OCEAN;
+        else
+            dynmapWorld.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_STONE_PLAIN;
+            
     
         // TODO: Make this less... weird...
         // Insert the world on the same spot as in the configuration.
@@ -416,7 +439,7 @@ public class MapManager {
     /**
      * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
      */
-    public MapChunkCache createMapChunkCache(final World w, final DynmapChunk[] chunks) {
+    public MapChunkCache createMapChunkCache(final DynmapWorld w, final DynmapChunk[] chunks) {
         Callable<MapChunkCache> job = new Callable<MapChunkCache>() {
             public MapChunkCache call() {
                 MapChunkCache c = null;
@@ -428,7 +451,13 @@ public class MapManager {
                 }
                 if(c == null)
                     c = new LegacyMapChunkCache();
-                c.loadChunks(w, chunks);
+                if(w.visibility_limits != null) {
+                    for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
+                        c.setVisibleRange(limit);
+                    }
+                    c.setHiddenFillStyle(w.hiddenchunkstyle);
+                }
+                c.loadChunks(w.world, chunks);
                 return c;
             }
         };
