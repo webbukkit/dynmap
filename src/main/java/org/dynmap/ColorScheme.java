@@ -69,14 +69,16 @@ public class ColorScheme {
                 else {
                     id = new Integer(split[0]);
                 }
-                Color[] c = new Color[4];
+                Color[] c = new Color[5];
 
                 /* store colors by raycast sequence number */
                 c[0] = new Color(Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]));
                 c[3] = new Color(Integer.parseInt(split[5]), Integer.parseInt(split[6]), Integer.parseInt(split[7]), Integer.parseInt(split[8]));
                 c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
                 c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
-
+                /* Blended color - for 'smooth' option on flat map */
+                c[4] = new Color((c[0].getRed()+c[2].getRed())/2, (c[0].getGreen()+c[2].getGreen())/2, (c[0].getBlue()+c[2].getBlue())/2, (c[0].getAlpha()+c[2].getAlpha())/2);
+                
                 if(dat != null) {
                     Color[][] dcolor = datacolors[id];    /* Existing list? */
                     if(dcolor == null) {
