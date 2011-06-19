@@ -164,7 +164,7 @@ public class KzedMap extends MapType {
         return false;
     }
     @Override
-    public DynmapChunk[] getRequiredChunks(MapTile tile) {
+    public List<DynmapChunk> getRequiredChunks(MapTile tile) {
         if (tile instanceof KzedMapTile) {
             KzedMapTile t = (KzedMapTile) tile;
 
@@ -216,12 +216,9 @@ public class KzedMap extends MapType {
                     chunks.add(chunk);
                 }
             }
-
-            DynmapChunk[] result = new DynmapChunk[chunks.size()];
-            chunks.toArray(result);
-            return result;
+            return chunks;
         } else {
-            return new DynmapChunk[0];
+            return new ArrayList<DynmapChunk>();
         }
     }
 

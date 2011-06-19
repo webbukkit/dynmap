@@ -9,10 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -25,13 +25,18 @@ import org.dynmap.utils.NewMapChunkCache;
 public class MapManager {
     public AsynchronousQueue<MapTile> tileQueue;
 
+    private static final int DEFAULT_CHUNKS_PER_TICK = 200;
+    
     public List<DynmapWorld> worlds = new ArrayList<DynmapWorld>();
     public Map<String, DynmapWorld> worldsLookup = new HashMap<String, DynmapWorld>();
     private BukkitScheduler scheduler;
     private DynmapPlugin plug_in;
     private long timeslice_int = 0; /* In milliseconds */
+    private int max_chunk_loads_per_tick = DEFAULT_CHUNKS_PER_TICK;
     /* Which fullrenders are active */
     private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
+    /* List of MapChunkCache requests to be processed */
+    private ConcurrentLinkedQueue<MapChunkCache> chunkloads = new ConcurrentLinkedQueue<MapChunkCache>();
     /* Tile hash manager */
     public TileHashManager hashman;
     /* lock for our data structures */
@@ -60,10 +65,22 @@ public class MapManager {
     public Collection<DynmapWorld> getWorlds() {
         return worlds;
     }
+
+    private static class OurThreadFactory implements ThreadFactory {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            t.setPriority(Thread.MIN_PRIORITY);
+            t.setName("Dynmap Render Thread");
+            return t;
+        }
+    }
     
     private class DynmapScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor {
         DynmapScheduledThreadPoolExecutor() {
             super(POOL_SIZE);
+            this.setThreadFactory(new OurThreadFactory());
         }
 
         protected void afterExecute(Runnable r, Throwable x) {
@@ -163,7 +180,7 @@ public class MapManager {
             }
             World w = world.world;
             /* Fetch chunk cache from server thread */
-            DynmapChunk[] requiredChunks = tile.getMap().getRequiredChunks(tile);
+            List<DynmapChunk> requiredChunks = tile.getMap().getRequiredChunks(tile);
             MapChunkCache cache = createMapChunkCache(world, requiredChunks);
             if(cache == null) {
                 cleanup();
@@ -222,6 +239,25 @@ public class MapManager {
         }
     }
     
+    private class ProcessChunkLoads implements Runnable {
+        public void run() {
+            int cnt = max_chunk_loads_per_tick;
+            
+            while(cnt > 0) {
+                MapChunkCache c = chunkloads.peek();
+                if(c == null)
+                    return;
+                cnt = cnt - c.loadChunks(cnt);
+                if(c.isDoneLoading()) {
+                    chunkloads.poll();
+                    synchronized(c) {
+                        c.notify();
+                    }
+                }
+            }
+        }
+    }
+    
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
         plug_in = plugin;
         mapman = this;
@@ -235,7 +271,8 @@ public class MapManager {
 
         /* On dedicated thread, so default to no delays */
         timeslice_int = (long)(configuration.getDouble("timesliceinterval", 0.0) * 1000);
-
+        max_chunk_loads_per_tick = configuration.getInteger("maxchunkspertick", DEFAULT_CHUNKS_PER_TICK);
+        if(max_chunk_loads_per_tick < 5) max_chunk_loads_per_tick = 5;
         scheduler = plugin.getServer().getScheduler();
 
         hashman = new TileHashManager(DynmapPlugin.tilesDirectory, configuration.getBoolean("enabletilehash", true));
@@ -247,7 +284,7 @@ public class MapManager {
         }
         
         scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
-        
+        scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 1); /* Chunk loader task */
     }
 
     void renderFullWorld(Location l, CommandSender sender) {
@@ -439,35 +476,32 @@ public class MapManager {
     /**
      * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
      */
-    public MapChunkCache createMapChunkCache(final DynmapWorld w, final DynmapChunk[] chunks) {
-        Callable<MapChunkCache> job = new Callable<MapChunkCache>() {
-            public MapChunkCache call() {
-                MapChunkCache c = null;
-                try {
-                    if(!use_legacy)
-                        c = new NewMapChunkCache();
-                } catch (NoClassDefFoundError ncdfe) {
-                    use_legacy = true;
-                }
-                if(c == null)
-                    c = new LegacyMapChunkCache();
-                if(w.visibility_limits != null) {
-                    for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
-                        c.setVisibleRange(limit);
-                    }
-                    c.setHiddenFillStyle(w.hiddenchunkstyle);
-                }
-                c.loadChunks(w.world, chunks);
-                return c;
-            }
-        };
-        Future<MapChunkCache> rslt = scheduler.callSyncMethod(plug_in, job);
+    public MapChunkCache createMapChunkCache(final DynmapWorld w, final List<DynmapChunk> chunks) {
+        MapChunkCache c = null;
         try {
-            return rslt.get();
-        } catch (Exception x) {
-            Log.info("createMapChunk - " + x);
-            return null;
+            if(!use_legacy)
+                c = new NewMapChunkCache();
+        } catch (NoClassDefFoundError ncdfe) {
+            use_legacy = true;
         }
+        if(c == null)
+            c = new LegacyMapChunkCache();
+        if(w.visibility_limits != null) {
+            for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
+                c.setVisibleRange(limit);
+            }
+            c.setHiddenFillStyle(w.hiddenchunkstyle);
+        }
+        c.setChunks(w.world, chunks);
+        synchronized(c) {
+            chunkloads.add(c);
+            try {
+                c.wait();
+            } catch (InterruptedException ix) {
+                return null;
+            }
+        }
+        return c;
     }
     /**
      *  Update map tile statistics

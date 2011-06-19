@@ -1,5 +1,6 @@
 package org.dynmap.utils;
 import org.bukkit.World;
+import java.util.List;
 import org.dynmap.DynmapChunk;
 
 public interface MapChunkCache {
@@ -12,11 +13,19 @@ public interface MapChunkCache {
         public int x0, x1, z0, z1;
     }
     /**
-     * Load chunks into cache
-     * @param w - world
-     * @param chunks - chunks to be loaded
+     * Set chunks to load, and world to load from
      */
-    void loadChunks(World w, DynmapChunk[] chunks);
+    void setChunks(World w, List<DynmapChunk> chunks);
+    /**
+     * Load chunks into cache
+     * @param maxToLoad - maximum number to load at once
+     * @return number loaded
+     */
+    int loadChunks(int maxToLoad);
+    /**
+     * Test if done loading
+     */
+    boolean isDoneLoading();
     /**
      * Unload chunks
      */
