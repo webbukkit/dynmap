@@ -1,6 +1,7 @@
 package org.dynmap;
 
 import java.io.File;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.dynmap.utils.MapChunkCache;
@@ -13,7 +14,7 @@ public abstract class MapType {
 
     public abstract MapTile[] getAdjecentTiles(MapTile tile);
 
-    public abstract DynmapChunk[] getRequiredChunks(MapTile tile);
+    public abstract List<DynmapChunk> getRequiredChunks(MapTile tile);
 
     public abstract boolean render(MapChunkCache cache, MapTile tile, File outputFile);
     

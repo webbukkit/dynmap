@@ -2,6 +2,7 @@ package org.dynmap.utils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.ListIterator;
 import java.lang.reflect.Field;
 import org.bukkit.World;
 import org.bukkit.Chunk;
@@ -20,7 +21,11 @@ public class LegacyMapChunkCache implements MapChunkCache {
     private static Method poppreservedchunk = null;
     private static Field heightmap = null;
     private static boolean initialized = false;
-    
+
+    private World w;
+    private List<DynmapChunk> chunks;
+    private ListIterator<DynmapChunk> iterator;
+
     private int x_min, x_max, z_min, z_max;
     private int x_dim;
     private HiddenChunkStyle hidestyle = HiddenChunkStyle.FILL_AIR;
@@ -177,17 +182,15 @@ public class LegacyMapChunkCache implements MapChunkCache {
     public LegacyMapChunkCache() {
     }
     /**
-     * Create chunk cache container
-     * @param w - world
-     * @param x_min - minimum chunk x coordinate
-     * @param z_min - minimum chunk z coordinate
-     * @param x_max - maximum chunk x coordinate
-     * @param z_max - maximum chunk z coordinate
+     * Set chunks to load, and world to load from
      */
-    @SuppressWarnings({ "unchecked" })
-    public void loadChunks(World w, DynmapChunk[] chunks) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void setChunks(World w, List<DynmapChunk> chunks) {
+        this.w = w;
+        this.chunks = chunks;
+
         /* Compute range */
-        if(chunks.length == 0) {
+        if(chunks.size() == 0) {
             this.x_min = 0;
             this.x_max = 0;
             this.z_min = 0;
@@ -195,17 +198,17 @@ public class LegacyMapChunkCache implements MapChunkCache {
             x_dim = 1;            
         }
         else {
-            x_min = x_max = chunks[0].x;
-            z_min = z_max = chunks[0].z;
-            for(int i = 1; i < chunks.length; i++) {
-                if(chunks[i].x > x_max)
-                    x_max = chunks[i].x;
-                if(chunks[i].x < x_min)
-                    x_min = chunks[i].x;
-                if(chunks[i].z > z_max)
-                    z_max = chunks[i].z;
-                if(chunks[i].z < z_min)
-                    z_min = chunks[i].z;
+            x_min = x_max = chunks.get(0).x;
+            z_min = z_max = chunks.get(0).z;
+            for(DynmapChunk c : chunks) {
+                if(c.x > x_max)
+                    x_max = c.x;
+                if(c.x < x_min)
+                    x_min = c.x;
+                if(c.z > z_max)
+                    z_max = c.z;
+                if(c.z < z_min)
+                    z_min = c.z;
             }
             x_dim = x_max - x_min + 1;            
         }
@@ -238,9 +241,17 @@ public class LegacyMapChunkCache implements MapChunkCache {
             }
         }
         snaparray = new LegacyChunkSnapshot[x_dim * (z_max-z_min+1)];
-        if(gethandle != null) {
-            // Load the required chunks.
-            for (DynmapChunk chunk : chunks) {
+    }
+    
+    public int loadChunks(int max_to_load) {
+        int cnt = 0;
+        if(iterator == null)
+            iterator = chunks.listIterator();
+        
+        // Load the required chunks.
+        while((cnt < max_to_load) && iterator.hasNext()) {
+            DynmapChunk chunk = iterator.next();
+            if(gethandle != null) {
                 boolean vis = true;
                 if(visible_limits != null) {
                     vis = false;
@@ -302,12 +313,25 @@ public class LegacyMapChunkCache implements MapChunkCache {
                     }
                 }
             }
+            cnt++;
         }
-        /* Fill missing chunks with empty dummy chunk */
-        for(int i = 0; i < snaparray.length; i++) {
-            if(snaparray[i] == null)
-                snaparray[i] = EMPTY;
+        /* If done, finish table */
+        if(iterator.hasNext() == false) {
+            /* Fill missing chunks with empty dummy chunk */
+            for(int i = 0; i < snaparray.length; i++) {
+                if(snaparray[i] == null)
+                    snaparray[i] = EMPTY;
+            }
         }
+        return cnt;
+    }
+    /**
+     * Test if done loading
+     */
+    public boolean isDoneLoading() {
+        if(iterator != null)
+            return !iterator.hasNext();
+        return false;
     }
     /**
      * Unload chunks

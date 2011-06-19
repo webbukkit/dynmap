@@ -100,6 +100,9 @@ disable-webserver: false
 # Period between tile renders for fullrender, in seconds (non-zero to pace fullrenders, lessen CPU load)
 timesliceinterval: 0.0
 
+# Maximum chunk loads per server tick (1/20th of a second) - reducing this below 90 will impact render performance, but also will reduce server thread load
+maxchunkspertick: 200
+
 # Interval the browser should poll for updates.
 updaterate: 2000
 
