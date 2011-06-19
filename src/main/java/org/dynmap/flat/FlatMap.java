@@ -5,6 +5,8 @@ import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -101,18 +103,16 @@ public class FlatMap extends MapType {
     }
 
     @Override
-    public DynmapChunk[] getRequiredChunks(MapTile tile) {
+    public List<DynmapChunk> getRequiredChunks(MapTile tile) {
         FlatMapTile t = (FlatMapTile) tile;
         int chunksPerTile = t.size / 16;
         int sx = t.x * chunksPerTile;
         int sz = t.y * chunksPerTile;
 
-        DynmapChunk[] result = new DynmapChunk[chunksPerTile * chunksPerTile];
-        int index = 0;
+        ArrayList<DynmapChunk> result = new ArrayList<DynmapChunk>(chunksPerTile * chunksPerTile);
         for (int x = 0; x < chunksPerTile; x++)
             for (int z = 0; z < chunksPerTile; z++) {
-                result[index] = new DynmapChunk(sx + x, sz + z);
-                index++;
+                result.add(new DynmapChunk(sx + x, sz + z));
             }
         return result;
     }
