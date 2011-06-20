@@ -185,7 +185,8 @@ templates:
   #          prefix: b
   #          maximumheight: 127
   #          colorscheme: default
-  #          biomecolored: true
+  #          # Biome-based coloring : biome=biome type, temperature=biome-temperature, rainfall=biome-rainfall
+  #          biomecolored: biome
   #        - class: org.dynmap.kzedmap.HighlightTileRenderer
   #          prefix: ht
   #          maximumheight: 127

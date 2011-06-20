@@ -14,4 +14,5 @@ public interface MapTileRenderer {
     void buildClientConfiguration(JSONObject worldObject);
     
     boolean isBiomeDataNeeded();
+    boolean isRawBiomeDataNeeded();
 }

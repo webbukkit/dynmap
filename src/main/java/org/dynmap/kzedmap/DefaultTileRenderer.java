@@ -39,7 +39,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
     protected int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
     protected boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
     protected boolean transparency; /* Is transparency support active? */
-    protected boolean biomecolored; /* Use biome for coloring */
+    public enum BiomeColorOption {
+        NONE, BIOME, TEMPERATURE, RAINFALL
+    }
+    protected BiomeColorOption biomecolored = BiomeColorOption.NONE; /* Use biome for coloring */
     @Override
     public String getName() {
         return name;
@@ -83,9 +86,24 @@ public class DefaultTileRenderer implements MapTileRenderer {
         colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
         night_and_day = configuration.getBoolean("night-and-day", false);
         transparency = configuration.getBoolean("transparency", true);  /* Default on */
-        biomecolored = configuration.getBoolean("biomecolored", false);
+        String biomeopt = configuration.getString("biomecolored", "none");
+        if(biomeopt.equals("biome")) {
+            biomecolored = BiomeColorOption.BIOME;
+        }
+        else if(biomeopt.equals("temperature")) {
+            biomecolored = BiomeColorOption.TEMPERATURE;
+        }
+        else if(biomeopt.equals("rainfall")) {
+            biomecolored = BiomeColorOption.RAINFALL;
+        }
+        else {
+            biomecolored = BiomeColorOption.NONE;
+        }
     }
-    public boolean isBiomeDataNeeded() { return biomecolored; }
+    public boolean isBiomeDataNeeded() { return biomecolored.equals(BiomeColorOption.BIOME); }
+    public boolean isRawBiomeDataNeeded() { 
+        return biomecolored.equals(BiomeColorOption.RAINFALL) || biomecolored.equals(BiomeColorOption.TEMPERATURE);
+    }
 
     public boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile) {
         World world = tile.getWorld();
@@ -365,6 +383,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         int lightlevel = 15;
         int lightlevel_day = 15;
         Biome bio = null;
+        double rain = 0.0;
+        double temp = 0.0;
         result.setTransparent();
         if(result_day != null)
             result_day.setTransparent();
@@ -386,11 +406,22 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     isnether = false;
             }
             if(id != 0) {       /* No update needed for air */
-                if(colorScheme.datacolors[id] != null) {    /* If data colored */
-                    data = mapiter.getBlockData();
+                switch(biomecolored) {
+                    case NONE:
+                        if(colorScheme.datacolors[id] != null) {    /* If data colored */
+                            data = mapiter.getBlockData();
+                        }
+                        break;
+                    case BIOME:
+                        bio = mapiter.getBiome();
+                        break;
+                    case RAINFALL:
+                        rain = mapiter.getRawBiomeRainfall();
+                        break;
+                    case TEMPERATURE:
+                        temp = mapiter.getRawBiomeTemperature();
+                        break;
                 }
-                if(biomecolored)
-                    bio = mapiter.getBiome();
                 if((shadowscale != null) && (mapiter.getY() < 127)) {
                     /* Find light level of previous chunk */
                     switch(seq) {
@@ -448,17 +479,25 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     result.setColor(highlightColor);
                     return;
                 }
-                Color[] colors;
-                if(biomecolored) {
-                    if(bio != null)
-                        colors = colorScheme.biomecolors[bio.ordinal()];
-                    else
-                        colors = null;
+                Color[] colors = null;
+                switch(biomecolored) {
+                    case NONE:
+                        if(data != 0)
+                            colors = colorScheme.datacolors[id][data];
+                        else
+                            colors = colorScheme.colors[id];
+                        break;
+                    case BIOME:
+                        if(bio != null)
+                            colors = colorScheme.biomecolors[bio.ordinal()];
+                        break;
+                    case RAINFALL:
+                        colors = colorScheme.getRainColor(rain);
+                        break;
+                    case TEMPERATURE:
+                        colors = colorScheme.getTempColor(temp);
+                        break;
                 }
-                else if(data != 0)
-                    colors = colorScheme.datacolors[id][data];
-                else
-                    colors = colorScheme.colors[id];
                 if (colors != null) {
                     Color c = colors[seq];
                     if (c.getAlpha() > 0) {
