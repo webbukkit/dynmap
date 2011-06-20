@@ -281,7 +281,7 @@ public class FlatMap extends MapType {
             if(!outputFile.getParentFile().exists())
                 outputFile.getParentFile().mkdirs();
             try {
-                ImageIO.write(im.buf_img, "png", outputFile);
+                FileLockManager.imageIOWrite(im.buf_img, "png", outputFile);
             } catch (IOException e) {
                 Debug.error("Failed to save image: " + outputFile.getPath(), e);
             } catch (java.lang.NullPointerException e) {
@@ -308,7 +308,7 @@ public class FlatMap extends MapType {
                 if(!dayfile.getParentFile().exists())
                     dayfile.getParentFile().mkdirs();
                 try {
-                    ImageIO.write(im_day.buf_img, "png", dayfile);
+                    FileLockManager.imageIOWrite(im_day.buf_img, "png", dayfile);
                 } catch (IOException e) {
                     Debug.error("Failed to save image: " + dayfile.getPath(), e);
                 } catch (java.lang.NullPointerException e) {
