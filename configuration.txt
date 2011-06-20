@@ -178,7 +178,15 @@ templates:
   #          background: "#000000"
   #          # Sets the icon to 'images/block_custom.png'
   #          icon: custom
-          
+  #          # Biome-based mapping
+  #        - class: org.dynmap.kzedmap.DefaultTileRenderer
+  #          name: biome
+  #          title: "Biome"
+  #          prefix: b
+  #          maximumheight: 127
+  #          colorscheme: default
+  #          # Biome-based coloring : biome=biome type, temperature=biome-temperature, rainfall=biome-rainfall
+  #          biomecolored: biome
   #        - class: org.dynmap.kzedmap.HighlightTileRenderer
   #          prefix: ht
   #          maximumheight: 127

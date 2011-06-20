@@ -4,8 +4,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.lang.reflect.Field;
+
+import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.bukkit.Chunk;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
@@ -68,6 +71,16 @@ public class LegacyMapChunkCache implements MapChunkCache {
         public final int getBlockEmittedLight() {
             return snap.getBlockEmittedLight(x & 0xF, y, z & 0xF);
         }
+        public Biome getBiome() {
+            return null;
+        }
+        public double getRawBiomeTemperature() {
+            return 0.0;
+        }
+        public double getRawBiomeRainfall() {
+            return 0.0;
+        }
+
         public final void incrementX() {
             x++;
             if((x & 0xF) == 0) {  /* Next chunk? */
@@ -377,6 +390,16 @@ public class LegacyMapChunkCache implements MapChunkCache {
         LegacyChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
     }
+    public Biome getBiome(int x, int z) {
+        return null;
+    }
+    public double getRawBiomeTemperature(int x, int z) {
+        return 0.0;
+    }
+    public double getRawBiomeRainfall(int x, int z) {
+        return 0.0;
+    }
+
     /**
      * Get cache iterator
      */
@@ -411,5 +434,11 @@ public class LegacyMapChunkCache implements MapChunkCache {
         if(visible_limits == null)
             visible_limits = new ArrayList<VisibilityLimit>();
         visible_limits.add(limit);
+    }
+    @Override
+    public boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome) {
+        if(biome || rawbiome)   /* Legacy doesn't support these */
+            return false;
+        return true;
     }
 }

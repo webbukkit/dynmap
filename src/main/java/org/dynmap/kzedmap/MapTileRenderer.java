@@ -12,4 +12,7 @@ public interface MapTileRenderer {
     boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile);
 
     void buildClientConfiguration(JSONObject worldObject);
+    
+    boolean isBiomeDataNeeded();
+    boolean isRawBiomeDataNeeded();
 }
