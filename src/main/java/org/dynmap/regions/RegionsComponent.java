@@ -65,7 +65,7 @@ public class RegionsComponent extends ClientComponent {
 
         outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf("."))+".json";
 
-        File webWorldPath = new File(this.configuration.getString("webpath", "web")+"/standalone/", outputFileName);
+        File webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
         Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(configuration.getString("basenode", "regions"));
         if (webWorldPath.isAbsolute())
             outputFile = webWorldPath;
