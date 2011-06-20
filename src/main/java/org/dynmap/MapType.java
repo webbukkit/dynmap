@@ -22,4 +22,10 @@ public abstract class MapType {
     }
     
     public abstract String getName();
+    
+    public boolean isBiomeDataNeeded() { return false; }
+    public boolean isHightestBlockYDataNeeded() { return false; }
+    public boolean isRawBiomeDataNeeded() { return false; }
+    public boolean isBlockTypeDataNeeded() { return true; }
+    
 }

@@ -1,5 +1,7 @@
 package org.dynmap.utils;
 
+import org.bukkit.block.Biome;
+
 /**
  * Iterator for traversing map chunk cache (base is for non-snapshot)
  */
@@ -38,6 +40,18 @@ public interface MapIterator {
      * @return emitted light level
      */
     int getBlockEmittedLight();
+    /**
+     * Get biome at coordinates
+     */
+    public Biome getBiome();
+    /**
+     * Get raw temperature data (0.0-1.0)
+     */
+    public double getRawBiomeTemperature();
+    /**
+     * Get raw rainfall data (0.0-1.0)
+     */
+    public double getRawBiomeRainfall();
     /**
      * Increment X of current position
      */
