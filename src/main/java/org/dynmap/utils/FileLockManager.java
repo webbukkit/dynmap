@@ -1,6 +1,10 @@
 package org.dynmap.utils;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import org.dynmap.Log;
 /**
@@ -101,5 +105,30 @@ public class FileLockManager {
             }
         }
         //Log.info("releaseReadLock(" + f + ")");
+    }
+    private static final int MAX_WRITE_RETRIES = 6;
+    /**
+     * Wrapper for IOImage.write - implements retries for busy files
+     */
+    public static void imageIOWrite(BufferedImage img, String type, File fname) throws IOException {
+        int retrycnt = 0;
+        boolean done = false;
+        
+        while(!done) {
+            try {
+                ImageIO.write(img, type, fname);
+                done = true;
+            } catch (FileNotFoundException fnfx) {  /* This seems to be what we get when file is locked by reader */
+                if(retrycnt < MAX_WRITE_RETRIES) {
+                    Log.info("Image file " + fname.getPath() + " - unable to write - retry #" + retrycnt);
+                    try { Thread.sleep(50 << retrycnt); } catch (InterruptedException ix) { throw fnfx; }
+                    retrycnt++;
+                }
+                else {
+                    Log.info("Image file " + fname.getPath() + " - unable to write - failed");
+                    throw fnfx;
+                }
+            }
+        }
     }
 }
