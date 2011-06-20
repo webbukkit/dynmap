@@ -8,19 +8,22 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import org.dynmap.debug.Debug;
+import org.bukkit.block.Biome;
 
 public class ColorScheme {
     private static final HashMap<String, ColorScheme> cache = new HashMap<String, ColorScheme>();
 
     public String name;
     /* Switch to arrays - faster than map */
-    public Color[][] colors;    /* [blk-type][step] */
-    public Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
+    public final Color[][] colors;    /* [blk-type][step] */
+    public final Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
+    public final Color[][] biomecolors;   /* [Biome.ordinal][step] */
 
-    public ColorScheme(String name, Color[][] colors, Color[][][] datacolors) {
+    public ColorScheme(String name, Color[][] colors, Color[][][] datacolors, Color[][] biomecolors) {
         this.name = name;
         this.colors = colors;
         this.datacolors = datacolors;
+        this.biomecolors = biomecolors;
     }
 
     private static File getColorSchemeDirectory() {
@@ -42,6 +45,7 @@ public class ColorScheme {
         File colorSchemeFile = new File(getColorSchemeDirectory(), name + ".txt");
         Color[][] colors = new Color[256][];
         Color[][][] datacolors = new Color[256][][];
+        Color[][] biomecolors = new Color[Biome.values().length][];
         InputStream stream;
         try {
             Debug.debug("Loading colors from '" + colorSchemeFile + "'...");
@@ -54,17 +58,37 @@ public class ColorScheme {
                 if (line.startsWith("#") || line.equals("")) {
                     continue;
                 }
-
-                String[] split = line.split("\t");
+                /* Make parser less pedantic - tabs or spaces should be fine */
+                String[] split = line.split("[\t ]");
+                int cnt = 0;
+                for(String s: split) { if(s.length() > 0) cnt++; }
+                String[] nsplit = new String[cnt];
+                cnt = 0;
+                for(String s: split) { if(s.length() > 0) { nsplit[cnt] = s; cnt++; } }
+                split = nsplit;
                 if (split.length < 17) {
                     continue;
                 }
                 Integer id;
                 Integer dat = null;
+                boolean isbiome = false;
                 int idx = split[0].indexOf(':');
                 if(idx > 0) {    /* ID:data - data color */
                     id = new Integer(split[0].substring(0, idx));
                     dat = new Integer(split[0].substring(idx+1));
+                }
+                else if(split[0].charAt(0) == '[') {    /* Biome color data */
+                    String bio = split[0].substring(1);
+                    idx = bio.indexOf(']');
+                    if(idx >= 0) bio = bio.substring(0, idx);
+                    isbiome = true;
+                    id = -1;
+                    for(Biome b : Biome.values()) {
+                        if(b.toString().equalsIgnoreCase(bio)) {
+                            id = b.ordinal();
+                            break;
+                        }
+                    }
                 }
                 else {
                     id = new Integer(split[0]);
@@ -78,8 +102,12 @@ public class ColorScheme {
                 c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
                 /* Blended color - for 'smooth' option on flat map */
                 c[4] = new Color((c[0].getRed()+c[2].getRed())/2, (c[0].getGreen()+c[2].getGreen())/2, (c[0].getBlue()+c[2].getBlue())/2, (c[0].getAlpha()+c[2].getAlpha())/2);
-                
-                if(dat != null) {
+
+                if(isbiome) {
+                    if((id >= 0) && (id < biomecolors.length))
+                        biomecolors[id] = c;
+                }
+                else if(dat != null) {
                     Color[][] dcolor = datacolors[id];    /* Existing list? */
                     if(dcolor == null) {
                         dcolor = new Color[16][];            /* Make 16 index long list */
@@ -115,6 +143,6 @@ public class ColorScheme {
         } catch (FileNotFoundException e) {
             Log.severe("Could not load colors '" + name + "' ('" + colorSchemeFile + "'): File not found.", e);
         }
-        return new ColorScheme(name, colors, datacolors);
+        return new ColorScheme(name, colors, datacolors, biomecolors);
     }
 }

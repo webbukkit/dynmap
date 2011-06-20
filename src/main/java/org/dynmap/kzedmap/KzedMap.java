@@ -310,6 +310,14 @@ public class KzedMap extends MapType {
         }
     }    
 
+    public boolean isBiomeDataNeeded() {
+        for(MapTileRenderer r : renderers) {
+           if(r.isBiomeDataNeeded())
+               return true;
+        }
+        return false;
+    }
+
     public String getName() {
         return "KzedMap";
     }

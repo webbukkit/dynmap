@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.block.Biome;
 import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
@@ -38,6 +39,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
     protected int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
     protected boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
     protected boolean transparency; /* Is transparency support active? */
+    protected boolean biomecolored; /* Use biome for coloring */
     @Override
     public String getName() {
         return name;
@@ -81,7 +83,9 @@ public class DefaultTileRenderer implements MapTileRenderer {
         colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
         night_and_day = configuration.getBoolean("night-and-day", false);
         transparency = configuration.getBoolean("transparency", true);  /* Default on */
+        biomecolored = configuration.getBoolean("biomecolored", false);
     }
+    public boolean isBiomeDataNeeded() { return biomecolored; }
 
     public boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile) {
         World world = tile.getWorld();
@@ -360,6 +364,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             MapIterator mapiter) {
         int lightlevel = 15;
         int lightlevel_day = 15;
+        Biome bio = null;
         result.setTransparent();
         if(result_day != null)
             result_day.setTransparent();
@@ -384,6 +389,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 if(colorScheme.datacolors[id] != null) {    /* If data colored */
                     data = mapiter.getBlockData();
                 }
+                if(biomecolored)
+                    bio = mapiter.getBiome();
                 if((shadowscale != null) && (mapiter.getY() < 127)) {
                     /* Find light level of previous chunk */
                     switch(seq) {
@@ -442,7 +449,13 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     return;
                 }
                 Color[] colors;
-                if(data != 0)
+                if(biomecolored) {
+                    if(bio != null)
+                        colors = colorScheme.biomecolors[bio.ordinal()];
+                    else
+                        colors = null;
+                }
+                else if(data != 0)
                     colors = colorScheme.datacolors[id][data];
                 else
                     colors = colorScheme.colors[id];

@@ -1,5 +1,7 @@
 package org.dynmap.utils;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
+
 import java.util.List;
 import org.dynmap.DynmapChunk;
 
@@ -16,6 +18,15 @@ public interface MapChunkCache {
      * Set chunks to load, and world to load from
      */
     void setChunks(World w, List<DynmapChunk> chunks);
+    /**
+     * Set chunk data type needed
+     * @param blockdata - need block type and data for chunk
+     * @param biome - need biome data
+     * @param highestblocky - need highest-block-y data
+     * @param rawbiome - need raw biome temp/rain data
+     * @return true if all data types can be retrieved, false if not
+     */
+    boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome);
     /**
      * Load chunks into cache
      * @param maxToLoad - maximum number to load at once
@@ -50,6 +61,18 @@ public interface MapChunkCache {
      * Get emitted light level
      */
     int getBlockEmittedLight(int x, int y, int z);
+    /**
+     * Get biome at coordinates
+     */
+    public Biome getBiome(int x, int z);
+    /**
+     * Get raw temperature data (0.0-1.0)
+     */
+    public double getRawBiomeTemperature(int x, int z);
+    /**
+     * Get raw rainfall data (0.0-1.0)
+     */
+    public double getRawBiomeRainfall(int x, int z);
     /**
      * Get cache iterator
      */

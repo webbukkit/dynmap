@@ -180,8 +180,11 @@ public class MapManager {
             }
             World w = world.world;
             /* Fetch chunk cache from server thread */
-            List<DynmapChunk> requiredChunks = tile.getMap().getRequiredChunks(tile);
-            MapChunkCache cache = createMapChunkCache(world, requiredChunks);
+            MapType mt = tile.getMap();
+            List<DynmapChunk> requiredChunks = mt.getRequiredChunks(tile);
+            MapChunkCache cache = createMapChunkCache(world, requiredChunks, mt.isBlockTypeDataNeeded(), 
+                                                      mt.isHightestBlockYDataNeeded(), mt.isBiomeDataNeeded(), 
+                                                      mt.isRawBiomeDataNeeded());
             if(cache == null) {
                 cleanup();
                 return; /* Cancelled/aborted */
@@ -476,7 +479,8 @@ public class MapManager {
     /**
      * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
      */
-    public MapChunkCache createMapChunkCache(final DynmapWorld w, final List<DynmapChunk> chunks) {
+    public MapChunkCache createMapChunkCache(DynmapWorld w, List<DynmapChunk> chunks,
+            boolean blockdata, boolean highesty, boolean biome, boolean rawbiome) {
         MapChunkCache c = null;
         try {
             if(!use_legacy)
@@ -493,6 +497,9 @@ public class MapManager {
             c.setHiddenFillStyle(w.hiddenchunkstyle);
         }
         c.setChunks(w.world, chunks);
+        if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
+            Log.severe("CraftBukkit build does not support biome APIs");
+
         synchronized(c) {
             chunkloads.add(c);
             try {
