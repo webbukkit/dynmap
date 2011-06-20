@@ -60,6 +60,10 @@ components:
   #    strokeWeight: 3
   #    fillColor: "#FF0000"
   #    fillOpacity: 0.35
+  #  # Optional setting to limit which regions to show, by name - if commented out, all regions are shown
+  #  visibleregions:
+  #    - homebase
+  #    - miningsite
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"
 
