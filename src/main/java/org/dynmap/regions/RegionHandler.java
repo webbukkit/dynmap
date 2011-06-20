@@ -1,10 +1,13 @@
 package org.dynmap.regions;
 
 import java.io.File;
+import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.logging.Level;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.ConfigurationNode;
@@ -60,6 +63,21 @@ public class RegionHandler extends FileHandler {
         regionConfig.load();
         /* Parse region data and store in MemoryInputStream */
         Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(regions.getString("basenode", "regions"));
+        /* See if we have explicit list of regions to report - limit to this list if we do */
+        List<String> idlist = regions.getStrings("visibleregions", null);
+        if(idlist != null) {
+            @SuppressWarnings("unchecked")
+            HashSet<String> ids = new HashSet<String>((Collection<? extends String>) regionData.keySet());
+            for(String id : ids) {
+                /* If not in list, remove it */
+                if(!idlist.contains(id)) {
+                    regionData.remove(id);
+                    log.info("discard " + id);
+                }
+                else
+                    log.info("keep " + id);
+            }
+        }
         try {
             ByteArrayOutputStream fos = new ByteArrayOutputStream();
             fos.write(Json.stringifyJson(regionData).getBytes());
