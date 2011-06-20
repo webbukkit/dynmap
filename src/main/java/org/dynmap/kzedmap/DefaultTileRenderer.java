@@ -265,7 +265,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             if(!fname.getParentFile().exists())
                 fname.getParentFile().mkdirs();
             try {
-                ImageIO.write(img.buf_img, "png", fname);
+                FileLockManager.imageIOWrite(img.buf_img, "png", fname);
             } catch (IOException e) {
                 Debug.error("Failed to save image: " + fname.getPath(), e);
             } catch (java.lang.NullPointerException e) {
@@ -291,7 +291,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 if(!dfname.getParentFile().exists())
                     dfname.getParentFile().mkdirs();
                 try {
-                    ImageIO.write(img_day.buf_img, "png", dfname);
+                    FileLockManager.imageIOWrite(img_day.buf_img, "png", dfname);
                 } catch (IOException e) {
                     Debug.error("Failed to save image: " + dfname.getPath(), e);
                 } catch (java.lang.NullPointerException e) {
@@ -365,7 +365,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             zoomFile.getParentFile().mkdirs();
 
         try {
-            ImageIO.write(zIm, "png", zoomFile);
+            FileLockManager.imageIOWrite(zIm, "png", zoomFile);
             Debug.debug("Saved zoom-out tile at " + zoomFile.getName());
         } catch (IOException e) {
             Debug.error("Failed to save zoom-out tile: " + zoomFile.getName(), e);
