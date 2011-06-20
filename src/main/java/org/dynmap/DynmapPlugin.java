@@ -466,4 +466,8 @@ public class DynmapPlugin extends JavaPlugin {
         pluginManager.disablePlugin(this);
         pluginManager.enablePlugin(this);
     }
+    
+    public String getWebPath() {
+        return configuration.getString("webpath", "web");
+    }
 }
