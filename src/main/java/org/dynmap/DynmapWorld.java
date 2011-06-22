@@ -64,6 +64,7 @@ public class DynmapWorld {
     private static class PrefixData {
     	int stepsize;
     	int[] stepseq;
+    	boolean neg_step_x;
     }
     
     public void freshenZoomOutFilesByLevel(File tilepath, int zoomlevel) {
@@ -77,6 +78,10 @@ public class DynmapWorld {
         	PrefixData pd = new PrefixData();
             List<String> pfx = mt.baseZoomFilePrefixes();
             pd.stepsize = mt.baseZoomFileStepSize();
+            if(pd.stepsize < 0) {
+            	pd.stepsize = -pd.stepsize;
+            	pd.neg_step_x = true;
+            }
             pd.stepseq = mt.zoomFileStepSequence();
             for(String p : pfx) {
                 maptab.put(p, pd);
@@ -121,6 +126,7 @@ public class DynmapWorld {
         }
         else
             prefix = zoomprefix + prefix;
+        int step = pd.stepsize << zoomlevel;
         zoomlevel++;
         String[] files = dir.list(new PNGFileFilter(prefix));
         for(String fn : files) {
@@ -142,14 +148,16 @@ public class DynmapWorld {
             }
             if(!parsed)
                 continue;
-            if(x >= 0)
-                x = x - (x % (pd.stepsize << zoomlevel));
+        	if(pd.neg_step_x) x = -x;
+        	if(x >= 0)
+                x = x - (x % (2*step));
             else
-                x = x + (x % (pd.stepsize << zoomlevel));
+                x = x + (x % (2*step));
+        	if(pd.neg_step_x) x = -x;
             if(y >= 0)
-                y = y - (y % (pd.stepsize << zoomlevel));
+                y = y - (y % (2*step));
             else
-                y = y + (y % (pd.stepsize << zoomlevel));
+                y = y + (y % (2*step));
             File zf;
             if(prefix.equals(""))
                 zf = new File(dir, "z_" + x + "_" + y + ".png");
@@ -170,7 +178,7 @@ public class DynmapWorld {
         }
         /* Do processing */
         for(ProcessTileRec s : toprocess.values()) {
-            processZoomTile(dir, s.zf, s.x, s.y, pd.stepsize << (zoomlevel-1), prefix, pd.stepseq);
+            processZoomTile(dir, s.zf, s.x - (pd.neg_step_x?step:0), s.y, step, prefix, pd.stepseq);
         }
     }
     private void processZoomTile(File dir, File zf, int tx, int ty, int stepsize, String prefix, int[] stepseq) {

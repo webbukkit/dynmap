@@ -335,8 +335,8 @@ public class KzedMap extends MapType {
         }
         return s;
     }
-    
-    public int baseZoomFileStepSize() { return zTileWidth; }
+    /* Return negative to flag negative X walk */
+    public int baseZoomFileStepSize() { return -zTileWidth; }
 
     private static final int[] stepseq = { 0, 2, 1, 3 };
     
