@@ -261,6 +261,17 @@ public class MapManager {
         }
     }
     
+    private class DoZoomOutProcessing implements Runnable {
+        public void run() {
+            Log.info("DoZoomOutProcessing started");
+            for(DynmapWorld w : worlds) {
+                w.freshenZoomOutFiles(plug_in.tilesDirectory);
+            }
+            renderpool.schedule(this, 60000, TimeUnit.MILLISECONDS);
+            Log.info("DoZoomOutProcessing finished");
+        }
+    }
+    
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
         plug_in = plugin;
         mapman = this;
@@ -288,6 +299,7 @@ public class MapManager {
         
         scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
         scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 1); /* Chunk loader task */
+
     }
 
     void renderFullWorld(Location l, CommandSender sender) {
@@ -343,6 +355,8 @@ public class MapManager {
         dynmapWorld.sendposition = worldConfiguration.getBoolean("sendposition", true);
         dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
         dynmapWorld.bigworld = worldConfiguration.getBoolean("bigworld", false);
+        dynmapWorld.extrazoomoutlevels = worldConfiguration.getInteger("extrazoomout", 0);
+        
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {
                 Location lx = new Location(w, loc.getDouble("x", 0), loc.getDouble("y", 64), loc.getDouble("z", 0));
@@ -422,6 +436,7 @@ public class MapManager {
     public void startRendering() {
         tileQueue.start();
         renderpool = new DynmapScheduledThreadPoolExecutor();
+        renderpool.schedule(new DoZoomOutProcessing(), 60000, TimeUnit.MILLISECONDS);
     }
 
     public void stopRendering() {

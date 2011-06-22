@@ -22,8 +22,10 @@ import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.MapType.ZoomStepDirection;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
+import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
@@ -406,6 +408,17 @@ public class FlatMap extends MapType {
         return prefix;
     }
 
+    public List<String> baseZoomFilePrefixes() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(getName() + "_128");
+        if(night_and_day)
+            s.add(getName()+"_day_128");
+        return s;
+    }
+    
+    public int baseZoomFileStepSize() { return 1; }
+
+    public ZoomStepDirection zoomFileStepDirection() { return ZoomStepDirection.POSITIVE_X_Y; }
 
     public static class FlatMapTile extends MapTile {
         FlatMap map;
@@ -427,7 +440,7 @@ public class FlatMap extends MapType {
         public String getFilename() {
             if(fname == null) {
                 if(world.bigworld)
-                    fname = map.prefix + "/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + size + "_" + -(y+1) + "_" + x + ".png";
+                    fname = map.prefix + "_" + size + "/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + -(y+1) + "_" + x + ".png";
                 else
                     fname = map.prefix + "_" + size + "_" + -(y+1) + "_" + x + ".png";
             }
@@ -437,7 +450,7 @@ public class FlatMap extends MapType {
         public String getDayFilename() {
             if(fname_day == null) {
                 if(world.bigworld)
-                    fname_day = map.prefix + "_day/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + size + "_" + -(y+1) + "_" + x + ".png";
+                    fname_day = map.prefix + "_day_" + size + "/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + -(y+1) + "_" + x + ".png";
                 else
                     fname_day = map.prefix + "_day_" + size + "_" + -(y+1) + "_" + x + ".png";
             }

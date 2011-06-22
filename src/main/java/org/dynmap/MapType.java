@@ -27,5 +27,14 @@ public abstract class MapType {
     public boolean isHightestBlockYDataNeeded() { return false; }
     public boolean isRawBiomeDataNeeded() { return false; }
     public boolean isBlockTypeDataNeeded() { return true; }
-    
+ 
+    public abstract List<String> baseZoomFilePrefixes();
+    public abstract int baseZoomFileStepSize();
+    public enum ZoomStepDirection {
+        POSITIVE_X_Y,
+        NEGATIVE_X_Y,
+        POSITIVE_X_NEGATIVE_Y,
+        NEGATIVE_X_POSITIVE_Y
+    }
+    public abstract ZoomStepDirection zoomFileStepDirection();
 }

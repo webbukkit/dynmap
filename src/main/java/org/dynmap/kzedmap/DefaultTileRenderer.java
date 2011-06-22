@@ -48,6 +48,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         return name;
     }
 
+    public boolean isNightAndDayEnabled() { return night_and_day; }
+
     public DefaultTileRenderer(ConfigurationNode configuration) {
         this.configuration = configuration;
         name = (String) configuration.get("prefix");

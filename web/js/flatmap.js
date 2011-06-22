@@ -30,8 +30,8 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
             dnprefix = '_day';
         
         if(this.dynmap.world.bigworld)
-            tileName = this.prefix + dnprefix + '/' + (coord.x >> 5) + '_' + (coord.y >> 5) + 
-                '/128_' + coord.x + '_' + coord.y + '.png';
+            tileName = this.prefix + dnprefix + '_128/' + (coord.x >> 5) + '_' + (coord.y >> 5) + 
+                '/' + coord.x + '_' + coord.y + '.png';
         else
             tileName = this.prefix + dnprefix + '_128_' + coord.x + '_' + coord.y + '.png';
         imgSize = Math.pow(2, 7+zoom);
