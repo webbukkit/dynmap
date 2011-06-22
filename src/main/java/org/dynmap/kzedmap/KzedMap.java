@@ -17,7 +17,6 @@ import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
-import org.dynmap.MapType.ZoomStepDirection;
 import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 import java.awt.image.DataBufferInt;
@@ -339,7 +338,9 @@ public class KzedMap extends MapType {
     
     public int baseZoomFileStepSize() { return zTileWidth; }
 
-    public ZoomStepDirection zoomFileStepDirection() { return ZoomStepDirection.NEGATIVE_X_POSITIVE_Y; }
+    private static final int[] stepseq = { 0, 2, 1, 3 };
+    
+    public int[] zoomFileStepSequence() { return stepseq; }
 
     public String getName() {
         return "KzedMap";

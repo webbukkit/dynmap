@@ -22,10 +22,8 @@ import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
-import org.dynmap.MapType.ZoomStepDirection;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
@@ -418,7 +416,9 @@ public class FlatMap extends MapType {
     
     public int baseZoomFileStepSize() { return 1; }
 
-    public ZoomStepDirection zoomFileStepDirection() { return ZoomStepDirection.POSITIVE_X_Y; }
+    private static final int[] stepseq = { 1, 3, 0, 2 };
+    
+    public int[] zoomFileStepSequence() { return stepseq; }
 
     public static class FlatMapTile extends MapTile {
         FlatMap map;

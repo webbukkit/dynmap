@@ -1,7 +1,6 @@
 package org.dynmap;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.World;
@@ -62,18 +61,25 @@ public class DynmapWorld {
         }
     }
     
+    private static class PrefixData {
+    	int stepsize;
+    	int[] stepseq;
+    }
+    
     public void freshenZoomOutFilesByLevel(File tilepath, int zoomlevel) {
-        Log.info("freshenZoomOutFiles(" + tilepath.getPath() + "," + zoomlevel + ")");
+        Debug.debug("freshenZoomOutFiles(" + tilepath.getPath() + "," + zoomlevel + ")");
         File worldpath = new File(tilepath, world.getName());   /* Make path to our world */
         if(worldpath.exists() == false) /* Quit if not found */
             return;
-        HashMap<String, Integer> maptab = new HashMap<String, Integer>();
+        HashMap<String, PrefixData> maptab = new HashMap<String, PrefixData>();
         /* Build table of file prefixes and step sizes */
         for(MapType mt : maps) {
+        	PrefixData pd = new PrefixData();
             List<String> pfx = mt.baseZoomFilePrefixes();
-            Integer step = mt.baseZoomFileStepSize();
+            pd.stepsize = mt.baseZoomFileStepSize();
+            pd.stepseq = mt.zoomFileStepSequence();
             for(String p : pfx) {
-                maptab.put(p, step);
+                maptab.put(p, pd);
             }
         }
         if(bigworld) {  /* If big world, next directories are map name specific */
@@ -103,10 +109,10 @@ public class DynmapWorld {
     
     private static class ProcessTileRec {
         File zf;
-        int x, z;
+        int x, y;
     }
-    private void processZoomDirectory(File dir, int stepsize, String prefix, int zoomlevel) {
-        Log.info("processZoomDirectory(" + dir.getPath() + "," + stepsize + "," + prefix + "," + zoomlevel + ")");
+    private void processZoomDirectory(File dir, PrefixData pd, String prefix, int zoomlevel) {
+        Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.stepsize + "," + prefix + "," + zoomlevel + ")");
         String zoomprefix = "zzzzzzzzzzzzzzzzzzzz".substring(0, zoomlevel);
         HashMap<String, ProcessTileRec> toprocess = new HashMap<String, ProcessTileRec>();
         if(prefix.equals("")) {
@@ -124,12 +130,12 @@ public class DynmapWorld {
             fn = fn.substring(0, fn.lastIndexOf('.'));  /* Strip off extension */
             String[] tok = fn.split("_");   /* Split by underscores */
             int x = 0;
-            int z = 0;
+            int y = 0;
             boolean parsed = false;
             if(tok.length >= 2) {
                 try {
                     x = Integer.parseInt(tok[tok.length-2]);
-                    z = Integer.parseInt(tok[tok.length-1]);
+                    y = Integer.parseInt(tok[tok.length-1]);
                     parsed = true;
                 } catch (NumberFormatException nfx) {
                 }
@@ -137,18 +143,18 @@ public class DynmapWorld {
             if(!parsed)
                 continue;
             if(x >= 0)
-                x = x - (x % (stepsize << zoomlevel));
+                x = x - (x % (pd.stepsize << zoomlevel));
             else
-                x = x + (x % (stepsize << zoomlevel));
-            if(z >= 0)
-                z = z - (z % (stepsize << zoomlevel));
+                x = x + (x % (pd.stepsize << zoomlevel));
+            if(y >= 0)
+                y = y - (y % (pd.stepsize << zoomlevel));
             else
-                z = z + (z % (stepsize << zoomlevel));
+                y = y + (y % (pd.stepsize << zoomlevel));
             File zf;
             if(prefix.equals(""))
-                zf = new File(dir, "z_" + x + "_" + z + ".png");
+                zf = new File(dir, "z_" + x + "_" + y + ".png");
             else
-                zf = new File(dir, "z" + prefix + x + "_" + z + ".png");
+                zf = new File(dir, "z" + prefix + x + "_" + y + ".png");
             /* If zoom file exists and is older than our file, nothing to do */
             if(zf.exists() && (zf.lastModified() >= f.lastModified())) {
                 continue;
@@ -158,17 +164,17 @@ public class DynmapWorld {
                 ProcessTileRec rec = new ProcessTileRec();
                 rec.zf = zf;
                 rec.x = x;
-                rec.z = z;
+                rec.y = y;
                 toprocess.put(zfpath, rec);
             }
         }
         /* Do processing */
         for(ProcessTileRec s : toprocess.values()) {
-            processZoomTile(dir, s.zf, s.x, s.z, stepsize << (zoomlevel-1), prefix);
+            processZoomTile(dir, s.zf, s.x, s.y, pd.stepsize << (zoomlevel-1), prefix, pd.stepseq);
         }
     }
-    private void processZoomTile(File dir, File zf, int tx, int tz, int stepsize, String prefix) {
-        Log.info("processZoomFile(" + dir.getPath() + "," + zf.getPath() + "," + tx + "," + tz + "," + stepsize + "," + prefix);
+    private void processZoomTile(File dir, File zf, int tx, int ty, int stepsize, String prefix, int[] stepseq) {
+        Debug.debug("processZoomFile(" + dir.getPath() + "," + zf.getPath() + "," + tx + "," + ty + "," + stepsize + "," + prefix);
         int width = 128, height = 128;
         BufferedImage zIm = null;
         KzedBufferedImage kzIm = null;
@@ -179,14 +185,16 @@ public class DynmapWorld {
         zIm = kzIm.buf_img;
 
         for(int i = 0; i < 4; i++) {
-            File f = new File(dir, prefix + (tx + stepsize*(i>>1)) + "_" + (tz + stepsize*(i&1)) + ".png");
+            File f = new File(dir, prefix + (tx + stepsize*(1&stepseq[i])) + "_" + (ty + stepsize*(stepseq[i]>>1)) + ".png");
             if(f.exists()) {
                 BufferedImage im = null;
+            	FileLockManager.getReadLock(f);
                 try {
                     im = ImageIO.read(f);
                 } catch (IOException e) {
                 } catch (IndexOutOfBoundsException e) {
                 }
+                FileLockManager.releaseReadLock(f);
                 if(im != null) {
                     im.getRGB(0, 0, width, height, argb, 0, width);    /* Read data */
                     im.flush();
@@ -216,6 +224,7 @@ public class DynmapWorld {
                 }
             }
         }
+        FileLockManager.getWriteLock(zf);
         try {
             FileLockManager.imageIOWrite(zIm, "png", zf);
             Debug.debug("Saved zoom-out tile at " + zf.getName());
@@ -224,6 +233,7 @@ public class DynmapWorld {
         } catch (java.lang.NullPointerException e) {
             Debug.error("Failed to save zoom-out tile (NullPointerException): " + zf.getName(), e);
         }
+        FileLockManager.releaseWriteLock(zf);
         KzedMap.freeBufferedImage(kzIm);
     }
 }

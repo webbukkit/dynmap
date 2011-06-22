@@ -26,13 +26,15 @@ public class MapManager {
     public AsynchronousQueue<MapTile> tileQueue;
 
     private static final int DEFAULT_CHUNKS_PER_TICK = 200;
-    
+    private static final int DEFAULT_ZOOMOUT_PERIOD = 60;
     public List<DynmapWorld> worlds = new ArrayList<DynmapWorld>();
     public Map<String, DynmapWorld> worldsLookup = new HashMap<String, DynmapWorld>();
     private BukkitScheduler scheduler;
     private DynmapPlugin plug_in;
     private long timeslice_int = 0; /* In milliseconds */
     private int max_chunk_loads_per_tick = DEFAULT_CHUNKS_PER_TICK;
+    
+    private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
     private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
     /* List of MapChunkCache requests to be processed */
@@ -263,12 +265,12 @@ public class MapManager {
     
     private class DoZoomOutProcessing implements Runnable {
         public void run() {
-            Log.info("DoZoomOutProcessing started");
+            Debug.debug("DoZoomOutProcessing started");
             for(DynmapWorld w : worlds) {
-                w.freshenZoomOutFiles(plug_in.tilesDirectory);
+                w.freshenZoomOutFiles(DynmapPlugin.tilesDirectory);
             }
-            renderpool.schedule(this, 60000, TimeUnit.MILLISECONDS);
-            Log.info("DoZoomOutProcessing finished");
+            renderpool.schedule(this, zoomout_period, TimeUnit.SECONDS);
+            Debug.debug("DoZoomOutProcessing finished");
         }
     }
     
@@ -287,6 +289,10 @@ public class MapManager {
         timeslice_int = (long)(configuration.getDouble("timesliceinterval", 0.0) * 1000);
         max_chunk_loads_per_tick = configuration.getInteger("maxchunkspertick", DEFAULT_CHUNKS_PER_TICK);
         if(max_chunk_loads_per_tick < 5) max_chunk_loads_per_tick = 5;
+        /* Get zoomout processing periond in seconds */
+        zoomout_period = configuration.getInteger("zoomoutperiod", DEFAULT_ZOOMOUT_PERIOD);
+        if(zoomout_period < 5) zoomout_period = 5;
+        
         scheduler = plugin.getServer().getScheduler();
 
         hashman = new TileHashManager(DynmapPlugin.tilesDirectory, configuration.getBoolean("enabletilehash", true));

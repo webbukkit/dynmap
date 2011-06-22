@@ -30,11 +30,9 @@ public abstract class MapType {
  
     public abstract List<String> baseZoomFilePrefixes();
     public abstract int baseZoomFileStepSize();
-    public enum ZoomStepDirection {
-        POSITIVE_X_Y,
-        NEGATIVE_X_Y,
-        POSITIVE_X_NEGATIVE_Y,
-        NEGATIVE_X_POSITIVE_Y
-    }
-    public abstract ZoomStepDirection zoomFileStepDirection();
+    /**
+     * Step sequence for creating zoomed file: first index is top-left, second top-right, third bottom-left, forth bottom-right
+     * Values correspond to tile X,Y (0), X+step,Y (1), X,Y+step (2), X+step,Y+step (3) 
+     */
+    public abstract int[] zoomFileStepSequence();
 }
