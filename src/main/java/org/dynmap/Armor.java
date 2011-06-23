@@ -2,6 +2,7 @@ package org.dynmap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.Material;
 
 public class Armor {
     /**
@@ -17,7 +18,12 @@ public class Armor {
         double baseArmorPoints = 0;
         ItemStack inventory[] = player.getInventory().getArmorContents();
         for(int i=0;i<inventory.length;i++) {
-            final short maxDurability = inventory[i].getType().getMaxDurability();
+            if(inventory[i] == null)
+                continue;
+            Material m = inventory[i].getType();
+            if(m == null)
+                continue;
+            final short maxDurability = m.getMaxDurability();
             if(maxDurability < 0)
                 continue;
             final short durability = inventory[i].getDurability();
