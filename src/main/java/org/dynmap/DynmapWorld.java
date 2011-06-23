@@ -32,6 +32,7 @@ public class DynmapWorld {
     public boolean sendhealth;
     public boolean bigworld;    /* If true, deeper directory hierarchy */
     public int extrazoomoutlevels;  /* Number of additional zoom out levels to generate */
+    public File worldtilepath;
     
     private static class DirFilter implements FilenameFilter {
         public boolean accept(File f, String n) {
@@ -55,9 +56,9 @@ public class DynmapWorld {
         }
     }
 
-    public void freshenZoomOutFiles(File tilepath) {
+    public void freshenZoomOutFiles() {
         for(int i = 0; i < extrazoomoutlevels; i++) {
-            freshenZoomOutFilesByLevel(tilepath, i);
+            freshenZoomOutFilesByLevel(i);
         }
     }
     
@@ -65,70 +66,96 @@ public class DynmapWorld {
     	int stepsize;
     	int[] stepseq;
     	boolean neg_step_x;
+    	String baseprefix;
+    	int zoomlevel;
+    	String zoomprefix;
+    	String fnprefix;
+        String zfnprefix;
     }
     
-    public void freshenZoomOutFilesByLevel(File tilepath, int zoomlevel) {
-        Debug.debug("freshenZoomOutFiles(" + tilepath.getPath() + "," + zoomlevel + ")");
-        File worldpath = new File(tilepath, world.getName());   /* Make path to our world */
-        if(worldpath.exists() == false) /* Quit if not found */
+    public void freshenZoomOutFilesByLevel(int zoomlevel) {
+        int cnt = 0;
+        Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ")");
+        if(worldtilepath.exists() == false) /* Quit if not found */
             return;
         HashMap<String, PrefixData> maptab = new HashMap<String, PrefixData>();
         /* Build table of file prefixes and step sizes */
         for(MapType mt : maps) {
-        	PrefixData pd = new PrefixData();
             List<String> pfx = mt.baseZoomFilePrefixes();
-            pd.stepsize = mt.baseZoomFileStepSize();
-            if(pd.stepsize < 0) {
-            	pd.stepsize = -pd.stepsize;
-            	pd.neg_step_x = true;
+            int stepsize = mt.baseZoomFileStepSize();
+            boolean neg_step_x = false;
+            if(stepsize < 0) {
+            	stepsize = -stepsize;
+            	neg_step_x = true;
             }
-            pd.stepseq = mt.zoomFileStepSequence();
+            int[] stepseq = mt.zoomFileStepSequence();
             for(String p : pfx) {
+                PrefixData pd = new PrefixData();
+                pd.stepsize = stepsize;
+                pd.neg_step_x = neg_step_x;
+                pd.stepseq = stepseq;
+                pd.baseprefix = p;
+                pd.zoomlevel = zoomlevel;
+                pd.zoomprefix = "zzzzzzzzzzzz".substring(0, zoomlevel);
+                if(bigworld) {
+                    if(zoomlevel > 0) {
+                        pd.zoomprefix += "_";
+                        pd.zfnprefix = "z" + pd.zoomprefix;
+                    }
+                    else {
+                        pd.zfnprefix = "z_";
+                    }
+                    pd.fnprefix = pd.zoomprefix;
+                }
+                else {
+                    pd.fnprefix = pd.zoomprefix + pd.baseprefix;
+                    pd.zfnprefix = "z" + pd.fnprefix;
+                }
+                
                 maptab.put(p, pd);
             }
         }
         if(bigworld) {  /* If big world, next directories are map name specific */
             DirFilter df = new DirFilter();
-            for(String pfx : maptab.keySet()) { /* Walk thrugh prefixes, as directories */
-                File dname = new File(worldpath, pfx);
+            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
+                PrefixData pd = maptab.get(pfx);
+                File dname = new File(worldtilepath, pfx);
                 /* Now, go through subdirectories under this one, and process them */
                 String[] subdir = dname.list(df);
+                if(subdir == null) continue;
                 for(String s : subdir) {
                     File sdname = new File(dname, s);
-                    /* Each middle tier directory is redundant - just go through them */
-                    String[] ssubdir = sdname.list(df);
-                    for(String ss : ssubdir) {
-                        File ssdname = new File(sdname, ss);
-                        processZoomDirectory(ssdname, maptab.get(pfx), "", zoomlevel);
-                    }
+                    cnt += processZoomDirectory(sdname, pd);
                 }
             }
         }
         else {  /* Else, classic file layout */
-            for(String pfx : maptab.keySet()) { /* Walk thrugh prefixes, as directories */
-                processZoomDirectory(worldpath, maptab.get(pfx), pfx + "_", zoomlevel);
+            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
+                cnt += processZoomDirectory(worldtilepath, maptab.get(pfx));
             }
         }
+        Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
     }
     
     
     private static class ProcessTileRec {
         File zf;
+        String zfname;
         int x, y;
     }
-    private void processZoomDirectory(File dir, PrefixData pd, String prefix, int zoomlevel) {
-        Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.stepsize + "," + prefix + "," + zoomlevel + ")");
-        String zoomprefix = "zzzzzzzzzzzzzzzzzzzz".substring(0, zoomlevel);
-        HashMap<String, ProcessTileRec> toprocess = new HashMap<String, ProcessTileRec>();
-        if(prefix.equals("")) {
-            if(zoomlevel > 0)
-                prefix = zoomprefix + "_";
-        }
+    private String makeFilePath(PrefixData pd, int x, int y, boolean zoomed) {
+        if(bigworld)
+            return pd.baseprefix + "/" + ((x/pd.stepsize) >> 5) + "_" + ((y/pd.stepsize) >> 5) + "/" + (zoomed?pd.zfnprefix:pd.fnprefix) + x + "_" + y + ".png";
         else
-            prefix = zoomprefix + prefix;
-        int step = pd.stepsize << zoomlevel;
-        zoomlevel++;
-        String[] files = dir.list(new PNGFileFilter(prefix));
+            return (zoomed?pd.zfnprefix:pd.fnprefix) + "_" + x + "_" + y + ".png";            
+    }
+    private int processZoomDirectory(File dir, PrefixData pd) {
+        Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ")");
+        HashMap<String, ProcessTileRec> toprocess = new HashMap<String, ProcessTileRec>();
+        int step = pd.stepsize << pd.zoomlevel;
+        String[] files = dir.list(new PNGFileFilter(pd.fnprefix));
+        if(files == null)
+            return 0;
         for(String fn : files) {
             /* Build file object */
             File f = new File(dir, fn);
@@ -158,11 +185,9 @@ public class DynmapWorld {
                 y = y - (y % (2*step));
             else
                 y = y + (y % (2*step));
-            File zf;
-            if(prefix.equals(""))
-                zf = new File(dir, "z_" + x + "_" + y + ".png");
-            else
-                zf = new File(dir, "z" + prefix + x + "_" + y + ".png");
+            /* Make name of corresponding zoomed tile */
+            String zfname = makeFilePath(pd, x, y, true);
+            File zf = new File(worldtilepath, zfname);
             /* If zoom file exists and is older than our file, nothing to do */
             if(zf.exists() && (zf.lastModified() >= f.lastModified())) {
                 continue;
@@ -173,27 +198,33 @@ public class DynmapWorld {
                 rec.zf = zf;
                 rec.x = x;
                 rec.y = y;
+                rec.zfname = zfname;
                 toprocess.put(zfpath, rec);
             }
         }
+        int cnt = 0;
         /* Do processing */
         for(ProcessTileRec s : toprocess.values()) {
-            processZoomTile(dir, s.zf, s.x - (pd.neg_step_x?step:0), s.y, step, prefix, pd.stepseq);
+            processZoomTile(pd, dir, s.zf, s.zfname, s.x - (pd.neg_step_x?step:0), s.y);
+            cnt++;
         }
+        Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ") - done (" + cnt + " files)");
+        return cnt;
     }
-    private void processZoomTile(File dir, File zf, int tx, int ty, int stepsize, String prefix, int[] stepseq) {
-        Debug.debug("processZoomFile(" + dir.getPath() + "," + zf.getPath() + "," + tx + "," + ty + "," + stepsize + "," + prefix);
+    private void processZoomTile(PrefixData pd, File dir, File zf, String zfname, int tx, int ty) {
+        Debug.debug("processZoomFile(" + pd.baseprefix + "," + dir.getPath() + "," + zf.getPath() + "," + tx + "," + ty + ")");
         int width = 128, height = 128;
         BufferedImage zIm = null;
         KzedBufferedImage kzIm = null;
         int[] argb = new int[width*height];
+        int step = pd.stepsize << pd.zoomlevel;
 
         /* create image buffer */
         kzIm = KzedMap.allocateBufferedImage(width, height);
         zIm = kzIm.buf_img;
 
         for(int i = 0; i < 4; i++) {
-            File f = new File(dir, prefix + (tx + stepsize*(1&stepseq[i])) + "_" + (ty + stepsize*(stepseq[i]>>1)) + ".png");
+            File f = new File(worldtilepath, makeFilePath(pd, (tx + step*(1&pd.stepseq[i])), (ty + step*(pd.stepseq[i]>>1)), false));
             if(f.exists()) {
                 BufferedImage im = null;
             	FileLockManager.getReadLock(f);
@@ -234,8 +265,10 @@ public class DynmapWorld {
         }
         FileLockManager.getWriteLock(zf);
         try {
+            if(!zf.getParentFile().exists())
+                zf.getParentFile().mkdirs();
             FileLockManager.imageIOWrite(zIm, "png", zf);
-            Debug.debug("Saved zoom-out tile at " + zf.getName());
+            Debug.debug("Saved zoom-out tile at " + zf.getPath());
         } catch (IOException e) {
             Debug.error("Failed to save zoom-out tile: " + zf.getName(), e);
         } catch (java.lang.NullPointerException e) {
@@ -243,5 +276,6 @@ public class DynmapWorld {
         }
         FileLockManager.releaseWriteLock(zf);
         KzedMap.freeBufferedImage(kzIm);
+        MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));            
     }
 }

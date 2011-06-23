@@ -284,7 +284,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
         mtile.file = fname;
 
         boolean updated_dfname = false;
-        File dfname = new File(fname.getParent(), mtile.getDayFilename());
+        
+        File dfname = new File(mtile.getDynmapWorld().worldtilepath, mtile.getDayFilename());
         if(img_day != null) {
             FileLockManager.getWriteLock(dfname);
             crc = hashman.calculateTileHash(img.argb_buf);
@@ -313,7 +314,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         boolean ztile_updated = false;
         FileLockManager.getWriteLock(zoomFile);
         if(updated_fname || (!zoomFile.exists())) {
-            saveZoomedTile(zmtile, zoomFile, zimg, ox, oy);
+            saveZoomedTile(zmtile, zoomFile, zimg, ox, oy, null);
             MapManager.mapman.pushUpdate(zmtile.getWorld(),
                                          new Client.Tile(zmtile.getFilename()));
             ztile_updated = true;
@@ -323,11 +324,11 @@ public class DefaultTileRenderer implements MapTileRenderer {
         MapManager.mapman.updateStatistics(zmtile, null, true, ztile_updated, !rendered);
         
         if(zimg_day != null) {
-            File zoomFile_day = new File(zoomFile.getParent(), zmtile.getDayFilename());
+            File zoomFile_day = new File(zmtile.getDynmapWorld().worldtilepath, zmtile.getDayFilename());
             ztile_updated = false;
             FileLockManager.getWriteLock(zoomFile_day);
             if(updated_dfname || (!zoomFile_day.exists())) {
-                saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy);
+                saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy, "day");
                 MapManager.mapman.pushUpdate(zmtile.getWorld(),
                                              new Client.Tile(zmtile.getDayFilename()));            
                 ztile_updated = true;
@@ -339,7 +340,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
 
     private void saveZoomedTile(final KzedZoomedMapTile zmtile, final File zoomFile,
-            final KzedBufferedImage zimg, int ox, int oy) {
+            final KzedBufferedImage zimg, int ox, int oy, String subkey) {
         BufferedImage zIm = null;
         KzedBufferedImage kzIm = null;
         try {
@@ -374,6 +375,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         } catch (java.lang.NullPointerException e) {
             Debug.error("Failed to save zoom-out tile (NullPointerException): " + zoomFile.getName(), e);
         }
+
         if(zIm_allocated)
             KzedMap.freeBufferedImage(kzIm);
         else

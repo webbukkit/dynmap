@@ -1,5 +1,6 @@
 function KzedProjection() {}
 KzedProjection.prototype = {
+		extrazoom: 0,
 		fromLatLngToPoint: function(latLng) {
 			var x = latLng.lng() * config.tileWidth;
 			var y = latLng.lat() * config.tileHeight;
@@ -18,9 +19,10 @@ KzedProjection.prototype = {
 			var dz = +z;
 			var px = dx + dz;
 			var py = dx - dz - dy;
+			var scale = 2 << this.extrazoom;
 
-			var lng = -px / config.tileWidth / 2 + 0.5;
-			var lat = py / config.tileHeight / 2;
+			var lng = -px / config.tileWidth / scale + (1.0 / scale);
+			var lat = py / config.tileHeight / scale;
 
 			return new google.maps.LatLng(lat, lng);
 		}
@@ -112,6 +114,7 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 	updateTileSize: function(zoom) {
 		var size;
 		var extrazoom = this.dynmap.world.extrazoomout;
+		this.projection.extrazoom = extrazoom;
 		this.maxZoom = 3 + extrazoom;
 		if (zoom <= extrazoom) {
 			size = 128;

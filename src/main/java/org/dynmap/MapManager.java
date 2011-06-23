@@ -267,7 +267,7 @@ public class MapManager {
         public void run() {
             Debug.debug("DoZoomOutProcessing started");
             for(DynmapWorld w : worlds) {
-                w.freshenZoomOutFiles(DynmapPlugin.tilesDirectory);
+                w.freshenZoomOutFiles();
             }
             renderpool.schedule(this, zoomout_period, TimeUnit.SECONDS);
             Debug.debug("DoZoomOutProcessing finished");
@@ -362,7 +362,7 @@ public class MapManager {
         dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
         dynmapWorld.bigworld = worldConfiguration.getBoolean("bigworld", false);
         dynmapWorld.extrazoomoutlevels = worldConfiguration.getInteger("extrazoomout", 0);
-        
+        dynmapWorld.worldtilepath = new File(plug_in.tilesDirectory, w.getName());
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {
                 Location lx = new Location(w, loc.getDouble("x", 0), loc.getDouble("y", 64), loc.getDouble("z", 0));

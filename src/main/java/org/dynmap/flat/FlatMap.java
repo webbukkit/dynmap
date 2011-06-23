@@ -300,7 +300,7 @@ public class FlatMap extends MapType {
 
         /* If day too, handle it */
         if(night_and_day) {
-            File dayfile = new File(outputFile.getParent(), tile.getDayFilename());
+            File dayfile = new File(tile.getDynmapWorld().worldtilepath, tile.getDayFilename());
             FileLockManager.getWriteLock(dayfile);
             crc = hashman.calculateTileHash(argb_buf_day);
             if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {

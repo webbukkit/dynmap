@@ -1,5 +1,6 @@
 function FlatProjection() {}
 FlatProjection.prototype = {
+		extrazoom: 0,
 		fromLatLngToPoint: function(latLng) {
 			return new google.maps.Point(latLng.lat()*config.tileWidth, latLng.lng()*config.tileHeight);
 		},
@@ -7,7 +8,7 @@ FlatProjection.prototype = {
 			return new google.maps.LatLng(point.x/config.tileWidth, point.y/config.tileHeight);
 		},
 		fromWorldToLatLng: function(x, y, z) {
-			return new google.maps.LatLng(-z / config.tileWidth, x / config.tileHeight);
+			return new google.maps.LatLng(-z / config.tileWidth / (1 << this.extrazoom), x / config.tileHeight / (1 << this.extrazoom));
 		}
 };
 
@@ -71,6 +72,7 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
 	updateTileSize: function(zoom) {
         var size;
 		var extrazoom = this.dynmap.world.extrazoomout;
+		this.projection.extrazoom = extrazoom;
 		this.maxZoom = 3 + extrazoom;
 		if (zoom <= extrazoom) {
         	size = 128;
