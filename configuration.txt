@@ -9,6 +9,7 @@ components:
     allowwebchat: true
     webchat-interval: 5
     hidewebchatip: false
+    trustclientname: false
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
