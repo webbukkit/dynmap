@@ -25,6 +25,7 @@ public class SendMessageHandler implements HttpHandler {
     private Charset cs_utf8 = Charset.forName("UTF-8");
     public int maximumMessageInterval = 1000;
     public boolean hideip = false;
+    public boolean trustclientname = false;
     public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
     private LinkedList<WebUser> disallowedUserQueue = new LinkedList<WebUser>();
@@ -44,14 +45,20 @@ public class SendMessageHandler implements HttpHandler {
 
         JSONObject o = (JSONObject)parser.parse(reader);
         final Message message = new Message();
-        /* If proxied client address, get original */
-        if(request.fields.containsKey("X-Forwarded-For"))
-            message.name = request.fields.get("X-Forwarded-For");
-        /* If from loopback, we're probably getting from proxy - need to trust client */
-        else if(request.rmtaddr.getAddress().isLoopbackAddress())
+        
+        if(trustclientname) {
             message.name = String.valueOf(o.get("name"));
-        else
-            message.name = request.rmtaddr.getAddress().getHostAddress();
+        }
+        else {
+        	/* If proxied client address, get original */
+        	if(request.fields.containsKey("X-Forwarded-For"))
+        		message.name = request.fields.get("X-Forwarded-For");
+        	/* If from loopback, we're probably getting from proxy - need to trust client */
+        	else if(request.rmtaddr.getAddress().isLoopbackAddress())
+        		message.name = String.valueOf(o.get("name"));
+        	else
+        		message.name = request.rmtaddr.getAddress().getHostAddress();
+        }
         if(hideip) {    /* If hiding IP, find or assign alias */
             synchronized(disallowedUsersLock) {
                 String n = useralias.get(message.name);
