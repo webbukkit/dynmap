@@ -300,7 +300,7 @@ public class FlatMap extends MapType {
 
         /* If day too, handle it */
         if(night_and_day) {
-            File dayfile = new File(outputFile.getParent(), tile.getDayFilename());
+            File dayfile = new File(tile.getDynmapWorld().worldtilepath, tile.getDayFilename());
             FileLockManager.getWriteLock(dayfile);
             crc = hashman.calculateTileHash(argb_buf_day);
             if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
@@ -406,6 +406,19 @@ public class FlatMap extends MapType {
         return prefix;
     }
 
+    public List<String> baseZoomFilePrefixes() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(getName() + "_128");
+        if(night_and_day)
+            s.add(getName()+"_day_128");
+        return s;
+    }
+    
+    public int baseZoomFileStepSize() { return 1; }
+
+    private static final int[] stepseq = { 1, 3, 0, 2 };
+    
+    public int[] zoomFileStepSequence() { return stepseq; }
 
     public static class FlatMapTile extends MapTile {
         FlatMap map;
@@ -427,7 +440,7 @@ public class FlatMap extends MapType {
         public String getFilename() {
             if(fname == null) {
                 if(world.bigworld)
-                    fname = map.prefix + "/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + size + "_" + -(y+1) + "_" + x + ".png";
+                    fname = map.prefix + "_" + size + "/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + -(y+1) + "_" + x + ".png";
                 else
                     fname = map.prefix + "_" + size + "_" + -(y+1) + "_" + x + ".png";
             }
@@ -437,7 +450,7 @@ public class FlatMap extends MapType {
         public String getDayFilename() {
             if(fname_day == null) {
                 if(world.bigworld)
-                    fname_day = map.prefix + "_day/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + size + "_" + -(y+1) + "_" + x + ".png";
+                    fname_day = map.prefix + "_day_" + size + "/" + ((-(y+1))>>5) + "_" + (x>>5) + "/" + -(y+1) + "_" + x + ".png";
                 else
                     fname_day = map.prefix + "_day_" + size + "_" + -(y+1) + "_" + x + ".png";
             }

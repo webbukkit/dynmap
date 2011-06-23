@@ -72,10 +72,7 @@ public class RegionHandler extends FileHandler {
                 /* If not in list, remove it */
                 if(!idlist.contains(id)) {
                     regionData.remove(id);
-                    log.info("discard " + id);
                 }
-                else
-                    log.info("keep " + id);
             }
         }
         try {

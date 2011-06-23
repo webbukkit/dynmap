@@ -15,4 +15,5 @@ public interface MapTileRenderer {
     
     boolean isBiomeDataNeeded();
     boolean isRawBiomeDataNeeded();
+    boolean isNightAndDayEnabled();
 }

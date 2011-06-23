@@ -326,6 +326,22 @@ public class KzedMap extends MapType {
          return false;
      }
 
+    public List<String> baseZoomFilePrefixes() {
+        ArrayList<String> s = new ArrayList<String>();
+        for(MapTileRenderer r : renderers) {
+            s.add("z" + r.getName());
+            if(r.isNightAndDayEnabled())
+                s.add("z" + r.getName() + "_day");
+        }
+        return s;
+    }
+    /* Return negative to flag negative X walk */
+    public int baseZoomFileStepSize() { return -zTileWidth; }
+
+    private static final int[] stepseq = { 0, 2, 1, 3 };
+    
+    public int[] zoomFileStepSequence() { return stepseq; }
+
     public String getName() {
         return "KzedMap";
     }
