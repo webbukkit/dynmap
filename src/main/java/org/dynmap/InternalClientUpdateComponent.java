@@ -12,6 +12,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
         super(plugin, configuration);
         final Boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         final Boolean hidewebchatip = configuration.getBoolean("hidewebchatip", false);
+        final Boolean trust_client_name = configuration.getBoolean("trustclientname", false);
         final float webchatInterval = configuration.getFloat("webchat-interval", 1);
         final String spammessage = plugin.configuration.getString("spammessage", "You may only chat once every %interval% seconds.");
 
@@ -30,6 +31,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
                 maximumMessageInterval = (int)(webchatInterval * 1000);
                 spamMessage = "\""+spammessage+"\"";
                 hideip = hidewebchatip;
+                this.trustclientname = trust_client_name;
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
                     public void triggered(Message t) {
