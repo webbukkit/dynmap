@@ -117,6 +117,7 @@ public class FileLockManager {
         while(!done) {
             try {
                 ImageIO.write(img, type, fname);
+                fname.setLastModified(System.currentTimeMillis());
                 done = true;
             } catch (FileNotFoundException fnfx) {  /* This seems to be what we get when file is locked by reader */
                 if(retrycnt < MAX_WRITE_RETRIES) {

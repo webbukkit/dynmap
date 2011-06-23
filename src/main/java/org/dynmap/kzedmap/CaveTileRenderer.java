@@ -11,6 +11,8 @@ public class CaveTileRenderer extends DefaultTileRenderer {
         super(configuration);
     }
 
+    public boolean isNightAndDayEnabled() { return false; }
+
     @Override
     protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
         MapIterator mapiter) {
