@@ -35,14 +35,16 @@ public class DynmapWorld {
     private int extrazoomoutlevels;  /* Number of additional zoom out levels to generate */
     public File worldtilepath;
     private Object lock = new Object();
-    private HashSet<File> zoomoutupdates[];
+    private HashSet<String> zoomoutupdates[];
+    private boolean checkts = true;	/* Check timestamps on first run with new configuration */
     
     @SuppressWarnings("unchecked")
     public void setExtraZoomOutLevels(int lvl) {
         extrazoomoutlevels = lvl;
         zoomoutupdates = new HashSet[lvl];
         for(int i = 0; i < lvl; i++)
-            zoomoutupdates[i] = new HashSet<File>();
+            zoomoutupdates[i] = new HashSet<String>();
+    	checkts = true;
     }
     public int getExtraZoomOutLevels() { return extrazoomoutlevels; }
     
@@ -54,7 +56,7 @@ public class DynmapWorld {
         if(level >= extrazoomoutlevels)
             return;
         synchronized(lock) {
-            zoomoutupdates[level].add(f);
+            zoomoutupdates[level].add(f.getPath());
         }
     }
     
@@ -62,7 +64,7 @@ public class DynmapWorld {
         if(level >= extrazoomoutlevels)
             return false;
         synchronized(lock) {
-            return zoomoutupdates[level].remove(f);
+            return zoomoutupdates[level].remove(f.getPath());
         }
     }
     
@@ -92,6 +94,7 @@ public class DynmapWorld {
         for(int i = 0; i < extrazoomoutlevels; i++) {
             freshenZoomOutFilesByLevel(i);
         }
+        checkts = false;	/* Just handle queued updates after first scan */
     }
     
     private static class PrefixData {
@@ -105,10 +108,6 @@ public class DynmapWorld {
         String zfnprefix;
     }
     
-    /**
-     * File based scan - used for priming map after server startup
-     * @param zoomlevel
-     */
     public void freshenZoomOutFilesByLevel(int zoomlevel) {
         int cnt = 0;
         Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ")");
@@ -211,7 +210,7 @@ public class DynmapWorld {
         int cnt = 0;
         /* Do processing */
         for(ProcessTileRec s : toprocess.values()) {
-            processZoomTile(pd, dir, s.zf, s.zfname, s.x - (pd.neg_step_x?step:0), s.y);
+            processZoomTile(pd, dir, s.zf, s.zfname, s.x, s.y);
             cnt++;
         }
         Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ") - done (" + cnt + " files)");
@@ -219,6 +218,11 @@ public class DynmapWorld {
     }
     
     private ProcessTileRec processZoomFile(File f, PrefixData pd) {
+    	/* If not checking timstamp, we're out if nothing queued for this file */
+    	if(!checkts) {
+    		if(!popQueuedUpdate(f, pd.zoomlevel))
+    			return null;
+    	}
         int step = pd.stepsize << pd.zoomlevel;
         String fn = f.getName();
         /* Parse filename to predict zoomed out file */
@@ -250,9 +254,11 @@ public class DynmapWorld {
         /* Make name of corresponding zoomed tile */
         String zfname = makeFilePath(pd, x, y, true);
         File zf = new File(worldtilepath, zfname);
-        /* If we're not updated, and zoom file exists and is older than our file, nothing to do */
-        if((!popQueuedUpdate(f, pd.zoomlevel)) && zf.exists() && (zf.lastModified() >= f.lastModified())) {
-            return null;
+        if(checkts) {	/* If checking timestamp, see if we need update based on enqueued update OR old file time */
+        	/* If we're not updated, and zoom file exists and is older than our file, nothing to do */
+        	if((!popQueuedUpdate(f, pd.zoomlevel)) && zf.exists() && (zf.lastModified() >= f.lastModified())) {
+        		return null;
+        	}
         }
         ProcessTileRec rec = new ProcessTileRec();
         rec.zf = zf;
@@ -269,6 +275,8 @@ public class DynmapWorld {
         KzedBufferedImage kzIm = null;
         int[] argb = new int[width*height];
         int step = pd.stepsize << pd.zoomlevel;
+        int ztx = tx;
+        tx = tx - (pd.neg_step_x?step:0);	/* Adjust for negative step */ 
 
         /* create image buffer */
         kzIm = KzedMap.allocateBufferedImage(width, height);
@@ -279,6 +287,7 @@ public class DynmapWorld {
             if(f.exists()) {
                 BufferedImage im = null;
             	FileLockManager.getReadLock(f);
+                popQueuedUpdate(f, pd.zoomlevel);
                 try {
                     im = ImageIO.read(f);
                 } catch (IOException e) {
@@ -316,10 +325,10 @@ public class DynmapWorld {
         }
         FileLockManager.getWriteLock(zf);
         TileHashManager hashman = MapManager.mapman.hashman;
-        long crc = hashman.calculateTileHash(argb); /* Get hash of tile */
-        int tilex = tx/step/2;
+        long crc = hashman.calculateTileHash(kzIm.argb_buf); /* Get hash of tile */
+        int tilex = ztx/step/2;
         int tiley = ty/step/2;
-        String key = world.getName()+"."+pd.zoomprefix+pd.baseprefix;
+        String key = world.getName()+".z"+pd.zoomprefix+pd.baseprefix;
         if((!zf.exists()) || (crc != MapManager.mapman.hashman.getImageHashCode(key, null, tilex, tiley))) {
             try {
                 if(!zf.getParentFile().exists())
@@ -334,9 +343,6 @@ public class DynmapWorld {
             hashman.updateHashCode(key, null, tilex, tiley, crc);
             MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
             enqueueZoomOutUpdate(zf, pd.zoomlevel+1);
-        }
-        else {
-            zf.setLastModified(System.currentTimeMillis()); /* Touch the existing file */
         }
         FileLockManager.releaseWriteLock(zf);
         KzedMap.freeBufferedImage(kzIm);
