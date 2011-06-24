@@ -422,6 +422,9 @@ public class FlatMap extends MapType {
     
     public int[] zoomFileStepSequence() { return stepseq; }
 
+    /* How many bits of coordinate are shifted off to make big world directory name */
+    public int getBigWorldShift() { return 5; }
+
     public static class FlatMapTile extends MapTile {
         FlatMap map;
         public int x;
