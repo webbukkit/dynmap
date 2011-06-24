@@ -50,18 +50,19 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
             dnprefix = '_day';
 		var extrazoom = this.dynmap.world.extrazoomout;        
 		if (zoom <= extrazoom) {
-			var zpre = 'zzzzzzzzzzzzzzzz'.substring(0, extrazoom-zoom+1);
+			var zpre = 'zzzzzzzzzzzzzzzz'.substring(0, extrazoom-zoom);
 			// Most zoomed out tiles.
 			tileSize = 128;
 			imgSize = tileSize;
 			var tilescale = 2 << (extrazoom-zoom);
             if (this.dynmap.world.bigworld) {
-                tileName = zpre + this.prefix + dnprefix + '/' + ((-coord.x * tileSize*tilescale)>>12) + 
-                    '_' + ((coord.y * tileSize*tilescale) >> 12) + '/' +
+                if(zoom < extrazoom) zpre = zpre + '_';
+                tileName = 'z' + this.prefix + dnprefix + '/' + ((-coord.x * tileSize*tilescale)>>12) + 
+                    '_' + ((coord.y * tileSize*tilescale) >> 12) + '/' + zpre +
                     (-coord.x * tileSize*tilescale) + '_' + (coord.y * tileSize*tilescale) + '.png';
             }
             else {
-                tileName = zpre + this.prefix + dnprefix + '_' + (-coord.x * tileSize*tilescale) + '_' + (coord.y * tileSize*tilescale) + '.png';
+                tileName = zpre + 'z' + this.prefix + dnprefix + '_' + (-coord.x * tileSize*tilescale) + '_' + (coord.y * tileSize*tilescale) + '.png';
             }
 		} else {
 			// Other zoom levels.
