@@ -137,18 +137,19 @@ public class DynmapWorld {
         Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
     }
     
-    
     private static class ProcessTileRec {
         File zf;
         String zfname;
         int x, y;
     }
+
     private String makeFilePath(PrefixData pd, int x, int y, boolean zoomed) {
         if(bigworld)
             return pd.baseprefix + "/" + ((x/pd.stepsize) >> 5) + "_" + ((y/pd.stepsize) >> 5) + "/" + (zoomed?pd.zfnprefix:pd.fnprefix) + x + "_" + y + ".png";
         else
             return (zoomed?pd.zfnprefix:pd.fnprefix) + "_" + x + "_" + y + ".png";            
     }
+    
     private int processZoomDirectory(File dir, PrefixData pd) {
         Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ")");
         HashMap<String, ProcessTileRec> toprocess = new HashMap<String, ProcessTileRec>();
@@ -188,8 +189,9 @@ public class DynmapWorld {
             /* Make name of corresponding zoomed tile */
             String zfname = makeFilePath(pd, x, y, true);
             File zf = new File(worldtilepath, zfname);
+            long fts = f.lastModified();
             /* If zoom file exists and is older than our file, nothing to do */
-            if(zf.exists() && (zf.lastModified() >= f.lastModified())) {
+            if(zf.exists() && ((zf.lastModified() >= f.lastModified()) || checkIgnoreUpdate(f, fts))) {
                 continue;
             }
             String zfpath = zf.getPath();
@@ -211,6 +213,7 @@ public class DynmapWorld {
         Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ") - done (" + cnt + " files)");
         return cnt;
     }
+    
     private void processZoomTile(PrefixData pd, File dir, File zf, String zfname, int tx, int ty) {
         Debug.debug("processZoomFile(" + pd.baseprefix + "," + dir.getPath() + "," + zf.getPath() + "," + tx + "," + ty + ")");
         int width = 128, height = 128;
@@ -264,18 +267,49 @@ public class DynmapWorld {
             }
         }
         FileLockManager.getWriteLock(zf);
-        try {
-            if(!zf.getParentFile().exists())
-                zf.getParentFile().mkdirs();
-            FileLockManager.imageIOWrite(zIm, "png", zf);
-            Debug.debug("Saved zoom-out tile at " + zf.getPath());
-        } catch (IOException e) {
-            Debug.error("Failed to save zoom-out tile: " + zf.getName(), e);
-        } catch (java.lang.NullPointerException e) {
-            Debug.error("Failed to save zoom-out tile (NullPointerException): " + zf.getName(), e);
+        TileHashManager hashman = MapManager.mapman.hashman;
+        long crc = hashman.calculateTileHash(argb); /* Get hash of tile */
+        int tilex = tx/step/2;
+        int tiley = ty/step/2;
+        String key = world.getName()+"."+pd.zoomprefix+pd.baseprefix;
+        if((!zf.exists()) || (crc != MapManager.mapman.hashman.getImageHashCode(key, null, tilex, tiley))) {
+            try {
+                if(!zf.getParentFile().exists())
+                    zf.getParentFile().mkdirs();
+                FileLockManager.imageIOWrite(zIm, "png", zf);
+                Debug.debug("Saved zoom-out tile at " + zf.getPath());
+            } catch (IOException e) {
+                Debug.error("Failed to save zoom-out tile: " + zf.getName(), e);
+            } catch (java.lang.NullPointerException e) {
+                Debug.error("Failed to save zoom-out tile (NullPointerException): " + zf.getName(), e);
+            }
+            hashman.updateHashCode(key, null, tilex, tiley, crc);
+            MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
+        }
+        else {
+            zf.setLastModified(System.currentTimeMillis()); /* Touch the existing file */
+//            ignoreUpdate(zf);   /* Remember to ignore this update */
         }
         FileLockManager.releaseWriteLock(zf);
         KzedMap.freeBufferedImage(kzIm);
-        MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));            
     }
+    private HashMap<String, Long> ignore_upd = new HashMap<String, Long>();
+    
+    private void ignoreUpdate(File f) {
+        long ts = f.lastModified();
+        ignore_upd.put(f.getPath(), ts);
+    }
+    /**
+     * Check if ignore for file at current timestamp - return true if so
+     */
+    private boolean checkIgnoreUpdate(File f, long ts) {
+        String fn = f.getPath();
+        Long its = ignore_upd.get(fn);
+        if((its != null) && (ts <= its.longValue())) {
+            return true;
+        }
+        ignore_upd.remove(fn);  /* If newer, stop ignoring */
+        return false;
+    }
+
 }
