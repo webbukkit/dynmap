@@ -289,6 +289,7 @@ public class FlatMap extends MapType {
             }
             MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
             hashman.updateHashCode(tile.getKey(), null, t.x, t.y, crc);
+            tile.getDynmapWorld().enqueueZoomOutUpdate(outputFile);
             tile_update = true;
         }
         else {
@@ -316,6 +317,7 @@ public class FlatMap extends MapType {
                 }
                 MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
                 hashman.updateHashCode(tile.getKey(), "day", t.x, t.y, crc);
+                tile.getDynmapWorld().enqueueZoomOutUpdate(dayfile);
                 tile_update = true;
             }
             else {
