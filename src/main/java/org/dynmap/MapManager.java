@@ -361,7 +361,7 @@ public class MapManager {
         dynmapWorld.sendposition = worldConfiguration.getBoolean("sendposition", true);
         dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
         dynmapWorld.bigworld = worldConfiguration.getBoolean("bigworld", false);
-        dynmapWorld.extrazoomoutlevels = worldConfiguration.getInteger("extrazoomout", 0);
+        dynmapWorld.setExtraZoomOutLevels(worldConfiguration.getInteger("extrazoomout", 0));
         dynmapWorld.worldtilepath = new File(plug_in.tilesDirectory, w.getName());
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {

@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 
@@ -31,8 +32,39 @@ public class DynmapWorld {
     public boolean sendposition;
     public boolean sendhealth;
     public boolean bigworld;    /* If true, deeper directory hierarchy */
-    public int extrazoomoutlevels;  /* Number of additional zoom out levels to generate */
+    private int extrazoomoutlevels;  /* Number of additional zoom out levels to generate */
     public File worldtilepath;
+    private Object lock = new Object();
+    private HashSet<File> zoomoutupdates[];
+    
+    @SuppressWarnings("unchecked")
+    public void setExtraZoomOutLevels(int lvl) {
+        extrazoomoutlevels = lvl;
+        zoomoutupdates = new HashSet[lvl];
+        for(int i = 0; i < lvl; i++)
+            zoomoutupdates[i] = new HashSet<File>();
+    }
+    public int getExtraZoomOutLevels() { return extrazoomoutlevels; }
+    
+    public void enqueueZoomOutUpdate(File f) {
+        enqueueZoomOutUpdate(f, 0);
+    }
+    
+    private void enqueueZoomOutUpdate(File f, int level) {
+        if(level >= extrazoomoutlevels)
+            return;
+        synchronized(lock) {
+            zoomoutupdates[level].add(f);
+        }
+    }
+    
+    private boolean popQueuedUpdate(File f, int level) {
+        if(level >= extrazoomoutlevels)
+            return false;
+        synchronized(lock) {
+            return zoomoutupdates[level].remove(f);
+        }
+    }
     
     private static class DirFilter implements FilenameFilter {
         public boolean accept(File f, String n) {
@@ -73,11 +105,40 @@ public class DynmapWorld {
         String zfnprefix;
     }
     
+    /**
+     * File based scan - used for priming map after server startup
+     * @param zoomlevel
+     */
     public void freshenZoomOutFilesByLevel(int zoomlevel) {
         int cnt = 0;
         Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ")");
         if(worldtilepath.exists() == false) /* Quit if not found */
             return;
+        HashMap<String, PrefixData> maptab = buildPrefixData(zoomlevel);
+
+        if(bigworld) {  /* If big world, next directories are map name specific */
+            DirFilter df = new DirFilter();
+            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
+                PrefixData pd = maptab.get(pfx);
+                File dname = new File(worldtilepath, pfx);
+                /* Now, go through subdirectories under this one, and process them */
+                String[] subdir = dname.list(df);
+                if(subdir == null) continue;
+                for(String s : subdir) {
+                    File sdname = new File(dname, s);
+                    cnt += processZoomDirectory(sdname, pd);
+                }
+            }
+        }
+        else {  /* Else, classic file layout */
+            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
+                cnt += processZoomDirectory(worldtilepath, maptab.get(pfx));
+            }
+        }
+        Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
+    }
+    
+    private HashMap<String, PrefixData> buildPrefixData(int zoomlevel) {
         HashMap<String, PrefixData> maptab = new HashMap<String, PrefixData>();
         /* Build table of file prefixes and step sizes */
         for(MapType mt : maps) {
@@ -85,8 +146,8 @@ public class DynmapWorld {
             int stepsize = mt.baseZoomFileStepSize();
             boolean neg_step_x = false;
             if(stepsize < 0) {
-            	stepsize = -stepsize;
-            	neg_step_x = true;
+                stepsize = -stepsize;
+                neg_step_x = true;
             }
             int[] stepseq = mt.zoomFileStepSequence();
             for(String p : pfx) {
@@ -115,26 +176,7 @@ public class DynmapWorld {
                 maptab.put(p, pd);
             }
         }
-        if(bigworld) {  /* If big world, next directories are map name specific */
-            DirFilter df = new DirFilter();
-            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
-                PrefixData pd = maptab.get(pfx);
-                File dname = new File(worldtilepath, pfx);
-                /* Now, go through subdirectories under this one, and process them */
-                String[] subdir = dname.list(df);
-                if(subdir == null) continue;
-                for(String s : subdir) {
-                    File sdname = new File(dname, s);
-                    cnt += processZoomDirectory(sdname, pd);
-                }
-            }
-        }
-        else {  /* Else, classic file layout */
-            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
-                cnt += processZoomDirectory(worldtilepath, maptab.get(pfx));
-            }
-        }
-        Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
+        return maptab;
     }
     
     private static class ProcessTileRec {
@@ -158,50 +200,12 @@ public class DynmapWorld {
         if(files == null)
             return 0;
         for(String fn : files) {
-            /* Build file object */
-            File f = new File(dir, fn);
-            /* Parse filename to predict zoomed out file */
-            fn = fn.substring(0, fn.lastIndexOf('.'));  /* Strip off extension */
-            String[] tok = fn.split("_");   /* Split by underscores */
-            int x = 0;
-            int y = 0;
-            boolean parsed = false;
-            if(tok.length >= 2) {
-                try {
-                    x = Integer.parseInt(tok[tok.length-2]);
-                    y = Integer.parseInt(tok[tok.length-1]);
-                    parsed = true;
-                } catch (NumberFormatException nfx) {
+            ProcessTileRec tr = processZoomFile(new File(dir, fn), pd);
+            if(tr != null) {
+                String zfpath = tr.zf.getPath();
+                if(!toprocess.containsKey(zfpath))  {
+                    toprocess.put(zfpath, tr);
                 }
-            }
-            if(!parsed)
-                continue;
-        	if(pd.neg_step_x) x = -x;
-        	if(x >= 0)
-                x = x - (x % (2*step));
-            else
-                x = x + (x % (2*step));
-        	if(pd.neg_step_x) x = -x;
-            if(y >= 0)
-                y = y - (y % (2*step));
-            else
-                y = y + (y % (2*step));
-            /* Make name of corresponding zoomed tile */
-            String zfname = makeFilePath(pd, x, y, true);
-            File zf = new File(worldtilepath, zfname);
-            long fts = f.lastModified();
-            /* If zoom file exists and is older than our file, nothing to do */
-            if(zf.exists() && ((zf.lastModified() >= f.lastModified()) || checkIgnoreUpdate(f, fts))) {
-                continue;
-            }
-            String zfpath = zf.getPath();
-            if(!toprocess.containsKey(zfpath))  {
-                ProcessTileRec rec = new ProcessTileRec();
-                rec.zf = zf;
-                rec.x = x;
-                rec.y = y;
-                rec.zfname = zfname;
-                toprocess.put(zfpath, rec);
             }
         }
         int cnt = 0;
@@ -212,6 +216,50 @@ public class DynmapWorld {
         }
         Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ") - done (" + cnt + " files)");
         return cnt;
+    }
+    
+    private ProcessTileRec processZoomFile(File f, PrefixData pd) {
+        int step = pd.stepsize << pd.zoomlevel;
+        String fn = f.getName();
+        /* Parse filename to predict zoomed out file */
+        fn = fn.substring(0, fn.lastIndexOf('.'));  /* Strip off extension */
+        String[] tok = fn.split("_");   /* Split by underscores */
+        int x = 0;
+        int y = 0;
+        boolean parsed = false;
+        if(tok.length >= 2) {
+            try {
+                x = Integer.parseInt(tok[tok.length-2]);
+                y = Integer.parseInt(tok[tok.length-1]);
+                parsed = true;
+            } catch (NumberFormatException nfx) {
+            }
+        }
+        if(!parsed)
+            return null;
+        if(pd.neg_step_x) x = -x;
+        if(x >= 0)
+            x = x - (x % (2*step));
+        else
+            x = x + (x % (2*step));
+        if(pd.neg_step_x) x = -x;
+        if(y >= 0)
+            y = y - (y % (2*step));
+        else
+            y = y + (y % (2*step));
+        /* Make name of corresponding zoomed tile */
+        String zfname = makeFilePath(pd, x, y, true);
+        File zf = new File(worldtilepath, zfname);
+        /* If we're not updated, and zoom file exists and is older than our file, nothing to do */
+        if((!popQueuedUpdate(f, pd.zoomlevel)) && zf.exists() && (zf.lastModified() >= f.lastModified())) {
+            return null;
+        }
+        ProcessTileRec rec = new ProcessTileRec();
+        rec.zf = zf;
+        rec.x = x;
+        rec.y = y;
+        rec.zfname = zfname;
+        return rec;
     }
     
     private void processZoomTile(PrefixData pd, File dir, File zf, String zfname, int tx, int ty) {
@@ -285,31 +333,12 @@ public class DynmapWorld {
             }
             hashman.updateHashCode(key, null, tilex, tiley, crc);
             MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
+            enqueueZoomOutUpdate(zf, pd.zoomlevel+1);
         }
         else {
             zf.setLastModified(System.currentTimeMillis()); /* Touch the existing file */
-//            ignoreUpdate(zf);   /* Remember to ignore this update */
         }
         FileLockManager.releaseWriteLock(zf);
         KzedMap.freeBufferedImage(kzIm);
     }
-    private HashMap<String, Long> ignore_upd = new HashMap<String, Long>();
-    
-    private void ignoreUpdate(File f) {
-        long ts = f.lastModified();
-        ignore_upd.put(f.getPath(), ts);
-    }
-    /**
-     * Check if ignore for file at current timestamp - return true if so
-     */
-    private boolean checkIgnoreUpdate(File f, long ts) {
-        String fn = f.getPath();
-        Long its = ignore_upd.get(fn);
-        if((its != null) && (ts <= its.longValue())) {
-            return true;
-        }
-        ignore_upd.remove(fn);  /* If newer, stop ignoring */
-        return false;
-    }
-
 }
