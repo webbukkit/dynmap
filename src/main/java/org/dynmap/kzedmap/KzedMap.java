@@ -341,6 +341,8 @@ public class KzedMap extends MapType {
     private static final int[] stepseq = { 0, 2, 1, 3 };
     
     public int[] zoomFileStepSequence() { return stepseq; }
+    /* How many bits of coordinate are shifted off to make big world directory name */
+    public int getBigWorldShift() { return 12; }
 
     public String getName() {
         return "KzedMap";
