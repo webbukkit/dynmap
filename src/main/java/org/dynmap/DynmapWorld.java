@@ -106,6 +106,7 @@ public class DynmapWorld {
     	String zoomprefix;
     	String fnprefix;
         String zfnprefix;
+        int bigworldshift;
     }
     
     public void freshenZoomOutFilesByLevel(int zoomlevel) {
@@ -143,6 +144,7 @@ public class DynmapWorld {
         for(MapType mt : maps) {
             List<String> pfx = mt.baseZoomFilePrefixes();
             int stepsize = mt.baseZoomFileStepSize();
+            int bigworldshift = mt.getBigWorldShift();
             boolean neg_step_x = false;
             if(stepsize < 0) {
                 stepsize = -stepsize;
@@ -157,6 +159,7 @@ public class DynmapWorld {
                 pd.baseprefix = p;
                 pd.zoomlevel = zoomlevel;
                 pd.zoomprefix = "zzzzzzzzzzzz".substring(0, zoomlevel);
+                pd.bigworldshift = bigworldshift;
                 if(bigworld) {
                     if(zoomlevel > 0) {
                         pd.zoomprefix += "_";
@@ -186,7 +189,7 @@ public class DynmapWorld {
 
     private String makeFilePath(PrefixData pd, int x, int y, boolean zoomed) {
         if(bigworld)
-            return pd.baseprefix + "/" + ((x/pd.stepsize) >> 5) + "_" + ((y/pd.stepsize) >> 5) + "/" + (zoomed?pd.zfnprefix:pd.fnprefix) + x + "_" + y + ".png";
+            return pd.baseprefix + "/" + (x >> pd.bigworldshift) + "_" + (y >> pd.bigworldshift) + "/" + (zoomed?pd.zfnprefix:pd.fnprefix) + x + "_" + y + ".png";
         else
             return (zoomed?pd.zfnprefix:pd.fnprefix) + "_" + x + "_" + y + ".png";            
     }
@@ -194,7 +197,6 @@ public class DynmapWorld {
     private int processZoomDirectory(File dir, PrefixData pd) {
         Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ")");
         HashMap<String, ProcessTileRec> toprocess = new HashMap<String, ProcessTileRec>();
-        int step = pd.stepsize << pd.zoomlevel;
         String[] files = dir.list(new PNGFileFilter(pd.fnprefix));
         if(files == null)
             return 0;
@@ -265,6 +267,7 @@ public class DynmapWorld {
         rec.x = x;
         rec.y = y;
         rec.zfname = zfname;
+        Debug.debug("Process " + zf.getPath() + " due to " + f.getPath());
         return rec;
     }
     
