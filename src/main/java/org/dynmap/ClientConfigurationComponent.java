@@ -33,7 +33,7 @@ public class ClientConfigurationComponent extends Component {
                     s(wo, "center/y", wn.getFloat("center/y", 64.0f));
                     s(wo, "center/z", wn.getFloat("center/z", 0.0f));
                     s(wo, "bigworld", world.bigworld);
-                    s(wo, "extrazoomout", world.extrazoomoutlevels);
+                    s(wo, "extrazoomout", world.getExtraZoomOutLevels());
                     a(t, "worlds", wo);
                     
                     for(MapType mt : world.maps) {

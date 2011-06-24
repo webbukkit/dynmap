@@ -317,6 +317,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             saveZoomedTile(zmtile, zoomFile, zimg, ox, oy, null);
             MapManager.mapman.pushUpdate(zmtile.getWorld(),
                                          new Client.Tile(zmtile.getFilename()));
+            zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile);
             ztile_updated = true;
         }
         KzedMap.freeBufferedImage(zimg);
@@ -331,6 +332,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy, "day");
                 MapManager.mapman.pushUpdate(zmtile.getWorld(),
                                              new Client.Tile(zmtile.getDayFilename()));            
+                zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile_day);
                 ztile_updated = true;
             }
             KzedMap.freeBufferedImage(zimg_day);
