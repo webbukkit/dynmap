@@ -38,6 +38,10 @@ public interface MapChunkCache {
      */
     boolean isDoneLoading();
     /**
+     * Test if all empty blocks
+     */
+    boolean isEmpty();
+    /**
      * Unload chunks
      */
     void unloadChunks();
@@ -87,4 +91,8 @@ public interface MapChunkCache {
      * Coordinates are block coordinates
      */
     public void setVisibleRange(VisibilityLimit limit);
+    /**
+     * Set autogenerate - must be done after at least one visible range has been set
+     */
+    public void setAutoGenerateVisbileRanges(boolean do_generate);
 }

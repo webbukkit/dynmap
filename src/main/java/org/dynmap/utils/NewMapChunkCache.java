@@ -31,6 +31,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean biome, biomeraw, highesty, blockdata;
     private HiddenChunkStyle hidestyle = HiddenChunkStyle.FILL_AIR;
     private List<VisibilityLimit> visible_limits = null;
+    private boolean do_generate = false;
+    private boolean isempty = true;
 
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     
@@ -296,7 +298,11 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
             }
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
-            boolean didload = w.loadChunk(chunk.x, chunk.z, false);
+            boolean didload = w.loadChunk(chunk.x, chunk.z, do_generate && vis);
+            boolean didgenerate = false;
+            /* If we didn't load, and we're supposed to generate, do it */
+            if((!didload) && do_generate && vis)
+                didgenerate = didload = w.loadChunk(chunk.x, chunk.z, true);
             /* If it did load, make cache of it */
             if(didload) {
                 ChunkSnapshot ss = null;
@@ -329,17 +335,20 @@ public class NewMapChunkCache implements MapChunkCache {
             if ((!wasLoaded) && didload) {
                 /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
                  * when chunks are unloaded but not saved - removing them seems to do the trick */
-                Chunk cc = w.getChunkAt(chunk.x, chunk.z);
-                if(cc != null) {
-                    for(Entity e: cc.getEntities())
-                        e.remove();
+                if(!didgenerate) {
+                    Chunk cc = w.getChunkAt(chunk.x, chunk.z);
+                    if(cc != null) {
+                        for(Entity e: cc.getEntities())
+                            e.remove();
+                    }
                 }
                 /* Since we only remember ones we loaded, and we're synchronous, no player has
                  * moved, so it must be safe (also prevent chunk leak, which appears to happen
                  * because isChunkInUse defined "in use" as being within 256 blocks of a player,
                  * while the actual in-use chunk area for a player where the chunks are managed
-                 * by the MC base server is 21x21 (or about a 160 block radius) */
-                w.unloadChunk(chunk.x, chunk.z, false, false);
+                 * by the MC base server is 21x21 (or about a 160 block radius).
+                 * Also, if we did generate it, need to save it */
+                w.unloadChunk(chunk.x, chunk.z, didgenerate, false);
                 /* And pop preserved chunk - this is a bad leak in Bukkit for map traversals like us */
                 try {
                     if(poppreservedchunk != null)
@@ -351,10 +360,13 @@ public class NewMapChunkCache implements MapChunkCache {
             cnt++;
         }
         if(iterator.hasNext() == false) {   /* If we're done */
+            isempty = true;
             /* Fill missing chunks with empty dummy chunk */
             for(int i = 0; i < snaparray.length; i++) {
                 if(snaparray[i] == null)
                     snaparray[i] = EMPTY;
+                else if(snaparray[i] != EMPTY)
+                    isempty = false;
             }
         }
         return cnt;
@@ -366,6 +378,12 @@ public class NewMapChunkCache implements MapChunkCache {
         if(iterator != null)
             return !iterator.hasNext();
         return false;
+    }
+    /**
+     * Test if all empty blocks
+     */
+    public boolean isEmpty() {
+        return isempty;
     }
     /**
      * Unload chunks
@@ -435,6 +453,16 @@ public class NewMapChunkCache implements MapChunkCache {
      */
     public void setHiddenFillStyle(HiddenChunkStyle style) {
         this.hidestyle = style;
+    }
+    /**
+     * Set autogenerate - must be done after at least one visible range has been set
+     */
+    public void setAutoGenerateVisbileRanges(boolean do_generate) {
+        if(do_generate && ((visible_limits == null) || (visible_limits.size() == 0))) {
+            Log.severe("Cannot setAutoGenerateVisibleRanges() without visible ranges defined");
+            return;
+        }
+        this.do_generate = do_generate;
     }
     /**
      * Add visible area limit - can be called more than once 
