@@ -302,7 +302,7 @@ worlds:
   #    - x: -15000
   #      y: 64
   #      z: -5000
-  #  # Use visbilitylimits to restrict which areas of maps on your world to render (zero or more rectangles can be defined)
+  #  # Use visibilitylimits to restrict which areas of maps on your world to render (zero or more rectangles can be defined)
   #  visibilitylimits:
   #    - x0: -1000
   #      z0: -1000
@@ -314,6 +314,10 @@ worlds:
   #      z1: -500
   #  # Use hidestyle to control how hidden-but-existing chunks are to be rendered (air=empty air (same as ungenerated), stone=a flat stone plain, ocean=a flat ocean)
   #  hidestyle: stone
+  #  # Use 'autogenerate-to-visibilitylimits: true' to choose to force the generation of ungenerated chunks while rendering maps on this world, for any chunks within the defined
+  #  # visibilitylimits (limits must be set).  This will result in initializing all game world areas within the visible ranges that have not yet been initialized.
+  #  # Note: BE SURE YOU WANT TO DO THIS - there isn't a good way to "ungenerate" terrain chunks once generated (although tools like WorldEdit can regenerate them) 
+  #  autogenerate-to-visibilitylimits: false
   #   Use 'template: mycustomtemplate' to use the properties specified in the template 'mycustomtemplate' to this world. Default it is set to the environment-name (normal or nether).
   #  template: mycustomtemplate
   #   Rest of comes from template - uncomment to tailor for world specifically

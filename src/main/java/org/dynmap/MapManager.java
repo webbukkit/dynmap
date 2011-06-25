@@ -108,6 +108,7 @@ public class MapManager {
         MapTile tile = null;
         int rendercnt = 0;
         CommandSender sender;
+        long starttime;
 
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender) {
@@ -143,8 +144,9 @@ public class MapManager {
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
+                        double msecpertile = (double)(tstart - starttime) / (double)((rendercnt>0)?rendercnt:1);
                         sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
-                                 world.world.getName() + "' completed - " + rendercnt + " tiles rendered.");
+                                 world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }                	
                     found.clear();
                     rendered.clear();
@@ -156,6 +158,7 @@ public class MapManager {
                         return;
                     }
                     map = world.maps.get(map_index);
+                    starttime = System.currentTimeMillis();
 
                     /* Now, prime the render queue */
                     for (MapTile mt : map.getTiles(loc)) {
@@ -192,10 +195,11 @@ public class MapManager {
                 return; /* Cancelled/aborted */
             }
             if(tile0 != null) {    /* Single tile? */
-                render(cache, tile);    /* Just render */
+                if(cache.isEmpty() == false)
+                    render(cache, tile);    /* Just render */
             }
             else {
-                if (render(cache, tile)) {
+                if ((cache.isEmpty() == false) && render(cache, tile)) {
                     found.remove(tile);
                     rendered.add(tile);
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
@@ -206,10 +210,13 @@ public class MapManager {
                     }
                 }
                 found.remove(tile);
-                rendercnt++;
-                if((rendercnt % 100) == 0) {
-                    sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
-                            w.getName() + "' in progress - " + rendercnt + " tiles rendered, " + renderQueue.size() + " tiles pending.");
+                if(!cache.isEmpty()) {
+                    rendercnt++;
+                    if((rendercnt % 100) == 0) {
+                        double msecpertile = (double)(System.currentTimeMillis() - starttime) / (double)rendercnt;
+                        sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
+                            w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
+                    }
                 }
             }
             /* And unload what we loaded */
@@ -384,6 +391,11 @@ public class MapManager {
                 dynmapWorld.seedloc.add(new Location(w, (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
             }            
         }
+        dynmapWorld.do_autogenerate = worldConfiguration.getBoolean("autogenerate-to-visibilitylimits", false);
+        if(dynmapWorld.do_autogenerate && (dynmapWorld.visibility_limits == null)) {
+            Log.info("Warning: Automatic world generation to visible limits option requires that visiblelimits be set - option disabled");
+            dynmapWorld.do_autogenerate = false;
+        }
         String hiddenchunkstyle = worldConfiguration.getString("hidestyle", "stone");
         if(hiddenchunkstyle.equals("air"))
             dynmapWorld.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_AIR;
@@ -516,6 +528,7 @@ public class MapManager {
                 c.setVisibleRange(limit);
             }
             c.setHiddenFillStyle(w.hiddenchunkstyle);
+            c.setAutoGenerateVisbileRanges(w.do_autogenerate);
         }
         c.setChunks(w.world, chunks);
         if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
