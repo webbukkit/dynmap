@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.io.IOException;
 import java.util.zip.CRC32;
 
@@ -45,8 +46,15 @@ public class TileHashManager {
         }
         
         public File getHashFile(File tiledir) {
-            if(hf == null)
-                hf = new File(tiledir, key + (subtype.equals("")?"":("." + subtype)) + "_" + x + "_" + y + ".hash");
+            if(hf == null) {
+                String k;
+                int idx = key.indexOf('.'); /* Find first '.' - world name split */
+                if(idx > 0)
+                    k = key.substring(0, idx) + File.separatorChar + key.substring(idx+1);
+                else
+                    k = key;
+                hf = new File(tiledir, k + (subtype.equals("")?"":("." + subtype)) + "_" + x + "_" + y + ".hash");
+            }
             return hf;
         }
         /* Write to file */
@@ -88,8 +96,21 @@ public class TileHashManager {
                 crcbuf[off+i] = (byte)((crc >> ((3-i)*8)) & 0xFF);
         }
     }
+    
+    public static class LRULinkedHashMap<T, K> extends LinkedHashMap<T, K> {
+        private int limit;
+        public LRULinkedHashMap(int lim) {
+            super(16, (float)0.75, true);
+            limit = lim;
+        }
+        protected boolean removeEldestEntry(Map.Entry<T, K> last) {
+            return(size() >= limit);
+        }
+    }
+    
+    private static final int MAX_CACHED_TILEHASHFILES = 25;
     private Object lock = new Object();
-    private LinkedHashMap<TileHashFile, byte[]> tilehash = new LinkedHashMap<TileHashFile, byte[]>(16, (float) 0.75, true);
+    private LRULinkedHashMap<TileHashFile, byte[]> tilehash = new LRULinkedHashMap<TileHashFile, byte[]>(MAX_CACHED_TILEHASHFILES);
     private CRC32 crc32 = new CRC32();
     
     public TileHashManager(File tileroot, boolean enabled) {
