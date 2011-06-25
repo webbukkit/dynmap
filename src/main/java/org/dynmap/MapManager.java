@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
+import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.LegacyMapChunkCache;
 import org.dynmap.utils.MapChunkCache;
@@ -93,6 +95,33 @@ public class MapManager {
                 Log.severe("Exception during render job: " + r);
                 x.printStackTrace();
             }
+        }
+        @Override
+        public void execute(final Runnable r) {
+            final Runnable rr = r;
+            super.execute(new Runnable() {
+                public void run() {
+                    try {
+                        r.run();
+                    } catch (Exception x) {
+                        Log.severe("Exception during render job: " + r);
+                        x.printStackTrace();                        
+                    }
+                }
+            });
+        }
+        @Override
+        public ScheduledFuture<?> schedule(final Runnable command, long delay, TimeUnit unit) {
+            return super.schedule(new Runnable() {
+                public void run() {
+                    try {
+                        command.run();
+                    } catch (Exception x) {
+                        Log.severe("Exception during render job: " + command);
+                        x.printStackTrace();                        
+                    }
+                }
+            }, delay, unit);
         }
     }
     /* This always runs on render pool threads - no bukkit calls from here */ 
@@ -391,10 +420,19 @@ public class MapManager {
                 dynmapWorld.seedloc.add(new Location(w, (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
             }            
         }
-        dynmapWorld.do_autogenerate = worldConfiguration.getBoolean("autogenerate-to-visibilitylimits", false);
-        if(dynmapWorld.do_autogenerate && (dynmapWorld.visibility_limits == null)) {
-            Log.info("Warning: Automatic world generation to visible limits option requires that visiblelimits be set - option disabled");
-            dynmapWorld.do_autogenerate = false;
+        String autogen = worldConfiguration.getString("autogenerate-to-visibilitylimits", "none");
+        if(autogen.equals("permanent")) {
+            dynmapWorld.do_autogenerate = AutoGenerateOption.PERMANENT;
+        }
+        else if(autogen.equals("map-only")) {
+            dynmapWorld.do_autogenerate = AutoGenerateOption.FORMAPONLY;
+        }
+        else {
+            dynmapWorld.do_autogenerate = AutoGenerateOption.NONE;
+        }
+        if((dynmapWorld.do_autogenerate != AutoGenerateOption.NONE) && (dynmapWorld.visibility_limits == null)) {
+            Log.info("Warning: Automatic world generation to visible limits option requires that visibitylimits be set - option disabled");
+            dynmapWorld.do_autogenerate = AutoGenerateOption.NONE;
         }
         String hiddenchunkstyle = worldConfiguration.getString("hidestyle", "stone");
         if(hiddenchunkstyle.equals("air"))

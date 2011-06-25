@@ -53,6 +53,7 @@ public class DynmapPlugin extends JavaPlugin {
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
     private boolean generate_only = false;
+    private static boolean ignore_chunk_loads = false; /* Flat to keep us from processing our own chunk loads */
 
     public static File dataDirectory;
     public static File tilesDirectory;
@@ -248,6 +249,8 @@ public class DynmapPlugin extends JavaPlugin {
             WorldListener renderTrigger = new WorldListener() {
                 @Override
                 public void onChunkLoad(ChunkLoadEvent event) {
+                    if(ignore_chunk_loads)
+                        return;
                     if(generate_only) {
                         if(!isNewChunk(event))
                             return;
@@ -493,5 +496,9 @@ public class DynmapPlugin extends JavaPlugin {
     
     public String getWebPath() {
         return configuration.getString("webpath", "web");
+    }
+    
+    public static void setIgnoreChunkLoads(boolean ignore) {
+        ignore_chunk_loads = ignore;
     }
 }
