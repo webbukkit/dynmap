@@ -21,13 +21,18 @@ import java.util.HashSet;
 import javax.imageio.ImageIO;
 
 public class DynmapWorld {
+    public enum AutoGenerateOption {
+        NONE,
+        FORMAPONLY,
+        PERMANENT
+    }
     public World world;
     public List<MapType> maps = new ArrayList<MapType>();
     public UpdateQueue updates = new UpdateQueue();
     public ConfigurationNode configuration;
     public List<Location> seedloc;
     public List<MapChunkCache.VisibilityLimit> visibility_limits;
-    public boolean do_autogenerate;
+    public AutoGenerateOption do_autogenerate;
     public MapChunkCache.HiddenChunkStyle hiddenchunkstyle;
     public int servertime;
     public boolean sendposition;

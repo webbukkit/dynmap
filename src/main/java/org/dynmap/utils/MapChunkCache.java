@@ -4,6 +4,7 @@ import org.bukkit.block.Biome;
 
 import java.util.List;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapWorld;
 
 public interface MapChunkCache {
     public enum HiddenChunkStyle {
@@ -94,5 +95,5 @@ public interface MapChunkCache {
     /**
      * Set autogenerate - must be done after at least one visible range has been set
      */
-    public void setAutoGenerateVisbileRanges(boolean do_generate);
+    public void setAutoGenerateVisbileRanges(DynmapWorld.AutoGenerateOption do_generate);
 }
