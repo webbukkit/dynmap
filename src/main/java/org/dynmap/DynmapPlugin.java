@@ -52,6 +52,7 @@ public class DynmapPlugin extends JavaPlugin {
     public Events events = new Events();
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
+    private boolean generate_only = false;
 
     public static File dataDirectory;
     public static File tilesDirectory;
@@ -247,21 +248,44 @@ public class DynmapPlugin extends JavaPlugin {
             WorldListener renderTrigger = new WorldListener() {
                 @Override
                 public void onChunkLoad(ChunkLoadEvent event) {
-                    int x = event.getChunk().getX() * 16 + 8;
-                    int z = event.getChunk().getZ() * 16 + 8;
-                    mm.touch(new Location(event.getWorld(), x, 127, z));
+                    if(generate_only) {
+                        if(!isNewChunk(event))
+                            return;
+                        /* Touch extreme corners */
+                        int x = event.getChunk().getX() * 16;
+                        int z = event.getChunk().getZ() * 16;
+                        mm.touch(new Location(event.getWorld(), x, 0, z));
+                        mm.touch(new Location(event.getWorld(), x+15, 127, z));
+                        mm.touch(new Location(event.getWorld(), x+15, 0, z+15));
+                        mm.touch(new Location(event.getWorld(), x, 127, z+15));
+                    }
+                    else {
+                        int x = event.getChunk().getX() * 16 + 8;
+                        int z = event.getChunk().getZ() * 16 + 8;
+                        mm.touch(new Location(event.getWorld(), x, 127, z));
+                    }
                 }
-
-                /*
-                 * @Override public void onChunkGenerated(ChunkLoadEvent event)
-                 * { int x = event.getChunk().getX() * 16 + 8; int z =
-                 * event.getChunk().getZ() * 16 + 8; mm.touch(new
-                 * Location(event.getWorld(), x, 127, z)); }
-                 */
+                private boolean isNewChunk(ChunkLoadEvent event) {
+                    return event.isNewChunk();
+                }
             };
-            if (isTrigger("chunkloaded"))
+            boolean ongenerate = isTrigger("chunkgenerated");
+            if(ongenerate) {
+                try {   /* Test if new enough bukkit to allow this */
+                    ChunkLoadEvent.class.getDeclaredMethod("isNewChunk", new Class[0]);
+                } catch (NoSuchMethodException nsmx) {
+                    Log.info("Warning: CraftBukkit build does not support function needed for 'chunkgenerated' trigger - disabling");
+                    ongenerate = false;
+                }
+            }
+            if(isTrigger("chunkloaded")) {
+                generate_only = false;
                 pm.registerEvent(org.bukkit.event.Event.Type.CHUNK_LOAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            //if (isTrigger("chunkgenerated")) pm.registerEvent(Event.Type.CHUNK_GENERATED, renderTrigger, Priority.Monitor, this);
+            }
+            else if(ongenerate) {
+                generate_only = true;
+                pm.registerEvent(org.bukkit.event.Event.Type.CHUNK_LOAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            }
         }
 
         // To link configuration to real loaded worlds.
