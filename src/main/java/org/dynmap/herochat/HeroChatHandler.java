@@ -245,7 +245,7 @@ public class HeroChatHandler {
 
     public HeroChatHandler(ConfigurationNode cfg, DynmapPlugin plugin, Server server) {
         /* If we're enabling hero chat support */
-        Log.info("HeroChat support configured");
+        Log.verboseinfo("HeroChat support configured");
         this.plugin = plugin;
         /* Now, get the monitored channel list */
         hcchannels = cfg.getStrings("herochatchannels", DEF_CHANNELS);
@@ -278,7 +278,7 @@ public class HeroChatHandler {
         /* Register event handler */
         plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT,
                 new OurEventListener(), Event.Priority.Monitor, plugin);
-        Log.info("HeroChat integration active");
+        Log.verboseinfo("HeroChat integration active");
     }
     /**
      * Send message from web to appropriate HeroChat channel

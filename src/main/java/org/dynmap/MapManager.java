@@ -384,7 +384,7 @@ public class MapManager {
         DynmapWorld dynmapWorld = new DynmapWorld();
         dynmapWorld.world = w;
         dynmapWorld.configuration = worldConfiguration;
-        Log.info("Loading maps of world '" + worldName + "'...");
+        Log.verboseinfo("Loading maps of world '" + worldName + "'...");
         for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
             map.onTileInvalidated.addListener(invalitateListener);
             dynmapWorld.maps.add(map);
