@@ -1,6 +1,8 @@
 name: dynmap
 main: org.dynmap.DynmapPlugin
 version: 0.19
+authors: [FrozenCow, mikeprimm, zeeZ]
+softdepend: [Permissions]
 commands:
   dynmap:
     description: Controls Dynmap.
@@ -12,3 +14,7 @@ commands:
            /<command> render - Renders the tile at your location.
            /<command> fullrender - (Attempts to) render entire world from your location.
            /<command> fullrender world - (Attempts to) render entire world 'world'.
+           /<command> stats - Show render statistics.
+           /<command> stats world - Show render statistics for maps on world 'world'.
+           /<command> resetstats - Reset render statistics.
+           /<command> resetstats world - Reset render statistics for maps on world 'world'.
