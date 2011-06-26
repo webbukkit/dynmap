@@ -62,11 +62,11 @@ public class KzedMap extends MapType {
     private static final int CACHE_LIMIT = 10;
 
     public KzedMap(ConfigurationNode configuration) {
-        Log.info("Loading renderers for map '" + getClass().toString() + "'...");
+        Log.verboseinfo("Loading renderers for map '" + getClass().toString() + "'...");
         List<MapTileRenderer> renderers = configuration.<MapTileRenderer>createInstances("renderers", new Class<?>[0], new Object[0]);
         this.renderers = new MapTileRenderer[renderers.size()];
         renderers.toArray(this.renderers);
-        Log.info("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
+        Log.verboseinfo("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
     }
 
     @Override

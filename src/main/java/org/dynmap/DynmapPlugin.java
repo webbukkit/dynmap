@@ -78,6 +78,8 @@ public class DynmapPlugin extends JavaPlugin {
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
         
+        Log.verbose = configuration.getBoolean("verbose", true);
+        
         loadDebuggers();
 
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
@@ -106,7 +108,7 @@ public class DynmapPlugin extends JavaPlugin {
         for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapPlugin.class }, new Object[] { this })) {
             componentManager.add(component);
         }
-        Log.info("Loaded " + componentManager.components.size() + " components.");
+        Log.verboseinfo("Loaded " + componentManager.components.size() + " components.");
 
         registerEvents();
 
@@ -456,9 +458,9 @@ public class DynmapPlugin extends JavaPlugin {
         finalConfiguration.extend(templateConfiguration);
         finalConfiguration.extend(worldConfiguration);
         
-        Log.info("Configuration of world " + world.getName());
+        Log.verboseinfo("Configuration of world " + world.getName());
         for(Map.Entry<String, Object> e : finalConfiguration.entrySet()) {
-            Log.info(e.getKey() + ": " + e.getValue());
+            Log.verboseinfo(e.getKey() + ": " + e.getValue());
         }
         
         return finalConfiguration;
@@ -467,7 +469,7 @@ public class DynmapPlugin extends JavaPlugin {
     private ConfigurationNode getDefaultTemplateConfigurationNode(World world) {
         Environment environment = world.getEnvironment();
         String environmentName = environment.name().toLowerCase();
-        Log.info("Using environment as template: " + environmentName);
+        Log.verboseinfo("Using environment as template: " + environmentName);
         return getTemplateConfigurationNode(environmentName);
     }
     

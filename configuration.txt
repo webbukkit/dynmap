@@ -417,6 +417,10 @@ worlds:
   #          maximumheight: 127
   #          colorscheme: default
 
+# Set to true to enable verbose startup messages - can help with debugging map configuration problems
+# Set to false for a much quieter startup log
+verbose: true
+
 # Enables debugging.
 #debuggers:
 #  - class: org.dynmap.debug.LogDebugger
