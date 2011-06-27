@@ -1,23 +1,23 @@
 package org.dynmap.regions;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashSet;
-import java.util.logging.Level;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.util.config.Configuration;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.Log;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.Json;
 import org.dynmap.web.handlers.FileHandler;
-
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
 
 public class RegionHandler extends FileHandler {
     private ConfigurationNode regions;
@@ -81,9 +81,9 @@ public class RegionHandler extends FileHandler {
             fos.close();
             return new ByteArrayInputStream(fos.toByteArray());
         } catch (FileNotFoundException ex) {
-            log.log(Level.SEVERE, "Exception while writing JSON-file.", ex);
+            Log.severe("Exception while writing JSON-file.", ex);
         } catch (IOException ioe) {
-            log.log(Level.SEVERE, "Exception while writing JSON-file.", ioe);
+            Log.severe("Exception while writing JSON-file.", ioe);
         }        
         return null;
     }
