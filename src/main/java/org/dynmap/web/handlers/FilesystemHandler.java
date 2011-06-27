@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.dynmap.Log;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.web.HttpField;
 import org.dynmap.web.HttpRequest;
@@ -23,16 +24,20 @@ public class FilesystemHandler extends FileHandler {
     protected InputStream getFileInput(String path, HttpRequest request, HttpResponse response) {
         File file = new File(root, path);
         FileLockManager.getReadLock(file);
-        if (file.getAbsolutePath().startsWith(root.getAbsolutePath()) && file.isFile()) {
-            FileInputStream result;
-            try {
-                result = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                FileLockManager.releaseReadLock(file);
-                return null;
+        try {
+            if (file.getCanonicalPath().startsWith(root.getAbsolutePath()) && file.isFile()) {
+                FileInputStream result;
+                try {
+                    result = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    FileLockManager.releaseReadLock(file);
+                    return null;
+                }
+                response.fields.put(HttpField.ContentLength, Long.toString(file.length()));
+                return result;
             }
-            response.fields.put(HttpField.ContentLength, Long.toString(file.length()));
-            return result;
+        } catch(IOException ex) {
+            Log.severe("Unable to get canoical path of requested file.", ex);
         }
         FileLockManager.releaseReadLock(file);
         return null;
