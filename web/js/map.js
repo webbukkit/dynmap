@@ -123,6 +123,26 @@ DynMap.prototype = {
 			});
 			me.defaultworld = me.defaultworld || world;
 		});
+		var urlarg = me.getParameterByName('worldname');
+		if(urlarg != "") {
+		    me.defaultworld = me.worlds[urlarg] || me.defaultworld;
+		}
+		urlarg = me.getParameterByName('mapname');
+		if(urlarg != "") {
+			me.defaultworld.defaultmap = me.defaultworld.maps[urlarg] || me.defaultworld.defaultmap;
+		}
+		urlarg = parseInt(me.getParameterByName('x'),10);
+		if(urlarg != NaN) {
+			me.defaultworld.center.x = urlarg;
+		}
+		urlarg = parseInt(me.getParameterByName('y'),10);
+		if(urlarg != NaN) {
+			me.defaultworld.center.y = urlarg;
+		}
+		urlarg = parseInt(me.getParameterByName('z'), 10);
+		if(urlarg != NaN) {
+			me.defaultworld.center.z = urlarg;
+		}
 	},
 	initialize: function() {
 		var me = this;
@@ -134,6 +154,9 @@ DynMap.prototype = {
 		(mapContainer = $('<div/>'))
 			.addClass('map')
 			.appendTo(container);
+
+		var urlzoom = parseInt(me.getParameterByName('zoom'),10);
+		if(urlzoom != NaN) { me.options.defaultzoom = urlzoom; }
 		
 		var map = this.map = new google.maps.Map(mapContainer.get(0), {
 			zoom: me.options.defaultzoom || 0,
@@ -592,7 +615,17 @@ DynMap.prototype = {
 				col = me.maptype.background;
 		}
 		$('.map').css('background', col);
-	}	
+	},
+	getParameterByName: function(name) {
+		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		var regexS = "[\\?&]"+name+"=([^&#]*)";
+		var regex = new RegExp( regexS );
+		var results = regex.exec( window.location.href );
+		if( results == null )
+			return "";
+		else
+			return decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
 	// TODO: Enable hash-links.
 /*	updateLink: function() {
 		var me = this;
