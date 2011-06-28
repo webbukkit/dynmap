@@ -131,18 +131,15 @@ DynMap.prototype = {
 		if(urlarg != "") {
 			me.defaultworld.defaultmap = me.defaultworld.maps[urlarg] || me.defaultworld.defaultmap;
 		}
-		urlarg = parseInt(me.getParameterByName('x'),10);
-		if(urlarg != NaN) {
+		urlarg = me.getIntParameterByName('x');
+		if(urlarg != null)
 			me.defaultworld.center.x = urlarg;
-		}
-		urlarg = parseInt(me.getParameterByName('y'),10);
-		if(urlarg != NaN) {
+		urlarg = me.getIntParameterByName('y');
+		if(urlarg != null)
 			me.defaultworld.center.y = urlarg;
-		}
-		urlarg = parseInt(me.getParameterByName('z'), 10);
-		if(urlarg != NaN) {
+		urlarg = me.getIntParameterByName('z');
+		if(urlarg != null)
 			me.defaultworld.center.z = urlarg;
-		}
 	},
 	initialize: function() {
 		var me = this;
@@ -155,8 +152,9 @@ DynMap.prototype = {
 			.addClass('map')
 			.appendTo(container);
 
-		var urlzoom = parseInt(me.getParameterByName('zoom'),10);
-		if(urlzoom != NaN) { me.options.defaultzoom = urlzoom; }
+		var urlzoom = me.getIntParameterByName('zoom');
+		if(urlzoom != null)
+			me.options.defaultzoom = urlzoom;
 		
 		var map = this.map = new google.maps.Map(mapContainer.get(0), {
 			zoom: me.options.defaultzoom || 0,
@@ -625,6 +623,16 @@ DynMap.prototype = {
 			return "";
 		else
 			return decodeURIComponent(results[1].replace(/\+/g, " "));
+	},
+	getIntParameterByName: function(name) {
+		var v = this.getParameterByName(name);
+		if(v != "") {
+			v = parseInt(v, 10);
+			if(v != NaN) {
+				return v;
+				}
+		}
+		return null;
 	}
 	// TODO: Enable hash-links.
 /*	updateLink: function() {
