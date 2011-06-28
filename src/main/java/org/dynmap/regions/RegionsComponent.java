@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.World;
@@ -67,6 +70,19 @@ public class RegionsComponent extends ClientComponent {
 
         File webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
         Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(configuration.getString("basenode", "regions"));
+        /* See if we have explicit list of regions to report - limit to this list if we do */
+        List<String> idlist = configuration.getStrings("visibleregions", null);
+        if(idlist != null) {
+            @SuppressWarnings("unchecked")
+            HashSet<String> ids = new HashSet<String>((Collection<? extends String>) regionData.keySet());
+            for(String id : ids) {
+                /* If not in list, remove it */
+                if(!idlist.contains(id)) {
+                    regionData.remove(id);
+                }
+            }
+        }
+       
         if (webWorldPath.isAbsolute())
             outputFile = webWorldPath;
         else {
