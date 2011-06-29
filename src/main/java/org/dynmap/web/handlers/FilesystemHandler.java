@@ -24,13 +24,12 @@ public class FilesystemHandler extends FileHandler {
     protected InputStream getFileInput(String path, HttpRequest request, HttpResponse response) {
         File file = new File(root, path);
         FileLockManager.getReadLock(file);
+        FileInputStream result = null;
         try {
             if (file.getCanonicalPath().startsWith(root.getAbsolutePath()) && file.isFile()) {
-                FileInputStream result;
                 try {
                     result = new FileInputStream(file);
                 } catch (FileNotFoundException e) {
-                    FileLockManager.releaseReadLock(file);
                     return null;
                 }
                 response.fields.put(HttpField.ContentLength, Long.toString(file.length()));
@@ -38,14 +37,17 @@ public class FilesystemHandler extends FileHandler {
             }
         } catch(IOException ex) {
             Log.severe("Unable to get canoical path of requested file.", ex);
+        } finally {
+            if(result == null) FileLockManager.releaseReadLock(file);
         }
-        FileLockManager.releaseReadLock(file);
         return null;
     }
     protected void closeFileInput(String path, InputStream in) throws IOException {
-        super.closeFileInput(path, in);
-        File file = new File(root, path);
-        FileLockManager.releaseReadLock(file);
+        try {
+            super.closeFileInput(path, in);
+        } finally {
+            File file = new File(root, path);
+            FileLockManager.releaseReadLock(file);
+        }
     }
-
 }

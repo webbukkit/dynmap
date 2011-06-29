@@ -137,7 +137,7 @@ public class MapManager {
         MapTile tile = null;
         int rendercnt = 0;
         CommandSender sender;
-        long starttime;
+        long timeaccum;
 
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender) {
@@ -173,7 +173,7 @@ public class MapManager {
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
-                        double msecpertile = (double)(tstart - starttime) / (double)((rendercnt>0)?rendercnt:1);
+                        double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1);
                         sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
                                  world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }                	
@@ -187,7 +187,6 @@ public class MapManager {
                         return;
                     }
                     map = world.maps.get(map_index);
-                    starttime = System.currentTimeMillis();
 
                     /* Now, prime the render queue */
                     for (MapTile mt : map.getTiles(loc)) {
@@ -241,8 +240,9 @@ public class MapManager {
                 found.remove(tile);
                 if(!cache.isEmpty()) {
                     rendercnt++;
+                    timeaccum += System.currentTimeMillis() - tstart;
                     if((rendercnt % 100) == 0) {
-                        double msecpertile = (double)(System.currentTimeMillis() - starttime) / (double)rendercnt;
+                        double msecpertile = (double)timeaccum / (double)rendercnt;
                         sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
                             w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }

@@ -18,7 +18,7 @@ public class FileLockManager {
      * Get write lock on file - exclusive lock, no other writers or readers
      * @throws InterruptedException
      */
-    public static void getWriteLock(File f) {
+    public static boolean getWriteLock(File f) {
         String fn = f.getPath();
         synchronized(lock) {
             boolean got_lock = false;
@@ -29,6 +29,7 @@ public class FileLockManager {
                         lock.wait(); 
                     } catch (InterruptedException ix) {
                         Log.severe("getWriteLock(" + fn + ") interrupted");
+                        return false;
                     }
                 }
                 else {
@@ -38,6 +39,7 @@ public class FileLockManager {
             }
         }
         //Log.info("getWriteLock(" + f + ")");
+        return true;
     }
     /**
      * Release write lock
@@ -60,7 +62,7 @@ public class FileLockManager {
     /**
      * Get read lock on file - multiple readers allowed, blocks writers
      */
-    public static void getReadLock(File f) {
+    public static boolean getReadLock(File f) {
         String fn = f.getPath();
         synchronized(lock) {
             boolean got_lock = false;
@@ -79,11 +81,13 @@ public class FileLockManager {
                         lock.wait();
                     } catch (InterruptedException ix) {
                         Log.severe("getReadLock(" + fn + ") interrupted");
+                        return false;
                     }
                 }
             }
         }        
         //Log.info("getReadLock(" + f + ")");
+        return true;
     }
     /**
      * Release read lock
