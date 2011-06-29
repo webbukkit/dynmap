@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -99,29 +100,36 @@ public class MapManager {
         @Override
         public void execute(final Runnable r) {
             final Runnable rr = r;
-            super.execute(new Runnable() {
-                public void run() {
-                    try {
+            try {
+                super.execute(new Runnable() {
+                    public void run() {
+                        try {
                         r.run();
-                    } catch (Exception x) {
-                        Log.severe("Exception during render job: " + r);
-                        x.printStackTrace();                        
+                        } catch (Exception x) {
+                            Log.severe("Exception during render job: " + r);
+                            x.printStackTrace();                        
+                        }
                     }
-                }
-            });
+                });
+            } catch (RejectedExecutionException rxe) {  /* Pool shutdown - nominal for reload or unload */
+            }    
         }
         @Override
         public ScheduledFuture<?> schedule(final Runnable command, long delay, TimeUnit unit) {
-            return super.schedule(new Runnable() {
-                public void run() {
-                    try {
-                        command.run();
-                    } catch (Exception x) {
-                        Log.severe("Exception during render job: " + command);
-                        x.printStackTrace();                        
+            try {
+                return super.schedule(new Runnable() {
+                    public void run() {
+                        try {
+                            command.run();
+                        } catch (Exception x) {
+                            Log.severe("Exception during render job: " + command);
+                            x.printStackTrace();                        
+                        }
                     }
-                }
-            }, delay, unit);
+                }, delay, unit);
+            } catch (RejectedExecutionException rxe) {
+                return null;    /* Pool shut down when we reload or unload */
+            }
         }
     }
     /* This always runs on render pool threads - no bukkit calls from here */ 
@@ -496,10 +504,7 @@ public class MapManager {
     }
 
     public void stopRendering() {
-        if(renderpool != null) {
-            renderpool.shutdown();
-            renderpool = null;
-        }
+        renderpool.shutdown();
         tileQueue.stop();
     }
 
