@@ -1,9 +1,55 @@
 regionConstructors['polygon'] = function(map, name, region)
 {
+    if(region.points) {
+    	var i;
+		if(regionCfg.use3dregions) {
+			var toppts = [];
+			var botpts = [];
+    		for(i = 0; i < region.points.length; i++) {
+    			toppts.push(map.getProjection().fromWorldToLatLng(region.points[i].x,
+    				region['max-y'], region.points[i].z));
+    			botpts.push(map.getProjection().fromWorldToLatLng(region.points[i].x,
+    				region['min-y'], region.points[i].z));    				
+    		}
+    		for(i = 0; i < region.points.length; i++) {
+				regionPolygons[name+'_side'+i] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
+					paths: [
+						toppts[i], botpts[i], botpts[(i+1)%region.points.length], toppts[(i+1)%region.points.length]
+					], map: map }));
+				google.maps.event.addListener(regionPolygons[name+'_side'+i] , 'click', function(event) {
+					regionInfo(event, name, region);
+				});
+			}
+			regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
+				paths: botpts, map: map }));
+			google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
+				regionInfo(event, name, region);
+			});
+			regionPolygons[name+'_top'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
+				paths: toppts, map: map }));
+			google.maps.event.addListener(regionPolygons[name+'_top'] , 'click', function(event) {
+				regionInfo(event, name, region);
+			});
+    	}
+    	else {
+ 	   		var pts = [];
+    		var yy = (region['min-y']+region['max-y'])/2;
+    		for(i = 0; i < region.points.length; i++) {
+    			pts.push(map.getProjection().fromWorldToLatLng(region.points[i].x,
+    				yy, region.points[i].z));
+    		}
+			regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
+				paths: pts, map: map }));
+			google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
+				regionInfo(event, name, region);
+			});
+		}
+		return;
+    }
 	if(!region.min || !region.max)
 		return;
-	if(region.max.y > 64)
-		region.max.y = 64;
+    if(region.max.y <= region.min.y)
+        region.min.y = region.max.y - 1;
 	if(regionCfg.use3dregions)
 	{
 		regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
