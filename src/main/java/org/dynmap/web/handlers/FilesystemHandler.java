@@ -23,7 +23,10 @@ public class FilesystemHandler extends FileHandler {
     @Override
     protected InputStream getFileInput(String path, HttpRequest request, HttpResponse response) {
         File file = new File(root, path);
-        FileLockManager.getReadLock(file);
+        if(!FileLockManager.getReadLock(file, 5000)) {    /* Wait up to 5 seconds for lock */
+            Log.severe("Timeout waiting for lock on file " + file.getPath());
+            return null;
+        }
         FileInputStream result = null;
         try {
             if (file.getCanonicalPath().startsWith(root.getAbsolutePath()) && file.isFile()) {

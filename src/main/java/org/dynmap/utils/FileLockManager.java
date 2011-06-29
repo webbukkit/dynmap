@@ -63,9 +63,16 @@ public class FileLockManager {
      * Get read lock on file - multiple readers allowed, blocks writers
      */
     public static boolean getReadLock(File f) {
+        return getReadLock(f, -1);
+    }
+    /**
+     * Get read lock on file - multiple readers allowed, blocks writers - with timeout (msec)
+     */
+    public static boolean getReadLock(File f, long timeout) {
         String fn = f.getPath();
         synchronized(lock) {
             boolean got_lock = false;
+            boolean first_wait = true;
             while(!got_lock) {
                 Integer lockcnt = filelocks.get(fn);    /* Get lock count */
                 if(lockcnt == null) {
@@ -78,7 +85,14 @@ public class FileLockManager {
                 }
                 else {  /* Write lock in place */
                     try {
-                        lock.wait();
+                        if((timeout > 0) && (!first_wait)) {    /* We already waited */
+                            return false;
+                        }
+                        if(timeout < 0)
+                            lock.wait();
+                        else
+                            lock.wait(timeout);
+                        first_wait = false;
                     } catch (InterruptedException ix) {
                         Log.severe("getReadLock(" + fn + ") interrupted");
                         return false;
