@@ -27,6 +27,7 @@ public class FilesystemHandler extends FileHandler {
     }
     @Override
     protected InputStream getFileInput(String path, HttpRequest request, HttpResponse response) {
+    	if(path == null) return null;
     	path = getNormalizedPath(path);	/* Resolve out relative stuff - nothing allowed above webroot */
         File file = new File(root, path);
         if(!file.isFile())
