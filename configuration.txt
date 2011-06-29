@@ -106,6 +106,9 @@ webserver-port: 8123
 # Disables Webserver portion of Dynmap (Advanced users only)
 disable-webserver: false
 
+# Enable/disable having the web server allow symbolic links (true=compatible with existing code, false=more secure (default))
+allow-symlinks: true
+
 # Period between tile renders for fullrender, in seconds (non-zero to pace fullrenders, lessen CPU load)
 timesliceinterval: 0.0
 
