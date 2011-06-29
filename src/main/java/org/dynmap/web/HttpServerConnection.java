@@ -131,7 +131,6 @@ public class HttpServerConnection extends Thread {
                 HttpRequest request = new HttpRequest();
                 request.rmtaddr = rmtaddr;
                 if (!readRequestHeader(in, request)) {
-                    socket.close();
                     return;
                 }
 
@@ -174,7 +173,6 @@ public class HttpServerConnection extends Thread {
                 }
 
                 if (handler == null) {
-                    socket.close();
                     return;
                 }
 
@@ -186,10 +184,7 @@ public class HttpServerConnection extends Thread {
                     throw e;
                 } catch (Exception e) {
                     Log.severe("HttpHandler '" + handler + "' has thown an exception", e);
-                    if (socket != null) {
-                        out.flush();
-                        socket.close();
-                    }
+                    out.flush();
                     return;
                 }
 
@@ -211,37 +206,28 @@ public class HttpServerConnection extends Thread {
                     if (responseBody == null) {
                         Debug.debug("Response was given without Content-Length by '" + handler + "' for path '" + request.path + "'.");
                         out.flush();
-                        socket.close();
                         return;
                     }
                 }
 
+                out.flush();
+
                 if (!isKeepalive) {
-                    out.flush();
-                    socket.close();
                     return;
                 }
-
-                out.flush();
             }
         } catch (IOException e) {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ex) {
-                }
-            }
-            return;
+
         } catch (Exception e) {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ex) {
-                }
-            }
             Log.severe("Exception while handling request: ", e);
             e.printStackTrace();
-            return;
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                }
+            }
         }
     }
 }
