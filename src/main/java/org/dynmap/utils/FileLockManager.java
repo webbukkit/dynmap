@@ -18,7 +18,7 @@ public class FileLockManager {
      * Get write lock on file - exclusive lock, no other writers or readers
      * @throws InterruptedException
      */
-    public static void getWriteLock(File f) {
+    public static boolean getWriteLock(File f) {
         String fn = f.getPath();
         synchronized(lock) {
             boolean got_lock = false;
@@ -29,6 +29,7 @@ public class FileLockManager {
                         lock.wait(); 
                     } catch (InterruptedException ix) {
                         Log.severe("getWriteLock(" + fn + ") interrupted");
+                        return false;
                     }
                 }
                 else {
@@ -38,6 +39,7 @@ public class FileLockManager {
             }
         }
         //Log.info("getWriteLock(" + f + ")");
+        return true;
     }
     /**
      * Release write lock
@@ -60,10 +62,17 @@ public class FileLockManager {
     /**
      * Get read lock on file - multiple readers allowed, blocks writers
      */
-    public static void getReadLock(File f) {
+    public static boolean getReadLock(File f) {
+        return getReadLock(f, -1);
+    }
+    /**
+     * Get read lock on file - multiple readers allowed, blocks writers - with timeout (msec)
+     */
+    public static boolean getReadLock(File f, long timeout) {
         String fn = f.getPath();
         synchronized(lock) {
             boolean got_lock = false;
+            boolean first_wait = true;
             while(!got_lock) {
                 Integer lockcnt = filelocks.get(fn);    /* Get lock count */
                 if(lockcnt == null) {
@@ -76,14 +85,23 @@ public class FileLockManager {
                 }
                 else {  /* Write lock in place */
                     try {
-                        lock.wait();
+                        if((timeout > 0) && (!first_wait)) {    /* We already waited */
+                            return false;
+                        }
+                        if(timeout < 0)
+                            lock.wait();
+                        else
+                            lock.wait(timeout);
+                        first_wait = false;
                     } catch (InterruptedException ix) {
                         Log.severe("getReadLock(" + fn + ") interrupted");
+                        return false;
                     }
                 }
             }
         }        
         //Log.info("getReadLock(" + f + ")");
+        return true;
     }
     /**
      * Release read lock

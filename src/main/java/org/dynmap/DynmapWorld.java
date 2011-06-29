@@ -301,8 +301,9 @@ public class DynmapWorld {
                     im = ImageIO.read(f);
                 } catch (IOException e) {
                 } catch (IndexOutOfBoundsException e) {
+                } finally {
+                    FileLockManager.releaseReadLock(f);
                 }
-                FileLockManager.releaseReadLock(f);
                 if(im != null) {
                     im.getRGB(0, 0, width, height, argb, 0, width);    /* Read data */
                     im.flush();
@@ -333,27 +334,30 @@ public class DynmapWorld {
             }
         }
         FileLockManager.getWriteLock(zf);
-        TileHashManager hashman = MapManager.mapman.hashman;
-        long crc = hashman.calculateTileHash(kzIm.argb_buf); /* Get hash of tile */
-        int tilex = ztx/step/2;
-        int tiley = ty/step/2;
-        String key = world.getName()+".z"+pd.zoomprefix+pd.baseprefix;
-        if((!zf.exists()) || (crc != MapManager.mapman.hashman.getImageHashCode(key, null, tilex, tiley))) {
-            try {
-                if(!zf.getParentFile().exists())
-                    zf.getParentFile().mkdirs();
-                FileLockManager.imageIOWrite(zIm, "png", zf);
-                Debug.debug("Saved zoom-out tile at " + zf.getPath());
-            } catch (IOException e) {
-                Debug.error("Failed to save zoom-out tile: " + zf.getName(), e);
-            } catch (java.lang.NullPointerException e) {
-                Debug.error("Failed to save zoom-out tile (NullPointerException): " + zf.getName(), e);
+        try {
+            TileHashManager hashman = MapManager.mapman.hashman;
+            long crc = hashman.calculateTileHash(kzIm.argb_buf); /* Get hash of tile */
+            int tilex = ztx/step/2;
+            int tiley = ty/step/2;
+            String key = world.getName()+".z"+pd.zoomprefix+pd.baseprefix;
+            if((!zf.exists()) || (crc != MapManager.mapman.hashman.getImageHashCode(key, null, tilex, tiley))) {
+                try {
+                    if(!zf.getParentFile().exists())
+                        zf.getParentFile().mkdirs();
+                    FileLockManager.imageIOWrite(zIm, "png", zf);
+                    Debug.debug("Saved zoom-out tile at " + zf.getPath());
+                } catch (IOException e) {
+                    Debug.error("Failed to save zoom-out tile: " + zf.getName(), e);
+                } catch (java.lang.NullPointerException e) {
+                    Debug.error("Failed to save zoom-out tile (NullPointerException): " + zf.getName(), e);
+                }
+                hashman.updateHashCode(key, null, tilex, tiley, crc);
+                MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
+                enqueueZoomOutUpdate(zf, pd.zoomlevel+1);
             }
-            hashman.updateHashCode(key, null, tilex, tiley, crc);
-            MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
-            enqueueZoomOutUpdate(zf, pd.zoomlevel+1);
+        } finally {
+            FileLockManager.releaseWriteLock(zf);
+            KzedMap.freeBufferedImage(kzIm);
         }
-        FileLockManager.releaseWriteLock(zf);
-        KzedMap.freeBufferedImage(kzIm);
     }
 }

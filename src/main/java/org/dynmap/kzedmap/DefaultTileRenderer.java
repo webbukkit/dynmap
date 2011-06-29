@@ -256,29 +256,32 @@ public class DefaultTileRenderer implements MapTileRenderer {
         int oy = (mtile.py == zmtile.getTileY())?0:KzedMap.tileHeight/2;
 
         /* Test to see if we're unchanged from older tile */
-        FileLockManager.getWriteLock(fname);
         TileHashManager hashman = MapManager.mapman.hashman;
         long crc = hashman.calculateTileHash(img.argb_buf);
         boolean updated_fname = false;
         int tx = mtile.px/KzedMap.tileWidth;
         int ty = mtile.py/KzedMap.tileHeight;
-        if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), null, tx, ty))) {
-            Debug.debug("saving image " + fname.getPath());
-            if(!fname.getParentFile().exists())
-                fname.getParentFile().mkdirs();
-            try {
-                FileLockManager.imageIOWrite(img.buf_img, "png", fname);
-            } catch (IOException e) {
-                Debug.error("Failed to save image: " + fname.getPath(), e);
-            } catch (java.lang.NullPointerException e) {
-                Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+        FileLockManager.getWriteLock(fname);
+        try {
+            if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), null, tx, ty))) {
+                Debug.debug("saving image " + fname.getPath());
+                if(!fname.getParentFile().exists())
+                    fname.getParentFile().mkdirs();
+                try {
+                    FileLockManager.imageIOWrite(img.buf_img, "png", fname);
+                } catch (IOException e) {
+                    Debug.error("Failed to save image: " + fname.getPath(), e);
+                } catch (java.lang.NullPointerException e) {
+                    Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
+                }
+                MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getFilename()));
+                hashman.updateHashCode(mtile.getKey(), null, tx, ty, crc);
+                updated_fname = true;
             }
-            MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getFilename()));
-            hashman.updateHashCode(mtile.getKey(), null, tx, ty, crc);
-            updated_fname = true;
+        } finally {
+            FileLockManager.releaseWriteLock(fname);
+            KzedMap.freeBufferedImage(img);
         }
-        KzedMap.freeBufferedImage(img);
-        FileLockManager.releaseWriteLock(fname);
         MapManager.mapman.updateStatistics(mtile, null, true, updated_fname, !rendered);
 
         mtile.file = fname;
@@ -287,25 +290,28 @@ public class DefaultTileRenderer implements MapTileRenderer {
         
         File dfname = new File(mtile.getDynmapWorld().worldtilepath, mtile.getDayFilename());
         if(img_day != null) {
-            FileLockManager.getWriteLock(dfname);
             crc = hashman.calculateTileHash(img.argb_buf);
-            if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", tx, ty))) {
-                Debug.debug("saving image " + dfname.getPath());
-                if(!dfname.getParentFile().exists())
-                    dfname.getParentFile().mkdirs();
-                try {
-                    FileLockManager.imageIOWrite(img_day.buf_img, "png", dfname);
-                } catch (IOException e) {
-                    Debug.error("Failed to save image: " + dfname.getPath(), e);
-                } catch (java.lang.NullPointerException e) {
-                    Debug.error("Failed to save image (NullPointerException): " + dfname.getPath(), e);
+            FileLockManager.getWriteLock(dfname);
+            try {
+                if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", tx, ty))) {
+                    Debug.debug("saving image " + dfname.getPath());
+                    if(!dfname.getParentFile().exists())
+                        dfname.getParentFile().mkdirs();
+                    try {
+                        FileLockManager.imageIOWrite(img_day.buf_img, "png", dfname);
+                    } catch (IOException e) {
+                        Debug.error("Failed to save image: " + dfname.getPath(), e);
+                    } catch (java.lang.NullPointerException e) {
+                        Debug.error("Failed to save image (NullPointerException): " + dfname.getPath(), e);
+                    }
+                    MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getDayFilename()));
+                    hashman.updateHashCode(mtile.getKey(), "day", tx, ty, crc);
+                    updated_dfname = true;
                 }
-                MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getDayFilename()));
-                hashman.updateHashCode(mtile.getKey(), "day", tx, ty, crc);
-                updated_dfname = true;
+            } finally {
+                FileLockManager.releaseWriteLock(dfname);
+                KzedMap.freeBufferedImage(img_day);
             }
-            KzedMap.freeBufferedImage(img_day);
-            FileLockManager.releaseWriteLock(dfname);
             MapManager.mapman.updateStatistics(mtile, "day", true, updated_dfname, !rendered);
         }
         
@@ -313,30 +319,36 @@ public class DefaultTileRenderer implements MapTileRenderer {
         // make the zoomed tile here
         boolean ztile_updated = false;
         FileLockManager.getWriteLock(zoomFile);
-        if(updated_fname || (!zoomFile.exists())) {
-            saveZoomedTile(zmtile, zoomFile, zimg, ox, oy, null);
-            MapManager.mapman.pushUpdate(zmtile.getWorld(),
+        try {
+            if(updated_fname || (!zoomFile.exists())) {
+                saveZoomedTile(zmtile, zoomFile, zimg, ox, oy, null);
+                MapManager.mapman.pushUpdate(zmtile.getWorld(),
                                          new Client.Tile(zmtile.getFilename()));
-            zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile);
-            ztile_updated = true;
+                zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile);
+                ztile_updated = true;
+            }
+        } finally {
+            FileLockManager.releaseWriteLock(zoomFile);
+            KzedMap.freeBufferedImage(zimg);
         }
-        KzedMap.freeBufferedImage(zimg);
-        FileLockManager.releaseWriteLock(zoomFile);
         MapManager.mapman.updateStatistics(zmtile, null, true, ztile_updated, !rendered);
         
         if(zimg_day != null) {
             File zoomFile_day = new File(zmtile.getDynmapWorld().worldtilepath, zmtile.getDayFilename());
             ztile_updated = false;
             FileLockManager.getWriteLock(zoomFile_day);
-            if(updated_dfname || (!zoomFile_day.exists())) {
-                saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy, "day");
-                MapManager.mapman.pushUpdate(zmtile.getWorld(),
+            try {
+                if(updated_dfname || (!zoomFile_day.exists())) {
+                    saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy, "day");
+                    MapManager.mapman.pushUpdate(zmtile.getWorld(),
                                              new Client.Tile(zmtile.getDayFilename()));            
-                zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile_day);
-                ztile_updated = true;
+                    zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile_day);
+                    ztile_updated = true;
+                }
+            } finally {
+                FileLockManager.releaseWriteLock(zoomFile_day);
+                KzedMap.freeBufferedImage(zimg_day);
             }
-            KzedMap.freeBufferedImage(zimg_day);
-            FileLockManager.releaseWriteLock(zoomFile_day);
             MapManager.mapman.updateStatistics(zmtile, "day", true, ztile_updated, !rendered);
         }
     }

@@ -271,61 +271,67 @@ public class FlatMap extends MapType {
             }
         }
         /* Test to see if we're unchanged from older tile */
-        FileLockManager.getWriteLock(outputFile);
         TileHashManager hashman = MapManager.mapman.hashman;
         long crc = hashman.calculateTileHash(argb_buf);
         boolean tile_update = false;
-        if((!outputFile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), null, t.x, t.y))) {
-            /* Wrap buffer as buffered image */
-            Debug.debug("saving image " + outputFile.getPath());
-            if(!outputFile.getParentFile().exists())
-                outputFile.getParentFile().mkdirs();
-            try {
-                FileLockManager.imageIOWrite(im.buf_img, "png", outputFile);
-            } catch (IOException e) {
-                Debug.error("Failed to save image: " + outputFile.getPath(), e);
-            } catch (java.lang.NullPointerException e) {
-                Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
+        FileLockManager.getWriteLock(outputFile);
+        try {
+            if((!outputFile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), null, t.x, t.y))) {
+                /* Wrap buffer as buffered image */
+                Debug.debug("saving image " + outputFile.getPath());
+                if(!outputFile.getParentFile().exists())
+                    outputFile.getParentFile().mkdirs();
+                try {
+                    FileLockManager.imageIOWrite(im.buf_img, "png", outputFile);
+                } catch (IOException e) {
+                    Debug.error("Failed to save image: " + outputFile.getPath(), e);
+                } catch (java.lang.NullPointerException e) {
+                    Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
+                }
+                MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+                hashman.updateHashCode(tile.getKey(), null, t.x, t.y, crc);
+                tile.getDynmapWorld().enqueueZoomOutUpdate(outputFile);
+                tile_update = true;
             }
-            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
-            hashman.updateHashCode(tile.getKey(), null, t.x, t.y, crc);
-            tile.getDynmapWorld().enqueueZoomOutUpdate(outputFile);
-            tile_update = true;
+            else {
+                Debug.debug("skipping image " + outputFile.getPath() + " - hash match");
+            }
+        } finally {
+            FileLockManager.releaseWriteLock(outputFile);
+            KzedMap.freeBufferedImage(im);
         }
-        else {
-            Debug.debug("skipping image " + outputFile.getPath() + " - hash match");
-        }
-        KzedMap.freeBufferedImage(im);
-        FileLockManager.releaseWriteLock(outputFile);
         MapManager.mapman.updateStatistics(tile, null, true, tile_update, !rendered);
 
         /* If day too, handle it */
         if(night_and_day) {
             File dayfile = new File(tile.getDynmapWorld().worldtilepath, tile.getDayFilename());
-            FileLockManager.getWriteLock(dayfile);
             crc = hashman.calculateTileHash(argb_buf_day);
-            if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
-                Debug.debug("saving image " + dayfile.getPath());
-                if(!dayfile.getParentFile().exists())
-                    dayfile.getParentFile().mkdirs();
-                try {
-                    FileLockManager.imageIOWrite(im_day.buf_img, "png", dayfile);
-                } catch (IOException e) {
-                    Debug.error("Failed to save image: " + dayfile.getPath(), e);
-                } catch (java.lang.NullPointerException e) {
-                    Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
+            FileLockManager.getWriteLock(dayfile);
+            try {
+                if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
+                    Debug.debug("saving image " + dayfile.getPath());
+                    if(!dayfile.getParentFile().exists())
+                        dayfile.getParentFile().mkdirs();
+                    try {
+                        FileLockManager.imageIOWrite(im_day.buf_img, "png", dayfile);
+                    } catch (IOException e) {
+                        Debug.error("Failed to save image: " + dayfile.getPath(), e);
+                    } catch (java.lang.NullPointerException e) {
+                        Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
+                    }
+                    MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
+                    hashman.updateHashCode(tile.getKey(), "day", t.x, t.y, crc);
+                    tile.getDynmapWorld().enqueueZoomOutUpdate(dayfile);
+                    tile_update = true;
                 }
-                MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
-                hashman.updateHashCode(tile.getKey(), "day", t.x, t.y, crc);
-                tile.getDynmapWorld().enqueueZoomOutUpdate(dayfile);
-                tile_update = true;
+                else {
+                    Debug.debug("skipping image " + dayfile.getPath() + " - hash match");
+                    tile_update = false;
+                }
+            } finally {
+                FileLockManager.releaseWriteLock(dayfile);
+                KzedMap.freeBufferedImage(im_day);
             }
-            else {
-                Debug.debug("skipping image " + dayfile.getPath() + " - hash match");
-                tile_update = false;
-            }
-            KzedMap.freeBufferedImage(im_day);
-            FileLockManager.releaseWriteLock(dayfile);
             MapManager.mapman.updateStatistics(tile, "day", true, tile_update, !rendered);
         }
         
