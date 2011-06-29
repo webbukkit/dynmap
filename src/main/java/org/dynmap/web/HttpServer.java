@@ -45,13 +45,15 @@ public class HttpServer extends Thread {
 
     public void run() {
         try {
+            ServerSocket s = sock;
             while (listeningThread == Thread.currentThread()) {
                 try {
-                    Socket socket = sock.accept();
+                    Socket socket = s.accept();
                     HttpServerConnection requestThread = new HttpServerConnection(socket, this);
                     requestThread.start();
                 } catch (IOException e) {
-                    Log.info("map WebServer.run() stops with IOException");
+                    if(listeningThread != null) /* Only report this if we didn't initiate the shutdown */
+                        Log.info("map WebServer.run() stops with IOException");
                     break;
                 }
             }
@@ -63,13 +65,14 @@ public class HttpServer extends Thread {
 
     public void shutdown() {
         Log.info("Shutting down webserver...");
+        listeningThread = null;
         try {
             if (sock != null) {
                 sock.close();
+                sock = null;
             }
         } catch (IOException e) {
             Log.warning("Exception while closing socket for webserver shutdown", e);
         }
-        listeningThread = null;
     }
 }
