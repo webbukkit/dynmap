@@ -72,7 +72,9 @@ public class FileLockManager {
         String fn = f.getPath();
         synchronized(lock) {
             boolean got_lock = false;
-            boolean first_wait = true;
+            long starttime = 0;
+            if(timeout > 0)
+                starttime = System.currentTimeMillis();
             while(!got_lock) {
                 Integer lockcnt = filelocks.get(fn);    /* Get lock count */
                 if(lockcnt == null) {
@@ -85,14 +87,16 @@ public class FileLockManager {
                 }
                 else {  /* Write lock in place */
                     try {
-                        if((timeout > 0) && (!first_wait)) {    /* We already waited */
-                            return false;
-                        }
-                        if(timeout < 0)
+                        if(timeout < 0) {
                             lock.wait();
-                        else
-                            lock.wait(timeout);
-                        first_wait = false;
+                        }
+                        else {
+                            long now = System.currentTimeMillis();
+                            long elapsed = now-starttime; 
+                            if(elapsed > timeout)   /* Give up on timeout */
+                                return false;
+                            lock.wait(timeout-elapsed);
+                        }
                     } catch (InterruptedException ix) {
                         Log.severe("getReadLock(" + fn + ") interrupted");
                         return false;
