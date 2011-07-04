@@ -25,6 +25,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private static Method poppreservedchunk = null;
     private static Method getsnapshot2 = null;
     private static Method getemptysnapshot = null;
+    private static Method gethandle = null;
+    private static Method removeentities = null;
     
     private World w;
     private List<DynmapChunk> chunks;
@@ -230,10 +232,18 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
-            /* Get CraftChunk.getChunkSnapshot(boolean,boolean,boolean) */
+            /* Get CraftChunk.getChunkSnapshot(boolean,boolean,boolean) and CraftChunk.getHandle() */
             try {
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftChunk");
                 getsnapshot2 = c.getDeclaredMethod("getChunkSnapshot", new Class[] { boolean.class, boolean.class, boolean.class });
+                gethandle = c.getDeclaredMethod("getHandle", new Class[0]);
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
+            /* Get Chunk.removeEntities() */
+            try {
+                Class c = Class.forName("net.minecraft.server.Chunk");
+                removeentities = c.getDeclaredMethod("removeEntities", new Class[0]);
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
@@ -341,11 +351,26 @@ public class NewMapChunkCache implements MapChunkCache {
             if ((!wasLoaded) && didload) {
                 /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
                  * when chunks are unloaded but not saved - removing them seems to do the trick */
-                if(!didgenerate) {
+                if(!(didgenerate && do_save)) {
+                    boolean did_remove = false;
                     Chunk cc = w.getChunkAt(chunk.x, chunk.z);
-                    if(cc != null) {
-                        for(Entity e: cc.getEntities())
-                            e.remove();
+                    if((gethandle != null) && (removeentities != null)) {
+                        try {
+                            Object chk = gethandle.invoke(cc);
+                            if(chk != null) {
+                                removeentities.invoke(chk);
+                                did_remove = true;
+                            }
+                        } catch (InvocationTargetException itx) {
+                        } catch (IllegalArgumentException e) {
+                        } catch (IllegalAccessException e) {
+                        }
+                    }
+                    if(!did_remove) {
+                        if(cc != null) {
+                            for(Entity e: cc.getEntities())
+                                e.remove();
+                        }
                     }
                 }
                 /* Since we only remember ones we loaded, and we're synchronous, no player has
