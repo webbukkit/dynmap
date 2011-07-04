@@ -2,10 +2,10 @@ function HDProjection() {}
 HDProjection.prototype = {
 		extrazoom: 0,
 		fromLatLngToPoint: function(latLng) {
-			return new google.maps.Point(latLng.lng()*config.tileWidth,latLng.lat()*config.tileHeight);
+			return new google.maps.Point(latLng.lng()*config.tileWidth, latLng.lat()*config.tileHeight);
 		},
 		fromPointToLatLng: function(point) {
-			return new google.maps.LatLng(point.y/config.tileHeight, point.x/config.tileWidth);
+			return new google.maps.LatLng( point.y/config.tileHeight, point.x/config.tileWidth);
 		},
 		fromWorldToLatLng: function(x, y, z) {
 			return new google.maps.LatLng(-z / config.tileWidth / (1 << this.extrazoom), x / config.tileHeight / (1 << this.extrazoom));

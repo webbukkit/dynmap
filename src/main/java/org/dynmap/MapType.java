@@ -27,7 +27,14 @@ public abstract class MapType {
     public boolean isHightestBlockYDataNeeded() { return false; }
     public boolean isRawBiomeDataNeeded() { return false; }
     public boolean isBlockTypeDataNeeded() { return true; }
- 
+
+    public enum MapStep {
+        X_PLUS_Y_PLUS,
+        X_PLUS_Y_MINUS,
+        X_MINUS_Y_PLUS,
+        X_MINUS_Y_MINUS
+    }
+    public abstract MapStep zoomFileMapStep();
     public abstract List<String> baseZoomFilePrefixes();
     public abstract int baseZoomFileStepSize();
     /* How many bits of coordinate are shifted off to make big world directory name */

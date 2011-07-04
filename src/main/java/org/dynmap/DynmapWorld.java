@@ -107,6 +107,7 @@ public class DynmapWorld {
     	int stepsize;
     	int[] stepseq;
     	boolean neg_step_x;
+        boolean neg_step_y;
     	String baseprefix;
     	int zoomlevel;
     	String zoomprefix;
@@ -152,15 +153,26 @@ public class DynmapWorld {
             int stepsize = mt.baseZoomFileStepSize();
             int bigworldshift = mt.getBigWorldShift();
             boolean neg_step_x = false;
-            if(stepsize < 0) {
-                stepsize = -stepsize;
-                neg_step_x = true;
+            boolean neg_step_y = false;
+            switch(mt.zoomFileMapStep()) {
+                case X_PLUS_Y_PLUS:
+                    break;
+                case X_MINUS_Y_PLUS:
+                    neg_step_x = true;
+                    break;
+                case X_PLUS_Y_MINUS:
+                    neg_step_y = true;
+                    break;
+                case X_MINUS_Y_MINUS:
+                    neg_step_x = neg_step_y = true;
+                    break;
             }
             int[] stepseq = mt.zoomFileStepSequence();
             for(String p : pfx) {
                 PrefixData pd = new PrefixData();
                 pd.stepsize = stepsize;
                 pd.neg_step_x = neg_step_x;
+                pd.neg_step_y = neg_step_y;
                 pd.stepseq = stepseq;
                 pd.baseprefix = p;
                 pd.zoomlevel = zoomlevel;
@@ -285,7 +297,9 @@ public class DynmapWorld {
         int[] argb = new int[width*height];
         int step = pd.stepsize << pd.zoomlevel;
         int ztx = tx;
+        int zty = ty;
         tx = tx - (pd.neg_step_x?step:0);	/* Adjust for negative step */ 
+        ty = ty - (pd.neg_step_y?step:0);   /* Adjust for negative step */ 
 
         /* create image buffer */
         kzIm = KzedMap.allocateBufferedImage(width, height);
@@ -338,7 +352,7 @@ public class DynmapWorld {
             TileHashManager hashman = MapManager.mapman.hashman;
             long crc = hashman.calculateTileHash(kzIm.argb_buf); /* Get hash of tile */
             int tilex = ztx/step/2;
-            int tiley = ty/step/2;
+            int tiley = zty/step/2;
             String key = world.getName()+".z"+pd.zoomprefix+pd.baseprefix;
             if((!zf.exists()) || (crc != MapManager.mapman.hashman.getImageHashCode(key, null, tilex, tiley))) {
                 try {

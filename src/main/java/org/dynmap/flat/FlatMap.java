@@ -22,6 +22,7 @@ import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.MapType.MapStep;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
@@ -426,6 +427,8 @@ public class FlatMap extends MapType {
 
     private static final int[] stepseq = { 1, 3, 0, 2 };
     
+    public MapStep zoomFileMapStep() { return MapStep.X_PLUS_Y_PLUS; }
+
     public int[] zoomFileStepSequence() { return stepseq; }
 
     /* How many bits of coordinate are shifted off to make big world directory name */
