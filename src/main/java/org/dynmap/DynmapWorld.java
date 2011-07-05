@@ -267,10 +267,12 @@ public class DynmapWorld {
         else
             x = x + (x % (2*step));
         if(pd.neg_step_x) x = -x;
+        if(pd.neg_step_y) y = -y;
         if(y >= 0)
             y = y - (y % (2*step));
         else
             y = y + (y % (2*step));
+        if(pd.neg_step_y) y = -y;
         /* Make name of corresponding zoomed tile */
         String zfname = makeFilePath(pd, x, y, true);
         File zf = new File(worldtilepath, zfname);
