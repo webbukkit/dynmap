@@ -26,16 +26,20 @@ HDMapType.prototype = $.extend(new DynMapType(), {
         var imgSize;
         var tileName;
         
+        var dnprefix = '';
+        if(this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].nightandday && this.dynmap.serverday)
+            dnprefix = '_day';
+
         var extrazoom = this.dynmap.world.extrazoomout;
         if(zoom < extrazoom) {
         	var scale = 1 << (extrazoom-zoom);
         	var zprefix = "zzzzzzzzzzzz".substring(0, extrazoom-zoom);
-	        tileName = this.prefix + '/' + ((scale*coord.x) >> 5) + '_' + ((-scale*coord.y) >> 5) + 
+	        tileName = this.prefix + dnprefix + '/' + ((scale*coord.x) >> 5) + '_' + ((-scale*coord.y) >> 5) + 
                 	'/' + zprefix + "_" + (scale*coord.x) + '_' + (-scale*coord.y) + '.png';
         	imgSize = 128;
         }
         else {
-	        tileName = this.prefix + '/' + (coord.x >> 5) + '_' + ((-coord.y) >> 5) + 
+	        tileName = this.prefix + dnprefix + '/' + (coord.x >> 5) + '_' + ((-coord.y) >> 5) + 
                 	'/' + coord.x + '_' + (-coord.y) + '.png';
         	imgSize = Math.pow(2, 7+zoom-extrazoom);
     	}

@@ -136,8 +136,14 @@ public class NewMapChunkCache implements MapChunkCache {
         public final void setY(int y) {
             this.y = y;
         }
+        public final int getX() {
+            return x;
+        }
         public final int getY() {
             return y;
+        }
+        public final int getZ() {
+            return z;
         }
      }
 

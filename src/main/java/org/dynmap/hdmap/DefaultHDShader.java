@@ -90,9 +90,9 @@ public class DefaultHDShader implements HDShader {
         private Color color = new Color();
         private Color daycolor;
         protected MapIterator mapiter;
-        private int seqy;    /* For dither */
         private Color tmpcolor = new Color();
         private Color tmpdaycolor = new Color();
+        private int pixelodd;
         
         private OurRendererState(MapIterator mapiter) {
             this.mapiter = mapiter;
@@ -107,10 +107,7 @@ public class DefaultHDShader implements HDShader {
             color.setTransparent();
             if(daycolor != null)
                 daycolor.setTransparent();
-            if(((x+y) & 0x01) == 0x01)
-                seqy = 0;
-            else
-                seqy = 2;
+            pixelodd = x ^ y;
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
             if((blockdata != 0) && (colorScheme.datacolors[blocktype] != null))
@@ -139,8 +136,10 @@ public class DefaultHDShader implements HDShader {
                     seq = 1;
                 else if((laststep == BlockStep.Z_PLUS) || (laststep == BlockStep.Z_MINUS))
                     seq = 3;
+                else if(((mapiter.getX() ^ mapiter.getZ() ^ pixelodd) & 0x01) == 0)
+                    seq = 0;
                 else
-                    seq = seqy;
+                    seq = 2;
 
                 Color c = colors[seq];
                 if (c.getAlpha() > 0) {
@@ -190,14 +189,15 @@ public class DefaultHDShader implements HDShader {
                     else {
                         int alpha = color.getAlpha();
                         int alpha2 = tmpcolor.getAlpha() * (255-alpha) / 255;
-                        color.setRGBA((tmpcolor.getRed()*alpha2 + color.getRed()*alpha) / 255,
-                                      (tmpcolor.getGreen()*alpha2 + color.getGreen()*alpha) / 255,
-                                      (tmpcolor.getBlue()*alpha2 + color.getBlue()*alpha) / 255, alpha+alpha2);
+                        int talpha = alpha + alpha2;
+                        color.setRGBA((tmpcolor.getRed()*alpha2 + color.getRed()*alpha) / talpha,
+                                      (tmpcolor.getGreen()*alpha2 + color.getGreen()*alpha) / talpha,
+                                      (tmpcolor.getBlue()*alpha2 + color.getBlue()*alpha) / talpha, talpha);
                         if(daycolor != null)
-                            daycolor.setRGBA((tmpdaycolor.getRed()*alpha2 + daycolor.getRed()*alpha) / 255,
-                                          (tmpdaycolor.getGreen()*alpha2 + daycolor.getGreen()*alpha) / 255,
-                                          (tmpdaycolor.getBlue()*alpha2 + daycolor.getBlue()*alpha) / 255, alpha+alpha2);
-                        return (alpha+alpha2) >= 254;   /* If only one short, no meaningful contribution left */
+                            daycolor.setRGBA((tmpdaycolor.getRed()*alpha2 + daycolor.getRed()*alpha) / talpha,
+                                          (tmpdaycolor.getGreen()*alpha2 + daycolor.getGreen()*alpha) / talpha,
+                                          (tmpdaycolor.getBlue()*alpha2 + daycolor.getBlue()*alpha) / talpha, talpha);
+                        return (talpha >= 254);   /* If only one short, no meaningful contribution left */
                     }
                 }
             }
@@ -292,6 +292,10 @@ public class DefaultHDShader implements HDShader {
         s(o, "title", c.getString("title"));
         s(o, "icon", c.getString("icon"));
         s(o, "prefix", c.getString("prefix"));
+        s(o, "background", c.getString("background"));
+        s(o, "nightandday", c.getBoolean("night-and-day", false));
+        s(o, "backgroundday", c.getString("backgroundday"));
+        s(o, "backgroundnight", c.getString("backgroundnight"));
         a(worldObject, "maps", o);
     }
 }

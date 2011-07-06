@@ -429,11 +429,43 @@ public class HDMap extends MapType {
                     FileLockManager.releaseWriteLock(f);
                     renderedone = true;
                     KzedMap.freeBufferedImage(im[i]);
-                    if(dayim[i] != null)
+                }
+                MapManager.mapman.updateStatistics(tile, shadername, true, tile_update, !rendered[i]);
+                /* Handle day image, if needed */
+                if(dayim[i] != null) {
+                    f = new File(t.getDynmapWorld().worldtilepath, t.getDayFilename(shadername));
+                    FileLockManager.getWriteLock(f);
+                    shadername = shadername+"_day";
+                    tile_update = false;
+                    try {
+                        if((!f.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), shadername, t.tx, t.ty))) {
+                            /* Wrap buffer as buffered image */
+                            Debug.debug("saving image " + f.getPath());
+                            if(!f.getParentFile().exists())
+                                f.getParentFile().mkdirs();
+                            try {
+                                FileLockManager.imageIOWrite(dayim[i].buf_img, "png", f);
+                            } catch (IOException e) {
+                                Debug.error("Failed to save image: " + f.getPath(), e);
+                            } catch (java.lang.NullPointerException e) {
+                                Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
+                            }
+                            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(f.getPath()));
+                            hashman.updateHashCode(tile.getKey(), shadername, t.tx, t.ty, crc);
+                            tile.getDynmapWorld().enqueueZoomOutUpdate(f);
+                            tile_update = true;
+                        }
+                        else {
+                            Debug.debug("skipping image " + f.getPath() + " - hash match");
+                        }
+                    } finally {
+                        FileLockManager.releaseWriteLock(f);
+                        renderedone = true;
                         KzedMap.freeBufferedImage(dayim[i]);
+                    }
+                    MapManager.mapman.updateStatistics(tile, shadername, true, tile_update, !rendered[i]);
                 }
             }
-            MapManager.mapman.updateStatistics(tile, shadername, true, tile_update, !rendered[i]);
         }
         return renderedone;
     }
