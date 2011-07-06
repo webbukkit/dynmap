@@ -49,7 +49,16 @@ public class HDMap extends MapType {
     public double azimuth;  /* Angle in degrees from looking north (0), east (90), south (180), or west (270) */
     public double inclination;  /* Angle in degrees from horizontal (0) to vertical (90) */
     public double scale;    /* Scale - tile pixel widths per block */
-    public ColorScheme colorScheme;
+    /* Represents last step of movement of the ray */
+    public enum BlockStep {
+        X_PLUS,
+        Y_PLUS,
+        Z_PLUS,
+        X_MINUS,
+        Y_MINUS,
+        Z_MINUS
+    };
+
     /* Coordinate space for tiles consists of a plane (X, Y), corresponding to the projection of each tile on to the
      * plane of the bottom of the world (X positive to the right, Y positive to the top), with Z+ corresponding to the
      * height above this plane on a vector towards the viewer).  Logically, this makes the parallelogram representing the
@@ -73,11 +82,13 @@ public class HDMap extends MapType {
     public static final double MAX_SCALE = 64;
     public static final double MIN_SCALE = 1;
     
-    private HDMapTileRenderer renderers[];
+    private HDShader shaders[];
+    private boolean need_skylightlevel = false;
+    private boolean need_emittedlightlevel = false;
+    private boolean need_biomedata = false;
+    private boolean need_rawbiomedata = false;
     
     public HDMap(ConfigurationNode configuration) {
-        colorScheme = ColorScheme.getScheme(configuration.getString("colorscheme", "default"));
-
         azimuth = configuration.getDouble("azimuth", 135.0);    /* Get azimuth (default to classic kzed POV */
         inclination = configuration.getDouble("inclination", 60.0);
         if(inclination > MAX_INCLINATION) inclination = MAX_INCLINATION;
@@ -111,11 +122,21 @@ public class HDMap extends MapType {
         transform.multiply(coordswap);
         map_to_world = transform;
         
-        Log.verboseinfo("Loading renderers for map '" + getClass().toString() + "'...");
-        List<HDMapTileRenderer> renderers = configuration.<HDMapTileRenderer>createInstances("renderers", new Class<?>[0], new Object[0]);
-        this.renderers = new HDMapTileRenderer[renderers.size()];
-        renderers.toArray(this.renderers);
-        Log.verboseinfo("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
+        Log.verboseinfo("Loading shaders for map '" + getClass().toString() + "'...");
+        List<HDShader> shaders = configuration.<HDShader>createInstances("shaders", new Class<?>[0], new Object[0]);
+        this.shaders = new HDShader[shaders.size()];
+        shaders.toArray(this.shaders);
+        Log.verboseinfo("Loaded " + shaders.size() + " shaders for map '" + getClass().toString() + "'.");
+        for(HDShader shader : shaders) {
+            if(shader.isBiomeDataNeeded())
+                need_biomedata = true;
+            if(shader.isEmittedLightLevelNeeded())
+                need_emittedlightlevel = true;
+            if(shader.isSkyLightLevelNeeded())
+                need_skylightlevel = true;
+            if(shader.isRawBiomeDataNeeded())
+                need_rawbiomedata = true;
+        }
     }   
 
     @Override
@@ -156,16 +177,14 @@ public class HDMap extends MapType {
         int x = t.tx;
         int y = t.ty;
         return new MapTile[] {
-            new HDMapTile(w, this, t.renderer, x, y - 1),
-            new HDMapTile(w, this, t.renderer, x + 1, y),
-            new HDMapTile(w, this, t.renderer, x, y + 1),
-            new HDMapTile(w, this, t.renderer, x - 1, y) };
+            new HDMapTile(w, this, x, y - 1),
+            new HDMapTile(w, this, x + 1, y),
+            new HDMapTile(w, this, x, y + 1),
+            new HDMapTile(w, this, x - 1, y) };
     }
 
     public void addTile(HashSet<MapTile> tiles, DynmapWorld world, int tx, int ty) {
-        for (int i = 0; i < renderers.length; i++) {
-            tiles.add(new HDMapTile(world, this, renderers[i], tx, ty));
-        }
+        tiles.add(new HDMapTile(world, this, tx, ty));
     }
 
     public void invalidateTile(MapTile tile) {
@@ -312,82 +331,118 @@ public class HDMap extends MapType {
     }
 
     @Override
-    public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
+    public boolean render(MapChunkCache cache, MapTile tile, File bogus) {
         HDMapTile t = (HDMapTile) tile;
         World w = t.getWorld();
-        boolean rendered = false;
         Color rslt = new Color();
-        int[] pixel = new int[4];
-        KzedBufferedImage im = KzedMap.allocateBufferedImage(tileWidth, tileHeight);
-        int[] argb_buf = im.argb_buf;
-
         MapIterator mapiter = cache.getIterator(0, 0, 0);
+        /* Build shader state object for each shader */
+        HDShaderState[] shaderstate = new HDShaderState[shaders.length];
+        for(int i = 0; i < shaders.length; i++) {
+            shaderstate[i] = shaders[i].getStateInstance(this, cache, mapiter);
+            if(shaders[i].isEmittedLightLevelNeeded())
+                need_emittedlightlevel = true;
+            if(shaders[i].isSkyLightLevelNeeded())
+                need_skylightlevel = true;
+        }
+        /* Create buffered image for each */
+        KzedBufferedImage im[] = new KzedBufferedImage[shaders.length];
+        KzedBufferedImage dayim[] = new KzedBufferedImage[shaders.length];
+        int[][] argb_buf = new int[shaders.length][];
+        int[][] day_argb_buf = new int[shaders.length][];
+        for(int i = 0; i < shaders.length; i++) {
+            im[i] = KzedMap.allocateBufferedImage(tileWidth, tileHeight);
+            argb_buf[i] = im[i].argb_buf;
+            if(shaders[i].isNightAndDayEnabled()) {
+                dayim[i] = KzedMap.allocateBufferedImage(tileWidth, tileHeight);
+                day_argb_buf[i] = dayim[i].argb_buf;
+            }
+        }
+        
         Vector3D top = new Vector3D();
         Vector3D bottom = new Vector3D();
         double xbase = t.tx * tileWidth;
         double ybase = t.ty * tileHeight;
-        boolean odd = false;
+        boolean shaderdone[] = new boolean[shaders.length];
+        boolean rendered[] = new boolean[shaders.length];
         for(int x = 0; x < tileWidth; x++) {
             for(int y = 0; y < tileHeight; y++) {
                 top.x = bottom.x = xbase + x + 0.5;    /* Start at center of pixel at Y=127.5, bottom at Y=-0.5 */
                 top.y = bottom.y = ybase + y + 0.5;
                 top.z = 127.5; bottom.z = -0.5;
                 map_to_world.transform(top);            /* Transform to world coordinates */
-                map_to_world.transform(bottom); 
-                raytrace(cache, mapiter, top, bottom, rslt, odd);
-                argb_buf[(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
-                rendered = true;
-                odd = !odd;
+                map_to_world.transform(bottom);
+                for(int i = 0; i < shaders.length; i++) {
+                    shaderstate[i].reset(x, y);
+                }
+                raytrace(cache, mapiter, top, bottom, shaderstate, shaderdone);
+                for(int i = 0; i < shaders.length; i++) {
+                    if(shaderdone[i] == false) {
+                        shaderstate[i].rayFinished();
+                    }
+                    else {
+                        shaderdone[i] = false;
+                        rendered[i] = true;
+                    }
+                    shaderstate[i].getRayColor(rslt, 0);
+                    argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                    if(day_argb_buf[i] != null) {
+                        shaderstate[i].getRayColor(rslt, 1);
+                        day_argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                    }
+                }
             }
-            odd = !odd;
         }
+
+        boolean renderedone = false;
         /* Test to see if we're unchanged from older tile */
         TileHashManager hashman = MapManager.mapman.hashman;
-        long crc = hashman.calculateTileHash(argb_buf);
-        boolean tile_update = false;
-        FileLockManager.getWriteLock(outputFile);
-        try {
-            if((!outputFile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), null, t.tx, t.ty))) {
-                /* Wrap buffer as buffered image */
-                Debug.debug("saving image " + outputFile.getPath());
-                if(!outputFile.getParentFile().exists())
-                    outputFile.getParentFile().mkdirs();
+        for(int i = 0; i < shaders.length; i++) {
+            long crc = hashman.calculateTileHash(argb_buf[i]);
+            boolean tile_update = false;
+            String shadername = shaders[i].getName();
+            if(rendered[i]) {
+                File f = new File(t.getDynmapWorld().worldtilepath, t.getFilename(shadername));
+                FileLockManager.getWriteLock(f);
                 try {
-                    FileLockManager.imageIOWrite(im.buf_img, "png", outputFile);
-                } catch (IOException e) {
-                    Debug.error("Failed to save image: " + outputFile.getPath(), e);
-                } catch (java.lang.NullPointerException e) {
-                    Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
+                    if((!f.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), shadername, t.tx, t.ty))) {
+                        /* Wrap buffer as buffered image */
+                        Debug.debug("saving image " + f.getPath());
+                        if(!f.getParentFile().exists())
+                            f.getParentFile().mkdirs();
+                        try {
+                            FileLockManager.imageIOWrite(im[i].buf_img, "png", f);
+                        } catch (IOException e) {
+                            Debug.error("Failed to save image: " + f.getPath(), e);
+                        } catch (java.lang.NullPointerException e) {
+                            Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
+                        }
+                        MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(f.getPath()));
+                        hashman.updateHashCode(tile.getKey(), shadername, t.tx, t.ty, crc);
+                        tile.getDynmapWorld().enqueueZoomOutUpdate(f);
+                        tile_update = true;
+                    }
+                    else {
+                        Debug.debug("skipping image " + f.getPath() + " - hash match");
+                    }
+                } finally {
+                    FileLockManager.releaseWriteLock(f);
+                    renderedone = true;
+                    KzedMap.freeBufferedImage(im[i]);
+                    if(dayim[i] != null)
+                        KzedMap.freeBufferedImage(dayim[i]);
                 }
-                MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
-                hashman.updateHashCode(tile.getKey(), null, t.tx, t.ty, crc);
-                tile.getDynmapWorld().enqueueZoomOutUpdate(outputFile);
-                tile_update = true;
             }
-            else {
-                Debug.debug("skipping image " + outputFile.getPath() + " - hash match");
-            }
-        } finally {
-            FileLockManager.releaseWriteLock(outputFile);
-            KzedMap.freeBufferedImage(im);
+            MapManager.mapman.updateStatistics(tile, shadername, true, tile_update, !rendered[i]);
         }
-        MapManager.mapman.updateStatistics(tile, null, true, tile_update, !rendered);
-        return rendered;
+        return renderedone;
     }
-    
-    public enum BlockStep {
-        X_PLUS,
-        Y_PLUS,
-        Z_PLUS,
-        X_MINUS,
-        Y_MINUS,
-        Z_MINUS
-    };
-    
+       
     /**
      * Trace ray, based on "Voxel Tranversal along a 3D line"
      */
-    private void raytrace(MapChunkCache cache, MapIterator mapiter, Vector3D top, Vector3D bottom, Color rslt, boolean odd) {
+    private void raytrace(MapChunkCache cache, MapIterator mapiter, Vector3D top, Vector3D bottom, 
+            HDShaderState[] shaderstate, boolean[] shaderdone) {
         /* Compute total delta on each axis */
         double dx = Math.abs(bottom.x - top.x);
         double dy = Math.abs(bottom.y - top.y);
@@ -459,23 +514,28 @@ public class HDMap extends MapType {
             t_next_z = (top.z - Math.floor(top.z)) * dt_dz;
         }
         /* Walk through scene */
-        rslt.setTransparent();
         BlockStep laststep = BlockStep.Y_MINUS; /* Last step is down into map */
         mapiter.initialize(x, y, z);
+        int sky_lightlevel = 15;
+        int emitted_lightlevel = 15;
         for (; n > 0; --n) {
             int blocktype = mapiter.getBlockTypeID();
             if(blocktype != 0) {
-                Color[] clr = colorScheme.colors[blocktype];
-                if(clr != null) {
-                    if(laststep == BlockStep.Y_MINUS)
-                        rslt.setColor(odd?clr[0]:clr[2]);
-                    else if((laststep == BlockStep.X_PLUS) || (laststep == BlockStep.X_MINUS))
-                        rslt.setColor(clr[1]);
-                    else
-                        rslt.setColor(clr[3]);
+                int blockdata = mapiter.getBlockData();
+                boolean done = true;
+                for(int i = 0; i < shaderstate.length; i++) {
+                    if(!shaderdone[i])
+                        shaderdone[i] = shaderstate[i].processBlock(blocktype, blockdata, sky_lightlevel, emitted_lightlevel, laststep);
+                    done = done && shaderdone[i];
                 }
-                return;
+                /* If all are done, we're out */
+                if(done)
+                    return;
             }
+            if(need_skylightlevel)
+                sky_lightlevel = mapiter.getBlockSkyLight();
+            if(need_emittedlightlevel)
+                emitted_lightlevel = mapiter.getBlockEmittedLight();
             /* If X step is next best */
             if((t_next_x <= t_next_y) && (t_next_x <= t_next_z)) {
                 x += x_inc;
@@ -527,19 +587,21 @@ public class HDMap extends MapType {
 
     @Override
     public boolean isBiomeDataNeeded() {
-        return false;
+        return need_biomedata;
     }
 
     @Override
     public boolean isRawBiomeDataNeeded() { 
-         return false;
+         return need_rawbiomedata;
      }
 
     @Override
     public List<String> baseZoomFilePrefixes() {
         ArrayList<String> s = new ArrayList<String>();
-        for(HDMapTileRenderer r : renderers) {
+        for(HDShader r : shaders) {
             s.add(r.getName());
+            if(r.isNightAndDayEnabled())
+                s.add(r.getName() + "_day");
         }
         return s;
     }
@@ -562,8 +624,8 @@ public class HDMap extends MapType {
 
     @Override
     public void buildClientConfiguration(JSONObject worldObject) {
-        for(HDMapTileRenderer renderer : renderers) {
-            renderer.buildClientConfiguration(worldObject);
+        for(HDShader shader : shaders) {
+            shader.buildClientConfiguration(worldObject);
         }
     }
 }

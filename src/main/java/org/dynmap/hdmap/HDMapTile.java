@@ -6,31 +6,33 @@ import org.dynmap.MapTile;
 
 public class HDMapTile extends MapTile {
     public HDMap map;
-    public HDMapTileRenderer renderer;
     public int tx, ty;  /* Tile X and Tile Y are in tile coordinates (pixels/tile-size) */
-    private String fname;
     
-    public HDMapTile(DynmapWorld world, HDMap map, HDMapTileRenderer renderer, int tx, int ty) {
+    public HDMapTile(DynmapWorld world, HDMap map, int tx, int ty) {
         super(world, map);
         this.map = map;
-        this.renderer = renderer;
         this.tx = tx;
         this.ty = ty;
     }
 
     @Override
     public String getFilename() {
-        if(fname == null) {
-            fname = renderer.getName() + "/"  + (tx >> 5) + '_' + (ty >> 5) + '/' + tx + "_" + ty + ".png";
-        }
-        return fname;
+        return getFilename("hdmap");
+    }
+
+    public String getFilename(String shader) {
+        return shader + "/"  + (tx >> 5) + '_' + (ty >> 5) + '/' + tx + "_" + ty + ".png";
     }
 
     @Override
     public String getDayFilename() {
-        return getFilename();
+        return getDayFilename("hdmap");
     }
 
+    public String getDayFilename(String shader) {
+        return shader + "_day/"  + (tx >> 5) + '_' + (ty >> 5) + '/' + tx + "_" + ty + ".png";
+    }
+    
     @Override
     public int hashCode() {
         return getFilename().hashCode() ^ getWorld().hashCode();
@@ -45,11 +47,11 @@ public class HDMapTile extends MapTile {
     }
 
     public boolean equals(HDMapTile o) {
-        return o.tx == tx && o.ty == ty && o.renderer == o.renderer && o.getWorld().equals(getWorld());
+        return o.tx == tx && o.ty == ty && o.getWorld().equals(getWorld());
     }
 
     public String getKey() {
-        return getWorld().getName() + "." + renderer.getName();
+        return getWorld().getName() + ".hdmap";
     }
 
     public String toString() {
