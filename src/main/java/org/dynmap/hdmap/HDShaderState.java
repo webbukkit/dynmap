@@ -1,8 +1,7 @@
 package org.dynmap.hdmap;
 
 import org.dynmap.Color;
-import org.dynmap.utils.MapChunkCache;
-import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.Vector3D;
 
 /**
  * This interface is used to define the operational state of a renderer during raytracing
@@ -12,7 +11,7 @@ public interface HDShaderState {
     /**
      * Reset renderer state for new ray - passes in pixel coordinate for ray
      */
-    void reset(int x, int y);
+    void reset(int x, int y, Vector3D raystart, double scale);
     /**
      * Process next ray step - called for each block on route
      * @param blocktype - block type of current block

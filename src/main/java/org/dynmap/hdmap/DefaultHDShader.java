@@ -16,6 +16,7 @@ import org.dynmap.kzedmap.KzedMapTile;
 import org.dynmap.kzedmap.DefaultTileRenderer.BiomeColorOption;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.Vector3D;
 import org.json.simple.JSONObject;
 
 public class DefaultHDShader implements HDShader {
@@ -103,11 +104,11 @@ public class DefaultHDShader implements HDShader {
         /**
          * Reset renderer state for new ray
          */
-        public void reset(int x, int y) {
+        public void reset(int x, int y, Vector3D raystart, double scale) {
             color.setTransparent();
             if(daycolor != null)
                 daycolor.setTransparent();
-            pixelodd = x ^ y;
+            pixelodd = (x & 0x3) + (y<<1);
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
             if((blockdata != 0) && (colorScheme.datacolors[blocktype] != null))
@@ -136,10 +137,10 @@ public class DefaultHDShader implements HDShader {
                     seq = 1;
                 else if((laststep == BlockStep.Z_PLUS) || (laststep == BlockStep.Z_MINUS))
                     seq = 3;
-                else if(((mapiter.getX() ^ mapiter.getZ() ^ pixelodd) & 0x01) == 0)
-                    seq = 0;
-                else
+                else if(((pixelodd + mapiter.getY()) & 0x03) == 0)
                     seq = 2;
+                else
+                    seq = 0;
 
                 Color c = colors[seq];
                 if (c.getAlpha() > 0) {

@@ -373,7 +373,7 @@ public class HDMap extends MapType {
                 map_to_world.transform(top);            /* Transform to world coordinates */
                 map_to_world.transform(bottom);
                 for(int i = 0; i < shaders.length; i++) {
-                    shaderstate[i].reset(x, y);
+                    shaderstate[i].reset(x, y, top, scale);
                 }
                 raytrace(cache, mapiter, top, bottom, shaderstate, shaderdone);
                 for(int i = 0; i < shaders.length; i++) {
@@ -402,7 +402,8 @@ public class HDMap extends MapType {
             boolean tile_update = false;
             String shadername = shaders[i].getName();
             if(rendered[i]) {
-                File f = new File(t.getDynmapWorld().worldtilepath, t.getFilename(shadername));
+                String fname = t.getFilename(shadername);
+                File f = new File(t.getDynmapWorld().worldtilepath, fname);
                 FileLockManager.getWriteLock(f);
                 try {
                     if((!f.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), shadername, t.tx, t.ty))) {
@@ -417,7 +418,7 @@ public class HDMap extends MapType {
                         } catch (java.lang.NullPointerException e) {
                             Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
                         }
-                        MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(f.getPath()));
+                        MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(fname));
                         hashman.updateHashCode(tile.getKey(), shadername, t.tx, t.ty, crc);
                         tile.getDynmapWorld().enqueueZoomOutUpdate(f);
                         tile_update = true;
@@ -433,7 +434,8 @@ public class HDMap extends MapType {
                 MapManager.mapman.updateStatistics(tile, shadername, true, tile_update, !rendered[i]);
                 /* Handle day image, if needed */
                 if(dayim[i] != null) {
-                    f = new File(t.getDynmapWorld().worldtilepath, t.getDayFilename(shadername));
+                    fname = t.getDayFilename(shadername);
+                    f = new File(t.getDynmapWorld().worldtilepath, fname);
                     FileLockManager.getWriteLock(f);
                     shadername = shadername+"_day";
                     tile_update = false;
@@ -450,7 +452,7 @@ public class HDMap extends MapType {
                             } catch (java.lang.NullPointerException e) {
                                 Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
                             }
-                            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(f.getPath()));
+                            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(fname));
                             hashman.updateHashCode(tile.getKey(), shadername, t.tx, t.ty, crc);
                             tile.getDynmapWorld().enqueueZoomOutUpdate(f);
                             tile_update = true;
