@@ -1,24 +1,17 @@
 package org.dynmap.hdmap;
 
 import org.dynmap.DynmapWorld;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.dynmap.Client;
 import org.dynmap.Color;
-import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
@@ -26,23 +19,15 @@ import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.TileHashManager;
-import org.dynmap.MapType.MapStep;
 import org.dynmap.debug.Debug;
-import org.dynmap.flat.FlatMap.FlatMapTile;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.Matrix3D;
 import org.dynmap.utils.Vector3D;
 import org.json.simple.JSONObject;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DataBuffer;
-import java.awt.image.WritableRaster;
-import java.awt.image.ColorModel;
-import java.awt.image.Raster;
 
 public class HDMap extends MapType {
     /* View angles */
@@ -87,6 +72,57 @@ public class HDMap extends MapType {
     private boolean need_emittedlightlevel = false;
     private boolean need_biomedata = false;
     private boolean need_rawbiomedata = false;
+    
+    private class OurPerspectiveState implements HDPerspectiveState {
+        int skylightlevel = 15;
+        int emittedlightlevel = 0;
+        int blocktypeid = 0;
+        int blockdata = 0;
+        Vector3D top, bottom;
+        int px, py;
+        BlockStep laststep = BlockStep.Y_MINUS;
+        /**
+         * Get sky light level - only available if shader requested it
+         */
+        public final int getSkyLightLevel() { return skylightlevel; }
+        /**
+         * Get emitted light level - only available if shader requested it
+         */
+        public final int getEmittedLightLevel() { return emittedlightlevel; }
+        /**
+         * Get current block type ID
+         */
+        public final int getBlockTypeID() { return blocktypeid; }
+        /**
+         * Get current block data
+         */
+        public final int getBlockData() { return blockdata; }
+        /**
+         * Get direction of last block step
+         */
+        public final BlockStep getLastBlockStep() { return laststep; }
+        /**
+         * Get perspective scale
+         */
+        public final double getScale() { return scale; }
+        /**
+         * Get start of current ray, in world coordinates
+         */
+        public final Vector3D getRayStart() { return top; }
+        /**
+         * Get end of current ray, in world coordinates
+         */
+        public final Vector3D getRayEnd() { return bottom; }
+        /**
+         * Get pixel X coordinate
+         */
+        public final int getPixelX() { return px; }
+        /**
+         * Get pixel Y coordinate
+         */
+        public final int getPixelY() { return py; }
+
+    }
     
     public HDMap(ConfigurationNode configuration) {
         azimuth = configuration.getDouble("azimuth", 135.0);    /* Get azimuth (default to classic kzed POV */
@@ -345,6 +381,9 @@ public class HDMap extends MapType {
             if(shaders[i].isSkyLightLevelNeeded())
                 need_skylightlevel = true;
         }
+        /* Create perspective state object */
+        OurPerspectiveState ps = new OurPerspectiveState();
+        
         /* Create buffered image for each */
         KzedBufferedImage im[] = new KzedBufferedImage[shaders.length];
         KzedBufferedImage dayim[] = new KzedBufferedImage[shaders.length];
@@ -359,26 +398,28 @@ public class HDMap extends MapType {
             }
         }
         
-        Vector3D top = new Vector3D();
-        Vector3D bottom = new Vector3D();
+        ps.top = new Vector3D();
+        ps.bottom = new Vector3D();
         double xbase = t.tx * tileWidth;
         double ybase = t.ty * tileHeight;
         boolean shaderdone[] = new boolean[shaders.length];
         boolean rendered[] = new boolean[shaders.length];
         for(int x = 0; x < tileWidth; x++) {
+            ps.px = x;
             for(int y = 0; y < tileHeight; y++) {
-                top.x = bottom.x = xbase + x + 0.5;    /* Start at center of pixel at Y=127.5, bottom at Y=-0.5 */
-                top.y = bottom.y = ybase + y + 0.5;
-                top.z = 127.5; bottom.z = -0.5;
-                map_to_world.transform(top);            /* Transform to world coordinates */
-                map_to_world.transform(bottom);
+                ps.top.x = ps.bottom.x = xbase + x + 0.5;    /* Start at center of pixel at Y=127.5, bottom at Y=-0.5 */
+                ps.top.y = ps.bottom.y = ybase + y + 0.5;
+                ps.top.z = 127.5; ps.bottom.z = -0.5;
+                map_to_world.transform(ps.top);            /* Transform to world coordinates */
+                map_to_world.transform(ps.bottom);
+                ps.py = y;
                 for(int i = 0; i < shaders.length; i++) {
-                    shaderstate[i].reset(x, y, top, scale);
+                    shaderstate[i].reset(ps);
                 }
-                raytrace(cache, mapiter, top, bottom, shaderstate, shaderdone);
+                raytrace(cache, mapiter, ps, shaderstate, shaderdone);
                 for(int i = 0; i < shaders.length; i++) {
                     if(shaderdone[i] == false) {
-                        shaderstate[i].rayFinished();
+                        shaderstate[i].rayFinished(ps);
                     }
                     else {
                         shaderdone[i] = false;
@@ -394,7 +435,7 @@ public class HDMap extends MapType {
             }
         }
 
-        boolean renderedone = false;
+        boolean renderone = false;
         /* Test to see if we're unchanged from older tile */
         TileHashManager hashman = MapManager.mapman.hashman;
         for(int i = 0; i < shaders.length; i++) {
@@ -402,6 +443,7 @@ public class HDMap extends MapType {
             boolean tile_update = false;
             String shadername = shaders[i].getName();
             if(rendered[i]) {
+                renderone = true;
                 String fname = t.getFilename(shadername);
                 File f = new File(t.getDynmapWorld().worldtilepath, fname);
                 FileLockManager.getWriteLock(f);
@@ -428,7 +470,6 @@ public class HDMap extends MapType {
                     }
                 } finally {
                     FileLockManager.releaseWriteLock(f);
-                    renderedone = true;
                     KzedMap.freeBufferedImage(im[i]);
                 }
                 MapManager.mapman.updateStatistics(tile, shadername, true, tile_update, !rendered[i]);
@@ -462,21 +503,22 @@ public class HDMap extends MapType {
                         }
                     } finally {
                         FileLockManager.releaseWriteLock(f);
-                        renderedone = true;
                         KzedMap.freeBufferedImage(dayim[i]);
                     }
                     MapManager.mapman.updateStatistics(tile, shadername, true, tile_update, !rendered[i]);
                 }
             }
         }
-        return renderedone;
+        return renderone;
     }
        
     /**
      * Trace ray, based on "Voxel Tranversal along a 3D line"
      */
-    private void raytrace(MapChunkCache cache, MapIterator mapiter, Vector3D top, Vector3D bottom, 
+    private void raytrace(MapChunkCache cache, MapIterator mapiter, OurPerspectiveState ps, 
             HDShaderState[] shaderstate, boolean[] shaderdone) {
+        Vector3D top = ps.top;
+        Vector3D bottom = ps.bottom;
         /* Compute total delta on each axis */
         double dx = Math.abs(bottom.x - top.x);
         double dy = Math.abs(bottom.y - top.y);
@@ -548,18 +590,18 @@ public class HDMap extends MapType {
             t_next_z = (top.z - Math.floor(top.z)) * dt_dz;
         }
         /* Walk through scene */
-        BlockStep laststep = BlockStep.Y_MINUS; /* Last step is down into map */
+        ps.laststep = BlockStep.Y_MINUS; /* Last step is down into map */
         mapiter.initialize(x, y, z);
-        int sky_lightlevel = 15;
-        int emitted_lightlevel = 15;
+        ps.skylightlevel = 15;
+        ps.emittedlightlevel = 0;
         for (; n > 0; --n) {
-            int blocktype = mapiter.getBlockTypeID();
-            if(blocktype != 0) {
-                int blockdata = mapiter.getBlockData();
+            ps.blocktypeid = mapiter.getBlockTypeID();
+            if(ps.blocktypeid != 0) {
+                ps.blockdata = mapiter.getBlockData();
                 boolean done = true;
                 for(int i = 0; i < shaderstate.length; i++) {
                     if(!shaderdone[i])
-                        shaderdone[i] = shaderstate[i].processBlock(blocktype, blockdata, sky_lightlevel, emitted_lightlevel, laststep);
+                        shaderdone[i] = shaderstate[i].processBlock(ps);
                     done = done && shaderdone[i];
                 }
                 /* If all are done, we're out */
@@ -567,20 +609,20 @@ public class HDMap extends MapType {
                     return;
             }
             if(need_skylightlevel)
-                sky_lightlevel = mapiter.getBlockSkyLight();
+                ps.skylightlevel = mapiter.getBlockSkyLight();
             if(need_emittedlightlevel)
-                emitted_lightlevel = mapiter.getBlockEmittedLight();
+                ps.emittedlightlevel = mapiter.getBlockEmittedLight();
             /* If X step is next best */
             if((t_next_x <= t_next_y) && (t_next_x <= t_next_z)) {
                 x += x_inc;
                 t = t_next_x;
                 t_next_x += dt_dx;
                 if(x_inc > 0) {
-                    laststep = BlockStep.X_PLUS;
+                    ps.laststep = BlockStep.X_PLUS;
                     mapiter.incrementX();
                 }
                 else {
-                    laststep = BlockStep.X_MINUS;
+                    ps.laststep = BlockStep.X_MINUS;
                     mapiter.decrementX();
                 }
             }
@@ -590,13 +632,13 @@ public class HDMap extends MapType {
                 t = t_next_y;
                 t_next_y += dt_dy;
                 if(y_inc > 0) {
-                    laststep = BlockStep.Y_PLUS;
+                    ps.laststep = BlockStep.Y_PLUS;
                     mapiter.incrementY();
                     if(mapiter.getY() > 127)
                         return;
                 }
                 else {
-                    laststep = BlockStep.Y_MINUS;
+                    ps.laststep = BlockStep.Y_MINUS;
                     mapiter.decrementY();
                     if(mapiter.getY() < 0)
                         return;
@@ -608,11 +650,11 @@ public class HDMap extends MapType {
                 t = t_next_z;
                 t_next_z += dt_dz;
                 if(z_inc > 0) {
-                    laststep = BlockStep.Z_PLUS;
+                    ps.laststep = BlockStep.Z_PLUS;
                     mapiter.incrementZ();
                 }
                 else {
-                    laststep = BlockStep.Z_MINUS;
+                    ps.laststep = BlockStep.Z_MINUS;
                     mapiter.decrementZ();
                 }
             }
