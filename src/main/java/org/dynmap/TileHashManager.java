@@ -2,10 +2,10 @@ package org.dynmap;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.io.IOException;
 import java.util.zip.CRC32;
+
+import org.dynmap.utils.LRULinkedHashMap;
 
 /**
  * Image hash code manager - used to reduce compression and notification of updated tiles that do not actually yield new content
@@ -94,17 +94,6 @@ public class TileHashManager {
             int off = (128 * (ty & 0x1F)) + (4 * (tx & 0x1F));
             for(int i = 0; i < 4; i++)
                 crcbuf[off+i] = (byte)((crc >> ((3-i)*8)) & 0xFF);
-        }
-    }
-    
-    public static class LRULinkedHashMap<T, K> extends LinkedHashMap<T, K> {
-        private int limit;
-        public LRULinkedHashMap(int lim) {
-            super(16, (float)0.75, true);
-            limit = lim;
-        }
-        protected boolean removeEldestEntry(Map.Entry<T, K> last) {
-            return(size() >= limit);
         }
     }
     
