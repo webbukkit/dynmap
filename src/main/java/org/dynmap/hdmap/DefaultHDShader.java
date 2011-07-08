@@ -38,7 +38,7 @@ public class DefaultHDShader implements HDShader {
     
     public DefaultHDShader(ConfigurationNode configuration) {
         this.configuration = configuration;
-        name = (String) configuration.get("prefix");
+        name = (String) configuration.get("name");
         double shadowweight = configuration.getDouble("shadowstrength", 0.0);
         if(shadowweight > 0.0) {
             shadowscale = new int[16];
@@ -61,7 +61,7 @@ public class DefaultHDShader implements HDShader {
                     lightscale[i] = i - (15-v);
             }
         }
-        colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
+        colorScheme = ColorScheme.getScheme(configuration.getString("colorscheme", "default"));
         night_and_day = configuration.getBoolean("night-and-day", false);
         transparency = configuration.getBoolean("transparency", true);  /* Default on */
         String biomeopt = configuration.getString("biomecolored", "none");

@@ -1,0 +1,18 @@
+shaders:
+ - class: org.dynmap.hdmap.DefaultHDShader
+   name: classic
+   colorscheme: default
+   
+ - class: org.dynmap.hdmap.DefaultHDShader
+   name: night
+   colorscheme: default
+   ambientlight: 4
+   shadowstrength: 1.0
+   
+ - class: org.dynmap.hdmap.DefaultHDShader
+   name: daynight
+   colorscheme: default
+   ambientlight: 4
+   shadowstrength: 1.0
+   night-and-day: true
+   

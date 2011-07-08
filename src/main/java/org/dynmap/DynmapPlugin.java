@@ -46,6 +46,8 @@ public class DynmapPlugin extends JavaPlugin {
     public MapManager mapManager = null;
     public PlayerList playerList;
     public ConfigurationNode configuration;
+    public ConfigurationNode shaderconfig;
+    public ConfigurationNode perspectiveconfig;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
     public ComponentManager componentManager = new ComponentManager();
@@ -77,6 +79,13 @@ public class DynmapPlugin extends JavaPlugin {
         org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "configuration.txt"));
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
+        /* Load shaders and perspectives */
+        org.bukkit.util.config.Configuration bukkitShaderConfig = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "shaders.txt"));
+        bukkitShaderConfig.load();
+        shaderconfig = new ConfigurationNode(bukkitShaderConfig);
+        org.bukkit.util.config.Configuration bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "perspectives.txt"));
+        bukkitPerspectiveConfig.load();
+        perspectiveconfig = new ConfigurationNode(bukkitPerspectiveConfig);
         
         Log.verbose = configuration.getBoolean("verbose", true);
         
@@ -90,7 +99,7 @@ public class DynmapPlugin extends JavaPlugin {
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
         playerList.load();
 
-        mapManager = new MapManager(this, configuration);
+        mapManager = new MapManager(this, configuration, shaderconfig, perspectiveconfig);
         mapManager.startRendering();
 
         loadWebserver();

@@ -21,6 +21,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
+import org.dynmap.hdmap.HDMapManager;
+import org.dynmap.hdmap.HDShader;
 import org.dynmap.utils.LegacyMapChunkCache;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.NewMapChunkCache;
@@ -48,7 +50,8 @@ public class MapManager {
     public static final Object lock = new Object();
 
     public static MapManager mapman;    /* Our singleton */
-
+    public HDMapManager hdmapman;
+    
     /* Thread pool for processing renders */
     private DynmapScheduledThreadPoolExecutor renderpool;
     private static final int POOL_SIZE = 3;    
@@ -319,9 +322,13 @@ public class MapManager {
         }
     }
     
-    public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
+    public MapManager(DynmapPlugin plugin, ConfigurationNode configuration, ConfigurationNode shadercfg, ConfigurationNode perspectivecfg) {
         plug_in = plugin;
         mapman = this;
+        /* Initialize HD map manager */
+        hdmapman = new HDMapManager();  
+        hdmapman.loadHDShaders(shadercfg);
+        hdmapman.loadHDPerspectives(perspectivecfg);
 
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override

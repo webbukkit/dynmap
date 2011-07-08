@@ -27,7 +27,9 @@
     	<directory>${project.basedir}</directory>
     	<outputDirectory>/dynmap/</outputDirectory>
     	<includes>
-    		<include>configuration.txt</include></includes></fileSet>
+    		<include>configuration.txt</include>
+    		<include>shaders.txt</include>
+    		<include>perspectives.txt</include></includes></fileSet>
   </fileSets>
   <files>
   	<file>
