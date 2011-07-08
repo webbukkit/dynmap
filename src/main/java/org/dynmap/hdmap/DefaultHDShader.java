@@ -104,35 +104,34 @@ public class DefaultHDShader implements HDShader {
         /**
          * Reset renderer state for new ray
          */
-        public void reset(int x, int y, Vector3D raystart, double scale) {
+        public void reset(HDPerspectiveState ps) {
             color.setTransparent();
             if(daycolor != null)
                 daycolor.setTransparent();
-            pixelodd = (x & 0x3) + (y<<1);
+            pixelodd = (ps.getPixelX() & 0x3) + (ps.getPixelY()<<1);
         }
+        
         protected Color[] getBlockColors(int blocktype, int blockdata) {
             if((blockdata != 0) && (colorScheme.datacolors[blocktype] != null))
                 return colorScheme.datacolors[blocktype][blockdata];
             else
                 return colorScheme.colors[blocktype];
         }
+        
         /**
          * Process next ray step - called for each block on route
-         * @param blocktype - block type of current block
-         * @param blockdata - data nibble of current block
-         * @param skylightlevel - sky light level of previous block (surface on current block)
-         * @param emittedlightlevel - emitted light level of previous block (surface on current block)
-         * @param laststep - direction of last step
          * @return true if ray is done, false if ray needs to continue
          */
-        public boolean processBlock(int blocktype, int blockdata, int skylightlevel, int emittedlightlevel, HDMap.BlockStep laststep) {            
+        public boolean processBlock(HDPerspectiveState ps) {
+            int blocktype = ps.getBlockTypeID();
             if(blocktype == 0)
                 return false;
-            Color[] colors = getBlockColors(blocktype, blockdata);
+            Color[] colors = getBlockColors(blocktype, ps.getBlockData());
             
             if (colors != null) {
                 int seq;
                 /* Figure out which color to use */
+                HDMap.BlockStep laststep = ps.getLastBlockStep();
                 if((laststep == BlockStep.X_PLUS) || (laststep == BlockStep.X_MINUS))
                     seq = 1;
                 else if((laststep == BlockStep.Z_PLUS) || (laststep == BlockStep.Z_MINUS))
@@ -147,11 +146,11 @@ public class DefaultHDShader implements HDShader {
                     /* Handle light level, if needed */
                     int lightlevel = 15, lightlevel_day = 15;
                     if(shadowscale != null) {
-                        lightlevel = lightlevel_day = skylightlevel;
+                        lightlevel = lightlevel_day = ps.getSkyLightLevel();
                         if(lightscale != null)
                             lightlevel = lightscale[lightlevel];
                         if((lightlevel < 15) || (lightlevel_day < 15)) {
-                            int emitted = emittedlightlevel;
+                            int emitted = ps.getEmittedLightLevel();
                             lightlevel = Math.max(emitted, lightlevel);                                
                             lightlevel_day = Math.max(emitted, lightlevel_day);                                
                         }
@@ -207,7 +206,7 @@ public class DefaultHDShader implements HDShader {
         /**
          * Ray ended - used to report that ray has exited map (called if renderer has not reported complete)
          */
-        public void rayFinished() {
+        public void rayFinished(HDPerspectiveState ps) {
         }
         /**
          * Get result color - get resulting color for ray
