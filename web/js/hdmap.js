@@ -19,7 +19,7 @@ HDMapType.prototype = $.extend(new DynMapType(), {
 	projection: new HDProjection(),
 	tileSize: new google.maps.Size(128.0, 128.0),
 	minZoom: 0,
-	maxZoom: 3,
+	maxZoom: 2,
 	prefix: null,
 	getTile: function(coord, zoom, doc) {
 		var	tileSize = 128;
@@ -27,13 +27,14 @@ HDMapType.prototype = $.extend(new DynMapType(), {
         var tileName;
         
         var dnprefix = '';
-        if(this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].nightandday && this.dynmap.serverday)
+        var map = this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId];
+        if(map.nightandday && this.dynmap.serverday)
             dnprefix = '_day';
 
-        var extrazoom = this.dynmap.world.extrazoomout;
+        var extrazoom = map.mapzoomout;
         if(zoom < extrazoom) {
         	var scale = 1 << (extrazoom-zoom);
-        	var zprefix = "zzzzzzzzzzzz".substring(0, extrazoom-zoom);
+        	var zprefix = "zzzzzzzzzzzzzzzzzzzzzz".substring(0, extrazoom-zoom);
 	        tileName = this.prefix + dnprefix + '/' + ((scale*coord.x) >> 5) + '_' + ((-scale*coord.y) >> 5) + 
                 	'/' + zprefix + "_" + (scale*coord.x) + '_' + (-scale*coord.y) + '.png';
         	imgSize = 128;
@@ -66,9 +67,9 @@ HDMapType.prototype = $.extend(new DynMapType(), {
 	},
 	updateTileSize: function(zoom) {
         var size;
-		var extrazoom = this.dynmap.world.extrazoomout;
+		var extrazoom = this.mapzoomout;
 		this.projection.extrazoom = extrazoom;
-		this.maxZoom = 3 + extrazoom;
+		this.maxZoom = 2 + extrazoom;
 		if (zoom <= extrazoom) {
         	size = 128;
     	}

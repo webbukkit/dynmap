@@ -34,7 +34,8 @@ public abstract class MapType {
     public abstract int getBigWorldShift();
     /* Returns true if big world file structure is in effect for this map */
     public abstract boolean isBigWorldMap(DynmapWorld w);
-
+    /* Return number of zoom levels needed by this map (before extra levels from extrazoomout) */
+    public int getMapZoomOutLevels() { return 0; }
     /**
      * Step sequence for creating zoomed file: first index is top-left, second top-right, third bottom-left, forth bottom-right
      * Values correspond to tile X,Y (0), X+step,Y (1), X,Y+step (2), X+step,Y+step (3) 

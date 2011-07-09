@@ -661,6 +661,10 @@ public class IsoHDPerspective implements HDPerspective {
     public boolean isBlockTypeDataNeeded() {
         return true;
     }
+    
+    public double getScale() {
+        return scale;
+    }
 
     @Override
     public String getName() {

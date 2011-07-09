@@ -24,6 +24,7 @@ public class HDMap extends MapType {
     private HDShader shader;
     private HDLighting lighting;
     private ConfigurationNode configuration;
+    private int mapzoomout;
     
     public HDMap(ConfigurationNode configuration) {
         name = configuration.getString("name", null);
@@ -54,6 +55,14 @@ public class HDMap extends MapType {
         }
         prefix = configuration.getString("prefix", name);
         this.configuration = configuration;
+        
+        /* Compute extra zoom outs needed for this map */
+        double scale = perspective.getScale();
+        mapzoomout = 0;
+        while(scale >= 1.0) {
+            mapzoomout++;
+            scale = scale / 2.0;
+        }
     }   
 
     public HDShader getShader() { return shader; }
@@ -107,6 +116,11 @@ public class HDMap extends MapType {
     @Override
     public boolean isBigWorldMap(DynmapWorld w) { return true; } /* We always use it on these maps */
 
+    /* Return number of zoom levels needed by this map (before extra levels from extrazoomout) */
+    public int getMapZoomOutLevels() {
+        return mapzoomout;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -129,6 +143,7 @@ public class HDMap extends MapType {
         s(o, "backgroundday", c.getString("backgroundday"));
         s(o, "backgroundnight", c.getString("backgroundnight"));
         s(o, "bigmap", true);
+        s(o, "mapzoomout", (world.getExtraZoomOutLevels()+mapzoomout));
         perspective.addClientConfiguration(o);
         shader.addClientConfiguration(o);
         lighting.addClientConfiguration(o);

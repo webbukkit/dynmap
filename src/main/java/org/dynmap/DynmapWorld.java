@@ -41,7 +41,8 @@ public class DynmapWorld {
     private int extrazoomoutlevels;  /* Number of additional zoom out levels to generate */
     public File worldtilepath;
     private Object lock = new Object();
-    private HashSet<String> zoomoutupdates[];
+    @SuppressWarnings("unchecked")
+    private HashSet<String> zoomoutupdates[] = new HashSet[0];
     private boolean checkts = true;	/* Check timestamps on first run with new configuration */
     
     @SuppressWarnings("unchecked")
@@ -59,15 +60,25 @@ public class DynmapWorld {
     }
     
     private void enqueueZoomOutUpdate(File f, int level) {
-        if(level >= extrazoomoutlevels)
-            return;
         synchronized(lock) {
+            if(level >= zoomoutupdates.length) {
+               @SuppressWarnings("unchecked")
+               HashSet<String> new_zoomout[] = new HashSet[level+1];
+               System.arraycopy(zoomoutupdates, 0, new_zoomout, 0, zoomoutupdates.length);
+               for(int i = 0; i < new_zoomout.length; i++) {
+                   if(i < zoomoutupdates.length)
+                       new_zoomout[i] = zoomoutupdates[i];
+                   else
+                       new_zoomout[i] = new HashSet<String>();
+               }
+               zoomoutupdates = new_zoomout;
+            }
             zoomoutupdates[level].add(f.getPath());
         }
     }
     
     private boolean popQueuedUpdate(File f, int level) {
-        if(level >= extrazoomoutlevels)
+        if(level >= zoomoutupdates.length)
             return false;
         synchronized(lock) {
             return zoomoutupdates[level].remove(f.getPath());
@@ -97,8 +108,15 @@ public class DynmapWorld {
     }
 
     public void freshenZoomOutFiles() {
-        for(int i = 0; i < extrazoomoutlevels; i++) {
-            freshenZoomOutFilesByLevel(i);
+        boolean done = false;
+        int last_done = 0;
+        for(int i = 0; (!done); i++) {
+            done = freshenZoomOutFilesByLevel(i);
+            last_done = i;
+        }
+        /* Purge updates for levels above what any map needs */
+        for(int i = last_done; i < zoomoutupdates.length; i++) {
+            zoomoutupdates[i].clear();
         }
         checkts = false;	/* Just handle queued updates after first scan */
     }
@@ -114,20 +132,20 @@ public class DynmapWorld {
     	String fnprefix;
         String zfnprefix;
         int bigworldshift;
-        boolean isbigworld;
+        boolean isbigmap;
     }
     
-    public void freshenZoomOutFilesByLevel(int zoomlevel) {
+    public boolean freshenZoomOutFilesByLevel(int zoomlevel) {
         int cnt = 0;
         Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ")");
         if(worldtilepath.exists() == false) /* Quit if not found */
-            return;
+            return true;
         HashMap<String, PrefixData> maptab = buildPrefixData(zoomlevel);
 
         DirFilter df = new DirFilter();
         for(String pfx : maptab.keySet()) { /* Walk through prefixes */
             PrefixData pd = maptab.get(pfx);
-            if(pd.isbigworld) { /* If big world, next directories are map name specific */
+            if(pd.isbigmap) { /* If big world, next directories are map name specific */
                 File dname = new File(worldtilepath, pfx);
                 /* Now, go through subdirectories under this one, and process them */
                 String[] subdir = dname.list(df);
@@ -142,12 +160,17 @@ public class DynmapWorld {
             }
         }
         Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
+        /* Return true when we have none left at the level */
+        return (maptab.size() == 0);
     }
     
     private HashMap<String, PrefixData> buildPrefixData(int zoomlevel) {
         HashMap<String, PrefixData> maptab = new HashMap<String, PrefixData>();
         /* Build table of file prefixes and step sizes */
         for(MapType mt : maps) {
+            /* If level is above top needed for this map, skip */
+            if(zoomlevel > (this.extrazoomoutlevels + mt.getMapZoomOutLevels()))
+                continue;
             List<String> pfx = mt.baseZoomFilePrefixes();
             int stepsize = mt.baseZoomFileStepSize();
             int bigworldshift = mt.getBigWorldShift();
@@ -175,10 +198,10 @@ public class DynmapWorld {
                 pd.stepseq = stepseq;
                 pd.baseprefix = p;
                 pd.zoomlevel = zoomlevel;
-                pd.zoomprefix = "zzzzzzzzzzzz".substring(0, zoomlevel);
+                pd.zoomprefix = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz".substring(0, zoomlevel);
                 pd.bigworldshift = bigworldshift;
-                pd.isbigworld = mt.isBigWorldMap(this);
-                if(pd.isbigworld) {
+                pd.isbigmap = mt.isBigWorldMap(this);
+                if(pd.isbigmap) {
                     if(zoomlevel > 0) {
                         pd.zoomprefix += "_";
                         pd.zfnprefix = "z" + pd.zoomprefix;
@@ -206,7 +229,7 @@ public class DynmapWorld {
     }
 
     private String makeFilePath(PrefixData pd, int x, int y, boolean zoomed) {
-        if(pd.isbigworld)
+        if(pd.isbigmap)
             return pd.baseprefix + "/" + (x >> pd.bigworldshift) + "_" + (y >> pd.bigworldshift) + "/" + (zoomed?pd.zfnprefix:pd.fnprefix) + x + "_" + y + ".png";
         else
             return (zoomed?pd.zfnprefix:pd.fnprefix) + "_" + x + "_" + y + ".png";            

@@ -24,6 +24,8 @@ public interface HDPerspective {
     public boolean isHightestBlockYDataNeeded();
     public boolean isRawBiomeDataNeeded();
     public boolean isBlockTypeDataNeeded();
+    
+    double getScale();
 
     public void addClientConfiguration(JSONObject mapObject);
 }
