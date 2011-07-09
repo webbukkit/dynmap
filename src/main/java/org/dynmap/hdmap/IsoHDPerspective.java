@@ -575,9 +575,10 @@ public class IsoHDPerspective implements HDPerspective {
         mapiter.initialize(x, y, z);
         ps.skylightlevel = 15;
         ps.emittedlightlevel = 0;
+        boolean nonairhit = false;
         for (; n > 0; --n) {
             ps.blocktypeid = mapiter.getBlockTypeID();
-            if(ps.blocktypeid != 0) {
+            if(nonairhit || (ps.blocktypeid != 0)) {
                 ps.blockdata = mapiter.getBlockData();
                 boolean done = true;
                 for(int i = 0; i < shaderstate.length; i++) {
@@ -588,6 +589,7 @@ public class IsoHDPerspective implements HDPerspective {
                 /* If all are done, we're out */
                 if(done)
                     return;
+                nonairhit = true;
             }
             if(need_skylightlevel)
                 ps.skylightlevel = mapiter.getBlockSkyLight();

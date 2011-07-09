@@ -31,6 +31,6 @@ shaders:
     name: no_transparency
     colorscheme: default
     transparency: false
-    
-    
-    
+  
+  - class: org.dynmap.hdmap.CaveHDShader
+    name: cave
