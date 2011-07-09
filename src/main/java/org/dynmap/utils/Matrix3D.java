@@ -1,5 +1,7 @@
 package org.dynmap.utils;
 
+import org.json.simple.JSONArray;
+
 /**
  * Basic 3D matrix math class - prevent dependency on Java 3D for this
  */
@@ -118,5 +120,20 @@ public class Matrix3D {
 
     public String toString() {
         return "[ [" + m11 + " " + m12 + " " + m13 + "] [" + m21 + " " + m22 + " " + m23 + "] [" + m31 + " " + m32 + " " + m33 + "] ]";
+    }
+    
+    @SuppressWarnings("unchecked")
+    public JSONArray toJSON() {
+        JSONArray array = new JSONArray();
+        array.add(m11);
+        array.add(m12);
+        array.add(m13);
+        array.add(m21);
+        array.add(m22);
+        array.add(m23);
+        array.add(m31);
+        array.add(m32);
+        array.add(m33);
+        return array;
     }
 }

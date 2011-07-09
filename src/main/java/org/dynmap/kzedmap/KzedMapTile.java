@@ -1,8 +1,14 @@
 package org.dynmap.kzedmap;
 
+import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
+import org.dynmap.MapManager;
+
 import java.io.File;
+import java.util.List;
+
 import org.dynmap.MapTile;
+import org.dynmap.utils.MapChunkCache;
 
 public class KzedMapTile extends MapTile {
     public KzedMap map;
@@ -15,7 +21,7 @@ public class KzedMapTile extends MapTile {
     public File file = null;
 
     public KzedMapTile(DynmapWorld world, KzedMap map, MapTileRenderer renderer, int px, int py) {
-        super(world, map);
+        super(world);
         this.map = map;
         this.renderer = renderer;
         this.px = px;
@@ -67,5 +73,17 @@ public class KzedMapTile extends MapTile {
 
     public String toString() {
         return getWorld().getName() + ":" + getFilename();
+    }
+    
+    public boolean render(MapChunkCache cache) {
+        return map.render(cache, this, MapManager.mapman.getTileFile(this));
+    }
+    
+    public List<DynmapChunk> getRequiredChunks() {
+        return map.getRequiredChunks(this);
+    }
+    
+    public MapTile[] getAdjecentTiles() {
+        return map.getAdjecentTiles(this);
     }
 }

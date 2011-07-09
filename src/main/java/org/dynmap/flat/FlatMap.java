@@ -119,11 +119,6 @@ public class FlatMap extends MapType {
     }
 
     @Override
-    public boolean isHightestBlockYDataNeeded() {
-        return true;
-    }
-
-    @Override
     public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         FlatMapTile t = (FlatMapTile) tile;
         World w = t.getWorld();
@@ -443,7 +438,7 @@ public class FlatMap extends MapType {
         private String fname_day;
 
         public FlatMapTile(DynmapWorld world, FlatMap map, int x, int y, int size) {
-            super(world, map);
+            super(world);
             this.map = map;
             this.x = x;
             this.y = y;
@@ -473,6 +468,29 @@ public class FlatMap extends MapType {
         public String toString() {
             return getWorld().getName() + ":" + getFilename();
         }
+
+        @Override
+        public boolean render(MapChunkCache cache) {
+            return map.render(cache, this, MapManager.mapman.getTileFile(this));
+        }
+
+        @Override
+        public List<DynmapChunk> getRequiredChunks() {
+            return map.getRequiredChunks(this);
+        }
+
+        @Override
+        public MapTile[] getAdjecentTiles() {
+            return map.getAdjecentTiles(this);
+        }
+
+        @Override
+        public String getKey() {
+            return world.world.getName() + "." + map.getName();
+        }
+        
+        public boolean isHightestBlockYDataNeeded() { return true; }
+
     }
     
     @Override

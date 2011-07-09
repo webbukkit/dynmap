@@ -8,8 +8,6 @@ import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 
 public abstract class MapType {
-    public Event<MapTile> onTileInvalidated = new Event<MapTile>();
-
     public abstract MapTile[] getTiles(Location l);
 
     public abstract MapTile[] getAdjecentTiles(MapTile tile);
@@ -23,11 +21,6 @@ public abstract class MapType {
     
     public abstract String getName();
     
-    public boolean isBiomeDataNeeded() { return false; }
-    public boolean isHightestBlockYDataNeeded() { return false; }
-    public boolean isRawBiomeDataNeeded() { return false; }
-    public boolean isBlockTypeDataNeeded() { return true; }
-
     public enum MapStep {
         X_PLUS_Y_PLUS,
         X_PLUS_Y_MINUS,

@@ -1,7 +1,11 @@
 package org.dynmap.kzedmap;
 
+import java.util.List;
+
+import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapTile;
+import org.dynmap.utils.MapChunkCache;
 
 public class KzedZoomedMapTile extends MapTile {
     private String fname;
@@ -33,8 +37,8 @@ public class KzedZoomedMapTile extends MapTile {
 
     public KzedMapTile originalTile;
 
-    public KzedZoomedMapTile(DynmapWorld world, KzedMap map, KzedMapTile original) {
-        super(world, map);
+    public KzedZoomedMapTile(DynmapWorld world, KzedMapTile original) {
+        super(world);
         this.originalTile = original;
     }
 
@@ -77,6 +81,21 @@ public class KzedZoomedMapTile extends MapTile {
 
     public String getKey() {
         return getWorld().getName() + ".z" + originalTile.renderer.getName();
+    }
+
+    @Override
+    public boolean render(MapChunkCache cache) {
+        return false;
+    }
+
+    @Override
+    public List<DynmapChunk> getRequiredChunks() {
+        return null;
+    }
+
+    @Override
+    public MapTile[] getAdjecentTiles() {
+        return null;
     }
 
 }

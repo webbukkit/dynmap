@@ -213,8 +213,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         }
 
         /* Hand encoding and writing file off to MapManager */
-        KzedZoomedMapTile zmtile = new KzedZoomedMapTile(tile.getDynmapWorld(),
-                (KzedMap) tile.getMap(), tile);
+        KzedZoomedMapTile zmtile = new KzedZoomedMapTile(tile.getDynmapWorld(), tile);
         File zoomFile = MapManager.mapman.getTileFile(zmtile);
 
         doFileWrites(outputFile, tile, im, im_day, zmtile, zoomFile, zim, zim_day, !isempty);

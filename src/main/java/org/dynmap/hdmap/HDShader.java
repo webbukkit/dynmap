@@ -18,17 +18,21 @@ public interface HDShader {
      * @return state object to use for all rays in tile
      */
     HDShaderState getStateInstance(HDMap map, MapChunkCache cache, MapIterator mapiter);
-    /* Build client configuration for this render instance */
-    void buildClientConfiguration(JSONObject worldObject);
     /* Test if Biome Data is needed for this renderer */
     boolean isBiomeDataNeeded();
     /* Test if raw biome temperature/rainfall data is needed */
     boolean isRawBiomeDataNeeded();
+    /* Test if highest block Y data is needed */
+    boolean isHightestBlockYDataNeeded();
+    /* Tet if block type data needed */
+    boolean isBlockTypeDataNeeded();
     /* Test if night/day is enabled for this renderer */
     boolean isNightAndDayEnabled();
     /* Test if sky light level needed */
     boolean isSkyLightLevelNeeded();
     /* Test if emitted light level needed */
     boolean isEmittedLightLevelNeeded();
-    
+    /* Add shader's contributions to JSON for map object */
+    void addClientConfiguration(JSONObject mapObject);
+
 }

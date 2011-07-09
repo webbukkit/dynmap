@@ -9,6 +9,14 @@ import org.dynmap.utils.Vector3D;
  */
 public interface HDShaderState {
     /**
+     * Get our shader
+     */
+    HDShader getShader();
+    /**
+     * Get our map
+     */
+    HDMap getMap();
+    /**
      * Reset renderer state for new ray - passes in pixel coordinate for ray
      */
     void reset(HDPerspectiveState ps);

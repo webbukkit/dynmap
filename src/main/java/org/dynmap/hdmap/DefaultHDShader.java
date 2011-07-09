@@ -1,26 +1,16 @@
 package org.dynmap.hdmap;
 
-import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
-
-import java.io.File;
 import java.util.HashSet;
-
 import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
-import org.dynmap.Log;
-import org.dynmap.hdmap.HDMap.BlockStep;
-import org.dynmap.kzedmap.KzedMapTile;
-import org.dynmap.kzedmap.DefaultTileRenderer.BiomeColorOption;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
-import org.dynmap.utils.Vector3D;
 import org.json.simple.JSONObject;
 
 public class DefaultHDShader implements HDShader {
-    private ConfigurationNode configuration;
     private String name;
     protected ColorScheme colorScheme;
 
@@ -37,7 +27,6 @@ public class DefaultHDShader implements HDShader {
     protected BiomeColorOption biomecolored = BiomeColorOption.NONE; /* Use biome for coloring */
     
     public DefaultHDShader(ConfigurationNode configuration) {
-        this.configuration = configuration;
         name = (String) configuration.get("name");
         double shadowweight = configuration.getDouble("shadowstrength", 0.0);
         if(shadowweight > 0.0) {
@@ -84,6 +73,8 @@ public class DefaultHDShader implements HDShader {
     public boolean isNightAndDayEnabled() { return night_and_day; }
     public boolean isSkyLightLevelNeeded() { return (lightscale != null); }
     public boolean isEmittedLightLevelNeeded() { return (shadowscale != null); }
+    public boolean isHightestBlockYDataNeeded() { return false; }
+    public boolean isBlockTypeDataNeeded() { return true; }
 
     public String getName() { return name; }
     
@@ -91,15 +82,30 @@ public class DefaultHDShader implements HDShader {
         private Color color = new Color();
         private Color daycolor;
         protected MapIterator mapiter;
+        protected HDMap map;
         private Color tmpcolor = new Color();
         private Color tmpdaycolor = new Color();
         private int pixelodd;
         
-        private OurRendererState(MapIterator mapiter) {
+        private OurRendererState(MapIterator mapiter, HDMap map) {
             this.mapiter = mapiter;
+            this.map = map;
             if(night_and_day) {
                 daycolor = new Color();
             }
+        }
+        /**
+         * Get our shader
+         */
+        public HDShader getShader() {
+            return DefaultHDShader.this;
+        }
+
+        /**
+         * Get our map
+         */
+        public HDMap getMap() {
+            return map;
         }
         /**
          * Reset renderer state for new ray
@@ -131,16 +137,22 @@ public class DefaultHDShader implements HDShader {
             if (colors != null) {
                 int seq;
                 /* Figure out which color to use */
-                HDMap.BlockStep laststep = ps.getLastBlockStep();
-                if((laststep == BlockStep.X_PLUS) || (laststep == BlockStep.X_MINUS))
-                    seq = 1;
-                else if((laststep == BlockStep.Z_PLUS) || (laststep == BlockStep.Z_MINUS))
-                    seq = 3;
-                else if(((pixelodd + mapiter.getY()) & 0x03) == 0)
-                    seq = 2;
-                else
-                    seq = 0;
-
+                switch(ps.getLastBlockStep()) {
+                    case X_PLUS:
+                    case X_MINUS:
+                        seq = 1;
+                        break;
+                    case Z_PLUS:
+                    case Z_MINUS:
+                        seq = 3;
+                        break;
+                    default:
+                        if(((pixelodd + mapiter.getY()) & 0x03) == 0)
+                            seq = 2;
+                        else
+                            seq = 0;
+                        break;
+                }
                 Color c = colors[seq];
                 if (c.getAlpha() > 0) {
                     /* Handle light level, if needed */
@@ -234,8 +246,8 @@ public class DefaultHDShader implements HDShader {
     }
 
     private class OurBiomeRendererState extends OurRendererState {
-        private OurBiomeRendererState(MapIterator mapiter) {
-            super(mapiter);
+        private OurBiomeRendererState(MapIterator mapiter, HDMap map) {
+            super(mapiter, map);
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
             Biome bio = mapiter.getBiome();
@@ -246,8 +258,8 @@ public class DefaultHDShader implements HDShader {
     }
     
     private class OurBiomeRainfallRendererState extends OurRendererState {
-        private OurBiomeRainfallRendererState(MapIterator mapiter) {
-            super(mapiter);
+        private OurBiomeRainfallRendererState(MapIterator mapiter, HDMap map) {
+            super(mapiter, map);
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
             return colorScheme.getRainColor(mapiter.getRawBiomeRainfall());
@@ -255,8 +267,8 @@ public class DefaultHDShader implements HDShader {
     }
 
     private class OurBiomeTempRendererState extends OurRendererState {
-        private OurBiomeTempRendererState(MapIterator mapiter) {
-            super(mapiter);
+        private OurBiomeTempRendererState(MapIterator mapiter, HDMap map) {
+            super(mapiter, map);
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
             return colorScheme.getTempColor(mapiter.getRawBiomeTemperature());
@@ -272,30 +284,20 @@ public class DefaultHDShader implements HDShader {
     public HDShaderState getStateInstance(HDMap map, MapChunkCache cache, MapIterator mapiter) {
         switch(biomecolored) {
             case NONE:
-                return new OurRendererState(mapiter);
+                return new OurRendererState(mapiter, map);
             case BIOME:
-                return new OurBiomeRendererState(mapiter);
+                return new OurBiomeRendererState(mapiter, map);
             case RAINFALL:
-                return new OurBiomeRainfallRendererState(mapiter);
+                return new OurBiomeRainfallRendererState(mapiter, map);
             case TEMPERATURE:
-                return new OurBiomeTempRendererState(mapiter);
+                return new OurBiomeTempRendererState(mapiter, map);
         }
         return null;
     }
     
-    @Override
-    public void buildClientConfiguration(JSONObject worldObject) {
-        ConfigurationNode c = configuration;
-        JSONObject o = new JSONObject();
-        s(o, "type", "HDMapType");
-        s(o, "name", c.getString("name"));
-        s(o, "title", c.getString("title"));
-        s(o, "icon", c.getString("icon"));
-        s(o, "prefix", c.getString("prefix"));
-        s(o, "background", c.getString("background"));
-        s(o, "nightandday", c.getBoolean("night-and-day", false));
-        s(o, "backgroundday", c.getString("backgroundday"));
-        s(o, "backgroundnight", c.getString("backgroundnight"));
-        a(worldObject, "maps", o);
+    /* Add shader's contributions to JSON for map object */
+    public void addClientConfiguration(JSONObject mapObject) {
+        s(mapObject, "shader", name);
+        s(mapObject, "nightandday", night_and_day);
     }
 }

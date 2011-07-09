@@ -140,10 +140,6 @@ public class KzedMap extends MapType {
         }
     }
 
-    public void invalidateTile(MapTile tile) {
-        onTileInvalidated.trigger(tile);
-    }
-
     /**
      * Test if point x,z is inside rectangle with corner at r0x,r0z and with
      * size vectors s1x,s1z and s2x,s2z

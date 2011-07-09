@@ -1,16 +1,20 @@
 package org.dynmap.hdmap;
 
+import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
-import java.io.File;
+import org.dynmap.MapManager;
+
+import java.util.List;
 import org.dynmap.MapTile;
+import org.dynmap.utils.MapChunkCache;
 
 public class HDMapTile extends MapTile {
-    public HDMap map;
+    public HDPerspective perspective;
     public int tx, ty;  /* Tile X and Tile Y are in tile coordinates (pixels/tile-size) */
     
-    public HDMapTile(DynmapWorld world, HDMap map, int tx, int ty) {
-        super(world, map);
-        this.map = map;
+    public HDMapTile(DynmapWorld world, HDPerspective perspective, int tx, int ty) {
+        super(world);
+        this.perspective = perspective;
         this.tx = tx;
         this.ty = ty;
     }
@@ -20,8 +24,8 @@ public class HDMapTile extends MapTile {
         return getFilename("hdmap");
     }
 
-    public String getFilename(String shader) {
-        return shader + "/"  + (tx >> 5) + '_' + (ty >> 5) + '/' + tx + "_" + ty + ".png";
+    public String getFilename(String prefix) {
+        return prefix + "/"  + (tx >> 5) + '_' + (ty >> 5) + '/' + tx + "_" + ty + ".png";
     }
 
     @Override
@@ -29,13 +33,13 @@ public class HDMapTile extends MapTile {
         return getDayFilename("hdmap");
     }
 
-    public String getDayFilename(String shader) {
-        return shader + "_day/"  + (tx >> 5) + '_' + (ty >> 5) + '/' + tx + "_" + ty + ".png";
+    public String getDayFilename(String prefix) {
+        return prefix + "_day/"  + (tx >> 5) + '_' + (ty >> 5) + '/' + tx + "_" + ty + ".png";
     }
     
     @Override
     public int hashCode() {
-        return getFilename().hashCode() ^ getWorld().hashCode();
+        return perspective.getName().hashCode() ^ getWorld().hashCode();
     }
 
     @Override
@@ -47,14 +51,39 @@ public class HDMapTile extends MapTile {
     }
 
     public boolean equals(HDMapTile o) {
-        return o.tx == tx && o.ty == ty && o.getWorld().equals(getWorld());
+        return o.tx == tx && o.ty == ty && o.getWorld().equals(getWorld()) && (perspective.equals(o.perspective));
     }
 
     public String getKey() {
-        return getWorld().getName() + ".hdmap";
+        return getWorld().getName() + "." + perspective.getName();
     }
 
+    @Override
     public String toString() {
         return getWorld().getName() + ":" + getFilename();
+    }
+    
+    @Override
+    public boolean isBiomeDataNeeded() { return MapManager.mapman.hdmapman.isBiomeDataNeeded(this); }
+    
+    @Override
+    public boolean isHightestBlockYDataNeeded() { return MapManager.mapman.hdmapman.isHightestBlockYDataNeeded(this); }
+    
+    @Override
+    public boolean isRawBiomeDataNeeded() { return MapManager.mapman.hdmapman.isRawBiomeDataNeeded(this); }
+    
+    @Override
+    public boolean isBlockTypeDataNeeded() { return MapManager.mapman.hdmapman.isBlockTypeDataNeeded(this); }
+    
+    public boolean render(MapChunkCache cache) {
+        return perspective.render(cache, this);
+    }
+    
+    public List<DynmapChunk> getRequiredChunks() {
+        return perspective.getRequiredChunks(this);
+    }
+    
+    public MapTile[] getAdjecentTiles() {
+        return perspective.getAdjecentTiles(this);
     }
 }
