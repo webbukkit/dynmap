@@ -82,7 +82,15 @@ public interface MapIterator {
      */
     void setY(int y);
     /**
+     * Get X coordinate
+     */
+    int getX();
+    /**
      * Get Y coordinate
      */
     int getY();
+    /**
+     * Get Z coordinate
+     */
+    int getZ();
 }

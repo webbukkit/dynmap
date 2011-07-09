@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
+import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.utils.LegacyMapChunkCache;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.NewMapChunkCache;
@@ -48,7 +49,8 @@ public class MapManager {
     public static final Object lock = new Object();
 
     public static MapManager mapman;    /* Our singleton */
-
+    public HDMapManager hdmapman;
+    
     /* Thread pool for processing renders */
     private DynmapScheduledThreadPoolExecutor renderpool;
     private static final int POOL_SIZE = 3;    
@@ -99,12 +101,11 @@ public class MapManager {
         }
         @Override
         public void execute(final Runnable r) {
-            final Runnable rr = r;
             try {
                 super.execute(new Runnable() {
                     public void run() {
                         try {
-                        r.run();
+                            r.run();
                         } catch (Exception x) {
                             Log.severe("Exception during render job: " + r);
                             x.printStackTrace();                        
@@ -222,21 +223,20 @@ public class MapManager {
             }
             World w = world.world;
             /* Fetch chunk cache from server thread */
-            MapType mt = tile.getMap();
-            List<DynmapChunk> requiredChunks = mt.getRequiredChunks(tile);
-            MapChunkCache cache = createMapChunkCache(world, requiredChunks, mt.isBlockTypeDataNeeded(), 
-                                                      mt.isHightestBlockYDataNeeded(), mt.isBiomeDataNeeded(), 
-                                                      mt.isRawBiomeDataNeeded());
+            List<DynmapChunk> requiredChunks = tile.getRequiredChunks();
+            MapChunkCache cache = createMapChunkCache(world, requiredChunks, tile.isBlockTypeDataNeeded(), 
+                                                      tile.isHightestBlockYDataNeeded(), tile.isBiomeDataNeeded(), 
+                                                      tile.isRawBiomeDataNeeded());
             if(cache == null) {
                 cleanup();
                 return; /* Cancelled/aborted */
             }
             if(tile0 != null) {    /* Single tile? */
                 if(cache.isEmpty() == false)
-                    render(cache, tile);    /* Just render */
+                    tile.render(cache);
             }
             else {
-                if ((cache.isEmpty() == false) && render(cache, tile)) {
+                if ((cache.isEmpty() == false) && tile.render(cache)) {
                     found.remove(tile);
                     rendered.add(tile);
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
@@ -319,9 +319,15 @@ public class MapManager {
         }
     }
     
-    public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
+    public MapManager(DynmapPlugin plugin, ConfigurationNode configuration, ConfigurationNode shadercfg, ConfigurationNode perspectivecfg,
+            ConfigurationNode lightingscfg) {
         plug_in = plugin;
         mapman = this;
+        /* Initialize HD map manager */
+        hdmapman = new HDMapManager();  
+        hdmapman.loadHDShaders(shadercfg);
+        hdmapman.loadHDPerspectives(perspectivecfg);
+        hdmapman.loadHDLightings(lightingscfg);
 
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
@@ -382,21 +388,14 @@ public class MapManager {
             return;
         }
         String worldName = w.getName();
-        
-        Event.Listener<MapTile> invalitateListener = new Event.Listener<MapTile>() {
-            @Override
-            public void triggered(MapTile t) {
-                invalidateTile(t);
-            }
-        };
-        
+
         DynmapWorld dynmapWorld = new DynmapWorld();
         dynmapWorld.world = w;
         dynmapWorld.configuration = worldConfiguration;
         Log.verboseinfo("Loading maps of world '" + worldName + "'...");
         for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
-            map.onTileInvalidated.addListener(invalitateListener);
-            dynmapWorld.maps.add(map);
+            if(map.getName() != null)
+                dynmapWorld.maps.add(map);
         }
         Log.info("Loaded " + dynmapWorld.maps.size() + " maps of world '" + worldName + "'.");
         
@@ -407,7 +406,7 @@ public class MapManager {
         dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
         dynmapWorld.bigworld = worldConfiguration.getBoolean("bigworld", false);
         dynmapWorld.setExtraZoomOutLevels(worldConfiguration.getInteger("extrazoomout", 0));
-        dynmapWorld.worldtilepath = new File(plug_in.tilesDirectory, w.getName());
+        dynmapWorld.worldtilepath = new File(DynmapPlugin.tilesDirectory, w.getName());
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {
                 Location lx = new Location(w, loc.getDouble("x", 0), loc.getDouble("y", 64), loc.getDouble("z", 0));
@@ -507,13 +506,6 @@ public class MapManager {
     public void stopRendering() {
         renderpool.shutdown();
         tileQueue.stop();
-    }
-
-    public boolean render(MapChunkCache cache, MapTile tile) {
-        boolean result = tile.getMap().render(cache, tile, getTileFile(tile));
-        //Do update after async file write
-
-        return result;
     }
 
     private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();

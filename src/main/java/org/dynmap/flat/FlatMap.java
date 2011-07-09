@@ -22,6 +22,7 @@ import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.MapType.MapStep;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
@@ -41,6 +42,7 @@ public class FlatMap extends MapType {
     protected boolean transparency;
     private enum Texture { NONE, SMOOTH, DITHER };
     private Texture textured = Texture.NONE;
+    private boolean isbigmap;
     
     public FlatMap(ConfigurationNode configuration) {
         this.configuration = configuration;
@@ -80,6 +82,7 @@ public class FlatMap extends MapType {
             textured = Texture.DITHER;
         else
             textured = Texture.SMOOTH;
+        isbigmap = configuration.getBoolean("isbigmap", false);
     }
 
     @Override
@@ -115,11 +118,6 @@ public class FlatMap extends MapType {
                 result.add(new DynmapChunk(sx + x, sz + z));
             }
         return result;
-    }
-
-    @Override
-    public boolean isHightestBlockYDataNeeded() {
-        return true;
     }
 
     @Override
@@ -426,10 +424,18 @@ public class FlatMap extends MapType {
 
     private static final int[] stepseq = { 1, 3, 0, 2 };
     
+    public MapStep zoomFileMapStep() { return MapStep.X_PLUS_Y_PLUS; }
+
     public int[] zoomFileStepSequence() { return stepseq; }
 
     /* How many bits of coordinate are shifted off to make big world directory name */
     public int getBigWorldShift() { return 5; }
+
+    /* Returns true if big world file structure is in effect for this map */
+    @Override
+    public boolean isBigWorldMap(DynmapWorld w) {
+        return w.bigworld || isbigmap;
+    }
 
     public static class FlatMapTile extends MapTile {
         FlatMap map;
@@ -440,7 +446,7 @@ public class FlatMap extends MapType {
         private String fname_day;
 
         public FlatMapTile(DynmapWorld world, FlatMap map, int x, int y, int size) {
-            super(world, map);
+            super(world);
             this.map = map;
             this.x = x;
             this.y = y;
@@ -470,10 +476,33 @@ public class FlatMap extends MapType {
         public String toString() {
             return getWorld().getName() + ":" + getFilename();
         }
+
+        @Override
+        public boolean render(MapChunkCache cache) {
+            return map.render(cache, this, MapManager.mapman.getTileFile(this));
+        }
+
+        @Override
+        public List<DynmapChunk> getRequiredChunks() {
+            return map.getRequiredChunks(this);
+        }
+
+        @Override
+        public MapTile[] getAdjecentTiles() {
+            return map.getAdjecentTiles(this);
+        }
+
+        @Override
+        public String getKey() {
+            return world.world.getName() + "." + map.getName();
+        }
+        
+        public boolean isHightestBlockYDataNeeded() { return true; }
+
     }
     
     @Override
-    public void buildClientConfiguration(JSONObject worldObject) {
+    public void buildClientConfiguration(JSONObject worldObject, DynmapWorld world) {
         ConfigurationNode c = configuration;
         JSONObject o = new JSONObject();
         s(o, "type", "FlatMapType");
@@ -485,6 +514,7 @@ public class FlatMap extends MapType {
         s(o, "nightandday", c.getBoolean("night-and-day",false));
         s(o, "backgroundday", c.getString("backgroundday"));
         s(o, "backgroundnight", c.getString("backgroundnight"));
+        s(o, "bigmap", this.isBigWorldMap(world));
         a(worldObject, "maps", o);
     }
 }

@@ -1,0 +1,30 @@
+lightings:
+    # Default lighting - no effects, shadows, day/night
+    - class: org.dynmap.hdmap.DefaultHDLighting 
+      name: default
+    # Shadows enabled day mode
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: shadows
+      shadowstrength: 1.0
+    # Night view (default moonight level is 4)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: night
+      shadowstrength: 1.0
+      ambientlight: 4
+    # A 'bright' night view (easier to see unlit landscape dimly)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: brightnight
+      shadowstrength: 1.0
+      ambientlight: 8
+    # Night and day view
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: nightandday
+      shadowstrength: 1.0
+      ambientlight: 4
+      night-and-day: true
+    # 'Bright' Night and day view
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: brightnightandday
+      shadowstrength: 1.0
+      ambientlight: 8
+      night-and-day: true
