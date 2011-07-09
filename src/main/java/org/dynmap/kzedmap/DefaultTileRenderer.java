@@ -16,6 +16,7 @@ import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapWorld;
 import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
@@ -586,7 +587,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
 
     @Override
-    public void buildClientConfiguration(JSONObject worldObject) {
+    public void buildClientConfiguration(JSONObject worldObject, DynmapWorld world, KzedMap map) {
         ConfigurationNode c = configuration;
         JSONObject o = new JSONObject();
         s(o, "type", "KzedMapType");
@@ -598,6 +599,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         s(o, "nightandday", c.getBoolean("night-and-day", false));
         s(o, "backgroundday", c.getString("backgroundday"));
         s(o, "backgroundnight", c.getString("backgroundnight"));
+        s(o, "bigmap", map.isBigWorldMap(world));
         a(worldObject, "maps", o);
     }
 }

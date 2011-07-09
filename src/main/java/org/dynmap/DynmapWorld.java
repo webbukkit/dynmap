@@ -114,6 +114,7 @@ public class DynmapWorld {
     	String fnprefix;
         String zfnprefix;
         int bigworldshift;
+        boolean isbigworld;
     }
     
     public void freshenZoomOutFilesByLevel(int zoomlevel) {
@@ -123,10 +124,10 @@ public class DynmapWorld {
             return;
         HashMap<String, PrefixData> maptab = buildPrefixData(zoomlevel);
 
-        if(bigworld) {  /* If big world, next directories are map name specific */
-            DirFilter df = new DirFilter();
-            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
-                PrefixData pd = maptab.get(pfx);
+        DirFilter df = new DirFilter();
+        for(String pfx : maptab.keySet()) { /* Walk through prefixes */
+            PrefixData pd = maptab.get(pfx);
+            if(pd.isbigworld) { /* If big world, next directories are map name specific */
                 File dname = new File(worldtilepath, pfx);
                 /* Now, go through subdirectories under this one, and process them */
                 String[] subdir = dname.list(df);
@@ -136,9 +137,7 @@ public class DynmapWorld {
                     cnt += processZoomDirectory(sdname, pd);
                 }
             }
-        }
-        else {  /* Else, classic file layout */
-            for(String pfx : maptab.keySet()) { /* Walk through prefixes, as directories */
+            else {  /* Else, classic file layout */
                 cnt += processZoomDirectory(worldtilepath, maptab.get(pfx));
             }
         }
@@ -178,7 +177,8 @@ public class DynmapWorld {
                 pd.zoomlevel = zoomlevel;
                 pd.zoomprefix = "zzzzzzzzzzzz".substring(0, zoomlevel);
                 pd.bigworldshift = bigworldshift;
-                if(bigworld) {
+                pd.isbigworld = mt.isBigWorldMap(this);
+                if(pd.isbigworld) {
                     if(zoomlevel > 0) {
                         pd.zoomprefix += "_";
                         pd.zfnprefix = "z" + pd.zoomprefix;
@@ -206,7 +206,7 @@ public class DynmapWorld {
     }
 
     private String makeFilePath(PrefixData pd, int x, int y, boolean zoomed) {
-        if(bigworld)
+        if(pd.isbigworld)
             return pd.baseprefix + "/" + (x >> pd.bigworldshift) + "_" + (y >> pd.bigworldshift) + "/" + (zoomed?pd.zfnprefix:pd.fnprefix) + x + "_" + y + ".png";
         else
             return (zoomed?pd.zfnprefix:pd.fnprefix) + "_" + x + "_" + y + ".png";            

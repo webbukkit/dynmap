@@ -37,7 +37,7 @@ public class ClientConfigurationComponent extends Component {
                     a(t, "worlds", wo);
                     
                     for(MapType mt : world.maps) {
-                        mt.buildClientConfiguration(wo);
+                        mt.buildClientConfiguration(wo, world);
                     }
                 }
                 s(t, "defaultworld", c.getString("defaultworld", defaultWorld == null ? "world" : defaultWorld.world.getName()));

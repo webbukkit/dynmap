@@ -9,6 +9,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
@@ -102,6 +103,10 @@ public class HDMap extends MapType {
     /* How many bits of coordinate are shifted off to make big world directory name */
     public int getBigWorldShift() { return 5; }
 
+    /* Returns true if big world file structure is in effect for this map */
+    @Override
+    public boolean isBigWorldMap(DynmapWorld w) { return true; } /* We always use it on these maps */
+
     @Override
     public String getName() {
         return name;
@@ -112,7 +117,7 @@ public class HDMap extends MapType {
     }
 
     @Override
-    public void buildClientConfiguration(JSONObject worldObject) {
+    public void buildClientConfiguration(JSONObject worldObject, DynmapWorld world) {
         ConfigurationNode c = configuration;
         JSONObject o = new JSONObject();
         s(o, "type", "HDMapType");
@@ -123,7 +128,7 @@ public class HDMap extends MapType {
         s(o, "background", c.getString("background"));
         s(o, "backgroundday", c.getString("backgroundday"));
         s(o, "backgroundnight", c.getString("backgroundnight"));
-        
+        s(o, "bigmap", true);
         perspective.addClientConfiguration(o);
         shader.addClientConfiguration(o);
         lighting.addClientConfiguration(o);

@@ -55,7 +55,7 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			tileSize = 128;
 			imgSize = tileSize;
 			var tilescale = 2 << (extrazoom-zoom);
-            if (this.dynmap.world.bigworld) {
+            if (this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].bigmap) {
                 if(zoom < extrazoom) zpre = zpre + '_';
                 tileName = 'z' + this.prefix + dnprefix + '/' + ((-coord.x * tileSize*tilescale)>>12) + 
                     '_' + ((coord.y * tileSize*tilescale) >> 12) + '/' + zpre +
@@ -69,7 +69,7 @@ KzedMapType.prototype = $.extend(new DynMapType(), {
 			tileSize = 128;
 
 			imgSize = Math.pow(2, 6+zoom-extrazoom);
-            if(this.dynmap.world.bigworld) {
+            if(this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].bigmap) {
                 tileName = this.prefix + dnprefix + '/' + ((-coord.x*tileSize) >> 12) + '_' +
                     ((coord.y*tileSize)>>12) + '/' + 
                     (-coord.x*tileSize) + '_' + (coord.y*tileSize) + '.png';

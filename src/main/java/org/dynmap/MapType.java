@@ -16,7 +16,7 @@ public abstract class MapType {
 
     public abstract boolean render(MapChunkCache cache, MapTile tile, File outputFile);
     
-    public void buildClientConfiguration(JSONObject worldObject) {
+    public void buildClientConfiguration(JSONObject worldObject, DynmapWorld w) {
     }
     
     public abstract String getName();
@@ -32,6 +32,8 @@ public abstract class MapType {
     public abstract int baseZoomFileStepSize();
     /* How many bits of coordinate are shifted off to make big world directory name */
     public abstract int getBigWorldShift();
+    /* Returns true if big world file structure is in effect for this map */
+    public abstract boolean isBigWorldMap(DynmapWorld w);
 
     /**
      * Step sequence for creating zoomed file: first index is top-left, second top-right, third bottom-left, forth bottom-right

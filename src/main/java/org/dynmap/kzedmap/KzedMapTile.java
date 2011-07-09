@@ -31,7 +31,7 @@ public class KzedMapTile extends MapTile {
     @Override
     public String getFilename() {
         if(fname == null) {
-            if(world.bigworld)        
+            if(map.isBigWorldMap(world))        
                 fname = renderer.getName() + "/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
             else
                 fname = renderer.getName() + "_" + px + "_" + py + ".png";            
@@ -42,7 +42,7 @@ public class KzedMapTile extends MapTile {
     @Override
     public String getDayFilename() {
         if(fname_day == null) {
-            if(world.bigworld)        
+            if(map.isBigWorldMap(world))        
                 fname_day = renderer.getName() + "_day/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
             else
                 fname_day = renderer.getName() + "_day_" + px + "_" + py + ".png";            

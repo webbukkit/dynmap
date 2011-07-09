@@ -42,6 +42,7 @@ public class FlatMap extends MapType {
     protected boolean transparency;
     private enum Texture { NONE, SMOOTH, DITHER };
     private Texture textured = Texture.NONE;
+    private boolean isbigmap;
     
     public FlatMap(ConfigurationNode configuration) {
         this.configuration = configuration;
@@ -81,6 +82,7 @@ public class FlatMap extends MapType {
             textured = Texture.DITHER;
         else
             textured = Texture.SMOOTH;
+        isbigmap = configuration.getBoolean("isbigmap", false);
     }
 
     @Override
@@ -429,6 +431,12 @@ public class FlatMap extends MapType {
     /* How many bits of coordinate are shifted off to make big world directory name */
     public int getBigWorldShift() { return 5; }
 
+    /* Returns true if big world file structure is in effect for this map */
+    @Override
+    public boolean isBigWorldMap(DynmapWorld w) {
+        return w.bigworld || isbigmap;
+    }
+
     public static class FlatMapTile extends MapTile {
         FlatMap map;
         public int x;
@@ -494,7 +502,7 @@ public class FlatMap extends MapType {
     }
     
     @Override
-    public void buildClientConfiguration(JSONObject worldObject) {
+    public void buildClientConfiguration(JSONObject worldObject, DynmapWorld world) {
         ConfigurationNode c = configuration;
         JSONObject o = new JSONObject();
         s(o, "type", "FlatMapType");
@@ -506,6 +514,7 @@ public class FlatMap extends MapType {
         s(o, "nightandday", c.getBoolean("night-and-day",false));
         s(o, "backgroundday", c.getString("backgroundday"));
         s(o, "backgroundnight", c.getString("backgroundnight"));
+        s(o, "bigmap", this.isBigWorldMap(world));
         a(worldObject, "maps", o);
     }
 }
