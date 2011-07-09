@@ -1,6 +1,7 @@
 function HDProjection() {}
 HDProjection.prototype = {
 		extrazoom: 0,
+		worldtomap: null,
 		fromLatLngToPoint: function(latLng) {
 			return new google.maps.Point(latLng.lng()*config.tileWidth, latLng.lat()*config.tileHeight);
 		},
@@ -8,7 +9,11 @@ HDProjection.prototype = {
 			return new google.maps.LatLng( point.y/config.tileHeight, point.x/config.tileWidth);
 		},
 		fromWorldToLatLng: function(x, y, z) {
-			return new google.maps.LatLng(-z / config.tileWidth / (1 << this.extrazoom), x / config.tileHeight / (1 << this.extrazoom));
+		    var wtp = this.worldtomap;
+			var xx = x*wtp[0] + y*wtp[1] + z*wtp[2];
+			var yy = x*wtp[3] + y*wtp[4] + z*wtp[5];
+			
+			return new google.maps.LatLng(-yy / config.tileHeight / (1 << this.extrazoom), xx / config.tileWidth / (1 << this.extrazoom));
 		}
 };
 
@@ -69,6 +74,7 @@ HDMapType.prototype = $.extend(new DynMapType(), {
         var size;
 		var extrazoom = this.mapzoomout;
 		this.projection.extrazoom = extrazoom;
+		this.projection.worldtomap = this.worldtomap;
 		this.maxZoom = 2 + extrazoom;
 		if (zoom <= extrazoom) {
         	size = 128;
