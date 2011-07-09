@@ -1,10 +1,18 @@
 package org.dynmap;
 
+import java.io.File;
+import java.util.List;
+
 import org.bukkit.World;
+import org.dynmap.kzedmap.MapTileRenderer;
+import org.dynmap.utils.MapChunkCache;
 
 public abstract class MapTile {
     protected DynmapWorld world;
-    private MapType map;
+
+    public abstract boolean render(MapChunkCache cache);
+    public abstract List<DynmapChunk> getRequiredChunks();
+    public abstract MapTile[] getAdjecentTiles();
 
     public World getWorld() {
         return world.world;
@@ -14,17 +22,12 @@ public abstract class MapTile {
         return world;
     }
 
-    public MapType getMap() {
-        return map;
-    }
-
     public abstract String getFilename();
 
     public abstract String getDayFilename();
 
-    public MapTile(DynmapWorld world, MapType map) {
+    public MapTile(DynmapWorld world) {
         this.world = world;
-        this.map = map;
     }
 
     @Override
@@ -41,7 +44,11 @@ public abstract class MapTile {
         return super.equals(obj);
     }
     
-    public String getKey() {
-        return world.world.getName() + "." + map.getName();
-    }
+    public abstract String getKey();
+    
+    public boolean isBiomeDataNeeded() { return false; }
+    public boolean isHightestBlockYDataNeeded() { return false; }
+    public boolean isRawBiomeDataNeeded() { return false; }
+    public boolean isBlockTypeDataNeeded() { return true; }
+
 }

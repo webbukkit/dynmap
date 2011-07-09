@@ -17,6 +17,7 @@ import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.MapType.MapStep;
 import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 import java.awt.image.DataBufferInt;
@@ -46,6 +47,7 @@ public class KzedMap extends MapType {
     public static final int anchorz = 0;
     
     MapTileRenderer[] renderers;
+    private boolean isbigmap;
 
     /* BufferedImage with direct access to its ARGB-formatted data buffer */
     public static class KzedBufferedImage {
@@ -67,6 +69,7 @@ public class KzedMap extends MapType {
         this.renderers = new MapTileRenderer[renderers.size()];
         renderers.toArray(this.renderers);
         Log.verboseinfo("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");
+        isbigmap = configuration.getBoolean("isbigmap", false);
     }
 
     @Override
@@ -137,10 +140,6 @@ public class KzedMap extends MapType {
         for (int i = 0; i < renderers.length; i++) {
             tiles.add(new KzedMapTile(world, this, renderers[i], px, py));
         }
-    }
-
-    public void invalidateTile(MapTile tile) {
-        onTileInvalidated.trigger(tile);
     }
 
     /**
@@ -335,8 +334,9 @@ public class KzedMap extends MapType {
         }
         return s;
     }
-    /* Return negative to flag negative X walk */
-    public int baseZoomFileStepSize() { return -zTileWidth; }
+    public int baseZoomFileStepSize() { return zTileWidth; }
+    
+    public MapStep zoomFileMapStep() { return MapStep.X_MINUS_Y_PLUS; }
 
     private static final int[] stepseq = { 0, 2, 1, 3 };
     
@@ -344,14 +344,20 @@ public class KzedMap extends MapType {
     /* How many bits of coordinate are shifted off to make big world directory name */
     public int getBigWorldShift() { return 12; }
 
+    /* Returns true if big world file structure is in effect for this map */
+    @Override
+    public boolean isBigWorldMap(DynmapWorld w) {
+        return w.bigworld || isbigmap; 
+    }
+    
     public String getName() {
         return "KzedMap";
     }
 
     @Override
-    public void buildClientConfiguration(JSONObject worldObject) {
+    public void buildClientConfiguration(JSONObject worldObject, DynmapWorld world) {
         for(MapTileRenderer renderer : renderers) {
-            renderer.buildClientConfiguration(worldObject);
+            renderer.buildClientConfiguration(worldObject, world, this);
         }
     }
 
