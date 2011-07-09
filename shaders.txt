@@ -1,18 +1,36 @@
 shaders:
- - class: org.dynmap.hdmap.DefaultHDShader
-   name: classic
-   colorscheme: default
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: default
+    colorscheme: default
    
- - class: org.dynmap.hdmap.DefaultHDShader
-   name: night
-   colorscheme: default
-   ambientlight: 4
-   shadowstrength: 1.0
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: ovocean
+    colorscheme: ovocean
    
- - class: org.dynmap.hdmap.DefaultHDShader
-   name: daynight
-   colorscheme: default
-   ambientlight: 4
-   shadowstrength: 1.0
-   night-and-day: true
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: flames
+    colorscheme: flames
+
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: sk89q
+    colorscheme: sk89q
    
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: biome
+    biomecolored: biome
+    
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: temperature
+    biomecolored: temperature
+    
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: rainfall
+    biomecolored: rainfall
+    
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: no_transparency
+    colorscheme: default
+    transparency: false
+    
+    
+    

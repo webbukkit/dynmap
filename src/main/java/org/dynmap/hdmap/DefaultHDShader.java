@@ -1,7 +1,6 @@
 package org.dynmap.hdmap;
 
 import static org.dynmap.JSONUtils.s;
-import java.util.HashSet;
 import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
@@ -14,12 +13,6 @@ public class DefaultHDShader implements HDShader {
     private String name;
     protected ColorScheme colorScheme;
 
-    protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
-    protected Color highlightColor = new Color(255, 0, 0);
-
-    protected int   shadowscale[];  /* index=skylight level, value = 256 * scaling value */
-    protected int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
-    protected boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
     protected boolean transparency; /* Is transparency support active? */
     public enum BiomeColorOption {
         NONE, BIOME, TEMPERATURE, RAINFALL
@@ -28,30 +21,7 @@ public class DefaultHDShader implements HDShader {
     
     public DefaultHDShader(ConfigurationNode configuration) {
         name = (String) configuration.get("name");
-        double shadowweight = configuration.getDouble("shadowstrength", 0.0);
-        if(shadowweight > 0.0) {
-            shadowscale = new int[16];
-            shadowscale[15] = 256;
-            /* Normal brightness weight in MC is a 20% relative dropoff per step */
-            for(int i = 14; i >= 0; i--) {
-                double v = shadowscale[i+1] * (1.0 - (0.2 * shadowweight));
-                shadowscale[i] = (int)v;
-                if(shadowscale[i] > 256) shadowscale[i] = 256;
-                if(shadowscale[i] < 0) shadowscale[i] = 0;
-            }
-        }
-        int v = configuration.getInteger("ambientlight", -1);
-        if(v >= 0) {
-            lightscale = new int[16];
-            for(int i = 0; i < 16; i++) {
-                if(i < (15-v))
-                    lightscale[i] = 0;
-                else
-                    lightscale[i] = i - (15-v);
-            }
-        }
         colorScheme = ColorScheme.getScheme(configuration.getString("colorscheme", "default"));
-        night_and_day = configuration.getBoolean("night-and-day", false);
         transparency = configuration.getBoolean("transparency", true);  /* Default on */
         String biomeopt = configuration.getString("biomecolored", "none");
         if(biomeopt.equals("biome")) {
@@ -68,30 +38,60 @@ public class DefaultHDShader implements HDShader {
         }
     }
     
-    public boolean isBiomeDataNeeded() { return biomecolored == BiomeColorOption.BIOME; }
-    public boolean isRawBiomeDataNeeded() { return (biomecolored == BiomeColorOption.RAINFALL) || (biomecolored == BiomeColorOption.TEMPERATURE); };
-    public boolean isNightAndDayEnabled() { return night_and_day; }
-    public boolean isSkyLightLevelNeeded() { return (lightscale != null); }
-    public boolean isEmittedLightLevelNeeded() { return (shadowscale != null); }
-    public boolean isHightestBlockYDataNeeded() { return false; }
-    public boolean isBlockTypeDataNeeded() { return true; }
-
-    public String getName() { return name; }
+    @Override
+    public boolean isBiomeDataNeeded() { 
+        return biomecolored == BiomeColorOption.BIOME; 
+    }
     
-    private class OurRendererState implements HDShaderState {
-        private Color color = new Color();
-        private Color daycolor;
+    @Override
+    public boolean isRawBiomeDataNeeded() { 
+        return (biomecolored == BiomeColorOption.RAINFALL) || (biomecolored == BiomeColorOption.TEMPERATURE); 
+    }
+    
+    @Override
+    public boolean isHightestBlockYDataNeeded() {
+        return false;
+    }
+
+    @Override
+    public boolean isBlockTypeDataNeeded() {
+        return true;
+    }
+
+    @Override
+    public boolean isSkyLightLevelNeeded() {
+        return false;
+    }
+
+    @Override
+    public boolean isEmittedLightLevelNeeded() {
+        return false;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+    
+    private class OurShaderState implements HDShaderState {
+        private Color color[];
         protected MapIterator mapiter;
         protected HDMap map;
-        private Color tmpcolor = new Color();
-        private Color tmpdaycolor = new Color();
+        private Color tmpcolor[];
         private int pixelodd;
+        private HDLighting lighting;
         
-        private OurRendererState(MapIterator mapiter, HDMap map) {
+        private OurShaderState(MapIterator mapiter, HDMap map) {
             this.mapiter = mapiter;
             this.map = map;
-            if(night_and_day) {
-                daycolor = new Color();
+            this.lighting = map.getLighting();
+            if(lighting.isNightAndDayEnabled()) {
+                color = new Color[] { new Color(), new Color() };
+                tmpcolor = new Color[] { new Color(), new Color() };
+            }
+            else {
+                color = new Color[] { new Color() };
+                tmpcolor = new Color[] { new Color() };
             }
         }
         /**
@@ -108,12 +108,17 @@ public class DefaultHDShader implements HDShader {
             return map;
         }
         /**
+         * Get our lighting
+         */
+        public HDLighting getLighting() {
+            return lighting;
+        }
+        /**
          * Reset renderer state for new ray
          */
         public void reset(HDPerspectiveState ps) {
-            color.setTransparent();
-            if(daycolor != null)
-                daycolor.setTransparent();
+            for(Color c: color) 
+                c.setTransparent();
             pixelodd = (ps.getPixelX() & 0x3) + (ps.getPixelY()<<1);
         }
         
@@ -129,6 +134,7 @@ public class DefaultHDShader implements HDShader {
          * @return true if ray is done, false if ray needs to continue
          */
         public boolean processBlock(HDPerspectiveState ps) {
+            int i;
             int blocktype = ps.getBlockTypeID();
             if(blocktype == 0)
                 return false;
@@ -140,75 +146,44 @@ public class DefaultHDShader implements HDShader {
                 switch(ps.getLastBlockStep()) {
                     case X_PLUS:
                     case X_MINUS:
-                        seq = 1;
+                        seq = 0;
                         break;
                     case Z_PLUS:
                     case Z_MINUS:
-                        seq = 3;
+                        seq = 2;
                         break;
                     default:
                         if(((pixelodd + mapiter.getY()) & 0x03) == 0)
-                            seq = 2;
+                            seq = 3;
                         else
-                            seq = 0;
+                            seq = 1;
                         break;
                 }
                 Color c = colors[seq];
                 if (c.getAlpha() > 0) {
                     /* Handle light level, if needed */
-                    int lightlevel = 15, lightlevel_day = 15;
-                    if(shadowscale != null) {
-                        lightlevel = lightlevel_day = ps.getSkyLightLevel();
-                        if(lightscale != null)
-                            lightlevel = lightscale[lightlevel];
-                        if((lightlevel < 15) || (lightlevel_day < 15)) {
-                            int emitted = ps.getEmittedLightLevel();
-                            lightlevel = Math.max(emitted, lightlevel);                                
-                            lightlevel_day = Math.max(emitted, lightlevel_day);                                
-                        }
-                    }
-                    /* Figure out our color, with lighting if needed */
-                    tmpcolor.setColor(c);
-                    if(lightlevel < 15) {
-                        shadowColor(tmpcolor, lightlevel);
-                    }
-                    if(daycolor != null) {
-                        if(lightlevel_day == lightlevel) {
-                            tmpdaycolor.setColor(tmpcolor);
-                        }
-                        else {
-                            tmpdaycolor.setColor(c);
-                            if(lightlevel_day < 15) {
-                                shadowColor(tmpdaycolor, lightlevel_day);
-                            }
-                        }
-                    }
+                    lighting.applyLighting(ps, this, c, tmpcolor);
                     /* Blend color with accumulated color (weighted by alpha) */
                     if(!transparency) {  /* No transparency support */
-                        color.setARGB(tmpcolor.getARGB() | 0xFF000000);
-                        if(daycolor != null)
-                            daycolor.setARGB(tmpdaycolor.getARGB() | 0xFF000000);
+                        for(i = 0; i < color.length; i++)
+                            color[i].setARGB(tmpcolor[i].getARGB() | 0xFF000000);
                         return true;    /* We're done */
                     }
                     /* If no previous color contribution, use new color */
-                    else if(color.isTransparent()) {
-                        color.setColor(tmpcolor);
-                        if(daycolor != null)
-                            daycolor.setColor(tmpdaycolor);
-                        return (color.getAlpha() == 255);
+                    else if(color[0].isTransparent()) {
+                        for(i = 0; i < color.length; i++)
+                            color[i].setColor(tmpcolor[i]);
+                        return (color[0].getAlpha() == 255);
                     }
                     /* Else, blend and generate new alpha */
                     else {
-                        int alpha = color.getAlpha();
-                        int alpha2 = tmpcolor.getAlpha() * (255-alpha) / 255;
+                        int alpha = color[0].getAlpha();
+                        int alpha2 = tmpcolor[0].getAlpha() * (255-alpha) / 255;
                         int talpha = alpha + alpha2;
-                        color.setRGBA((tmpcolor.getRed()*alpha2 + color.getRed()*alpha) / talpha,
-                                      (tmpcolor.getGreen()*alpha2 + color.getGreen()*alpha) / talpha,
-                                      (tmpcolor.getBlue()*alpha2 + color.getBlue()*alpha) / talpha, talpha);
-                        if(daycolor != null)
-                            daycolor.setRGBA((tmpdaycolor.getRed()*alpha2 + daycolor.getRed()*alpha) / talpha,
-                                          (tmpdaycolor.getGreen()*alpha2 + daycolor.getGreen()*alpha) / talpha,
-                                          (tmpdaycolor.getBlue()*alpha2 + daycolor.getBlue()*alpha) / talpha, talpha);
+                        for(i = 0; i < color.length; i++)
+                            color[i].setRGBA((tmpcolor[i].getRed()*alpha2 + color[i].getRed()*alpha) / talpha,
+                                      (tmpcolor[i].getGreen()*alpha2 + color[i].getGreen()*alpha) / talpha,
+                                      (tmpcolor[i].getBlue()*alpha2 + color[i].getBlue()*alpha) / talpha, talpha);
                         return (talpha >= 254);   /* If only one short, no meaningful contribution left */
                     }
                 }
@@ -226,27 +201,17 @@ public class DefaultHDShader implements HDShader {
          * @param index - index of color to request (renderer specific - 0=default, 1=day for night/day renderer
          */
         public void getRayColor(Color c, int index) {
-            if(index == 0)
-                c.setColor(color);
-            else if((index == 1) && (daycolor != null))
-                c.setColor(daycolor);
+            c.setColor(color[index]);
         }
         /**
          * Clean up state object - called after last ray completed
          */
         public void cleanup() {
         }
-        
-        private final void shadowColor(Color c, int lightlevel) {
-            int scale = shadowscale[lightlevel];
-            if(scale < 256)
-                c.setRGBA((c.getRed() * scale) >> 8, (c.getGreen() * scale) >> 8, 
-                    (c.getBlue() * scale) >> 8, c.getAlpha());
-        }
     }
 
-    private class OurBiomeRendererState extends OurRendererState {
-        private OurBiomeRendererState(MapIterator mapiter, HDMap map) {
+    private class OurBiomeShaderState extends OurShaderState {
+        private OurBiomeShaderState(MapIterator mapiter, HDMap map) {
             super(mapiter, map);
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
@@ -257,8 +222,8 @@ public class DefaultHDShader implements HDShader {
         }
     }
     
-    private class OurBiomeRainfallRendererState extends OurRendererState {
-        private OurBiomeRainfallRendererState(MapIterator mapiter, HDMap map) {
+    private class OurBiomeRainfallShaderState extends OurShaderState {
+        private OurBiomeRainfallShaderState(MapIterator mapiter, HDMap map) {
             super(mapiter, map);
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
@@ -266,8 +231,8 @@ public class DefaultHDShader implements HDShader {
         }
     }
 
-    private class OurBiomeTempRendererState extends OurRendererState {
-        private OurBiomeTempRendererState(MapIterator mapiter, HDMap map) {
+    private class OurBiomeTempShaderState extends OurShaderState {
+        private OurBiomeTempShaderState(MapIterator mapiter, HDMap map) {
             super(mapiter, map);
         }
         protected Color[] getBlockColors(int blocktype, int blockdata) {
@@ -284,13 +249,13 @@ public class DefaultHDShader implements HDShader {
     public HDShaderState getStateInstance(HDMap map, MapChunkCache cache, MapIterator mapiter) {
         switch(biomecolored) {
             case NONE:
-                return new OurRendererState(mapiter, map);
+                return new OurShaderState(mapiter, map);
             case BIOME:
-                return new OurBiomeRendererState(mapiter, map);
+                return new OurBiomeShaderState(mapiter, map);
             case RAINFALL:
-                return new OurBiomeRainfallRendererState(mapiter, map);
+                return new OurBiomeRainfallShaderState(mapiter, map);
             case TEMPERATURE:
-                return new OurBiomeTempRendererState(mapiter, map);
+                return new OurBiomeTempShaderState(mapiter, map);
         }
         return null;
     }
@@ -298,6 +263,5 @@ public class DefaultHDShader implements HDShader {
     /* Add shader's contributions to JSON for map object */
     public void addClientConfiguration(JSONObject mapObject) {
         s(mapObject, "shader", name);
-        s(mapObject, "nightandday", night_and_day);
     }
 }

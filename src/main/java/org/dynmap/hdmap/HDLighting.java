@@ -1,23 +1,15 @@
 package org.dynmap.hdmap;
 
-import java.io.File;
-
+import org.dynmap.Color;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
-
 import org.json.simple.JSONObject;
 
-public interface HDShader {
-    /* Get shader name */
+public interface HDLighting {
+    /* Get lighting name */
     String getName();
-    /**
-     *  Get renderer state object for use rendering a tile
-     * @param map - map being rendered
-     * @param cache - chunk cache containing data for tile to be rendered
-     * @param mapiter - iterator used when traversing rays in tile
-     * @return state object to use for all rays in tile
-     */
-    HDShaderState getStateInstance(HDMap map, MapChunkCache cache, MapIterator mapiter);
+    /* Apply lighting to given pixel colors (1 outcolor if normal, 2 if night/day) */
+    void    applyLighting(HDPerspectiveState ps, HDShaderState ss, Color incolor, Color[] outcolor);
     /* Test if Biome Data is needed for this renderer */
     boolean isBiomeDataNeeded();
     /* Test if raw biome temperature/rainfall data is needed */
@@ -26,11 +18,12 @@ public interface HDShader {
     boolean isHightestBlockYDataNeeded();
     /* Tet if block type data needed */
     boolean isBlockTypeDataNeeded();
+    /* Test if night/day is enabled for this renderer */
+    boolean isNightAndDayEnabled();
     /* Test if sky light level needed */
     boolean isSkyLightLevelNeeded();
     /* Test if emitted light level needed */
     boolean isEmittedLightLevelNeeded();
     /* Add shader's contributions to JSON for map object */
     void addClientConfiguration(JSONObject mapObject);
-
 }

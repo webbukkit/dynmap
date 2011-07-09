@@ -21,6 +21,7 @@ public class HDMap extends MapType {
     private String prefix;
     private HDPerspective perspective;
     private HDShader shader;
+    private HDLighting lighting;
     private ConfigurationNode configuration;
     
     public HDMap(ConfigurationNode configuration) {
@@ -43,12 +44,20 @@ public class HDMap extends MapType {
             name = null;
             return;
         }
+        String lightingid = configuration.getString("lighting", "default");
+        lighting = MapManager.mapman.hdmapman.lightings.get(lightingid);
+        if(lighting == null) {
+            Log.severe("HDMap '"+name+"' loading invalid lighting '" + lighting + "' - map disabled");
+            name = null;
+            return;
+        }
         prefix = configuration.getString("prefix", name);
         this.configuration = configuration;
     }   
 
     public HDShader getShader() { return shader; }
     public HDPerspective getPerspective() { return perspective; }
+    public HDLighting getLighting() { return lighting; }
     
     @Override
     public MapTile[] getTiles(Location loc) {
@@ -77,7 +86,7 @@ public class HDMap extends MapType {
     public List<String> baseZoomFilePrefixes() {
         ArrayList<String> s = new ArrayList<String>();
         s.add(prefix);
-        if(shader.isNightAndDayEnabled())
+        if(lighting.isNightAndDayEnabled())
             s.add(prefix + "_day");
         return s;
     }
@@ -117,6 +126,7 @@ public class HDMap extends MapType {
         
         perspective.addClientConfiguration(o);
         shader.addClientConfiguration(o);
+        lighting.addClientConfiguration(o);
         
         a(worldObject, "maps", o);
 

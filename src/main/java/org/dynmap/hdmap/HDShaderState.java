@@ -13,6 +13,10 @@ public interface HDShaderState {
      */
     HDShader getShader();
     /**
+     * Get our lighting
+     */
+    HDLighting getLighting();
+    /**
      * Get our map
      */
     HDMap getMap();

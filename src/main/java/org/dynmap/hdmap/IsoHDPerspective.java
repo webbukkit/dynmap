@@ -363,13 +363,14 @@ public class IsoHDPerspective implements HDPerspective {
         
         for(int i = 0; i < numshaders; i++) {
             HDShader shader = shaderstate[i].getShader();
-            if(shader.isEmittedLightLevelNeeded())
+            HDLighting lighting = shaderstate[i].getLighting();
+            if(shader.isEmittedLightLevelNeeded() || lighting.isEmittedLightLevelNeeded())
                 need_emittedlightlevel = true;
-            if(shader.isSkyLightLevelNeeded())
+            if(shader.isSkyLightLevelNeeded() || lighting.isSkyLightLevelNeeded())
                 need_skylightlevel = true;
             im[i] = KzedMap.allocateBufferedImage(tileWidth, tileHeight);
             argb_buf[i] = im[i].argb_buf;
-            if(shader.isNightAndDayEnabled()) {
+            if(lighting.isNightAndDayEnabled()) {
                 dayim[i] = KzedMap.allocateBufferedImage(tileWidth, tileHeight);
                 day_argb_buf[i] = dayim[i].argb_buf;
             }

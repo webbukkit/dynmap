@@ -319,13 +319,15 @@ public class MapManager {
         }
     }
     
-    public MapManager(DynmapPlugin plugin, ConfigurationNode configuration, ConfigurationNode shadercfg, ConfigurationNode perspectivecfg) {
+    public MapManager(DynmapPlugin plugin, ConfigurationNode configuration, ConfigurationNode shadercfg, ConfigurationNode perspectivecfg,
+            ConfigurationNode lightingscfg) {
         plug_in = plugin;
         mapman = this;
         /* Initialize HD map manager */
         hdmapman = new HDMapManager();  
         hdmapman.loadHDShaders(shadercfg);
         hdmapman.loadHDPerspectives(perspectivecfg);
+        hdmapman.loadHDLightings(lightingscfg);
 
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
