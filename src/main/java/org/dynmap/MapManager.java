@@ -188,6 +188,7 @@ public class MapManager {
                     found.clear();
                     rendered.clear();
                     rendercnt = 0;
+                    timeaccum = 0;
                     map_index++;    /* Next map */
                     if(map_index >= world.maps.size()) {    /* Last one done? */
                         sender.sendMessage("Full render of '" + world.world.getName() + "' finished.");
