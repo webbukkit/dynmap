@@ -1,21 +1,31 @@
 package org.dynmap;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Event<T> {
     private List<Listener<T>> listeners = new LinkedList<Listener<T>>();
+    private Object lock = new Object();
 
-    public synchronized void addListener(Listener<T> l) {
-        listeners.add(l);
+    public void addListener(Listener<T> l) {
+        synchronized(lock) {
+            listeners.add(l);
+        }
     }
 
-    public synchronized void removeListener(Listener<T> l) {
-        listeners.remove(l);
+    public void removeListener(Listener<T> l) {
+        synchronized(lock) {
+            listeners.remove(l);
+        }
     }
 
-    public synchronized void trigger(T t) {
-        for (Listener<T> l : listeners) {
+    public void trigger(T t) {
+        ArrayList<Listener<T>> iterlist;
+        synchronized(lock) {
+            iterlist = new ArrayList<Listener<T>>(listeners);
+        }
+        for (Listener<T> l : iterlist) {
             l.triggered(t);
         }
     }
