@@ -11,6 +11,7 @@ import org.dynmap.Client;
 import org.dynmap.Component;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapWebChatEvent;
 import org.dynmap.Event;
 import org.json.simple.JSONObject;
 
@@ -22,9 +23,13 @@ public class HeroWebChatComponent extends Component {
         plugin.events.addListener("webchat", new Event.Listener<ChatEvent>() {
             @Override
             public void triggered(ChatEvent t) {
-                /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
-                if (!handler.sendWebMessageToHeroChat(t.name, t.message)) {
-                    plugin.getServer().broadcastMessage(plugin.configuration.getString("webprefix", "\u00A72[WEB] ") + t.name + ": " + plugin.configuration.getString("websuffix", "\u00A7f") + t.message);
+                DynmapWebChatEvent evt = new DynmapWebChatEvent(t.source, t.name, t.message);
+                plugin.getServer().getPluginManager().callEvent(evt);
+                if(evt.isCancelled() == false) {
+                    /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
+                    if (!handler.sendWebMessageToHeroChat(t.name, t.message)) {
+                        plugin.getServer().broadcastMessage(plugin.configuration.getString("webprefix", "\u00A72[WEB] ") + t.name + ": " + plugin.configuration.getString("websuffix", "\u00A7f") + t.message);
+                    }
                 }
             }
         });
