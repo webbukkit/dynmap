@@ -30,7 +30,8 @@
     		<include>configuration.txt</include>
     		<include>shaders.txt</include>
     		<include>perspectives.txt</include>
-    		<include>lightings.txt</include></includes></fileSet>
+    		<include>lightings.txt</include>
+    		<include>configuration.txt.sample-hd</include></includes></fileSet>
   </fileSets>
   <files>
   	<file>
