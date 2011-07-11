@@ -86,4 +86,10 @@ public class KzedMapTile extends MapTile {
     public MapTile[] getAdjecentTiles() {
         return map.getAdjecentTiles(this);
     }
+    
+    public boolean isBiomeDataNeeded() { return map.isBiomeDataNeeded(); }
+    public boolean isHightestBlockYDataNeeded() { return false; }
+    public boolean isRawBiomeDataNeeded() { return map.isRawBiomeDataNeeded(); }
+    public boolean isBlockTypeDataNeeded() { return true; }
+
 }

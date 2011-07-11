@@ -46,9 +46,9 @@ public abstract class MapTile {
     
     public abstract String getKey();
     
-    public boolean isBiomeDataNeeded() { return false; }
-    public boolean isHightestBlockYDataNeeded() { return false; }
-    public boolean isRawBiomeDataNeeded() { return false; }
-    public boolean isBlockTypeDataNeeded() { return true; }
+    public abstract boolean isBiomeDataNeeded();
+    public abstract boolean isHightestBlockYDataNeeded();
+    public abstract boolean isRawBiomeDataNeeded();
+    public abstract boolean isBlockTypeDataNeeded();
 
 }
