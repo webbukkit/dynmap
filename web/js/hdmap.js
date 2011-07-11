@@ -10,10 +10,10 @@ HDProjection.prototype = {
 		},
 		fromWorldToLatLng: function(x, y, z) {
 		    var wtp = this.worldtomap;
-			var xx = x*wtp[0] + y*wtp[1] + z*wtp[2];
-			var yy = x*wtp[3] + y*wtp[4] + z*wtp[5];
+			var xx = wtp[0]*x + wtp[1]*y + wtp[2]*z;
+			var yy = wtp[3]*x + wtp[4]*y + wtp[5]*z;
 			
-			return new google.maps.LatLng(-yy / config.tileHeight / (1 << this.extrazoom), xx / config.tileWidth / (1 << this.extrazoom));
+			return new google.maps.LatLng( (1 - (yy / config.tileHeight)) / (1 << this.extrazoom), xx / config.tileWidth / (1 << this.extrazoom));
 		}
 };
 
