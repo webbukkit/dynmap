@@ -330,9 +330,13 @@ public class IsoHDPerspective implements HDPerspective {
             }
             double mtend = Math.min(t_next_x, Math.min(t_next_y, t_next_z));
             while(mt < mtend) {
-                if(model[modscale*modscale*my + modscale*mz + mx] > 0) {
-                    return false;
-                }
+            	try {
+            		if(model[modscale*modscale*my + modscale*mz + mx] > 0) {
+            			return false;
+            		}
+            	} catch (ArrayIndexOutOfBoundsException aioobx) {	/* We're outside the model, so miss */
+            		return true;
+            	}
                 /* If X step is next best */
                 if((mt_next_x <= mt_next_y) && (mt_next_x <= mt_next_z)) {
                     mx += x_inc;

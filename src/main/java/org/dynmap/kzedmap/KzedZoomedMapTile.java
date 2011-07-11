@@ -98,4 +98,9 @@ public class KzedZoomedMapTile extends MapTile {
         return null;
     }
 
+    public boolean isBiomeDataNeeded() { return originalTile.isBiomeDataNeeded(); }
+    public boolean isHightestBlockYDataNeeded() { return false; }
+    public boolean isRawBiomeDataNeeded() { return originalTile.isRawBiomeDataNeeded(); }
+    public boolean isBlockTypeDataNeeded() { return true; }
+    
 }

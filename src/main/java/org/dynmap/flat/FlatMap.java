@@ -498,7 +498,9 @@ public class FlatMap extends MapType {
         }
         
         public boolean isHightestBlockYDataNeeded() { return true; }
-
+        public boolean isBiomeDataNeeded() { return false; }
+        public boolean isRawBiomeDataNeeded() { return false; }
+        public boolean isBlockTypeDataNeeded() { return true; }
     }
     
     @Override
