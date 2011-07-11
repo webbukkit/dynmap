@@ -49,6 +49,10 @@ public class IsoHDPerspective implements HDPerspective {
     private Matrix3D world_to_map;
     private Matrix3D map_to_world;
     
+    /* Scaled models for non-cube blocks */
+    private HDBlockModels.HDScaledBlockModels scalemodels;
+    private int modscale;
+    
     /* dimensions of a map tile */
     public static final int tileWidth = 128;
     public static final int tileHeight = 128;
@@ -74,6 +78,14 @@ public class IsoHDPerspective implements HDPerspective {
         Vector3D top, bottom;
         int px, py;
         BlockStep laststep = BlockStep.Y_MINUS;
+        /* Raytrace state variables */
+        double dx, dy, dz;
+        int x, y, z;
+        double dt_dx, dt_dy, dt_dz, t;
+        int n;
+        int x_inc, y_inc, z_inc;        
+        double t_next_y, t_next_x, t_next_z;
+        boolean nonairhit;
         /**
          * Get sky light level - only available if shader requested it
          */
@@ -115,6 +127,258 @@ public class IsoHDPerspective implements HDPerspective {
          */
         public final int getPixelY() { return py; }
 
+        /**
+         * Initialize raytrace state variables
+         */
+        private void raytrace_init() {
+            /* Compute total delta on each axis */
+            dx = Math.abs(bottom.x - top.x);
+            dy = Math.abs(bottom.y - top.y);
+            dz = Math.abs(bottom.z - top.z);
+            /* Initial block coord */
+            x = (int) (Math.floor(top.x));
+            y = (int) (Math.floor(top.y));
+            z = (int) (Math.floor(top.z));
+            /* Compute parametric step (dt) per step on each axis */
+            dt_dx = 1.0 / dx;
+            dt_dy = 1.0 / dy;
+            dt_dz = 1.0 / dz;
+            /* Initialize parametric value to 0 (and we're stepping towards 1) */
+            t = 0;
+            /* Compute number of steps and increments for each */
+            n = 1;
+
+            /* If perpendicular to X axis */
+            if (dx == 0) {
+                x_inc = 0;
+                t_next_x = Double.MAX_VALUE;
+            }
+            /* If bottom is right of top */
+            else if (bottom.x > top.x) {
+                x_inc = 1;
+                n += (int) (Math.floor(bottom.x)) - x;
+                t_next_x = (Math.floor(top.x) + 1 - top.x) * dt_dx;
+            }
+            /* Top is right of bottom */
+            else {
+                x_inc = -1;
+                n += x - (int) (Math.floor(bottom.x));
+                t_next_x = (top.x - Math.floor(top.x)) * dt_dx;
+            }
+            /* If perpendicular to Y axis */
+            if (dy == 0) {
+                y_inc = 0;
+                t_next_y = Double.MAX_VALUE;
+            }
+            /* If bottom is above top */
+            else if (bottom.y > top.y) {
+                y_inc = 1;
+                n += (int) (Math.floor(bottom.y)) - y;
+                t_next_y = (Math.floor(top.y) + 1 - top.y) * dt_dy;
+            }
+            /* If top is above bottom */
+            else {
+                y_inc = -1;
+                n += y - (int) (Math.floor(bottom.y));
+                t_next_y = (top.y - Math.floor(top.y)) * dt_dy;
+            }
+            /* If perpendicular to Z axis */
+            if (dz == 0) {
+                z_inc = 0;
+                t_next_z = Double.MAX_VALUE;
+            }
+            /* If bottom right of top */
+            else if (bottom.z > top.z) {
+                z_inc = 1;
+                n += (int) (Math.floor(bottom.z)) - z;
+                t_next_z = (Math.floor(top.z) + 1 - top.z) * dt_dz;
+            }
+            /* If bottom left of top */
+            else {
+                z_inc = -1;
+                n += z - (int) (Math.floor(bottom.z));
+                t_next_z = (top.z - Math.floor(top.z)) * dt_dz;
+            }
+            /* Walk through scene */
+            laststep = BlockStep.Y_MINUS; /* Last step is down into map */
+            skylightlevel = 15;
+            emittedlightlevel = 0;
+            nonairhit = false;
+        }
+        /**
+         * Process visit of ray to block
+         */
+        private boolean visit_block(MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
+            blocktypeid = mapiter.getBlockTypeID();
+            if(nonairhit || (blocktypeid != 0)) {
+                blockdata = mapiter.getBlockData();
+                boolean missed = false;
+                /* Look up to see if block is modelled */
+                short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
+                if(model != null) {
+                    missed = raytraceSubblock(model);
+                }
+                if(!missed) {
+                    boolean done = true;
+                    for(int i = 0; i < shaderstate.length; i++) {
+                        if(!shaderdone[i])
+                            shaderdone[i] = shaderstate[i].processBlock(this);
+                        done = done && shaderdone[i];
+                    }
+                    /* If all are done, we're out */
+                    if(done)
+                        return true;
+                    nonairhit = true;
+                }
+            }
+            if(need_skylightlevel)
+                skylightlevel = mapiter.getBlockSkyLight();
+            if(need_emittedlightlevel)
+                emittedlightlevel = mapiter.getBlockEmittedLight();
+            return false;
+        }
+        /**
+         * Trace ray, based on "Voxel Tranversal along a 3D line"
+         */
+        private void raytrace(MapChunkCache cache, MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
+            /* Initialize raytrace state variables */
+            raytrace_init();
+
+            mapiter.initialize(x, y, z);
+            
+            boolean nonairhit = false;
+            for (; n > 0; --n) {
+                /* Visit block */
+                if(visit_block(mapiter, shaderstate, shaderdone)) {
+                    return;
+                }
+                /* If X step is next best */
+                if((t_next_x <= t_next_y) && (t_next_x <= t_next_z)) {
+                    x += x_inc;
+                    t = t_next_x;
+                    t_next_x += dt_dx;
+                    if(x_inc > 0) {
+                        laststep = BlockStep.X_PLUS;
+                        mapiter.incrementX();
+                    }
+                    else {
+                        laststep = BlockStep.X_MINUS;
+                        mapiter.decrementX();
+                    }
+                }
+                /* If Y step is next best */
+                else if((t_next_y <= t_next_x) && (t_next_y <= t_next_z)) {
+                    y += y_inc;
+                    t = t_next_y;
+                    t_next_y += dt_dy;
+                    if(y_inc > 0) {
+                        laststep = BlockStep.Y_PLUS;
+                        mapiter.incrementY();
+                        if(mapiter.getY() > 127)
+                            return;
+                    }
+                    else {
+                        laststep = BlockStep.Y_MINUS;
+                        mapiter.decrementY();
+                        if(mapiter.getY() < 0)
+                            return;
+                    }
+                }
+                /* Else, Z step is next best */
+                else {
+                    z += z_inc;
+                    t = t_next_z;
+                    t_next_z += dt_dz;
+                    if(z_inc > 0) {
+                        laststep = BlockStep.Z_PLUS;
+                        mapiter.incrementZ();
+                    }
+                    else {
+                        laststep = BlockStep.Z_MINUS;
+                        mapiter.decrementZ();
+                    }
+                }
+            }
+        }
+        
+        private boolean raytraceSubblock(short[] model) {
+            int mx = 0, my = 0, mz = 0;
+            double xx, yy, zz;
+            double mt = t + 0.00000001;
+            xx = top.x + mt *(bottom.x - top.x);  
+            yy = top.y + mt *(bottom.y - top.y);  
+            zz = top.z + mt *(bottom.z - top.z);
+            mx = (int)((xx - Math.floor(xx)) * modscale);
+            my = (int)((yy - Math.floor(yy)) * modscale);
+            mz = (int)((zz - Math.floor(zz)) * modscale);
+            double mdt_dx = dt_dx / modscale;
+            double mdt_dy = dt_dy / modscale;
+            double mdt_dz = dt_dz / modscale;
+            double togo;
+            double mt_next_x = t_next_x, mt_next_y = t_next_y, mt_next_z = t_next_z;
+            if(mt_next_x != Double.MAX_VALUE) {
+                togo = ((t_next_x - t) / mdt_dx);
+                mt_next_x = mt + (togo - Math.floor(togo)) * mdt_dx;
+            }
+            if(mt_next_y != Double.MAX_VALUE) {
+                togo = ((t_next_y - t) / mdt_dy);
+                mt_next_y = mt + (togo - Math.floor(togo)) * mdt_dy;
+            }
+            if(mt_next_z != Double.MAX_VALUE) {
+                togo = ((t_next_z - t) / mdt_dz);
+                mt_next_z = mt + (togo - Math.floor(togo)) * mdt_dz;
+            }
+            double mtend = Math.min(t_next_x, Math.min(t_next_y, t_next_z));
+            while(mt < mtend) {
+                if(model[modscale*modscale*my + modscale*mz + mx] > 0) {
+                    return false;
+                }
+                /* If X step is next best */
+                if((mt_next_x <= mt_next_y) && (mt_next_x <= mt_next_z)) {
+                    mx += x_inc;
+                    mt = mt_next_x;
+                    mt_next_x += mdt_dx;
+                    if(x_inc > 0) {
+                        laststep = BlockStep.X_PLUS;
+                    }
+                    else {
+                        laststep = BlockStep.X_MINUS;
+                        if(mx < 0)
+                            mx += modscale;
+                    }
+                }
+                /* If Y step is next best */
+                else if((mt_next_y <= mt_next_x) && (mt_next_y <= mt_next_z)) {
+                    my += y_inc;
+                    mt = mt_next_y;
+                    mt_next_y += mdt_dy;
+                    if(y_inc > 0) {
+                        laststep = BlockStep.Y_PLUS;
+                    }
+                    else {
+                        laststep = BlockStep.Y_MINUS;
+                        if(my < 0)
+                            my += modscale;
+                    }
+                }
+                /* Else, Z step is next best */
+                else {
+                    mz += z_inc;
+                    mt = mt_next_z;
+                    mt_next_z += mdt_dz;
+                    if(z_inc > 0) {
+                        laststep = BlockStep.Z_PLUS;
+                    }
+                    else {
+                        laststep = BlockStep.Z_MINUS;
+                        if(mz < 0)
+                            mz += modscale;
+                    }
+                }
+            }
+            return true;
+        }
+
     }
     
     public IsoHDPerspective(ConfigurationNode configuration) {
@@ -130,7 +394,6 @@ public class IsoHDPerspective implements HDPerspective {
         scale = configuration.getDouble("scale", MIN_SCALE);
         if(scale < MIN_SCALE) scale = MIN_SCALE;
         if(scale > MAX_SCALE) scale = MAX_SCALE;
-        Log.info("azimuth=" + azimuth + ", inclination=" + inclination + ", scale=" + scale);
         
         /* Generate transform matrix for world-to-tile coordinate mapping */
         /* First, need to fix basic coordinate mismatches before rotation - we want zero azimuth to have north to top
@@ -155,6 +418,9 @@ public class IsoHDPerspective implements HDPerspective {
         Matrix3D coordswap = new Matrix3D(0.0, -1.0, 0.0, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0);
         transform.multiply(coordswap);
         map_to_world = transform;
+        /* Scaled models for non-cube blocks */
+        modscale = (int)Math.ceil(scale);
+        scalemodels = HDBlockModels.getModelsForScale(modscale);;
     }   
 
     @Override
@@ -397,7 +663,7 @@ public class IsoHDPerspective implements HDPerspective {
                 for(int i = 0; i < numshaders; i++) {
                     shaderstate[i].reset(ps);
                 }
-                raytrace(cache, mapiter, ps, shaderstate, shaderdone);
+                ps.raytrace(cache, mapiter, shaderstate, shaderdone);
                 for(int i = 0; i < numshaders; i++) {
                     if(shaderdone[i] == false) {
                         shaderstate[i].rayFinished(ps);
@@ -491,157 +757,6 @@ public class IsoHDPerspective implements HDPerspective {
             }
         }
         return renderone;
-    }
-       
-    /**
-     * Trace ray, based on "Voxel Tranversal along a 3D line"
-     */
-    private void raytrace(MapChunkCache cache, MapIterator mapiter, OurPerspectiveState ps, 
-            HDShaderState[] shaderstate, boolean[] shaderdone) {
-        Vector3D top = ps.top;
-        Vector3D bottom = ps.bottom;
-        /* Compute total delta on each axis */
-        double dx = Math.abs(bottom.x - top.x);
-        double dy = Math.abs(bottom.y - top.y);
-        double dz = Math.abs(bottom.z - top.z);
-        /* Initial block coord */
-        int x = (int) (Math.floor(top.x));
-        int y = (int) (Math.floor(top.y));
-        int z = (int) (Math.floor(top.z));
-        /* Compute parametric step (dt) per step on each axis */
-        double dt_dx = 1.0 / dx;
-        double dt_dy = 1.0 / dy;
-        double dt_dz = 1.0 / dz;
-        /* Initialize parametric value to 0 (and we're stepping towards 1) */
-        double t = 0;
-        /* Compute number of steps and increments for each */
-        int n = 1;
-        int x_inc, y_inc, z_inc;
-        
-        double t_next_y, t_next_x, t_next_z;
-        /* If perpendicular to X axis */
-        if (dx == 0) {
-            x_inc = 0;
-            t_next_x = Double.MAX_VALUE;
-        }
-        /* If bottom is right of top */
-        else if (bottom.x > top.x) {
-            x_inc = 1;
-            n += (int) (Math.floor(bottom.x)) - x;
-            t_next_x = (Math.floor(top.x) + 1 - top.x) * dt_dx;
-        }
-        /* Top is right of bottom */
-        else {
-            x_inc = -1;
-            n += x - (int) (Math.floor(bottom.x));
-            t_next_x = (top.x - Math.floor(top.x)) * dt_dx;
-        }
-        /* If perpendicular to Y axis */
-        if (dy == 0) {
-            y_inc = 0;
-            t_next_y = Double.MAX_VALUE;
-        }
-        /* If bottom is above top */
-        else if (bottom.y > top.y) {
-            y_inc = 1;
-            n += (int) (Math.floor(bottom.y)) - y;
-            t_next_y = (Math.floor(top.y) + 1 - top.y) * dt_dy;
-        }
-        /* If top is above bottom */
-        else {
-            y_inc = -1;
-            n += y - (int) (Math.floor(bottom.y));
-            t_next_y = (top.y - Math.floor(top.y)) * dt_dy;
-        }
-        /* If perpendicular to Z axis */
-        if (dz == 0) {
-            z_inc = 0;
-            t_next_z = Double.MAX_VALUE;
-        }
-        /* If bottom right of top */
-        else if (bottom.z > top.z) {
-            z_inc = 1;
-            n += (int) (Math.floor(bottom.z)) - z;
-            t_next_z = (Math.floor(top.z) + 1 - top.z) * dt_dz;
-        }
-        /* If bottom left of top */
-        else {
-            z_inc = -1;
-            n += z - (int) (Math.floor(bottom.z));
-            t_next_z = (top.z - Math.floor(top.z)) * dt_dz;
-        }
-        /* Walk through scene */
-        ps.laststep = BlockStep.Y_MINUS; /* Last step is down into map */
-        mapiter.initialize(x, y, z);
-        ps.skylightlevel = 15;
-        ps.emittedlightlevel = 0;
-        boolean nonairhit = false;
-        for (; n > 0; --n) {
-            ps.blocktypeid = mapiter.getBlockTypeID();
-            if(nonairhit || (ps.blocktypeid != 0)) {
-                ps.blockdata = mapiter.getBlockData();
-                boolean done = true;
-                for(int i = 0; i < shaderstate.length; i++) {
-                    if(!shaderdone[i])
-                        shaderdone[i] = shaderstate[i].processBlock(ps);
-                    done = done && shaderdone[i];
-                }
-                /* If all are done, we're out */
-                if(done)
-                    return;
-                nonairhit = true;
-            }
-            if(need_skylightlevel)
-                ps.skylightlevel = mapiter.getBlockSkyLight();
-            if(need_emittedlightlevel)
-                ps.emittedlightlevel = mapiter.getBlockEmittedLight();
-            /* If X step is next best */
-            if((t_next_x <= t_next_y) && (t_next_x <= t_next_z)) {
-                x += x_inc;
-                t = t_next_x;
-                t_next_x += dt_dx;
-                if(x_inc > 0) {
-                    ps.laststep = BlockStep.X_PLUS;
-                    mapiter.incrementX();
-                }
-                else {
-                    ps.laststep = BlockStep.X_MINUS;
-                    mapiter.decrementX();
-                }
-            }
-            /* If Y step is next best */
-            else if((t_next_y <= t_next_x) && (t_next_y <= t_next_z)) {
-                y += y_inc;
-                t = t_next_y;
-                t_next_y += dt_dy;
-                if(y_inc > 0) {
-                    ps.laststep = BlockStep.Y_PLUS;
-                    mapiter.incrementY();
-                    if(mapiter.getY() > 127)
-                        return;
-                }
-                else {
-                    ps.laststep = BlockStep.Y_MINUS;
-                    mapiter.decrementY();
-                    if(mapiter.getY() < 0)
-                        return;
-                }
-            }
-            /* Else, Z step is next best */
-            else {
-                z += z_inc;
-                t = t_next_z;
-                t_next_z += dt_dz;
-                if(z_inc > 0) {
-                    ps.laststep = BlockStep.Z_PLUS;
-                    mapiter.incrementZ();
-                }
-                else {
-                    ps.laststep = BlockStep.Z_MINUS;
-                    mapiter.decrementZ();
-                }
-            }
-        }
     }
 
     @Override
