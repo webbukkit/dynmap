@@ -153,7 +153,7 @@ templates:
         name: flat
         title: "Flat"
         prefix: flat
-        perspective: iso_N_90_lowres
+        perspective: iso_S_90_lowres
         shader: default
         lighting: default
   #      # To render a world as a "night view", switch to lighting: night
@@ -220,7 +220,7 @@ templates:
         name: flat
         title: "Flat"
         prefix: flat
-        perspective: iso_N_90_lowres
+        perspective: iso_S_90_lowres
         shader: default
         lighting: default
         # Map background color (day or night)
@@ -250,7 +250,7 @@ templates:
         name: flat
         title: "Flat"
         prefix: flat
-        perspective: iso_N_90_lowres
+        perspective: iso_S_90_lowres
         shader: default
         lighting: default
         # Background color for map during the day
@@ -322,7 +322,7 @@ worlds:
   #      name: flat
   #      title: "Flat"
   #      prefix: flat
-  #      perspective: iso_N_90_lowres
+  #      perspective: iso_S_90_lowres
   #      shader: default
   #      lighting: default
   #      # To render a world as a "night view", switch to lighting: night
@@ -390,7 +390,7 @@ worlds:
   #      name: flat
   #      title: "Flat"
   #      prefix: flat
-  #      perspective: iso_N_90_lowres
+  #      perspective: iso_S_90_lowres
   #      shader: default
   #      lighting: default
   #      # Map background color (day or night)
