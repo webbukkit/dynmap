@@ -306,3 +306,21 @@ perspectives:
     azimuth: 0
     inclination: 90
     scale: 16
+
+  - class: org.dynmap.hdmap.IsoHDPerspective 
+    name: iso_S_90_lowres
+    azimuth: 180
+    inclination: 90
+    scale: 4
+
+  - class: org.dynmap.hdmap.IsoHDPerspective 
+    name: iso_S_90_medres
+    azimuth: 180
+    inclination: 90
+    scale: 8
+    
+  - class: org.dynmap.hdmap.IsoHDPerspective 
+    name: iso_S_90_hires
+    azimuth: 180
+    inclination: 90
+    scale: 16
