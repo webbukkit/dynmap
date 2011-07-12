@@ -1,9 +1,14 @@
 package org.dynmap.hdmap;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Material;
+import org.dynmap.Log;
 
 /**
  * Custom block models - used for non-cube blocks to represent the physical volume associated with the block
@@ -22,8 +27,7 @@ public class HDBlockModels {
         private short[][][] modelvectors;
         
         public final short[] getScaledModel(int blocktype, int blockdata) {
-            if((blocktype > modelvectors.length) || (modelvectors[blocktype] == null) || 
-                    (modelvectors[blocktype][blockdata] == null)) {
+            if(modelvectors[blocktype] == null) {
                 return null;
             }
             return modelvectors[blocktype][blockdata];
@@ -31,111 +35,6 @@ public class HDBlockModels {
     }
     
     private static HashMap<Integer, HDScaledBlockModels> scaled_models_by_scale = new HashMap<Integer, HDScaledBlockModels>();
-
-    /* Block models */
-    private static HDBlockModels WOOD_STAIR_UP_NORTH = new HDBlockModels(Material.WOOD_STAIRS, 1<<1, 2, new long[] { 
-        0x03, 0x03, 
-        0x01, 0x01 });
-    private static HDBlockModels WOOD_STAIR_UP_SOUTH = new HDBlockModels(Material.WOOD_STAIRS, 1<<0, 2, new long[] {
-        0x03, 0x03, 
-        0x02, 0x02 });
-    private static HDBlockModels WOOD_STAIR_UP_WEST = new HDBlockModels(Material.WOOD_STAIRS, 1<<2, 2, new long[] {
-        0x03, 0x03,
-        0x00, 0x03 });
-    private static HDBlockModels WOOD_STAIR_UP_EAST = new HDBlockModels(Material.WOOD_STAIRS, 1<<3, 2, new long[] {
-        0x03, 0x03, 
-        0x03, 0x00 });
-    private static HDBlockModels COBBLE_STAIR_UP_NORTH = new HDBlockModels(Material.COBBLESTONE_STAIRS, 1<<1, WOOD_STAIR_UP_NORTH);
-    private static HDBlockModels COBBLE_STAIR_UP_SOUTH = new HDBlockModels(Material.COBBLESTONE_STAIRS, 1<<0, WOOD_STAIR_UP_SOUTH);
-    private static HDBlockModels COBBLE_STAIR_UP_WEST = new HDBlockModels(Material.COBBLESTONE_STAIRS, 1<<2, WOOD_STAIR_UP_WEST);
-    private static HDBlockModels COBBLE_STAIR_UP_EAST = new HDBlockModels(Material.COBBLESTONE_STAIRS, 1<<3, WOOD_STAIR_UP_EAST);
-    private static HDBlockModels STEP = new HDBlockModels(Material.STEP, 0x0F, 2, new long[] { 
-        0x03, 
-        0x03 });
-    private static HDBlockModels SNOW = new HDBlockModels(Material.SNOW, 0x0F, 4, new long[] {
-        0x0F, 0x0F, 0x0F, 0x0F });
-    private static HDBlockModels TORCH_UP = new HDBlockModels(Material.TORCH, (1<<5) | (1 << 0), 4, new long[] {
-        0x00, 0x02, 0x00, 0x00, 
-        0x00, 0x02, 0x00, 0x00 });
-    private static HDBlockModels TORCH_SOUTH = new HDBlockModels(Material.TORCH, (1<<1), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00, 
-        0x00, 0x01, 0x00, 0x00, 
-        0x00, 0x02, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels TORCH_NORTH = new HDBlockModels(Material.TORCH, (1<<2), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00, 
-        0x00, 0x00, 0x08, 0x00, 
-        0x00, 0x00, 0x04, 0x00,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels TORCH_WEST = new HDBlockModels(Material.TORCH, (1<<3), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00, 
-        0x02, 0x00, 0x00, 0x00, 
-        0x00, 0x02, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels TORCH_EAST = new HDBlockModels(Material.TORCH, (1<<4), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00, 
-        0x00, 0x00, 0x00, 0x02, 
-        0x00, 0x00, 0x02, 0x00,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels REDSTONETORCHON_UP = new HDBlockModels(Material.REDSTONE_TORCH_ON, (1<<5) | (1 << 0), TORCH_UP);    
-    private static HDBlockModels REDSTONETORCHOFF_UP = new HDBlockModels(Material.REDSTONE_TORCH_OFF, (1<<5) | (1 << 0), TORCH_UP);    
-    private static HDBlockModels REDSTONETORCHON_NORTH = new HDBlockModels(Material.REDSTONE_TORCH_ON, (1<<2), TORCH_NORTH);    
-    private static HDBlockModels REDSTONETORCHOFF_NORTH = new HDBlockModels(Material.REDSTONE_TORCH_OFF, (1<<2), TORCH_NORTH);    
-    private static HDBlockModels REDSTONETORCHON_SOUTH = new HDBlockModels(Material.REDSTONE_TORCH_ON, (1<<1), TORCH_SOUTH);    
-    private static HDBlockModels REDSTONETORCHOFF_SOUTH = new HDBlockModels(Material.REDSTONE_TORCH_OFF, (1<<1), TORCH_SOUTH);    
-    private static HDBlockModels REDSTONETORCHON_EAST = new HDBlockModels(Material.REDSTONE_TORCH_ON, (1<<4), TORCH_EAST);    
-    private static HDBlockModels REDSTONETORCHOFF_EAST = new HDBlockModels(Material.REDSTONE_TORCH_OFF, (1<<4), TORCH_EAST);    
-    private static HDBlockModels REDSTONETORCHON_WEST = new HDBlockModels(Material.REDSTONE_TORCH_ON, (1<<3), TORCH_WEST);    
-    private static HDBlockModels REDSTONETORCHOFF_WEST = new HDBlockModels(Material.REDSTONE_TORCH_OFF, (1<<3), TORCH_WEST);    
-    private static HDBlockModels FENCE = new HDBlockModels(Material.FENCE, 0xFFFF, 4, new long[] {
-        0x00, 0x06, 0x06, 0x00, 
-        0x00, 0x06, 0x06, 0x00, 
-        0x00, 0x06, 0x06, 0x00,
-        0x00, 0x06, 0x06, 0x00 });
-    private static HDBlockModels TRAPDOOR = new HDBlockModels(Material.TRAP_DOOR, 0xFFFF, 4, new long[] {
-        0x0F, 0x0F, 0x0F, 0x0F });
-    private static HDBlockModels WOODPRESSPLATE = new HDBlockModels(Material.WOOD_PLATE, 0xFFFF, 4, new long[] {
-        0x0F, 0x0F, 0x0F, 0x0F });
-    private static HDBlockModels STONEPRESSPLATE = new HDBlockModels(Material.STONE_PLATE, 0xFFFF, 4, new long[] {
-        0x0F, 0x0F, 0x0F, 0x0F });
-    private static HDBlockModels WALLSIGN_NORTH = new HDBlockModels(Material.WALL_SIGN, (1<<4), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00,
-        0x08, 0x08, 0x08, 0x08,
-        0x08, 0x08, 0x08, 0x08,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels WALLSIGN_SOUTH = new HDBlockModels(Material.WALL_SIGN, (1<<5), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00,
-        0x01, 0x01, 0x01, 0x01,
-        0x01, 0x01, 0x01, 0x01,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels WALLSIGN_EAST = new HDBlockModels(Material.WALL_SIGN, (1<<2), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x0F,
-        0x00, 0x00, 0x00, 0x0F,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels WALLSIGN_WEST = new HDBlockModels(Material.WALL_SIGN, (1<<3), 4, new long[] {
-        0x00, 0x00, 0x00, 0x00,
-        0x0F, 0x00, 0x00, 0x00,
-        0x0F, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels REDSTONEWIRE = new HDBlockModels(Material.REDSTONE_WIRE, 0xFFFF, 8, new long[] {
-        0x18, 0x18, 0x18, 0xFF, 0xFF, 0x18, 0x18, 0x18 });
-    private static HDBlockModels SIGNPOST_EASTWEST = new HDBlockModels(Material.SIGN_POST, 0xC7C7, 8, new long[] {
-        0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
-    private static HDBlockModels SIGHPOST_NORTHSOUTH = new HDBlockModels(Material.SIGN_POST, 0x3838, 8, new long[] {
-        0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
-        0x00, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
-        0x00, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
-        0x00, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
-        0x00, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
     
     /**
      * Block definition - copy from other
@@ -159,14 +58,26 @@ public class HDBlockModels {
      *    if array is short, other elements area are assumed to be zero (fills from bottom of block up)
      */
     public HDBlockModels(Material blocktype, int databits, int nativeres, long[] blockflags) {
-        this.blockid = blocktype.getId();
+        this(blocktype.getId(), databits, nativeres, blockflags);
+    }
+    /**
+     * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
+     * @param blockid - block ID
+     * @param databits - bitmap of block data bits matching this model (bit N is set if data=N would match)
+     * @param nativeres - native subblocks per edge of cube (up to 64)
+     * @param blockflags - array of native^2 long integers representing volume of block (bit X of element (nativeres*Y+Z) is set if that subblock is filled)
+     *    if array is short, other elements area are assumed to be zero (fills from bottom of block up)
+     */
+    public HDBlockModels(int blockid, int databits, int nativeres, long[] blockflags) {
+        this.blockid = blockid;
         this.databits = databits;
         this.nativeres = nativeres;
         this.blockflags = new long[nativeres * nativeres];
         System.arraycopy(blockflags, 0, this.blockflags, 0, blockflags.length);
         for(int i = 0; i < 16; i++) {
-            if((databits & (1<<i)) != 0)
+            if((databits & (1<<i)) != 0) {
                 models_by_id_data.put((blockid<<4)+i, this);
+            }
         }
     }
     /**
@@ -174,6 +85,15 @@ public class HDBlockModels {
      */
     public final boolean isSubblockSet(int x, int y, int z) {
         return ((blockflags[nativeres*y+z] & (1 << x)) != 0);
+    }
+    /**
+     * Set subblock value
+     */
+    public final void setSubblock(int x, int y, int z, boolean isset) {
+        if(isset)
+            blockflags[nativeres*y+z] |= (1 << x);
+        else
+            blockflags[nativeres*y+z] &= ~(1 << x);            
     }
     /**
      * Get scaled map of block: will return array of alpha levels, corresponding to how much of the
@@ -329,5 +249,144 @@ public class HDBlockModels {
             scaled_models_by_scale.put(scale, model);
         }
         return model;
+    }
+    /**
+     * Load models from model.txt file
+     */
+    public static void loadModels(File plugindir) {
+        LineNumberReader rdr = null;
+        int cnt = 0;
+        try {
+            String line;
+            ArrayList<HDBlockModels> modlist = new ArrayList<HDBlockModels>();
+            int layerbits = 0;
+            int rownum = 0;
+            int scale = 0;
+            rdr = new LineNumberReader(new FileReader(new File(plugindir, "models.txt")));
+            while((line = rdr.readLine()) != null) {
+                if(line.startsWith("block:")) {
+                    ArrayList<Integer> blkids = new ArrayList<Integer>();
+                    int databits = 0;
+                    scale = 0;
+                    line = line.substring(6);
+                    String[] args = line.split(",");
+                    for(String a : args) {
+                        String[] av = a.split("=");
+                        if(av.length < 2) continue;
+                        if(av[0].equals("id")) {
+                            blkids.add(Integer.parseInt(av[1]));
+                        }
+                        else if(av[0].equals("data")) {
+                            if(av[1].equals("*"))
+                                databits = 0xFFFF;
+                            else
+                                databits |= (1 << Integer.parseInt(av[1]));
+                        }
+                        else if(av[0].equals("scale")) {
+                            scale = Integer.parseInt(av[1]);
+                        }
+                    }
+                    /* If we have everything, build block */
+                    if((blkids.size() > 0) && (databits != 0) && (scale > 0)) {
+                        modlist.clear();
+                        for(Integer id : blkids) {
+                            modlist.add(new HDBlockModels(id.intValue(), databits, scale, new long[0]));
+                            cnt++;
+                        }
+                    }
+                    else {
+                        Log.severe("Block model missing required parameters = line " + rdr.getLineNumber() + " of models.txt");
+                    }
+                    layerbits = 0;
+                }
+                else if(line.startsWith("layer:")) {
+                    line = line.substring(6);
+                    String args[] = line.split(",");
+                    layerbits = 0;
+                    rownum = 0;
+                    for(String a: args) {
+                        layerbits |= (1 << Integer.parseInt(a));
+                    }
+                }
+                else if(line.startsWith("rotate:")) {
+                    line = line.substring(7);
+                    String args[] = line.split(",");
+                    int id = -1;
+                    int data = -1;
+                    int rot = -1;
+                    for(String a : args) {
+                        String[] av = a.split("=");
+                        if(av.length < 2) continue;
+                        if(av[0].equals("id")) { id = Integer.parseInt(av[1]); }
+                        if(av[0].equals("data")) { data = Integer.parseInt(av[1]); }
+                        if(av[0].equals("rot")) { rot = Integer.parseInt(av[1]); }
+                    }
+                    /* get old model to be rotated */
+                    HDBlockModels mod = models_by_id_data.get((id<<4)+data);
+                    if((mod != null) && ((rot%90) == 0)) {
+                        for(int x = 0; x < scale; x++) {
+                            for(int y = 0; y < scale; y++) {
+                                for(int z = 0; z < scale; z++) {
+                                    if(mod.isSubblockSet(x, y, z) == false) continue;
+                                    switch(rot) {
+                                        case 0:
+                                            for(HDBlockModels bm : modlist)
+                                                bm.setSubblock(x, y, z, true);
+                                            break;
+                                        case 90:
+                                            for(HDBlockModels bm : modlist)
+                                                bm.setSubblock(scale-z-1, y, x, true);
+                                            break;
+                                        case 180:
+                                            for(HDBlockModels bm : modlist)
+                                                bm.setSubblock(scale-x-1, y, scale-z-1, true);
+                                            break;
+                                        case 270:
+                                            for(HDBlockModels bm : modlist)
+                                                bm.setSubblock(z, y, scale-x-1, true);
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if(line.startsWith("#") || line.startsWith(";")) {
+                }
+                else if(layerbits != 0) {   /* If we're working pattern lines */
+                    /* Layerbits determine Y, rows count from North to South (X=0 to X=N-1), columns Z are West to East (N-1 to 0) */
+                    for(int i = 0; (i < scale) && (i < line.length()); i++) {
+                        if(line.charAt(i) == '*') { /* If an asterix, set flag */
+                            for(int y = 0; y < scale; y++) {
+                                if((layerbits & (1<<y)) != 0) {
+                                    for(HDBlockModels mod : modlist) {
+                                        mod.setSubblock(rownum, y, scale-i-1, true);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    /* See if we're done with layer */
+                    rownum++;
+                    if(rownum >= scale) {
+                        rownum = 0;
+                        layerbits = 0;
+                    }
+                }
+            }
+            Log.info("Loaded " + cnt + " block models");
+        } catch (IOException iox) {
+            Log.severe("Error reading models.txt - " + iox.toString());
+        } catch (NumberFormatException nfx) {
+            Log.severe("Format error - line " + rdr.getLineNumber() + " of models.txt");
+        } finally {
+            if(rdr != null) {
+                try {
+                    rdr.close();
+                    rdr = null;
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 }
