@@ -142,18 +142,21 @@ public class DefaultHDShader implements HDShader {
             
             if (colors != null) {
                 int seq;
+                int subalpha = ps.getSubmodelAlpha();
                 /* Figure out which color to use */
                 switch(ps.getLastBlockStep()) {
                     case X_PLUS:
                     case X_MINUS:
-                        seq = 0;
+                        seq = 2;
                         break;
                     case Z_PLUS:
                     case Z_MINUS:
-                        seq = 2;
+                        seq = 0;
                         break;
                     default:
-                        if(((pixelodd + mapiter.getY()) & 0x03) == 0)
+                    	if(subalpha >= 0)	/* We hit a block in a model */
+                    		seq = 4;	/* Use smooth top */
+                    	else if(((pixelodd + mapiter.getY()) & 0x03) == 0)
                             seq = 3;
                         else
                             seq = 1;
@@ -164,10 +167,9 @@ public class DefaultHDShader implements HDShader {
                     /* Handle light level, if needed */
                     lighting.applyLighting(ps, this, c, tmpcolor);
                     /* If we got alpha from subblock model, use it instead */
-                    int subalpha = ps.getSubmodelAlpha();
                     if(subalpha >= 0) {
                         for(Color clr : tmpcolor)
-                           clr.setAlpha(subalpha);
+                           clr.setAlpha(Math.max(subalpha,clr.getAlpha()));
                     }
                     /* Blend color with accumulated color (weighted by alpha) */
                     if(!transparency) {  /* No transparency support */
