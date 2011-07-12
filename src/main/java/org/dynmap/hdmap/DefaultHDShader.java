@@ -163,6 +163,12 @@ public class DefaultHDShader implements HDShader {
                 if (c.getAlpha() > 0) {
                     /* Handle light level, if needed */
                     lighting.applyLighting(ps, this, c, tmpcolor);
+                    /* If we got alpha from subblock model, use it instead */
+                    int subalpha = ps.getSubmodelAlpha();
+                    if(subalpha >= 0) {
+                        for(Color clr : tmpcolor)
+                           clr.setAlpha(subalpha);
+                    }
                     /* Blend color with accumulated color (weighted by alpha) */
                     if(!transparency) {  /* No transparency support */
                         for(i = 0; i < color.length; i++)

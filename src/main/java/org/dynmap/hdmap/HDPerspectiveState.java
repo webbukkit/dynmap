@@ -52,4 +52,8 @@ public interface HDPerspectiveState {
      * Get pixel Y coordinate
      */
     int getPixelY();
+    /**
+     * Return submodel alpha value (-1 if no submodel rendered)
+     */
+    int getSubmodelAlpha();
 }

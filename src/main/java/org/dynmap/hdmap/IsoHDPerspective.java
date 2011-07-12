@@ -86,6 +86,7 @@ public class IsoHDPerspective implements HDPerspective {
         int x_inc, y_inc, z_inc;        
         double t_next_y, t_next_x, t_next_z;
         boolean nonairhit;
+        int subalpha;
         /**
          * Get sky light level - only available if shader requested it
          */
@@ -126,7 +127,12 @@ public class IsoHDPerspective implements HDPerspective {
          * Get pixel Y coordinate
          */
         public final int getPixelY() { return py; }
-
+        /**
+         * Return submodel alpha value (-1 if no submodel rendered)
+         */
+        public int getSubmodelAlpha() {
+            return subalpha;
+        }
         /**
          * Initialize raytrace state variables
          */
@@ -213,10 +219,14 @@ public class IsoHDPerspective implements HDPerspective {
             if(nonairhit || (blocktypeid != 0)) {
                 blockdata = mapiter.getBlockData();
                 boolean missed = false;
+
                 /* Look up to see if block is modelled */
                 short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
                 if(model != null) {
                     missed = raytraceSubblock(model);
+                }
+                else {
+                    subalpha = -1;
                 }
                 if(!missed) {
                     boolean done = true;
@@ -329,9 +339,12 @@ public class IsoHDPerspective implements HDPerspective {
                 mt_next_z = mt + (togo - Math.floor(togo)) * mdt_dz;
             }
             double mtend = Math.min(t_next_x, Math.min(t_next_y, t_next_z));
+            subalpha = -1;
             while(mt < mtend) {
             	try {
-            		if(model[modscale*modscale*my + modscale*mz + mx] > 0) {
+            	    int blkalpha = model[modscale*modscale*my + modscale*mz + mx];
+            		if(blkalpha > 0) {
+                        subalpha = blkalpha;
             			return false;
             		}
             	} catch (ArrayIndexOutOfBoundsException aioobx) {	/* We're outside the model, so miss */
@@ -451,11 +464,7 @@ public class IsoHDPerspective implements HDPerspective {
             block.y = inity;
             block.x += 1;
         }
-        MapTile[] result = tiles.toArray(new MapTile[tiles.size()]);
-        Log.info("processed update for " + loc);
-        for(MapTile mt : result)
-            Log.info("need to render " + mt);
-        return result;
+        return tiles.toArray(new MapTile[tiles.size()]);
     }
 
     @Override

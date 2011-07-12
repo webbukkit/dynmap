@@ -52,4 +52,7 @@ public class Color {
     public final int getComponent(int idx) {
         return 0xFF & (val >> ((3-idx)*8));
     }
+    public final void setAlpha(int v) {
+        val = (val & 0x00FFFFFF) | (v << 24);
+    }
 }
