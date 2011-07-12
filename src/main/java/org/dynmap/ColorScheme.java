@@ -132,7 +132,7 @@ public class ColorScheme {
                 c[1] = new Color(Integer.parseInt(split[9]), Integer.parseInt(split[10]), Integer.parseInt(split[11]), Integer.parseInt(split[12]));
                 c[2] = new Color(Integer.parseInt(split[13]), Integer.parseInt(split[14]), Integer.parseInt(split[15]), Integer.parseInt(split[16]));
                 /* Blended color - for 'smooth' option on flat map */
-                c[4] = new Color((c[0].getRed()+c[2].getRed())/2, (c[0].getGreen()+c[2].getGreen())/2, (c[0].getBlue()+c[2].getBlue())/2, (c[0].getAlpha()+c[2].getAlpha())/2);
+                c[4] = new Color((c[1].getRed()+c[3].getRed())/2, (c[1].getGreen()+c[3].getGreen())/2, (c[1].getBlue()+c[3].getBlue())/2, (c[1].getAlpha()+c[3].getAlpha())/2);
 
                 if(isbiome) {
                     if(istemp) {
