@@ -292,13 +292,19 @@ DynMap.prototype = {
 		
 		var updateHeight = function() {
 			playerlist.height(sidebar.innerHeight() - (playerlist.offset().top - worldlist.offset().top) - 64); // here we need a fix to avoid the static value, but it works fine this way :P
-			var scrollable = playerlist.scrollHeight() > playerlist.height();
+			console.log('scrollheight=' + playerlist.scrollHeight() + ', height=' + playerlist.height());
+			var scrollable = playerlist.scrollHeight() < playerlist.height();
 			upbtn.toggle(scrollable);
 			downbtn.toggle(scrollable);
 		};
 		updateHeight();
 		$(window).resize(updateHeight);
-		
+		$(dynmap).bind('playeradded', function() {
+			updateHeight();
+		});
+		$(dynmap).bind('playerremoved', function() {
+			updateHeight();
+		});
 		// The Compass
 		var compass = $('<div/>')
 			.addClass('compass')
