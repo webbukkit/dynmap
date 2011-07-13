@@ -162,6 +162,8 @@ public class HDBlockModels {
                                 }
                             }
                             map[off] = (short)((255*raw_w) / (nativeres*nativeres*nativeres));
+                            if(map[off] > 255) map[off] = 255;
+                            if(map[off] < 0) map[off] = 0;
                         }
                     }
                 }
@@ -214,6 +216,8 @@ public class HDBlockModels {
                 }
                 for(int i = 0; i < map.length; i++) {
                     map[i] = (short)(255*map[i]/(nativeres*nativeres*nativeres));
+                    if(map[i] > 255) map[i] = 255;                            
+                    if(map[i] < 0) map[i] = 0;
                 }
             }
             scaledblocks.put(Integer.valueOf(res), map);
