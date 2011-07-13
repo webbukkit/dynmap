@@ -216,14 +216,39 @@ public class IsoHDPerspective implements HDPerspective {
          */
         private boolean visit_block(MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
             blocktypeid = mapiter.getBlockTypeID();
+            boolean skip_light_update = false;
             if(nonairhit || (blocktypeid != 0)) {
                 blockdata = mapiter.getBlockData();
+                if(blocktypeid == 85) {   /* Special case for fence - need to fake data so we can render properly */
+                    mapiter.decrementX();   /* Look north */
+                    blockdata = 0;
+                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
+                        blockdata |= 1;
+                    }
+                    mapiter.incrementX();
+                    mapiter.decrementZ();   /* Look east */
+                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
+                        blockdata |= 2;
+                    }
+                    mapiter.incrementZ();
+                    mapiter.incrementX();   /* Look south */
+                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
+                        blockdata |= 4;
+                    }
+                    mapiter.decrementX();   /* Look west */
+                    mapiter.incrementZ();
+                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
+                        blockdata |= 8;
+                    }
+                    mapiter.decrementZ();
+                }
                 boolean missed = false;
 
                 /* Look up to see if block is modelled */
                 short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
                 if(model != null) {
                     missed = raytraceSubblock(model);
+                    skip_light_update = true;   /* Some blocks are light blocking, but not fully blocking - this sucks */
                 }
                 else {
                     subalpha = -1;
@@ -241,10 +266,26 @@ public class IsoHDPerspective implements HDPerspective {
                     nonairhit = true;
                 }
             }
-            if(need_skylightlevel)
-                skylightlevel = mapiter.getBlockSkyLight();
-            if(need_emittedlightlevel)
-                emittedlightlevel = mapiter.getBlockEmittedLight();
+            if(skip_light_update) {  /* If considering skipping, do so if block is unlit */
+                int ll;
+                if(need_skylightlevel) {
+                    ll = mapiter.getBlockSkyLight();
+                    if(ll > 0)
+                        skylightlevel = ll;
+                }
+                if(need_emittedlightlevel) {
+                    ll = mapiter.getBlockEmittedLight();
+                    if(ll > 0) {
+                        emittedlightlevel = ll;
+                    }
+                }
+            }
+            else {
+                if(need_skylightlevel)
+                    skylightlevel = mapiter.getBlockSkyLight();
+                if(need_emittedlightlevel)
+                    emittedlightlevel = mapiter.getBlockEmittedLight();
+            }
             return false;
         }
         /**
@@ -314,7 +355,7 @@ public class IsoHDPerspective implements HDPerspective {
         private boolean raytraceSubblock(short[] model) {
             int mx = 0, my = 0, mz = 0;
             double xx, yy, zz;
-            double mt = t + 0.00000001;
+            double mt = t + 0.0000001;
             xx = top.x + mt *(bottom.x - top.x);  
             yy = top.y + mt *(bottom.y - top.y);  
             zz = top.z + mt *(bottom.z - top.z);
@@ -357,11 +398,14 @@ public class IsoHDPerspective implements HDPerspective {
                     mt_next_x += mdt_dx;
                     if(x_inc > 0) {
                         laststep = BlockStep.X_PLUS;
+                        if(mx >= modscale)
+                            return true;
                     }
                     else {
                         laststep = BlockStep.X_MINUS;
                         if(mx < 0)
-                            mx += modscale;
+                            //mx += modscale;
+                            return true;
                     }
                 }
                 /* If Y step is next best */
@@ -371,11 +415,14 @@ public class IsoHDPerspective implements HDPerspective {
                     mt_next_y += mdt_dy;
                     if(y_inc > 0) {
                         laststep = BlockStep.Y_PLUS;
+                        if(my >= modscale)
+                            return true;
                     }
                     else {
                         laststep = BlockStep.Y_MINUS;
                         if(my < 0)
-                            my += modscale;
+                            //my += modscale;
+                            return true;
                     }
                 }
                 /* Else, Z step is next best */
@@ -385,11 +432,14 @@ public class IsoHDPerspective implements HDPerspective {
                     mt_next_z += mdt_dz;
                     if(z_inc > 0) {
                         laststep = BlockStep.Z_PLUS;
+                        if(mz >= modscale)
+                            return true;
                     }
                     else {
                         laststep = BlockStep.Z_MINUS;
                         if(mz < 0)
-                            mz += modscale;
+                            //mz += modscale;
+                            return true;
                     }
                 }
             }
