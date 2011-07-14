@@ -197,6 +197,12 @@ public class DynmapPlugin extends JavaPlugin {
         return enabledTriggers.contains(s);
     }
 
+    private boolean onplace;
+    private boolean onbreak;
+    private boolean onsnow;
+    private boolean onleaves;
+    private boolean onburn;
+
     public void registerEvents() {
         final PluginManager pm = getServer().getPluginManager();
         final MapManager mm = mapManager;
@@ -204,50 +210,61 @@ public class DynmapPlugin extends JavaPlugin {
         // To trigger rendering.
         {
             BlockListener renderTrigger = new BlockListener() {
+                
                 @Override
                 public void onBlockPlace(BlockPlaceEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.touch(event.getBlockPlaced().getLocation());
+                    if(onplace)
+                        mm.touch(event.getBlockPlaced().getLocation());
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
 
                 @Override
                 public void onBlockBreak(BlockBreakEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.touch(event.getBlock().getLocation());
+                    if(onbreak)
+                        mm.touch(event.getBlock().getLocation());
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
                 @Override
                 public void onSnowForm(SnowFormEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.touch(event.getBlock().getLocation());        
+                    if(onsnow)
+                        mm.touch(event.getBlock().getLocation());        
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
 
                 @Override
                 public void onLeavesDecay(LeavesDecayEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.touch(event.getBlock().getLocation());                
+                    if(onleaves)
+                        mm.touch(event.getBlock().getLocation());              
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
                 
                 @Override
                 public void onBlockBurn(BlockBurnEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.touch(event.getBlock().getLocation());
+                    if(onburn)
+                        mm.touch(event.getBlock().getLocation());
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
             };
-            if (isTrigger("blockplaced"))
-                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PLACE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            if (isTrigger("blockbreak"))
-                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BREAK, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            if (isTrigger("snowform"))
-                pm.registerEvent(org.bukkit.event.Event.Type.SNOW_FORM, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            if (isTrigger("leavesdecay"))
-                pm.registerEvent(org.bukkit.event.Event.Type.LEAVES_DECAY, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            if (isTrigger("blockburn"))
-                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BURN, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            onplace = isTrigger("blockplaced");
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PLACE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            onbreak = isTrigger("blockbreak");
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BREAK, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            onsnow = isTrigger("snowform");
+            pm.registerEvent(org.bukkit.event.Event.Type.SNOW_FORM, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            onleaves = isTrigger("leavesdecay");
+            pm.registerEvent(org.bukkit.event.Event.Type.LEAVES_DECAY, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            onburn = isTrigger("blockburn");
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BURN, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
         }
         {
             PlayerListener renderTrigger = new PlayerListener() {

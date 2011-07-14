@@ -319,6 +319,20 @@ public class NewMapChunkCache implements MapChunkCache {
                     }
                 }
             }
+            /* Check if cached chunk snapshot found */
+            ChunkSnapshot ss = MapManager.mapman.sscache.getSnapshot(w.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
+            if(ss != null) {
+                if(!vis) {
+                    if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
+                        ss = STONE;
+                    else if(hidestyle == HiddenChunkStyle.FILL_OCEAN)
+                        ss = OCEAN;
+                    else
+                        ss = EMPTY;
+                }
+                snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
+                continue;
+            }
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = w.loadChunk(chunk.x, chunk.z, false);
             boolean didgenerate = false;
@@ -327,7 +341,6 @@ public class NewMapChunkCache implements MapChunkCache {
                 didgenerate = didload = w.loadChunk(chunk.x, chunk.z, true);
             /* If it did load, make cache of it */
             if(didload) {
-                ChunkSnapshot ss = null;
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
@@ -351,6 +364,8 @@ public class NewMapChunkCache implements MapChunkCache {
                     }
                     else
                         ss = c.getChunkSnapshot();
+                    if(ss != null)
+                        MapManager.mapman.sscache.putSnapshot(w.getName(), chunk.x, chunk.z, ss, blockdata, biome, biomeraw, highesty);
                 }
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
             }
