@@ -128,6 +128,10 @@ public class KzedMap extends MapType {
             DynmapWorld world = tile.getDynmapWorld();
             MapTileRenderer renderer = t.renderer;
             return new MapTile[] {
+                new KzedMapTile(world, this, renderer, t.px - tileWidth, t.py + tileHeight),
+                new KzedMapTile(world, this, renderer, t.px + tileWidth, t.py - tileHeight),
+                new KzedMapTile(world, this, renderer, t.px - tileWidth, t.py - tileHeight),
+                new KzedMapTile(world, this, renderer, t.px + tileWidth, t.py + tileHeight),
                 new KzedMapTile(world, this, renderer, t.px - tileWidth, t.py),
                 new KzedMapTile(world, this, renderer, t.px + tileWidth, t.py),
                 new KzedMapTile(world, this, renderer, t.px, t.py - tileHeight),

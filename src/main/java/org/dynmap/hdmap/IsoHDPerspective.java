@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.dynmap.Client;
 import org.dynmap.Color;
@@ -248,7 +249,14 @@ public class IsoHDPerspective implements HDPerspective {
                 short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
                 if(model != null) {
                     missed = raytraceSubblock(model);
-                    skip_light_update = true;   /* Some blocks are light blocking, but not fully blocking - this sucks */
+                    /* Some blocks are light blocking, but not fully blocking - this sucks */
+                    switch(blocktypeid) {
+                    case 53:    /* Wood stairs */
+                    case 44:    /* Slabs */
+                    case 67:    /* Cobblestone stairs */
+                        skip_light_update = true;
+                        break;
+                    }
                 }
                 else {
                     subalpha = -1;
@@ -524,6 +532,10 @@ public class IsoHDPerspective implements HDPerspective {
         int x = t.tx;
         int y = t.ty;
         return new MapTile[] {
+            new HDMapTile(w, this, x - 1, y - 1),
+            new HDMapTile(w, this, x + 1, y - 1),
+            new HDMapTile(w, this, x - 1, y + 1),
+            new HDMapTile(w, this, x + 1, y + 1),
             new HDMapTile(w, this, x, y - 1),
             new HDMapTile(w, this, x + 1, y),
             new HDMapTile(w, this, x, y + 1),
