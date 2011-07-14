@@ -1,6 +1,7 @@
 package org.dynmap;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +16,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -22,9 +25,11 @@ import org.bukkit.command.CommandSender;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
 import org.dynmap.hdmap.HDMapManager;
+import org.dynmap.utils.LRULinkedHashMap;
 import org.dynmap.utils.LegacyMapChunkCache;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.NewMapChunkCache;
+import org.dynmap.utils.SnapshotCache;
 
 public class MapManager {
     public AsynchronousQueue<MapTile> tileQueue;
@@ -50,6 +55,7 @@ public class MapManager {
 
     public static MapManager mapman;    /* Our singleton */
     public HDMapManager hdmapman;
+    public SnapshotCache sscache;
     
     /* Thread pool for processing renders */
     private DynmapScheduledThreadPoolExecutor renderpool;
@@ -328,7 +334,8 @@ public class MapManager {
         hdmapman.loadHDShaders(shadercfg);
         hdmapman.loadHDPerspectives(perspectivecfg);
         hdmapman.loadHDLightings(lightingscfg);
-
+        sscache = new SnapshotCache(configuration.getInteger("snapshotcachesize", 500));
+        
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {
@@ -623,6 +630,7 @@ public class MapManager {
         }
         sender.sendMessage("  TOTALS: processed=" + tot.loggedcnt + ", rendered=" + tot.renderedcnt + 
                            ", updated=" + tot.updatedcnt + ", transparent=" + tot.transparentcnt);
+        sender.sendMessage("  Cache hit rate: " + sscache.getHitRate() + "%");
     }
     /**
      * Reset statistics
@@ -639,6 +647,7 @@ public class MapManager {
                 ms.transparentcnt = 0;
             }
         }
+        sscache.resetStats();
         sender.sendMessage("Tile Render Statistics reset");
-    }
+    }    
 }
