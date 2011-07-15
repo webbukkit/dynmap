@@ -133,6 +133,7 @@ public class HDBlockModels {
                     }
                     else {  /* Else, see how much is in first one */
                         weights[idx] = (offsets[idx] + res) - v;
+                        weights[idx] = (offsets[idx]*res + res) - v;
                     }
                 }
                 /* Now, use weights and indices to fill in scaled map */
@@ -182,7 +183,7 @@ public class HDBlockModels {
                         weights[idx] = res;
                     }
                     else {  /* Else, see how much is in first one */
-                        weights[idx] = (offsets[idx] + nativeres) - v;
+                        weights[idx] = (offsets[idx]*nativeres + nativeres) - v;
                     }
                 }
                 /* Now, use weights and indices to fill in scaled map */

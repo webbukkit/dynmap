@@ -279,7 +279,7 @@ public class TexturePack {
                     weights[idx] = nativeres;
                 }
                 else {  /* Else, see how much is in first one */
-                    weights[idx] = (offsets[idx] + res) - v;
+                    weights[idx] = (offsets[idx]*res + res) - v;
                 }
             }
             /* Now, use weights and indices to fill in scaled map */
@@ -328,7 +328,7 @@ public class TexturePack {
                     weights[idx] = res;
                 }
                 else {  /* Else, see how much is in first one */
-                    weights[idx] = (offsets[idx] + nativeres) - v;
+                    weights[idx] = (offsets[idx]*nativeres + nativeres) - v;
                 }
             }
             int accum_red[] = new int[res*res];
