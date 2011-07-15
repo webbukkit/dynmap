@@ -22,9 +22,14 @@ import org.dynmap.kzedmap.KzedMap;
  *  Texture packs are found in dynmap/texturepacks directory, and either are either ZIP files
  *  or are directories whose content matches the structure of a zipped texture pack:
  *    ./terrain.png - main color data (required)
- *    misc/water.png - tone for water, biome sensitive (optional)
+ *    misc/water.png - still water tile? (optional)
  *    misc/grasscolor.png - tone for grass color, biome sensitive (optional)
  *    misc/foliagecolor.png - tone for leaf color, biome sensitive (optional)
+ *    misc/watercolor.png - tone for water color, biome sensitive (optional)
+ *    custom_lava_still.png - custom still lava animation (optional)
+ *    custom_lava_flowing.png - custom flowing lava animation (optional)
+ *    custom_water_still.png - custom still water animation (optional)
+ *    custom_water_flowing.png - custom flowing water animation (optional)
  *    BetterGlass/*.png - mod-based improved windows (future optional)
  */
 public class TexturePack {
