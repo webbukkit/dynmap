@@ -1,0 +1,72 @@
+# Mapping of texture resources to block ID and data values
+# block:id=<block-id>,data=<data-val|*>,top=<index>,bottom=<index>,north=<index>,south=<index>,east=<index>,west=<index>,allfaces=<index>,allsides=<index>
+# <index>=0-255 (index of patch in terrain.png), -1=clear, 256=patch(38)+biome tint from grasscolor.png,257=stationary water,258=moving water,
+#      259=stationary lava,260=moving lava,261=patch(52)+biome tint from foliagecolor.png,262=patch(132)+biome tint from foliagecolor.png,
+#      263=patch(
+######
+# Stone
+block:id=1,data=*,allfaces=1
+# Grass
+block:id=2,data=*,allsides=3,top=256,bottom=2
+# Dirt
+block:id=3,data=*,allfaces=2
+# Cobblestone
+block:id=4,data=*,allfaces=16
+# Wooden Plank
+block:id=5,data=*,allfaces=4
+# Sapling
+block:id=6,data=0,data=3,allsides=15
+# Sapling (Spruce)
+block:id=6,data=1,allsides=63
+# Sapling (Birch)
+block:id=6,data=2,allsides=79
+# Bedrock
+block:id=7,data=*,allfaces=16
+# Water
+block:id=8,data=*,allfaces=258
+# Stationary water
+block:id=9,data=*,allfaces=257
+# Lava
+block:id=10,data=*,allfaces=260
+# Stationary Lava
+block:id=11,data=*,allfaces=259
+# Sand
+block:id=12,data=*,allfaces=18
+# Gravel
+block:id=13,data=*,allfaces=19
+# Gold Ore
+block:id=14,data=*,allfaces=32
+# Iron Ore
+block:id=15,data=*,allfaces=33
+# Coal Ore
+block:id=16,data=*,allfaces=34
+# Wood (std)
+block:id=17,data=0,allsides=20,top=21,bottom=21
+# Wood (spruce/pine)
+block:id=17,data=1,allsides=116,top=21,bottom=21
+# Wood (birch)
+block:id=17,data=2,allsides=117,top=21,bottom=21
+# Leaves (std)
+block:id=18,data=0,allfaces=261
+# Leaves (spruce/pine)
+block:id=18,data=1,allfaces=262
+# Leaves (birch)
+block:id=18,data=2,allfaces=261
+# Sponge
+block:id=19,data=*,allfaces=48
+# Glass
+block:id=20,data=*,allfaces=49
+# Lapis Lazuli Ore
+block:id=21,data=*,allfaces=160
+# Lapis Lazuli Block
+block:id=22,data=*,allfaces=144
+# Dispenser (facing east)
+block:id=23,data=2,top=62,east=46,south=45,north=45,west=45,bottom=62
+# Dispenser (facing west)
+block:id=23,data=3,top=62,west=46,south=45,north=45,east=45,bottom=62
+# Dispenser (facing north)
+block:id=23,data=4,top=62,north=46,south=45,east=45,west=45,bottom=62
+# Dispenser (facing south)
+block:id=23,data=5,top=62,south=46,north=45,east=45,west=45,bottom=62
+# Sandstone
+block:id=24,data=*,top=176,bottom=208,allsides=192

@@ -4,9 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -15,6 +20,7 @@ import javax.imageio.ImageIO;
 import org.dynmap.Color;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
+import org.dynmap.hdmap.HDPerspectiveState.BlockStep;
 import org.dynmap.kzedmap.KzedMap;
 
 /**
@@ -56,6 +62,47 @@ public class TexturePack {
     
     private HashMap<Integer, TexturePack> scaled_textures;
     
+    
+    public static class HDTextureMap {
+        private short faces[];  /* index in terrain.png of image for each face (indexed by BlockStep.ordinal()) */
+        private List<Integer> blockids;
+        private int databits;
+        private static HDTextureMap[] texmaps;
+        
+        private static void initializeTable() {
+            texmaps = new HDTextureMap[16*256];
+            HDTextureMap blank = new HDTextureMap();
+            for(int i = 0; i < texmaps.length; i++)
+                texmaps[i] = blank;
+        }
+        
+        private HDTextureMap() {
+            blockids = Collections.singletonList(Integer.valueOf(0));
+            databits = 0xFFFF;
+            faces = new short[] { -1, -1, -1, -1, -1, -1 };
+            
+            for(int i = 0; i < texmaps.length; i++) {
+                texmaps[i] = this;
+            }
+        }
+        
+        public HDTextureMap(List<Integer> blockids, int databits, short[] faces) {
+            this.faces = faces;
+            this.blockids = blockids;
+            this.databits = databits;
+        }
+        
+        public void addToTable() {
+            /* Add entries to lookup table */
+            for(Integer blkid : blockids) {
+                for(int i = 0; i < 16; i++) {
+                    if((databits & (1 << i)) != 0) {
+                        texmaps[16*blkid + i] = this;
+                    }
+                }
+            }
+        }
+    }
     /** Get or load texture pack */
     public static TexturePack getTexturePack(String tpname) {
         TexturePack tp = packs.get(tpname);
@@ -378,6 +425,96 @@ public class TexturePack {
         BufferedImage img = KzedMap.createBufferedImage(terrain_argb, terrain_width, terrain_height);
         ImageIO.write(img, "png", f);
     }
+    
+    /**
+     * Load texture pack mappings from texture.txt file
+     */
+    public static void loadTextureMapping(File plugindir) {
+        LineNumberReader rdr = null;
+        int cnt = 0;
+        /* Initialize map with blank map for all entries */
+        HDTextureMap.initializeTable();
+
+        try {
+            String line;
+            rdr = new LineNumberReader(new FileReader(new File(plugindir, "texture.txt")));
+            while((line = rdr.readLine()) != null) {
+                if(line.startsWith("block:")) {
+                    ArrayList<Integer> blkids = new ArrayList<Integer>();
+                    int databits = 0;
+                    short faces[] = new short[] { -1, -1, -1, -1, -1, -1 };
+                    line = line.substring(6);
+                    String[] args = line.split(",");
+                    for(String a : args) {
+                        String[] av = a.split("=");
+                        if(av.length < 2) continue;
+                        if(av[0].equals("id")) {
+                            blkids.add(Integer.parseInt(av[1]));
+                        }
+                        else if(av[0].equals("data")) {
+                            if(av[1].equals("*"))
+                                databits = 0xFFFF;
+                            else
+                                databits |= (1 << Integer.parseInt(av[1]));
+                        }
+                        else if(av[0].equals("top") || av[0].equals("y-")) {
+                            faces[BlockStep.Y_MINUS.ordinal()] = Short.parseShort(av[1]);
+                        }
+                        else if(av[0].equals("bottom") || av[0].equals("y+")) {
+                            faces[BlockStep.Y_PLUS.ordinal()] = Short.parseShort(av[1]);
+                        }
+                        else if(av[0].equals("north") || av[0].equals("x+")) {
+                            faces[BlockStep.X_PLUS.ordinal()] = Short.parseShort(av[1]);
+                        }
+                        else if(av[0].equals("east") || av[0].equals("z-")) {
+                            faces[BlockStep.Z_MINUS.ordinal()] = Short.parseShort(av[1]);
+                        }
+                        else if(av[0].equals("west") || av[0].equals("z+")) {
+                            faces[BlockStep.Z_PLUS.ordinal()] = Short.parseShort(av[1]);
+                        }
+                        else if(av[0].equals("allfaces")) {
+                            short id = Short.parseShort(av[1]);
+                            for(int i = 0; i < 6; i++) {
+                                faces[i] = id;
+                            }
+                        }
+                        else if(av[0].equals("allsides")) {
+                            short id = Short.parseShort(av[1]);
+                            faces[BlockStep.X_PLUS.ordinal()] = id;
+                            faces[BlockStep.X_MINUS.ordinal()] = id;
+                            faces[BlockStep.Z_PLUS.ordinal()] = id;
+                            faces[BlockStep.Z_MINUS.ordinal()] = id;
+                        }
+                    }
+                    /* If we have everything, build block */
+                    if((blkids.size() > 0) && (databits != 0)) {
+                        HDTextureMap map = new HDTextureMap(blkids, databits, faces);
+                        map.addToTable();
+                        cnt++;
+                    }
+                    else {
+                        Log.severe("Texture mapping missing required parameters = line " + rdr.getLineNumber() + " of texture.txt");
+                    }
+                }
+                else if(line.startsWith("#") || line.startsWith(";")) {
+                }
+            }
+            Log.info("Loaded " + cnt + " texture mappings");
+        } catch (IOException iox) {
+            Log.severe("Error reading texture.txt - " + iox.toString());
+        } catch (NumberFormatException nfx) {
+            Log.severe("Format error - line " + rdr.getLineNumber() + " of texture.txt");
+        } finally {
+            if(rdr != null) {
+                try {
+                    rdr.close();
+                    rdr = null;
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+    
     public static void main(String[] args) {
         TexturePack tp = TexturePack.getTexturePack("test");
         TexturePack tp2 = tp.resampleTexturePack(4);
