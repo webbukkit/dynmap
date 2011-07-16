@@ -1,23 +1,39 @@
-function FlatProjection() {}
-FlatProjection.prototype = {
-		extrazoom: 0,
-		fromLatLngToPoint: function(latLng) {
-			return new google.maps.Point(latLng.lat()*config.tileWidth, latLng.lng()*config.tileHeight);
-		},
-		fromPointToLatLng: function(point) {
-			return new google.maps.LatLng(point.x/config.tileWidth, point.y/config.tileHeight);
-		},
-		fromWorldToLatLng: function(x, y, z) {
-			return new google.maps.LatLng(-z / config.tileWidth / (1 << this.extrazoom), x / config.tileHeight / (1 << this.extrazoom));
-		}
-};
+var FlatProjection = DynmapProjection.extend({
+	fromLocationToLatLng: function(location) {
+		return new L.LatLng(-location.z, location.x, true);
+	}
+});
 
+var FlatMapType = DynmapTileLayer.extend({
+	projection: new FlatProjection({}),
+	options: {
+		minZoom: 0,
+		maxZoom: 4
+	},
+	initialize: function(options) {
+		L.Util.setOptions(this, options);
+	},
+	getTileName: function(tilePoint, zoom) {
+		var tileName;
+		var dnprefix = '';
+		if(this.options.nightandday && this.dynmap.serverday) {
+			dnprefix = '_day';
+		}
+		tileName = this.options.prefix + dnprefix + '_128_' + tilePoint.x + '_' + tilePoint.y + '.png';
+		return tileName;
+	},
+	calculateTileSize: function(zoom) {
+		return Math.pow(2, 7+zoom);
+	}
+})
+
+/*
 function FlatMapType(configuration) {
 	$.extend(this, configuration); }
 FlatMapType.prototype = $.extend(new DynMapType(), {
 	constructor: FlatMapType,
 	projection: new FlatProjection(),
-	tileSize: new google.maps.Size(128.0, 128.0),
+	tileSize: 128.0,
 	minZoom: 0,
 	maxZoom: 3,
 	prefix: null,
@@ -81,8 +97,8 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
     	else {
         	size = Math.pow(2, 7+zoom-extrazoom);
     	}
-        this.tileSize = new google.maps.Size(size, size);
+        this.tileSize = size;
 	}
 });
-
-maptypes.FlatMapType = function(configuration) { return new FlatMapType(configuration); };
+*/
+maptypes.FlatMapType = function(options) { return new FlatMapType(options); };

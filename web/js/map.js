@@ -158,17 +158,25 @@ DynMap.prototype = {
 		if(urlzoom != null)
 			me.options.defaultzoom = urlzoom;
 		
-		var map = this.map = new google.maps.Map(mapContainer.get(0), {
-			zoom: me.options.defaultzoom || 0,
-			center: new google.maps.LatLng(0, 1),
-			navigationControl: true,
-			navigationControlOptions: {
-				style: google.maps.NavigationControlStyle.DEFAULT
-			},
-			scaleControl: false,
-			mapTypeControl: false,
-			streetViewControl: false,
-			backgroundColor: '#000000'
+		var map = this.map = new L.Map(mapContainer.get(0), {
+			zoom: 1, //TODO: me.options.defaultzoom || 1,
+			center: new L.LatLng(0, 0),
+			zoomAnimation: true,
+			crs: L.Util.extend({}, L.CRS, {
+				code: 'simple',
+				projection: {
+						project: function(latlng) {
+							return new L.Point(latlng.lat, latlng.lng);
+						},
+						unproject: function(point, unbounded) {
+							return new L.LatLng(point.x, point.y, true);
+						}
+					},
+				transformation: new L.Transformation(1, 0, 1, 0)
+			}),
+			scale: function(zoom) {
+				return (1 << zoom);
+			}
 		});
 		
 		map.zoom_changed = function() {
@@ -176,18 +184,9 @@ DynMap.prototype = {
 			$(me).trigger('zoomchanged');
 		};
 
-		google.maps.event.addListener(map, 'dragstart', function(mEvent) {
+		/*google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 			me.followPlayer(null);
-		});
-		// TODO: Enable hash-links.
-		/*
-		google.maps.event.addListener(map, 'zoom_changed', function() {
-			me.updateLink();
-		});
-		google.maps.event.addListener(map, 'center_changed', function() {
-			me.updateLink();
-		});
-		*/
+		});*/
 
 		// Sidebar
 		var panel;
@@ -239,7 +238,7 @@ DynMap.prototype = {
 				.appendTo(worldlist);
 			
 			$.each(world.maps, function(index, map) {
-				me.map.mapTypes.set(map.world.name + '.' + map.name, map);
+				//me.map.mapTypes.set(map.world.name + '.' + map.name, map);
 				
 				map.element = $('<li/>')
 					.addClass('map')
@@ -349,14 +348,17 @@ DynMap.prototype = {
 			});
 		});
 	},
+	getProjection: function() { return this.maptype.getProjection(); },
 	selectMap: function(map, completed) {
 		if (!map) { throw "Cannot select map " + map; }
+		console.log('Selecting map...');
 		var me = this;
 		
 		if (me.maptype === map) {
 			return;
 		}
 		$(me).trigger('mapchanging');
+		var mapWorld = map.options.world;
 		if (me.maptype) {
 			$('.compass').removeClass('compass_' + me.maptype.compassview);
 			$('.compass').removeClass('compass_' + me.maptype.name);
@@ -364,31 +366,33 @@ DynMap.prototype = {
 		$('.compass').addClass('compass_' + map.compassview);
 		$('.compass').addClass('compass_' + map.name);
 		var worldChanged = me.world !== map.world;
-		var projectionChanged = me.map.getProjection() !== map.projection;
-		me.map.setMapTypeId('none');
-		me.world = map.world;
+		var projectionChanged = (me.maptype && me.maptype.getProjection()) !== (map && map.projection);
+		if (me.maptype) {
+			me.map.removeLayer(me.maptype);
+		}
+		me.world = mapWorld;
 		me.maptype = map;
-		me.maptype.updateTileSize(me.map.zoom);
-		window.setTimeout(function() {
-			me.map.setMapTypeId(map.world.name + '.' + map.name);
-			if (worldChanged) {
-				$(me).trigger('worldchanged');
-			}
-			if (projectionChanged || worldChanged) {
-				if (map.world.center) {
-					me.map.panTo(map.projection.fromWorldToLatLng(map.world.center.x||0,map.world.center.y||64,map.world.center.z||0));
-				} else {
-					me.map.panTo(map.projection.fromWorldToLatLng(0,64,0));
-				}
-			}
-			$(me).trigger('mapchanged');
-			if (completed) {
-				completed();
-			}
-		}, 1);
+		me.map.addLayer(me.maptype);
+		
+		if (worldChanged) {
+			$(me).trigger('worldchanged');
+		}
+		if (projectionChanged || worldChanged) {
+			var centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
+			var centerPoint = map.getProjection().fromLocationToLatLng(centerLocation);
+			me.map.setView(centerPoint, 0, true);
+		}
+		$(me).trigger('mapchanged');
+
 		$('.map', me.worldlist).removeClass('selected');
 		$(map.element).addClass('selected');
 		me.updateBackground();
+		
+		
+		if (completed) {
+			completed();
+		}
+		console.log('Map selected.');
 	},
 	selectWorld: function(world, completed) {
 		var me = this;
@@ -399,12 +403,34 @@ DynMap.prototype = {
 		}
 		me.selectMap(world.defaultmap, completed);
 	},
-	panTo: function(location, completed) {
+	panToLocation: function(location, completed) {
 		var me = this;
-		me.selectWorld(location.world, function() {
-			var position = me.map.getProjection().fromWorldToLatLng(location.x, location.y, location.z);
-			me.map.panTo(position);
-		});
+		var pan = function() {
+			var latlng = me.maptype.getProjection().fromLocationToLatLng(location);
+			me.panToLatLng(latlng, completed);
+		};
+		
+		if (location.world) {
+			me.selectWorld(location.world, function() {
+				pan();
+			});
+		} else {
+			pan();
+		}
+	},
+	panToLayerPoint: function(point, completed) {
+		var me = this;
+		var latlng = me.map.layerPointToLatLng(point);
+		me.map.panToLatLng(latlng);
+		if (completed) {
+			completed();
+		}
+	},
+	panToLatLng: function(latlng, completed) {
+		this.map.panTo(latlng);
+		if (completed) {
+			completed();
+		}
 	},
 	update: function() {
 		var me = this;
@@ -473,12 +499,13 @@ DynMap.prototype = {
 				if(me.serverday != oldday) {
 					me.updateBackground();				
 					var mtid = me.map.mapTypeId;
-					if(me.map.mapTypes[mtid].nightandday) {
+					console.log('TODO: RENDER NIGHTANDDAY!!!')
+					/*if(me.map.mapTypes[mtid].nightandday) {
 						me.map.setMapTypeId('none');
 						window.setTimeout(function() {
 							me.map.setMapTypeId(mtid);
 						}, 0.1);
-					}
+					}*/
 				}
 				
 				$(me).trigger('worldupdated', [ update ]);
@@ -526,6 +553,7 @@ DynMap.prototype = {
 			tile.lastseen = timestamp;
 			tile.mapType.onTileUpdated(tile.tileElement, tileName);
 		}
+		me.maptype.updateNamedTile(tileName);
 	},
 	addPlayer: function(update) {
 		var me = this;
@@ -563,7 +591,7 @@ DynMap.prototype = {
 				if (me.followingPlayer !== player) {
 					me.followPlayer(null);
 				}
-				me.panTo(player.location);
+				me.panToLocation(player.location);
 			})
 			.appendTo(me.playerlist);
 		if (me.options.showplayerfacesinmenu) {
@@ -586,7 +614,7 @@ DynMap.prototype = {
 		
 		if (player === me.followingPlayer) {
 			// Follow the updated player.
-			me.panTo(player.location);
+			me.panToLocation(player.location);
 		}
 	},
 	removePlayer: function(player) {
@@ -605,7 +633,7 @@ DynMap.prototype = {
 		
 		if(player) {
 			$(player.menuitem).addClass('following');
-			me.panTo(player.location);
+			me.panToLocation(player.location);
 		}
 		this.followingPlayer = player;
 	},

@@ -1,3 +1,10 @@
+/* DEBUGGING */
+.leaflet-tile {
+	margin: -1;
+	border: 1px solid red;
+}
+
+
 /*******************
  * Page setup
  */
@@ -37,13 +44,6 @@
 .gmnoprint{
     margin-top:-75px;
     margin-left:-20px
-}
-
-/* Google branding */
-
-.dynmap > div.map > DIV > DIV:first-child + DIV,
-.dynmap > div.map > DIV > DIV:first-child + DIV + DIV {
-    visibility: hidden !important;
 }
 
 
