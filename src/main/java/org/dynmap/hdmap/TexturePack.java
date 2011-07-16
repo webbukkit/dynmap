@@ -22,16 +22,17 @@ import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
 import org.dynmap.hdmap.HDPerspectiveState.BlockStep;
 import org.dynmap.kzedmap.KzedMap;
+import org.dynmap.utils.MapIterator;
 
 /**
  * Loader and processor class for minecraft texture packs
  *  Texture packs are found in dynmap/texturepacks directory, and either are either ZIP files
  *  or are directories whose content matches the structure of a zipped texture pack:
  *    ./terrain.png - main color data (required)
- *    misc/water.png - still water tile? (optional)
- *    misc/grasscolor.png - tone for grass color, biome sensitive (optional)
- *    misc/foliagecolor.png - tone for leaf color, biome sensitive (optional)
- *    misc/watercolor.png - tone for water color, biome sensitive (optional)
+ *    misc/water.png - still water tile (required))
+ *    misc/grasscolor.png - tone for grass color, biome sensitive (required)
+ *    misc/foliagecolor.png - tone for leaf color, biome sensitive (required)
+ *    misc/watercolor.png - tone for water color, biome sensitive (required)
  *    custom_lava_still.png - custom still lava animation (optional)
  *    custom_lava_flowing.png - custom flowing lava animation (optional)
  *    custom_water_still.png - custom still water animation (optional)
@@ -45,17 +46,37 @@ public class TexturePack {
     private static final String TERRAIN_PNG = "terrain.png";
     private static final String GRASSCOLOR_PNG = "misc/grasscolor.png";
     private static final String FOLIAGECOLOR_PNG = "misc/foliagecolor.png";
+    private static final String WATERCOLOR_PNG = "misc/watercolor.png";
     private static final String WATER_PNG = "misc/water.png";
-    
-    private int[]   terrain_argb;
+
+    /* Color modifier codes (x1000 for value in mapping code) */
+    private static final short COLORMOD_GRASSTONED = 1;
+    private static final short COLORMOD_FOLIAGETONED = 2;
+    private static final short COLORMOD_WATERTONED = 3;
+    /* Special tile index values */
+    private static final short BLOCKINDEX_BLANK = -1;
+    private static final short BLOCKINDEX_STATIONARYWATER = 257;
+    private static final short BLOCKINDEX_MOVINGWATER = 258;
+    private static final short BLOCKINDEX_STATIONARYLAVA = 259;
+    private static final short BLOCKINDEX_MOVINGLAVA = 260;
+    private static final int MAX_BLOCKINDEX = 260;
+    private static final int BLOCKTABLELEN = MAX_BLOCKINDEX+1;
+        
+    private int[][]   terrain_argb;
     private int terrain_width, terrain_height;
     private int native_scale;
 
     private int[]   grasscolor_argb;
     private int grasscolor_width, grasscolor_height;
+    private int trivial_grasscolor;
 
     private int[]   foliagecolor_argb;
     private int foliagecolor_width, foliagecolor_height;
+    private int trivial_foliagecolor;
+
+    private int[]   watercolor_argb;
+    private int watercolor_width, watercolor_height;
+    private int trivial_watercolor;
 
     private int[]   water_argb;
     private int water_width, water_height;
@@ -70,7 +91,7 @@ public class TexturePack {
         private static HDTextureMap[] texmaps;
         
         private static void initializeTable() {
-            texmaps = new HDTextureMap[16*256];
+            texmaps = new HDTextureMap[16*BLOCKTABLELEN];
             HDTextureMap blank = new HDTextureMap();
             for(int i = 0; i < texmaps.length; i++)
                 texmaps[i] = blank;
@@ -101,6 +122,10 @@ public class TexturePack {
                     }
                 }
             }
+        }
+        
+        public static HDTextureMap getMap(int blkid, int blkdata) {
+            return texmaps[(blkid<<4) + blkdata];
         }
     }
     /** Get or load texture pack */
@@ -136,25 +161,33 @@ public class TexturePack {
             is.close();
             /* Try to find and load misc/grasscolor.png */
             ze = zf.getEntry(GRASSCOLOR_PNG);
-            if(ze != null) {    /* Found it, so load it */
-                is = zf.getInputStream(ze);
-                loadGrassColorPNG(is);
-                is.close();
-            }
+            if(ze == null)
+                throw new FileNotFoundException();
+            is = zf.getInputStream(ze);
+            loadGrassColorPNG(is);
+            is.close();
             /* Try to find and load misc/foliagecolor.png */
             ze = zf.getEntry(FOLIAGECOLOR_PNG);
-            if(ze != null) {    /* Found it, so load it */
-                is = zf.getInputStream(ze);
-                loadFoliageColorPNG(is);
-                is.close();
-            }
+            if(ze == null)
+                throw new FileNotFoundException();
+            is = zf.getInputStream(ze);
+            loadFoliageColorPNG(is);
+            is.close();
+            /* Try to find and load misc/watercolor.png */
+            ze = zf.getEntry(WATERCOLOR_PNG);
+            if(ze == null)
+                throw new FileNotFoundException();
+            is = zf.getInputStream(ze);
+            loadWaterColorPNG(is);
+            is.close();
             /* Try to find and load misc/water.png */
             ze = zf.getEntry(WATER_PNG);
-            if(ze != null) {    /* Found it, so load it */
-                is = zf.getInputStream(ze);
-                loadWaterPNG(is);
-                is.close();
-            }
+            if(ze == null)
+                throw new FileNotFoundException();
+            is = zf.getInputStream(ze);
+            loadWaterPNG(is);
+            is.close();
+            
             zf.close();
             return;
         } catch (IOException iox) {
@@ -174,25 +207,24 @@ public class TexturePack {
             fis.close();
             /* Check for misc/grasscolor.png */
             f = new File(texturedir, tpname + "/" + GRASSCOLOR_PNG);
-            if(f.canRead()) {
-                fis = new FileInputStream(f);
-                loadGrassColorPNG(fis);
-                fis.close();
-            }
+            fis = new FileInputStream(f);
+            loadGrassColorPNG(fis);
+            fis.close();
             /* Check for misc/foliagecolor.png */
             f = new File(texturedir, tpname + "/" + FOLIAGECOLOR_PNG);
-            if(f.canRead()) {
-                fis = new FileInputStream(f);
-                loadFoliageColorPNG(fis);
-                fis.close();
-            }
+            fis = new FileInputStream(f);
+            loadFoliageColorPNG(fis);
+            fis.close();
+            /* Check for misc/waterecolor.png */
+            f = new File(texturedir, tpname + "/" + WATERCOLOR_PNG);
+            fis = new FileInputStream(f);
+            loadWaterColorPNG(fis);
+            fis.close();
             /* Check for misc/water.png */
             f = new File(texturedir, tpname + "/" + WATER_PNG);
-            if(f.canRead()) {
-                fis = new FileInputStream(f);
-                loadWaterPNG(fis);
-                fis.close();
-            }
+            fis = new FileInputStream(f);
+            loadWaterPNG(fis);
+            fis.close();
         } catch (IOException iox) {
             if(fis != null) {
                 try { fis.close(); } catch (IOException io) {}
@@ -202,7 +234,8 @@ public class TexturePack {
     }
     /* Copy texture pack */
     private TexturePack(TexturePack tp) {
-        this.terrain_argb = tp.terrain_argb;
+        this.terrain_argb = new int[tp.terrain_argb.length][];
+        System.arraycopy(tp.terrain_argb, 0, this.terrain_argb, 0, this.terrain_argb.length);
         this.terrain_width = tp.terrain_width;
         this.terrain_height = tp.terrain_height;
         this.native_scale = tp.native_scale;
@@ -210,11 +243,18 @@ public class TexturePack {
         this.grasscolor_argb = tp.grasscolor_argb;
         this.grasscolor_height = tp.grasscolor_height;
         this.grasscolor_width = tp.grasscolor_width;
+        this.trivial_grasscolor = tp.trivial_grasscolor;
+
+        this.watercolor_argb = tp.watercolor_argb;
+        this.watercolor_height = tp.watercolor_height;
+        this.watercolor_width = tp.watercolor_width;
+        this.trivial_watercolor = tp.trivial_watercolor;
 
         this.foliagecolor_argb = tp.foliagecolor_argb;
         this.foliagecolor_height = tp.foliagecolor_height;
         this.foliagecolor_width = tp.foliagecolor_width;
-        
+        this.trivial_foliagecolor = tp.trivial_foliagecolor;
+
         this.water_argb = tp.water_argb;
         this.water_height = tp.water_height;
         this.water_width = tp.water_width;
@@ -222,15 +262,23 @@ public class TexturePack {
     
     /* Load terrain.png */
     private void loadTerrainPNG(InputStream is) throws IOException {
+        int i;
         /* Load image */
         BufferedImage img = ImageIO.read(is);
         if(img == null) { throw new FileNotFoundException(); }
         terrain_width = img.getWidth();
         terrain_height = img.getHeight();
-        terrain_argb = new int[terrain_width * terrain_height];
-        img.getRGB(0, 0, terrain_width, terrain_height, terrain_argb, 0, terrain_width);
-        img.flush();
         native_scale = terrain_width / 16;
+        terrain_argb = new int[BLOCKTABLELEN][];
+        for(i = 0; i < 256; i++) {
+            terrain_argb[i] = new int[native_scale*native_scale];
+            img.getRGB((i & 0xF)*native_scale, (i>>4)*native_scale, native_scale, native_scale, terrain_argb[i], 0, native_scale);
+        }
+        int[] blank = new int[native_scale*native_scale];
+        for(i = 256; i < BLOCKTABLELEN; i++) {
+            terrain_argb[i] = blank;
+        }
+        img.flush();
     }
     
     /* Load misc/grasscolor.png */
@@ -242,7 +290,19 @@ public class TexturePack {
         grasscolor_height = img.getHeight();
         grasscolor_argb = new int[grasscolor_width * grasscolor_height];
         img.getRGB(0, 0, grasscolor_width, grasscolor_height, grasscolor_argb, 0, grasscolor_width);
-        img.flush();        
+        img.flush();
+        /* Figure out trivial color */
+        trivial_grasscolor = grasscolor_argb[grasscolor_height*grasscolor_width*3/4 + grasscolor_width/2];
+        boolean same = true;
+        for(int j = 0; same && (j < grasscolor_height); j++) {
+            for(int i = 0; same && (i <= j); i++) {
+                if(grasscolor_argb[grasscolor_width*j+i] != trivial_grasscolor)
+                    same = false;
+            }
+        }
+        /* All the same - no biome lookup needed */
+        if(same)
+            grasscolor_argb = null;
     }
     
     /* Load misc/foliagecolor.png */
@@ -255,8 +315,44 @@ public class TexturePack {
         foliagecolor_argb = new int[foliagecolor_width * foliagecolor_height];
         img.getRGB(0, 0, foliagecolor_width, foliagecolor_height, foliagecolor_argb, 0, foliagecolor_width);
         img.flush();        
+        /* Figure out trivial color */
+        trivial_foliagecolor = foliagecolor_argb[foliagecolor_height*foliagecolor_width*3/4 + foliagecolor_width/2];
+        boolean same = true;
+        for(int j = 0; same && (j < foliagecolor_height); j++) {
+            for(int i = 0; same && (i <= j); i++) {
+                if(foliagecolor_argb[foliagecolor_width*j+i] != trivial_foliagecolor)
+                    same = false;
+            }
+        }
+        /* All the same - no biome lookup needed */
+        if(same)
+            foliagecolor_argb = null;
     }
-    
+
+    /* Load misc/watercolor.png */
+    private void loadWaterColorPNG(InputStream is) throws IOException {
+        /* Load image */
+        BufferedImage img = ImageIO.read(is);
+        if(img == null) { throw new FileNotFoundException(); }
+        watercolor_width = img.getWidth();
+        watercolor_height = img.getHeight();
+        watercolor_argb = new int[watercolor_width * watercolor_height];
+        img.getRGB(0, 0, watercolor_width, watercolor_height, watercolor_argb, 0, watercolor_width);
+        img.flush();        
+        /* Figure out trivial color */
+        trivial_watercolor = watercolor_argb[watercolor_height*watercolor_width*3/4 + watercolor_width/2];
+        boolean same = true;
+        for(int j = 0; same && (j < watercolor_height); j++) {
+            for(int i = 0; same && (i <= j); i++) {
+                if(watercolor_argb[watercolor_width*j+i] != trivial_watercolor)
+                    same = false;
+            }
+        }
+        /* All the same - no biome lookup needed */
+        if(same)
+            watercolor_argb = null;
+    }
+
     /* Load misc/water.png */
     private void loadWaterPNG(InputStream is) throws IOException {
         /* Load image */
@@ -266,13 +362,16 @@ public class TexturePack {
         water_height = img.getHeight();
         water_argb = new int[water_width * water_height];
         img.getRGB(0, 0, water_width, water_height, water_argb, 0, water_width);
-        img.flush();        
+        img.flush();
+        /* Now, patch in to block table */
+        int new_water_argb[] = new int[native_scale*native_scale];
+        scaleTerrainPNGSubImage(water_width, native_scale, water_argb, new_water_argb);
+        terrain_argb[BLOCKINDEX_STATIONARYWATER] = new_water_argb;
+        terrain_argb[BLOCKINDEX_MOVINGWATER] = new_water_argb;
     }
-    
     /* Get texture pack directory */
     private static File getTexturePackDirectory() {
-//      return new File(DynmapPlugin.dataDirectory, "texturepacks");
-        return new File("texturepacks");
+        return new File(DynmapPlugin.dataDirectory, "texturepacks");
     }
 
     /**
@@ -289,7 +388,6 @@ public class TexturePack {
             stp.native_scale = scale;
             stp.terrain_height = 16*scale;
             stp.terrain_width = 16*scale;
-            stp.terrain_argb = new int[stp.terrain_height*stp.terrain_width];
             scaleTerrainPNG(stp);
         }
         /* Remember it */
@@ -301,23 +399,25 @@ public class TexturePack {
      * @param tp
      */
     private void scaleTerrainPNG(TexturePack tp) {
+        tp.terrain_argb = new int[256][];
         /* Terrain.png is 16x16 array of images : process one at a time */
-        for(int ty = 0; ty < 16; ty++) {
-            for(int tx = 0; tx < 16; tx++) {
-                int srcoff = ty*native_scale*terrain_width + tx*native_scale;
-                int destoff = ty*tp.native_scale*tp.terrain_width + tx*tp.native_scale;
-                scaleTerrainPNGSubImage(tp, srcoff, destoff);
-            }
+        for(int idx = 0; idx < 256; idx++) {
+            tp.terrain_argb[idx] = new int[tp.native_scale*tp.native_scale];
+            scaleTerrainPNGSubImage(native_scale, tp.native_scale, terrain_argb[idx],  tp.terrain_argb[idx]);
         }
     }
-    private void scaleTerrainPNGSubImage(TexturePack tp, int srcoff, int destoff) {
-        int nativeres = native_scale;        
-        int res = tp.native_scale;
+    private static void scaleTerrainPNGSubImage(int srcscale, int destscale, int[] src_argb, int[] dest_argb) {
+        int nativeres = srcscale;
+        int res = destscale;
         Color c = new Color();
+        /* Same size, so just copy */
+        if(res == nativeres) {
+            System.arraycopy(src_argb, 0, dest_argb, 0, src_argb.length);
+        }
         /* If we're scaling larger source pixels into smaller pixels, each destination pixel
          * receives input from 1 or 2 source pixels on each axis
          */
-        if(res > nativeres) {
+        else if(res > nativeres) {
             int weights[] = new int[res];
             int offsets[] = new int[res];
             /* LCM of resolutions is used as length of line (res * nativeres)
@@ -352,7 +452,7 @@ public class TexturePack {
                             int wy = (yy==0)?wgt_y:(nativeres-wgt_y);
                             if(wy == 0) continue;
                             /* Accumulate */
-                            c.setARGB(terrain_argb[srcoff + (ind_y+yy)*terrain_width + ind_x + xx]);
+                            c.setARGB(src_argb[(ind_y+yy)*nativeres + ind_x + xx]);
                             accum_red += c.getRed() * wx * wy;
                             accum_green += c.getGreen() * wx * wy;
                             accum_blue += c.getBlue() * wx * wy;
@@ -362,7 +462,7 @@ public class TexturePack {
                     /* Generate weighted compnents into color */
                     c.setRGBA(accum_red / (nativeres*nativeres), accum_green / (nativeres*nativeres), 
                               accum_blue / (nativeres*nativeres), accum_alpha / (nativeres*nativeres));
-                    tp.terrain_argb[destoff + (y*tp.terrain_width) + x] = c.getARGB();
+                    dest_argb[(y*res) + x] = c.getARGB();
                 }
             }
         }
@@ -395,7 +495,7 @@ public class TexturePack {
                 for(int x = 0; x < nativeres; x++) {
                     int ind_x = offsets[x];
                     int wgt_x = weights[x];
-                    c.setARGB(terrain_argb[srcoff + (y*terrain_width) + x]);
+                    c.setARGB(src_argb[(y*nativeres) + x]);
                     for(int xx = 0; xx < 2; xx++) {
                         int wx = (xx==0)?wgt_x:(res-wgt_x);
                         if(wx == 0) continue;
@@ -416,13 +516,19 @@ public class TexturePack {
                     int off = (y*res) + x;
                     c.setRGBA(accum_red[off]/(nativeres*nativeres), accum_green[off]/(nativeres*nativeres),
                           accum_blue[off]/(nativeres*nativeres), accum_alpha[off]/(nativeres*nativeres));
-                    tp.terrain_argb[destoff + y*tp.terrain_width + x] = c.getARGB();
+                    dest_argb[y*res + x] = c.getARGB();
                 }
             }
         }
     }
     public void saveTerrainPNG(File f) throws IOException {
-        BufferedImage img = KzedMap.createBufferedImage(terrain_argb, terrain_width, terrain_height);
+        int[] outbuf = new int[256*native_scale*native_scale];
+        for(int i = 0; i < 256; i++) {
+            for(int y = 0; y < native_scale; y++) {
+                System.arraycopy(terrain_argb[i],native_scale*y,outbuf,((i>>4)*native_scale+y)*terrain_width + (i & 0xF)*native_scale, native_scale);
+            }
+        }
+        BufferedImage img = KzedMap.createBufferedImage(outbuf, terrain_width, terrain_height);
         ImageIO.write(img, "png", f);
     }
     
@@ -514,9 +620,89 @@ public class TexturePack {
             }
         }
     }
+    /**
+     * Read color for given subblock coordinate, with given block id and data and face
+     */
+    public void readColor(HDPerspectiveState ps, MapIterator mapiter, Color rslt) {
+        int blkid = ps.getBlockTypeID();
+        int blkdata = ps.getBlockData();
+        HDTextureMap map = HDTextureMap.getMap(blkid, blkdata);
+        BlockStep laststep = ps.getLastBlockStep();
+        int textid = map.faces[laststep.ordinal()]; /* Get index of texture source */
+        if(textid < 0) {
+            rslt.setTransparent();
+            return;
+        }
+        /* See if not basic block texture */
+        int textop = textid / 1000;
+        textid = textid % 1000;
+        int[] texture = terrain_argb[textid];
+        int clrval = 0;
+        int[] xyz = new int[3];
+        ps.getSubblockCoord(xyz);
+        switch(laststep) {
+            case X_MINUS:
+                clrval = texture[(native_scale-xyz[1]-1)*native_scale + xyz[2]];
+                break;
+            case X_PLUS:
+                clrval = texture[(native_scale-xyz[1]-1)*native_scale + (native_scale-xyz[2]-1)];
+                break;
+            case Z_MINUS:
+                clrval = texture[(native_scale-xyz[1]-1)*native_scale + xyz[0]];
+                break;
+            case Z_PLUS:
+                clrval = texture[(native_scale-xyz[1]-1)*native_scale + (native_scale-xyz[0]-1)];
+                break;
+            case Y_MINUS:
+                clrval = texture[xyz[2]*native_scale + xyz[0]];
+                break;
+            case Y_PLUS:
+                clrval = texture[xyz[2]*native_scale + (native_scale-xyz[0]-1)];
+                break;
+        }
+        rslt.setARGB(clrval);
+        if(textop > 0) {
+            int tone = 0xFFFFFFFF;
+            /* Switch based on texture modifier */
+            switch(textop) {
+                case COLORMOD_GRASSTONED:
+                    if(grasscolor_argb == null) {
+                        tone = trivial_grasscolor;
+                    }
+                    else {
+                        tone = biomeLookup(grasscolor_argb, grasscolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+                    }
+                    break;
+                case COLORMOD_FOLIAGETONED:
+                    if(foliagecolor_argb == null) {
+                        tone = trivial_foliagecolor;
+                    }
+                    else {
+                        tone = biomeLookup(foliagecolor_argb, foliagecolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+                    }
+                    break;
+                case COLORMOD_WATERTONED:
+                    if(watercolor_argb == null) {
+                        tone = trivial_watercolor;
+                    }
+                    else {
+                        tone = biomeLookup(watercolor_argb, watercolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+                    }
+                    break;
+            }
+            rslt.blendColor(tone);
+        }
+    }
+    
+    private static final int biomeLookup(int[] argb, int width, double rainfall, double temp) {
+        int t = (int)((1.0-temp)*(width-1));
+        int h = width - (int)(temp*rainfall*(width-1)) - 1;
+        return argb[width*h + t];
+    }
     
     public static void main(String[] args) {
-        TexturePack tp = TexturePack.getTexturePack("test");
+        TexturePack.loadTextureMapping(new File("."));
+        TexturePack tp = TexturePack.getTexturePack("standard");
         TexturePack tp2 = tp.resampleTexturePack(4);
         try {
             tp2.saveTerrainPNG(new File("test_terrain_4.png"));

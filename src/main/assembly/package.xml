@@ -34,6 +34,9 @@
     		<include>configuration.txt.sample-hd</include>
     		<include>models.txt</include>
     		<include>texture.txt</include></includes></fileSet>
+    <fileSet>
+    	<directory>${project.basedir}/texturepacks</directory>
+    	<outputDirectory>/dynmap/texturepacks</outputDirectory></fileSet>
   </fileSets>
   <files>
   	<file>

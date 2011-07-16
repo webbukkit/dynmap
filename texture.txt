@@ -1,13 +1,12 @@
 # Mapping of texture resources to block ID and data values
 # block:id=<block-id>,data=<data-val|*>,top=<index>,bottom=<index>,north=<index>,south=<index>,east=<index>,west=<index>,allfaces=<index>,allsides=<index>
-# <index>=0-255 (index of patch in terrain.png), -1=clear, 256=patch(38)+biome tint from grasscolor.png,257=stationary water,258=moving water,
-#      259=stationary lava,260=moving lava,261=patch(52)+biome tint from foliagecolor.png,262=patch(132)+biome tint from foliagecolor.png,
-#      263=patch(
+# <index>=0-255 (index of patch in terrain.png), -1=clear, 1xxx=biome tint from grasscolor.png,257=stationary water,258=moving water,
+#      259=stationary lava,260=moving lava,2xxx=biome tint from foliagecolor.png,3xxx=biome tint from watercolor.png
 ######
 # Stone
 block:id=1,data=*,allfaces=1
 # Grass
-block:id=2,data=*,allsides=3,top=256,bottom=2
+block:id=2,data=*,allsides=3,top=1000,bottom=2
 # Dirt
 block:id=3,data=*,allfaces=2
 # Cobblestone
@@ -47,11 +46,11 @@ block:id=17,data=1,allsides=116,top=21,bottom=21
 # Wood (birch)
 block:id=17,data=2,allsides=117,top=21,bottom=21
 # Leaves (std)
-block:id=18,data=0,allfaces=261
+block:id=18,data=0,allfaces=2052
 # Leaves (spruce/pine)
-block:id=18,data=1,allfaces=262
+block:id=18,data=1,allfaces=2132
 # Leaves (birch)
-block:id=18,data=2,allfaces=261
+block:id=18,data=2,allfaces=2052
 # Sponge
 block:id=19,data=*,allfaces=48
 # Glass
@@ -70,3 +69,8 @@ block:id=23,data=4,top=62,north=46,south=45,east=45,west=45,bottom=62
 block:id=23,data=5,top=62,south=46,north=45,east=45,west=45,bottom=62
 # Sandstone
 block:id=24,data=*,top=176,bottom=208,allsides=192
+# Snow
+block:id=78,data=*,allfaces=66
+# Ice
+block:id=79,data=*,allfaces=67
+

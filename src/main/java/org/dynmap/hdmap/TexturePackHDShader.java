@@ -6,6 +6,7 @@ import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
+import org.dynmap.hdmap.HDPerspectiveState.BlockStep;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
@@ -31,7 +32,7 @@ public class TexturePackHDShader implements HDShader {
     
     @Override
     public boolean isRawBiomeDataNeeded() { 
-        return false; 
+        return true; 
     }
     
     @Override
@@ -60,15 +61,28 @@ public class TexturePackHDShader implements HDShader {
     }
     
     private class OurShaderState implements HDShaderState {
-        private Color color;
+        private Color color[];
+        private Color tmpcolor[];
+        private Color c;
         protected MapIterator mapiter;
         protected HDMap map;
-        private boolean air;
+        private TexturePack scaledtp;
+        private HDLighting lighting;
         
         private OurShaderState(MapIterator mapiter, HDMap map) {
             this.mapiter = mapiter;
             this.map = map;
-            this.color = new Color();
+            this.lighting = map.getLighting();
+            if(lighting.isNightAndDayEnabled()) {
+                color = new Color[] { new Color(), new Color() };
+                tmpcolor = new Color[] { new Color(), new Color() };
+            }
+            else {
+                color = new Color[] { new Color() };
+                tmpcolor = new Color[] { new Color() };
+            }
+            c = new Color();
+            scaledtp = tp.resampleTexturePack(map.getPerspective().getModelScale());
         }
         /**
          * Get our shader
@@ -88,15 +102,15 @@ public class TexturePackHDShader implements HDShader {
          * Get our lighting
          */
         public HDLighting getLighting() {
-            return map.getLighting();
+            return lighting;
         }
         
         /**
          * Reset renderer state for new ray
          */
         public void reset(HDPerspectiveState ps) {
-            color.setTransparent();
-            air = true;
+            for(Color c: color) 
+                c.setTransparent();
         }
         
         /**
@@ -105,8 +119,54 @@ public class TexturePackHDShader implements HDShader {
          */
         public boolean processBlock(HDPerspectiveState ps) {
             int blocktype = ps.getBlockTypeID();
-            color.setRGBA(0, 0, 0, 255);
+            if(blocktype == 0)
+                return false;
+            /* Get color from textures */
+            scaledtp.readColor(ps, mapiter, c);
 
+            if (c.getAlpha() > 0) {
+                int subalpha = ps.getSubmodelAlpha();
+                /* Scale brightness depending upon face */
+                switch(ps.getLastBlockStep()) {
+                    case X_MINUS:
+                    case X_PLUS:
+                        /* 60% brightness */
+                        c.blendColor(0xFFA0A0A0);
+                        break;
+                    case Y_MINUS:
+                    case Y_PLUS:
+                        /* 85% brightness for even, 90% for even*/
+                        if((mapiter.getY() & 0x01) == 0) 
+                            c.blendColor(0xFFD9D9D9);
+                        else
+                            c.blendColor(0xFFE6E6E6);
+                        break;
+                }
+                /* Handle light level, if needed */
+                lighting.applyLighting(ps, this, c, tmpcolor);
+                /* If we got alpha from subblock model, use it instead */
+                if(subalpha >= 0) {
+                    for(Color clr : tmpcolor)
+                       clr.setAlpha(Math.max(subalpha,clr.getAlpha()));
+                }
+                /* If no previous color contribution, use new color */
+                if(color[0].isTransparent()) {
+                    for(int i = 0; i < color.length; i++)
+                        color[i].setColor(tmpcolor[i]);
+                    return (color[0].getAlpha() == 255);
+                }
+                /* Else, blend and generate new alpha */
+                else {
+                    int alpha = color[0].getAlpha();
+                    int alpha2 = tmpcolor[0].getAlpha() * (255-alpha) / 255;
+                    int talpha = alpha + alpha2;
+                    for(int i = 0; i < color.length; i++)
+                        color[i].setRGBA((tmpcolor[i].getRed()*alpha2 + color[i].getRed()*alpha) / talpha,
+                                  (tmpcolor[i].getGreen()*alpha2 + color[i].getGreen()*alpha) / talpha,
+                                  (tmpcolor[i].getBlue()*alpha2 + color[i].getBlue()*alpha) / talpha, talpha);
+                    return (talpha >= 254);   /* If only one short, no meaningful contribution left */
+                }
+            }
             return true;
         }        
         /**
@@ -120,7 +180,7 @@ public class TexturePackHDShader implements HDShader {
          * @param index - index of color to request (renderer specific - 0=default, 1=day for night/day renderer
          */
         public void getRayColor(Color c, int index) {
-            c.setColor(color);
+            c.setColor(color[index]);
         }
         /**
          * Clean up state object - called after last ray completed
