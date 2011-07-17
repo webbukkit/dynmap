@@ -1,20 +1,20 @@
 # Mapping of texture resources to block ID and data values
 # block:id=<block-id>,data=<data-val|*>,top=<index>,bottom=<index>,north=<index>,south=<index>,east=<index>,west=<index>,allfaces=<index>,allsides=<index>
 # <index>=0-255 (index of patch in terrain.png), -1=clear, 1xxx=biome tint from grasscolor.png,257=stationary water,258=moving water,
-#      259=stationary lava,260=moving lava,2xxx=biome tint from foliagecolor.png,3xxx=biome tint from watercolor.png,4xxx=rotate texture 90,
+#      259=stationary lava,260=moving lava,2xxx=biome tint from foliagecolor.png,4xxx=rotate texture 90,
 #      5xxx=rotate texture 180, 6xxx=rotate texture 270, 7xxx=flip texture horizontally, 8xxx=shift down 1/2 block, 9=shift down 1/2,flip horiz,
 #      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block
 ######
 # Stone
-block:id=1,data=*,allfaces=1
+block:id=1,allfaces=1
 # Grass
-block:id=2,data=*,allsides=11003,top=1000,bottom=2
+block:id=2,allsides=11003,top=1000,bottom=2
 # Dirt
-block:id=3,data=*,allfaces=2
+block:id=3,allfaces=2
 # Cobblestone
-block:id=4,data=*,allfaces=16
+block:id=4,allfaces=16
 # Wooden Plank
-block:id=5,data=*,allsides=4,topbottom=4004
+block:id=5,allsides=4,topbottom=4004
 # Sapling
 block:id=6,data=0,data=3,allsides=15
 # Sapling (Spruce)
@@ -22,25 +22,25 @@ block:id=6,data=1,allsides=63
 # Sapling (Birch)
 block:id=6,data=2,allsides=79
 # Bedrock
-block:id=7,data=*,allfaces=16
+block:id=7,allfaces=16
 # Water
-block:id=8,data=*,allfaces=12258
+block:id=8,allfaces=12258
 # Stationary water
-block:id=9,data=*,allfaces=12257
+block:id=9,allfaces=12257
 # Lava
-block:id=10,data=*,allfaces=260
+block:id=10,allfaces=260
 # Stationary Lava
-block:id=11,data=*,allfaces=259
+block:id=11,allfaces=259
 # Sand
-block:id=12,data=*,allfaces=18
+block:id=12,allfaces=18
 # Gravel
-block:id=13,data=*,allfaces=19
+block:id=13,allfaces=19
 # Gold Ore
-block:id=14,data=*,allfaces=32
+block:id=14,allfaces=32
 # Iron Ore
-block:id=15,data=*,allfaces=33
+block:id=15,allfaces=33
 # Coal Ore
-block:id=16,data=*,allfaces=34
+block:id=16,allfaces=34
 # Wood (std)
 block:id=17,data=0,allsides=20,top=21,bottom=21
 # Wood (spruce/pine)
@@ -54,13 +54,13 @@ block:id=18,data=1,allfaces=2132
 # Leaves (birch)
 block:id=18,data=2,allfaces=2052
 # Sponge
-block:id=19,data=*,allfaces=48
+block:id=19,allfaces=48
 # Glass
-block:id=20,data=*,allfaces=12049
+block:id=20,allfaces=12049
 # Lapis Lazuli Ore
-block:id=21,data=*,allfaces=160
+block:id=21,allfaces=160
 # Lapis Lazuli Block
-block:id=22,data=*,allfaces=144
+block:id=22,allfaces=144
 # Dispenser (facing east)
 block:id=23,data=2,top=62,east=46,south=45,north=45,west=45,bottom=62
 # Dispenser (facing west)
@@ -70,7 +70,7 @@ block:id=23,data=4,top=62,north=46,south=45,east=45,west=45,bottom=62
 # Dispenser (facing south)
 block:id=23,data=5,top=62,south=46,north=45,east=45,west=45,bottom=62
 # Sandstone
-block:id=24,data=*,top=176,bottom=208,allsides=192
+block:id=24,top=176,bottom=208,allsides=192
 # Note Block 
 block:id=25,allfaces=74
 # Bed - head - pointing west
@@ -126,7 +126,7 @@ block:id=29,data=4,data=12,north=106,south=109,top=108,bottom=5108,east=6108,wes
 # Sticky piston - facing south
 block:id=29,data=5,data=13,north=109,south=106,top=5108,bottom=108,east=4108,west=6108
 # Web
-block:id=30,data=*,allfaces=11
+block:id=30,allfaces=11
 # Dead shrub
 block:id=31,data=0,allsides=55,top=20
 # Tall Grass
@@ -134,7 +134,7 @@ block:id=31,data=1,allfaces=1039
 # Fern
 block:id=31,data=2,allsides=1056,top=1000
 # Dead shrub
-block:id=32,data=*,allsides=55,top=20
+block:id=32,allsides=55,top=20
 # Piston - facing down
 block:id=33,data=0,data=8,top=109,bottom=107,allsides=5108
 # Piston - facing up
@@ -148,7 +148,7 @@ block:id=33,data=4,data=12,north=107,south=109,top=108,bottom=5108,east=6108,wes
 # Piston - facing south
 block:id=33,data=5,data=13,north=109,south=107,top=5108,bottom=108,east=4108,west=6108
 # Piston extesions - skipped - render all as if closed
-block:id=34,data=*
+block:id=34
 # Wool - white
 block:id=35,data=0,allfaces=64
 # Wool - orange
@@ -182,19 +182,19 @@ block:id=35,data=14,allfaces=129
 # Wool - Black
 block:id=35,data=15,allfaces=113
 # Block move by piston - don't render
-block:id=36,data=*
+block:id=36
 # Dandelion
-block:id=37,data=*,allsides=13,top=162
+block:id=37,allsides=13,top=162
 # Rose
-block:id=38,data=*,allsides=12,top=129
+block:id=38,allsides=12,top=129
 # Brown mushroom
-block:id=39,data=*,allsides=29,top=161
+block:id=39,allsides=29,top=161
 # Red mushroom
-block:id=40,data=*,allsides=28,top=129
+block:id=40,allsides=28,top=129
 # Gold block
-block:id=41,data=*,allfaces=23
+block:id=41,allfaces=23
 # Iron block
-block:id=42,data=*,allfaces=22
+block:id=42,allfaces=22
 # Double Slab - stone
 block:id=43,data=0,allsides=5,topbottom=6
 # Double Slab - Sandstone
@@ -212,35 +212,35 @@ block:id=44,data=2,allsides=4,topbottom=4004
 # Slab - Cobblestone
 block:id=44,data=3,allfaces=16
 # Brick Block
-block:id=45,data=*,allfaces=7
+block:id=45,allfaces=7
 # TNT
-block:id=46,data=*,top=9,bottom=10,allsides=8
+block:id=46,top=9,bottom=10,allsides=8
 # Bookshelf
-block:id=47,data=*,topbottom=4,allsides=35
+block:id=47,topbottom=4,allsides=35
 # Mossy Cobblestone
-block:id=48,data=*,allfaces=36
+block:id=48,allfaces=36
 # Obsidian
-block:id=49,data=*,allfaces=37
+block:id=49,allfaces=37
 # Torch - inclined
 block:id=50,data=1,data=2,data=3,data=4,allsides=10080,top=162,bottom=4
 # Torch - up
 block:id=50,data=5,allsides=80,top=162,bottom=4
 # Fire
-block:id=51,data=*,allsides=129,top=162
+block:id=51,allsides=129,top=162
 # Monster spawner
-block:id=52,data=*,allfaces=65
+block:id=52,allfaces=65
 # Wooden stairs
-block:id=53,data=*,allsides=4,topbottom=4004
+block:id=53,allsides=4,topbottom=4004
 # Chest - TODO: get entity data so we can see orientation
-block:id=54,data=*,top=25,south=27,north=27,east=26,west=26
+block:id=54,top=25,south=27,north=27,east=26,west=26
 # Redstone wire (model handling shape - use red wool for color)
-block:id=55,data=*,allfaces=129
+block:id=55,allfaces=129
 # Diamond ore
-block:id=56,data=*,allfaces=50
+block:id=56,allfaces=50
 # Diamond block
-block:id=57,data=*,allfaces=24
+block:id=57,allfaces=24
 # Crafting table
-block:id=58,data=*,topbottom=43,east=59,west=59,north=60,south=60
+block:id=58,topbottom=43,east=59,west=59,north=60,south=60
 # Crops (size 1)
 block:id=59,data=0,allsides=88,top=1000
 # Crops (size 2)
@@ -270,13 +270,13 @@ block:id=61,data=4,top=62,north=61,south=45,east=45,west=45,bottom=62
 # Furnace (facing south)
 block:id=61,data=5,top=62,south=61,north=45,east=45,west=45,bottom=62
 # Signpost
-block:id=62,data=*,allsides=4,topbottom=4004
+block:id=62,allsides=4,topbottom=4004
 # Wooden Door - bottom
 block:id=64,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,allsides=97,topbottom=4
 # Wooden Door - top
 block:id=64,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=81,topbottom=4
 # Ladders
-block:id=65,data=*,allsides=83,topbottom=4
+block:id=65,allsides=83,topbottom=4
 # Rail - heading east-west
 # Rail - incline to east
 # Rail - incline to west
@@ -294,21 +294,21 @@ block:id=66,data=8,topbottom=6112,allsides=4
 # Rails - northwest corner
 block:id=66,data=9,topbottom=112,allsides=4
 # Cobblestone Stairs
-block:id=67,data=*,allfaces=16
+block:id=67,allfaces=16
 # Wall sign
-block:id=68,data=*,allsides=4,topbottom=4004
+block:id=68,allsides=4,topbottom=4004
 # Switch (just do stone for now)
-block:id=69,data=*,allfaces=1
+block:id=69,allfaces=1
 # Stone pressure plate
-block:id=70,data=*,allfaces=1
+block:id=70,allfaces=1
 # Iron Door - bottom
 block:id=71,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,allsides=98,topbottom=22
 # Iron Door - top
 block:id=71,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=82,topbottom=22
 # Wooden pressure plate
-block:id=72,data=*,allsides=4,topbottom=4004
+block:id=72,allsides=4,topbottom=4004
 # Redstone Ore
-block:id=73,id=74,data=*,allfaces=51
+block:id=73,id=74,allfaces=51
 # Redstone Torch - unlit - inclined
 block:id=75,data=1,data=2,data=3,data=4,allsides=10115,top=162,bottom=4
 # Redstone Torch - unlit - up
@@ -318,33 +318,33 @@ block:id=76,data=1,data=2,data=3,data=4,allsides=10099,top=162,bottom=4
 # Redstone Torch - lit - up
 block:id=76,data=5,allsides=99,top=162,bottom=4
 # Stone button
-block:id=77,data=*,allfaces=1
+block:id=77,allfaces=1
 # Snow
-block:id=78,data=*,allfaces=66
+block:id=78,allfaces=66
 # Ice
-block:id=79,data=*,allfaces=12067
+block:id=79,allfaces=12067
 # Snow block
-block:id=80,data=*,allfaces=66
+block:id=80,allfaces=66
 # Cactus
-block:id=81,data=*,top=69,allsides=70,bottom=71
+block:id=81,top=69,allsides=70,bottom=71
 # Clay block
-block:id=82,data=*,allfaces=72
+block:id=82,allfaces=72
 # Sugar Cane
-block:id=83,data=*,allsides=73,topbottom=21
+block:id=83,allsides=73,topbottom=21
 # Jukebox
-block:id=84,data=*,allsides=74,topbottom=75
+block:id=84,allsides=74,topbottom=75
 # Fence
-block:id=85,data=*,allsides=4,topbottom=4004
+block:id=85,allsides=4,topbottom=4004
 # Pumpkin
-block:id=86,data=*,allsides=118,topbottom=102
+block:id=86,allsides=118,topbottom=102
 # Netherrock
-block:id=87,data=*,allfaces=103
+block:id=87,allfaces=103
 # SoulSand
-block:id=88,data=*,allfaces=104
+block:id=88,allfaces=104
 # Glowstone Block
-block:id=89,data=*,allfaces=105
+block:id=89,allfaces=105
 # Portal (no texture for this - using purple wool)
-block:id=90,data=*,allfaces=193
+block:id=90,allfaces=193
 # Jack O Lantern (east)
 block:id=91,data=0,north=118,south=118,east=120,west=118,topbottom=102
 # Jack O Lantern (south)
@@ -354,12 +354,12 @@ block:id=91,data=2,north=118,south=118,east=118,west=120,topbottom=102
 # Jack O Lantern (north)
 block:id=91,data=3,north=120,south=118,east=118,west=118,topbottom=102
 # Cake Block
-block:id=92,data=*,allsides=122,top=121,bottom=124
+block:id=92,allsides=122,top=121,bottom=124
 # Repeater (off)
-block:id=93,data=*,top=131,allsides=1,bottom=1
+block:id=93,top=131,allsides=1,bottom=1
 # Repeater (on)
-block:id=94,data=*,top=147,allsides=1,bottom=1
+block:id=94,top=147,allsides=1,bottom=1
 # Locked Chest - TODO: get entity data so we can see orientation
-block:id=95,data=*,top=25,south=27,north=27,east=26,west=26
+block:id=95,top=25,south=27,north=27,east=26,west=26
 # Trap door
-block:id=96,data=*,topbottom=84,allsides=4
+block:id=96,topbottom=84,allsides=4
