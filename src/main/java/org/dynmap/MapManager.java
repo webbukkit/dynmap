@@ -296,8 +296,10 @@ public class MapManager {
     }
     
     private class ProcessChunkLoads implements Runnable {
+        long last_tick;
         public void run() {
             int cnt = max_chunk_loads_per_tick;
+            long tick = System.currentTimeMillis();
             
             while(cnt > 0) {
                 MapChunkCache c = chunkloads.peek();
@@ -311,8 +313,16 @@ public class MapManager {
                     }
                 }
             }
-            if(mapman.scheduler != null)
-                mapman.scheduler.scheduleSyncDelayedTask(mapman.plug_in, this, 1);
+            if(mapman.scheduler != null) {
+                /* Detect if bukkit is being stupid - add delay of 1 tick if we're being overfed */
+                if((tick - last_tick) >= 35) {   /* If at least 35msec since last run, try immediate */
+                    mapman.scheduler.scheduleSyncDelayedTask(mapman.plug_in, this);
+                }
+                else {
+                    mapman.scheduler.scheduleSyncDelayedTask(mapman.plug_in, this, 1);
+                }
+                last_tick = tick;
+            }
         }
     }
     
