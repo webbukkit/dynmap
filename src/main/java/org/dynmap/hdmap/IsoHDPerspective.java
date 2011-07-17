@@ -89,6 +89,7 @@ public class IsoHDPerspective implements HDPerspective {
         boolean nonairhit;
         int subalpha;
         double mt;
+        int[] subblock_xyz = new int[3];
         /**
          * Get sky light level - only available if shader requested it
          */
@@ -454,16 +455,17 @@ public class IsoHDPerspective implements HDPerspective {
             }
             return true;
         }
-        public void getSubblockCoord(int[] v) {
+        public int[] getSubblockCoord() {
             double tt = t + 0.000001;
             if(subalpha >= 0)
                 tt = mt;
             double xx = top.x + tt * (bottom.x - top.x);  
             double yy = top.y + tt * (bottom.y - top.y);  
             double zz = top.z + tt * (bottom.z - top.z);
-            v[0] = (int)((xx - Math.floor(xx)) * modscale);
-            v[1] = (int)((yy - Math.floor(yy)) * modscale);
-            v[2] = (int)((zz - Math.floor(zz)) * modscale);
+            subblock_xyz[0] = (int)((xx - Math.floor(xx)) * modscale);
+            subblock_xyz[1] = (int)((yy - Math.floor(yy)) * modscale);
+            subblock_xyz[2] = (int)((zz - Math.floor(zz)) * modscale);
+            return subblock_xyz;
         }
     }
     

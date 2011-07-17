@@ -1,7 +1,9 @@
 package org.dynmap.hdmap;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
@@ -256,9 +258,28 @@ public class HDBlockModels {
         return model;
     }
     /**
-     * Load models from model.txt file
+     * Load models 
      */
-    public static void loadModels(File plugindir) {
+    public static void loadModels(File datadir) {
+        /* Load block models */
+        HDBlockModels.loadModelFile(new File(datadir, "models.txt"));
+        File custom = new File(datadir, "custom-models.txt");
+        if(custom.canRead()) {
+            HDBlockModels.loadModels(custom);
+        }
+        else {
+            try {
+                FileWriter fw = new FileWriter(custom);
+                fw.write("# The user is free to add new and custom models here - Dynmap's install will not overwrite it\n");
+                fw.close();
+            } catch (IOException iox) {
+            }
+        }
+    }
+    /**
+     * Load models from file
+     */
+    private static void loadModelFile(File modelfile) {
         LineNumberReader rdr = null;
         int cnt = 0;
         try {
@@ -267,7 +288,7 @@ public class HDBlockModels {
             int layerbits = 0;
             int rownum = 0;
             int scale = 0;
-            rdr = new LineNumberReader(new FileReader(new File(plugindir, "models.txt")));
+            rdr = new LineNumberReader(new FileReader(modelfile));
             while((line = rdr.readLine()) != null) {
                 if(line.startsWith("block:")) {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
@@ -300,7 +321,7 @@ public class HDBlockModels {
                         }
                     }
                     else {
-                        Log.severe("Block model missing required parameters = line " + rdr.getLineNumber() + " of models.txt");
+                        Log.severe("Block model missing required parameters = line " + rdr.getLineNumber() + " of " + modelfile.getPath());
                     }
                     layerbits = 0;
                 }
@@ -379,11 +400,11 @@ public class HDBlockModels {
                     }
                 }
             }
-            Log.info("Loaded " + cnt + " block models");
+            Log.verboseinfo("Loaded " + cnt + " block models from " + modelfile.getPath());
         } catch (IOException iox) {
             Log.severe("Error reading models.txt - " + iox.toString());
         } catch (NumberFormatException nfx) {
-            Log.severe("Format error - line " + rdr.getLineNumber() + " of models.txt");
+            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + modelfile.getPath());
         } finally {
             if(rdr != null) {
                 try {

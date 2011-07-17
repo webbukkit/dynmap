@@ -363,7 +363,7 @@ public class MapManager {
         }
         
         scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
-        scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 1); /* Chunk loader task */
+        scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 2); /* Chunk loader task - do every 2 to work around bukkit issue */
 
     }
 

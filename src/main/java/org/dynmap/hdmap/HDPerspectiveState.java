@@ -59,5 +59,5 @@ public interface HDPerspectiveState {
     /**
      * Return subblock coordinates of current ray position
      */
-    void getSubblockCoord(int[] xyz);
+    int[] getSubblockCoord();
 }

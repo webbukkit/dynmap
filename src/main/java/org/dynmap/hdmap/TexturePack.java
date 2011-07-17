@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.LineNumberReader;
@@ -48,6 +49,10 @@ public class TexturePack {
     private static final String FOLIAGECOLOR_PNG = "misc/foliagecolor.png";
     private static final String WATERCOLOR_PNG = "misc/watercolor.png";
     private static final String WATER_PNG = "misc/water.png";
+    private static final String CUSTOMLAVASTILL_PNG = "custom_lava_still.png";
+    private static final String CUSTOMLAVAFLOWING_PNG = "custom_lava_flowing.png";
+    private static final String CUSTOMWATERSTILL_PNG = "custom_water_still.png";
+    private static final String CUSTOMWATERFLOWING_PNG = "custom_water_flowing.png";
 
     /* Color modifier codes (x1000 for value in mapping code) */
     private static final int COLORMOD_GRASSTONED = 1;
@@ -545,11 +550,31 @@ public class TexturePack {
         BufferedImage img = KzedMap.createBufferedImage(outbuf, terrain_width, terrain_height);
         ImageIO.write(img, "png", f);
     }
-    
+
+    /**
+     * Load texture pack mappings
+     */
+    public static void loadTextureMapping(File datadir) {
+        /* Load block models */
+        loadTextureFile(new File(datadir, "texture.txt"));
+        File custom = new File(datadir, "custom-texture.txt");
+        if(custom.canRead()) {
+            loadTextureFile(custom);
+        }
+        else {
+            try {
+                FileWriter fw = new FileWriter(custom);
+                fw.write("# The user is free to add new and custom texture mappings here - Dynmap's install will not overwrite it\n");
+                fw.close();
+            } catch (IOException iox) {
+            }
+        }
+    }
+
     /**
      * Load texture pack mappings from texture.txt file
      */
-    public static void loadTextureMapping(File plugindir) {
+    private static void loadTextureFile(File txtfile) {
         LineNumberReader rdr = null;
         int cnt = 0;
         /* Initialize map with blank map for all entries */
@@ -557,7 +582,7 @@ public class TexturePack {
 
         try {
             String line;
-            rdr = new LineNumberReader(new FileReader(new File(plugindir, "texture.txt")));
+            rdr = new LineNumberReader(new FileReader(txtfile));
             while((line = rdr.readLine()) != null) {
                 if(line.startsWith("block:")) {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
@@ -620,17 +645,17 @@ public class TexturePack {
                         cnt++;
                     }
                     else {
-                        Log.severe("Texture mapping missing required parameters = line " + rdr.getLineNumber() + " of texture.txt");
+                        Log.severe("Texture mapping missing required parameters = line " + rdr.getLineNumber() + " of " + txtfile.getPath());
                     }
                 }
                 else if(line.startsWith("#") || line.startsWith(";")) {
                 }
             }
-            Log.info("Loaded " + cnt + " texture mappings");
+            Log.verboseinfo("Loaded " + cnt + " texture mappings from " + txtfile.getPath());
         } catch (IOException iox) {
-            Log.severe("Error reading texture.txt - " + iox.toString());
+            Log.severe("Error reading " + txtfile.getPath() + " - " + iox.toString());
         } catch (NumberFormatException nfx) {
-            Log.severe("Format error - line " + rdr.getLineNumber() + " of texture.txt");
+            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + txtfile.getPath());
         } finally {
             if(rdr != null) {
                 try {
@@ -656,10 +681,18 @@ public class TexturePack {
         /* See if not basic block texture */
         int textop = textid / 1000;
         textid = textid % 1000;
+        
+        /* If clear-inside op, get out early */
+        if(textop == COLORMOD_CLEARINSIDE) {
+            /* Check if previous block is same block type as we are: surface is transparent if it is */
+            if(blkid == lastblocktype) {
+                rslt.setTransparent();
+                return;
+            }
+        }
+
         int[] texture = terrain_argb[textid];
-        int clrval = 0;
-        int[] xyz = new int[3];
-        ps.getSubblockCoord(xyz);
+        int[] xyz = ps.getSubblockCoord();
         /* Get texture coordinates (U=horizontal(left=0),V=vertical(top=0)) */
         int u = 0, v = 0, tmp;
 
@@ -729,18 +762,10 @@ public class TexturePack {
                         }
                     }
                     break;
-                case COLORMOD_CLEARINSIDE:
-                    /* Check if previous block is same block type as we are: surface is transparent if it is */
-                    if(blkid == lastblocktype) {
-                        rslt.setTransparent();
-                        return;
-                    }
-                    break;
             }
         }
-        clrval = texture[v*native_scale + u];
-
-        rslt.setARGB(clrval);
+        /* Read color from texture */
+        rslt.setARGB(texture[v*native_scale + u]);
         if(textop > 0) {
             /* Switch based on texture modifier */
             switch(textop) {
@@ -776,30 +801,5 @@ public class TexturePack {
         int t = (int)((1.0-temp)*(width-1));
         int h = width - (int)(temp*rainfall*(width-1)) - 1;
         return argb[width*h + t];
-    }
-    
-    public static void main(String[] args) {
-        TexturePack.loadTextureMapping(new File("."));
-        TexturePack tp = TexturePack.getTexturePack("standard");
-        TexturePack tp2 = tp.resampleTexturePack(4);
-        try {
-            tp2.saveTerrainPNG(new File("test_terrain_4.png"));
-        } catch (IOException iox) {}
-        tp2 = tp.resampleTexturePack(16);
-        try {
-            tp2.saveTerrainPNG(new File("test_terrain_16.png"));
-        } catch (IOException iox) {}
-        tp2 = tp.resampleTexturePack(24);
-        try {
-            tp2.saveTerrainPNG(new File("test_terrain_24.png"));
-        } catch (IOException iox) {}
-        tp2 = tp.resampleTexturePack(64);
-        try {
-            tp2.saveTerrainPNG(new File("test_terrain_64.png"));
-        } catch (IOException iox) {}
-        tp2 = tp.resampleTexturePack(1);
-        try {
-            tp2.saveTerrainPNG(new File("test_terrain_1.png"));
-        } catch (IOException iox) {}
     }
 }
