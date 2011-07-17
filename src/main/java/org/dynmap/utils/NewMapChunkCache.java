@@ -145,6 +145,11 @@ public class NewMapChunkCache implements MapChunkCache {
         public final int getZ() {
             return z;
         }
+        public final int getBlockTypeIDAbove() {
+            if(y < 127)
+                return snap.getBlockTypeId(x & 0xF, y+1, z & 0xF);
+            return 0;
+        }
      }
 
     /**

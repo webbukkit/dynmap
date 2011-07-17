@@ -50,15 +50,25 @@ public class TexturePack {
     private static final String WATER_PNG = "misc/water.png";
 
     /* Color modifier codes (x1000 for value in mapping code) */
-    private static final short COLORMOD_GRASSTONED = 1;
-    private static final short COLORMOD_FOLIAGETONED = 2;
-    private static final short COLORMOD_WATERTONED = 3;
+    private static final int COLORMOD_GRASSTONED = 1;
+    private static final int COLORMOD_FOLIAGETONED = 2;
+    private static final int COLORMOD_WATERTONED = 3;
+    private static final int COLORMOD_ROT90 = 4;
+    private static final int COLORMOD_ROT180 = 5;
+    private static final int COLORMOD_ROT270 = 6;
+    private static final int COLORMOD_FLIPHORIZ = 7;
+    private static final int COLORMOD_SHIFTDOWNHALF = 8;
+    private static final int COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ = 9;
+    private static final int COLORMOD_INCLINEDTORCH = 10;
+    private static final int COLORMOD_GRASSSIDE = 11;
+    private static final int COLORMOD_CLEARINSIDE = 12;
+    
     /* Special tile index values */
-    private static final short BLOCKINDEX_BLANK = -1;
-    private static final short BLOCKINDEX_STATIONARYWATER = 257;
-    private static final short BLOCKINDEX_MOVINGWATER = 258;
-    private static final short BLOCKINDEX_STATIONARYLAVA = 259;
-    private static final short BLOCKINDEX_MOVINGLAVA = 260;
+    private static final int BLOCKINDEX_BLANK = -1;
+    private static final int BLOCKINDEX_STATIONARYWATER = 257;
+    private static final int BLOCKINDEX_MOVINGWATER = 258;
+    private static final int BLOCKINDEX_STATIONARYLAVA = 259;
+    private static final int BLOCKINDEX_MOVINGLAVA = 260;
     private static final int MAX_BLOCKINDEX = 260;
     private static final int BLOCKTABLELEN = MAX_BLOCKINDEX+1;
         
@@ -85,7 +95,7 @@ public class TexturePack {
     
     
     public static class HDTextureMap {
-        private short faces[];  /* index in terrain.png of image for each face (indexed by BlockStep.ordinal()) */
+        private int faces[];  /* index in terrain.png of image for each face (indexed by BlockStep.ordinal()) */
         private List<Integer> blockids;
         private int databits;
         private static HDTextureMap[] texmaps;
@@ -100,14 +110,14 @@ public class TexturePack {
         private HDTextureMap() {
             blockids = Collections.singletonList(Integer.valueOf(0));
             databits = 0xFFFF;
-            faces = new short[] { -1, -1, -1, -1, -1, -1 };
+            faces = new int[] { -1, -1, -1, -1, -1, -1 };
             
             for(int i = 0; i < texmaps.length; i++) {
                 texmaps[i] = this;
             }
         }
         
-        public HDTextureMap(List<Integer> blockids, int databits, short[] faces) {
+        public HDTextureMap(List<Integer> blockids, int databits, int[] faces) {
             this.faces = faces;
             this.blockids = blockids;
             this.databits = databits;
@@ -548,7 +558,7 @@ public class TexturePack {
                 if(line.startsWith("block:")) {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
                     int databits = 0;
-                    short faces[] = new short[] { -1, -1, -1, -1, -1, -1 };
+                    int faces[] = new int[] { -1, -1, -1, -1, -1, -1 };
                     line = line.substring(6);
                     String[] args = line.split(",");
                     for(String a : args) {
@@ -564,22 +574,25 @@ public class TexturePack {
                                 databits |= (1 << Integer.parseInt(av[1]));
                         }
                         else if(av[0].equals("top") || av[0].equals("y-")) {
-                            faces[BlockStep.Y_MINUS.ordinal()] = Short.parseShort(av[1]);
+                            faces[BlockStep.Y_MINUS.ordinal()] = Integer.parseInt(av[1]);
                         }
                         else if(av[0].equals("bottom") || av[0].equals("y+")) {
-                            faces[BlockStep.Y_PLUS.ordinal()] = Short.parseShort(av[1]);
+                            faces[BlockStep.Y_PLUS.ordinal()] = Integer.parseInt(av[1]);
                         }
                         else if(av[0].equals("north") || av[0].equals("x+")) {
-                            faces[BlockStep.X_PLUS.ordinal()] = Short.parseShort(av[1]);
+                            faces[BlockStep.X_PLUS.ordinal()] = Integer.parseInt(av[1]);
                         }
-                        else if(av[0].equals("east") || av[0].equals("z-")) {
-                            faces[BlockStep.Z_MINUS.ordinal()] = Short.parseShort(av[1]);
+                        else if(av[0].equals("south") || av[0].equals("x-")) {
+                            faces[BlockStep.X_MINUS.ordinal()] = Integer.parseInt(av[1]);
                         }
-                        else if(av[0].equals("west") || av[0].equals("z+")) {
-                            faces[BlockStep.Z_PLUS.ordinal()] = Short.parseShort(av[1]);
+                        else if(av[0].equals("west") || av[0].equals("z-")) {
+                            faces[BlockStep.Z_MINUS.ordinal()] = Integer.parseInt(av[1]);
+                        }
+                        else if(av[0].equals("east") || av[0].equals("z+")) {
+                            faces[BlockStep.Z_PLUS.ordinal()] = Integer.parseInt(av[1]);
                         }
                         else if(av[0].equals("allfaces")) {
-                            short id = Short.parseShort(av[1]);
+                            int id = Integer.parseInt(av[1]);
                             for(int i = 0; i < 6; i++) {
                                 faces[i] = id;
                             }
@@ -590,6 +603,10 @@ public class TexturePack {
                             faces[BlockStep.X_MINUS.ordinal()] = id;
                             faces[BlockStep.Z_PLUS.ordinal()] = id;
                             faces[BlockStep.Z_MINUS.ordinal()] = id;
+                        }
+                        else if(av[0].equals("topbottom")) {
+                            faces[BlockStep.Y_MINUS.ordinal()] = 
+                                faces[BlockStep.Y_PLUS.ordinal()] = Integer.parseInt(av[1]);
                         }
                     }
                     /* If we have everything, build block */
@@ -623,8 +640,7 @@ public class TexturePack {
     /**
      * Read color for given subblock coordinate, with given block id and data and face
      */
-    public void readColor(HDPerspectiveState ps, MapIterator mapiter, Color rslt) {
-        int blkid = ps.getBlockTypeID();
+    public void readColor(HDPerspectiveState ps, MapIterator mapiter, Color rslt, int blkid, int lastblocktype) {
         int blkdata = ps.getBlockData();
         HDTextureMap map = HDTextureMap.getMap(blkid, blkdata);
         BlockStep laststep = ps.getLastBlockStep();
@@ -640,57 +656,115 @@ public class TexturePack {
         int clrval = 0;
         int[] xyz = new int[3];
         ps.getSubblockCoord(xyz);
+        /* Get texture coordinates (U=horizontal(left=0),V=vertical(top=0)) */
+        int u = 0, v = 0, tmp;
+
         switch(laststep) {
-            case X_MINUS:
-                clrval = texture[(native_scale-xyz[1]-1)*native_scale + xyz[2]];
+            case X_MINUS: /* South face: U = East (Z-), V = Down (Y-) */
+                u = native_scale-xyz[2]-1; v = native_scale-xyz[1]-1; 
                 break;
-            case X_PLUS:
-                clrval = texture[(native_scale-xyz[1]-1)*native_scale + (native_scale-xyz[2]-1)];
+            case X_PLUS:    /* North face: U = West (Z+), V = Down (Y-) */
+                u = xyz[2]; v = native_scale-xyz[1]-1; 
                 break;
-            case Z_MINUS:
-                clrval = texture[(native_scale-xyz[1]-1)*native_scale + xyz[0]];
+            case Z_MINUS:   /* West face: U = South (X+), V = Down (Y-) */
+                u = xyz[0]; v = native_scale-xyz[1]-1;
                 break;
-            case Z_PLUS:
-                clrval = texture[(native_scale-xyz[1]-1)*native_scale + (native_scale-xyz[0]-1)];
+            case Z_PLUS:    /* East face: U = North (X-), V = Down (Y-) */
+                u = native_scale-xyz[0]-1; v = native_scale-xyz[1]-1;
                 break;
-            case Y_MINUS:
-                clrval = texture[xyz[2]*native_scale + xyz[0]];
-                break;
+            case Y_MINUS:   /* U = East(Z-), V = South(X+) */
             case Y_PLUS:
-                clrval = texture[xyz[2]*native_scale + (native_scale-xyz[0]-1)];
+                u = native_scale-xyz[2]-1; v = xyz[0];
                 break;
         }
+        /* Handle U-V transorms before fetching color */
+        if(textop > 0) {
+            switch(textop) {
+                case COLORMOD_ROT90:
+                    tmp = u; u = native_scale - v - 1; v = tmp;
+                    break;
+                case COLORMOD_ROT180:
+                    u = native_scale - u - 1; v = native_scale - v - 1;
+                    break;
+                case COLORMOD_ROT270:
+                    tmp = u; u = v; v = native_scale - tmp - 1;
+                    break;
+                case COLORMOD_FLIPHORIZ:
+                    u = native_scale - u - 1;
+                    break;
+                case COLORMOD_SHIFTDOWNHALF:
+                case COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ:
+                    if(v < native_scale/2) {
+                        rslt.setTransparent();
+                        return;
+                    }
+                    v -= native_scale/2;
+                    if(textop == COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ)
+                        u = native_scale - u - 1;
+                    break;
+                case COLORMOD_INCLINEDTORCH:
+                    if(v >= (3*native_scale/4)) {
+                        rslt.setTransparent();
+                        return;
+                    }
+                    v += native_scale/4;
+                    if(u < native_scale/2) u = native_scale/2-1;
+                    if(u > native_scale/2) u = native_scale/2;
+                    break;
+                case COLORMOD_GRASSSIDE:
+                    /* Check if snow above block */
+                    if(mapiter.getBlockTypeIDAbove() == 78) {
+                        texture = terrain_argb[68]; /* Snow block */
+                        textid = 68;
+                    }
+                    else {  /* Else, check the grass color overlay */
+                        int ovclr = terrain_argb[38][v*native_scale+u];
+                        if((ovclr & 0xFF000000) != 0) { /* Hit? */
+                            texture = terrain_argb[38]; /* Use it */
+                            textop = COLORMOD_GRASSTONED;   /* Force grass toning */
+                        }
+                    }
+                    break;
+                case COLORMOD_CLEARINSIDE:
+                    /* Check if previous block is same block type as we are: surface is transparent if it is */
+                    if(blkid == lastblocktype) {
+                        rslt.setTransparent();
+                        return;
+                    }
+                    break;
+            }
+        }
+        clrval = texture[v*native_scale + u];
+
         rslt.setARGB(clrval);
         if(textop > 0) {
-            int tone = 0xFFFFFFFF;
             /* Switch based on texture modifier */
             switch(textop) {
                 case COLORMOD_GRASSTONED:
                     if(grasscolor_argb == null) {
-                        tone = trivial_grasscolor;
+                        rslt.blendColor(trivial_grasscolor);
                     }
                     else {
-                        tone = biomeLookup(grasscolor_argb, grasscolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+                        rslt.blendColor(biomeLookup(grasscolor_argb, grasscolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
                     }
                     break;
                 case COLORMOD_FOLIAGETONED:
                     if(foliagecolor_argb == null) {
-                        tone = trivial_foliagecolor;
+                        rslt.blendColor(trivial_foliagecolor);
                     }
                     else {
-                        tone = biomeLookup(foliagecolor_argb, foliagecolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+                        rslt.blendColor(biomeLookup(foliagecolor_argb, foliagecolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
                     }
                     break;
                 case COLORMOD_WATERTONED:
                     if(watercolor_argb == null) {
-                        tone = trivial_watercolor;
+                        rslt.blendColor(trivial_watercolor);
                     }
                     else {
-                        tone = biomeLookup(watercolor_argb, watercolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+                        rslt.blendColor(biomeLookup(watercolor_argb, watercolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
                     }
                     break;
             }
-            rslt.blendColor(tone);
         }
     }
     

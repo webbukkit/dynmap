@@ -68,6 +68,7 @@ public class TexturePackHDShader implements HDShader {
         protected HDMap map;
         private TexturePack scaledtp;
         private HDLighting lighting;
+        private int lastblkid;
         
         private OurShaderState(MapIterator mapiter, HDMap map) {
             this.mapiter = mapiter;
@@ -111,6 +112,7 @@ public class TexturePackHDShader implements HDShader {
         public void reset(HDPerspectiveState ps) {
             for(Color c: color) 
                 c.setTransparent();
+            lastblkid = 0;
         }
         
         /**
@@ -119,10 +121,14 @@ public class TexturePackHDShader implements HDShader {
          */
         public boolean processBlock(HDPerspectiveState ps) {
             int blocktype = ps.getBlockTypeID();
-            if(blocktype == 0)
+            int lastblocktype = lastblkid;
+            lastblkid = blocktype;
+            
+            if(blocktype == 0) {
                 return false;
+            }
             /* Get color from textures */
-            scaledtp.readColor(ps, mapiter, c);
+            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype);
 
             if (c.getAlpha() > 0) {
                 int subalpha = ps.getSubmodelAlpha();
@@ -167,7 +173,8 @@ public class TexturePackHDShader implements HDShader {
                     return (talpha >= 254);   /* If only one short, no meaningful contribution left */
                 }
             }
-            return true;
+
+            return false;
         }        
         /**
          * Ray ended - used to report that ray has exited map (called if renderer has not reported complete)

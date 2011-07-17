@@ -317,7 +317,8 @@ public class MapManager {
     private class DoZoomOutProcessing implements Runnable {
         public void run() {
             Debug.debug("DoZoomOutProcessing started");
-            for(DynmapWorld w : worlds) {
+            ArrayList<DynmapWorld> wl = new ArrayList<DynmapWorld>(worlds);
+            for(DynmapWorld w : wl) {
                 w.freshenZoomOutFiles();
             }
             renderpool.schedule(this, zoomout_period, TimeUnit.SECONDS);
