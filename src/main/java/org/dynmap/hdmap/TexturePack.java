@@ -288,6 +288,10 @@ public class TexturePack {
         for(i = 256; i < BLOCKTABLELEN; i++) {
             terrain_argb[i] = blank;
         }
+        /* Fallbacks */
+        terrain_argb[BLOCKINDEX_STATIONARYLAVA] = terrain_argb[255];
+        terrain_argb[BLOCKINDEX_MOVINGLAVA] = terrain_argb[255];
+
         img.flush();
     }
     

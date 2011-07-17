@@ -14,7 +14,7 @@ block:id=3,data=*,allfaces=2
 # Cobblestone
 block:id=4,data=*,allfaces=16
 # Wooden Plank
-block:id=5,data=*,allfaces=4
+block:id=5,data=*,allsides=4,topbottom=4004
 # Sapling
 block:id=6,data=0,data=3,allsides=15
 # Sapling (Spruce)
@@ -200,7 +200,7 @@ block:id=43,data=0,allsides=5,topbottom=6
 # Double Slab - Sandstone
 block:id=43,data=1,top=176,bottom=208,allsides=192
 # Double Slab - Wood
-block:id=43,data=2,allfaces=4
+block:id=43,data=2,allsides=4,topbottom=4004
 # Double Slab - Cobblestone
 block:id=43,data=3,allfaces=16
 # Slab - stone
@@ -208,7 +208,7 @@ block:id=44,data=0,allsides=5,topbottom=6
 # Slab - Sandstone
 block:id=44,data=1,top=176,bottom=208,allsides=192
 # Slab - Wood
-block:id=44,data=2,allfaces=4
+block:id=44,data=2,allsides=4,topbottom=4004
 # Slab - Cobblestone
 block:id=44,data=3,allfaces=16
 # Brick Block
@@ -230,7 +230,7 @@ block:id=51,data=*,allsides=129,top=162
 # Monster spawner
 block:id=52,data=*,allfaces=65
 # Wooden stairs
-block:id=53,data=*,allfaces=4
+block:id=53,data=*,allsides=4,topbottom=4004
 # Chest - TODO: get entity data so we can see orientation
 block:id=54,data=*,top=25,south=27,north=27,east=26,west=26
 # Redstone wire (model handling shape - use red wool for color)
@@ -270,7 +270,7 @@ block:id=61,data=4,top=62,north=61,south=45,east=45,west=45,bottom=62
 # Furnace (facing south)
 block:id=61,data=5,top=62,south=61,north=45,east=45,west=45,bottom=62
 # Signpost
-block:id=62,data=*,allfaces=4
+block:id=62,data=*,allsides=4,topbottom=4004
 # Wooden Door - bottom
 block:id=64,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,allsides=97,topbottom=4
 # Wooden Door - top
@@ -296,7 +296,7 @@ block:id=66,data=9,topbottom=112,allsides=4
 # Cobblestone Stairs
 block:id=67,data=*,allfaces=16
 # Wall sign
-block:id=68,data=*,allfaces=4
+block:id=68,data=*,allsides=4,topbottom=4004
 # Switch (just do stone for now)
 block:id=69,data=*,allfaces=1
 # Stone pressure plate
@@ -306,7 +306,7 @@ block:id=71,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,allsides=98,
 # Iron Door - top
 block:id=71,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=82,topbottom=22
 # Wooden pressure plate
-block:id=72,data=*,allfaces=4
+block:id=72,data=*,allsides=4,topbottom=4004
 # Redstone Ore
 block:id=73,id=74,data=*,allfaces=51
 # Redstone Torch - unlit - inclined
@@ -334,7 +334,7 @@ block:id=83,data=*,allsides=73,topbottom=21
 # Jukebox
 block:id=84,data=*,allsides=74,topbottom=75
 # Fence
-block:id=85,data=*,allfaces=4
+block:id=85,data=*,allsides=4,topbottom=4004
 # Pumpkin
 block:id=86,data=*,allsides=118,topbottom=102
 # Netherrock
