@@ -93,4 +93,11 @@ public interface MapIterator {
      * Get Z coordinate
      */
     int getZ();
+    /**
+     * Get block ID at one above current coordinates
+     * 
+     * @return block id
+     */
+    int getBlockTypeIDAbove();
+
 }

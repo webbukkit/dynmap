@@ -56,4 +56,8 @@ public interface HDPerspectiveState {
      * Return submodel alpha value (-1 if no submodel rendered)
      */
     int getSubmodelAlpha();
+    /**
+     * Return subblock coordinates of current ray position
+     */
+    int[] getSubblockCoord();
 }

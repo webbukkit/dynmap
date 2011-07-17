@@ -34,3 +34,8 @@ shaders:
   
   - class: org.dynmap.hdmap.CaveHDShader
     name: cave
+
+  - class: org.dynmap.hdmap.TexturePackHDShader
+    name: stdtexture
+    texturepack: standard
+    

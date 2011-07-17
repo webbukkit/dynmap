@@ -26,6 +26,7 @@ public interface HDPerspective {
     public boolean isBlockTypeDataNeeded();
     
     double getScale();
+    int getModelScale();
 
     public void addClientConfiguration(JSONObject mapObject);
 }

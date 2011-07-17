@@ -35,6 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.hdmap.HDBlockModels;
+import org.dynmap.hdmap.TexturePack;
 import org.dynmap.permissions.NijikokunPermissions;
 import org.dynmap.permissions.OpPermissions;
 import org.dynmap.permissions.PermissionProvider;
@@ -79,6 +80,9 @@ public class DynmapPlugin extends JavaPlugin {
         dataDirectory = this.getDataFolder();
         /* Load block models */
         HDBlockModels.loadModels(dataDirectory);
+        /* Load texture mappings */
+        TexturePack.loadTextureMapping(dataDirectory);
+        
         org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "configuration.txt"));
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
