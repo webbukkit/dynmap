@@ -264,9 +264,7 @@ public class LegacyMapChunkCache implements MapChunkCache {
             } catch (NoSuchMethodException nsmx) {
             }
             initialized = true;
-            if(gethandle != null)
-                Log.info("Chunk snapshot support enabled");
-            else {
+            if(gethandle == null) {
                 Log.severe("ERROR: Chunk snapshot support not found - rendering not functiona!l");
                 return;
             }

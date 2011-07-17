@@ -258,10 +258,6 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
-            if(getsnapshot2 != null)
-                Log.info("Biome data support is enabled");
-            else
-                Log.info("Biome data support is disabled");
             init = true;
         }
     }

@@ -302,7 +302,7 @@ public class MapManager {
             while(cnt > 0) {
                 MapChunkCache c = chunkloads.peek();
                 if(c == null)
-                    return;
+                    break;
                 cnt = cnt - c.loadChunks(cnt);
                 if(c.isDoneLoading()) {
                     chunkloads.poll();
@@ -311,6 +311,8 @@ public class MapManager {
                     }
                 }
             }
+            if(mapman.scheduler != null)
+                mapman.scheduler.scheduleSyncDelayedTask(mapman.plug_in, this, 1);
         }
     }
     
@@ -363,8 +365,9 @@ public class MapManager {
         }
         
         scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
-        scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 2); /* Chunk loader task - do every 2 to work around bukkit issue */
-
+//        scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 2); 
+        /* Chunk loader task - work around bukkit issue */
+        scheduler.scheduleSyncDelayedTask(plugin, new ProcessChunkLoads());
     }
 
     void renderFullWorld(Location l, CommandSender sender) {

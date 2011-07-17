@@ -76,26 +76,29 @@ public class TexturePack {
     private static final int BLOCKINDEX_MOVINGLAVA = 260;
     private static final int MAX_BLOCKINDEX = 260;
     private static final int BLOCKTABLELEN = MAX_BLOCKINDEX+1;
-        
+
+    private static class LoadedImage {
+        int[] argb;
+        int width, height;
+        int trivial_color;
+    }    
+    
     private int[][]   terrain_argb;
     private int terrain_width, terrain_height;
     private int native_scale;
 
-    private int[]   grasscolor_argb;
-    private int grasscolor_width, grasscolor_height;
-    private int trivial_grasscolor;
-
-    private int[]   foliagecolor_argb;
-    private int foliagecolor_width, foliagecolor_height;
-    private int trivial_foliagecolor;
-
-    private int[]   watercolor_argb;
-    private int watercolor_width, watercolor_height;
-    private int trivial_watercolor;
-
-    private int[]   water_argb;
-    private int water_width, water_height;
+    private static final int IMG_GRASSCOLOR = 0;
+    private static final int IMG_FOLIAGECOLOR = 1;
+    private static final int IMG_WATERCOLOR = 2;
+    private static final int IMG_WATER = 3;
+    private static final int IMG_CUSTOMWATERMOVING = 4;
+    private static final int IMG_CUSTOMWATERSTILL = 5;
+    private static final int IMG_CUSTOMLAVAMOVING = 6;
+    private static final int IMG_CUSTOMLAVASTILL = 7;
+    private static final int IMG_CNT = 8;
     
+    private LoadedImage[] imgs = new LoadedImage[IMG_CNT];
+
     private HashMap<Integer, TexturePack> scaled_textures;
     
     
@@ -179,28 +182,30 @@ public class TexturePack {
             if(ze == null)
                 throw new FileNotFoundException();
             is = zf.getInputStream(ze);
-            loadGrassColorPNG(is);
+            loadBiomeShadingImage(is, IMG_GRASSCOLOR);
             is.close();
             /* Try to find and load misc/foliagecolor.png */
             ze = zf.getEntry(FOLIAGECOLOR_PNG);
             if(ze == null)
                 throw new FileNotFoundException();
             is = zf.getInputStream(ze);
-            loadFoliageColorPNG(is);
+            loadBiomeShadingImage(is, IMG_FOLIAGECOLOR);
             is.close();
             /* Try to find and load misc/watercolor.png */
             ze = zf.getEntry(WATERCOLOR_PNG);
             if(ze == null)
                 throw new FileNotFoundException();
             is = zf.getInputStream(ze);
-            loadWaterColorPNG(is);
+            loadBiomeShadingImage(is, IMG_WATERCOLOR);
             is.close();
             /* Try to find and load misc/water.png */
             ze = zf.getEntry(WATER_PNG);
             if(ze == null)
                 throw new FileNotFoundException();
             is = zf.getInputStream(ze);
-            loadWaterPNG(is);
+            loadImage(is, IMG_WATER);
+            patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
+            patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
             is.close();
             
             zf.close();
@@ -223,22 +228,25 @@ public class TexturePack {
             /* Check for misc/grasscolor.png */
             f = new File(texturedir, tpname + "/" + GRASSCOLOR_PNG);
             fis = new FileInputStream(f);
-            loadGrassColorPNG(fis);
+            loadBiomeShadingImage(fis, IMG_GRASSCOLOR);
             fis.close();
             /* Check for misc/foliagecolor.png */
             f = new File(texturedir, tpname + "/" + FOLIAGECOLOR_PNG);
             fis = new FileInputStream(f);
-            loadFoliageColorPNG(fis);
+            loadBiomeShadingImage(fis, IMG_FOLIAGECOLOR);
             fis.close();
             /* Check for misc/waterecolor.png */
             f = new File(texturedir, tpname + "/" + WATERCOLOR_PNG);
             fis = new FileInputStream(f);
-            loadWaterColorPNG(fis);
+            loadBiomeShadingImage(fis, IMG_WATERCOLOR);
             fis.close();
             /* Check for misc/water.png */
             f = new File(texturedir, tpname + "/" + WATER_PNG);
             fis = new FileInputStream(f);
-            loadWaterPNG(fis);
+            loadImage(fis, IMG_WATER);
+            patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
+            patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
+
             fis.close();
         } catch (IOException iox) {
             if(fis != null) {
@@ -255,24 +263,7 @@ public class TexturePack {
         this.terrain_height = tp.terrain_height;
         this.native_scale = tp.native_scale;
 
-        this.grasscolor_argb = tp.grasscolor_argb;
-        this.grasscolor_height = tp.grasscolor_height;
-        this.grasscolor_width = tp.grasscolor_width;
-        this.trivial_grasscolor = tp.trivial_grasscolor;
-
-        this.watercolor_argb = tp.watercolor_argb;
-        this.watercolor_height = tp.watercolor_height;
-        this.watercolor_width = tp.watercolor_width;
-        this.trivial_watercolor = tp.trivial_watercolor;
-
-        this.foliagecolor_argb = tp.foliagecolor_argb;
-        this.foliagecolor_height = tp.foliagecolor_height;
-        this.foliagecolor_width = tp.foliagecolor_width;
-        this.trivial_foliagecolor = tp.trivial_foliagecolor;
-
-        this.water_argb = tp.water_argb;
-        this.water_height = tp.water_height;
-        this.water_width = tp.water_width;
+        this.imgs = tp.imgs;
     }
     
     /* Load terrain.png */
@@ -300,94 +291,47 @@ public class TexturePack {
         img.flush();
     }
     
-    /* Load misc/grasscolor.png */
-    private void loadGrassColorPNG(InputStream is) throws IOException {
+    /* Load image into image array */
+    private void loadImage(InputStream is, int idx) throws IOException {
         /* Load image */
         BufferedImage img = ImageIO.read(is);
         if(img == null) { throw new FileNotFoundException(); }
-        grasscolor_width = img.getWidth();
-        grasscolor_height = img.getHeight();
-        grasscolor_argb = new int[grasscolor_width * grasscolor_height];
-        img.getRGB(0, 0, grasscolor_width, grasscolor_height, grasscolor_argb, 0, grasscolor_width);
+        imgs[idx] = new LoadedImage();
+        imgs[idx].width = img.getWidth();
+        imgs[idx].height = img.getHeight();
+        imgs[idx].argb = new int[imgs[idx].width * imgs[idx].height];
+        img.getRGB(0, 0, imgs[idx].width, imgs[idx].height, imgs[idx].argb, 0, imgs[idx].width);
         img.flush();
-        /* Figure out trivial color */
-        trivial_grasscolor = grasscolor_argb[grasscolor_height*grasscolor_width*3/4 + grasscolor_width/2];
+    }
+
+    /* Load biome shading image into image array */
+    private void loadBiomeShadingImage(InputStream is, int idx) throws IOException {
+        loadImage(is, idx); /* Get image */
+        LoadedImage li = imgs[idx];
+        /* Get trivial color for biome-shading image */
+        int clr = li.argb[li.height*li.width*3/4 + li.width/2];
         boolean same = true;
-        for(int j = 0; same && (j < grasscolor_height); j++) {
+        for(int j = 0; same && (j < li.height); j++) {
             for(int i = 0; same && (i <= j); i++) {
-                if(grasscolor_argb[grasscolor_width*j+i] != trivial_grasscolor)
+                if(li.argb[li.width*j+i] != clr)
                     same = false;
             }
         }
         /* All the same - no biome lookup needed */
         if(same)
-            grasscolor_argb = null;
+            imgs[idx].argb = null;
+        li.trivial_color = clr;
     }
     
-    /* Load misc/foliagecolor.png */
-    private void loadFoliageColorPNG(InputStream is) throws IOException {
-        /* Load image */
-        BufferedImage img = ImageIO.read(is);
-        if(img == null) { throw new FileNotFoundException(); }
-        foliagecolor_width = img.getWidth();
-        foliagecolor_height = img.getHeight();
-        foliagecolor_argb = new int[foliagecolor_width * foliagecolor_height];
-        img.getRGB(0, 0, foliagecolor_width, foliagecolor_height, foliagecolor_argb, 0, foliagecolor_width);
-        img.flush();        
-        /* Figure out trivial color */
-        trivial_foliagecolor = foliagecolor_argb[foliagecolor_height*foliagecolor_width*3/4 + foliagecolor_width/2];
-        boolean same = true;
-        for(int j = 0; same && (j < foliagecolor_height); j++) {
-            for(int i = 0; same && (i <= j); i++) {
-                if(foliagecolor_argb[foliagecolor_width*j+i] != trivial_foliagecolor)
-                    same = false;
-            }
-        }
-        /* All the same - no biome lookup needed */
-        if(same)
-            foliagecolor_argb = null;
-    }
-
-    /* Load misc/watercolor.png */
-    private void loadWaterColorPNG(InputStream is) throws IOException {
-        /* Load image */
-        BufferedImage img = ImageIO.read(is);
-        if(img == null) { throw new FileNotFoundException(); }
-        watercolor_width = img.getWidth();
-        watercolor_height = img.getHeight();
-        watercolor_argb = new int[watercolor_width * watercolor_height];
-        img.getRGB(0, 0, watercolor_width, watercolor_height, watercolor_argb, 0, watercolor_width);
-        img.flush();        
-        /* Figure out trivial color */
-        trivial_watercolor = watercolor_argb[watercolor_height*watercolor_width*3/4 + watercolor_width/2];
-        boolean same = true;
-        for(int j = 0; same && (j < watercolor_height); j++) {
-            for(int i = 0; same && (i <= j); i++) {
-                if(watercolor_argb[watercolor_width*j+i] != trivial_watercolor)
-                    same = false;
-            }
-        }
-        /* All the same - no biome lookup needed */
-        if(same)
-            watercolor_argb = null;
-    }
-
-    /* Load misc/water.png */
-    private void loadWaterPNG(InputStream is) throws IOException {
-        /* Load image */
-        BufferedImage img = ImageIO.read(is);
-        if(img == null) { throw new FileNotFoundException(); }
-        water_width = img.getWidth();
-        water_height = img.getHeight();
-        water_argb = new int[water_width * water_height];
-        img.getRGB(0, 0, water_width, water_height, water_argb, 0, water_width);
-        img.flush();
+    /* Patch image into texture table */
+    private void patchTextureWithImage(int image_idx, int block_idx) {
         /* Now, patch in to block table */
-        int new_water_argb[] = new int[native_scale*native_scale];
-        scaleTerrainPNGSubImage(water_width, native_scale, water_argb, new_water_argb);
-        terrain_argb[BLOCKINDEX_STATIONARYWATER] = new_water_argb;
-        terrain_argb[BLOCKINDEX_MOVINGWATER] = new_water_argb;
+        int new_argb[] = new int[native_scale*native_scale];
+        scaleTerrainPNGSubImage(imgs[image_idx].width, native_scale, imgs[image_idx].argb, new_argb);
+        terrain_argb[block_idx] = new_argb;
+        
     }
+
     /* Get texture pack directory */
     private static File getTexturePackDirectory() {
         return new File(DynmapPlugin.dataDirectory, "texturepacks");
@@ -586,7 +530,7 @@ public class TexturePack {
             while((line = rdr.readLine()) != null) {
                 if(line.startsWith("block:")) {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
-                    int databits = 0;
+                    int databits = -1;
                     int faces[] = new int[] { -1, -1, -1, -1, -1, -1 };
                     line = line.substring(6);
                     String[] args = line.split(",");
@@ -638,8 +582,10 @@ public class TexturePack {
                                 faces[BlockStep.Y_PLUS.ordinal()] = Integer.parseInt(av[1]);
                         }
                     }
+                    /* If no data bits, assume all */
+                    if(databits < 0) databits = 0xFFFF;
                     /* If we have everything, build block */
-                    if((blkids.size() > 0) && (databits != 0)) {
+                    if(blkids.size() > 0) {
                         HDTextureMap map = new HDTextureMap(blkids, databits, faces);
                         map.addToTable();
                         cnt++;
@@ -767,30 +713,34 @@ public class TexturePack {
         /* Read color from texture */
         rslt.setARGB(texture[v*native_scale + u]);
         if(textop > 0) {
+            LoadedImage li;
             /* Switch based on texture modifier */
             switch(textop) {
                 case COLORMOD_GRASSTONED:
-                    if(grasscolor_argb == null) {
-                        rslt.blendColor(trivial_grasscolor);
+                    li = imgs[IMG_GRASSCOLOR];
+                    if(li.argb == null) {
+                        rslt.blendColor(li.trivial_color);
                     }
                     else {
-                        rslt.blendColor(biomeLookup(grasscolor_argb, grasscolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
+                        rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
                     }
                     break;
                 case COLORMOD_FOLIAGETONED:
-                    if(foliagecolor_argb == null) {
-                        rslt.blendColor(trivial_foliagecolor);
+                    li = imgs[IMG_FOLIAGECOLOR];
+                    if(li.argb == null) {
+                        rslt.blendColor(li.trivial_color);
                     }
                     else {
-                        rslt.blendColor(biomeLookup(foliagecolor_argb, foliagecolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
+                        rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
                     }
                     break;
                 case COLORMOD_WATERTONED:
-                    if(watercolor_argb == null) {
-                        rslt.blendColor(trivial_watercolor);
+                    li = imgs[IMG_WATERCOLOR];
+                    if(li.argb == null) {
+                        rslt.blendColor(li.trivial_color);
                     }
                     else {
-                        rslt.blendColor(biomeLookup(watercolor_argb, watercolor_width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
+                        rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
                     }
                     break;
             }
