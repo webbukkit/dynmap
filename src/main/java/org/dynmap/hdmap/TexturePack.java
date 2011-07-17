@@ -33,7 +33,6 @@ import org.dynmap.utils.MapIterator;
  *    misc/water.png - still water tile (required))
  *    misc/grasscolor.png - tone for grass color, biome sensitive (required)
  *    misc/foliagecolor.png - tone for leaf color, biome sensitive (required)
- *    misc/watercolor.png - tone for water color, biome sensitive (required)
  *    custom_lava_still.png - custom still lava animation (optional)
  *    custom_lava_flowing.png - custom flowing lava animation (optional)
  *    custom_water_still.png - custom still water animation (optional)
@@ -47,7 +46,6 @@ public class TexturePack {
     private static final String TERRAIN_PNG = "terrain.png";
     private static final String GRASSCOLOR_PNG = "misc/grasscolor.png";
     private static final String FOLIAGECOLOR_PNG = "misc/foliagecolor.png";
-    private static final String WATERCOLOR_PNG = "misc/watercolor.png";
     private static final String WATER_PNG = "misc/water.png";
     private static final String CUSTOMLAVASTILL_PNG = "custom_lava_still.png";
     private static final String CUSTOMLAVAFLOWING_PNG = "custom_lava_flowing.png";
@@ -57,7 +55,7 @@ public class TexturePack {
     /* Color modifier codes (x1000 for value in mapping code) */
     private static final int COLORMOD_GRASSTONED = 1;
     private static final int COLORMOD_FOLIAGETONED = 2;
-    private static final int COLORMOD_WATERTONED = 3;
+//    private static final int COLORMOD_WATERTONED = 3;
     private static final int COLORMOD_ROT90 = 4;
     private static final int COLORMOD_ROT180 = 5;
     private static final int COLORMOD_ROT270 = 6;
@@ -89,13 +87,12 @@ public class TexturePack {
 
     private static final int IMG_GRASSCOLOR = 0;
     private static final int IMG_FOLIAGECOLOR = 1;
-    private static final int IMG_WATERCOLOR = 2;
-    private static final int IMG_WATER = 3;
-    private static final int IMG_CUSTOMWATERMOVING = 4;
-    private static final int IMG_CUSTOMWATERSTILL = 5;
-    private static final int IMG_CUSTOMLAVAMOVING = 6;
-    private static final int IMG_CUSTOMLAVASTILL = 7;
-    private static final int IMG_CNT = 8;
+    private static final int IMG_WATER = 2;
+    private static final int IMG_CUSTOMWATERMOVING = 3;
+    private static final int IMG_CUSTOMWATERSTILL = 4;
+    private static final int IMG_CUSTOMLAVAMOVING = 5;
+    private static final int IMG_CUSTOMLAVASTILL = 6;
+    private static final int IMG_CNT = 7;
     
     private LoadedImage[] imgs = new LoadedImage[IMG_CNT];
 
@@ -166,9 +163,10 @@ public class TexturePack {
     private TexturePack(String tpname) throws FileNotFoundException {
         ZipFile zf = null;
         File texturedir = getTexturePackDirectory();
+        File f = new File(texturedir, tpname);
         try {
             /* Try to open zip */
-            zf = new ZipFile(new File(texturedir, tpname + ".zip"));
+            zf = new ZipFile(f);
             /* Find and load terrain.png */
             ZipEntry ze = zf.getEntry(TERRAIN_PNG); /* Try to find terrain.png */
             if(ze == null) {
@@ -191,13 +189,6 @@ public class TexturePack {
             is = zf.getInputStream(ze);
             loadBiomeShadingImage(is, IMG_FOLIAGECOLOR);
             is.close();
-            /* Try to find and load misc/watercolor.png */
-            ze = zf.getEntry(WATERCOLOR_PNG);
-            if(ze == null)
-                throw new FileNotFoundException();
-            is = zf.getInputStream(ze);
-            loadBiomeShadingImage(is, IMG_WATERCOLOR);
-            is.close();
             /* Try to find and load misc/water.png */
             ze = zf.getEntry(WATER_PNG);
             if(ze == null)
@@ -214,10 +205,8 @@ public class TexturePack {
             if(zf != null) {
                 try { zf.close(); } catch (IOException io) {}
             }
-            /* No zip, or bad - try directory next */
         }
         /* Try loading terrain.png from directory of name */
-        File f = null;
         FileInputStream fis = null;
         try {
             /* Open and load terrain.png */
@@ -235,11 +224,6 @@ public class TexturePack {
             fis = new FileInputStream(f);
             loadBiomeShadingImage(fis, IMG_FOLIAGECOLOR);
             fis.close();
-            /* Check for misc/waterecolor.png */
-            f = new File(texturedir, tpname + "/" + WATERCOLOR_PNG);
-            fis = new FileInputStream(f);
-            loadBiomeShadingImage(fis, IMG_WATERCOLOR);
-            fis.close();
             /* Check for misc/water.png */
             f = new File(texturedir, tpname + "/" + WATER_PNG);
             fis = new FileInputStream(f);
@@ -252,6 +236,8 @@ public class TexturePack {
             if(fis != null) {
                 try { fis.close(); } catch (IOException io) {}
             }
+            Log.info("Cannot process " + f.getPath() + " - " + iox);
+
             throw new FileNotFoundException();
         }
     }
@@ -307,6 +293,7 @@ public class TexturePack {
     /* Load biome shading image into image array */
     private void loadBiomeShadingImage(InputStream is, int idx) throws IOException {
         loadImage(is, idx); /* Get image */
+        
         LoadedImage li = imgs[idx];
         /* Get trivial color for biome-shading image */
         int clr = li.argb[li.height*li.width*3/4 + li.width/2];
@@ -362,9 +349,9 @@ public class TexturePack {
      * @param tp
      */
     private void scaleTerrainPNG(TexturePack tp) {
-        tp.terrain_argb = new int[256][];
+        tp.terrain_argb = new int[terrain_argb.length][];
         /* Terrain.png is 16x16 array of images : process one at a time */
-        for(int idx = 0; idx < 256; idx++) {
+        for(int idx = 0; idx < terrain_argb.length; idx++) {
             tp.terrain_argb[idx] = new int[tp.native_scale*tp.native_scale];
             scaleTerrainPNGSubImage(native_scale, tp.native_scale, terrain_argb[idx],  tp.terrain_argb[idx]);
         }
@@ -499,6 +486,8 @@ public class TexturePack {
      * Load texture pack mappings
      */
     public static void loadTextureMapping(File datadir) {
+        /* Initialize map with blank map for all entries */
+        HDTextureMap.initializeTable();
         /* Load block models */
         loadTextureFile(new File(datadir, "texture.txt"));
         File custom = new File(datadir, "custom-texture.txt");
@@ -521,8 +510,6 @@ public class TexturePack {
     private static void loadTextureFile(File txtfile) {
         LineNumberReader rdr = null;
         int cnt = 0;
-        /* Initialize map with blank map for all entries */
-        HDTextureMap.initializeTable();
 
         try {
             String line;
@@ -727,15 +714,6 @@ public class TexturePack {
                     break;
                 case COLORMOD_FOLIAGETONED:
                     li = imgs[IMG_FOLIAGECOLOR];
-                    if(li.argb == null) {
-                        rslt.blendColor(li.trivial_color);
-                    }
-                    else {
-                        rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
-                    }
-                    break;
-                case COLORMOD_WATERTONED:
-                    li = imgs[IMG_WATERCOLOR];
                     if(li.argb == null) {
                         rslt.blendColor(li.trivial_color);
                     }

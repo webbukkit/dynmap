@@ -1,6 +1,10 @@
 package org.dynmap.hdmap;
 
 import static org.dynmap.JSONUtils.s;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;

@@ -1,7 +1,7 @@
 # Mapping of texture resources to block ID and data values
 # block:id=<block-id>,data=<data-val|*>,top=<index>,bottom=<index>,north=<index>,south=<index>,east=<index>,west=<index>,allfaces=<index>,allsides=<index>
 # <index>=0-255 (index of patch in terrain.png), -1=clear, 1xxx=biome tint from grasscolor.png,257=stationary water,258=moving water,
-#      259=stationary lava,260=moving lava,2xxx=biome tint from foliagecolor.png,3xxx=biome tint from watercolor.png,4xxx=rotate texture 90,
+#      259=stationary lava,260=moving lava,2xxx=biome tint from foliagecolor.png,4xxx=rotate texture 90,
 #      5xxx=rotate texture 180, 6xxx=rotate texture 270, 7xxx=flip texture horizontally, 8xxx=shift down 1/2 block, 9=shift down 1/2,flip horiz,
 #      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block
 ######
