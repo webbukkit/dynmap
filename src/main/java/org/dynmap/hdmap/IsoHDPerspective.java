@@ -88,6 +88,8 @@ public class IsoHDPerspective implements HDPerspective {
         double t_next_y, t_next_x, t_next_z;
         boolean nonairhit;
         int subalpha;
+        double mt;
+        int[] subblock_xyz = new int[3];
         /**
          * Get sky light level - only available if shader requested it
          */
@@ -363,7 +365,7 @@ public class IsoHDPerspective implements HDPerspective {
         private boolean raytraceSubblock(short[] model) {
             int mx = 0, my = 0, mz = 0;
             double xx, yy, zz;
-            double mt = t + 0.0000001;
+            mt = t + 0.0000001;
             xx = top.x + mt *(bottom.x - top.x);  
             yy = top.y + mt *(bottom.y - top.y);  
             zz = top.z + mt *(bottom.z - top.z);
@@ -453,7 +455,18 @@ public class IsoHDPerspective implements HDPerspective {
             }
             return true;
         }
-
+        public int[] getSubblockCoord() {
+            double tt = t + 0.000001;
+            if(subalpha >= 0)
+                tt = mt;
+            double xx = top.x + tt * (bottom.x - top.x);  
+            double yy = top.y + tt * (bottom.y - top.y);  
+            double zz = top.z + tt * (bottom.z - top.z);
+            subblock_xyz[0] = (int)((xx - Math.floor(xx)) * modscale);
+            subblock_xyz[1] = (int)((yy - Math.floor(yy)) * modscale);
+            subblock_xyz[2] = (int)((zz - Math.floor(zz)) * modscale);
+            return subblock_xyz;
+        }
     }
     
     public IsoHDPerspective(ConfigurationNode configuration) {
@@ -854,6 +867,10 @@ public class IsoHDPerspective implements HDPerspective {
     
     public double getScale() {
         return scale;
+    }
+
+    public int getModelScale() {
+        return modscale;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package org.dynmap.hdmap;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +26,7 @@ public class HDMapManager {
     public HashMap<String, HDLighting> lightings = new HashMap<String, HDLighting>();
     public HashSet<HDMap> maps = new HashSet<HDMap>();
     public HashMap<String, ArrayList<HDMap>> maps_by_world_perspective = new HashMap<String, ArrayList<HDMap>>();
-    
+ 
     public void loadHDShaders(ConfigurationNode shadercfg) {
         Log.verboseinfo("Loading shaders...");
         for(HDShader shader : shadercfg.<HDShader>createInstances("shaders", new Class<?>[0], new Object[0])) {

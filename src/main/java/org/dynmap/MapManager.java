@@ -317,7 +317,8 @@ public class MapManager {
     private class DoZoomOutProcessing implements Runnable {
         public void run() {
             Debug.debug("DoZoomOutProcessing started");
-            for(DynmapWorld w : worlds) {
+            ArrayList<DynmapWorld> wl = new ArrayList<DynmapWorld>(worlds);
+            for(DynmapWorld w : wl) {
                 w.freshenZoomOutFiles();
             }
             renderpool.schedule(this, zoomout_period, TimeUnit.SECONDS);
@@ -362,7 +363,7 @@ public class MapManager {
         }
         
         scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
-        scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 1); /* Chunk loader task */
+        scheduler.scheduleSyncRepeatingTask(plugin, new ProcessChunkLoads(), 1, 2); /* Chunk loader task - do every 2 to work around bukkit issue */
 
     }
 
