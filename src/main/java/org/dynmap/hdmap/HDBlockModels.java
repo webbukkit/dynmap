@@ -262,10 +262,10 @@ public class HDBlockModels {
      */
     public static void loadModels(File datadir) {
         /* Load block models */
-        HDBlockModels.loadModelFile(new File(datadir, "models.txt"));
+        loadModelFile(new File(datadir, "models.txt"));
         File custom = new File(datadir, "custom-models.txt");
         if(custom.canRead()) {
-            HDBlockModels.loadModels(custom);
+            loadModelFile(custom);
         }
         else {
             try {
