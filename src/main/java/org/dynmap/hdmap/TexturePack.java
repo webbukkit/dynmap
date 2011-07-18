@@ -198,6 +198,31 @@ public class TexturePack {
             patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
             patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
             is.close();
+            /* Optional files - process if they exist */
+            ze = zf.getEntry(CUSTOMLAVAFLOWING_PNG);
+            if(ze != null) {
+                is = zf.getInputStream(ze);
+                loadImage(is, IMG_CUSTOMLAVAMOVING);
+                patchTextureWithImage(IMG_CUSTOMLAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+            }
+            ze = zf.getEntry(CUSTOMLAVASTILL_PNG);
+            if(ze != null) {
+                is = zf.getInputStream(ze);
+                loadImage(is, IMG_CUSTOMLAVASTILL);
+                patchTextureWithImage(IMG_CUSTOMLAVASTILL, BLOCKINDEX_STATIONARYLAVA);
+            }
+            ze = zf.getEntry(CUSTOMWATERFLOWING_PNG);
+            if(ze != null) {
+                is = zf.getInputStream(ze);
+                loadImage(is, IMG_CUSTOMWATERMOVING);
+                patchTextureWithImage(IMG_CUSTOMWATERMOVING, BLOCKINDEX_MOVINGWATER);
+            }
+            ze = zf.getEntry(CUSTOMWATERSTILL_PNG);
+            if(ze != null) {
+                is = zf.getInputStream(ze);
+                loadImage(is, IMG_CUSTOMWATERSTILL);
+                patchTextureWithImage(IMG_CUSTOMWATERSTILL, BLOCKINDEX_STATIONARYWATER);
+            }
             
             zf.close();
             return;
@@ -230,8 +255,36 @@ public class TexturePack {
             loadImage(fis, IMG_WATER);
             patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
             patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
-
             fis.close();
+            /* Optional files - process if they exist */
+            f = new File(texturedir, tpname + "/" + CUSTOMLAVAFLOWING_PNG);
+            if(f.canRead()) {
+                fis = new FileInputStream(f);
+                loadImage(fis, IMG_CUSTOMLAVAMOVING);
+                patchTextureWithImage(IMG_CUSTOMLAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+                fis.close();
+            }
+            f = new File(texturedir, tpname + "/" + CUSTOMLAVASTILL_PNG);
+            if(f.canRead()) {
+                fis = new FileInputStream(f);
+                loadImage(fis, IMG_CUSTOMLAVASTILL);
+                patchTextureWithImage(IMG_CUSTOMLAVASTILL, BLOCKINDEX_STATIONARYLAVA);
+                fis.close();
+            }
+            f = new File(texturedir, tpname + "/" + IMG_CUSTOMWATERMOVING);
+            if(f.canRead()) {
+                fis = new FileInputStream(f);
+                loadImage(fis, IMG_CUSTOMWATERMOVING);
+                patchTextureWithImage(IMG_CUSTOMWATERMOVING, BLOCKINDEX_MOVINGWATER);
+                fis.close();
+            }
+            f = new File(texturedir, tpname + "/" + IMG_CUSTOMWATERSTILL);
+            if(f.canRead()) {
+                fis = new FileInputStream(f);
+                loadImage(fis, IMG_CUSTOMWATERSTILL);
+                patchTextureWithImage(IMG_CUSTOMWATERSTILL, BLOCKINDEX_STATIONARYWATER);
+                fis.close();
+            }
         } catch (IOException iox) {
             if(fis != null) {
                 try { fis.close(); } catch (IOException io) {}
@@ -362,7 +415,7 @@ public class TexturePack {
         Color c = new Color();
         /* Same size, so just copy */
         if(res == nativeres) {
-            System.arraycopy(src_argb, 0, dest_argb, 0, src_argb.length);
+            System.arraycopy(src_argb, 0, dest_argb, 0, dest_argb.length);
         }
         /* If we're scaling larger source pixels into smaller pixels, each destination pixel
          * receives input from 1 or 2 source pixels on each axis
