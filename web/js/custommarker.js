@@ -20,10 +20,7 @@ L.CustomMarker = L.Class.extend({
 		if (!this._element && this.options.elementCreator) {
 			this._element = this.options.elementCreator();
 			
-			
-			// TODO: Pass this fix to Leaflet-dev(s), it may be a bug in Leaflet.
-			this._element.style.position = 'absolute';
-			
+			this._element.className += ' leaflet-marker-icon';
 			
 			this._initInteraction();
 		}

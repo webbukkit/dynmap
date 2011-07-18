@@ -1,22 +1,54 @@
-function HDProjection() {}
-HDProjection.prototype = {
-		extrazoom: 0,
-		worldtomap: null,
-		fromLatLngToPoint: function(latLng) {
-			return new google.maps.Point(latLng.lng()*config.tileWidth, latLng.lat()*config.tileHeight);
-		},
-		fromPointToLatLng: function(point) {
-			return new google.maps.LatLng( point.y/config.tileHeight, point.x/config.tileWidth);
-		},
-		fromWorldToLatLng: function(x, y, z) {
-		    var wtp = this.worldtomap;
-			var xx = wtp[0]*x + wtp[1]*y + wtp[2]*z;
-			var yy = wtp[3]*x + wtp[4]*y + wtp[5]*z;
-			
-			return new google.maps.LatLng( (1 - (yy / config.tileHeight)) / (1 << this.extrazoom), xx / config.tileWidth / (1 << this.extrazoom));
-		}
-};
+var HDProjection = DynmapProjection.extend({
+	fromLocationToLatLng: function(location) {
+		var wtp = this.options.worldtomap;
+		console.log(wtp);
+		var xx = wtp[0]*location.x + wtp[1]*location.y + wtp[2]*location.z;
+		var yy = wtp[3]*location.x + wtp[4]*location.y + wtp[5]*location.z;
+		var lat = xx / (8 << this.options.extrazoom);
+		var lng = (128-yy) / (8 << this.options.extrazoom);
+		return new L.LatLng(lat, lng, true);
+	}
+});
 
+var HDMapType = DynmapTileLayer.extend({
+	projection: undefined,
+	options: {
+		minZoom: 0,
+		maxZoom: 3
+	},
+	initialize: function(options) {
+		options.maxZoom = options.mapzoomin + options.world.extrazoomout;
+		L.Util.setOptions(this, options);
+		this.projection = new HDProjection({worldtomap: options.worldtomap})
+	},
+	getTileName: function(tilePoint, zoom) {
+        var tileName;
+        
+        var dnprefix = '';
+        if(this.options.nightandday && this.options.dynmap.serverday)
+            dnprefix = '_day';
+
+        var extrazoom = this.options.mapzoomout;
+        if(zoom < extrazoom) {
+        	var scale = 1 << (extrazoom-zoom);
+        	var zprefix = "zzzzzzzzzzzzzzzzzzzzzz".substring(0, extrazoom-zoom);
+	        tileName = this.options.prefix + dnprefix + '/' + ((scale*tilePoint.x) >> 5) + '_' + ((-scale*tilePoint.y) >> 5) + '/' + zprefix + "_" + (scale*tilePoint.x) + '_' + (-scale*tilePoint.y) + '.png';
+        } else {
+	        tileName = this.options.prefix + dnprefix + '/' + (tilePoint.x >> 5) + '_' + ((-tilePoint.y) >> 5) + '/' + tilePoint.x + '_' + (-tilePoint.y) + '.png';
+    	}
+		return tileName;
+	},
+	calculateTileSize: function(zoom) {
+		var extrazoom = this.options.mapzoomout;
+		console.log(zoom <= extrazoom, zoom, extrazoom);
+		return (zoom <= extrazoom)
+				? 128
+				: Math.pow(2, 7+zoom-extrazoom);
+				//128;
+	}
+});
+
+/*
 function HDMapType(configuration) {
 	$.extend(this, configuration); }
 HDMapType.prototype = $.extend(new DynMapType(), {
@@ -86,5 +118,5 @@ HDMapType.prototype = $.extend(new DynMapType(), {
         this.tileSize = new google.maps.Size(size, size);
 	}
 });
-
-maptypes.HDMapType = function(configuration) { return new HDMapType(configuration); };
+*/
+maptypes.HDMapType = function(options) { return new HDMapType(options); };

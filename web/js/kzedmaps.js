@@ -1,129 +1,61 @@
-function KzedProjection() {}
-KzedProjection.prototype = {
-		extrazoom: 0,
-		fromLatLngToPoint: function(latLng) {
-			var x = latLng.lng() * config.tileWidth;
-			var y = latLng.lat() * config.tileHeight;
+var KzedProjection = DynmapProjection.extend({
+	fromLocationToLatLng: function(location) {
+		var dx = location.x;
+		var dy = location.y - 127;
+		var dz = location.z;
+		var px = dx + dz;
+		var py = dx - dz - dy;
+		var scale = 2 << this.options.extrazoom;
 
-			return new google.maps.Point(x, y);
-		},
-		fromPointToLatLng: function(point) {
-			var lng = point.x / config.tileWidth;
-			var lat = point.y / config.tileHeight;
-			return new google.maps.LatLng(lat, lng);
-		},
-		fromWorldToLatLng: function(x, y, z)
-		{
-			var dx = +x;
-			var dy = +y - 127;
-			var dz = +z;
-			var px = dx + dz;
-			var py = dx - dz - dy;
-			var scale = 2 << this.extrazoom;
+		var lat = px / scale - 64;
+		var lng = py / scale;
+		return new L.LatLng(-lat, lng, true);
+	}
+});
 
-			var lng = -px / config.tileWidth / scale + (1.0 / scale);
-			var lat = py / config.tileHeight / scale;
-
-			return new google.maps.LatLng(lat, lng);
-		}
-};
-
-function KzedMapType(configuration) { $.extend(this, configuration); }
-KzedMapType.prototype = $.extend(new DynMapType(), {
-	constructor: KzedMapType,
-	projection: new KzedProjection(),
-	tileSize: new google.maps.Size(128, 128),
-	minZoom: 0,
-	maxZoom: 3,
-	prefix: null,
-	getTile: function(coord, zoom, doc) {
-		var tileDebugText = null;
+var KzedMapType = DynmapTileLayer.extend({
+	options: {
+		minZoom: 0,
+		maxZoom: 4
+	},
+	initialize: function(options) {
+		options.maxZoom = options.mapzoomin + options.world.extrazoomout;
+		L.Util.setOptions(this, options);
+		this.projection = new KzedProjection({extrazoom: this.options.world.extrazoomout});
+	},
+	getTileName: function(tilePoint, zoom) {
 		var tileSize = 128;
-		var tileName;
-		var imgSize;
-		
-		var debugred;
-		var debugblue;
-		
+		var tileName = '';
         var dnprefix = '';
-        if(this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].nightandday && this.dynmap.serverday)
+		
+        if(this.options.nightandday && this.options.dynmap.serverday) {
             dnprefix = '_day';
-		var extrazoom = this.dynmap.world.extrazoomout;        
+        }
+		var extrazoom = this.options.world.extrazoomout;
 		if (zoom <= extrazoom) {
 			var zpre = 'zzzzzzzzzzzzzzzz'.substring(0, extrazoom-zoom);
 			// Most zoomed out tiles.
-			tileSize = 128;
-			imgSize = tileSize;
 			var tilescale = 2 << (extrazoom-zoom);
-            if (this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].bigmap) {
+            if (this.options.bigmap) {
                 if(zoom < extrazoom) zpre = zpre + '_';
-                tileName = 'z' + this.prefix + dnprefix + '/' + ((-coord.x * tileSize*tilescale)>>12) + 
-                    '_' + ((coord.y * tileSize*tilescale) >> 12) + '/' + zpre +
-                    (-coord.x * tileSize*tilescale) + '_' + (coord.y * tileSize*tilescale) + '.png';
-            }
-            else {
-                tileName = zpre + 'z' + this.prefix + dnprefix + '_' + (-coord.x * tileSize*tilescale) + '_' + (coord.y * tileSize*tilescale) + '.png';
+                tileName = 'z' + this.options.prefix + dnprefix + '/' + ((-tilePoint.x * tileSize*tilescale)>>12) + '_' + ((tilePoint.y * tileSize*tilescale) >> 12) + '/' + zpre + (-tilePoint.x * tileSize*tilescale) + '_' + (tilePoint.y * tileSize*tilescale) + '.png';
+            } else {
+                tileName = zpre + 'z' + this.options.prefix + dnprefix + '_' + (-tilePoint.x * tileSize*tilescale) + '_' + (tilePoint.y * tileSize*tilescale) + '.png';
             }
 		} else {
-			// Other zoom levels.
-			tileSize = 128;
-
-			imgSize = Math.pow(2, 6+zoom-extrazoom);
-            if(this.dynmap.map.mapTypes[this.dynmap.map.mapTypeId].bigmap) {
-                tileName = this.prefix + dnprefix + '/' + ((-coord.x*tileSize) >> 12) + '_' +
-                    ((coord.y*tileSize)>>12) + '/' + 
-                    (-coord.x*tileSize) + '_' + (coord.y*tileSize) + '.png';
-            }
-            else {
-                tileName = this.prefix + dnprefix + '_' + (-coord.x*tileSize) + '_' + (coord.y*tileSize) + '.png';
+            if(this.options.bigmap) {
+                tileName = this.options.prefix + dnprefix + '/' + ((-tilePoint.x*tileSize) >> 12) + '_' + ((tilePoint.y*tileSize)>>12) + '/' + (-tilePoint.x*tileSize) + '_' + (tilePoint.y*tileSize) + '.png';
+            } else {
+                tileName = this.options.prefix + dnprefix + '_' + (-tilePoint.x*tileSize) + '_' + (tilePoint.y*tileSize) + '.png';
             }
 		}
-		var img;
-		var tile = $('<div/>')
-			.addClass('tile')
-			.css({
-				width: tileSize + 'px',
-				height: tileSize + 'px'
-			});
-		if (tileDebugText) {
-			$('<span/>')
-				.text(tileDebugText)
-				.css({
-					position: 'absolute',
-					color: 'red'
-				})
-				.appendTo(tile);
-		}
-		if (tileName) {
-			img = $('<img/>')
-				.attr('src', this.dynmap.getTileUrl(tileName))
-				.error(function() { img.hide(); })
-				.bind('load', function() { img.show(); })
-				.css({
-					width: imgSize + 'px',
-					height: imgSize + 'px',
-					borderStyle: 'none'
-				})
-				.hide()
-				.appendTo(tile);
-			this.dynmap.registerTile(this, tileName, img);
-		} else {
-			this.dynmap.unregisterTile(this, tileName);
-		}
-		return tile.get(0);
+		return tileName;
 	},
-	updateTileSize: function(zoom) {
-		var size;
-		var extrazoom = this.dynmap.world.extrazoomout;
-		var mapzoomin = this.mapzoomin;
-		this.projection.extrazoom = extrazoom;
-		this.maxZoom = mapzoomin + extrazoom;
-		if (zoom <= extrazoom) {
-			size = 128;
-		} else {
-			size = Math.pow(2, 6+zoom-extrazoom);
-		}
-		this.tileSize = new google.maps.Size(size, size);
+	calculateTileSize: function(zoom) {
+		var extrazoomout = this.options.dynmap.world.extrazoomout;
+		return (zoom <= extrazoom)
+				? 128
+				: Math.pow(2, 6+zoom-extrazoomout);
 	}
 });
 

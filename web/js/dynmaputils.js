@@ -1,4 +1,7 @@
 var DynmapProjection = L.Class.extend({
+	initialize: function(options) {
+		L.Util.setOptions(this, options);
+	},
 	fromLocationToLatLng: function(location) {
 		throw "fromLocationToLatLng not implemented";
 	}
