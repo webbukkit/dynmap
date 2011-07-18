@@ -21,20 +21,21 @@ var HDMapType = DynmapTileLayer.extend({
 		this.projection = new HDProjection({worldtomap: options.worldtomap})
 	},
 	getTileName: function(tilePoint, zoom) {
-        var tileName;
-        
-        var dnprefix = '';
-        if(this.options.nightandday && this.options.dynmap.serverday)
-            dnprefix = '_day';
+		var tileName;
 
-        var extrazoom = this.options.mapzoomout;
-        if(zoom < extrazoom) {
-        	var scale = 1 << (extrazoom-zoom);
-        	var zprefix = "zzzzzzzzzzzzzzzzzzzzzz".substring(0, extrazoom-zoom);
-	        tileName = this.options.prefix + dnprefix + '/' + ((scale*tilePoint.x) >> 5) + '_' + ((-scale*tilePoint.y) >> 5) + '/' + zprefix + "_" + (scale*tilePoint.x) + '_' + (-scale*tilePoint.y) + '.png';
-        } else {
-	        tileName = this.options.prefix + dnprefix + '/' + (tilePoint.x >> 5) + '_' + ((-tilePoint.y) >> 5) + '/' + tilePoint.x + '_' + (-tilePoint.y) + '.png';
-    	}
+		var dnprefix = '';
+		if(this.options.nightandday && this.options.dynmap.serverday) {
+			dnprefix = '_day';
+		}
+
+		var extrazoom = this.options.mapzoomout;
+		if(zoom < extrazoom) {
+			var scale = 1 << (extrazoom-zoom);
+			var zprefix = "zzzzzzzzzzzzzzzzzzzzzz".substring(0, extrazoom-zoom);
+			tileName = this.options.prefix + dnprefix + '/' + ((scale*tilePoint.x) >> 5) + '_' + ((-scale*tilePoint.y) >> 5) + '/' + zprefix + "_" + (scale*tilePoint.x) + '_' + (-scale*tilePoint.y) + '.png';
+		} else {
+			tileName = this.options.prefix + dnprefix + '/' + (tilePoint.x >> 5) + '_' + ((-tilePoint.y) >> 5) + '/' + tilePoint.x + '_' + (-tilePoint.y) + '.png';
+		}
 		return tileName;
 	},
 	calculateTileSize: function(zoom) {
