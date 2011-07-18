@@ -15,6 +15,7 @@ components:
   #  sendhealth: true
   #  sendposition: true
   #  allowwebchat: false
+  #  webchat-interval: 5
   #  hidewebchatip: false
   
   - class: org.dynmap.SimpleWebChatComponent
