@@ -1,7 +1,6 @@
 var HDProjection = DynmapProjection.extend({
 	fromLocationToLatLng: function(location) {
 		var wtp = this.options.worldtomap;
-		console.log(wtp);
 		var xx = wtp[0]*location.x + wtp[1]*location.y + wtp[2]*location.z;
 		var yy = wtp[3]*location.x + wtp[4]*location.y + wtp[5]*location.z;
 		var lat = xx / (8 << this.options.extrazoom);
