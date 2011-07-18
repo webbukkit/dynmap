@@ -44,7 +44,6 @@ var HDMapType = DynmapTileLayer.extend({
 		return (zoom <= extrazoom)
 				? 128
 				: Math.pow(2, 7+zoom-extrazoom);
-				//128;
 	}
 });
 
