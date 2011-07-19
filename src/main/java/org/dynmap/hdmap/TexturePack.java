@@ -463,8 +463,8 @@ public class TexturePack {
                         }
                     }
                     /* Generate weighted compnents into color */
-                    c.setRGBA(accum_red / (res*res), accum_green / (res*res), 
-                              accum_blue / (res*res), accum_alpha / (res*res));
+                    c.setRGBA(accum_red / (nativeres*nativeres), accum_green / (nativeres*nativeres), 
+                              accum_blue / (nativeres*nativeres), accum_alpha / (nativeres*nativeres));
                     dest_argb[(y*res) + x] = c.getARGB();
                 }
             }
