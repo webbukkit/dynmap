@@ -57,6 +57,9 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             public void triggered(JSONObject t) {
                 s(t, "jsonfile", true);
                 s(t, "allowwebchat", allowwebchat);
+                
+                // For 'sendmessage.php'
+                s(t, "webchat-interval", configuration.getFloat("webchat-interval", 5.0f));
             }
         });
         plugin.events.addListener("initialized", new Event.Listener<Object>() {
