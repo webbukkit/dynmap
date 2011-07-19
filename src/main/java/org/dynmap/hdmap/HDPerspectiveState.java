@@ -1,17 +1,9 @@
 package org.dynmap.hdmap;
 
+import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.utils.Vector3D;
 
 public interface HDPerspectiveState {
-    /* Represents last step of movement of the ray */
-    public enum BlockStep {
-        X_PLUS,
-        Y_PLUS,
-        Z_PLUS,
-        X_MINUS,
-        Y_MINUS,
-        Z_MINUS
-    };
     /**
      * Get sky light level - only available if shader requested it
      */
