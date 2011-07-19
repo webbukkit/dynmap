@@ -13,6 +13,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
@@ -89,9 +90,12 @@ public class IsoHDPerspective implements HDPerspective {
         double mt;
         int[] subblock_xyz = new int[3];
         MapIterator mapiter;
+        boolean isnether;
+        boolean skiptoair;
 
-        public OurPerspectiveState(MapIterator mi) {
+        public OurPerspectiveState(MapIterator mi, boolean isnether) {
             mapiter = mi;
+            this.isnether = isnether;
         }
         /**
          * Get sky light level - only available if shader requested it
@@ -250,6 +254,7 @@ public class IsoHDPerspective implements HDPerspective {
             /* Walk through scene */
             laststep = BlockStep.Y_MINUS; /* Last step is down into map */
             nonairhit = false;
+            skiptoair = isnether;
         }
         private int generateFenceBlockData(MapIterator mapiter) {
             int blockdata = 0;
@@ -304,7 +309,11 @@ public class IsoHDPerspective implements HDPerspective {
          */
         private boolean visit_block(MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
             blocktypeid = mapiter.getBlockTypeID();
-            if(nonairhit || (blocktypeid != 0)) {
+            if(skiptoair) {	/* If skipping until we see air */
+                if(blocktypeid == 0)	/* If air, we're done */
+                	skiptoair = false;
+            }
+            else if(nonairhit || (blocktypeid != 0)) {
                 blockdata = mapiter.getBlockData();
                 if(blocktypeid == 85) {   /* Special case for fence - need to fake data so we can render properly */
                     blockdata = generateFenceBlockData(mapiter);
@@ -347,8 +356,7 @@ public class IsoHDPerspective implements HDPerspective {
             mapiter.initialize(x, y, z);
             
             for (; n > 0; --n) {
-                /* Visit block */
-                if(visit_block(mapiter, shaderstate, shaderdone)) {
+        		if(visit_block(mapiter, shaderstate, shaderdone)) {
                     return;
                 }
                 /* If X step is next best */
@@ -744,7 +752,8 @@ public class IsoHDPerspective implements HDPerspective {
         int numshaders = shaderstate.length;
         if(numshaders == 0)
             return false;
-
+        /* Check if nether world */
+        boolean isnether = tile.getWorld().getEnvironment() == Environment.NETHER;
         /* Create buffered image for each */
         KzedBufferedImage im[] = new KzedBufferedImage[numshaders];
         KzedBufferedImage dayim[] = new KzedBufferedImage[numshaders];
@@ -767,7 +776,7 @@ public class IsoHDPerspective implements HDPerspective {
         }
         
         /* Create perspective state object */
-        OurPerspectiveState ps = new OurPerspectiveState(mapiter);        
+        OurPerspectiveState ps = new OurPerspectiveState(mapiter, isnether);        
         
         ps.top = new Vector3D();
         ps.bottom = new Vector3D();
