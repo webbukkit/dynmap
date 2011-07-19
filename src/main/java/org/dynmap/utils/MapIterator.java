@@ -6,6 +6,15 @@ import org.bukkit.block.Biome;
  * Iterator for traversing map chunk cache (base is for non-snapshot)
  */
 public interface MapIterator {
+    /* Represents last step of movement of the ray (don't alter order here - ordinal sensitive) */
+    public enum BlockStep {
+        X_PLUS,
+        Y_PLUS,
+        Z_PLUS,
+        X_MINUS,
+        Y_MINUS,
+        Z_MINUS;
+    };
     /**
      * Initialize iterator at given coordinates
      * 
@@ -53,29 +62,13 @@ public interface MapIterator {
      */
     public double getRawBiomeRainfall();
     /**
-     * Increment X of current position
+     * Step current position in given direction
      */
-    void incrementX();
+    void stepPosition(BlockStep step);
     /**
-     * Decrement X of current position
+     * Unstep current position to previous position : return step to take to return
      */
-    void decrementX();
-    /**
-     * Increment Y of current position
-     */
-    void incrementY();
-    /**
-     * Decrement Y of current position
-     */
-    void decrementY();
-    /**
-     * Increment Z of current position
-     */
-    void incrementZ();
-    /**
-     * Decrement Y of current position
-     */
-    void decrementZ();
+    BlockStep unstepPosition();
     /**
      * Set Y coordinate of current position
      * @param y
@@ -94,10 +87,13 @@ public interface MapIterator {
      */
     int getZ();
     /**
-     * Get block ID at one above current coordinates
+     * Get block ID at 1 step in given direction
      * 
      * @return block id
      */
-    int getBlockTypeIDAbove();
-
+    int getBlockTypeIDAt(BlockStep s);
+    /**
+     * Get last step taken
+     */
+    BlockStep getLastStep();
 }

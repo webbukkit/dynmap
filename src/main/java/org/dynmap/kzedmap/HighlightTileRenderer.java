@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.MapIterator.BlockStep;
 
 public class HighlightTileRenderer extends DefaultTileRenderer {
     protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
@@ -46,16 +47,16 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
             }
 
             switch (seq) {
-            case 0:
-                mapiter.decrementX();
-                break;
-            case 1:
-            case 3:
-                mapiter.decrementY();
-                break;
-            case 2:
-                mapiter.incrementZ();
-                break;
+                case 0:
+                    mapiter.stepPosition(BlockStep.X_MINUS);
+                    break;
+                case 1:
+                case 3:
+                    mapiter.stepPosition(BlockStep.Y_MINUS);
+                    break;
+                case 2:
+                    mapiter.stepPosition(BlockStep.Z_PLUS);
+                    break;
             }
 
             seq = (seq + 1) & 3;

@@ -4,6 +4,7 @@ import org.bukkit.World;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.MapIterator.BlockStep;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
 
@@ -32,14 +33,14 @@ public class CaveTileRenderer extends DefaultTileRenderer {
 
             switch (seq) {
             case 0:
-                mapiter.decrementX();
+                mapiter.stepPosition(BlockStep.X_MINUS);
                 break;
             case 1:
             case 3:
-                mapiter.decrementY();
+                mapiter.stepPosition(BlockStep.Y_MINUS);
                 break;
             case 2:
-                mapiter.incrementZ();
+                mapiter.stepPosition(BlockStep.Z_PLUS);
                 break;
             }
 

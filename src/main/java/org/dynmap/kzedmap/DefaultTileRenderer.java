@@ -24,6 +24,7 @@ import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.MapIterator.BlockStep;
 import org.json.simple.JSONObject;
 
 public class DefaultTileRenderer implements MapTileRenderer {
@@ -442,18 +443,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 }
                 if((shadowscale != null) && (mapiter.getY() < 127)) {
                     /* Find light level of previous chunk */
-                    switch(seq) {
-                        case 0:
-                        case 2:
-                            mapiter.incrementY();
-                            break;
-                        case 1:
-                            mapiter.incrementX();
-                            break;
-                        case 3:
-                            mapiter.decrementZ();
-                            break;
-                    }
+                    BlockStep last = mapiter.unstepPosition();
                     lightlevel = lightlevel_day = mapiter.getBlockSkyLight();
                     if(lightscale != null)
                         lightlevel = lightscale[lightlevel];
@@ -462,34 +452,23 @@ public class DefaultTileRenderer implements MapTileRenderer {
                         lightlevel = Math.max(emitted, lightlevel);                                
                         lightlevel_day = Math.max(emitted, lightlevel_day);                                
                     }
-                    switch(seq) {
-                        case 0:
-                        case 2:
-                            mapiter.decrementY();
-                            break;
-                        case 1:
-                            mapiter.decrementX();
-                            break;
-                        case 3:
-                            mapiter.incrementZ();
-                            break;
-                    }
+                    mapiter.stepPosition(last);
                 }
             }
             
             switch (seq) {
-            case 0:
-                mapiter.decrementX();
-                break;
-            case 1:
-            case 3:
-                mapiter.decrementY();
-                break;
-            case 2:
-                mapiter.incrementZ();
-                break;
+                case 0:
+                    mapiter.stepPosition(BlockStep.X_MINUS);
+                    break;
+                case 1:
+                case 3:
+                    mapiter.stepPosition(BlockStep.Y_MINUS);
+                    break;
+                case 2:
+                    mapiter.stepPosition(BlockStep.Z_PLUS);
+                    break;
             }
-
+            
             seq = (seq + 1) & 3;
 
             if (id != 0) {

@@ -348,23 +348,19 @@ public class DynmapWorld {
                     im.flush();
                     /* Do binlinear scale to 64x64 */
                     Color c1 = new Color();
+                    int off = 0;
                     for(int y = 0; y < height; y += 2) {
-                        for(int x = 0; x < width; x += 2) {
-                            int red = 0;
-                            int green = 0;
-                            int blue = 0;
-                            int alpha = 0;
-                            for(int yy = y; yy < y+2; yy++) {
-                                for(int xx = x; xx < x+2; xx++) {
-                                    c1.setARGB(argb[(yy*width)+xx]);
-                                    red += c1.getRed();
-                                    green += c1.getGreen();
-                                    blue += c1.getBlue();
-                                    alpha += c1.getAlpha();
-                                }
-                            }
-                            c1.setRGBA(red>>2, green>>2, blue>>2, alpha>>2);
-                            argb[(y*width/2) + (x/2)] = c1.getARGB();
+                        off = y*width;
+                        for(int x = 0; x < width; x += 2, off += 2) {
+                            int p0 = argb[off];
+                            int p1 = argb[off+1];
+                            int p2 = argb[off+width];
+                            int p3 = argb[off+width+1];
+                            int alpha = ((p0 >> 24) & 0xFF) + ((p1 >> 24) & 0xFF) + ((p2 >> 24) & 0xFF) + ((p3 >> 24) & 0xFF);
+                            int red = ((p0 >> 16) & 0xFF) + ((p1 >> 16) & 0xFF) + ((p2 >> 16) & 0xFF) + ((p3 >> 16) & 0xFF);
+                            int green = ((p0 >> 8) & 0xFF) + ((p1 >> 8) & 0xFF) + ((p2 >> 8) & 0xFF) + ((p3 >> 8) & 0xFF);
+                            int blue = (p0 & 0xFF) + (p1 & 0xFF) + (p2 & 0xFF) + (p3 & 0xFF);
+                            argb[off>>1] = (((alpha>>2)&0xFF)<<24) | (((red>>2)&0xFF)<<16) | (((green>>2)&0xFF)<<8) | ((blue>>2)&0xFF);
                         }
                     }
                     /* blit scaled rendered tile onto zoom-out tile */

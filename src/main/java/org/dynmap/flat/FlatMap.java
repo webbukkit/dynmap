@@ -29,6 +29,7 @@ import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.MapIterator.BlockStep;
 import org.json.simple.JSONObject;
 
 public class FlatMap extends MapType {
@@ -142,12 +143,12 @@ public class FlatMap extends MapType {
         MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
         for (int x = 0; x < t.size; x++) {
             mapiter.initialize(t.x * t.size + x, 127, t.y * t.size);
-            for (int y = 0; y < t.size; y++, mapiter.incrementZ()) {
+            for (int y = 0; y < t.size; y++, mapiter.stepPosition(BlockStep.Z_PLUS)) {
                 int blockType;
                 mapiter.setY(127);
                 if(isnether) {
                     while((blockType = mapiter.getBlockTypeID()) != 0) {
-                        mapiter.decrementY();
+                        mapiter.stepPosition(BlockStep.Y_MINUS);
                         if(mapiter.getY() < 0) {    /* Solid - use top */
                             mapiter.setY(127);
                             blockType = mapiter.getBlockTypeID();
@@ -156,7 +157,7 @@ public class FlatMap extends MapType {
                     }
                     if(blockType == 0) {    /* Hit air - now find non-air */
                         while((blockType = mapiter.getBlockTypeID()) == 0) {
-                            mapiter.decrementY();
+                            mapiter.stepPosition(BlockStep.Y_MINUS);
                             if(mapiter.getY() < 0) {
                                 mapiter.setY(0);
                                 break;
@@ -209,7 +210,7 @@ public class FlatMap extends MapType {
                 /* If ambient light less than 15, do scaling */
                 else if((shadowscale != null) && (ambientlight < 15)) {
                     if(mapiter.getY() < 127) 
-                        mapiter.incrementY();
+                        mapiter.stepPosition(BlockStep.Y_PLUS);
                     if(night_and_day) { /* Use unscaled color for day (no shadows from above) */
                         pixel_day[0] = pixel[0];    
                         pixel_day[1] = pixel[1];
@@ -348,7 +349,7 @@ public class FlatMap extends MapType {
         if((shadowscale != null) && (ambientlight < 15)) {
             boolean did_inc = false;
             if(mapiter.getY() < 127) {
-                mapiter.incrementY();
+                mapiter.stepPosition(BlockStep.Y_PLUS);
                 did_inc = true;
             }
             if(night_and_day) { /* Use unscaled color for day (no shadows from above) */
@@ -359,13 +360,13 @@ public class FlatMap extends MapType {
             g = (g * shadowscale[light]) >> 8;
             b = (b * shadowscale[light]) >> 8;
             if(did_inc)
-                mapiter.decrementY();
+                mapiter.stepPosition(BlockStep.Y_MINUS);
         }
         if(a < 255) {   /* If not opaque */
             pixel[0] = pixel[1] = pixel[2] = pixel[3] = 0;
             if(pixel_day != null) 
                 pixel_day[0] = pixel_day[1] = pixel_day[2] = pixel_day[3] = 0;
-            mapiter.decrementY();
+            mapiter.stepPosition(BlockStep.Y_MINUS);
             if(mapiter.getY() >= 0) {
                 int blockType = mapiter.getBlockTypeID();
                 int data = 0;

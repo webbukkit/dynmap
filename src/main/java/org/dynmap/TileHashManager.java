@@ -101,6 +101,7 @@ public class TileHashManager {
     private Object lock = new Object();
     private LRULinkedHashMap<TileHashFile, byte[]> tilehash = new LRULinkedHashMap<TileHashFile, byte[]>(MAX_CACHED_TILEHASHFILES);
     private CRC32 crc32 = new CRC32();
+    private byte[] crcworkbuf = new byte[8192];
     
     public TileHashManager(File tileroot, boolean enabled) {
         tiledir = tileroot;
@@ -130,15 +131,19 @@ public class TileHashManager {
             return 0;   /* Return value that doesn't match */
         }
         synchronized(lock) {
+            if(crcworkbuf.length < (4*newbuf.length)){
+                crcworkbuf = new byte[4*newbuf.length];
+            }
+            for(int i = 0, off = 0; i < newbuf.length; i++) {
+                int v = newbuf[i];
+                crcworkbuf[off++] = (byte)v;
+                crcworkbuf[off++] = (byte)(v>>8);
+                crcworkbuf[off++] = (byte)(v>>16);
+                crcworkbuf[off++] = (byte)(v>>24);
+            }
             /* Calculate CRC-32 for buffer */
             crc32.reset();
-            for(int i = 0; i < newbuf.length; i++) {
-                int v = newbuf[i];
-                crc32.update(0xFF & v);
-                crc32.update(0xFF & (v >> 8));
-                crc32.update(0xFF & (v >> 16));
-                crc32.update(0xFF & (v >> 24));
-            }
+            crc32.update(crcworkbuf, 0, 4*newbuf.length);
             return crc32.getValue();
         }
     }
