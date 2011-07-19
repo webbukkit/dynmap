@@ -102,21 +102,28 @@ public class IsoHDPerspective implements HDPerspective {
          */
         public final int getSkyLightLevel() {
             int ll;
-            BlockStep ls = mapiter.unstepPosition();
+            BlockStep ls;
             /* Some blocks are light blocking, but not fully blocking - this sucks */
             switch(mapiter.getBlockTypeID()) {
                 case 53:    /* Wood stairs */
                 case 44:    /* Slabs */
                 case 67:    /* Cobblestone stairs */
+                    ls = mapiter.unstepPosition();                	
                     mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
                     ll = mapiter.getBlockSkyLight();
                     mapiter.stepPosition(BlockStep.Y_MINUS);
+                    mapiter.stepPosition(ls);
                     break;
+                case 78:	/* Snow */
+                	ll = mapiter.getBlockSkyLight();
+                	break;
                 default:
+                	ls = mapiter.unstepPosition();
                     ll = mapiter.getBlockSkyLight();
+                    mapiter.stepPosition(ls);
                     break;
             }
-            mapiter.stepPosition(ls);
+            
             return ll;
         }
         /**
@@ -124,21 +131,27 @@ public class IsoHDPerspective implements HDPerspective {
          */
         public final int getEmittedLightLevel() {
             int ll;
-            BlockStep ls = mapiter.unstepPosition();
+            BlockStep ls;            
             /* Some blocks are light blocking, but not fully blocking - this sucks */
             switch(mapiter.getBlockTypeID()) {
                 case 53:    /* Wood stairs */
                 case 44:    /* Slabs */
                 case 67:    /* Cobblestone stairs */
+                    ls = mapiter.unstepPosition();
                     mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
                     ll = mapiter.getBlockEmittedLight();
                     mapiter.stepPosition(BlockStep.Y_MINUS);
+                    mapiter.stepPosition(ls);                    
                     break;
+                case 78:	/* Snow */
+                	ll = mapiter.getBlockEmittedLight();
+                	break;
                 default:
+                	ls = mapiter.unstepPosition();
                     ll = mapiter.getBlockEmittedLight();
+                    mapiter.stepPosition(ls);
                     break;
             }
-            mapiter.stepPosition(ls);
             return ll;
         }
         /**
