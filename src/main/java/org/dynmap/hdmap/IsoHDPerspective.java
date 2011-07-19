@@ -22,7 +22,7 @@ import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
-import org.dynmap.hdmap.HDPerspectiveState.BlockStep;
+import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.utils.FileLockManager;
@@ -72,8 +72,6 @@ public class IsoHDPerspective implements HDPerspective {
     private boolean need_rawbiomedata = false;
     
     private class OurPerspectiveState implements HDPerspectiveState {
-        int skylightlevel = 15;
-        int emittedlightlevel = 0;
         int blocktypeid = 0;
         int blockdata = 0;
         Vector3D top, bottom;
@@ -90,14 +88,55 @@ public class IsoHDPerspective implements HDPerspective {
         int subalpha;
         double mt;
         int[] subblock_xyz = new int[3];
+        MapIterator mapiter;
+
+        public OurPerspectiveState(MapIterator mi) {
+            mapiter = mi;
+        }
         /**
          * Get sky light level - only available if shader requested it
          */
-        public final int getSkyLightLevel() { return skylightlevel; }
+        public final int getSkyLightLevel() {
+            int ll;
+            BlockStep ls = mapiter.unstepPosition();
+            /* Some blocks are light blocking, but not fully blocking - this sucks */
+            switch(mapiter.getBlockTypeID()) {
+                case 53:    /* Wood stairs */
+                case 44:    /* Slabs */
+                case 67:    /* Cobblestone stairs */
+                    mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
+                    ll = mapiter.getBlockSkyLight();
+                    mapiter.stepPosition(BlockStep.Y_MINUS);
+                    break;
+                default:
+                    ll = mapiter.getBlockSkyLight();
+                    break;
+            }
+            mapiter.stepPosition(ls);
+            return ll;
+        }
         /**
          * Get emitted light level - only available if shader requested it
          */
-        public final int getEmittedLightLevel() { return emittedlightlevel; }
+        public final int getEmittedLightLevel() {
+            int ll;
+            BlockStep ls = mapiter.unstepPosition();
+            /* Some blocks are light blocking, but not fully blocking - this sucks */
+            switch(mapiter.getBlockTypeID()) {
+                case 53:    /* Wood stairs */
+                case 44:    /* Slabs */
+                case 67:    /* Cobblestone stairs */
+                    mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
+                    ll = mapiter.getBlockEmittedLight();
+                    mapiter.stepPosition(BlockStep.Y_MINUS);
+                    break;
+                default:
+                    ll = mapiter.getBlockEmittedLight();
+                    break;
+            }
+            mapiter.stepPosition(ls);
+            return ll;
+        }
         /**
          * Get current block type ID
          */
@@ -210,40 +249,68 @@ public class IsoHDPerspective implements HDPerspective {
             }
             /* Walk through scene */
             laststep = BlockStep.Y_MINUS; /* Last step is down into map */
-            skylightlevel = 15;
-            emittedlightlevel = 0;
             nonairhit = false;
+        }
+        private int generateFenceBlockData(MapIterator mapiter) {
+            int blockdata = 0;
+            /* Check north */
+            if(mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) == 85) {    /* Fence? */
+                blockdata |= 1;
+            }
+            /* Look east */
+            if(mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS) == 85) {    /* Fence? */
+                blockdata |= 2;
+            }
+            /* Look south */
+            if(mapiter.getBlockTypeIDAt(BlockStep.X_PLUS) == 85) {    /* Fence? */
+                blockdata |= 4;
+            }
+            /* Look west */
+            if(mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS) == 85) {    /* Fence? */
+                blockdata |= 8;
+            }
+            return blockdata;
+        }
+        /* Figure out which orientation possibility applies to chest:
+         * bit 1-0: 00=facing west, 01=facing-south, 10=facing-east, 11=facing-north
+         * bit 3-2: 00=single, 01=left half, 10=right half
+         * truth table:
+         * N S E W : facing
+         * - - - - : W
+         * X - - - : S
+         * - X - - : N
+         * - - X - : W
+         * - - - X : E
+         * X - X - : S
+         * X - - X : S
+         * X - X X : S
+         * - X - X : N
+         * - X X - : N
+         * - X X X : N
+         * X X X - : W
+         * X X - - : W
+         * - - X X : W
+         * X - - X : S
+         * X X - X : E
+         * X X X X : ?
+         */
+        private int generateChestBlockData(MapIterator mapiter) {
+            int blockdata = 0;
+            
+            return blockdata;
         }
         /**
          * Process visit of ray to block
          */
         private boolean visit_block(MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
             blocktypeid = mapiter.getBlockTypeID();
-            boolean skip_light_update = false;
             if(nonairhit || (blocktypeid != 0)) {
                 blockdata = mapiter.getBlockData();
                 if(blocktypeid == 85) {   /* Special case for fence - need to fake data so we can render properly */
-                    mapiter.decrementX();   /* Look north */
-                    blockdata = 0;
-                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
-                        blockdata |= 1;
-                    }
-                    mapiter.incrementX();
-                    mapiter.decrementZ();   /* Look east */
-                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
-                        blockdata |= 2;
-                    }
-                    mapiter.incrementZ();
-                    mapiter.incrementX();   /* Look south */
-                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
-                        blockdata |= 4;
-                    }
-                    mapiter.decrementX();   /* Look west */
-                    mapiter.incrementZ();
-                    if(mapiter.getBlockTypeID() == 85) {    /* Fence? */
-                        blockdata |= 8;
-                    }
-                    mapiter.decrementZ();
+                    blockdata = generateFenceBlockData(mapiter);
+                }
+                else if(blocktypeid == 54) {    /* Special case for chest - need to fake data so we can render */
+                    blockdata = generateChestBlockData(mapiter);
                 }
                 boolean missed = false;
 
@@ -251,14 +318,6 @@ public class IsoHDPerspective implements HDPerspective {
                 short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
                 if(model != null) {
                     missed = raytraceSubblock(model);
-                    /* Some blocks are light blocking, but not fully blocking - this sucks */
-                    switch(blocktypeid) {
-                    case 53:    /* Wood stairs */
-                    case 44:    /* Slabs */
-                    case 67:    /* Cobblestone stairs */
-                        skip_light_update = true;
-                        break;
-                    }
                 }
                 else {
                     subalpha = -1;
@@ -276,26 +335,6 @@ public class IsoHDPerspective implements HDPerspective {
                     nonairhit = true;
                 }
             }
-            if(skip_light_update) {  /* If considering skipping, do so if block is unlit */
-                int ll;
-                if(need_skylightlevel) {
-                    ll = mapiter.getBlockSkyLight();
-                    if(ll > 0)
-                        skylightlevel = ll;
-                }
-                if(need_emittedlightlevel) {
-                    ll = mapiter.getBlockEmittedLight();
-                    if(ll > 0) {
-                        emittedlightlevel = ll;
-                    }
-                }
-            }
-            else {
-                if(need_skylightlevel)
-                    skylightlevel = mapiter.getBlockSkyLight();
-                if(need_emittedlightlevel)
-                    emittedlightlevel = mapiter.getBlockEmittedLight();
-            }
             return false;
         }
         /**
@@ -307,7 +346,6 @@ public class IsoHDPerspective implements HDPerspective {
 
             mapiter.initialize(x, y, z);
             
-            boolean nonairhit = false;
             for (; n > 0; --n) {
                 /* Visit block */
                 if(visit_block(mapiter, shaderstate, shaderdone)) {
@@ -320,12 +358,11 @@ public class IsoHDPerspective implements HDPerspective {
                     t_next_x += dt_dx;
                     if(x_inc > 0) {
                         laststep = BlockStep.X_PLUS;
-                        mapiter.incrementX();
                     }
                     else {
                         laststep = BlockStep.X_MINUS;
-                        mapiter.decrementX();
                     }
+                    mapiter.stepPosition(laststep);
                 }
                 /* If Y step is next best */
                 else if((t_next_y <= t_next_x) && (t_next_y <= t_next_z)) {
@@ -334,13 +371,13 @@ public class IsoHDPerspective implements HDPerspective {
                     t_next_y += dt_dy;
                     if(y_inc > 0) {
                         laststep = BlockStep.Y_PLUS;
-                        mapiter.incrementY();
+                        mapiter.stepPosition(laststep);
                         if(mapiter.getY() > 127)
                             return;
                     }
                     else {
                         laststep = BlockStep.Y_MINUS;
-                        mapiter.decrementY();
+                        mapiter.stepPosition(laststep);
                         if(mapiter.getY() < 0)
                             return;
                     }
@@ -352,12 +389,11 @@ public class IsoHDPerspective implements HDPerspective {
                     t_next_z += dt_dz;
                     if(z_inc > 0) {
                         laststep = BlockStep.Z_PLUS;
-                        mapiter.incrementZ();
                     }
                     else {
                         laststep = BlockStep.Z_MINUS;
-                        mapiter.decrementZ();
                     }
+                    mapiter.stepPosition(laststep);
                 }
             }
         }
@@ -731,7 +767,7 @@ public class IsoHDPerspective implements HDPerspective {
         }
         
         /* Create perspective state object */
-        OurPerspectiveState ps = new OurPerspectiveState();        
+        OurPerspectiveState ps = new OurPerspectiveState(mapiter);        
         
         ps.top = new Vector3D();
         ps.bottom = new Vector3D();

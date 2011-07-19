@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
 import org.dynmap.Color;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
-import org.dynmap.hdmap.HDPerspectiveState.BlockStep;
+import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.utils.MapIterator;
 
@@ -736,7 +736,7 @@ public class TexturePack {
                     break;
                 case COLORMOD_GRASSSIDE:
                     /* Check if snow above block */
-                    if(mapiter.getBlockTypeIDAbove() == 78) {
+                    if(mapiter.getBlockTypeIDAt(BlockStep.Y_PLUS) == 78) {
                         texture = terrain_argb[68]; /* Snow block */
                         textid = 68;
                     }

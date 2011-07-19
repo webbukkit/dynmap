@@ -16,6 +16,7 @@ import org.dynmap.DynmapPlugin;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.utils.MapIterator.BlockStep;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -42,13 +43,18 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean isempty = true;
 
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    
+
+    private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
+        BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
+
     /**
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
     public class OurMapIterator implements MapIterator {
-        private int x, y, z;  
+        private int x, y, z, chunkindex, bx, bz;  
         private ChunkSnapshot snap;
+        private BlockStep laststep;
+        private int typeid = -1;
 
         OurMapIterator(int x0, int y0, int z0) {
             initialize(x0, y0, z0);
@@ -57,84 +63,125 @@ public class NewMapChunkCache implements MapChunkCache {
             this.x = x0;
             this.y = y0;
             this.z = z0;
+            this.chunkindex = ((x >> 4) - x_min) + (((z >> 4) - z_min) * x_dim);
+            this.bx = x & 0xF;
+            this.bz = z & 0xF;
             try {
-                snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+                snap = snaparray[chunkindex];
             } catch (ArrayIndexOutOfBoundsException aioobx) {
                 snap = EMPTY;
             }
+            laststep = BlockStep.Y_MINUS;
+            typeid = -1;
         }
         public final int getBlockTypeID() {
-            return snap.getBlockTypeId(x & 0xF, y, z & 0xF);
+            if(typeid < 0)
+                typeid = snap.getBlockTypeId(bx, y, bz);
+            return typeid;
         }
         public final int getBlockData() {
-            return snap.getBlockData(x & 0xF, y, z & 0xF);
+            return snap.getBlockData(bx, y, bz);
         }
         public final int getHighestBlockYAt() {
-            return snap.getHighestBlockYAt(x & 0xF, z & 0xF);
+            return snap.getHighestBlockYAt(bx, bz);
         }
         public final int getBlockSkyLight() {
-            return snap.getBlockSkyLight(x & 0xF, y, z & 0xF);
+            return snap.getBlockSkyLight(bx, y, bz);
         }
         public final int getBlockEmittedLight() {
-            return snap.getBlockEmittedLight(x & 0xF, y, z & 0xF);
+            return snap.getBlockEmittedLight(bx, y, bz);
         }
         public Biome getBiome() {
-            return snap.getBiome(x & 0xF, z & 0xF);
+            return snap.getBiome(bx, bz);
         }
         public double getRawBiomeTemperature() {
-            return snap.getRawBiomeTemperature(x & 0xf, z & 0xf);
+            return snap.getRawBiomeTemperature(bx, bz);
         }
         public double getRawBiomeRainfall() {
-            return snap.getRawBiomeRainfall(x & 0xf, z & 0xf);
+            return snap.getRawBiomeRainfall(bx, bz);
         }
-        public final void incrementX() {
-            x++;
-            if((x & 0xF) == 0) {  /* Next chunk? */
-                try {
-                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-                } catch (ArrayIndexOutOfBoundsException aioobx) {
-                    snap = EMPTY;
-                }
+        /**
+         * Step current position in given direction
+         */
+        public final void stepPosition(BlockStep step) {
+            switch(step.ordinal()) {
+                case 0:
+                    x++;
+                    bx++;
+                    if(bx == 16) {  /* Next chunk? */
+                        try {
+                            bx = 0;
+                            chunkindex++;
+                            snap = snaparray[chunkindex];
+                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                            snap = EMPTY;
+                        }
+                    }
+                    break;
+                case 1:
+                    y++;
+                    break;
+                case 2:
+                    z++;
+                    bz++;
+                    if(bz == 16) {  /* Next chunk? */
+                        try {
+                            bz = 0;
+                            chunkindex += x_dim;
+                            snap = snaparray[chunkindex];
+                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                            snap = EMPTY;
+                        }
+                    }
+                    break;
+                case 3:
+                    x--;
+                    bx--;
+                    if(bx == -1) {  /* Next chunk? */
+                        try {
+                            bx = 15;
+                            chunkindex--;
+                            snap = snaparray[chunkindex];
+                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                            snap = EMPTY;
+                        }
+                    }
+                    break;
+                case 4:
+                    y--;
+                    break;
+                case 5:
+                    z--;
+                    bz--;
+                    if(bz == -1) {  /* Next chunk? */
+                        try {
+                            bz = 15;
+                            chunkindex -= x_dim;
+                            snap = snaparray[chunkindex];
+                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                            snap = EMPTY;
+                        }
+                    }
+                    break;
             }
+            laststep = step;
+            typeid = -1;
         }
-        public final void decrementX() {
-            x--;
-            if((x & 0xF) == 15) {  /* Next chunk? */
-                try {
-                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-                } catch (ArrayIndexOutOfBoundsException aioobx) {
-                    snap = EMPTY;
-                }
-            }
-        }
-        public final void incrementY() {
-            y++;
-        }
-        public final void decrementY() {
-            y--;
-        }
-        public final void incrementZ() {
-            z++;
-            if((z & 0xF) == 0) {  /* Next chunk? */
-                try {
-                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-                } catch (ArrayIndexOutOfBoundsException aioobx) {
-                    snap = EMPTY;
-                }
-            }
-        }
-        public final void decrementZ() {
-            z--;
-            if((z & 0xF) == 15) {  /* Next chunk? */
-                try {
-                    snap = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-                } catch (ArrayIndexOutOfBoundsException aioobx) {
-                    snap = EMPTY;
-                }
-            }
+        /**
+         * Unstep current position to previous position
+         */
+        public BlockStep unstepPosition() {
+            BlockStep ls = laststep;
+            stepPosition(unstep[ls.ordinal()]);
+            return ls;
         }
         public final void setY(int y) {
+            if(y > this.y)
+                laststep = BlockStep.Y_PLUS;
+            else
+                laststep = BlockStep.Y_PLUS;
             this.y = y;
+            typeid = -1;
         }
         public final int getX() {
             return x;
@@ -145,10 +192,27 @@ public class NewMapChunkCache implements MapChunkCache {
         public final int getZ() {
             return z;
         }
-        public final int getBlockTypeIDAbove() {
-            if(y < 127)
-                return snap.getBlockTypeId(x & 0xF, y+1, z & 0xF);
+        public final int getBlockTypeIDAt(BlockStep s) {
+            if(s == BlockStep.Y_MINUS) {
+                if(y > 0)
+                    return snap.getBlockTypeId(bx, y-1, bz);
+            }
+            else if(s == BlockStep.Y_PLUS) {
+                if(y < 127)
+                    return snap.getBlockTypeId(bx, y+1, bz);
+            }
+            else {
+                BlockStep ls = laststep;
+                stepPosition(s);
+                int tid = snap.getBlockTypeId(bx, y, bz);
+                unstepPosition();
+                laststep = ls;
+                return tid;
+            }
             return 0;
+        }
+        public BlockStep getLastStep() {
+            return laststep;
         }
      }
 
