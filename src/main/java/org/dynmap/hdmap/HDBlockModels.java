@@ -164,7 +164,7 @@ public class HDBlockModels {
                                     }
                                 }
                             }
-                            map[off] = (short)((255*raw_w) / (res*res*res));
+                            map[off] = (short)((255*raw_w) / (nativeres*nativeres*nativeres));
                             if(map[off] > 255) map[off] = 255;
                             if(map[off] < 0) map[off] = 0;
                         }
