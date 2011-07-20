@@ -55,6 +55,7 @@ public class NewMapChunkCache implements MapChunkCache {
         private ChunkSnapshot snap;
         private BlockStep laststep;
         private int typeid = -1;
+        private int blkdata = -1;
 
         OurMapIterator(int x0, int y0, int z0) {
             initialize(x0, y0, z0);
@@ -72,7 +73,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 snap = EMPTY;
             }
             laststep = BlockStep.Y_MINUS;
-            typeid = -1;
+            typeid = blkdata = -1;
         }
         public final int getBlockTypeID() {
             if(typeid < 0)
@@ -80,7 +81,9 @@ public class NewMapChunkCache implements MapChunkCache {
             return typeid;
         }
         public final int getBlockData() {
-            return snap.getBlockData(bx, y, bz);
+            if(blkdata < 0)
+                blkdata = snap.getBlockData(bx, y, bz);
+            return blkdata;
         }
         public final int getHighestBlockYAt() {
             return snap.getHighestBlockYAt(bx, bz);
@@ -166,6 +169,7 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             laststep = step;
             typeid = -1;
+            blkdata = -1;
         }
         /**
          * Unstep current position to previous position
@@ -175,6 +179,12 @@ public class NewMapChunkCache implements MapChunkCache {
             stepPosition(unstep[ls.ordinal()]);
             return ls;
         }
+        /**
+         * Unstep current position in oppisite director of given step
+         */
+        public void unstepPosition(BlockStep s) {
+            stepPosition(unstep[s.ordinal()]);
+        }
         public final void setY(int y) {
             if(y > this.y)
                 laststep = BlockStep.Y_PLUS;
@@ -182,6 +192,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 laststep = BlockStep.Y_PLUS;
             this.y = y;
             typeid = -1;
+            blkdata = -1;
         }
         public final int getX() {
             return x;

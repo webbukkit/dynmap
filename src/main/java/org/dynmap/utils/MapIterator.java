@@ -66,6 +66,10 @@ public interface MapIterator {
      */
     void stepPosition(BlockStep step);
     /**
+     * Step current position in opposite of given direction
+     */
+    void unstepPosition(BlockStep step);
+    /**
      * Unstep current position to previous position : return step to take to return
      */
     BlockStep unstepPosition();
