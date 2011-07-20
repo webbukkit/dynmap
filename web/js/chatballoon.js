@@ -1,50 +1,64 @@
 componentconstructors['chatballoon'] = function(dynmap, configuration) {
 	var me = this;
 	me.chatpopups = {};
+	$(dynmap).bind('playerupdated', function(event, player) {
+		var popup = me.chatpopups[player.name];
+		if (popup) {
+			var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
+			popup.layer.setLatLng(markerPosition);
+		}
+	});
+	$(dynmap).bind('worldchanged', function() {
+		$.each(me.chatpopups, function(name, popup) {
+			popup.close();
+		});
+	});
 	$(dynmap).bind('chat', function(event, message) {
 		if (message.source != 'player') {
 			return;
 		}
 		var player = dynmap.players[message.name];
-		var playerMarker = player && player.marker;
-		if (!playerMarker) {
+		if (dynmap.world !== player.location.world) {
 			return;
 		}
-		if (player.location.world != dynmap.world) {
-			return;
-		}
+		var popupPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
+		console.log('popupPosition', popupPosition);
 		var popup = me.chatpopups[message.name];
 		if (!popup) {
-			popup = { lines: [ message.text ] };
-		} else {
-			popup.lines[popup.lines.length] = message.text;
+			me.chatpopups[message.name] = popup = {
+				layer: new L.Popup({autopan: false, closeButton: false}),
+				content: $('<div/>').addClass('balloonmessages')[0]
+			};
+			popup.layer.setContent(popup.content);
+			
+			popup.close = function() {
+				if (popup.timeout) { window.clearTimeout(popup.timeout); }
+				dynmap.map.removeLayer(popup.layer);
+				delete me.chatpopups[message.name];
+			};
+			
+			popup.layer.setLatLng(popupPosition);
+			dynmap.map.addLayer(popup.layer);
 		}
+		
+		// Add line to balloon.
+		$('<div/>').addClass('balloonmessage').text(message.text).appendTo(popup.content);
 
-		var MAX_LINES = 5;
-		if (popup.lines.length > MAX_LINES) {
-			popup.lines = popup.lines.slice(1);
+		// Remove older lines when too many messages are shown.
+		var children = $(popup.content).children();
+		if (children.length > 5) {
+			$(children[0]).remove();
 		}
-		var htmlMessage = '<div id="content"><b>' + message.name + "</b><br/><br/>";
-		var line;
-		for (line in popup.lines) {
-			htmlMessage = htmlMessage + popup.lines[line] + "<br/>";
-		}
-		htmlMessage = htmlMessage + "</div>";
-		if (!popup.infoWindow) {
-			popup.infoWindow = new google.maps.InfoWindow({
-				disableAutoPan: !(configuration.focuschatballoons || false),
-			    content: htmlMessage
-			});
-		} else {
-			popup.infoWindow.setContent(htmlMessage);
-		}
-		popup.infoWindow.open(dynmap.map, playerMarker);
-		me.chatpopups[message.name] = popup;
+		
+		popup.layer.setContent(popup.content);
+		
 		if (popup.timeout) { window.clearTimeout(popup.timeout); }
 		popup.timeout = window.setTimeout(function() {
-			popup.infoWindow.close();
-			popup.infoWindow = null;
-			delete me.chatpopups[message.name];
+			popup.close();
 		}, 8000);
+		
+		if (configuration.focuschatballoons) {
+			dynmap.panToLatLng(popupPosition);
+		}
 	});
 };

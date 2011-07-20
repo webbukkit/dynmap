@@ -703,6 +703,11 @@
 	top: -3px;
 	left: 0px;
 }
-.infowindow {
-color:black;
+
+.leaflet-popup {
+	color: black;
+}
+
+.balloonmessage {
+	word-wrap: break-word;
 }
