@@ -150,6 +150,11 @@ public class HttpServerConnection extends Thread {
                         }
                     }
                 }
+                boolean iskeepalive = false;
+                String keepalive = request.fields.get(HttpField.Connection);
+                if((keepalive != null) && (keepalive.toLowerCase().indexOf("keep-alive") >= 0)) {
+                    iskeepalive = true;
+                }
 
                 // TODO: Optimize HttpHandler-finding by using a real path-aware tree.
                 HttpHandler handler = null;
@@ -178,6 +183,10 @@ public class HttpServerConnection extends Thread {
 
                 HttpResponse response = new HttpResponse(this, out);
 
+                if(iskeepalive) {
+                    response.fields.put(HttpField.Connection, "keep-alive");
+                    response.fields.put("Keep-Alive", "timeout=5");
+                }
                 try {
                     handler.handle(relativePath, request, response);
                 } catch (IOException e) {
@@ -194,8 +203,7 @@ public class HttpServerConnection extends Thread {
                     //return;
                 }
 
-                boolean isKeepalive = !"close".equals(request.fields.get(HttpField.Connection)) && !"close".equals(response.fields.get(HttpField.Connection));
-
+                boolean isKeepalive = iskeepalive && !"close".equals(request.fields.get(HttpField.Connection)) && !"close".equals(response.fields.get(HttpField.Connection));
                 String contentLength = response.fields.get("Content-Length");
                 if (isKeepalive && contentLength == null) {
                     // A handler has been a bad boy, but we're here to fix it.
