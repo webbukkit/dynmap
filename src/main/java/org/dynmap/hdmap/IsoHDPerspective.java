@@ -24,6 +24,8 @@ import org.dynmap.MapTile;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.MapIterator.BlockStep;
+import org.dynmap.hdmap.TexturePack.BlockTransparency;
+import org.dynmap.hdmap.TexturePack.HDTextureMap;
 import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.utils.FileLockManager;
@@ -75,6 +77,7 @@ public class IsoHDPerspective implements HDPerspective {
     private class OurPerspectiveState implements HDPerspectiveState {
         int blocktypeid = 0;
         int blockdata = 0;
+        int lastblocktypeid = 0;
         Vector3D top, bottom;
         int px, py;
         BlockStep laststep = BlockStep.Y_MINUS;
@@ -92,67 +95,54 @@ public class IsoHDPerspective implements HDPerspective {
         MapIterator mapiter;
         boolean isnether;
         boolean skiptoair;
+        int skylevel = -1;
+        int emitlevel = -1;
 
         public OurPerspectiveState(MapIterator mi, boolean isnether) {
             mapiter = mi;
             this.isnether = isnether;
         }
         /**
+         * Update sky and emitted light 
+         */
+        private final void updateLightLevel() {
+            /* Look up transparency for current block */
+            BlockTransparency bt = HDTextureMap.getTransparency(blocktypeid);
+            if(bt == BlockTransparency.TRANSPARENT) {
+                skylevel = mapiter.getBlockSkyLight();
+                emitlevel = mapiter.getBlockEmittedLight();
+            }
+            else if(HDTextureMap.getTransparency(lastblocktypeid) != BlockTransparency.SEMITRANSPARENT) {
+                mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
+                emitlevel = mapiter.getBlockEmittedLight();
+                skylevel = mapiter.getBlockSkyLight();
+                mapiter.stepPosition(laststep);
+            }
+            else {
+                mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
+                mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
+                emitlevel = mapiter.getBlockEmittedLight();
+                skylevel = mapiter.getBlockSkyLight();
+                mapiter.stepPosition(BlockStep.Y_MINUS);
+                mapiter.stepPosition(laststep);
+            }
+        }
+        /**
          * Get sky light level - only available if shader requested it
          */
         public final int getSkyLightLevel() {
-            int ll;
-            BlockStep ls;
-            /* Some blocks are light blocking, but not fully blocking - this sucks */
-            switch(mapiter.getBlockTypeID()) {
-                case 53:    /* Wood stairs */
-                case 44:    /* Slabs */
-                case 67:    /* Cobblestone stairs */
-                    ls = mapiter.unstepPosition();                	
-                    mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
-                    ll = mapiter.getBlockSkyLight();
-                    mapiter.stepPosition(BlockStep.Y_MINUS);
-                    mapiter.stepPosition(ls);
-                    break;
-                case 78:	/* Snow */
-                	ll = mapiter.getBlockSkyLight();
-                	break;
-                default:
-                	ls = mapiter.unstepPosition();
-                    ll = mapiter.getBlockSkyLight();
-                    mapiter.stepPosition(ls);
-                    break;
+            if(skylevel < 0) {
+                updateLightLevel();
             }
-            
-            return ll;
+            return skylevel;
         }
         /**
          * Get emitted light level - only available if shader requested it
          */
         public final int getEmittedLightLevel() {
-            int ll;
-            BlockStep ls;            
-            /* Some blocks are light blocking, but not fully blocking - this sucks */
-            switch(mapiter.getBlockTypeID()) {
-                case 53:    /* Wood stairs */
-                case 44:    /* Slabs */
-                case 67:    /* Cobblestone stairs */
-                    ls = mapiter.unstepPosition();
-                    mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
-                    ll = mapiter.getBlockEmittedLight();
-                    mapiter.stepPosition(BlockStep.Y_MINUS);
-                    mapiter.stepPosition(ls);                    
-                    break;
-                case 78:	/* Snow */
-                	ll = mapiter.getBlockEmittedLight();
-                	break;
-                default:
-                	ls = mapiter.unstepPosition();
-                    ll = mapiter.getBlockEmittedLight();
-                    mapiter.stepPosition(ls);
-                    break;
-            }
-            return ll;
+            if(emitlevel < 0)
+                updateLightLevel();
+            return emitlevel;
         }
         /**
          * Get current block type ID
@@ -321,6 +311,7 @@ public class IsoHDPerspective implements HDPerspective {
          * Process visit of ray to block
          */
         private boolean visit_block(MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
+            lastblocktypeid = blocktypeid;
             blocktypeid = mapiter.getBlockTypeID();
             if(skiptoair) {	/* If skipping until we see air */
                 if(blocktypeid == 0)	/* If air, we're done */
@@ -346,6 +337,7 @@ public class IsoHDPerspective implements HDPerspective {
                 }
                 if(!missed) {
                     boolean done = true;
+                    skylevel = emitlevel = -1;
                     for(int i = 0; i < shaderstate.length; i++) {
                         if(!shaderdone[i])
                             shaderdone[i] = shaderstate[i].processBlock(this);

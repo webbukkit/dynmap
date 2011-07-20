@@ -159,6 +159,12 @@ public class LegacyMapChunkCache implements MapChunkCache {
             stepPosition(unstep[ls.ordinal()]);
             return ls;
         }
+        /**
+         * Unstep current position in oppisite director of given step
+         */
+        public void unstepPosition(BlockStep s) {
+            stepPosition(unstep[s.ordinal()]);
+        }
         public final void setY(int y) {
             if(y > this.y)
                 laststep = BlockStep.Y_PLUS;

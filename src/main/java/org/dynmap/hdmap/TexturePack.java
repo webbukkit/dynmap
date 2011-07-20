@@ -98,18 +98,27 @@ public class TexturePack {
 
     private HashMap<Integer, TexturePack> scaled_textures;
     
-    
+    public enum BlockTransparency {
+        OPAQUE, /* Block is opaque - blocks light - lit by light from adjacent blocks */
+        TRANSPARENT,    /* Block is transparent - passes light - lit by light level in own block */ 
+        SEMITRANSPARENT /* Opaque block that doesn't block all rays (steps, slabs) - use light above for face lighting on opaque blocks */
+    }
     public static class HDTextureMap {
         private int faces[];  /* index in terrain.png of image for each face (indexed by BlockStep.ordinal()) */
         private List<Integer> blockids;
         private int databits;
+        private BlockTransparency bt;
         private static HDTextureMap[] texmaps;
+        private static BlockTransparency transp[];
         
         private static void initializeTable() {
             texmaps = new HDTextureMap[16*BLOCKTABLELEN];
+            transp = new BlockTransparency[BLOCKTABLELEN];
             HDTextureMap blank = new HDTextureMap();
             for(int i = 0; i < texmaps.length; i++)
                 texmaps[i] = blank;
+            for(int i = 0; i < transp.length; i++)
+                transp[i] = BlockTransparency.OPAQUE;
         }
         
         private HDTextureMap() {
@@ -122,10 +131,11 @@ public class TexturePack {
             }
         }
         
-        public HDTextureMap(List<Integer> blockids, int databits, int[] faces) {
+        public HDTextureMap(List<Integer> blockids, int databits, int[] faces, BlockTransparency trans) {
             this.faces = faces;
             this.blockids = blockids;
             this.databits = databits;
+            this.bt = trans;
         }
         
         public void addToTable() {
@@ -136,11 +146,16 @@ public class TexturePack {
                         texmaps[16*blkid + i] = this;
                     }
                 }
+                transp[blkid] = bt; /* Transparency is only blocktype based right now */
             }
         }
         
         public static HDTextureMap getMap(int blkid, int blkdata) {
             return texmaps[(blkid<<4) + blkdata];
+        }
+        
+        public static BlockTransparency getTransparency(int blkid) {
+            return transp[blkid];
         }
     }
     /** Get or load texture pack */
@@ -573,6 +588,7 @@ public class TexturePack {
                     int databits = -1;
                     int faces[] = new int[] { -1, -1, -1, -1, -1, -1 };
                     line = line.substring(6);
+                    BlockTransparency trans = BlockTransparency.OPAQUE;
                     String[] args = line.split(",");
                     for(String a : args) {
                         String[] av = a.split("=");
@@ -622,12 +638,19 @@ public class TexturePack {
                             faces[BlockStep.Y_MINUS.ordinal()] = 
                                 faces[BlockStep.Y_PLUS.ordinal()] = Integer.parseInt(av[1]);
                         }
+                        else if(av[0].equals("transparency")) {
+                            trans = BlockTransparency.valueOf(av[1]);
+                            if(trans == null) {
+                                trans = BlockTransparency.OPAQUE;
+                                Log.severe("Texture mapping has invalid transparency setting - " + av[1] + " - line " + rdr.getLineNumber() + " of " + txtfile.getPath());
+                            }
+                        }
                     }
                     /* If no data bits, assume all */
                     if(databits < 0) databits = 0xFFFF;
                     /* If we have everything, build block */
                     if(blkids.size() > 0) {
-                        HDTextureMap map = new HDTextureMap(blkids, databits, faces);
+                        HDTextureMap map = new HDTextureMap(blkids, databits, faces, trans);
                         map.addToTable();
                         cnt++;
                     }
