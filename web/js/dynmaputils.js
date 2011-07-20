@@ -182,3 +182,27 @@ function Location(world, x, y, z) {
 	this.y = y;
 	this.z = z;
 }
+
+function namedReplace(str, obj)
+{
+	var startIndex = 0;
+	var result = '';
+	while(true) {
+		var variableBegin = str.indexOf('{', startIndex);
+		var variableEnd = str.indexOf('}', variableBegin+1);
+		if (variableBegin < 0 || variableEnd < 0) {
+			result += str.substr(startIndex);
+			break;
+		}
+		if (variableBegin < variableEnd) {
+			var variableName = str.substring(variableBegin+1, variableEnd-1);
+			result += str.substring(startIndex, variableBegin-1);
+			result += obj[variableName];
+		} else /* found '{}' */ {
+			result += str.substring(startIndex, variableBegin-1);
+			result += '';
+		}
+		startIndex = variableEnd+1;
+	}
+	return result;
+}

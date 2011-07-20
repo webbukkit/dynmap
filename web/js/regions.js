@@ -1,36 +1,33 @@
-// Author: nidefawl. contact me at bukkit.org or irc.esper.net #nide
-
-var regionCfg;
-var regionPolygons = {} ;
-var regionInfoWindow = new google.maps.InfoWindow();
 var regionConstructors = {};
-function makeRegionPolygonCube(map, name, region)
-{
-	new regionConstructors['polygon'](map, name, region);
-}
-function regionInfo(event, name, region)
-{
-	new regionConstructors['info'](event, name, region);
-}
-componentconstructors['regions'] = function(dynmap, configuration)
-{
-	regionCfg = configuration;
 
-	loadjs('js/regions_' + regionCfg.name + '.js', function()
-	{
-		var world_info = dynmap.map.mapTypeId.split('.');
-		new regionConstructors['update'](world_info[0]);
-		
-		$(dynmap).bind('mapchanged', function() {
-			var world_info = dynmap.map.mapTypeId.split('.');
-			new regionConstructors['update'](world_info[0]); 
-		});
+componentconstructors['regions'] = function(dynmap, configuration) {
+	regionCfg = configuration;
+	var regionType = regionCfg.name;
+	loadjs('js/regions_' + regionType + '.js', function() {
+		var regionsLayer = undefined;
+		function undraw() {
+			if (regionsLayer) {
+				dynmap.map.removeLayer(regionsLayer);
+				regionsLayer = undefined;
+			}
+		}
+		function redraw() {
+			undraw();
+			var worldName = dynmap.world && dynmap.world.name;
+			if (worldName) {
+				regionConstructors[regionType](dynmap, worldName, function(regionLayers) {
+					var newRegionsLayer = new L.LayerGroup();
+					$.each(regionLayers, function(name, layer) {
+						console.log(name, layer);
+						newRegionsLayer.addLayer(layer);
+					});
+					regionsLayer = newRegionsLayer;
+					dynmap.map.addLayer(newRegionsLayer);
+				});
+			}
+		}
+		$(dynmap).bind('mapchanged', redraw);
+		$(dynmap).bind('mapchanging', undraw);
+		redraw();
 	});
 }
-
-function arrayReplace(replace, by, str)
-{
-	for (var i=0; i<replace.length; i++)
-		str = str.replace(replace[i], by[i]);
-	return str;
-} 

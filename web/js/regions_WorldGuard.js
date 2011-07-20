@@ -1,219 +1,110 @@
-regionConstructors['polygon'] = function(map, name, region)
+Array.max = function( array ){
+    return Math.max.apply( Math, array );
+};
+Array.min = function( array ){
+    return Math.min.apply( Math, array );
+};
+
+function createPolygonSurfaces(latlng, maxx, minx, maxy, miny, maxz, minz) {
+	return [
+		new L.Polygon([
+			latlng(minx,miny,minz),
+			latlng(maxx,miny,minz),
+			latlng(maxx,miny,maxz),
+			latlng(minx,miny,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,maxy,minz),
+			latlng(maxx,maxy,minz),
+			latlng(maxx,maxy,maxz),
+			latlng(minx,maxy,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,miny,minz),
+			latlng(minx,maxy,minz),
+			latlng(maxx,maxy,minz),
+			latlng(maxx,miny,minz)
+			], {}),
+		new L.Polygon([
+			latlng(maxx,miny,minz),
+			latlng(maxx,maxy,minz),
+			latlng(maxx,maxy,maxz),
+			latlng(maxx,miny,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,miny,maxz),
+			latlng(minx,maxy,maxz),
+			latlng(maxx,maxy,maxz),
+			latlng(maxx,miny,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,miny,minz),
+			latlng(minx,maxy,minz),
+			latlng(minx,maxy,maxz),
+			latlng(minx,miny,maxz)
+			], {})
+		];
+}
+
+function createPolygonsFromWorldGuardRegion(latlng, name, region)
 {
-    if(region.points) {
-    	var i;
-		if(regionCfg.use3dregions) {
-			var toppts = [];
-			var botpts = [];
-    		for(i = 0; i < region.points.length; i++) {
-    			toppts.push(map.getProjection().fromWorldToLatLng(region.points[i].x,
-    				region['max-y'], region.points[i].z));
-    			botpts.push(map.getProjection().fromWorldToLatLng(region.points[i].x,
-    				region['min-y'], region.points[i].z));    				
-    		}
-    		for(i = 0; i < region.points.length; i++) {
-				regionPolygons[name+'_side'+i] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-					paths: [
-						toppts[i], botpts[i], botpts[(i+1)%region.points.length], toppts[(i+1)%region.points.length]
-					], map: map }));
-				google.maps.event.addListener(regionPolygons[name+'_side'+i] , 'click', function(event) {
-					regionInfo(event, name, region);
-				});
-			}
-			regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-				paths: botpts, map: map }));
-			google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
-				regionInfo(event, name, region);
-			});
-			regionPolygons[name+'_top'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-				paths: toppts, map: map }));
-			google.maps.event.addListener(regionPolygons[name+'_top'] , 'click', function(event) {
-				regionInfo(event, name, region);
-			});
-    	}
-    	else {
- 	   		var pts = [];
-    		var yy = (region['min-y']+region['max-y'])/2;
-    		for(i = 0; i < region.points.length; i++) {
-    			pts.push(map.getProjection().fromWorldToLatLng(region.points[i].x,
-    				yy, region.points[i].z));
-    		}
-			regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-				paths: pts, map: map }));
-			google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
-				regionInfo(event, name, region);
-			});
-		}
-		return;
-    }
+	if(region.points) {
+		var i;
+		var xs = region.points.map(function(p) { return p.x; });
+		var zs = region.points.map(function(p) { return p.z; });
+		return createPolygonSurfaces(latlng, Array.max(xs), Array.min(xs), region['max-y'], region['min-y'], Array.max(zs), Array.min(zs));
+	}
 	if(!region.min || !region.max)
-		return;
-    if(region.max.y <= region.min.y)
-        region.min.y = region.max.y - 1;
-	if(regionCfg.use3dregions)
-	{
-		regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-			paths: [
-			map.getProjection().fromWorldToLatLng(region.min.x,region.min.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.min.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.min.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.min.y,region.max.z)
-			],
-			map: map
-			}));
-		regionPolygons[name+'_top'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-			paths: [
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.max.z)
-			],
-			map: map
-			}));
-		regionPolygons[name+'_east'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-			paths: [
-			map.getProjection().fromWorldToLatLng(region.min.x,region.min.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.min.y,region.min.z)
-			],
-			map: map
-			}));
-		regionPolygons[name+'_south'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-			paths: [
-			map.getProjection().fromWorldToLatLng(region.max.x,region.min.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.min.y,region.max.z)
-			],
-			map: map
-			}));
-		regionPolygons[name+'_west'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-			paths: [
-			map.getProjection().fromWorldToLatLng(region.min.x,region.min.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.min.y,region.max.z)
-			],
-			map: map
-			}));
-		regionPolygons[name+'_north'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-			paths: [
-			map.getProjection().fromWorldToLatLng(region.min.x,region.min.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.min.y,region.max.z)
-			],
-			map: map
-			}));
-		google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
-			regionInfo(event, name, region);
-		});
-		google.maps.event.addListener(regionPolygons[name+'_top'] , 'click', function(event) {
-			regionInfo(event, name, region);
-		});
-		google.maps.event.addListener(regionPolygons[name+'_east'] , 'click', function(event) {
-			regionInfo(event, name, region);
-		});
-		google.maps.event.addListener(regionPolygons[name+'_south'] , 'click', function(event) {
-			regionInfo(event, name, region);
-		});
-		google.maps.event.addListener(regionPolygons[name+'_west'] , 'click', function(event) {
-			regionInfo(event, name, region);
-		});
-		google.maps.event.addListener(regionPolygons[name+'_north'] , 'click', function(event) {
-			regionInfo(event, name, region);
-		});
-	}
-	else
-	{
-		regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
-			paths: [
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.min.z),
-			map.getProjection().fromWorldToLatLng(region.max.x,region.max.y,region.max.z),
-			map.getProjection().fromWorldToLatLng(region.min.x,region.max.y,region.max.z)
-			],
-			map: map
-			}));
-		
-		google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
-			regionInfo(event, name, region);
-		});
-	}
-}
-regionConstructors['info'] = function(event, name, region)
-{
-	var owners = {'players':'', 'groups':''};
-	$.each(region.owners, function(type, names)
-	{
-		$.each(names, function(index, name)
-		{
-			if(type == 'players')
-				owners['players'] += name+' ';
-			else if(type == 'groups')
-				owners['groups'] += name+' ';
-		});
-	});
-	var members = {'players':'', 'groups':''};
-	$.each(region.members, function(type, names)
-	{
-		$.each(names, function(index, name)
-		{
-			if(type == 'players')
-				members['players'] += name+' ';
-			else if(type == 'groups')
-				members['groups'] += name+' ';
-		});
-	});
-	var flags = '';
-	$.each(region.flags, function(name, value)
-	{
-		flags += name+': '+value+'<br />';
-	});
-	
-	name = '<span class="regionname">'+name+'</span>';
-	owners['players'] = '<span class="playerowners">'+owners['players']+'</span>';
-	owners['groups'] = '<span class="groupowners">'+owners['groups']+'</span>';
-	members['players'] = '<span class="playermembers">'+members['players']+'</span>';
-	members['groups'] = '<span class="groupmembers">'+members['groups']+'</span>';
-	var region_parent = (region.parent) ? '<span class="regionparent">'+region.parent+'</span>' : '';
-	flags = '<span class="regionflags">'+flags+'</span>';
-	var region_priority = '<span class="regionpriority">'+region.priority+'</span>';
-	
-	var replace = ['%regionname%','%playerowners%','%groupowners%','%playermembers%','%groupmembers%','%parent%','%flags%','%priority%'];
-	var by = [name,owners['players'],owners['groups'],members['players'], members['groups'],region_parent,flags,region_priority];
-	
-	var contentString = arrayReplace(replace, by, regionCfg.infowindow)
-
-	regionInfoWindow.setContent(contentString);
-	regionInfoWindow.setPosition(event.latLng);
-
-	regionInfoWindow.open(dynmap.map);
+		return [];
+	if(region.max.y <= region.min.y)
+		region.min.y = region.max.y - 1;
+	return createPolygonSurfaces(latlng, region.max.x, region.min.x, region.max.y, region.min.y, region.max.z, region.min.z);
 }
 
-regionConstructors['update'] = function(map)
-{
-	if(regionInfoWindow)
-		regionInfoWindow.close();
-	$.each(regionPolygons, function(index, region)
-	{
-		region.setMap(null);
-	});
-	regionPolygons = {};
+function createPopupContent(name, region) {
+	
+	return $('<div/>')
+		.append($('<span/>').addClass('regionname').text(name))
+		.append(region.owners.players && $('<span/>').addClass('playerowners').text(region.owners.players.concat()))
+		.append(region.owners.groups && $('<span/>').addClass('groupowners').text(region.owners.groups.concat()))
+		.append(region.members.players && $('<span/>').addClass('playermembers').text(region.members.players.concat()))
+		.append(region.members.groups && $('<span/>').addClass('groupmembers').text(region.members.groups.concat()))
+		.append(region.parent && $('<span/>').addClass('regionparent').text(region.parent))
+		.append(region.flags && function() {
+			var regionflags = $('<span/>').addClass('regionflags');
+			$.each(region.flags, function(name, value) {
+				regionflags.append($('<span/>').addClass('regionflag').text(name + ': ' + value));
+			});
+			return regionflags;
+		}())
+		.append($('<span/>').addClass('regionpriority').text(region.priority))
+		[0];
+};
+
+regionConstructors['WorldGuard'] = function(dynmap, worldName, result) {
+	var latlng = function(x, y, z) {
+		var l;
+		if (typeof x === 'Object' && !y && !z) {
+			l = x;
+		} else {
+			l = new Location(undefined, x,y,z);
+		}
+		return dynmap.getProjection().fromLocationToLatLng(l);
+	};
 	
 	regionFile = regionCfg.filename.substr(0, regionCfg.filename.lastIndexOf('.'));
-	regionFile += '_'+map+'.json';
-
-	$.getJSON('standalone/'+regionFile, function(data)
-	{
-		var regionnames = '';
-		var count = 0;
-		$.each(data, function(name, residence)
-		{
-			count += 1;
-			regionnames += ", "+name;
-			makeRegionPolygonCube(dynmap.map, name, residence);
+	regionFile += '_'+worldName+'.json';
+	$.getJSON('standalone/'+regionFile, function(data) {
+		var regionLayers = {};
+		$.each(data, function(name, region) {
+			var polygons = createPolygonsFromWorldGuardRegion(latlng, name, region);
+			var regionLayer = new L.FeatureGroup(polygons);
+			
+			regionLayer.bindPopup(createPopupContent(name, region));
+			
+			regionLayers[name] = regionLayer;
 		});
+		result(regionLayers);
+		
 	});
-}
+};

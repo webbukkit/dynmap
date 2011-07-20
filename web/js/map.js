@@ -19,63 +19,6 @@ componentconstructors['testcomponent'] = function(dynmap, configuration) {
 	$(dynmap).bind('playerupdated', function() { console.log('playerupdated'); });
 };
 
-function loadjs(url, completed) {
-	var script = document.createElement('script');
-	script.setAttribute('src', url);
-	script.setAttribute('type', 'text/javascript');
-	var isloaded = false;
-	script.onload = function() {
-		if (isloaded) { return; }
-		isloaded = true;
-		completed();
-	};
-	
-	// Hack for IE, don't know whether this still applies to IE9.
-	script.onreadystatechange = function() {
-		script.onload();
-	};
-	(document.head || document.getElementsByTagName('head')[0]).appendChild(script);
-}
-
-function splitArgs(s) {
-	var r = s.split(' ');
-	delete arguments[0];
-	var obj = {};
-	var index = 0;
-	$.each(arguments, function(argumentIndex, argument) {
-		if (!argumentIndex) { return; }
-		var value = r[argumentIndex-1];
-		obj[argument] = value;
-	});
-	return obj;
-}
-
-function swtch(value, options, defaultOption) {
-	return (options[value] || defaultOption || function(){})(value);
-}
-(function( $ ){
-	$.fn.scrollHeight = function(height) {
-		return this[0].scrollHeight;
-	};
-})($);
-
-function DynMapType() { }
-DynMapType.prototype = {
-	onTileUpdated: function(tile, tileName) {
-		var src = this.dynmap.getTileUrl(tileName);
-		tile.attr('src', src);
-		tile.show();
-	},
-	updateTileSize: function(zoom) {}
-};
-
-function Location(world, x, y, z) {
-	this.world = world;
-	this.x = x;
-	this.y = y;
-	this.z = z;
-}
-
 function DynMap(options) {
 	var me = this;
 	me.options = options;
