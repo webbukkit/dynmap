@@ -75,7 +75,7 @@ public class DynmapPlugin extends JavaPlugin {
 
     /* Add/Replace branches in configuration tree with contribution from a separate file */
     @SuppressWarnings("unchecked")
-    private void mergeConfigurationBranch(ConfigurationNode cfgnode, String branch, boolean replace_existing) {
+    private void mergeConfigurationBranch(ConfigurationNode cfgnode, String branch, boolean replace_existing, boolean islist) {
         Object srcbranch = cfgnode.getObject(branch);
         if(srcbranch == null)
             return;
@@ -86,9 +86,9 @@ public class DynmapPlugin extends JavaPlugin {
             return;
         }
         /* If list, merge by "name" attribute */
-        if((srcbranch instanceof List) && (destbranch instanceof List)) {
-            List<ConfigurationNode> dest = (List<ConfigurationNode>)destbranch;
-            List<ConfigurationNode> src = (List<ConfigurationNode>)srcbranch;
+        if(islist) {
+            List<ConfigurationNode> dest = configuration.getNodes(branch);
+            List<ConfigurationNode> src = cfgnode.getNodes(branch);
             /* Go through new records : see what to do with each */
             for(ConfigurationNode node : src) {
                 String name = node.getString("name", null);
@@ -96,7 +96,7 @@ public class DynmapPlugin extends JavaPlugin {
                 /* Walk destination - see if match */
                 boolean matched = false;
                 for(ConfigurationNode dnode : dest) {
-                    String dname = node.getString("name", null);
+                    String dname = dnode.getString("name", null);
                     if(dname == null) continue;
                     if(dname.equals(name)) {    /* Match? */
                         if(replace_existing) {
@@ -112,11 +112,12 @@ public class DynmapPlugin extends JavaPlugin {
                     dest.add(node);
                 }
             }
+            configuration.put(branch,dest);
         }
         /* If configuration node, merge by key */
-        else if((srcbranch instanceof ConfigurationNode) && (destbranch instanceof ConfigurationNode)) {
-            ConfigurationNode src = (ConfigurationNode)srcbranch;
-            ConfigurationNode dest = (ConfigurationNode)destbranch;
+        else {
+            ConfigurationNode src = cfgnode.getNode(branch);
+            ConfigurationNode dest = configuration.getNode(branch);
             for(String key : src.keySet()) {    /* Check each contribution */
                 if(dest.containsKey(key)) { /* Exists? */
                     if(replace_existing) {  /* If replacing, do so */
@@ -173,7 +174,7 @@ public class DynmapPlugin extends JavaPlugin {
             org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
             cfg.load();
             ConfigurationNode cn = new ConfigurationNode(cfg);
-            mergeConfigurationBranch(cn, "worlds", true);
+            mergeConfigurationBranch(cn, "worlds", true, true);
         }
         else {
             try {
@@ -192,7 +193,7 @@ public class DynmapPlugin extends JavaPlugin {
             org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
             cfg.load();
             ConfigurationNode cn = new ConfigurationNode(cfg);
-            mergeConfigurationBranch(cn, "templates", false);
+            mergeConfigurationBranch(cn, "templates", false, false);
         }
 
         /* Now, process custom-templates.txt - these are user supplied, so override anything matcing */
@@ -201,7 +202,7 @@ public class DynmapPlugin extends JavaPlugin {
             org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
             cfg.load();
             ConfigurationNode cn = new ConfigurationNode(cfg);
-            mergeConfigurationBranch(cn, "templates", true);
+            mergeConfigurationBranch(cn, "templates", true, false);
         }
         else {
             try {

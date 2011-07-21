@@ -928,6 +928,7 @@ public class IsoHDPerspective implements HDPerspective {
         return name;
     }
 
+    private static String[] directions = { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
     @Override
     public void addClientConfiguration(JSONObject mapObject) {
         s(mapObject, "perspective", name);
@@ -936,5 +937,8 @@ public class IsoHDPerspective implements HDPerspective {
         s(mapObject, "scale", scale);
         s(mapObject, "worldtomap", world_to_map.toJSON());
         s(mapObject, "maptoworld", map_to_world.toJSON());
+        int dir = ((360 + (int)(22.5+azimuth)) / 45) % 8;;
+        s(mapObject, "compassview", directions[dir]);
+
     }
 }

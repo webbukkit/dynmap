@@ -565,29 +565,55 @@
  * Compass
  */
 
-.compass {
+.compass, .compass_NE, .compass_SE, .compass_NW, .compass_SW {
     display: block;
     position: absolute;
     z-index: 10;
-
     top: 20px;
     right: 32px;
-
     height: 84px;
     width: 83px;
-
     background-repeat: no-repeat;
+}
+
+.compass, .compass_SE {
     background-image: url(../images/compass.png);
 }
 
-.compass_flat {
+.compass_NE {
+    background-image: url(../images/compass_NE.png);
+}
+
+.compass_NW {
+    background-image: url(../images/compass_NW.png);
+}
+
+.compass_SW {
+    background-image: url(../images/compass_SW.png);
+}
+
+.compass_flat, .compass_N, .compass_E, .compass_W, .compass_S {
 	top: 10px;
 	right: 21px;
 
 	height: 105px;
 	width: 105px;
+}
 
+.compass_flat, .compass_S {
 	background-image: url(../images/compass_flat.png);
+}
+
+.compass_N {
+	background-image: url(../images/compass_N.png);
+}
+
+.compass_E {
+	background-image: url(../images/compass_E.png);
+}
+
+.compass_W {
+	background-image: url(../images/compass_W.png);
 }
 
 /*******************
