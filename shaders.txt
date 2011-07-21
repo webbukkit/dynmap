@@ -1,3 +1,7 @@
+#
+# This file contains default standard shader definitions.  The contents of this file are replaced and updated
+# during upgrades, so new or updated shader definitions should be done in the custom-shaders.txt file
+#
 shaders:
   - class: org.dynmap.hdmap.DefaultHDShader
     name: default

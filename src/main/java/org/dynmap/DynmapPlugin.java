@@ -1,6 +1,10 @@
 package org.dynmap;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -52,6 +56,7 @@ public class DynmapPlugin extends JavaPlugin {
     public PermissionProvider permissions;
     public ComponentManager componentManager = new ComponentManager();
     public Events events = new Events();
+    public String deftemplatesuffix = "";
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
     private boolean generate_only = false;
@@ -67,6 +72,63 @@ public class DynmapPlugin extends JavaPlugin {
     public HttpServer getWebServer() {
         return webServer;
     }
+
+    /* Add/Replace branches in configuration tree with contribution from a separate file */
+    @SuppressWarnings("unchecked")
+    private void mergeConfigurationBranch(ConfigurationNode cfgnode, String branch, boolean replace_existing) {
+        Object srcbranch = cfgnode.getObject(branch);
+        if(srcbranch == null)
+            return;
+        /* See if top branch is in configuration - if not, just add whole thing */
+        Object destbranch = configuration.getObject(branch);
+        if(destbranch == null) {    /* Not found */
+            configuration.put(branch, srcbranch);   /* Add new tree to configuration */
+            return;
+        }
+        /* If list, merge by "name" attribute */
+        if((srcbranch instanceof List) && (destbranch instanceof List)) {
+            List<ConfigurationNode> dest = (List<ConfigurationNode>)destbranch;
+            List<ConfigurationNode> src = (List<ConfigurationNode>)srcbranch;
+            /* Go through new records : see what to do with each */
+            for(ConfigurationNode node : src) {
+                String name = node.getString("name", null);
+                if(name == null) continue;
+                /* Walk destination - see if match */
+                boolean matched = false;
+                for(ConfigurationNode dnode : dest) {
+                    String dname = node.getString("name", null);
+                    if(dname == null) continue;
+                    if(dname.equals(name)) {    /* Match? */
+                        if(replace_existing) {
+                            dnode.clear();
+                            dnode.putAll(node);
+                        }
+                        matched = true;
+                        break;
+                    }
+                }
+                /* If no match, add to end */
+                if(!matched) {
+                    dest.add(node);
+                }
+            }
+        }
+        /* If configuration node, merge by key */
+        else if((srcbranch instanceof ConfigurationNode) && (destbranch instanceof ConfigurationNode)) {
+            ConfigurationNode src = (ConfigurationNode)srcbranch;
+            ConfigurationNode dest = (ConfigurationNode)destbranch;
+            for(String key : src.keySet()) {    /* Check each contribution */
+                if(dest.containsKey(key)) { /* Exists? */
+                    if(replace_existing) {  /* If replacing, do so */
+                        dest.put(key, src.getObject(key));
+                    }
+                }
+                else {  /* Else, always add if not there */
+                    dest.put(key, src.getObject(key));
+                }
+            }
+        }
+    }
     
     @Override
     public void onEnable() {
@@ -80,11 +142,79 @@ public class DynmapPlugin extends JavaPlugin {
         /* Load texture mappings */
         TexturePack.loadTextureMapping(dataDirectory);
         
-        org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "configuration.txt"));
+        File f = new File(this.getDataFolder(), "configuration.txt");
+        /* If configuration.txt not found, copy the default one */
+        if(f.exists() == false) {
+            Log.info("configuration.txt not found - creating default");
+            File deffile = new File(this.getDataFolder(), "configuration.default");
+            try {
+                FileInputStream fis = new FileInputStream(deffile);
+                FileOutputStream fos = new FileOutputStream(f);
+                byte[] buf = new byte[512];
+                int len;
+                while((len = fis.read(buf)) > 0) {
+                    fos.write(buf, 0, len);
+                }
+                fos.close();
+                fis.close();
+            } catch (IOException iox) {
+                Log.severe("ERROR CREATING DEFAULT CONFIGURATION.TXT!");
+                this.setEnabled(false);
+                return;
+            }
+        }
+        org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(f);
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
 
+        /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
+        f = new File(this.getDataFolder(), "worlds.txt");
+        if(f.exists()) {
+            org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
+            cfg.load();
+            ConfigurationNode cn = new ConfigurationNode(cfg);
+            mergeConfigurationBranch(cn, "worlds", true);
+        }
+        else {
+            try {
+                FileWriter fw = new FileWriter(f);
+                fw.write("# This file is intended to allow the user to define world-specific settings\n");
+                fw.write("# Dynmap's install will not overwrite it\n");
+                fw.write("worlds:\n");
+                fw.close();
+            } catch (IOException iox) {
+            }
+        }
+
+        /* Now, process templates.txt - supplement existing values (don't replace), since configuration.txt is more custom than these */
+        f = new File(this.getDataFolder(), "templates.txt");
+        if(f.exists()) {
+            org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
+            cfg.load();
+            ConfigurationNode cn = new ConfigurationNode(cfg);
+            mergeConfigurationBranch(cn, "templates", false);
+        }
+
+        /* Now, process custom-templates.txt - these are user supplied, so override anything matcing */
+        f = new File(this.getDataFolder(), "custom-templates.txt");
+        if(f.exists()) {
+            org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
+            cfg.load();
+            ConfigurationNode cn = new ConfigurationNode(cfg);
+            mergeConfigurationBranch(cn, "templates", true);
+        }
+        else {
+            try {
+                FileWriter fw = new FileWriter(f);
+                fw.write("# This file is intended to allow the user to define templates, including replacements for standard templates\n");
+                fw.write("# Dynmap's install will not overwrite it\n");
+                fw.write("templates:\n");
+                fw.close();
+            } catch (IOException iox) {
+            }
+        }
         Log.verbose = configuration.getBoolean("verbose", true);
+        deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
         
         loadDebuggers();
 
@@ -496,6 +626,9 @@ public class DynmapPlugin extends JavaPlugin {
     private ConfigurationNode getDefaultTemplateConfigurationNode(World world) {
         Environment environment = world.getEnvironment();
         String environmentName = environment.name().toLowerCase();
+        if(deftemplatesuffix.length() > 0) {
+            environmentName += "-" + deftemplatesuffix;
+        }
         Log.verboseinfo("Using environment as template: " + environmentName);
         return getTemplateConfigurationNode(environmentName);
     }
