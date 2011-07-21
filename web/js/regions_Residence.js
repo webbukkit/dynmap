@@ -1,31 +1,26 @@
-function createPolygonsFromResidence(latlng, name, residence) {
-	return createPolygonSurfaces(residence.X1, residence.X2, residence.Y1, residence.Y2, residence.Z1, residence.Z2);
-}
-function createPopupContent(name, region) {
-	return $('<div/>')
-		.append($('<span/>').addClass('regionname').text(name))
-		.append(region.owners.players && $('<span/>').addClass('playerowners').text(region.permissions.owner))
-		[0];
-};
+regionConstructors['Residence'] = function(dynmap, configuration) {
+	// Helper function.
+	function createBoxFromArea(area, boxCreator) {
+		return boxCreator(area.X1, area.X2, area.Y1, area.Y2, area.Z1, area.Z2);
+	}
 
-regionConstructors['Residence'] = function(dynmap, worldName, result) {
-	var latlng = function(x, y, z) {
-		return dynmap.getProjection().fromLocationToLatLng(new Location(undefined, x,y,z));
-	};
-	
 	$.getJSON('standalone/res_' + worldName + '.json', function(data) {
-		var regionLayers = {};
+		var boxLayers = [];
 		$.each(data, function(name, residence) {
-			if(map === residence.Permissions.World) {
-				var polygons = createPolygonsFromResidence(latlng, name, residence);
-				var regionLayer = new L.FeatureGroup(polygons);
-				
-				regionLayer.bindPopup(createPopupContent(name, region));
-				
-				regionLayers[name] = regionLayer;
+			if(worldName == residence.Permissions.World) {
+				$.each(residence.Areas, function(name, area) {
+					var boxLayer = configuration.createBoxLayer(area.X1, area.X2, area.Y1, area.Y2, area.Z1, area.Z2);
+					
+					boxLayer.bindPopup(configuration.createPopupContent(name, $.extend(residence, {
+						owners: { players: [residence.Permissions.Owner] },
+						flags: region.Permissions.AreaFlags
+					})));
+					
+					boxLayers.push(boxLayer);
+				});
 			}
 		});
-		result(regionLayers);
+		configuration.result(new L.LayerGroup(boxLayers));
 		
 	});
 };

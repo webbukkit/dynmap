@@ -154,6 +154,27 @@ function loadjs(url, completed) {
 	(document.head || document.getElementsByTagName('head')[0]).appendChild(script);
 }
 
+function loadcss(url, completed) {
+	var script = document.createElement('link');
+	script.setAttribute('href', url);
+	script.setAttribute('rel', 'stylesheet');
+	var isloaded = false;
+	if (completed) {
+		script.onload = function() {
+			if (isloaded) { return; }
+			isloaded = true;
+			completed();
+		};
+		
+		// Hack for IE, don't know whether this still applies to IE9.
+		script.onreadystatechange = function() {
+			script.onload();
+		};
+	}
+	
+	(document.head || document.getElementsByTagName('head')[0]).appendChild(script);
+}
+
 function splitArgs(s) {
 	var r = s.split(' ');
 	delete arguments[0];

@@ -1,70 +1,110 @@
 var regionConstructors = {};
 
-function createPolygonSurfaces(latlng, maxx, minx, maxy, miny, maxz, minz) {
-	return [
-		new L.Polygon([
-			latlng(minx,miny,minz),
-			latlng(maxx,miny,minz),
-			latlng(maxx,miny,maxz),
-			latlng(minx,miny,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,maxy,minz),
-			latlng(maxx,maxy,minz),
-			latlng(maxx,maxy,maxz),
-			latlng(minx,maxy,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,miny,minz),
-			latlng(minx,maxy,minz),
-			latlng(maxx,maxy,minz),
-			latlng(maxx,miny,minz)
-			], {}),
-		new L.Polygon([
-			latlng(maxx,miny,minz),
-			latlng(maxx,maxy,minz),
-			latlng(maxx,maxy,maxz),
-			latlng(maxx,miny,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,miny,maxz),
-			latlng(minx,maxy,maxz),
-			latlng(maxx,maxy,maxz),
-			latlng(maxx,miny,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,miny,minz),
-			latlng(minx,maxy,minz),
-			latlng(minx,maxy,maxz),
-			latlng(minx,miny,maxz)
-			], {})
-		];
-}
-
 componentconstructors['regions'] = function(dynmap, configuration) {
-	regionCfg = configuration;
-	var regionType = regionCfg.name;
+	
+	// Helper functions
+	latlng = function(x, y, z) {
+		return dynmap.getProjection().fromLocationToLatLng(new Location(undefined, x,y,z));
+	}
+	
+	function create3DBoxLayer(maxx, minx, maxy, miny, maxz, minz) {
+		return new L.FeatureGroup([
+			new L.Polygon([
+				latlng(minx,miny,minz),
+				latlng(maxx,miny,minz),
+				latlng(maxx,miny,maxz),
+				latlng(minx,miny,maxz)
+				], configuration.regionstyle),
+			new L.Polygon([
+				latlng(minx,maxy,minz),
+				latlng(maxx,maxy,minz),
+				latlng(maxx,maxy,maxz),
+				latlng(minx,maxy,maxz)
+				], configuration.regionstyle),
+			new L.Polygon([
+				latlng(minx,miny,minz),
+				latlng(minx,maxy,minz),
+				latlng(maxx,maxy,minz),
+				latlng(maxx,miny,minz)
+				], configuration.regionstyle),
+			new L.Polygon([
+				latlng(maxx,miny,minz),
+				latlng(maxx,maxy,minz),
+				latlng(maxx,maxy,maxz),
+				latlng(maxx,miny,maxz)
+				], configuration.regionstyle),
+			new L.Polygon([
+				latlng(minx,miny,maxz),
+				latlng(minx,maxy,maxz),
+				latlng(maxx,maxy,maxz),
+				latlng(maxx,miny,maxz)
+				], configuration.regionstyle),
+			new L.Polygon([
+				latlng(minx,miny,minz),
+				latlng(minx,maxy,minz),
+				latlng(minx,maxy,maxz),
+				latlng(minx,miny,maxz)
+				], configuration.regionstyle)
+			]);
+	}
+	
+	function create2DBoxLayer(maxx, minx, maxy, miny, maxz, minz) {
+		return new L.Polygon([
+				latlng(minx,64,minz),
+				latlng(maxx,64,minz),
+				latlng(maxx,64,maxz),
+				latlng(minx,64,maxz)
+				], configuration.regionstyle);
+	}
+	
+	function createPopupContent(name, region) {
+		return $('<div/>').addClass('regioninfo')
+			.append($('<span/>').addClass('regionname').text(name))
+			.append($('<span/>').addClass('owners')
+				.append(region.owners.players && $('<span/>').addClass('playerowners').text(region.owners.players.concat()))
+				.append(region.owners.groups && $('<span/>').addClass('groupowners').text(region.owners.groups.concat()))
+				)
+			.append($('<span/>').addClass('members')
+				.append(region.members.players && $('<span/>').addClass('playermembers').text(region.members.players.concat()))
+				.append(region.members.groups && $('<span/>').addClass('groupmembers').text(region.members.groups.concat()))
+				)
+			.append(region.parent && $('<span/>').addClass('regionparent').text(region.parent))
+			.append(region.flags && function() {
+				var regionflags = $('<span/>').addClass('regionflags');
+				$.each(region.flags, function(name, value) {
+					regionflags.append($('<span/>').addClass('regionflag').text(name + ': ' + value));
+				});
+				return regionflags;
+			}())
+			.append($('<span/>').addClass('regionpriority').text(region.priority))
+			[0];
+	}
+	
+	var self = this;
+	loadcss('css/regions.css');
+	var regionType = configuration.name;
 	loadjs('js/regions_' + regionType + '.js', function() {
-		var regionsLayer = undefined;
+		var activeLayer = undefined;
 		function undraw() {
-			if (regionsLayer) {
-				dynmap.map.removeLayer(regionsLayer);
-				regionsLayer = undefined;
+			if (activeLayer) {
+				dynmap.map.removeLayer(activeLayer);
+				activeLayer = undefined;
 			}
 		}
 		function redraw() {
 			undraw();
 			var worldName = dynmap.world && dynmap.world.name;
 			if (worldName) {
-				regionConstructors[regionType](dynmap, worldName, function(regionLayers) {
-					var newRegionsLayer = new L.LayerGroup();
-					$.each(regionLayers, function(name, layer) {
-						console.log(name, layer);
-						newRegionsLayer.addLayer(layer);
-					});
-					regionsLayer = newRegionsLayer;
-					dynmap.map.addLayer(newRegionsLayer);
-				});
+				regionConstructors[regionType](dynmap, $.extend({}, configuration, {
+						component: self,
+						worldName: worldName,
+						createPopupContent: createPopupContent,
+						createBoxLayer: configuration.use3dregions ? create3DBoxLayer : create2DBoxLayer,
+						result: function(regionsLayer) {
+							activeLayer = regionsLayer;
+							dynmap.map.addLayer(activeLayer);
+						}
+					}));
 			}
 		}
 		$(dynmap).bind('mapchanged', redraw);
