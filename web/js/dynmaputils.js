@@ -130,7 +130,6 @@ var DynmapTileLayer = L.TileLayer.extend({
 	setTileSize: function(tileSize) {
 		this.options.tileSize = tileSize;
 		this._tiles = {};
-		this._container.innerHTML = '';
 		this._createTileProto();
 	},
 	updateTileSize: function(zoom) {}
