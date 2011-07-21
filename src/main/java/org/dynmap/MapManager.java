@@ -10,7 +10,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -46,8 +49,12 @@ public class MapManager {
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
     private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
-    /* List of MapChunkCache requests to be processed */
-    private ConcurrentLinkedQueue<MapChunkCache> chunkloads = new ConcurrentLinkedQueue<MapChunkCache>();
+
+    /* Chunk load handling */
+    private Object loadlock = new Object();
+    private int chunks_in_cur_tick = 0;
+    private long cur_tick;
+    
     /* Tile hash manager */
     public TileHashManager hashman;
     /* lock for our data structures */
@@ -295,34 +302,6 @@ public class MapManager {
         }
     }
     
-    private class ProcessChunkLoads implements Runnable {
-        long last_tick;
-        public void run() {
-            int cnt = max_chunk_loads_per_tick;
-            long tick = System.currentTimeMillis();
-            while(cnt > 0) {
-                MapChunkCache c = chunkloads.peek();
-                if(c == null)
-                    break;
-                cnt = cnt - c.loadChunks(cnt);
-                if(c.isDoneLoading()) {
-                    chunkloads.poll();
-                    synchronized(c) {
-                        c.notify();
-                    }
-                }
-            }
-            if((tick - last_tick) < 30) {
-                Log.info("Chunk fetch running too often - " + (tick-last_tick) + "msec - rescheduled");
-                scheduler.scheduleSyncDelayedTask(plug_in, this, 2); 
-            }
-            else {
-                scheduler.scheduleSyncDelayedTask(plug_in, this, 1); 
-            }
-            last_tick = tick;
-        }
-    }
-    
     private class DoZoomOutProcessing implements Runnable {
         public void run() {
             Debug.debug("DoZoomOutProcessing started");
@@ -371,9 +350,6 @@ public class MapManager {
         }
         
         scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
-        /* Workaround for Bukkit scheduler */
-        ProcessChunkLoads pc = new ProcessChunkLoads();
-        scheduler.scheduleSyncDelayedTask(plugin, pc, 1); 
     }
 
     void renderFullWorld(Location l, CommandSender sender) {
@@ -587,14 +563,34 @@ public class MapManager {
         if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
             Log.severe("CraftBukkit build does not support biome APIs");
 
-        synchronized(c) {
-            chunkloads.add(c);
-            try {
-                c.wait();
-            } catch (InterruptedException ix) {
-                return null;
+    	synchronized(loadlock) {
+    		final MapChunkCache cc = c;
+    		long now = System.currentTimeMillis();
+    		
+    		if(cur_tick != (now/50)) {	/* New tick? */
+    			chunks_in_cur_tick = max_chunk_loads_per_tick;
+    			cur_tick = now/50;
+    		}
+    		
+            while(!cc.isDoneLoading()) {
+            	final int cntin = chunks_in_cur_tick;
+            	Future<Integer> f = scheduler.callSyncMethod(plug_in, new Callable<Integer>() {
+            		public Integer call() throws Exception {
+		                return Integer.valueOf(cntin - cc.loadChunks(cntin));
+            		}
+            	});
+            	try {
+            		chunks_in_cur_tick = f.get();
+            	} catch (Exception ix) {
+            		Log.severe(ix);
+            		return null;
+            	}
+        		if(chunks_in_cur_tick == 0) {
+        			chunks_in_cur_tick = max_chunk_loads_per_tick;
+        			try { Thread.sleep(50); } catch (InterruptedException ix) {}
+        		}
             }
-        }
+    	}
         return c;
     }
     /**
