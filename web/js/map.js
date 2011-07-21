@@ -292,7 +292,6 @@ DynMap.prototype = {
 		
 		var updateHeight = function() {
 			playerlist.height(sidebar.innerHeight() - (playerlist.offset().top - worldlist.offset().top) - 64); // here we need a fix to avoid the static value, but it works fine this way :P
-			console.log('scrollheight=' + playerlist.scrollHeight() + ', height=' + playerlist.height());
 			var scrollable = playerlist.scrollHeight() < playerlist.height();
 			upbtn.toggle(scrollable);
 			downbtn.toggle(scrollable);
@@ -357,8 +356,10 @@ DynMap.prototype = {
 		}
 		$(me).trigger('mapchanging');
 		if (me.maptype) {
+			$('.compass').removeClass('compass_' + me.maptype.compassview);
 			$('.compass').removeClass('compass_' + me.maptype.name);
 		}
+		$('.compass').addClass('compass_' + map.compassview);
 		$('.compass').addClass('compass_' + map.name);
 		var worldChanged = me.world !== map.world;
 		var projectionChanged = me.map.getProjection() !== map.projection;
