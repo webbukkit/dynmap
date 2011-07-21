@@ -1,3 +1,7 @@
+#
+# This file contains default standard lighting profiles.  The contents of this file are replaced and updated
+# during upgrades, so new or updated lighing definitions should be done in the custom-lightings.txt file
+#
 lightings:
     # Default lighting - no effects, shadows, day/night
     - class: org.dynmap.hdmap.DefaultHDLighting 
