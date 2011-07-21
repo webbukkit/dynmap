@@ -2,6 +2,17 @@ var regionConstructors = {};
 
 componentconstructors['regions'] = function(dynmap, configuration) {
 	
+	// Compatibility with older configurations.
+	if (configuration.regionstyle) {
+		configuration.regionstyle = $.extend({
+			stroke: true,
+			color: configuration.strokeColor,
+			opacity: configuration.strokeOpacity,
+			weight: configuration.strokeWeight,
+			fill: true
+		}, configuration.regionstyle);
+	}
+	
 	// Helper functions
 	latlng = function(x, y, z) {
 		return dynmap.getProjection().fromLocationToLatLng(new Location(undefined, x,y,z));
