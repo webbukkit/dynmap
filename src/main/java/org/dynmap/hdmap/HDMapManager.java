@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
@@ -27,43 +28,103 @@ public class HDMapManager {
     public HashSet<HDMap> maps = new HashSet<HDMap>();
     public HashMap<String, ArrayList<HDMap>> maps_by_world_perspective = new HashMap<String, ArrayList<HDMap>>();
  
-    public void loadHDShaders(ConfigurationNode shadercfg) {
+    public void loadHDShaders(Plugin plugin) {
         Log.verboseinfo("Loading shaders...");
+
+        org.bukkit.util.config.Configuration bukkitShaderConfig = new org.bukkit.util.config.Configuration(new File(plugin.getDataFolder(), "shaders.txt"));
+        bukkitShaderConfig.load();
+        ConfigurationNode shadercfg = new ConfigurationNode(bukkitShaderConfig);
+
         for(HDShader shader : shadercfg.<HDShader>createInstances("shaders", new Class<?>[0], new Object[0])) {
             if(shader.getName() == null) continue;
-            if(shaders.containsKey(shader.getName())) {
-                Log.severe("Duplicate shader name '" + shader.getName() + "' - shader ignored");
-            }
-            else {
+            shaders.put(shader.getName(), shader);
+        }
+        /* Load custom shaders, if file is defined - or create empty one if not */
+        File f = new File(plugin.getDataFolder(), "custom-shaders.txt");
+        if(f.exists()) {
+            bukkitShaderConfig = new org.bukkit.util.config.Configuration(f);
+            bukkitShaderConfig.load();
+            ConfigurationNode customshadercfg = new ConfigurationNode(bukkitShaderConfig);
+            for(HDShader shader : customshadercfg.<HDShader>createInstances("shaders", new Class<?>[0], new Object[0])) {
+                if(shader.getName() == null) continue;
                 shaders.put(shader.getName(), shader);
+            }
+        }
+        else {
+            try {
+                FileWriter fw = new FileWriter(f);
+                fw.write("# The user is free to add new and custom shaders here, including replacements for standard ones\n");
+                fw.write("# Dynmap's install will not overwrite it\n");
+                fw.write("shaders:\n");
+                fw.close();
+            } catch (IOException iox) {
             }
         }
         Log.info("Loaded " + shaders.size() + " shaders.");
     }
 
-    public void loadHDPerspectives(ConfigurationNode perspectivecfg) {
+    public void loadHDPerspectives(Plugin plugin) {
         Log.verboseinfo("Loading perspectives...");
+        org.bukkit.util.config.Configuration bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(new File(plugin.getDataFolder(), "perspectives.txt"));
+        bukkitPerspectiveConfig.load();
+        ConfigurationNode perspectivecfg = new ConfigurationNode(bukkitPerspectiveConfig);
         for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[0], new Object[0])) {
             if(perspective.getName() == null) continue;
-            if(perspectives.containsKey(perspective.getName())) {
-                Log.severe("Duplicate perspective name '" + perspective.getName() + "' - perspective ignored");
-            }
-            else {
+            perspectives.put(perspective.getName(), perspective);
+        }
+        /* Load custom perspectives, if file is defined - or create empty one if not */
+        File f = new File(plugin.getDataFolder(), "custom-perspectives.txt");
+        if(f.exists()) {
+            bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(f);
+            bukkitPerspectiveConfig.load();
+            perspectivecfg = new ConfigurationNode(bukkitPerspectiveConfig);
+            for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[0], new Object[0])) {
+                if(perspective.getName() == null) continue;
                 perspectives.put(perspective.getName(), perspective);
+            }
+        }
+        else {
+            try {
+                FileWriter fw = new FileWriter(f);
+                fw.write("# The user is free to add new and custom perspectives here, including replacements for standard ones\n");
+                fw.write("# Dynmap's install will not overwrite it\n");
+                fw.write("perspectives:\n");
+                fw.close();
+            } catch (IOException iox) {
             }
         }
         Log.info("Loaded " + perspectives.size() + " perspectives.");
     }
     
-    public void loadHDLightings(ConfigurationNode lightingcfg) {
+    public void loadHDLightings(Plugin plugin) {
         Log.verboseinfo("Loading lightings...");
+        org.bukkit.util.config.Configuration bukkitLightingsConfig = new org.bukkit.util.config.Configuration(new File(plugin.getDataFolder(), "lightings.txt"));
+        bukkitLightingsConfig.load();
+        ConfigurationNode lightingcfg = new ConfigurationNode(bukkitLightingsConfig);
+
         for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[0], new Object[0])) {
             if(lighting.getName() == null) continue;
-            if(lightings.containsKey(lighting.getName())) {
-                Log.severe("Duplicate lighting name '" + lighting.getName() + "' - lighting ignored");
-            }
-            else {
+            lightings.put(lighting.getName(), lighting);
+        }
+        /* Load custom lightings, if file is defined - or create empty one if not */
+        File f = new File(plugin.getDataFolder(), "custom-lightings.txt");
+        if(f.exists()) {
+            bukkitLightingsConfig = new org.bukkit.util.config.Configuration(f);
+            bukkitLightingsConfig.load();
+            lightingcfg = new ConfigurationNode(bukkitLightingsConfig);
+            for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[0], new Object[0])) {
+                if(lighting.getName() == null) continue;
                 lightings.put(lighting.getName(), lighting);
+            }
+        }
+        else {
+            try {
+                FileWriter fw = new FileWriter(f);
+                fw.write("# The user is free to add new and custom lightings here, including replacements for standard ones\n");
+                fw.write("# Dynmap's install will not overwrite it\n");
+                fw.write("lightings:\n");
+                fw.close();
+            } catch (IOException iox) {
             }
         }
         Log.info("Loaded " + lightings.size() + " lightings.");
