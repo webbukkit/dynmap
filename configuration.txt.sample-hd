@@ -154,7 +154,7 @@ templates:
         title: "Flat"
         prefix: flat
         perspective: iso_S_90_lowres
-        shader: default
+        shader: stdtexture
         lighting: default
   #      # To render a world as a "night view", switch to lighting: night
   #      lighting: night
@@ -171,7 +171,7 @@ templates:
         title: "Surface"
         prefix: t
         perspective: iso_SE_60_lowres
-        shader: default
+        shader: stdtexture
         lighting: default
   #      # Add shadows to world (based on top-down shadows from chunk data)
   #      lighting: shadows
@@ -221,7 +221,7 @@ templates:
         title: "Flat"
         prefix: flat
         perspective: iso_S_90_lowres
-        shader: default
+        shader: stdtexture
         lighting: default
         # Map background color (day or night)
         background: "#300806"
@@ -230,7 +230,7 @@ templates:
         title: "Surface"
         prefix: nt
         perspective: iso_SE_60_lowres
-        shader: default
+        shader: stdtexture
         lighting: default
         # Map background color (day or night)
         background: "#300806"
@@ -251,7 +251,7 @@ templates:
         title: "Flat"
         prefix: flat
         perspective: iso_S_90_lowres
-        shader: default
+        shader: stdtexture
         lighting: default
         # Background color for map during the day
         backgroundday: "#153E7E"
@@ -262,7 +262,7 @@ templates:
         title: "Surface"
         prefix: st
         perspective: iso_SE_60_lowres
-        shader: default
+        shader: stdtexture
         lighting: nightandday
         # Background color for map during the day
         backgroundday: "#153E7E"

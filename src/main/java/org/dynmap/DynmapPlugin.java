@@ -48,9 +48,6 @@ public class DynmapPlugin extends JavaPlugin {
     public MapManager mapManager = null;
     public PlayerList playerList;
     public ConfigurationNode configuration;
-    public ConfigurationNode shaderconfig;
-    public ConfigurationNode perspectiveconfig;
-    public ConfigurationNode lightingsconfig;
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
     public ComponentManager componentManager = new ComponentManager();
@@ -58,7 +55,7 @@ public class DynmapPlugin extends JavaPlugin {
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
     private boolean generate_only = false;
-    private static boolean ignore_chunk_loads = false; /* Flat to keep us from processing our own chunk loads */
+    private static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
 
     public static File dataDirectory;
     public static File tilesDirectory;
@@ -86,17 +83,7 @@ public class DynmapPlugin extends JavaPlugin {
         org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "configuration.txt"));
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
-        /* Load shaders and perspectives */
-        org.bukkit.util.config.Configuration bukkitShaderConfig = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "shaders.txt"));
-        bukkitShaderConfig.load();
-        shaderconfig = new ConfigurationNode(bukkitShaderConfig);
-        org.bukkit.util.config.Configuration bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "perspectives.txt"));
-        bukkitPerspectiveConfig.load();
-        perspectiveconfig = new ConfigurationNode(bukkitPerspectiveConfig);
-        org.bukkit.util.config.Configuration bukkitLightingsConfig = new org.bukkit.util.config.Configuration(new File(this.getDataFolder(), "lightings.txt"));
-        bukkitLightingsConfig.load();
-        lightingsconfig = new ConfigurationNode(bukkitLightingsConfig);
-        
+
         Log.verbose = configuration.getBoolean("verbose", true);
         
         loadDebuggers();
@@ -109,7 +96,7 @@ public class DynmapPlugin extends JavaPlugin {
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
         playerList.load();
 
-        mapManager = new MapManager(this, configuration, shaderconfig, perspectiveconfig, lightingsconfig);
+        mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
 
         loadWebserver();
