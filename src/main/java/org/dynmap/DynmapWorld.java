@@ -85,6 +85,14 @@ public class DynmapWorld {
         }
     }
     
+    private String[]	peekQueuedUpdates(int level) {
+        if(level >= zoomoutupdates.length)
+            return new String[0];
+        synchronized(lock) {
+            return zoomoutupdates[level].toArray(new String[zoomoutupdates[level].size()]);
+        }
+    }
+    
     private static class DirFilter implements FilenameFilter {
         public boolean accept(File f, String n) {
             if(!n.equals("..") && !n.equals(".")) {
@@ -142,24 +150,57 @@ public class DynmapWorld {
             return true;
         HashMap<String, PrefixData> maptab = buildPrefixData(zoomlevel);
 
-        DirFilter df = new DirFilter();
-        for(String pfx : maptab.keySet()) { /* Walk through prefixes */
-            PrefixData pd = maptab.get(pfx);
-            if(pd.isbigmap) { /* If big world, next directories are map name specific */
-                File dname = new File(worldtilepath, pfx);
-                /* Now, go through subdirectories under this one, and process them */
-                String[] subdir = dname.list(df);
-                if(subdir == null) continue;
-                for(String s : subdir) {
-                    File sdname = new File(dname, s);
-                    cnt += processZoomDirectory(sdname, pd);
+        if(checkts) {	/* If doing timestamp based scan (initial) */
+        	DirFilter df = new DirFilter();
+        	for(String pfx : maptab.keySet()) { /* Walk through prefixes */
+        		PrefixData pd = maptab.get(pfx);
+        		if(pd.isbigmap) { /* If big world, next directories are map name specific */
+        			File dname = new File(worldtilepath, pfx);
+        			/* Now, go through subdirectories under this one, and process them */
+        			String[] subdir = dname.list(df);
+        			if(subdir == null) continue;
+        			for(String s : subdir) {
+        				File sdname = new File(dname, s);
+        				cnt += processZoomDirectory(sdname, pd);
+        			}
+        		}
+        		else {  /* Else, classic file layout */
+        			cnt += processZoomDirectory(worldtilepath, maptab.get(pfx));
+        		}
+        	}
+        	Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
+        }
+        else {	/* Else, only process updates */
+            String[] paths = peekQueuedUpdates(zoomlevel);	/* Get pending updates */
+            HashMap<String, ProcessTileRec> toprocess = new HashMap<String, ProcessTileRec>();
+            /* Accumulate zoomed tiles to be processed (combine triggering subtiles) */
+            for(String p : paths) {
+            	File f = new File(p);	/* Make file */
+            	/* Find matching prefix */
+            	for(PrefixData pd : maptab.values()) { /* Walk through prefixes */
+            		ProcessTileRec tr = null;
+            		/* If big map and matches name pattern */
+            		if(pd.isbigmap && f.getName().startsWith(pd.fnprefix) && 
+            				f.getParentFile().getParentFile().getName().equals(pd.baseprefix)) {
+                        tr = processZoomFile(f, pd);
+            		}
+                    /* If not big map and matches name pattern */
+                    else if((!pd.isbigmap) && f.getName().startsWith(pd.fnprefix)) {
+                        tr = processZoomFile(f, pd);
+                    }
+                    if(tr != null) {
+                        String zfpath = tr.zf.getPath();
+                        if(!toprocess.containsKey(zfpath))  {
+                            toprocess.put(zfpath, tr);
+                        }
+                    }
                 }
             }
-            else {  /* Else, classic file layout */
-                cnt += processZoomDirectory(worldtilepath, maptab.get(pfx));
+            /* Do processing */
+            for(ProcessTileRec s : toprocess.values()) {
+                processZoomTile(s.pd, s.zf, s.zfname, s.x, s.y);
             }
         }
-        Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
         /* Return true when we have none left at the level */
         return (maptab.size() == 0);
     }
@@ -226,6 +267,7 @@ public class DynmapWorld {
         File zf;
         String zfname;
         int x, y;
+        PrefixData pd;
     }
 
     private String makeFilePath(PrefixData pd, int x, int y, boolean zoomed) {
@@ -253,7 +295,7 @@ public class DynmapWorld {
         int cnt = 0;
         /* Do processing */
         for(ProcessTileRec s : toprocess.values()) {
-            processZoomTile(pd, dir, s.zf, s.zfname, s.x, s.y);
+            processZoomTile(s.pd, s.zf, s.zfname, s.x, s.y);
             cnt++;
         }
         Debug.debug("processZoomDirectory(" + dir.getPath() + "," + pd.baseprefix + ") - done (" + cnt + " files)");
@@ -310,12 +352,13 @@ public class DynmapWorld {
         rec.x = x;
         rec.y = y;
         rec.zfname = zfname;
+        rec.pd = pd;
         Debug.debug("Process " + zf.getPath() + " due to " + f.getPath());
         return rec;
     }
     
-    private void processZoomTile(PrefixData pd, File dir, File zf, String zfname, int tx, int ty) {
-        Debug.debug("processZoomFile(" + pd.baseprefix + "," + dir.getPath() + "," + zf.getPath() + "," + tx + "," + ty + ")");
+    private void processZoomTile(PrefixData pd, File zf, String zfname, int tx, int ty) {
+        Debug.debug("processZoomFile(" + pd.baseprefix + "," + zf.getPath() + "," + tx + "," + ty + ")");
         int width = 128, height = 128;
         BufferedImage zIm = null;
         KzedBufferedImage kzIm = null;
@@ -347,7 +390,6 @@ public class DynmapWorld {
                     im.getRGB(0, 0, width, height, argb, 0, width);    /* Read data */
                     im.flush();
                     /* Do binlinear scale to 64x64 */
-                    Color c1 = new Color();
                     int off = 0;
                     for(int y = 0; y < height; y += 2) {
                         off = y*width;
