@@ -294,7 +294,6 @@ DynMap.prototype = {
 	getProjection: function() { return this.maptype.getProjection(); },
 	selectMap: function(map, completed) {
 		if (!map) { throw "Cannot select map " + map; }
-		console.log('Selecting map...');
 		var me = this;
 		
 		if (me.maptype === map) {
@@ -337,7 +336,6 @@ DynMap.prototype = {
 		if (completed) {
 			completed();
 		}
-		console.log('Map selected.');
 	},
 	selectWorld: function(world, completed) {
 		var me = this;
