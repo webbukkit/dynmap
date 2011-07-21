@@ -315,15 +315,17 @@ DynMap.prototype = {
 		}
 		me.world = mapWorld;
 		me.maptype = map;
-		me.map.addLayer(me.maptype);
+		
+		if (projectionChanged || worldChanged) {
+			var centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
+			var centerPoint = me.getProjection().fromLocationToLatLng(centerLocation);
+			me.map.setView(centerPoint, 0, true);
+		}
+		
+		me.map.addLayer(me.maptype, false);
 		
 		if (worldChanged) {
 			$(me).trigger('worldchanged');
-		}
-		if (projectionChanged || worldChanged) {
-			var centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
-			var centerPoint = map.getProjection().fromLocationToLatLng(centerLocation);
-			me.map.setView(centerPoint, 0, true);
 		}
 		$(me).trigger('mapchanged');
 
