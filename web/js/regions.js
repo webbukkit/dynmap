@@ -1,5 +1,46 @@
 var regionConstructors = {};
 
+function createPolygonSurfaces(latlng, maxx, minx, maxy, miny, maxz, minz) {
+	return [
+		new L.Polygon([
+			latlng(minx,miny,minz),
+			latlng(maxx,miny,minz),
+			latlng(maxx,miny,maxz),
+			latlng(minx,miny,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,maxy,minz),
+			latlng(maxx,maxy,minz),
+			latlng(maxx,maxy,maxz),
+			latlng(minx,maxy,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,miny,minz),
+			latlng(minx,maxy,minz),
+			latlng(maxx,maxy,minz),
+			latlng(maxx,miny,minz)
+			], {}),
+		new L.Polygon([
+			latlng(maxx,miny,minz),
+			latlng(maxx,maxy,minz),
+			latlng(maxx,maxy,maxz),
+			latlng(maxx,miny,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,miny,maxz),
+			latlng(minx,maxy,maxz),
+			latlng(maxx,maxy,maxz),
+			latlng(maxx,miny,maxz)
+			], {}),
+		new L.Polygon([
+			latlng(minx,miny,minz),
+			latlng(minx,maxy,minz),
+			latlng(minx,maxy,maxz),
+			latlng(minx,miny,maxz)
+			], {})
+		];
+}
+
 componentconstructors['regions'] = function(dynmap, configuration) {
 	regionCfg = configuration;
 	var regionType = regionCfg.name;

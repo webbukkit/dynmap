@@ -1,53 +1,11 @@
-Array.max = function( array ){
+Array.max = function( array ) {
     return Math.max.apply( Math, array );
 };
-Array.min = function( array ){
+Array.min = function( array ) {
     return Math.min.apply( Math, array );
 };
 
-function createPolygonSurfaces(latlng, maxx, minx, maxy, miny, maxz, minz) {
-	return [
-		new L.Polygon([
-			latlng(minx,miny,minz),
-			latlng(maxx,miny,minz),
-			latlng(maxx,miny,maxz),
-			latlng(minx,miny,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,maxy,minz),
-			latlng(maxx,maxy,minz),
-			latlng(maxx,maxy,maxz),
-			latlng(minx,maxy,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,miny,minz),
-			latlng(minx,maxy,minz),
-			latlng(maxx,maxy,minz),
-			latlng(maxx,miny,minz)
-			], {}),
-		new L.Polygon([
-			latlng(maxx,miny,minz),
-			latlng(maxx,maxy,minz),
-			latlng(maxx,maxy,maxz),
-			latlng(maxx,miny,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,miny,maxz),
-			latlng(minx,maxy,maxz),
-			latlng(maxx,maxy,maxz),
-			latlng(maxx,miny,maxz)
-			], {}),
-		new L.Polygon([
-			latlng(minx,miny,minz),
-			latlng(minx,maxy,minz),
-			latlng(minx,maxy,maxz),
-			latlng(minx,miny,maxz)
-			], {})
-		];
-}
-
-function createPolygonsFromWorldGuardRegion(latlng, name, region)
-{
+function createPolygonsFromWorldGuardRegion(latlng, name, region) {
 	if(region.points) {
 		var i;
 		var xs = region.points.map(function(p) { return p.x; });
