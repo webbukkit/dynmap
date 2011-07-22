@@ -30,6 +30,7 @@ import org.json.simple.JSONObject;
 public class DefaultTileRenderer implements MapTileRenderer {
     protected static final Color translucent = new Color(0, 0, 0, 0);
     protected String name;
+    protected String prefix;
     protected ConfigurationNode configuration;
     protected int maximumHeight = 127;
     protected ColorScheme colorScheme;
@@ -45,7 +46,12 @@ public class DefaultTileRenderer implements MapTileRenderer {
         NONE, BIOME, TEMPERATURE, RAINFALL
     }
     protected BiomeColorOption biomecolored = BiomeColorOption.NONE; /* Use biome for coloring */
+
     @Override
+    public String getPrefix() {
+        return prefix;
+    }
+
     public String getName() {
         return name;
     }
@@ -54,7 +60,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
     public DefaultTileRenderer(ConfigurationNode configuration) {
         this.configuration = configuration;
-        name = (String) configuration.get("prefix");
+        name = configuration.getString("name", null);
+        prefix = configuration.getString("prefix", name);
         Object o = configuration.get("maximumheight");
         if (o != null) {
             maximumHeight = Integer.parseInt(String.valueOf(o));

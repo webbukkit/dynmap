@@ -6,6 +6,7 @@ import static org.dynmap.JSONUtils.s;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -35,6 +36,7 @@ import org.json.simple.JSONObject;
 public class FlatMap extends MapType {
     private ConfigurationNode configuration;
     private String prefix;
+    private String name;
     private ColorScheme colorScheme;
     private int maximumHeight = 127;
     private int ambientlight = 15;;
@@ -47,7 +49,8 @@ public class FlatMap extends MapType {
     
     public FlatMap(ConfigurationNode configuration) {
         this.configuration = configuration;
-        prefix = (String) configuration.get("prefix");
+        name = configuration.getString("name", null);
+        prefix = configuration.getString("prefix", name);
         colorScheme = ColorScheme.getScheme((String) configuration.get("colorscheme"));
         Object o = configuration.get("maximumheight");
         if (o != null) {
@@ -411,6 +414,16 @@ public class FlatMap extends MapType {
 
     public String getName() {
         return prefix;
+    }
+    
+    /* Get maps rendered concurrently with this map in this world */
+    public List<MapType> getMapsSharingRender(DynmapWorld w) {
+        return Collections.singletonList((MapType)this);
+    }
+
+    /* Get names of maps rendered concurrently with this map type in this world */
+    public List<String> getMapNamesSharingRender(DynmapWorld w) {
+        return Collections.singletonList(name);
     }
 
     public List<String> baseZoomFilePrefixes() {

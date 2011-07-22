@@ -8,6 +8,7 @@ import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 
 public interface MapTileRenderer {
+    String getPrefix();
     String getName();
 
     boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile);

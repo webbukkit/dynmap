@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -356,6 +357,23 @@ public class KzedMap extends MapType {
     
     public String getName() {
         return "KzedMap";
+    }
+
+    /* Get maps rendered concurrently with this map in this world */
+    public List<MapType> getMapsSharingRender(DynmapWorld w) {
+        return Collections.singletonList((MapType)this);
+    }
+
+    /* Get names of maps rendered concurrently with this map type in this world */
+    public List<String> getMapNamesSharingRender(DynmapWorld w) {
+        ArrayList<String> lst = new ArrayList<String>();
+        for(MapTileRenderer rend : renderers) {
+            if(rend.isNightAndDayEnabled())
+                lst.add(rend.getName() + "(night/day)");
+            else
+                lst.add(rend.getName());
+        }
+        return lst;
     }
 
     @Override
