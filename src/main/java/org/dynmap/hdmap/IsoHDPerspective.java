@@ -89,8 +89,18 @@ public class IsoHDPerspective implements HDPerspective {
         int x_inc, y_inc, z_inc;        
         double t_next_y, t_next_x, t_next_z;
         boolean nonairhit;
+        /* Subblock tracer state */
+        int mx, my, mz;
+        double xx, yy, zz;
+        double mdt_dx;
+        double mdt_dy;
+        double mdt_dz;
+        double togo;
+        double mt_next_x, mt_next_y, mt_next_z;
         int subalpha;
         double mt;
+        double mtend;
+        
         int[] subblock_xyz = new int[3];
         MapIterator mapiter;
         boolean isnether;
@@ -325,19 +335,31 @@ public class IsoHDPerspective implements HDPerspective {
                 else if(blocktypeid == 54) {    /* Special case for chest - need to fake data so we can render */
                     blockdata = generateChestBlockData(mapiter);
                 }
-                boolean missed = false;
 
                 /* Look up to see if block is modelled */
                 short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
                 if(model != null) {
-                    missed = raytraceSubblock(model);
+                	boolean firststep = true;
+               	
+                	while(!raytraceSubblock(model, firststep)) {
+                        boolean done = true;
+                        skylevel = emitlevel = -1;
+                        for(int i = 0; i < shaderstate.length; i++) {
+                            if(!shaderdone[i])
+                                shaderdone[i] = shaderstate[i].processBlock(this);
+                            done = done && shaderdone[i];
+                        }
+                        /* If all are done, we're out */
+                        if(done)
+                            return true;
+                        nonairhit = true;
+                        firststep = false;
+                	}
                 }
                 else {
-                    subalpha = -1;
-                }
-                if(!missed) {
                     boolean done = true;
                     skylevel = emitlevel = -1;
+                    subalpha = -1;
                     for(int i = 0; i < shaderstate.length; i++) {
                         if(!shaderdone[i])
                             shaderdone[i] = shaderstate[i].processBlock(this);
@@ -411,45 +433,53 @@ public class IsoHDPerspective implements HDPerspective {
             }
         }
         
-        private boolean raytraceSubblock(short[] model) {
-            int mx = 0, my = 0, mz = 0;
-            double xx, yy, zz;
-            mt = t + 0.0000001;
-            xx = top.x + mt *(bottom.x - top.x);  
-            yy = top.y + mt *(bottom.y - top.y);  
-            zz = top.z + mt *(bottom.z - top.z);
-            mx = (int)((xx - Math.floor(xx)) * modscale);
-            my = (int)((yy - Math.floor(yy)) * modscale);
-            mz = (int)((zz - Math.floor(zz)) * modscale);
-            double mdt_dx = dt_dx / modscale;
-            double mdt_dy = dt_dy / modscale;
-            double mdt_dz = dt_dz / modscale;
-            double togo;
-            double mt_next_x = t_next_x, mt_next_y = t_next_y, mt_next_z = t_next_z;
-            if(mt_next_x != Double.MAX_VALUE) {
-                togo = ((t_next_x - t) / mdt_dx);
-                mt_next_x = mt + (togo - Math.floor(togo)) * mdt_dx;
-            }
-            if(mt_next_y != Double.MAX_VALUE) {
-                togo = ((t_next_y - t) / mdt_dy);
-                mt_next_y = mt + (togo - Math.floor(togo)) * mdt_dy;
-            }
-            if(mt_next_z != Double.MAX_VALUE) {
-                togo = ((t_next_z - t) / mdt_dz);
-                mt_next_z = mt + (togo - Math.floor(togo)) * mdt_dz;
-            }
-            double mtend = Math.min(t_next_x, Math.min(t_next_y, t_next_z));
-            subalpha = -1;
-            while(mt < mtend) {
-            	try {
-            	    int blkalpha = model[modscale*modscale*my + modscale*mz + mx];
-            		if(blkalpha > 0) {
-                        subalpha = blkalpha;
-            			return false;
-            		}
-            	} catch (ArrayIndexOutOfBoundsException aioobx) {	/* We're outside the model, so miss */
-            		return true;
+        private boolean raytraceSubblock(short[] model, boolean firsttime) {
+            if(firsttime) {
+            	mt = t + 0.0000001;
+            	xx = top.x + mt *(bottom.x - top.x);  
+            	yy = top.y + mt *(bottom.y - top.y);  
+            	zz = top.z + mt *(bottom.z - top.z);
+            	mx = (int)((xx - Math.floor(xx)) * modscale);
+            	my = (int)((yy - Math.floor(yy)) * modscale);
+            	mz = (int)((zz - Math.floor(zz)) * modscale);
+            	mdt_dx = dt_dx / modscale;
+            	mdt_dy = dt_dy / modscale;
+            	mdt_dz = dt_dz / modscale;
+            	mt_next_x = t_next_x;
+            	mt_next_y = t_next_y;
+            	mt_next_z = t_next_z;
+            	if(mt_next_x != Double.MAX_VALUE) {
+            		togo = ((t_next_x - t) / mdt_dx);
+            		mt_next_x = mt + (togo - Math.floor(togo)) * mdt_dx;
             	}
+            	if(mt_next_y != Double.MAX_VALUE) {
+            		togo = ((t_next_y - t) / mdt_dy);
+            		mt_next_y = mt + (togo - Math.floor(togo)) * mdt_dy;
+            	}
+            	if(mt_next_z != Double.MAX_VALUE) {
+            		togo = ((t_next_z - t) / mdt_dz);
+            		mt_next_z = mt + (togo - Math.floor(togo)) * mdt_dz;
+            	}
+            	mtend = Math.min(t_next_x, Math.min(t_next_y, t_next_z));
+            }
+            subalpha = -1;
+            boolean skip = !firsttime;	/* Skip first block on continue */
+            while(mt < mtend) {
+            	if(!skip) {
+            		try {
+            			int blkalpha = model[modscale*modscale*my + modscale*mz + mx];
+            			if(blkalpha > 0) {
+            				subalpha = blkalpha;
+            				return false;
+            			}
+            		} catch (ArrayIndexOutOfBoundsException aioobx) {	/* We're outside the model, so miss */
+            			return true;
+            		}
+            	}
+            	else {
+            		skip = false;
+            	}
+        		
                 /* If X step is next best */
                 if((mt_next_x <= mt_next_y) && (mt_next_x <= mt_next_z)) {
                     mx += x_inc;

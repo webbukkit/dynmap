@@ -189,6 +189,7 @@ public class HDBlockModels {
                     }
                 }
                 /* Now, use weights and indices to fill in scaled map */
+                long accum[] = new long[map.length];
                 for(int y = 0; y < nativeres; y++) {
                     int ind_y = offsets[y];
                     int wgt_y = weights[y];
@@ -208,7 +209,7 @@ public class HDBlockModels {
                                         for(int zz = 0; zz < 2; zz++) {
                                             int wz = (zz==0)?wgt_z:(res-wgt_z);
                                             if(wz == 0) continue;
-                                            map[(ind_y+yy)*res*res + (ind_z+zz)*res + (ind_x+xx)] +=
+                                            accum[(ind_y+yy)*res*res + (ind_z+zz)*res + (ind_x+xx)] +=
                                                 wx*wy*wz;
                                         }
                                     }
@@ -218,7 +219,7 @@ public class HDBlockModels {
                     }
                 }
                 for(int i = 0; i < map.length; i++) {
-                    map[i] = (short)(255*map[i]/(nativeres*nativeres*nativeres));
+                    map[i] = (short)(accum[i]*255/nativeres/nativeres/nativeres);
                     if(map[i] > 255) map[i] = 255;                            
                     if(map[i] < 0) map[i] = 0;
                 }
@@ -249,6 +250,18 @@ public class HDBlockModels {
                     if((m.databits & (1 << i)) != 0) {
                         if(smod == null) smod = m.getScaledMap(scale);
                         row[i] = smod;
+/*                        if((m.blockid == 50) && (i == 5)) {
+                            String v0 = "";
+                            String v = "";
+                            for(int x = 0; x < m.blockflags.length; x++) 
+                                v0 = v0 + " " + m.blockflags[x];
+                            for(int x = 0; x < smod.length; x++) {
+                                v = v + " " + smod[x];
+                                if((x%scale) == (scale-1)) v += "|";
+                            }
+                            Log.info("src=" + v0);
+                            Log.info("scaled=" + v);
+                        } */
                     }
                 }
             }
