@@ -72,8 +72,9 @@ FlatMapType.prototype = $.extend(new DynMapType(), {
 	updateTileSize: function(zoom) {
         var size;
 		var extrazoom = this.dynmap.world.extrazoomout;
+		var mapzoomin = this.dynmap.world.mapzoomin;
 		this.projection.extrazoom = extrazoom;
-		this.maxZoom = 3 + extrazoom;
+		this.maxZoom = mapzoomin + extrazoom;
 		if (zoom <= extrazoom) {
         	size = 128;
     	}
