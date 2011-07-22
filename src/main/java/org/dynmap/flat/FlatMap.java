@@ -518,6 +518,7 @@ public class FlatMap extends MapType {
         s(o, "backgroundday", c.getString("backgroundday"));
         s(o, "backgroundnight", c.getString("backgroundnight"));
         s(o, "bigmap", this.isBigWorldMap(world));
+        s(o, "mapzoomin", c.getInteger("mapzoomin", 3));
         s(o, "compassview", "S");   /* Always from south */
         a(worldObject, "maps", o);
     }

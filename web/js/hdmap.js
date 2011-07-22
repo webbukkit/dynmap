@@ -73,9 +73,10 @@ HDMapType.prototype = $.extend(new DynMapType(), {
 	updateTileSize: function(zoom) {
         var size;
 		var extrazoom = this.mapzoomout;
+		var mapzoomin = this.mapzoomin;
 		this.projection.extrazoom = extrazoom;
 		this.projection.worldtomap = this.worldtomap;
-		this.maxZoom = 2 + extrazoom;
+		this.maxZoom = mapzoomin + extrazoom;
 		if (zoom <= extrazoom) {
         	size = 128;
     	}

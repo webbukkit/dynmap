@@ -144,6 +144,7 @@ public class HDMap extends MapType {
         s(o, "backgroundnight", c.getString("backgroundnight"));
         s(o, "bigmap", true);
         s(o, "mapzoomout", (world.getExtraZoomOutLevels()+mapzoomout));
+        s(o, "mapzoomin", c.getInteger("mapzoomin", 2));
         perspective.addClientConfiguration(o);
         shader.addClientConfiguration(o);
         lighting.addClientConfiguration(o);
