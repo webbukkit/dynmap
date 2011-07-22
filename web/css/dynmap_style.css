@@ -519,6 +519,21 @@
     border-radius: 3px;
 }
 
+.dynmap .playerNameSm {
+	position: absolute;
+	top: -1px;
+	left: 18px;
+
+	white-space: nowrap;
+
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
 .dynmap .healthContainer {
 	display: block;
 	position: absolute;
