@@ -32,7 +32,7 @@ public class Color {
         return ((val >> 24) & 0xFF);
     }
     public final boolean isTransparent() {
-        return (val == TRANSPARENT);
+        return ((val & 0xFF000000) == TRANSPARENT);
     }
     public final void setTransparent() {
         val = TRANSPARENT;
