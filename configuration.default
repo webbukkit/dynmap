@@ -49,6 +49,8 @@ components:
     type: playermarkers
     showplayerfaces: true
     showplayerhealth: true
+    # Option to make player faces small - don't use with showplayerhealth
+    smallplayerfaces: false
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent
