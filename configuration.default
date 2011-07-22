@@ -138,6 +138,8 @@ quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
 webprefix: "§2[WEB] "
 websuffix: "§f"
+# Enable checking for banned IPs via banned-ips.txt (internal web server only)
+check-banned-ips: true
 
 defaultzoom: 0
 defaultworld: world

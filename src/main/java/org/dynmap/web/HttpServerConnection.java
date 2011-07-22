@@ -115,7 +115,7 @@ public class HttpServerConnection extends Thread {
     public final void writeResponseHeader(HttpResponse response) throws IOException {
         writeResponseHeader(printOut, response);
     }
-
+    
     public void run() {
         try {
             if (socket == null)
@@ -128,6 +128,11 @@ public class HttpServerConnection extends Thread {
 
             printOut = new PrintStream(out, false);
             while (true) {
+            	/* Check for start of each request - kicks out persistent connections */
+                if(server.checkForBannedIp(rmtaddr)) {
+                	return;
+                }
+                
                 HttpRequest request = new HttpRequest();
                 request.rmtaddr = rmtaddr;
                 if (!readRequestHeader(in, request)) {

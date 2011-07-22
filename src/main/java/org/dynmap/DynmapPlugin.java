@@ -274,11 +274,12 @@ public class DynmapPlugin extends JavaPlugin {
         }
         int port = configuration.getInteger("webserver-port", 8123);
         boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
+        boolean checkbannedips = configuration.getBoolean("check-banned-ips", true);
         if(allow_symlinks)
         	Log.verboseinfo("Web server is permitting symbolic links");
         else
         	Log.verboseinfo("Web server is not permitting symbolic links");        	
-        webServer = new HttpServer(bindAddress, port);
+        webServer = new HttpServer(bindAddress, port, checkbannedips);
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web")), allow_symlinks));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory, allow_symlinks));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(this));
