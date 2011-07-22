@@ -148,10 +148,13 @@ public class TexturePackHDShader implements HDShader {
                 }
                 /* Handle light level, if needed */
                 lighting.applyLighting(ps, this, c, tmpcolor);
-                /* If we got alpha from subblock model, use it instead */
+                /* If we got alpha from subblock model, use it instead if it is lower */
                 if(subalpha >= 0) {
-                    for(Color clr : tmpcolor)
-                       clr.setAlpha(Math.max(subalpha,clr.getAlpha()));
+                    for(Color clr : tmpcolor) {
+                    	int a = clr.getAlpha();
+                    	if(subalpha < a)
+                    		clr.setAlpha(subalpha);
+                    }
                 }
                 /* If no previous color contribution, use new color */
                 if(color[0].isTransparent()) {
@@ -164,10 +167,15 @@ public class TexturePackHDShader implements HDShader {
                     int alpha = color[0].getAlpha();
                     int alpha2 = tmpcolor[0].getAlpha() * (255-alpha) / 255;
                     int talpha = alpha + alpha2;
-                    for(int i = 0; i < color.length; i++)
-                        color[i].setRGBA((tmpcolor[i].getRed()*alpha2 + color[i].getRed()*alpha) / talpha,
+                    if(talpha > 0)
+                    	for(int i = 0; i < color.length; i++)
+                    		color[i].setRGBA((tmpcolor[i].getRed()*alpha2 + color[i].getRed()*alpha) / talpha,
                                   (tmpcolor[i].getGreen()*alpha2 + color[i].getGreen()*alpha) / talpha,
                                   (tmpcolor[i].getBlue()*alpha2 + color[i].getBlue()*alpha) / talpha, talpha);
+                    else
+                    	for(int i = 0; i < color.length; i++)
+                    		color[i].setTransparent();
+                    	
                     return (talpha >= 254);   /* If only one short, no meaningful contribution left */
                 }
             }
