@@ -160,6 +160,9 @@ public class MapManager {
         int rendercnt = 0;
         CommandSender sender;
         long timeaccum;
+        HashSet<MapType> renderedmaps = new HashSet<MapType>();
+        String activemaps;
+        List<String> activemaplist;
 
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender) {
@@ -195,21 +198,40 @@ public class MapManager {
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
-                        double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1);
-                        sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' of world '" +
+                        double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1)/(double)activemaplist.size();
+                        if(activemaplist.size() > 1) 
+                            sender.sendMessage("Full render of maps [" + activemaps + "] of '" +
+                               world.world.getName() + "' completed - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
+                        else
+                            sender.sendMessage("Full render of map '" + activemaps + "' of '" +
                                  world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }                	
                     found.clear();
                     rendered.clear();
                     rendercnt = 0;
                     timeaccum = 0;
-                    map_index++;    /* Next map */
+                    /* Advance to next unrendered map */
+                    while(map_index < world.maps.size()) {
+                        map_index++;    /* Move to next one */
+                        if((map_index < world.maps.size()) && (renderedmaps.contains(world.maps.get(map_index)) == false))
+                            break;
+                    }
                     if(map_index >= world.maps.size()) {    /* Last one done? */
                         sender.sendMessage("Full render of '" + world.world.getName() + "' finished.");
                         cleanup();
                         return;
                     }
                     map = world.maps.get(map_index);
+                    activemaplist = map.getMapNamesSharingRender(world);
+                    /* Build active map list */
+                    activemaps = "";
+                    for(String n : activemaplist) {
+                        if(activemaps.length() > 0)
+                            activemaps += ",";
+                        activemaps += n;
+                    }
+                    /* Mark all the concurrently rendering maps rendered */
+                    renderedmaps.addAll(map.getMapsSharingRender(world));
 
                     /* Now, prime the render queue */
                     for (MapTile mt : map.getTiles(loc)) {
@@ -264,9 +286,13 @@ public class MapManager {
                     rendercnt++;
                     timeaccum += System.currentTimeMillis() - tstart;
                     if((rendercnt % 100) == 0) {
-                        double msecpertile = (double)timeaccum / (double)rendercnt;
-                        sender.sendMessage("Full render of map '" + world.maps.get(map_index).getClass().getSimpleName() + "' on world '" +
-                            w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
+                        double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemaplist.size();
+                        if(activemaplist.size() > 1) 
+                            sender.sendMessage("Full render of maps [" + activemaps + "] of '" +
+                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
+                        else
+                            sender.sendMessage("Full render of map '" + activemaps + "' of '" +
+                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }
                 }
             }

@@ -32,9 +32,9 @@ public class KzedMapTile extends MapTile {
     public String getFilename() {
         if(fname == null) {
             if(map.isBigWorldMap(world))        
-                fname = renderer.getName() + "/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
+                fname = renderer.getPrefix() + "/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
             else
-                fname = renderer.getName() + "_" + px + "_" + py + ".png";            
+                fname = renderer.getPrefix() + "_" + px + "_" + py + ".png";            
         }
         return fname;
     }
@@ -43,9 +43,9 @@ public class KzedMapTile extends MapTile {
     public String getDayFilename() {
         if(fname_day == null) {
             if(map.isBigWorldMap(world))        
-                fname_day = renderer.getName() + "_day/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
+                fname_day = renderer.getPrefix() + "_day/"  + (px >> 12) + '_' + (py >> 12) + '/' + px + "_" + py + ".png";
             else
-                fname_day = renderer.getName() + "_day_" + px + "_" + py + ".png";            
+                fname_day = renderer.getPrefix() + "_day_" + px + "_" + py + ".png";            
         }
         return fname_day;
     }
@@ -68,7 +68,7 @@ public class KzedMapTile extends MapTile {
     }
 
     public String getKey() {
-        return getWorld().getName() + "." + renderer.getName();
+        return getWorld().getName() + "." + renderer.getPrefix();
     }
 
     public String toString() {

@@ -20,6 +20,11 @@ public abstract class MapType {
     }
     
     public abstract String getName();
+
+    /* Get maps rendered concurrently with this map in this world */
+    public abstract List<MapType> getMapsSharingRender(DynmapWorld w);
+    /* Get names of maps rendered concurrently with this map type in this world */
+    public abstract List<String> getMapNamesSharingRender(DynmapWorld w);
     
     public enum MapStep {
         X_PLUS_Y_PLUS,

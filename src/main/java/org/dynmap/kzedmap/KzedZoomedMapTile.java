@@ -15,10 +15,10 @@ public class KzedZoomedMapTile extends MapTile {
     public String getFilename() {
         if(fname == null) {
             if(world.bigworld)
-                fname = "z" + originalTile.renderer.getName() + "/" + (getTileX()>>12) + '_' + 
+                fname = "z" + originalTile.renderer.getPrefix() + "/" + (getTileX()>>12) + '_' + 
                     (getTileY() >> 12) + '/' + getTileX() + "_" + getTileY() + ".png";
             else
-                fname = "z" + originalTile.renderer.getName() + "_" + getTileX() + "_" + getTileY() + ".png";
+                fname = "z" + originalTile.renderer.getPrefix() + "_" + getTileX() + "_" + getTileY() + ".png";
         }
         return fname;
     }
@@ -27,10 +27,10 @@ public class KzedZoomedMapTile extends MapTile {
     public String getDayFilename() {
         if(fname_day == null) {
             if(world.bigworld)
-                fname_day = "z" + originalTile.renderer.getName() + "_day/" + (getTileX()>>12) + '_' + 
+                fname_day = "z" + originalTile.renderer.getPrefix() + "_day/" + (getTileX()>>12) + '_' + 
                     (getTileY() >> 12) + '/' + getTileX() + "_" + getTileY() + ".png";
             else
-                fname_day = "z" + originalTile.renderer.getName() + "_day_" + getTileX() + "_" + getTileY() + ".png";
+                fname_day = "z" + originalTile.renderer.getPrefix() + "_day_" + getTileX() + "_" + getTileY() + ".png";
         }
         return fname_day;
     }
@@ -80,7 +80,7 @@ public class KzedZoomedMapTile extends MapTile {
     
 
     public String getKey() {
-        return getWorld().getName() + ".z" + originalTile.renderer.getName();
+        return getWorld().getName() + ".z" + originalTile.renderer.getPrefix();
     }
 
     @Override

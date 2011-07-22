@@ -147,7 +147,7 @@ public class HDMapManager {
         }
         return shaders.toArray(new HDShaderState[shaders.size()]);
     }
-
+    
     private static final int BIOMEDATAFLAG = 0;
     private static final int HIGHESTZFLAG = 1;
     private static final int RAWBIOMEFLAG = 2;
