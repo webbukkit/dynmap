@@ -14,16 +14,26 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				.append(playerImage = $('<img/>')
 						.attr({ src: 'images/player.png' }))
 				.append($('<span/>')
-					.addClass('playerName')
+					.addClass(configuration.smallplayerfaces?'playerNameSm':'playerName')
 					.text(player.name));
 			
 			if (configuration.showplayerfaces) {
-				getMinecraftHead(player.account, 32, function(head) {
-					$(head)
-						.addClass('playericon')
+				if(configuration.smallplayerfaces) {
+					getMinecraftHead(player.account, 16, function(head) {
+						$(head)
+							.addClass('playericon')
 						.prependTo(div);
-					playerImage.remove();
-				});
+						playerImage.remove();
+					});
+				}
+				else {
+					getMinecraftHead(player.account, 32, function(head) {
+						$(head)
+							.addClass('playericon')
+						.prependTo(div);
+						playerImage.remove();
+					});
+				}
 			}
 			if (configuration.showplayerhealth) {
                 if(!configuration.showplayerfaces) /* Need 32 high */
