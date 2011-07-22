@@ -14,6 +14,7 @@ import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 
@@ -130,6 +131,38 @@ public class HDMap extends MapType {
         return prefix;
     }
 
+    /* Get maps rendered concurrently with this map in this world */
+    public List<MapType> getMapsSharingRender(DynmapWorld w) {
+        ArrayList<MapType> maps = new ArrayList<MapType>();
+        for(MapType mt : w.maps) {
+            if(mt instanceof HDMap) {
+                HDMap hdmt = (HDMap)mt;
+                if(hdmt.perspective == this.perspective) {  /* Same perspective */
+                    maps.add(hdmt);
+                }
+            }
+        }
+        return maps;
+    }
+    
+    /* Get names of maps rendered concurrently with this map type in this world */
+    public List<String> getMapNamesSharingRender(DynmapWorld w) {
+        ArrayList<String> lst = new ArrayList<String>();
+        for(MapType mt : w.maps) {
+            if(mt instanceof HDMap) {
+                HDMap hdmt = (HDMap)mt;
+                if(hdmt.perspective == this.perspective) {  /* Same perspective */
+                    if(hdmt.lighting.isNightAndDayEnabled())
+                        lst.add(hdmt.getName() + "(night/day)");
+                    else
+                        lst.add(hdmt.getName());
+                }
+            }
+        }
+        return lst;
+    }
+
+    
     @Override
     public void buildClientConfiguration(JSONObject worldObject, DynmapWorld world) {
         ConfigurationNode c = configuration;
