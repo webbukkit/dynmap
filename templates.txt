@@ -40,6 +40,8 @@ templates:
   #      backgroundnight: "#000000"        
   #      # Background color for map (independent of night/day)
   #      background: "#000000"
+  #      # Adjust extra zoom in levels - default is 3
+  #      mapzoomin: 3
       - class: org.dynmap.kzedmap.KzedMap
         renderers:
           - class: org.dynmap.kzedmap.DefaultTileRenderer
@@ -64,6 +66,8 @@ templates:
   #          background: "#000000"
   #          # Sets the icon to 'images/block_custom.png'
   #          icon: custom
+  #          # Adjust extra zoom in levels - default is 3
+  #          mapzoomin: 3
   #          # Biome-based mapping
   #        - class: org.dynmap.kzedmap.DefaultTileRenderer
   #          name: biome
@@ -185,6 +189,8 @@ templates:
   #      backgroundnight: "#000000"        
   #      # Background color for map (independent of night/day)
   #      background: "#000000"
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
       - class: org.dynmap.hdmap.HDMap
         name: surface
         title: "Surface"
@@ -206,6 +212,8 @@ templates:
   #      background: "#000000"
   #      # Sets the icon to 'images/block_custom.png'
   #      icon: custom
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
   #      # Biome-based mapping
   #    - class: org.dynmap.hdmap.HDMap
   #      name: biome
@@ -215,6 +223,8 @@ templates:
   #      lighting: default
   #      # Biome-based shading : biome=biome type, temperature=biome-temperature, rainfall=biome-rainfall
   #      shader: biome
+  #      # Adjust extra zoom in levels - default is 2
+  #      mapzoomin: 2
       - class: org.dynmap.hdmap.HDMap
         name: cave
         title: "Cave"
@@ -222,6 +232,8 @@ templates:
         perspective: iso_SE_60_lowres
         shader: cave
         lighting: default
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
          
   # Nether world template (HDMap)
   nether-HDMap:
@@ -244,6 +256,8 @@ templates:
         lighting: default
         # Map background color (day or night)
         background: "#300806"
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
       - class: org.dynmap.hdmap.HDMap
         name: nether
         title: "Surface"
@@ -253,6 +267,8 @@ templates:
         lighting: default
         # Map background color (day or night)
         background: "#300806"
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
   # Skylands world template (HDMap)
   skylands-HDMap:
     enabled: true
@@ -276,6 +292,8 @@ templates:
         backgroundday: "#153E7E"
         # Background color for map during the night
         backgroundnight: "#000000"        
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
       - class: org.dynmap.hdmap.HDMap
         name: skylands
         title: "Surface"
@@ -287,4 +305,6 @@ templates:
         backgroundday: "#153E7E"
         # Background color for map during the night
         backgroundnight: "#000000"        
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
             
