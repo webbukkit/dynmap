@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -557,10 +558,24 @@ public class TexturePack {
         /* Initialize map with blank map for all entries */
         HDTextureMap.initializeTable();
         /* Load block models */
-        loadTextureFile(new File(datadir, "renderdata/texture.txt"));
+        InputStream in = TexturePack.class.getResourceAsStream("/texture.txt");
+        if(in != null) {
+            loadTextureFile(in, "texture.txt");
+            if(in != null) { try { in.close(); } catch (IOException x) {} in = null; }
+        }
+        else
+            Log.severe("Error loading texture.txt");
+        
         File custom = new File(datadir, "renderdata/custom-texture.txt");
         if(custom.canRead()) {
-            loadTextureFile(custom);
+            try {
+                in = new FileInputStream(custom);
+                loadTextureFile(in, custom.getPath());
+            } catch (IOException iox) {
+                Log.severe("Error loading renderdata/custom-texture.txt - " + iox);
+            } finally {
+                if(in != null) { try { in.close(); } catch (IOException x) {} in = null; }
+            }
         }
         else {
             try {
@@ -575,13 +590,13 @@ public class TexturePack {
     /**
      * Load texture pack mappings from texture.txt file
      */
-    private static void loadTextureFile(File txtfile) {
+    private static void loadTextureFile(InputStream txtfile, String txtname) {
         LineNumberReader rdr = null;
         int cnt = 0;
 
         try {
             String line;
-            rdr = new LineNumberReader(new FileReader(txtfile));
+            rdr = new LineNumberReader(new InputStreamReader(txtfile));
             while((line = rdr.readLine()) != null) {
                 if(line.startsWith("block:")) {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
@@ -642,7 +657,7 @@ public class TexturePack {
                             trans = BlockTransparency.valueOf(av[1]);
                             if(trans == null) {
                                 trans = BlockTransparency.OPAQUE;
-                                Log.severe("Texture mapping has invalid transparency setting - " + av[1] + " - line " + rdr.getLineNumber() + " of " + txtfile.getPath());
+                                Log.severe("Texture mapping has invalid transparency setting - " + av[1] + " - line " + rdr.getLineNumber() + " of " + txtname);
                             }
                         }
                     }
@@ -655,17 +670,17 @@ public class TexturePack {
                         cnt++;
                     }
                     else {
-                        Log.severe("Texture mapping missing required parameters = line " + rdr.getLineNumber() + " of " + txtfile.getPath());
+                        Log.severe("Texture mapping missing required parameters = line " + rdr.getLineNumber() + " of " + txtname);
                     }
                 }
                 else if(line.startsWith("#") || line.startsWith(";")) {
                 }
             }
-            Log.verboseinfo("Loaded " + cnt + " texture mappings from " + txtfile.getPath());
+            Log.verboseinfo("Loaded " + cnt + " texture mappings from " + txtname);
         } catch (IOException iox) {
-            Log.severe("Error reading " + txtfile.getPath() + " - " + iox.toString());
+            Log.severe("Error reading " + txtname + " - " + iox.toString());
         } catch (NumberFormatException nfx) {
-            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + txtfile.getPath());
+            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + txtname);
         } finally {
             if(rdr != null) {
                 try {

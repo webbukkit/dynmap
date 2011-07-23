@@ -1,0 +1,3 @@
+# The user is free to add new and custom perspectives here, including replacements for standard ones
+# Dynmap's install will not overwrite it
+perspectives:

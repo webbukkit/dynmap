@@ -1,10 +1,13 @@
 package org.dynmap.hdmap;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -263,10 +266,24 @@ public class HDBlockModels {
      */
     public static void loadModels(File datadir) {
         /* Load block models */
-        loadModelFile(new File(datadir, "renderdata/models.txt"));
+        InputStream in = TexturePack.class.getResourceAsStream("/models.txt");
+        if(in != null) {
+            loadModelFile(in, "models.txt");
+            try { in.close(); } catch (IOException iox) {} in = null;
+        }
         File custom = new File(datadir, "renderdata/custom-models.txt");
         if(custom.canRead()) {
-            loadModelFile(custom);
+            try {
+                in = new FileInputStream(custom);
+                loadModelFile(in, custom.getPath());
+            } catch (IOException iox) {
+                Log.severe("Error loading " + custom.getPath());
+            } finally {
+                if(in != null) { 
+                    try { in.close(); } catch (IOException iox) {}
+                    in = null;
+                }
+            }
         }
         else {
             try {
@@ -280,7 +297,7 @@ public class HDBlockModels {
     /**
      * Load models from file
      */
-    private static void loadModelFile(File modelfile) {
+    private static void loadModelFile(InputStream in, String fname) {
         LineNumberReader rdr = null;
         int cnt = 0;
         try {
@@ -289,7 +306,7 @@ public class HDBlockModels {
             int layerbits = 0;
             int rownum = 0;
             int scale = 0;
-            rdr = new LineNumberReader(new FileReader(modelfile));
+            rdr = new LineNumberReader(new InputStreamReader(in));
             while((line = rdr.readLine()) != null) {
                 if(line.startsWith("block:")) {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
@@ -322,7 +339,7 @@ public class HDBlockModels {
                         }
                     }
                     else {
-                        Log.severe("Block model missing required parameters = line " + rdr.getLineNumber() + " of " + modelfile.getPath());
+                        Log.severe("Block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
                     }
                     layerbits = 0;
                 }
@@ -401,11 +418,11 @@ public class HDBlockModels {
                     }
                 }
             }
-            Log.verboseinfo("Loaded " + cnt + " block models from " + modelfile.getPath());
+            Log.verboseinfo("Loaded " + cnt + " block models from " + fname);
         } catch (IOException iox) {
             Log.severe("Error reading models.txt - " + iox.toString());
         } catch (NumberFormatException nfx) {
-            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + modelfile.getPath());
+            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + fname);
         } finally {
             if(rdr != null) {
                 try {

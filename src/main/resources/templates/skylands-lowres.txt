@@ -1,8 +1,9 @@
+version: 0.20
 #
 # Default template for "Skylands" environment worlds (deftemplatesuffix="lowres")
 #  Uses the HDMap renderer with view from the SE with the "lowres" resolution (4 pixels per block edge)
 #
-#   To customize without losing updates during upgrade, rename file to 'custom-skylands-lowres.txt'
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-skylands-lowres.txt' if you wish to customize it
 #
 templates:
   # Skylands world template (HDMap lowres)

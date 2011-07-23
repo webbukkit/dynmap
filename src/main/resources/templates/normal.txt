@@ -1,6 +1,8 @@
+version: 0.20
 #
 # Default template for "Normal" environment worlds (deftemplatesuffix="")
-#   To customize without losing updates during upgrade, rename file to 'custom-normal.txt'
+#
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-normal.txt' if you wish to customize it
 #
 templates:
   # Template for normal world (classic render)
