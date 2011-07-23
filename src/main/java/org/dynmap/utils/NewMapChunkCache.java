@@ -189,7 +189,7 @@ public class NewMapChunkCache implements MapChunkCache {
             if(y > this.y)
                 laststep = BlockStep.Y_PLUS;
             else
-                laststep = BlockStep.Y_PLUS;
+                laststep = BlockStep.Y_MINUS;
             this.y = y;
             typeid = -1;
             blkdata = -1;
