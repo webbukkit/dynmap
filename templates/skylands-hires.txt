@@ -19,15 +19,14 @@ templates:
         name: flat
         title: "Flat"
         prefix: flat
-        perspective: iso_S_90_hires
+        perspective: iso_S_90_lowres
         shader: stdtexture
         lighting: default
         # Background color for map during the day
         backgroundday: "#153E7E"
         # Background color for map during the night
         backgroundnight: "#000000"        
-        # Adjust extra zoom in levels - default is 2
-        mapzoomin: 2
+        mapzoomin: 3
       - class: org.dynmap.hdmap.HDMap
         name: skylands
         title: "Surface"
@@ -39,6 +38,5 @@ templates:
         backgroundday: "#153E7E"
         # Background color for map during the night
         backgroundnight: "#000000"        
-        # Adjust extra zoom in levels - default is 2
-        mapzoomin: 2
+        mapzoomin: 1
             

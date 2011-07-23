@@ -19,11 +19,10 @@ templates:
         name: flat
         title: "Flat"
         prefix: flat
-        perspective: iso_S_90_hires
+        perspective: iso_S_90_lowres
         shader: stdtexture
         lighting: default
-        # Adjust extra zoom in levels - default is 2
-        mapzoomin: 2
+        mapzoomin: 3
       - class: org.dynmap.hdmap.HDMap
         name: surface
         title: "Surface"
@@ -31,8 +30,7 @@ templates:
         perspective: iso_SE_60_hires
         shader: stdtexture
         lighting: shadows
-        # Adjust extra zoom in levels - default is 2
-        mapzoomin: 2
+        mapzoomin: 1
       - class: org.dynmap.hdmap.HDMap
         name: cave
         title: "Cave"
@@ -40,5 +38,4 @@ templates:
         perspective: iso_SE_60_lowres
         shader: cave
         lighting: default
-        # Adjust extra zoom in levels - make it 4 to match number of levels for surface map
-        mapzoomin: 4
+        mapzoomin: 3
