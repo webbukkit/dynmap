@@ -250,18 +250,6 @@ public class HDBlockModels {
                     if((m.databits & (1 << i)) != 0) {
                         if(smod == null) smod = m.getScaledMap(scale);
                         row[i] = smod;
-/*                        if((m.blockid == 50) && (i == 5)) {
-                            String v0 = "";
-                            String v = "";
-                            for(int x = 0; x < m.blockflags.length; x++) 
-                                v0 = v0 + " " + m.blockflags[x];
-                            for(int x = 0; x < smod.length; x++) {
-                                v = v + " " + smod[x];
-                                if((x%scale) == (scale-1)) v += "|";
-                            }
-                            Log.info("src=" + v0);
-                            Log.info("scaled=" + v);
-                        } */
                     }
                 }
             }
@@ -275,8 +263,8 @@ public class HDBlockModels {
      */
     public static void loadModels(File datadir) {
         /* Load block models */
-        loadModelFile(new File(datadir, "models.txt"));
-        File custom = new File(datadir, "custom-models.txt");
+        loadModelFile(new File(datadir, "renderdata/models.txt"));
+        File custom = new File(datadir, "renderdata/custom-models.txt");
         if(custom.canRead()) {
             loadModelFile(custom);
         }

@@ -557,8 +557,8 @@ public class TexturePack {
         /* Initialize map with blank map for all entries */
         HDTextureMap.initializeTable();
         /* Load block models */
-        loadTextureFile(new File(datadir, "texture.txt"));
-        File custom = new File(datadir, "custom-texture.txt");
+        loadTextureFile(new File(datadir, "renderdata/texture.txt"));
+        File custom = new File(datadir, "renderdata/custom-texture.txt");
         if(custom.canRead()) {
             loadTextureFile(custom);
         }

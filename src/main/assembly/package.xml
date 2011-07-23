@@ -31,8 +31,6 @@
     		<include>shaders.txt</include>
     		<include>perspectives.txt</include>
     		<include>lightings.txt</include>
-    		<include>models.txt</include>
-    		<include>texture.txt</include>
     		<include>worlds.txt.sample</include></includes></fileSet>
     <fileSet>
     	<directory>${project.basedir}/texturepacks</directory>
@@ -40,6 +38,9 @@
     <fileSet>
     	<directory>${project.basedir}/templates</directory>
     	<outputDirectory>/dynmap/templates</outputDirectory></fileSet>
+    <fileSet>
+    	<directory>${project.basedir}/renderdata</directory>
+    	<outputDirectory>/dynmap/renderdata</outputDirectory></fileSet>
   </fileSets>
   <files>
   	<file>
