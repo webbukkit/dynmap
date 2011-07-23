@@ -73,7 +73,22 @@ public class IsoHDPerspective implements HDPerspective {
     private boolean need_emittedlightlevel = false;
     private boolean need_biomedata = false;
     private boolean need_rawbiomedata = false;
+
+    private static final int CHEST_BLKTYPEID = 54;
+    private static final int FENCE_BLKTYPEID = 85;
     
+    private enum ChestData {
+        SINGLE_WEST, SINGLE_SOUTH, SINGLE_EAST, SINGLE_NORTH, LEFT_WEST, LEFT_SOUTH, LEFT_EAST, LEFT_NORTH, RIGHT_WEST, RIGHT_SOUTH, RIGHT_EAST, RIGHT_NORTH
+    };
+    
+    /* Orientation lookup for single chest - index bits: occupied blocks NESW */
+    private static final ChestData[] SINGLE_LOOKUP = { 
+        ChestData.SINGLE_WEST, ChestData.SINGLE_EAST, ChestData.SINGLE_NORTH, ChestData.SINGLE_NORTH, 
+        ChestData.SINGLE_WEST, ChestData.SINGLE_WEST, ChestData.SINGLE_NORTH, ChestData.SINGLE_NORTH,
+        ChestData.SINGLE_SOUTH, ChestData.SINGLE_SOUTH, ChestData.SINGLE_WEST, ChestData.SINGLE_EAST,
+        ChestData.SINGLE_SOUTH, ChestData.SINGLE_SOUTH, ChestData.SINGLE_WEST, ChestData.SINGLE_EAST
+    };
+
     private class OurPerspectiveState implements HDPerspectiveState {
         int blocktypeid = 0;
         int blockdata = 0;
@@ -124,16 +139,26 @@ public class IsoHDPerspective implements HDPerspective {
             }
             else if(HDTextureMap.getTransparency(lastblocktypeid) != BlockTransparency.SEMITRANSPARENT) {
                 mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
-                emitlevel = mapiter.getBlockEmittedLight();
-                skylevel = mapiter.getBlockSkyLight();
+                if(mapiter.getY() < 128) {
+                    emitlevel = mapiter.getBlockEmittedLight();
+                    skylevel = mapiter.getBlockSkyLight();
+                } else {
+                    emitlevel = 0;
+                    skylevel = 15;
+                }
                 mapiter.stepPosition(laststep);
             }
             else {
                 mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
-                mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
-                emitlevel = mapiter.getBlockEmittedLight();
-                skylevel = mapiter.getBlockSkyLight();
-                mapiter.stepPosition(BlockStep.Y_MINUS);
+                if(mapiter.getY() < 128) {
+                    mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
+                    emitlevel = mapiter.getBlockEmittedLight();
+                    skylevel = mapiter.getBlockSkyLight();
+                    mapiter.stepPosition(BlockStep.Y_MINUS);
+                } else {
+                    emitlevel = 0;
+                    skylevel = 15;
+                }
                 mapiter.stepPosition(laststep);
             }
         }
@@ -272,50 +297,71 @@ public class IsoHDPerspective implements HDPerspective {
         private int generateFenceBlockData(MapIterator mapiter) {
             int blockdata = 0;
             /* Check north */
-            if(mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 1;
             }
             /* Look east */
-            if(mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 2;
             }
             /* Look south */
-            if(mapiter.getBlockTypeIDAt(BlockStep.X_PLUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.X_PLUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 4;
             }
             /* Look west */
-            if(mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 8;
             }
             return blockdata;
         }
-        /* Figure out which orientation possibility applies to chest:
-         * bit 1-0: 00=facing west, 01=facing-south, 10=facing-east, 11=facing-north
-         * bit 3-2: 00=single, 01=left half, 10=right half
-         * truth table:
-         * N S E W : facing
-         * - - - - : W
-         * X - - - : S
-         * - X - - : N
-         * - - X - : W
-         * - - - X : E
-         * X - X - : S
-         * X - - X : S
-         * X - X X : S
-         * - X - X : N
-         * - X X - : N
-         * - X X X : N
-         * X X X - : W
-         * X X - - : W
-         * - - X X : W
-         * X - - X : S
-         * X X - X : E
-         * X X X X : ?
+        /**
+         * Generate chest block to drive model selection:
+         *   0 = single facing west
+         *   1 = single facing south
+         *   2 = single facing east
+         *   3 = single facing north
+         *   4 = left side facing west
+         *   5 = left side facing south
+         *   6 = left side facing east
+         *   7 = left side facing north
+         *   8 = right side facing west
+         *   9 = right side facing south
+         *   10 = right side facing east
+         *   11 = right side facing north
+         * @param mapiter
+         * @return
          */
         private int generateChestBlockData(MapIterator mapiter) {
-            int blockdata = 0;
+            ChestData cd = ChestData.SINGLE_WEST;   /* Default to single facing west */
+            /* Check adjacent block IDs */
+            int ids[] = { mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS),  /* To west */
+                mapiter.getBlockTypeIDAt(BlockStep.X_PLUS),            /* To south */
+                mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS),           /* To east */
+                mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) };         /* To north */
+            /* First, check if we're a double - see if any adjacent chests */
+            if(ids[0] == CHEST_BLKTYPEID) { /* Another to west - assume we face south */
+                cd = ChestData.RIGHT_SOUTH; /* We're right side */
+            }
+            else if(ids[1] == CHEST_BLKTYPEID) {    /* Another to south - assume west facing */
+                cd = ChestData.LEFT_WEST;   /* We're left side */
+            }
+            else if(ids[2] == CHEST_BLKTYPEID) {    /* Another to east - assume south facing */
+                cd = ChestData.LEFT_SOUTH;  /* We're left side */
+            }
+            else if(ids[3] == CHEST_BLKTYPEID) {    /* Another to north - assume west facing */
+                cd = ChestData.RIGHT_WEST;  /* We're right side */
+            }
+            else {  /* Else, single - build index into lookup table */
+                int idx = 0;
+                for(int i = 0; i < ids.length; i++) {
+                    if((ids[i] != 0) && (HDTextureMap.getTransparency(ids[i]) != BlockTransparency.TRANSPARENT)) {
+                        idx |= (1<<i);
+                    }
+                }
+                cd = SINGLE_LOOKUP[idx];
+            }
             
-            return blockdata;
+            return cd.ordinal();
         }
         /**
          * Process visit of ray to block
@@ -329,10 +375,10 @@ public class IsoHDPerspective implements HDPerspective {
             }
             else if(nonairhit || (blocktypeid != 0)) {
                 blockdata = mapiter.getBlockData();
-                if(blocktypeid == 85) {   /* Special case for fence - need to fake data so we can render properly */
+                if(blocktypeid == FENCE_BLKTYPEID) {   /* Special case for fence - need to fake data so we can render properly */
                     blockdata = generateFenceBlockData(mapiter);
                 }
-                else if(blocktypeid == 54) {    /* Special case for chest - need to fake data so we can render */
+                else if(blocktypeid == CHEST_BLKTYPEID) {    /* Special case for chest - need to fake data so we can render */
                     blockdata = generateChestBlockData(mapiter);
                 }
 
