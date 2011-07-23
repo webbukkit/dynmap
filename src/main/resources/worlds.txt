@@ -1,8 +1,9 @@
-# These are examples of world-specific settings, which can be defined in the worlds.txt file
+# These are examples of world-specific settings - customize your content as you see fit
 #
-# NOTE:
-#  This file only contains samples: actual world customizations must be done in the worlds.txt file (or the worlds: section of
-#  configuration.txt).  All lines here are commented with the # symbol - delete the # symbol on copied lines you wish to enable
+# NOTES:
+#   All lines here are commented with the # symbol - delete the # symbol on copied lines you wish to enable
+#   Definitions of a world made here will superecede any world definition with the same name in configuration.txt
+#   Deleting this file will result in a fresh copy being produced by dynmap.jar on the next startup.
 #
 worlds:
   # Worlds can be handled by templates, based on world type

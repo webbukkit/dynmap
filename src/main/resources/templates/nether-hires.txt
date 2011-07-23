@@ -1,12 +1,13 @@
+version: 0.20
 #
-# Default template for "Skylands" environment worlds (deftemplatesuffix="hires")
+# Default template for "Nether" environment worlds (deftemplatesuffix="hires")
 #  Uses the HDMap renderer with view from the SE with the "hires" resolution (16 pixels per block edge)
 #
-#   To customize without losing updates during upgrade, rename file to 'custom-skylands-hires.txt'
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-nether-hires.txt' if you wish to customize it
 #
 templates:
-  # Skylands world template (HDMap hires)
-  skylands-hires:
+  # Nether world template (HDMap hires)
+  nether-hires:
     enabled: true
     # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
     extrazoomout: 2
@@ -22,21 +23,16 @@ templates:
         perspective: iso_S_90_lowres
         shader: stdtexture
         lighting: default
-        # Background color for map during the day
-        backgroundday: "#153E7E"
-        # Background color for map during the night
-        backgroundnight: "#000000"        
+        # Map background color (day or night)
+        background: "#300806"
         mapzoomin: 1
       - class: org.dynmap.hdmap.HDMap
-        name: skylands
+        name: nether
         title: "Surface"
-        prefix: st
+        prefix: nt
         perspective: iso_SE_30_hires
         shader: stdtexture
         lighting: shadows
-        # Background color for map during the day
-        backgroundday: "#153E7E"
-        # Background color for map during the night
-        backgroundnight: "#000000"        
+        # Map background color (day or night)
+        background: "#300806"
         mapzoomin: 1
-            

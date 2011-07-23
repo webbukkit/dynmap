@@ -1,0 +1,3 @@
+# The user is free to add new and custom shaders here, including replacements for standard ones
+# Dynmap's install will not overwrite it
+shaders:

@@ -22,6 +22,15 @@
 		<jar jarfile="${dist}/${pluginname}.jar">
 			<fileset dir="${bin}"/>
 			<fileset file="${src}/main/resources/plugin.yml"/>
+			<fileset file="${src}/main/resources/configuration.txt"/>
+			<fileset file="${src}/main/resources/custom-lightings.txt"/>
+			<fileset file="${src}/main/resources/custom-perspectives.txt"/>
+			<fileset file="${src}/main/resources/custom-shaders.txt"/>
+			<fileset file="${src}/main/resources/lightings.txt"/>
+			<fileset file="${src}/main/resources/models.txt"/>
+			<fileset file="${src}/main/resources/perspectives.txt"/>
+			<fileset file="${src}/main/resources/texture.txt"/>
+			<fileset file="${src}/main/resources/worlds.txt"/>
 			<zipfileset file="${src}/main/resources/colors.txt"/>
 		</jar>
 	</target>

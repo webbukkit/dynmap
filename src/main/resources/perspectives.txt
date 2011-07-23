@@ -1,5 +1,6 @@
+version: 0.20
 #
-# This file contains default standard perspective definitions.  The contents of this file are replaced and updated
+# This file contains default standard perspective definitions.  The contents of this file CAN need to be replaced and updated
 # during upgrades, so new or updated perspective definitions should be done in the custom-perspectives.txt file
 #
 perspectives:
