@@ -2,10 +2,13 @@
 # NOTE: the 'templates' section is now found in the templates.txt (and can be safely customized using custom-templates.txt)
 # NOTE: the 'worlds' section is now found in the worlds.txt (example custom settings can be found in worlds.txt.sample)
 
-# To use the HDMap map templates as world defaults (normal-HDMap, nether-HDMap and skylands-HDMap), uncomment the following line
-# Otherwise, the world defaults will be based on classic templates (normal, nether, skylands)
+# To use the HDMap low-res map templates as world defaults (normal-lowres, nether-lowres and skylands-lowres), uncomment the following line
+#deftemplatesuffix: lowres
+# To use the HDMap hi-res map templates (these can take a VERY long time for initial fullrender), comment the following line
+#deftemplatesuffix: hires
+# Otherwise, the world defaults will be based on classic FlatMap/KzedMap templates (normal, nether, skylands)
+
 # Other values will search for templates named normal-<value>, nether-<value>, skylands-<value>
-#deftemplatesuffix: HDMap
 
 components:
   - class: org.dynmap.ClientConfigurationComponent

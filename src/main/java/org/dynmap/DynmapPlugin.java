@@ -131,6 +131,37 @@ public class DynmapPlugin extends JavaPlugin {
         }
     }
     
+    private static final String CUSTOM_PREFIX = "custom-";
+    /* Load templates from template folder */
+    private void loadTemplates() {
+        File templatedir = new File(dataDirectory, "templates");
+        String[] templates = templatedir.list();
+        /* Go through list - process all ones not starting with 'custom' first */
+        for(String tname: templates) {
+            /* If matches naming convention */
+            if(tname.endsWith(".txt") && (!tname.startsWith(CUSTOM_PREFIX))) {
+                File tf = new File(templatedir, tname);
+                org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(tf);
+                cfg.load();
+                ConfigurationNode cn = new ConfigurationNode(cfg);
+                /* Supplement existing values (don't replace), since configuration.txt is more custom than these */
+                mergeConfigurationBranch(cn, "templates", false, false);
+            }
+        }
+        /* Go through list again - this time do custom- ones */
+        for(String tname: templates) {
+            /* If matches naming convention */
+            if(tname.endsWith(".txt") && tname.startsWith(CUSTOM_PREFIX)) {
+                File tf = new File(templatedir, tname);
+                org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(tf);
+                cfg.load();
+                ConfigurationNode cn = new ConfigurationNode(cfg);
+                /* This are overrides - replace even configuration.txt content */
+                mergeConfigurationBranch(cn, "templates", true, false);
+            }
+        }
+    }
+    
     @Override
     public void onEnable() {
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
@@ -187,33 +218,9 @@ public class DynmapPlugin extends JavaPlugin {
             }
         }
 
-        /* Now, process templates.txt - supplement existing values (don't replace), since configuration.txt is more custom than these */
-        f = new File(this.getDataFolder(), "templates.txt");
-        if(f.exists()) {
-            org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
-            cfg.load();
-            ConfigurationNode cn = new ConfigurationNode(cfg);
-            mergeConfigurationBranch(cn, "templates", false, false);
-        }
+        /* Now, process templates */
+        loadTemplates();
 
-        /* Now, process custom-templates.txt - these are user supplied, so override anything matcing */
-        f = new File(this.getDataFolder(), "custom-templates.txt");
-        if(f.exists()) {
-            org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
-            cfg.load();
-            ConfigurationNode cn = new ConfigurationNode(cfg);
-            mergeConfigurationBranch(cn, "templates", true, false);
-        }
-        else {
-            try {
-                FileWriter fw = new FileWriter(f);
-                fw.write("# This file is intended to allow the user to define templates, including replacements for standard templates\n");
-                fw.write("# Dynmap's install will not overwrite it\n");
-                fw.write("templates:\n");
-                fw.close();
-            } catch (IOException iox) {
-            }
-        }
         Log.verbose = configuration.getBoolean("verbose", true);
         deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
         
