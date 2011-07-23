@@ -80,6 +80,14 @@ public class IsoHDPerspective implements HDPerspective {
     private enum ChestData {
         SINGLE_WEST, SINGLE_SOUTH, SINGLE_EAST, SINGLE_NORTH, LEFT_WEST, LEFT_SOUTH, LEFT_EAST, LEFT_NORTH, RIGHT_WEST, RIGHT_SOUTH, RIGHT_EAST, RIGHT_NORTH
     };
+    
+    /* Orientation lookup for single chest - index bits: occupied blocks NESW */
+    private static final ChestData[] SINGLE_LOOKUP = { 
+        ChestData.SINGLE_WEST, ChestData.SINGLE_EAST, ChestData.SINGLE_NORTH, ChestData.SINGLE_NORTH, 
+        ChestData.SINGLE_WEST, ChestData.SINGLE_WEST, ChestData.SINGLE_NORTH, ChestData.SINGLE_NORTH,
+        ChestData.SINGLE_SOUTH, ChestData.SINGLE_SOUTH, ChestData.SINGLE_WEST, ChestData.SINGLE_EAST,
+        ChestData.SINGLE_SOUTH, ChestData.SINGLE_SOUTH, ChestData.SINGLE_WEST, ChestData.SINGLE_EAST
+    };
 
     private class OurPerspectiveState implements HDPerspectiveState {
         int blocktypeid = 0;
@@ -289,19 +297,19 @@ public class IsoHDPerspective implements HDPerspective {
         private int generateFenceBlockData(MapIterator mapiter) {
             int blockdata = 0;
             /* Check north */
-            if(mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 1;
             }
             /* Look east */
-            if(mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 2;
             }
             /* Look south */
-            if(mapiter.getBlockTypeIDAt(BlockStep.X_PLUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.X_PLUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 4;
             }
             /* Look west */
-            if(mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS) == 85) {    /* Fence? */
+            if(mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS) == FENCE_BLKTYPEID) {    /* Fence? */
                 blockdata |= 8;
             }
             return blockdata;
@@ -342,6 +350,15 @@ public class IsoHDPerspective implements HDPerspective {
             }
             else if(ids[3] == CHEST_BLKTYPEID) {    /* Another to north - assume west facing */
                 cd = ChestData.RIGHT_WEST;  /* We're right side */
+            }
+            else {  /* Else, single - build index into lookup table */
+                int idx = 0;
+                for(int i = 0; i < ids.length; i++) {
+                    if((ids[i] != 0) && (HDTextureMap.getTransparency(ids[i]) != BlockTransparency.TRANSPARENT)) {
+                        idx |= (1<<i);
+                    }
+                }
+                cd = SINGLE_LOOKUP[idx];
             }
             
             return cd.ordinal();
