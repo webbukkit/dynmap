@@ -31,7 +31,7 @@ templates:
         name: skylands
         title: "Surface"
         prefix: st
-        perspective: iso_SE_60_hires
+        perspective: iso_SE_30_hires
         shader: stdtexture
         lighting: shadows
         # Background color for map during the day

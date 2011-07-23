@@ -27,7 +27,7 @@ templates:
         name: surface
         title: "Surface"
         prefix: t
-        perspective: iso_SE_60_hires
+        perspective: iso_SE_30_hires
         shader: stdtexture
         lighting: shadows
         mapzoomin: 1

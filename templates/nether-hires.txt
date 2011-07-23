@@ -29,7 +29,7 @@ templates:
         name: nether
         title: "Surface"
         prefix: nt
-        perspective: iso_SE_60_hires
+        perspective: iso_SE_30_hires
         shader: stdtexture
         lighting: shadows
         # Map background color (day or night)
