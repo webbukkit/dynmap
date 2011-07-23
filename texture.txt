@@ -231,8 +231,30 @@ block:id=51,allsides=129,top=162,transparency=TRANSPARENT
 block:id=52,allfaces=65,transparency=TRANSPARENT
 # Wooden stairs
 block:id=53,allsides=4,topbottom=4004,transparency=SEMITRANSPARENT
-# Chest - TODO: get entity data so we can see orientation
-block:id=54,top=25,south=27,north=27,east=26,west=26
+# Chest - single, facing west
+block:id=54,data=0,topbottom=25,south=26,north=26,east=26,west=27
+# Chest - single, facing south
+block:id=54,data=1,topbottom=25,south=27,north=26,east=26,west=26
+# Chest - single, facing east
+block:id=54,data=2,topbottom=25,south=26,north=26,east=27,west=26
+# Chest - single, facing north
+block:id=54,data=3,topbottom=25,south=26,north=27,east=26,west=26
+# Chest - left side of double, facing west
+block:id=54,data=4,topbottom=25,south=26,north=26,east=58,west=41
+# Chest - left side of double, facing south
+block:id=54,data=5,topbottom=25,south=41,north=58,east=26,west=26
+# Chest - left side of double, facing east
+block:id=54,data=6,topbottom=25,south=26,north=26,east=41,west=58
+# Chest - left side of double, facing north
+block:id=54,data=7,topbottom=25,south=58,north=41,east=26,west=26
+# Chest - right side of double, facing west
+block:id=54,data=8,topbottom=25,south=26,north=26,east=57,west=42
+# Chest - right side of double, facing south
+block:id=54,data=9,topbottom=25,south=42,north=57,east=26,west=26
+# Chest - right side of double, facing east
+block:id=54,data=10,topbottom=25,south=26,north=26,east=42,west=57
+# Chest - right side of double, facing north
+block:id=54,data=11,topbottom=25,south=57,north=42,east=26,west=26
 # Redstone wire (model handling shape - use red wool for color)
 block:id=55,allfaces=129,transparency=TRANSPARENT
 # Diamond ore
