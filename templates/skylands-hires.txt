@@ -26,7 +26,7 @@ templates:
         backgroundday: "#153E7E"
         # Background color for map during the night
         backgroundnight: "#000000"        
-        mapzoomin: 3
+        mapzoomin: 1
       - class: org.dynmap.hdmap.HDMap
         name: skylands
         title: "Surface"

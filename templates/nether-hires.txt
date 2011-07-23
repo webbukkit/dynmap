@@ -24,7 +24,7 @@ templates:
         lighting: default
         # Map background color (day or night)
         background: "#300806"
-        mapzoomin: 3
+        mapzoomin: 1
       - class: org.dynmap.hdmap.HDMap
         name: nether
         title: "Surface"
