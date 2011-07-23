@@ -1,15 +1,16 @@
+version: 0.20
 #
-# Default template for "Normal" environment worlds (deftemplatesuffix="lowres")
+# Default template for "Nether" environment worlds (deftemplatesuffix="lowres")
 #  Uses the HDMap renderer with view from the SE with the "lowres" resolution (4 pixels per block edge)
 #
-#   To customize without losing updates during upgrade, rename file to 'custom-normal-lowres.txt'
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-nether-lowres.txt' if you wish to customize it
 #
 templates:
-  # Template for normal world (HDMap lowres)
-  normal-lowres:
+  # Nether world template (HDMap lowres)
+  nether-lowres:
     enabled: true
-    # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
-    extrazoomout: 2
+  #  # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+  #  extrazoomout: 3
     center:
       x: 0
       y: 64
@@ -22,23 +23,18 @@ templates:
         perspective: iso_S_90_lowres
         shader: stdtexture
         lighting: default
+        # Map background color (day or night)
+        background: "#300806"
         # Adjust extra zoom in levels - default is 2
         mapzoomin: 2
       - class: org.dynmap.hdmap.HDMap
-        name: surface
+        name: nether
         title: "Surface"
-        prefix: t
+        prefix: nt
         perspective: iso_SE_60_lowres
         shader: stdtexture
         lighting: default
-        # Adjust extra zoom in levels - default is 2
-        mapzoomin: 2
-      - class: org.dynmap.hdmap.HDMap
-        name: cave
-        title: "Cave"
-        prefix: ct
-        perspective: iso_SE_60_lowres
-        shader: cave
-        lighting: default
+        # Map background color (day or night)
+        background: "#300806"
         # Adjust extra zoom in levels - default is 2
         mapzoomin: 2

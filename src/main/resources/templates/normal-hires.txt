@@ -1,12 +1,13 @@
+version: 0.20
 #
-# Default template for "Nether" environment worlds (deftemplatesuffix="hires")
+# Default template for "Normal" environment worlds (deftemplatesuffix="lhires")
 #  Uses the HDMap renderer with view from the SE with the "hires" resolution (16 pixels per block edge)
 #
-#   To customize without losing updates during upgrade, rename file to 'custom-nether-hires.txt'
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-normal-hires.txt' if you wish to customize it
 #
 templates:
-  # Nether world template (HDMap hires)
-  nether-hires:
+  # Template for normal world (HDMap hires)
+  normal-hires:
     enabled: true
     # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
     extrazoomout: 2
@@ -22,16 +23,20 @@ templates:
         perspective: iso_S_90_lowres
         shader: stdtexture
         lighting: default
-        # Map background color (day or night)
-        background: "#300806"
         mapzoomin: 1
       - class: org.dynmap.hdmap.HDMap
-        name: nether
+        name: surface
         title: "Surface"
-        prefix: nt
+        prefix: t
         perspective: iso_SE_30_hires
         shader: stdtexture
         lighting: shadows
-        # Map background color (day or night)
-        background: "#300806"
         mapzoomin: 1
+      - class: org.dynmap.hdmap.HDMap
+        name: cave
+        title: "Cave"
+        prefix: ct
+        perspective: iso_SE_60_lowres
+        shader: cave
+        lighting: default
+        mapzoomin: 3

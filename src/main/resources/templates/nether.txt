@@ -1,6 +1,8 @@
+version: 0.20
 #
 # Default template for "Nether" environment worlds (deftemplatesuffix="")
-#   To customize without losing updates during upgrade, rename file to 'custom-nether.txt'
+#
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-nether.txt' if you wish to customize it
 #
 templates:
   # Nether world template (classic render)

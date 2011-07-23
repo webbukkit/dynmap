@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -130,11 +131,22 @@ public class DynmapPlugin extends JavaPlugin {
             }
         }
     }
+    /* Table of default templates - all are resources in dynmap.jar unnder templates/, and go in templates directory when needed */
+    private static final String[] stdtemplates = { "normal.txt", "nether.txt", "skylands.txt", "normal-lowres.txt", 
+        "nether-lowres.txt", "skylands-lowres.txt", "normal-hires.txt", "nether-hires.txt", "skyands-hires.txt"
+    };
     
     private static final String CUSTOM_PREFIX = "custom-";
     /* Load templates from template folder */
     private void loadTemplates() {
         File templatedir = new File(dataDirectory, "templates");
+        templatedir.mkdirs();
+        /* First, prime the templates directory with default standard templates, if needed */
+        for(String stdtemplate : stdtemplates) {
+            File f = new File(templatedir, stdtemplate);
+            createDefaultFileFromResource("/templates/" + stdtemplate, f);
+        }
+        /* Now process files */
         String[] templates = templatedir.list();
         /* Go through list - process all ones not starting with 'custom' first */
         for(String tname: templates) {
@@ -174,49 +186,27 @@ public class DynmapPlugin extends JavaPlugin {
         /* Load texture mappings */
         TexturePack.loadTextureMapping(dataDirectory);
         
+        /* Initialize confguration.txt if needed */
         File f = new File(this.getDataFolder(), "configuration.txt");
-        /* If configuration.txt not found, copy the default one */
-        if(f.exists() == false) {
-            Log.info("configuration.txt not found - creating default");
-            File deffile = new File(this.getDataFolder(), "configuration.default");
-            try {
-                FileInputStream fis = new FileInputStream(deffile);
-                FileOutputStream fos = new FileOutputStream(f);
-                byte[] buf = new byte[512];
-                int len;
-                while((len = fis.read(buf)) > 0) {
-                    fos.write(buf, 0, len);
-                }
-                fos.close();
-                fis.close();
-            } catch (IOException iox) {
-                Log.severe("ERROR CREATING DEFAULT CONFIGURATION.TXT!");
-                this.setEnabled(false);
-                return;
-            }
+        if(!createDefaultFileFromResource("/configuration.txt", f)) {
+            this.setEnabled(false);
+            return;
         }
+        /* Load configuration.txt */
         org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(f);
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
 
         /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
         f = new File(this.getDataFolder(), "worlds.txt");
-        if(f.exists()) {
-            org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
-            cfg.load();
-            ConfigurationNode cn = new ConfigurationNode(cfg);
-            mergeConfigurationBranch(cn, "worlds", true, true);
+        if(!createDefaultFileFromResource("/worlds.txt", f)) {
+            this.setEnabled(false);
+            return;
         }
-        else {
-            try {
-                FileWriter fw = new FileWriter(f);
-                fw.write("# This file is intended to allow the user to define world-specific settings\n");
-                fw.write("# Dynmap's install will not overwrite it\n");
-                fw.write("worlds:\n");
-                fw.close();
-            } catch (IOException iox) {
-            }
-        }
+        org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
+        cfg.load();
+        ConfigurationNode cn = new ConfigurationNode(cfg);
+        mergeConfigurationBranch(cn, "worlds", true, true);
 
         /* Now, process templates */
         loadTemplates();
@@ -671,5 +661,36 @@ public class DynmapPlugin extends JavaPlugin {
     
     public static void setIgnoreChunkLoads(boolean ignore) {
         ignore_chunk_loads = ignore;
+    }
+    /* Uses resource to create default file, if file does not yet exist */
+    public boolean createDefaultFileFromResource(String resourcename, File deffile) {
+        if(deffile.canRead())
+            return true;
+        Log.info(deffile.getPath() + " not found - creating default");
+        InputStream in = getClass().getResourceAsStream(resourcename);
+        if(in == null) {
+            Log.severe("Unable to find default resource - " + resourcename);
+            return false;
+        }
+        else {
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(deffile);
+                byte[] buf = new byte[512];
+                int len;
+                while((len = in.read(buf)) > 0) {
+                    fos.write(buf, 0, len);
+                }
+            } catch (IOException iox) {
+                Log.severe("ERROR creatomg default for " + deffile.getPath());
+                return false;
+            } finally {
+                if(fos != null)
+                    try { fos.close(); } catch (IOException iox) {}
+                if(in != null)
+                    try { in.close(); } catch (IOException iox) {}
+            }
+            return true;
+        }
     }
 }
