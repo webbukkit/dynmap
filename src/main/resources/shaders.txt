@@ -43,3 +43,9 @@ shaders:
     name: stdtexture
     texturepack: standard
     
+  - class: org.dynmap.hdmap.TexturePackHDShader
+    name: stdtexture-nobiome
+    texturepack: standard
+    biomeshaded: false
+    
+    

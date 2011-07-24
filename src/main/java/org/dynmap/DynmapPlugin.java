@@ -133,7 +133,7 @@ public class DynmapPlugin extends JavaPlugin {
     }
     /* Table of default templates - all are resources in dynmap.jar unnder templates/, and go in templates directory when needed */
     private static final String[] stdtemplates = { "normal.txt", "nether.txt", "skylands.txt", "normal-lowres.txt", 
-        "nether-lowres.txt", "skylands-lowres.txt", "normal-hires.txt", "nether-hires.txt", "skyands-hires.txt"
+        "nether-lowres.txt", "skylands-lowres.txt", "normal-hires.txt", "nether-hires.txt", "skylands-hires.txt"
     };
     
     private static final String CUSTOM_PREFIX = "custom-";
