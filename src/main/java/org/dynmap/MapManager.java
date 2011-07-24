@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -163,21 +164,44 @@ public class MapManager {
         HashSet<MapType> renderedmaps = new HashSet<MapType>();
         String activemaps;
         List<String> activemaplist;
+        /* Min and max limits for chunk coords (for radius limit) */
+        int cxmin, cxmax, czmin, czmax;
+        String rendertype;
 
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender) {
+            this(dworld, l, sender, -1);
+            rendertype = "Full render";
+        }
+        
+        /* Full world, all maps render, with optional render radius */
+        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, int radius) {
             world = dworld;
             loc = l;
             found = new HashSet<MapTile>();
             rendered = new HashSet<MapTile>();
             renderQueue = new LinkedList<MapTile>();
             this.sender = sender;
+            if(radius < 0) {
+                cxmin = czmin = Integer.MIN_VALUE;
+                cxmax = czmax = Integer.MAX_VALUE;
+                rendertype = "Full render";
+            }
+            else {
+                cxmin = (l.getBlockX() - radius)>>4;
+                czmin = (l.getBlockZ() - radius)>>4;
+                cxmax = (l.getBlockX() + radius+15)>>4;
+                czmax = (l.getBlockZ() + radius+15)>>4;
+                rendertype = "Radius render";
+            }
         }
 
         /* Single tile render - used for incremental renders */
         FullWorldRenderState(MapTile t) {
             world = getWorld(t.getWorld().getName());
             tile0 = t;
+            cxmin = czmin = Integer.MIN_VALUE;
+            cxmax = czmax = Integer.MAX_VALUE;
         }
 
         public String toString() {
@@ -200,10 +224,10 @@ public class MapManager {
                     if(map_index >= 0) { /* Finished a map? */
                         double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1)/(double)activemaplist.size();
                         if(activemaplist.size() > 1) 
-                            sender.sendMessage("Full render of maps [" + activemaps + "] of '" +
+                            sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
                                world.world.getName() + "' completed - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
                         else
-                            sender.sendMessage("Full render of map '" + activemaps + "' of '" +
+                            sender.sendMessage(rendertype + " of map '" + activemaps + "' of '" +
                                  world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }                	
                     found.clear();
@@ -217,7 +241,7 @@ public class MapManager {
                             break;
                     }
                     if(map_index >= world.maps.size()) {    /* Last one done? */
-                        sender.sendMessage("Full render of '" + world.world.getName() + "' finished.");
+                        sender.sendMessage(rendertype + " of '" + world.world.getName() + "' finished.");
                         cleanup();
                         return;
                     }
@@ -257,8 +281,20 @@ public class MapManager {
                 tile = tile0;
             }
             World w = world.world;
-            /* Fetch chunk cache from server thread */
+            /* Get list of chunks required for tile */
             List<DynmapChunk> requiredChunks = tile.getRequiredChunks();
+            /* If we are doing radius limit render, see if any are inside limits */
+            if(cxmin != Integer.MIN_VALUE) {
+                boolean good = false;
+                for(DynmapChunk c : requiredChunks) {
+                    if((c.x >= cxmin) && (c.x <= cxmax) && (c.z >= czmin) && (c.z <= czmax)) {
+                        good = true;
+                        break;
+                    }
+                }
+                if(!good) requiredChunks = Collections.emptyList();
+            }
+            /* Fetch chunk cache from server thread */
             MapChunkCache cache = createMapChunkCache(world, requiredChunks, tile.isBlockTypeDataNeeded(), 
                                                       tile.isHightestBlockYDataNeeded(), tile.isBiomeDataNeeded(), 
                                                       tile.isRawBiomeDataNeeded());
@@ -288,10 +324,10 @@ public class MapManager {
                     if((rendercnt % 100) == 0) {
                         double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemaplist.size();
                         if(activemaplist.size() > 1) 
-                            sender.sendMessage("Full render of maps [" + activemaps + "] of '" +
+                            sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
                                                w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
                         else
-                            sender.sendMessage("Full render of map '" + activemaps + "' of '" +
+                            sender.sendMessage(rendertype + " of map '" + activemaps + "' of '" +
                                                w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }
                 }
@@ -389,7 +425,7 @@ public class MapManager {
         synchronized(lock) {
             rndr = active_renders.get(wname);
             if(rndr != null) {
-                sender.sendMessage("Full world render of world '" + wname + "' already active.");
+                sender.sendMessage(rndr.rendertype + " of world '" + wname + "' already active.");
                 return;
             }
             rndr = new FullWorldRenderState(world,l,sender);    /* Make new activation record */
@@ -398,6 +434,28 @@ public class MapManager {
         /* Schedule first tile to be worked */
         renderpool.execute(rndr);
         sender.sendMessage("Full render starting on world '" + wname + "'...");
+    }
+
+    void renderWorldRadius(Location l, CommandSender sender, int radius) {
+        DynmapWorld world = getWorld(l.getWorld().getName());
+        if (world == null) {
+            sender.sendMessage("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
+            return;
+        }
+        String wname = l.getWorld().getName();
+        FullWorldRenderState rndr;
+        synchronized(lock) {
+            rndr = active_renders.get(wname);
+            if(rndr != null) {
+                sender.sendMessage(rndr.rendertype + " of world '" + wname + "' already active.");
+                return;
+            }
+            rndr = new FullWorldRenderState(world,l,sender, radius);    /* Make new activation record */
+            active_renders.put(wname, rndr);    /* Add to active table */
+        }
+        /* Schedule first tile to be worked */
+        renderpool.execute(rndr);
+        sender.sendMessage("Render of " + radius + " block radius starting on world '" + wname + "'...");
     }
 
     public void activateWorld(World w) {
@@ -588,6 +646,9 @@ public class MapManager {
         c.setChunks(w.world, chunks);
         if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
             Log.severe("CraftBukkit build does not support biome APIs");
+        if(chunks.size() == 0) {    /* No chunks to get? */
+            return c;
+        }
 
     	synchronized(loadlock) {
     		final MapChunkCache cc = c;

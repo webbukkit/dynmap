@@ -495,6 +495,7 @@ public class DynmapPlugin extends JavaPlugin {
         "hide",
         "show",
         "fullrender",
+        "radiusrender",
         "reload",
         "stats",
         "resetstats" }));
@@ -516,8 +517,27 @@ public class DynmapPlugin extends JavaPlugin {
                 if (player != null) {
                     int invalidates = mapManager.touch(player.getLocation());
                     sender.sendMessage("Queued " + invalidates + " tiles" + (invalidates == 0
-                            ? " (world is not loaded?)"
-                            : "..."));
+                        ? " (world is not loaded?)"
+                        : "..."));
+                }
+                else {
+                    sender.sendMessage("Command can only be issued by player.");
+                }
+            }
+            else if(c.equals("radiusrender") && checkPlayerPermission(sender,"radiusrender")) {
+                if (player != null) {
+                    int radius = 0;
+                    if(args.length > 1) {
+                        radius = Integer.parseInt(args[1]); /* Parse radius */
+                        if(radius < 0)
+                            radius = 0;
+                    }
+                    Location loc = player.getLocation();
+                    if(loc != null)
+                        mapManager.renderWorldRadius(loc, sender, radius);
+                }
+                else {
+                    sender.sendMessage("Command can only be issued by player.");
                 }
             } else if (c.equals("hide")) {
                 if (args.length == 1) {
