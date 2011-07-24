@@ -22,7 +22,17 @@ var HDMapType = DynmapTileLayer.extend({
 		this.projection = new HDProjection($.extend({map: this}, options));
 	},
 	getTileName: function(tilePoint, zoom) {
-		return namedReplace('{prefix}{nightday}/{scaledx}_{scaledy}/{zoom}{x}_{y}.png', this.getTileInfo(tilePoint, zoom));
+		var info = this.getTileInfo(tilePoint, zoom);
+		// Y is inverted for HD-map.
+		info.y = -info.y;
+		info.scaledy = info.y >> 5;
+		return namedReplace('{prefix}{nightday}/{scaledx}_{scaledy}/{zoom}{x}_{y}.png', info);
+	},
+	zoomprefix: function(amount) {
+		// amount == 0 -> ''
+		// amount == 1 -> 'z_'
+		// amount == 2 -> 'zz_'
+		return 'zzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount) + (amount === 0 ? '' : '_');
 	}
 });
 

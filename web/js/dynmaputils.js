@@ -142,27 +142,26 @@ var DynmapTileLayer = L.TileLayer.extend({
 	
 	// Some helper functions.
 	zoomprefix: function(amount) {
-		// amount == 0 -> ''
-		// amount == 1 -> 'z_'
-		// amount == 2 -> 'zz_'
-		return 'zzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount) + (amount === 0 ? '' : '_');
+		return 'zzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount);
 	},
 	getTileInfo: function(tilePoint, zoom) {
 		// zoom: max zoomed in = this.options.maxZoom, max zoomed out = 0
 		// izoom: max zoomed in = 0, max zoomed out = this.options.maxZoom
-		// zoomoutlevel: 0 when izoom < mapzoomin, else izoom - mapzoomin (which ranges from 0 till mapzoomout)
+		// zoomoutlevel: izoom < mapzoomin -> 0, else -> izoom - mapzoomin (which ranges from 0 till mapzoomout)
 		var izoom = this.options.maxZoom - zoom;
 		var zoomoutlevel = Math.max(0, izoom - this.options.mapzoomin);
 		var scale = 1 << zoomoutlevel;
 		var zoomprefix = this.zoomprefix(zoomoutlevel);
+		var x = scale*tilePoint.x;
+		var y = scale*tilePoint.y;
 		return {
 			prefix: this.options.prefix,
 			nightday: (this.options.nightandday && this.options.dynmap.serverday) ? '_day' : '',
-			scaledx: (scale*tilePoint.x) >> 5,
-			scaledy: (-scale*tilePoint.y) >> 5,
+			scaledx: x >> 5,
+			scaledy: y >> 5,
 			zoom: this.zoomprefix(zoomoutlevel),
-			x: scale*tilePoint.x,
-			y: -scale*tilePoint.y
+			x: x,
+			y: y
 		};
 	}
 });

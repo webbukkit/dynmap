@@ -5,11 +5,11 @@ var KzedProjection = DynmapProjection.extend({
 		var dz = location.z;
 		var px = dx + dz;
 		var py = dx - dz - dy;
-		var scale = 2 << this.options.extrazoom;
+		var scale = 1 << this.options.mapzoomout;
 
-		var lat = px / scale - 64;
-		var lng = py / scale;
-		return new L.LatLng(-lat, lng, true);
+		var xx = (128 - px) / scale;
+		var yy = py / scale;
+		return new L.LatLng(xx, yy, true);
 	}
 });
 
@@ -19,43 +19,35 @@ var KzedMapType = DynmapTileLayer.extend({
 		maxZoom: 4
 	},
 	initialize: function(options) {
-		options.maxZoom = options.mapzoomin + options.world.extrazoomout;
+		options.mapzoomout = options.mapzoomout || options.world.extrazoomout;
+		options.maxZoom = options.mapzoomin + options.mapzoomout;
 		L.Util.setOptions(this, options);
-		this.projection = new KzedProjection({extrazoom: this.options.world.extrazoomout});
+		this.projection = new KzedProjection({mapzoomout: this.options.mapzoomout});
 	},
 	getTileName: function(tilePoint, zoom) {
-		var tileSize = 128;
-		var tileName = '';
-        var dnprefix = '';
-		
-        if(this.options.nightandday && this.options.dynmap.serverday) {
-            dnprefix = '_day';
-        }
-		var extrazoom = this.options.world.extrazoomout;
-		if (zoom <= extrazoom) {
-			var zpre = 'zzzzzzzzzzzzzzzz'.substring(0, extrazoom-zoom);
-			// Most zoomed out tiles.
-			var tilescale = 2 << (extrazoom-zoom);
-            if (this.options.bigmap) {
-                if(zoom < extrazoom) zpre = zpre + '_';
-                tileName = 'z' + this.options.prefix + dnprefix + '/' + ((-tilePoint.x * tileSize*tilescale)>>12) + '_' + ((tilePoint.y * tileSize*tilescale) >> 12) + '/' + zpre + (-tilePoint.x * tileSize*tilescale) + '_' + (tilePoint.y * tileSize*tilescale) + '.png';
-            } else {
-                tileName = zpre + 'z' + this.options.prefix + dnprefix + '_' + (-tilePoint.x * tileSize*tilescale) + '_' + (tilePoint.y * tileSize*tilescale) + '.png';
-            }
-		} else {
-            if(this.options.bigmap) {
-                tileName = this.options.prefix + dnprefix + '/' + ((-tilePoint.x*tileSize) >> 12) + '_' + ((tilePoint.y*tileSize)>>12) + '/' + (-tilePoint.x*tileSize) + '_' + (tilePoint.y*tileSize) + '.png';
-            } else {
-                tileName = this.options.prefix + dnprefix + '_' + (-tilePoint.x*tileSize) + '_' + (tilePoint.y*tileSize) + '.png';
-            }
-		}
-		return tileName;
+		var info = this.getTileInfo(tilePoint, zoom);
+		return namedReplace(this.options.bigmap
+				? '{prefix}{nightday}/{scaledx}_{scaledy}/{zoom}_{x}_{y}.png'
+				: '{zoom}{prefix}{nightday}_{x}_{y}.png'
+				, this.getTileInfo(tilePoint, zoom));
 	},
-	calculateTileSize: function(zoom) {
-		var extrazoomout = this.options.dynmap.world.extrazoomout;
-		return (zoom <= extrazoomout)
-				? 128
-				: Math.pow(2, 6+zoom-extrazoomout);
+	getTileInfo: function(tilePoint, zoom) {
+		// Custom tile-info-calculation for KzedMap: *128 and >>12
+		var izoom = this.options.maxZoom - zoom;
+		var zoomoutlevel = Math.max(0, izoom - this.options.mapzoomin);
+		var scale = 1 << zoomoutlevel;
+		var zoomprefix = this.zoomprefix(zoomoutlevel);
+		var x = -scale*tilePoint.x*128;
+		var y = scale*tilePoint.y*128;
+		return {
+			prefix: this.options.prefix,
+			nightday: (this.options.nightandday && this.options.dynmap.serverday) ? '_day' : '',
+			scaledx: x >> 12,
+			scaledy: y >> 12,
+			zoom: this.zoomprefix(zoomoutlevel),
+			x: x,
+			y: y
+		};
 	}
 });
 
