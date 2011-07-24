@@ -22,7 +22,7 @@ block:id=6,data=1,allsides=63,transparency=TRANSPARENT
 # Sapling (Birch)
 block:id=6,data=2,allsides=79,transparency=TRANSPARENT
 # Bedrock
-block:id=7,allfaces=16
+block:id=7,allfaces=17
 # Water
 block:id=8,allfaces=12258,transparency=TRANSPARENT
 # Stationary water
