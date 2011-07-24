@@ -374,9 +374,15 @@ public class TexturePack {
             }
         }
         /* All the same - no biome lookup needed */
-        if(same)
+        if(same) {
             imgs[idx].argb = null;
-        li.trivial_color = clr;
+            li.trivial_color = clr;
+        }
+        else {  /* Else, calculate color average for lower left quadrant */
+            int[] clr_scale = new int[4];
+            scaleTerrainPNGSubImage(li.width, 2, li.argb, clr_scale);
+            li.trivial_color = clr_scale[2];
+        }
     }
     
     /* Patch image into texture table */
@@ -694,7 +700,7 @@ public class TexturePack {
     /**
      * Read color for given subblock coordinate, with given block id and data and face
      */
-    public void readColor(HDPerspectiveState ps, MapIterator mapiter, Color rslt, int blkid, int lastblocktype) {
+    public void readColor(HDPerspectiveState ps, MapIterator mapiter, Color rslt, int blkid, int lastblocktype, boolean biome_shaded) {
         int blkdata = ps.getBlockData();
         HDTextureMap map = HDTextureMap.getMap(blkid, blkdata);
         BlockStep laststep = ps.getLastBlockStep();
@@ -797,7 +803,7 @@ public class TexturePack {
             switch(textop) {
                 case COLORMOD_GRASSTONED:
                     li = imgs[IMG_GRASSCOLOR];
-                    if(li.argb == null) {
+                    if((li.argb == null) || (!biome_shaded)) {
                         rslt.blendColor(li.trivial_color);
                     }
                     else {
@@ -806,7 +812,7 @@ public class TexturePack {
                     break;
                 case COLORMOD_FOLIAGETONED:
                     li = imgs[IMG_FOLIAGECOLOR];
-                    if(li.argb == null) {
+                    if((li.argb == null) || (!biome_shaded)) {
                         rslt.blendColor(li.trivial_color);
                     }
                     else {

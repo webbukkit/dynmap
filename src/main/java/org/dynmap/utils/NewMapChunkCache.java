@@ -629,4 +629,9 @@ public class NewMapChunkCache implements MapChunkCache {
         this.blockdata = blockdata;
         return true;
     }
+    @Override
+    public World getWorld() {
+        return w;
+    }
+
 }
