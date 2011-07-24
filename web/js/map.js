@@ -391,11 +391,18 @@ DynMap.prototype = {
 				}
 
 				me.servertime = update.servertime;                
-				var oldday = me.serverday;
-				if(me.servertime > 23100 || me.servertime < 12900)
-					me.serverday = true;
-				else
-					me.serverday = false;
+				var newserverday = (me.servertime > 23100 || me.servertime < 12900);
+				if(me.serverday != newserverday) {
+					console.log('serverday changed', newserverday)
+					me.serverday = newserverday;
+					
+					me.updateBackground();				
+					if(me.maptype.options.nightandday) {
+						// Readd map.
+						me.map.removeLayer(me.maptype);
+						me.map.addLayer(me.maptype);
+					}
+				}
                     
 				var newplayers = {};
 				$.each(update.players, function(index, playerUpdate) {
@@ -438,18 +445,6 @@ DynMap.prototype = {
 					//var divs = $('div[rel]');
 					//divs.filter(function(i){return parseInt(divs[i].attr('rel')) > timestamp+me.options.messagettl;}).remove();
 				});
-
-				if(me.serverday != oldday) {
-					me.updateBackground();				
-					var mtid = me.map.mapTypeId;
-					console.log('TODO: RENDER NIGHTANDDAY!!!')
-					/*if(me.map.mapTypes[mtid].nightandday) {
-						me.map.setMapTypeId('none');
-						window.setTimeout(function() {
-							me.map.setMapTypeId(mtid);
-						}, 0.1);
-					}*/
-				}
 				
 				$(me).trigger('worldupdated', [ update ]);
 				

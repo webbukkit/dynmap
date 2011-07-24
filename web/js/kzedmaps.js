@@ -53,7 +53,7 @@ var KzedMapType = DynmapTileLayer.extend({
 	},
 	calculateTileSize: function(zoom) {
 		var extrazoomout = this.options.dynmap.world.extrazoomout;
-		return (zoom <= extrazoom)
+		return (zoom <= extrazoomout)
 				? 128
 				: Math.pow(2, 6+zoom-extrazoomout);
 	}

@@ -17,7 +17,7 @@ var FlatMapType = DynmapTileLayer.extend({
 	getTileName: function(tilePoint, zoom) {
 		var tileName;
 		var dnprefix = '';
-		if(this.options.nightandday && this.dynmap.serverday) {
+		if(this.options.nightandday && this.options.dynmap.serverday) {
 			dnprefix = '_day';
 		}
 		var extrazoom = this.options.world.extrazoomout;
