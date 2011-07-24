@@ -541,4 +541,7 @@ public class LegacyMapChunkCache implements MapChunkCache {
             return false;
         return true;
     }
+    public World getWorld() {
+        return w;
+    }
 }

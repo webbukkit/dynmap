@@ -2,6 +2,7 @@ package org.dynmap.hdmap;
 
 import static org.dynmap.JSONUtils.s;
 
+import org.bukkit.World.Environment;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
@@ -13,11 +14,13 @@ public class TexturePackHDShader implements HDShader {
     private String tpname;
     private String name;
     private TexturePack tp;
+    private boolean biome_shaded;
     
     public TexturePackHDShader(ConfigurationNode configuration) {
         tpname = configuration.getString("texturepack", "minecraft");
         name = configuration.getString("name", tpname);
         tp = TexturePack.getTexturePack(tpname);
+        biome_shaded = configuration.getBoolean("biomeshaded", true);
         if(tp == null) {
             Log.severe("Error: shader '" + name + "' cannot load texture pack '" + tpname + "'");
         }
@@ -30,7 +33,7 @@ public class TexturePackHDShader implements HDShader {
     
     @Override
     public boolean isRawBiomeDataNeeded() { 
-        return true; 
+        return biome_shaded; 
     }
     
     @Override
@@ -67,8 +70,9 @@ public class TexturePackHDShader implements HDShader {
         private TexturePack scaledtp;
         private HDLighting lighting;
         private int lastblkid;
+        private boolean do_biome_shading;
         
-        private OurShaderState(MapIterator mapiter, HDMap map) {
+        private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
             this.map = map;
             this.lighting = map.getLighting();
@@ -82,6 +86,8 @@ public class TexturePackHDShader implements HDShader {
             }
             c = new Color();
             scaledtp = tp.resampleTexturePack(map.getPerspective().getModelScale());
+            /* Biome raw data only works on normal worlds at this point */
+            do_biome_shading = biome_shaded && (cache.getWorld().getEnvironment() != Environment.NORMAL);
         }
         /**
          * Get our shader
@@ -126,7 +132,7 @@ public class TexturePackHDShader implements HDShader {
                 return false;
             }
             /* Get color from textures */
-            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype);
+            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading);
 
             if (c.getAlpha() > 0) {
                 int subalpha = ps.getSubmodelAlpha();
@@ -210,7 +216,7 @@ public class TexturePackHDShader implements HDShader {
      * @return state object to use for all rays in tile
      */
     public HDShaderState getStateInstance(HDMap map, MapChunkCache cache, MapIterator mapiter) {
-        return new OurShaderState(mapiter, map);
+        return new OurShaderState(mapiter, map, cache);
     }
     
     /* Add shader's contributions to JSON for map object */
