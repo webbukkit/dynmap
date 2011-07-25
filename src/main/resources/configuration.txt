@@ -139,8 +139,9 @@ showplayerfacesinmenu: true
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
-webprefix: "§2[WEB] "
-websuffix: "§f"
+# webprefix and websuffix support using '&color;' as escape code for color code
+webprefix: "&color;2[WEB] "
+websuffix: "&color;f"
 # Enable checking for banned IPs via banned-ips.txt (internal web server only)
 check-banned-ips: true
 
@@ -149,7 +150,7 @@ defaultworld: world
 
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
-verbose: true
+verbose: false
 
 # Enables debugging.
 #debuggers:
