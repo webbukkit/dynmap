@@ -19,7 +19,7 @@ public class SimpleWebChatComponent extends Component {
                 DynmapWebChatEvent evt = new DynmapWebChatEvent(t.source, t.name, t.message);
                 plugin.getServer().getPluginManager().callEvent(evt);
                 if(evt.isCancelled() == false)
-                    plugin.getServer().broadcastMessage(plugin.configuration.getString("webprefix", "\u00A72[WEB] ") + t.name + ": " + plugin.configuration.getString("websuffix", "\u00A7f") + t.message);
+                    plugin.getServer().broadcastMessage(unescapeString(plugin.configuration.getString("webprefix", "\u00A72[WEB] ")) + t.name + ": " + unescapeString(plugin.configuration.getString("websuffix", "\u00A7f")) + t.message);
             }
         });
         

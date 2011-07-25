@@ -10,4 +10,12 @@ public abstract class Component {
     
     public void dispose() {
     }
+    
+    /* Substitute proper values for escape sequences */
+    public static String unescapeString(String v) {
+        /* Replace color code &color; */
+        v = v.replaceAll("&color;", "\u00A7");
+        
+        return v;
+    }
 }
