@@ -96,6 +96,8 @@ public class IsoHDPerspective implements HDPerspective {
         Vector3D top, bottom;
         int px, py;
         BlockStep laststep = BlockStep.Y_MINUS;
+        
+        BlockStep stepx, stepy, stepz;
         /* Raytrace state variables */
         double dx, dy, dz;
         int x, y, z;
@@ -115,6 +117,7 @@ public class IsoHDPerspective implements HDPerspective {
         int subalpha;
         double mt;
         double mtend;
+        int mxout, myout, mzout;
         
         int[] subblock_xyz = new int[3];
         MapIterator mapiter;
@@ -238,56 +241,76 @@ public class IsoHDPerspective implements HDPerspective {
             /* Compute number of steps and increments for each */
             n = 1;
 
+            int mxout, myout, mzout;
+            
             /* If perpendicular to X axis */
             if (dx == 0) {
                 x_inc = 0;
                 t_next_x = Double.MAX_VALUE;
+                stepx = BlockStep.X_PLUS;
+                mxout = modscale;
             }
             /* If bottom is right of top */
             else if (bottom.x > top.x) {
                 x_inc = 1;
                 n += (int) (Math.floor(bottom.x)) - x;
                 t_next_x = (Math.floor(top.x) + 1 - top.x) * dt_dx;
+                stepx = BlockStep.X_PLUS;
+                mxout = modscale;
             }
             /* Top is right of bottom */
             else {
                 x_inc = -1;
                 n += x - (int) (Math.floor(bottom.x));
                 t_next_x = (top.x - Math.floor(top.x)) * dt_dx;
+                stepx = BlockStep.X_MINUS;
+                mxout = -1;
             }
             /* If perpendicular to Y axis */
             if (dy == 0) {
                 y_inc = 0;
                 t_next_y = Double.MAX_VALUE;
+                stepy = BlockStep.Y_PLUS;
+                myout = modscale;
             }
             /* If bottom is above top */
             else if (bottom.y > top.y) {
                 y_inc = 1;
                 n += (int) (Math.floor(bottom.y)) - y;
                 t_next_y = (Math.floor(top.y) + 1 - top.y) * dt_dy;
+                stepy = BlockStep.Y_PLUS;
+                myout = modscale;
             }
             /* If top is above bottom */
             else {
                 y_inc = -1;
                 n += y - (int) (Math.floor(bottom.y));
                 t_next_y = (top.y - Math.floor(top.y)) * dt_dy;
+                stepy = BlockStep.Y_MINUS;
+                myout = -1;
             }
             /* If perpendicular to Z axis */
             if (dz == 0) {
                 z_inc = 0;
                 t_next_z = Double.MAX_VALUE;
+                stepz = BlockStep.Z_PLUS;
+                mzout = modscale;
             }
             /* If bottom right of top */
             else if (bottom.z > top.z) {
                 z_inc = 1;
                 n += (int) (Math.floor(bottom.z)) - z;
                 t_next_z = (Math.floor(top.z) + 1 - top.z) * dt_dz;
+                stepz = BlockStep.Z_PLUS;
+                mzout = modscale;
             }
             /* If bottom left of top */
             else {
                 z_inc = -1;
                 n += z - (int) (Math.floor(bottom.z));
                 t_next_z = (top.z - Math.floor(top.z)) * dt_dz;
+                stepz = BlockStep.Z_MINUS;
+                mzout = -1;
             }
             /* Walk through scene */
             laststep = BlockStep.Y_MINUS; /* Last step is down into map */
@@ -363,10 +386,29 @@ public class IsoHDPerspective implements HDPerspective {
             
             return cd.ordinal();
         }
+        private final boolean handleSubModel(short[] model, HDShaderState[] shaderstate, boolean[] shaderdone) {
+            boolean firststep = true;
+            
+            while(!raytraceSubblock(model, firststep)) {
+                boolean done = true;
+                skylevel = emitlevel = -1;
+                for(int i = 0; i < shaderstate.length; i++) {
+                    if(!shaderdone[i])
+                        shaderdone[i] = shaderstate[i].processBlock(this);
+                    done = done && shaderdone[i];
+                }
+                /* If all are done, we're out */
+                if(done)
+                    return true;
+                nonairhit = true;
+                firststep = false;
+            }
+            return false;
+        }
         /**
          * Process visit of ray to block
          */
-        private boolean visit_block(MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
+        private final boolean visit_block(MapIterator mapiter, HDShaderState[] shaderstate, boolean[] shaderdone) {
             lastblocktypeid = blocktypeid;
             blocktypeid = mapiter.getBlockTypeID();
             if(skiptoair) {	/* If skipping until we see air */
@@ -374,33 +416,21 @@ public class IsoHDPerspective implements HDPerspective {
                 	skiptoair = false;
             }
             else if(nonairhit || (blocktypeid != 0)) {
-                blockdata = mapiter.getBlockData();
-                if(blocktypeid == FENCE_BLKTYPEID) {   /* Special case for fence - need to fake data so we can render properly */
-                    blockdata = generateFenceBlockData(mapiter);
+                switch(blocktypeid) {
+                    case FENCE_BLKTYPEID:   /* Special case for fence - need to fake data so we can render properly */
+                        blockdata = generateFenceBlockData(mapiter);
+                        break;
+                    case CHEST_BLKTYPEID:   /* Special case for chest - need to fake data so we can render */
+                        blockdata = generateChestBlockData(mapiter);
+                        break;
+                    default:
+                        blockdata = mapiter.getBlockData();
+                        break;
                 }
-                else if(blocktypeid == CHEST_BLKTYPEID) {    /* Special case for chest - need to fake data so we can render */
-                    blockdata = generateChestBlockData(mapiter);
-                }
-
                 /* Look up to see if block is modelled */
                 short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
                 if(model != null) {
-                	boolean firststep = true;
-               	
-                	while(!raytraceSubblock(model, firststep)) {
-                        boolean done = true;
-                        skylevel = emitlevel = -1;
-                        for(int i = 0; i < shaderstate.length; i++) {
-                            if(!shaderdone[i])
-                                shaderdone[i] = shaderstate[i].processBlock(this);
-                            done = done && shaderdone[i];
-                        }
-                        /* If all are done, we're out */
-                        if(done)
-                            return true;
-                        nonairhit = true;
-                        firststep = false;
-                	}
+                    return handleSubModel(model, shaderstate, shaderdone);
                 }
                 else {
                     boolean done = true;
@@ -437,12 +467,7 @@ public class IsoHDPerspective implements HDPerspective {
                     x += x_inc;
                     t = t_next_x;
                     t_next_x += dt_dx;
-                    if(x_inc > 0) {
-                        laststep = BlockStep.X_PLUS;
-                    }
-                    else {
-                        laststep = BlockStep.X_MINUS;
-                    }
+                    laststep = stepx;
                     mapiter.stepPosition(laststep);
                 }
                 /* If Y step is next best */
@@ -450,30 +475,17 @@ public class IsoHDPerspective implements HDPerspective {
                     y += y_inc;
                     t = t_next_y;
                     t_next_y += dt_dy;
-                    if(y_inc > 0) {
-                        laststep = BlockStep.Y_PLUS;
-                        mapiter.stepPosition(laststep);
-                        if(mapiter.getY() > 127)
-                            return;
-                    }
-                    else {
-                        laststep = BlockStep.Y_MINUS;
-                        mapiter.stepPosition(laststep);
-                        if(mapiter.getY() < 0)
-                            return;
-                    }
+                    laststep = stepy;
+                    mapiter.stepPosition(laststep);
+                    /* If outside 0-127 range */
+                    if((y & (~0x7F)) != 0) return;
                 }
                 /* Else, Z step is next best */
                 else {
                     z += z_inc;
                     t = t_next_z;
                     t_next_z += dt_dz;
-                    if(z_inc > 0) {
-                        laststep = BlockStep.Z_PLUS;
-                    }
-                    else {
-                        laststep = BlockStep.Z_MINUS;
-                    }
+                    laststep = stepz;
                     mapiter.stepPosition(laststep);
                 }
             }
@@ -531,56 +543,32 @@ public class IsoHDPerspective implements HDPerspective {
                     mx += x_inc;
                     mt = mt_next_x;
                     mt_next_x += mdt_dx;
-                    if(x_inc > 0) {
-                        laststep = BlockStep.X_PLUS;
-                        if(mx >= modscale)
-                            return true;
-                    }
-                    else {
-                        laststep = BlockStep.X_MINUS;
-                        if(mx < 0)
-                            //mx += modscale;
-                            return true;
-                    }
+                    laststep = stepx;
+                    if(mx == mxout)
+                        return true;
                 }
                 /* If Y step is next best */
                 else if((mt_next_y <= mt_next_x) && (mt_next_y <= mt_next_z)) {
                     my += y_inc;
                     mt = mt_next_y;
                     mt_next_y += mdt_dy;
-                    if(y_inc > 0) {
-                        laststep = BlockStep.Y_PLUS;
-                        if(my >= modscale)
-                            return true;
-                    }
-                    else {
-                        laststep = BlockStep.Y_MINUS;
-                        if(my < 0)
-                            //my += modscale;
-                            return true;
-                    }
+                    laststep = stepy;
+                    if(my == myout)
+                        return true;
                 }
                 /* Else, Z step is next best */
                 else {
                     mz += z_inc;
                     mt = mt_next_z;
                     mt_next_z += mdt_dz;
-                    if(z_inc > 0) {
-                        laststep = BlockStep.Z_PLUS;
-                        if(mz >= modscale)
-                            return true;
-                    }
-                    else {
-                        laststep = BlockStep.Z_MINUS;
-                        if(mz < 0)
-                            //mz += modscale;
-                            return true;
-                    }
+                    laststep = stepz;
+                    if(mz == mzout) 
+                        return true;
                 }
             }
             return true;
         }
-        public int[] getSubblockCoord() {
+        public final int[] getSubblockCoord() {
             double tt = t + 0.000001;
             if(subalpha >= 0)
                 tt = mt;
