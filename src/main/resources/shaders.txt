@@ -3,10 +3,16 @@
 # during upgrades, so new or updated shader definitions should be done in the custom-shaders.txt file
 #
 shaders:
-  - class: org.dynmap.hdmap.DefaultHDShader
+  # Default shader - used if shader not specified or invalid
+  - class: org.dynmap.hdmap.TexturePackHDShader
     name: default
+    texturepack: standard
+
+  # Color scheme based shaders
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: defaultscheme
     colorscheme: default
-   
+
   - class: org.dynmap.hdmap.DefaultHDShader
     name: ovocean
     colorscheme: ovocean
@@ -19,6 +25,7 @@ shaders:
     name: sk89q
     colorscheme: sk89q
    
+  # Biome based shaders
   - class: org.dynmap.hdmap.DefaultHDShader
     name: biome
     biomecolored: biome
@@ -31,21 +38,23 @@ shaders:
     name: rainfall
     biomecolored: rainfall
     
+  # No transparency default color scheme shader
   - class: org.dynmap.hdmap.DefaultHDShader
     name: no_transparency
     colorscheme: default
     transparency: false
   
+  # Cave view shader
   - class: org.dynmap.hdmap.CaveHDShader
     name: cave
 
+  # Texture pack based shader for standard Minecraft textures
   - class: org.dynmap.hdmap.TexturePackHDShader
     name: stdtexture
     texturepack: standard
     
+  # Texture pack based shader for standard Minecraft textures, without biome-tinted grass/leaves
   - class: org.dynmap.hdmap.TexturePackHDShader
     name: stdtexture-nobiome
     texturepack: standard
     biomeshaded: false
-    
-    

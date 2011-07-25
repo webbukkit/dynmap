@@ -36,23 +36,42 @@ public class HDMap extends MapType {
         String perspectiveid = configuration.getString("perspective", "default");
         perspective = MapManager.mapman.hdmapman.perspectives.get(perspectiveid);
         if(perspective == null) {
-            Log.severe("HDMap '"+name+"' loading invalid perspective '" + perspectiveid + "' - map disabled");
-            name = null;
-            return;
+            /* Try to use default */
+            perspective = MapManager.mapman.hdmapman.perspectives.get("default");
+            if(perspective == null) {
+                Log.severe("HDMap '"+name+"' loaded invalid perspective '" + perspectiveid + "' - map disabled");
+                name = null;
+                return;
+            }
+            else {
+                Log.severe("HDMap '"+name+"' loaded invalid perspective '" + perspectiveid + "' - using 'default' perspective");
+            }
         }
         String shaderid = configuration.getString("shader", "default");
         shader = MapManager.mapman.hdmapman.shaders.get(shaderid);
         if(shader == null) {
-            Log.severe("HDMap '"+name+"' loading invalid shader '" + shaderid + "' - map disabled");
-            name = null;
-            return;
+            shader = MapManager.mapman.hdmapman.shaders.get("default");
+            if(shader == null) {
+                Log.severe("HDMap '"+name+"' loading invalid shader '" + shaderid + "' - map disabled");
+                name = null;
+                return;
+            }
+            else {
+                Log.severe("HDMap '"+name+"' loading invalid shader '" + shaderid + "' - using 'default' shader");
+            }
         }
         String lightingid = configuration.getString("lighting", "default");
         lighting = MapManager.mapman.hdmapman.lightings.get(lightingid);
         if(lighting == null) {
-            Log.severe("HDMap '"+name+"' loading invalid lighting '" + lighting + "' - map disabled");
-            name = null;
-            return;
+            lighting = MapManager.mapman.hdmapman.lightings.get("default");
+            if(lighting == null) {
+                Log.severe("HDMap '"+name+"' loading invalid lighting '" + lighting + "' - map disabled");
+                name = null;
+                return;
+            }
+            else {
+                Log.severe("HDMap '"+name+"' loading invalid lighting '" + lighting + "' - using 'default' lighting");
+            }
         }
         prefix = configuration.getString("prefix", name);
         this.configuration = configuration;
