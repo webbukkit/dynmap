@@ -55,9 +55,10 @@ public class TexturePack {
     private static final String CUSTOMWATERFLOWING_PNG = "custom_water_flowing.png";
 
     /* Color modifier codes (x1000 for value in mapping code) */
+    private static final int COLORMOD_NONE = 0;
     private static final int COLORMOD_GRASSTONED = 1;
     private static final int COLORMOD_FOLIAGETONED = 2;
-//    private static final int COLORMOD_WATERTONED = 3;
+    private static final int COLORMOD_WATERTONED = 3;   /* Not used */
     private static final int COLORMOD_ROT90 = 4;
     private static final int COLORMOD_ROT180 = 5;
     private static final int COLORMOD_ROT270 = 6;
@@ -703,7 +704,7 @@ public class TexturePack {
     /**
      * Read color for given subblock coordinate, with given block id and data and face
      */
-    public void readColor(HDPerspectiveState ps, MapIterator mapiter, Color rslt, int blkid, int lastblocktype, boolean biome_shaded) {
+    public final void readColor(final HDPerspectiveState ps, final MapIterator mapiter, final Color rslt, final int blkid, final int lastblocktype, final boolean biome_shaded) {
         int blkdata = ps.getBlockData();
         HDTextureMap map = HDTextureMap.getMap(blkid, blkdata);
         BlockStep laststep = ps.getLastBlockStep();
@@ -749,80 +750,89 @@ public class TexturePack {
                 break;
         }
         /* Handle U-V transorms before fetching color */
-        if(textop > 0) {
-            switch(textop) {
-                case COLORMOD_ROT90:
-                    tmp = u; u = native_scale - v - 1; v = tmp;
-                    break;
-                case COLORMOD_ROT180:
-                    u = native_scale - u - 1; v = native_scale - v - 1;
-                    break;
-                case COLORMOD_ROT270:
-                    tmp = u; u = v; v = native_scale - tmp - 1;
-                    break;
-                case COLORMOD_FLIPHORIZ:
-                    u = native_scale - u - 1;
-                    break;
-                case COLORMOD_SHIFTDOWNHALF:
-                case COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ:
-                    if(v < native_scale/2) {
-                        rslt.setTransparent();
-                        return;
+        switch(textop) {
+            case COLORMOD_NONE:
+            case COLORMOD_GRASSTONED:
+            case COLORMOD_FOLIAGETONED:
+            case COLORMOD_WATERTONED:
+                break;
+            case COLORMOD_ROT90:
+                tmp = u; u = native_scale - v - 1; v = tmp;
+                break;
+            case COLORMOD_ROT180:
+                u = native_scale - u - 1; v = native_scale - v - 1;
+                break;
+            case COLORMOD_ROT270:
+                tmp = u; u = v; v = native_scale - tmp - 1;
+                break;
+            case COLORMOD_FLIPHORIZ:
+                u = native_scale - u - 1;
+                break;
+            case COLORMOD_SHIFTDOWNHALF:
+                if(v < native_scale/2) {
+                    rslt.setTransparent();
+                    return;
+                }
+                v -= native_scale/2;
+                break;
+            case COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ:
+                if(v < native_scale/2) {
+                    rslt.setTransparent();
+                    return;
+                }
+                v -= native_scale/2;
+                u = native_scale - u - 1;
+                break;
+            case COLORMOD_INCLINEDTORCH:
+                if(v >= (3*native_scale/4)) {
+                    rslt.setTransparent();
+                    return;
+                }
+                v += native_scale/4;
+                if(u < native_scale/2) u = native_scale/2-1;
+                if(u > native_scale/2) u = native_scale/2;
+                break;
+            case COLORMOD_GRASSSIDE:
+                /* Check if snow above block */
+                if(mapiter.getBlockTypeIDAt(BlockStep.Y_PLUS) == 78) {
+                    texture = terrain_argb[68]; /* Snow block */
+                    textid = 68;
+                }
+                else {  /* Else, check the grass color overlay */
+                    int ovclr = terrain_argb[38][v*native_scale+u];
+                    if((ovclr & 0xFF000000) != 0) { /* Hit? */
+                        texture = terrain_argb[38]; /* Use it */
+                        textop = COLORMOD_GRASSTONED;   /* Force grass toning */
                     }
-                    v -= native_scale/2;
-                    if(textop == COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ)
-                        u = native_scale - u - 1;
-                    break;
-                case COLORMOD_INCLINEDTORCH:
-                    if(v >= (3*native_scale/4)) {
-                        rslt.setTransparent();
-                        return;
-                    }
-                    v += native_scale/4;
-                    if(u < native_scale/2) u = native_scale/2-1;
-                    if(u > native_scale/2) u = native_scale/2;
-                    break;
-                case COLORMOD_GRASSSIDE:
-                    /* Check if snow above block */
-                    if(mapiter.getBlockTypeIDAt(BlockStep.Y_PLUS) == 78) {
-                        texture = terrain_argb[68]; /* Snow block */
-                        textid = 68;
-                    }
-                    else {  /* Else, check the grass color overlay */
-                        int ovclr = terrain_argb[38][v*native_scale+u];
-                        if((ovclr & 0xFF000000) != 0) { /* Hit? */
-                            texture = terrain_argb[38]; /* Use it */
-                            textop = COLORMOD_GRASSTONED;   /* Force grass toning */
-                        }
-                    }
-                    break;
-            }
+                }
+                break;
+            case COLORMOD_CLEARINSIDE:
+                break;
         }
         /* Read color from texture */
         rslt.setARGB(texture[v*native_scale + u]);
-        if(textop > 0) {
-            LoadedImage li;
-            /* Switch based on texture modifier */
-            switch(textop) {
-                case COLORMOD_GRASSTONED:
-                    li = imgs[IMG_GRASSCOLOR];
-                    if((li.argb == null) || (!biome_shaded)) {
-                        rslt.blendColor(li.trivial_color);
-                    }
-                    else {
-                        rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
-                    }
-                    break;
-                case COLORMOD_FOLIAGETONED:
-                    li = imgs[IMG_FOLIAGECOLOR];
-                    if((li.argb == null) || (!biome_shaded)) {
-                        rslt.blendColor(li.trivial_color);
-                    }
-                    else {
-                        rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
-                    }
-                    break;
-            }
+
+        LoadedImage li;
+        /* Switch based on texture modifier */
+        switch(textop) {
+            case COLORMOD_GRASSTONED:
+                li = imgs[IMG_GRASSCOLOR];
+                if((li.argb == null) || (!biome_shaded)) {
+                    rslt.blendColor(li.trivial_color);
+                }
+                else {
+                    rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
+                }
+                break;
+            case COLORMOD_FOLIAGETONED:
+                li = imgs[IMG_FOLIAGECOLOR];
+                if((li.argb == null) || (!biome_shaded)) {
+                    rslt.blendColor(li.trivial_color);
+                }
+                else {
+                    rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
+                }
+                break;
         }
     }
     
