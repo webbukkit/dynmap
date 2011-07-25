@@ -127,7 +127,7 @@ public class TexturePack {
         private HDTextureMap() {
             blockids = Collections.singletonList(Integer.valueOf(0));
             databits = 0xFFFF;
-            faces = new int[] { -1, -1, -1, -1, -1, -1 };
+            faces = new int[] { BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK };
             
             for(int i = 0; i < texmaps.length; i++) {
                 texmaps[i] = this;
@@ -713,6 +713,35 @@ public class TexturePack {
             rslt.setTransparent();
             return;
         }
+        else if(textid < 1000) {    /* If simple mapping */
+            int[] texture = terrain_argb[textid];
+            int[] xyz = ps.getSubblockCoord();
+            /* Get texture coordinates (U=horizontal(left=0),V=vertical(top=0)) */
+            int u = 0, v = 0;
+
+            switch(laststep) {
+                case X_MINUS: /* South face: U = East (Z-), V = Down (Y-) */
+                    u = native_scale-xyz[2]-1; v = native_scale-xyz[1]-1; 
+                    break;
+                case X_PLUS:    /* North face: U = West (Z+), V = Down (Y-) */
+                    u = xyz[2]; v = native_scale-xyz[1]-1; 
+                    break;
+                case Z_MINUS:   /* West face: U = South (X+), V = Down (Y-) */
+                    u = xyz[0]; v = native_scale-xyz[1]-1;
+                    break;
+                case Z_PLUS:    /* East face: U = North (X-), V = Down (Y-) */
+                    u = native_scale-xyz[0]-1; v = native_scale-xyz[1]-1;
+                    break;
+                case Y_MINUS:   /* U = East(Z-), V = South(X+) */
+                case Y_PLUS:
+                    u = native_scale-xyz[2]-1; v = xyz[0];
+                    break;
+            }
+            /* Read color from texture */
+            rslt.setARGB(texture[v*native_scale + u]);
+            return;            
+        }
+        
         /* See if not basic block texture */
         int textop = textid / 1000;
         textid = textid % 1000;
