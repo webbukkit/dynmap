@@ -4,6 +4,19 @@ version: 0.20
 # during upgrades, so new or updated perspective definitions should be done in the custom-perspectives.txt file
 #
 perspectives:
+  # Default - used if bad or no perspective name supplied
+  - class: org.dynmap.hdmap.IsoHDPerspective 
+    name: default
+    azimuth: 135
+    inclination: 60
+    scale: 4
+  # iso_classic is very close to KzedMap view
+  - class: org.dynmap.hdmap.IsoHDPerspective 
+    name: classic
+    azimuth: 135
+    inclination: 60
+    scale: 1.4
+  # High angle (60 degree) views
   - class: org.dynmap.hdmap.IsoHDPerspective 
     name: iso_S_60_lowres
     azimuth: 180
