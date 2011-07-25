@@ -351,16 +351,27 @@ public class MapManager {
 
     private class CheckWorldTimes implements Runnable {
         public void run() {
-            for(DynmapWorld w : worlds) {
-                int new_servertime = (int)(w.world.getTime() % 24000);
-                /* Check if we went from night to day */
-                boolean wasday = w.servertime >= 0 && w.servertime < 13700;
-                boolean isday = new_servertime >= 0 && new_servertime < 13700;
-                w.servertime = new_servertime;
-                if(wasday != isday) {
-                    MapManager.mapman.pushUpdate(w.world, new Client.DayNight(isday));            
+            Future<Integer> f = scheduler.callSyncMethod(plug_in, new Callable<Integer>() {
+                public Integer call() throws Exception {
+                    for(DynmapWorld w : worlds) {
+                        int new_servertime = (int)(w.world.getTime() % 24000);
+                        /* Check if we went from night to day */
+                        boolean wasday = w.servertime >= 0 && w.servertime < 13700;
+                        boolean isday = new_servertime >= 0 && new_servertime < 13700;
+                        w.servertime = new_servertime;
+                        if(wasday != isday) {
+                            MapManager.mapman.pushUpdate(w.world, new Client.DayNight(isday));            
+                        }
+                    }
+                    return 0;
                 }
+            });
+            try {
+                f.get();
+            } catch (Exception ix) {
+                Log.severe(ix);
             }
+            renderpool.schedule(this, 5, TimeUnit.SECONDS);
         }
     }
     
@@ -409,9 +420,7 @@ public class MapManager {
         
         for (World world : plug_in.getServer().getWorlds()) {
             activateWorld(world);
-        }
-        
-        scheduler.scheduleSyncRepeatingTask(plugin, new CheckWorldTimes(), 5*20, 5*20); /* Check very 5 seconds */
+        }        
     }
 
     void renderFullWorld(Location l, CommandSender sender) {
@@ -578,6 +587,7 @@ public class MapManager {
         tileQueue.start();
         renderpool = new DynmapScheduledThreadPoolExecutor();
         renderpool.schedule(new DoZoomOutProcessing(), 60000, TimeUnit.MILLISECONDS);
+        renderpool.schedule(new CheckWorldTimes(), 5, TimeUnit.SECONDS);
     }
 
     public void stopRendering() {
