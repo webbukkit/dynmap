@@ -7,7 +7,7 @@ import org.bukkit.World;
 import org.bukkit.Location;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
+import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
 
@@ -361,7 +361,7 @@ public class DynmapWorld {
         Debug.debug("processZoomFile(" + pd.baseprefix + "," + zf.getPath() + "," + tx + "," + ty + ")");
         int width = 128, height = 128;
         BufferedImage zIm = null;
-        KzedBufferedImage kzIm = null;
+        DynmapBufferedImage kzIm = null;
         int[] argb = new int[width*height];
         int step = pd.stepsize << pd.zoomlevel;
         int ztx = tx;
@@ -370,7 +370,7 @@ public class DynmapWorld {
         ty = ty - (pd.neg_step_y?step:0);   /* Adjust for negative step */ 
 
         /* create image buffer */
-        kzIm = KzedMap.allocateBufferedImage(width, height);
+        kzIm = DynmapBufferedImage.allocateBufferedImage(width, height);
         zIm = kzIm.buf_img;
 
         for(int i = 0; i < 4; i++) {
@@ -434,7 +434,7 @@ public class DynmapWorld {
             }
         } finally {
             FileLockManager.releaseWriteLock(zf);
-            KzedMap.freeBufferedImage(kzIm);
+            DynmapBufferedImage.freeBufferedImage(kzIm);
         }
     }
 }

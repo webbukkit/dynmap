@@ -26,7 +26,7 @@ import org.dynmap.MapType;
 import org.dynmap.MapType.MapStep;
 import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
+import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
@@ -134,12 +134,12 @@ public class FlatMap extends MapType {
         Color rslt = new Color();
         int[] pixel = new int[4];
         int[] pixel_day = null;
-        KzedBufferedImage im = KzedMap.allocateBufferedImage(t.size, t.size);
+        DynmapBufferedImage im = DynmapBufferedImage.allocateBufferedImage(t.size, t.size);
         int[] argb_buf = im.argb_buf;
-        KzedBufferedImage im_day = null;
+        DynmapBufferedImage im_day = null;
         int[] argb_buf_day = null;
         if(night_and_day) {
-            im_day = KzedMap.allocateBufferedImage(t.size, t.size);
+            im_day = DynmapBufferedImage.allocateBufferedImage(t.size, t.size);
             argb_buf_day = im_day.argb_buf;
             pixel_day = new int[4];
         }
@@ -300,7 +300,7 @@ public class FlatMap extends MapType {
             }
         } finally {
             FileLockManager.releaseWriteLock(outputFile);
-            KzedMap.freeBufferedImage(im);
+            DynmapBufferedImage.freeBufferedImage(im);
         }
         MapManager.mapman.updateStatistics(tile, null, true, tile_update, !rendered);
 
@@ -332,7 +332,7 @@ public class FlatMap extends MapType {
                 }
             } finally {
                 FileLockManager.releaseWriteLock(dayfile);
-                KzedMap.freeBufferedImage(im_day);
+                DynmapBufferedImage.freeBufferedImage(im_day);
             }
             MapManager.mapman.updateStatistics(tile, "day", true, tile_update, !rendered);
         }
