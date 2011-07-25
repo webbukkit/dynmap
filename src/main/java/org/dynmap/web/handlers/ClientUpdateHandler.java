@@ -38,7 +38,10 @@ public class ClientUpdateHandler implements HttpHandler {
         String worldName = match.group(1);
         String timeKey = match.group(2);
 
-        DynmapWorld dynmapWorld = plugin.mapManager.getWorld(worldName);
+        DynmapWorld dynmapWorld = null;
+        if(plugin.mapManager != null) {
+            dynmapWorld = plugin.mapManager.getWorld(worldName);
+        }
         if (dynmapWorld == null || dynmapWorld.world == null) {
             response.status = WorldNotFound;
             return;

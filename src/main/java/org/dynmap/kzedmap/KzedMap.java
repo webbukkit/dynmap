@@ -19,6 +19,7 @@ import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.MapType.MapStep;
+import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 import java.awt.image.DataBufferInt;
@@ -49,20 +50,6 @@ public class KzedMap extends MapType {
     
     MapTileRenderer[] renderers;
     private boolean isbigmap;
-
-    /* BufferedImage with direct access to its ARGB-formatted data buffer */
-    public static class KzedBufferedImage {
-        public BufferedImage buf_img;
-        public int[] argb_buf;
-        public int width;
-        public int height;
-    }
-
-    /* BufferedImage cache - we use the same things a lot... */
-    private static Object lock = new Object();
-    private static HashMap<Long, LinkedList<KzedBufferedImage>> imgcache = 
-        new HashMap<Long, LinkedList<KzedBufferedImage>>(); /* Indexed by resolution - X<<32+Y */
-    private static final int CACHE_LIMIT = 10;
 
     public KzedMap(ConfigurationNode configuration) {
         Log.verboseinfo("Loading renderers for map '" + getClass().toString() + "'...");
@@ -267,52 +254,6 @@ public class KzedMap extends MapType {
             return y - (y % zTileHeight);
     }
 
-    /**
-     * Allocate buffered image from pool, if possible
-     * @param x - x dimension
-     * @param y - y dimension
-     */
-    public static KzedBufferedImage allocateBufferedImage(int x, int y) {
-        KzedBufferedImage img = null;
-        synchronized(lock) {
-            long k = (x<<16) + y;
-            LinkedList<KzedBufferedImage> ll = imgcache.get(k);
-            if(ll != null) {
-                img = ll.poll();
-            }
-        }
-        if(img != null) {   /* Got it - reset it for use */
-            Arrays.fill(img.argb_buf, 0);
-        }
-        else {
-            img = new KzedBufferedImage();
-            img.width = x;
-            img.height = y;
-            img.argb_buf = new int[x*y];
-        }
-        img.buf_img = createBufferedImage(img.argb_buf, img.width, img.height);
-        return img;
-    }
-    
-    /**
-     * Return buffered image to pool
-     */
-    public static void freeBufferedImage(KzedBufferedImage img) {
-        img.buf_img.flush();
-        img.buf_img = null; /* Toss bufferedimage - seems to hold on to other memory */
-        synchronized(lock) {
-            long k = (img.width<<16) + img.height;
-            LinkedList<KzedBufferedImage> ll = imgcache.get(k);
-            if(ll == null) {
-                ll = new LinkedList<KzedBufferedImage>();
-                imgcache.put(k, ll);
-            }
-            if(ll.size() < CACHE_LIMIT) {
-                ll.add(img);
-                img = null;
-            }
-        }
-    }    
 
     public boolean isBiomeDataNeeded() {
         for(MapTileRenderer r : renderers) {
@@ -381,22 +322,5 @@ public class KzedMap extends MapType {
         for(MapTileRenderer renderer : renderers) {
             renderer.buildClientConfiguration(worldObject, world, this);
         }
-    }
-
-    /* ARGB band masks */
-    private static final int [] band_masks = {0xFF0000, 0xFF00, 0xff, 0xff000000};
-
-    /**
-     * Build BufferedImage from provided ARGB array and dimensions
-     */
-    public static BufferedImage createBufferedImage(int[] argb_buf, int w, int h) {
-        /* Create integer-base data buffer */
-        DataBuffer db = new DataBufferInt (argb_buf, w*h);
-        /* Create writable raster */
-        WritableRaster raster = Raster.createPackedRaster(db, w, h, w, band_masks, null);
-        /* RGB color model */
-        ColorModel color_model = ColorModel.getRGBdefault ();
-        /* Return buffered image */
-        return new BufferedImage (color_model, raster, false, null);
     }
 }

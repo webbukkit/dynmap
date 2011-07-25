@@ -16,10 +16,7 @@ import org.dynmap.web.HttpStatus;
 
 public abstract class FileHandler implements HttpHandler {
     protected static final Logger log = Logger.getLogger("Minecraft");
-    protected static final String LOG_PREFIX = "[dynmap] ";
-    //BUG-this breaks re-entrancy of this handler, which is called from multiple threads (one per request)
-    //private byte[] readBuffer = new byte[40960];
-    //Replace with pool of buffers
+
     private LinkedList<byte[]> bufferpool = new LinkedList<byte[]>();
     private Object lock = new Object();
     private static final int MAX_FREE_IN_POOL = 2;

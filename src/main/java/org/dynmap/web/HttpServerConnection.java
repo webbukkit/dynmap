@@ -19,13 +19,13 @@ import java.net.InetSocketAddress;
 
 public class HttpServerConnection extends Thread {
     protected static final Logger log = Logger.getLogger("Minecraft");
-    protected static final String LOG_PREFIX = "[dynmap] ";
 
     private static Pattern requestHeaderLine = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+HTTP/(.+)$");
     private static Pattern requestHeaderField = Pattern.compile("^([^:]+):\\s*(.+)$");
 
     private Socket socket;
     private HttpServer server;
+    private boolean do_shutdown;
 
     private PrintStream printOut;
     private StringWriter sw = new StringWriter();
@@ -35,6 +35,7 @@ public class HttpServerConnection extends Thread {
     public HttpServerConnection(Socket socket, HttpServer server) {
         this.socket = socket;
         this.server = server;
+        do_shutdown = false;
     }
 
     private final static void readLine(InputStream in, StringWriter sw) throws IOException {
@@ -232,8 +233,10 @@ public class HttpServerConnection extends Thread {
         } catch (IOException e) {
 
         } catch (Exception e) {
-            Log.severe("Exception while handling request: ", e);
-            e.printStackTrace();
+            if(!do_shutdown) {
+                Log.severe("Exception while handling request: ", e);
+                e.printStackTrace();
+            }
         } finally {
             if (socket != null) {
                 try {
@@ -241,6 +244,18 @@ public class HttpServerConnection extends Thread {
                 } catch (IOException ex) {
                 }
             }
+            server.connectionEnded(this);
+        }
+    }
+    public void shutdownConnection() {
+        try {
+            do_shutdown = true;
+            if(socket != null) {
+                socket.close();
+            }
+            join(); /* Wait for thread to die */
+        } catch (IOException iox) {
+        } catch (InterruptedException ix) {
         }
     }
 }

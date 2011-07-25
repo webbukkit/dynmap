@@ -1,7 +1,6 @@
 package org.dynmap;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -21,7 +18,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -29,7 +25,6 @@ import org.bukkit.command.CommandSender;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
 import org.dynmap.hdmap.HDMapManager;
-import org.dynmap.utils.LRULinkedHashMap;
 import org.dynmap.utils.LegacyMapChunkCache;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.NewMapChunkCache;
@@ -66,7 +61,7 @@ public class MapManager {
     public SnapshotCache sscache;
     
     /* Thread pool for processing renders */
-    private DynmapScheduledThreadPoolExecutor renderpool;
+    private DynmapScheduledThreadPoolExecutor render_pool;
     private static final int POOL_SIZE = 3;    
 
     private HashMap<String, MapStats> mapstats = new HashMap<String, MapStats>();
@@ -102,6 +97,9 @@ public class MapManager {
         DynmapScheduledThreadPoolExecutor() {
             super(POOL_SIZE);
             this.setThreadFactory(new OurThreadFactory());
+            /* Set shutdown policy to stop everything */
+            setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+            setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
         }
 
         protected void afterExecute(Runnable r, Throwable x) {
@@ -337,10 +335,10 @@ public class MapManager {
             if(tile0 == null) {    /* fullrender */
                 long tend = System.currentTimeMillis();
                 if(timeslice_int > (tend-tstart)) { /* We were fast enough */
-                    renderpool.schedule(this, timeslice_int - (tend-tstart), TimeUnit.MILLISECONDS);
+                    scheduleDelayedJob(this, timeslice_int - (tend-tstart));
                 }
                 else {  /* Schedule to run ASAP */
-                    renderpool.execute(this);
+                    scheduleDelayedJob(this, 0);
                 }
             }
             else {
@@ -360,7 +358,7 @@ public class MapManager {
                         boolean isday = new_servertime >= 0 && new_servertime < 13700;
                         w.servertime = new_servertime;
                         if(wasday != isday) {
-                            MapManager.mapman.pushUpdate(w.world, new Client.DayNight(isday));            
+                            pushUpdate(w.world, new Client.DayNight(isday));            
                         }
                     }
                     return 0;
@@ -371,7 +369,7 @@ public class MapManager {
             } catch (Exception ix) {
                 Log.severe(ix);
             }
-            renderpool.schedule(this, 5, TimeUnit.SECONDS);
+            scheduleDelayedJob(this, 5000);
         }
     }
     
@@ -382,7 +380,7 @@ public class MapManager {
             for(DynmapWorld w : wl) {
                 w.freshenZoomOutFiles();
             }
-            renderpool.schedule(this, zoomout_period, TimeUnit.SECONDS);
+            scheduleDelayedJob(this, zoomout_period*1000);
             Debug.debug("DoZoomOutProcessing finished");
         }
     }
@@ -390,6 +388,8 @@ public class MapManager {
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
         plug_in = plugin;
         mapman = this;
+        /* Clear color scheme */
+        ColorScheme.reset();
         /* Initialize HD map manager */
         hdmapman = new HDMapManager();  
         hdmapman.loadHDShaders(plugin);
@@ -400,7 +400,7 @@ public class MapManager {
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
             public void handle(MapTile t) {
-                renderpool.execute(new FullWorldRenderState(t));
+                scheduleDelayedJob(new FullWorldRenderState(t), 0);
             }
         }, (int) (configuration.getDouble("renderinterval", 0.5) * 1000));
 
@@ -441,7 +441,8 @@ public class MapManager {
             active_renders.put(wname, rndr);    /* Add to active table */
         }
         /* Schedule first tile to be worked */
-        renderpool.execute(rndr);
+        scheduleDelayedJob(rndr, 0);
+
         sender.sendMessage("Full render starting on world '" + wname + "'...");
     }
 
@@ -463,7 +464,7 @@ public class MapManager {
             active_renders.put(wname, rndr);    /* Add to active table */
         }
         /* Schedule first tile to be worked */
-        renderpool.execute(rndr);
+        scheduleDelayedJob(rndr, 0);
         sender.sendMessage("Render of " + radius + " block radius starting on world '" + wname + "'...");
     }
 
@@ -583,16 +584,31 @@ public class MapManager {
         tileQueue.push(tile);
     }
 
+    public static void scheduleDelayedJob(Runnable job, long delay_in_msec) {
+        if((mapman != null) && (mapman.render_pool != null)) {
+            if(delay_in_msec > 0)
+                mapman.render_pool.schedule(job, delay_in_msec, TimeUnit.MILLISECONDS);
+            else
+                mapman.render_pool.execute(job);
+        }
+    }
+                                                                       
     public void startRendering() {
         tileQueue.start();
-        renderpool = new DynmapScheduledThreadPoolExecutor();
-        renderpool.schedule(new DoZoomOutProcessing(), 60000, TimeUnit.MILLISECONDS);
-        renderpool.schedule(new CheckWorldTimes(), 5, TimeUnit.SECONDS);
+        render_pool = new DynmapScheduledThreadPoolExecutor();
+        scheduleDelayedJob(new DoZoomOutProcessing(), 60000);
+        scheduleDelayedJob(new CheckWorldTimes(), 5000);
     }
 
     public void stopRendering() {
-        renderpool.shutdown();
+        render_pool.shutdown();
+        try {
+            render_pool.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException ix) {
+        }
         tileQueue.stop();
+        mapman = null;
+        hdmapman = null;
     }
 
     private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();
