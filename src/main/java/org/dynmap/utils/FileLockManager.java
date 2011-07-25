@@ -1,12 +1,16 @@
 package org.dynmap.utils;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.dynmap.Log;
+import org.dynmap.debug.Debug;
 /**
  * Implements soft-locks for prevent concurrency issues with file updates
  */
@@ -129,26 +133,40 @@ public class FileLockManager {
         //Log.info("releaseReadLock(" + f + ")");
     }
     private static final int MAX_WRITE_RETRIES = 6;
+    
+    private static ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private static Object baos_lock = new Object();
     /**
      * Wrapper for IOImage.write - implements retries for busy files
      */
     public static void imageIOWrite(BufferedImage img, String type, File fname) throws IOException {
         int retrycnt = 0;
         boolean done = false;
-        
+        byte[] rslt;
+        synchronized(baos_lock) {
+            baos.reset();
+            ImageIO.write(img, type, baos); /* Write to byte array stream - prevent bogus I/O errors */
+            rslt = baos.toByteArray();
+        }
         while(!done) {
+            RandomAccessFile f = null;
             try {
-                ImageIO.write(img, type, fname);
+                f = new RandomAccessFile(fname, "rw");
+                f.write(rslt);
                 done = true;
             } catch (IOException fnfx) {
                 if(retrycnt < MAX_WRITE_RETRIES) {
-                    Log.info("Image file " + fname.getPath() + " - unable to write - retry #" + retrycnt);
+                    Debug.debug("Image file " + fname.getPath() + " - unable to write - retry #" + retrycnt);
                     try { Thread.sleep(50 << retrycnt); } catch (InterruptedException ix) { throw fnfx; }
                     retrycnt++;
                 }
                 else {
                     Log.info("Image file " + fname.getPath() + " - unable to write - failed");
                     throw fnfx;
+                }
+            } finally {
+                if(f != null) {
+                    try { f.close(); } catch (IOException iox) {}
                 }
             }
         }
