@@ -230,12 +230,13 @@ public class HeroChatHandler {
                             hcchannels.contains(c.getNick())) {
                         if(cce.isSentByPlayer()) {  /* Player message? */
                             org.bukkit.entity.Player p = plugin.getServer().getPlayer(cce.getSource());
-                            if(p != null)
+                            if((p != null) && (plugin.mapManager != null)) {
                                 plugin.mapManager.pushUpdate(new Client.ChatMessage("player", 
                                                                                     c.getNick(),
                                                                                     p.getDisplayName(),
                                                                                     cce.getMessage(),
                                                                                     p.getName()));
+                            }
                         }
                     }
                 }

@@ -176,6 +176,9 @@ public class DynmapPlugin extends JavaPlugin {
     
     @Override
     public void onEnable() {
+        /* Start with clean events */
+        events = new Events();
+        
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = new OpPermissions(new String[] { "fullrender", "reload" });
@@ -303,6 +306,7 @@ public class DynmapPlugin extends JavaPlugin {
         
         if (mapManager != null) {
             mapManager.stopRendering();
+            mapManager = null;
         }
 
         if (webServer != null) {

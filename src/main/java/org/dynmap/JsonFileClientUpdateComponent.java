@@ -22,8 +22,6 @@ import static org.dynmap.JSONUtils.*;
 import java.nio.charset.Charset;
 
 public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
-    protected TimerTask task;
-    protected Timer timer;
     protected long jsonInterval;
     protected long currentTimestamp = 0;
     protected long lastTimestamp = 0;
@@ -39,7 +37,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
         hidewebchatip = configuration.getBoolean("hidewebchatip", false);
-        task = new TimerTask() {
+        MapManager.scheduleDelayedJob(new Runnable() {
             @Override
             public void run() {
                 currentTimestamp = System.currentTimeMillis();
@@ -48,10 +46,9 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                     handleWebChat();
                 }
                 lastTimestamp = currentTimestamp;
-            }
-        };
-        timer = new Timer();
-        timer.scheduleAtFixedRate(task, jsonInterval, jsonInterval);
+                MapManager.scheduleDelayedJob(this, jsonInterval);
+            }}, jsonInterval);
+        
         plugin.events.addListener("buildclientconfiguration", new Event.Listener<JSONObject>() {
             @Override
             public void triggered(JSONObject t) {
@@ -84,6 +81,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             return new File(plugin.getDataFolder(), webpath.toString());
     }
     
+    private static final int RETRY_LIMIT = 5;
     protected void writeConfiguration() {
         File outputFile;
         File outputTempFile;
@@ -91,17 +89,27 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         plugin.events.trigger("buildclientconfiguration", clientConfiguration);
         outputFile = getStandaloneFile("dynmap_config.json");
         outputTempFile = getStandaloneFile("dynmap_config.json.new");
-
-        try {
-            FileOutputStream fos = new FileOutputStream(outputTempFile);
-            fos.write(clientConfiguration.toJSONString().getBytes("UTF-8"));
-            fos.close();
-            outputFile.delete();
-            outputTempFile.renameTo(outputFile);
-        } catch (FileNotFoundException ex) {
-            Log.severe("Exception while writing JSON-configuration-file.", ex);
-        } catch (IOException ioe) {
-            Log.severe("Exception while writing JSON-configuration-file.", ioe);
+        
+        int retrycnt = 0;
+        boolean done = false;
+        while(!done) {
+            try {
+                FileOutputStream fos = new FileOutputStream(outputTempFile);
+                fos.write(clientConfiguration.toJSONString().getBytes("UTF-8"));
+                fos.close();
+                outputFile.delete();
+                outputTempFile.renameTo(outputFile);
+                done = true;
+            } catch (IOException ioe) {
+                if(retrycnt < RETRY_LIMIT) {
+                    try { Thread.sleep(20 * (1 << retrycnt)); } catch (InterruptedException ix) {}
+                    retrycnt++;
+                }
+                else {
+                    Log.severe("Exception while writing JSON-configuration-file.", ioe);
+                    done = true;
+                }
+            }
         }
     }
     
@@ -120,16 +128,26 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 
             outputFile = getStandaloneFile("dynmap_" + world.getName() + ".json");
             outputTempFile = getStandaloneFile("dynmap_" + world.getName() + ".json.new");
-            try {
-                FileOutputStream fos = new FileOutputStream(outputTempFile);
-                fos.write(Json.stringifyJson(update).getBytes("UTF-8"));
-                fos.close();
-                outputFile.delete();
-                outputTempFile.renameTo(outputFile);
-            } catch (FileNotFoundException ex) {
-                Log.severe("Exception while writing JSON-file.", ex);
-            } catch (IOException ioe) {
-                Log.severe("Exception while writing JSON-file.", ioe);
+            int retrycnt = 0;
+            boolean done = false;
+            while(!done) {
+                try {
+                    FileOutputStream fos = new FileOutputStream(outputTempFile);
+                    fos.write(Json.stringifyJson(update).getBytes("UTF-8"));
+                    fos.close();
+                    outputFile.delete();
+                    outputTempFile.renameTo(outputFile);
+                    done = true;
+                } catch (IOException ioe) {
+                    if(retrycnt < RETRY_LIMIT) {
+                        try { Thread.sleep(20 * (1 << retrycnt)); } catch (InterruptedException ix) {}
+                        retrycnt++;
+                    }
+                    else {
+                        Log.severe("Exception while writing JSON-file.", ioe);
+                        done = true;
+                    }
+                }
             }
             plugin.events.<ClientUpdateEvent>trigger("clientupdatewritten", clientUpdate);
         }
@@ -179,7 +197,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected void webChat(String name, String message) {
         // TODO: Change null to something meaningful.
         plugin.mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
-        Log.info(plugin.configuration.getString("webprefix", "\u00A2[WEB] ") + name + ": " + plugin.configuration.getString("websuffix", "\u00A7f") + message);
+        Log.info(unescapeString(plugin.configuration.getString("webprefix", "\u00A2[WEB] ")) + name + ": " + unescapeString(plugin.configuration.getString("websuffix", "\u00A7f")) + message);
         ChatEvent event = new ChatEvent("web", name, message);
         plugin.events.trigger("webchat", event);
     }
@@ -187,6 +205,5 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     @Override
     public void dispose() {
         super.dispose();
-        timer.cancel();
     }
 }

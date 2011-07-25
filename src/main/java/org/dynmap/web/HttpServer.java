@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -28,6 +29,9 @@ public class HttpServer extends Thread {
     private boolean check_banned_ips;
 
     public SortedMap<String, HttpHandler> handlers = new TreeMap<String, HttpHandler>(Collections.reverseOrder());
+    
+    private Object lock = new Object();
+    private HashSet<HttpServerConnection> active_connections = new HashSet<HttpServerConnection>();
 
     public HttpServer(InetAddress bindAddress, int port, boolean check_banned_ips) {
         this.bindAddress = bindAddress;
@@ -62,6 +66,9 @@ public class HttpServer extends Thread {
                     }
 
                     HttpServerConnection requestThread = new HttpServerConnection(socket, this);
+                    synchronized(lock) {
+                        active_connections.add(requestThread);
+                    }
                     requestThread.start();
                 } catch (IOException e) {
                     if(listeningThread != null) /* Only report this if we didn't initiate the shutdown */
@@ -83,8 +90,22 @@ public class HttpServer extends Thread {
                 sock.close();
                 sock = null;
             }
+            /* And kill off the active connections */
+            HashSet<HttpServerConnection> sc;
+            synchronized(lock) {
+                sc = new HashSet<HttpServerConnection>(active_connections);
+            }
+            for(HttpServerConnection c : sc) {
+                c.shutdownConnection();
+            }
         } catch (IOException e) {
             Log.warning("Exception while closing socket for webserver shutdown", e);
+        }
+    }
+    
+    public void connectionEnded(HttpServerConnection c) {
+        synchronized(lock) {
+            active_connections.remove(c);
         }
     }
     

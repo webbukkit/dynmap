@@ -235,4 +235,7 @@ public class ColorScheme {
         else
             return null;
     }
+    public static void reset() {
+        cache.clear();
+    }
 }

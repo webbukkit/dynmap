@@ -265,6 +265,11 @@ public class HDBlockModels {
      * Load models 
      */
     public static void loadModels(File datadir) {
+        /* Reset models-by-ID-Data cache */
+        models_by_id_data.clear();
+        /* Reset scaled models by scale cache */
+        scaled_models_by_scale.clear();
+        
         /* Load block models */
         InputStream in = TexturePack.class.getResourceAsStream("/models.txt");
         if(in != null) {

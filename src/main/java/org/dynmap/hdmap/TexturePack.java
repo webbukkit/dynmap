@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import org.dynmap.Color;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
+import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.utils.MapIterator;
@@ -553,7 +554,7 @@ public class TexturePack {
                 System.arraycopy(terrain_argb[i],native_scale*y,outbuf,((i>>4)*native_scale+y)*terrain_width + (i & 0xF)*native_scale, native_scale);
             }
         }
-        BufferedImage img = KzedMap.createBufferedImage(outbuf, terrain_width, terrain_height);
+        BufferedImage img = DynmapBufferedImage.createBufferedImage(outbuf, terrain_width, terrain_height);
         ImageIO.write(img, "png", f);
     }
 
@@ -561,6 +562,8 @@ public class TexturePack {
      * Load texture pack mappings
      */
     public static void loadTextureMapping(File datadir) {
+        /* Start clean with texture packs - need to be loaded after mapping */
+        packs.clear();
         /* Initialize map with blank map for all entries */
         HDTextureMap.initializeTable();
         /* Load block models */

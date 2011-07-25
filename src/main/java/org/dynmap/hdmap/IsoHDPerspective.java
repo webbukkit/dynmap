@@ -26,8 +26,8 @@ import org.dynmap.debug.Debug;
 import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.hdmap.TexturePack.BlockTransparency;
 import org.dynmap.hdmap.TexturePack.HDTextureMap;
-import org.dynmap.kzedmap.KzedMap.KzedBufferedImage;
 import org.dynmap.kzedmap.KzedMap;
+import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
@@ -836,8 +836,8 @@ public class IsoHDPerspective implements HDPerspective {
         /* Check if nether world */
         boolean isnether = tile.getWorld().getEnvironment() == Environment.NETHER;
         /* Create buffered image for each */
-        KzedBufferedImage im[] = new KzedBufferedImage[numshaders];
-        KzedBufferedImage dayim[] = new KzedBufferedImage[numshaders];
+        DynmapBufferedImage im[] = new DynmapBufferedImage[numshaders];
+        DynmapBufferedImage dayim[] = new DynmapBufferedImage[numshaders];
         int[][] argb_buf = new int[numshaders][];
         int[][] day_argb_buf = new int[numshaders][];
         
@@ -848,10 +848,10 @@ public class IsoHDPerspective implements HDPerspective {
                 need_emittedlightlevel = true;
             if(shader.isSkyLightLevelNeeded() || lighting.isSkyLightLevelNeeded())
                 need_skylightlevel = true;
-            im[i] = KzedMap.allocateBufferedImage(tileWidth, tileHeight);
+            im[i] = DynmapBufferedImage.allocateBufferedImage(tileWidth, tileHeight);
             argb_buf[i] = im[i].argb_buf;
             if(lighting.isNightAndDayEnabled()) {
-                dayim[i] = KzedMap.allocateBufferedImage(tileWidth, tileHeight);
+                dayim[i] = DynmapBufferedImage.allocateBufferedImage(tileWidth, tileHeight);
                 day_argb_buf[i] = dayim[i].argb_buf;
             }
         }
@@ -931,7 +931,7 @@ public class IsoHDPerspective implements HDPerspective {
                     }
                 } finally {
                     FileLockManager.releaseWriteLock(f);
-                    KzedMap.freeBufferedImage(im[i]);
+                    DynmapBufferedImage.freeBufferedImage(im[i]);
                 }
                 MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered[i]);
                 /* Handle day image, if needed */
@@ -964,7 +964,7 @@ public class IsoHDPerspective implements HDPerspective {
                         }
                     } finally {
                         FileLockManager.releaseWriteLock(f);
-                        KzedMap.freeBufferedImage(dayim[i]);
+                        DynmapBufferedImage.freeBufferedImage(dayim[i]);
                     }
                     MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered[i]);
                 }
