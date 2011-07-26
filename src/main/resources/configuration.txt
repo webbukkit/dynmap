@@ -151,7 +151,7 @@ check-banned-ips: true
 # Default selection when map page is loaded
 defaultzoom: 0
 defaultworld: world
-defaultmap: surface
+defaultmap: flat
 
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
