@@ -27,16 +27,19 @@ public class HttpServer extends Thread {
     private InetAddress bindAddress;
     private int port;
     private boolean check_banned_ips;
+    private int max_sessions;
 
     public SortedMap<String, HttpHandler> handlers = new TreeMap<String, HttpHandler>(Collections.reverseOrder());
     
     private Object lock = new Object();
     private HashSet<HttpServerConnection> active_connections = new HashSet<HttpServerConnection>();
+    private HashSet<HttpServerConnection> keepalive_connections = new HashSet<HttpServerConnection>();
 
-    public HttpServer(InetAddress bindAddress, int port, boolean check_banned_ips) {
+    public HttpServer(InetAddress bindAddress, int port, boolean check_banned_ips, int max_sessions) {
         this.bindAddress = bindAddress;
         this.port = port;
         this.check_banned_ips = check_banned_ips;
+        this.max_sessions = max_sessions;
     }
 
     public InetAddress getAddress() {
@@ -68,8 +71,13 @@ public class HttpServer extends Thread {
                     HttpServerConnection requestThread = new HttpServerConnection(socket, this);
                     synchronized(lock) {
                         active_connections.add(requestThread);
+                        requestThread.start();
+                        /* If we're at limit, wait here until we're free to accept another */
+                        while((listeningThread == Thread.currentThread()) &&
+                                (active_connections.size() >= max_sessions)) {
+                            lock.wait(500);
+                        }
                     }
-                    requestThread.start();
                 } catch (IOException e) {
                     if(listeningThread != null) /* Only report this if we didn't initiate the shutdown */
                         Log.info("map WebServer.run() stops with IOException");
@@ -102,10 +110,23 @@ public class HttpServer extends Thread {
             Log.warning("Exception while closing socket for webserver shutdown", e);
         }
     }
+
+    public boolean canKeepAlive(HttpServerConnection c) {
+        synchronized(lock) {
+            /* If less than half of our limit are keep-alive, approve */
+            if(keepalive_connections.size() < (max_sessions/2)) {
+                keepalive_connections.add(c);
+                return true;
+            }
+        }
+        return false;
+    }
     
     public void connectionEnded(HttpServerConnection c) {
         synchronized(lock) {
             active_connections.remove(c);
+            keepalive_connections.remove(c);
+            lock.notifyAll();
         }
     }
     
