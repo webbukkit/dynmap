@@ -181,7 +181,7 @@ public class DynmapPlugin extends JavaPlugin {
         
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
-            permissions = new OpPermissions(new String[] { "fullrender", "reload" });
+            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload" });
 
         dataDirectory = this.getDataFolder();
         /* Load block models */
@@ -501,6 +501,7 @@ public class DynmapPlugin extends JavaPlugin {
         "hide",
         "show",
         "fullrender",
+        "cancelrender",
         "radiusrender",
         "reload",
         "stats",
@@ -582,6 +583,22 @@ public class DynmapPlugin extends JavaPlugin {
                     Location loc = player.getLocation();
                     if(loc != null)
                         mapManager.renderFullWorld(loc, sender);
+                } else {
+                    sender.sendMessage("World name is required");
+                }
+            } else if (c.equals("cancelrender") && checkPlayerPermission(sender,"cancelrender")) {
+                if (args.length > 1) {
+                    for (int i = 1; i < args.length; i++) {
+                        World w = getServer().getWorld(args[i]);
+                        if(w != null)
+                            mapManager.cancelRender(w,sender);
+                        else
+                            sender.sendMessage("World '" + args[i] + "' not defined/loaded");
+                    }
+                } else if (player != null) {
+                    Location loc = player.getLocation();
+                    if(loc != null)
+                        mapManager.cancelRender(loc.getWorld(), sender);
                 } else {
                     sender.sendMessage("World name is required");
                 }

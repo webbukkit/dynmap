@@ -165,6 +165,7 @@ public class MapManager {
         /* Min and max limits for chunk coords (for radius limit) */
         int cxmin, cxmax, czmin, czmax;
         String rendertype;
+        boolean cancelled;
 
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender) {
@@ -216,6 +217,10 @@ public class MapManager {
         public void run() {
             long tstart = System.currentTimeMillis();
             
+            if(cancelled) {
+            	cleanup();
+            	return;
+            }
             if(tile0 == null) {    /* Not single tile render */
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
@@ -345,6 +350,10 @@ public class MapManager {
                 cleanup();
             }
         }
+        
+        public void cancelRender() {
+        	cancelled = true;
+        }
     }
 
     private class CheckWorldTimes implements Runnable {
@@ -468,6 +477,30 @@ public class MapManager {
         sender.sendMessage("Render of " + radius + " block radius starting on world '" + wname + "'...");
     }
 
+    void cancelRender(World w, CommandSender sender) {
+    	synchronized(lock) {
+    		if(w != null) {
+    			FullWorldRenderState rndr;
+    			rndr = active_renders.get(w.getName());
+    			if(rndr != null) {
+    				rndr.cancelRender();	/* Cancel render */
+    				if(sender != null) {
+    					sender.sendMessage("Cancelled render for '" + w.getName() + "'");
+    				}
+    			}
+    		}
+    		else {	/* Else, cancel all */
+    			for(String wid : active_renders.keySet()) {
+    				FullWorldRenderState rnd = active_renders.get(wid);
+					rnd.cancelRender();
+    				if(sender != null) {
+    					sender.sendMessage("Cancelled render for '" + wid + "'");
+    				}
+    			}
+    		}
+    	}
+    }
+    
     public void activateWorld(World w) {
         ConfigurationNode worldConfiguration = plug_in.getWorldConfiguration(w);
         if (!worldConfiguration.getBoolean("enabled", false)) {
