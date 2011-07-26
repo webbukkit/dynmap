@@ -96,6 +96,7 @@ DynMap.prototype = {
     serverday: false,
     inittime: new Date().getTime(),
 	followingPlayer: '',
+	missedupdates: 0,
 	formatUrl: function(name, options) {
 		var url = this.options.url[name];
 		$.each(options, function(n,v) {
@@ -483,13 +484,16 @@ DynMap.prototype = {
 				$(me).trigger('worldupdated', [ update ]);
 				
 				me.lasttimestamp = update.timestamp;
-				
+				me.missedupdates = 0;
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}, function(status, statusText, request) {
-				me.alertbox
-					.text('Could not update map: ' + (statusText || 'Could not connect to server'))
-					.show();
-				$(me).trigger('worldupdatefailed');
+				me.missedupdates++;
+				if(me.missedupdates > 2) {
+					me.alertbox
+						.text('Could not update map: ' + (statusText || 'Could not connect to server'))
+						.show();
+					$(me).trigger('worldupdatefailed');
+				}
 				setTimeout(function() { me.update(); }, me.options.updaterate);
 			}
 		);
