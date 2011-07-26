@@ -118,7 +118,8 @@ DynMap.prototype = {
 					dynmap: me
 				});
 				map = world.maps[mapentry.name] = maptypes[mapentry.type](map);
-				
+				if(me.options.defaultmap && me.options.defaultmap == mapentry.name)
+					world.defaultmap = map;				
 				world.defaultmap = world.defaultmap || map;
 			});
 			me.defaultworld = me.defaultworld || world;
