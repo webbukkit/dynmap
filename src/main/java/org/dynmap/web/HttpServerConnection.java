@@ -26,6 +26,7 @@ public class HttpServerConnection extends Thread {
     private Socket socket;
     private HttpServer server;
     private boolean do_shutdown;
+    private boolean can_keepalive;
 
     private PrintStream printOut;
     private StringWriter sw = new StringWriter();
@@ -36,6 +37,7 @@ public class HttpServerConnection extends Thread {
         this.socket = socket;
         this.server = server;
         do_shutdown = false;
+        can_keepalive = false;
     }
 
     private final static void readLine(InputStream in, StringWriter sw) throws IOException {
@@ -159,7 +161,9 @@ public class HttpServerConnection extends Thread {
                 boolean iskeepalive = false;
                 String keepalive = request.fields.get(HttpField.Connection);
                 if((keepalive != null) && (keepalive.toLowerCase().indexOf("keep-alive") >= 0)) {
-                    iskeepalive = true;
+                    /* See if we're clear to do keepalive */
+                    if(!iskeepalive)
+                        iskeepalive = server.canKeepAlive(this);
                 }
 
                 // TODO: Optimize HttpHandler-finding by using a real path-aware tree.
@@ -192,6 +196,9 @@ public class HttpServerConnection extends Thread {
                 if(iskeepalive) {
                     response.fields.put(HttpField.Connection, "keep-alive");
                     response.fields.put("Keep-Alive", "timeout=5");
+                }
+                else {
+                    response.fields.put(HttpField.Connection, "close");
                 }
                 try {
                     handler.handle(relativePath, request, response);
