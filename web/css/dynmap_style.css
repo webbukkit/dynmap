@@ -15,7 +15,7 @@
  * Leaflet overrides
  */
 .leaflet-control-zoom-in {
-	background-image: url(../images/zoom-in.png) !important;
+	background-image: url(../images/zoom-in.png);
 }
 
 .leaflet-control-zoom-out {
