@@ -4,6 +4,12 @@
 	border: 1px solid red;
 }*/
 
+/*******************
+ * Attribution placement
+ */
+.leaflet-control-attribution {
+	margin-right: 20px !important;
+}
 
 /*******************
  * Page setup

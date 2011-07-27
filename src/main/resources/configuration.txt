@@ -61,6 +61,10 @@ components:
     type: timeofdayclock
     showdigitalclock: true
     #showweather: true
+  #- class: org.dynmap.ClientComponent
+  #  type: logo
+  #  text: "Dynmap"
+  #  linkurl: "http://forums.bukkit.org/threads/dynmap.489/"
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
   #  name: WorldGuard
