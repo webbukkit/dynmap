@@ -44,6 +44,7 @@ public class DynmapWorld {
     @SuppressWarnings("unchecked")
     private HashSet<String> zoomoutupdates[] = new HashSet[0];
     private boolean checkts = true;	/* Check timestamps on first run with new configuration */
+    private boolean cancelled;
     
     @SuppressWarnings("unchecked")
     public void setExtraZoomOutLevels(int lvl) {
@@ -118,7 +119,7 @@ public class DynmapWorld {
     public void freshenZoomOutFiles() {
         boolean done = false;
         int last_done = 0;
-        for(int i = 0; (!done); i++) {
+        for(int i = 0; (!cancelled) && (!done); i++) {
             done = freshenZoomOutFilesByLevel(i);
             last_done = i;
         }
@@ -127,6 +128,10 @@ public class DynmapWorld {
             zoomoutupdates[i].clear();
         }
         checkts = false;	/* Just handle queued updates after first scan */
+    }
+    
+    public void cancelZoomOutFreshen() {
+        cancelled = true;
     }
     
     private static class PrefixData {
@@ -153,6 +158,7 @@ public class DynmapWorld {
         if(checkts) {	/* If doing timestamp based scan (initial) */
         	DirFilter df = new DirFilter();
         	for(String pfx : maptab.keySet()) { /* Walk through prefixes */
+                if(cancelled) return true;
         		PrefixData pd = maptab.get(pfx);
         		if(pd.isbigmap) { /* If big world, next directories are map name specific */
         			File dname = new File(worldtilepath, pfx);
@@ -160,6 +166,7 @@ public class DynmapWorld {
         			String[] subdir = dname.list(df);
         			if(subdir == null) continue;
         			for(String s : subdir) {
+        			    if(cancelled) return true;
         				File sdname = new File(dname, s);
         				cnt += processZoomDirectory(sdname, pd);
         			}
@@ -175,9 +182,11 @@ public class DynmapWorld {
             HashMap<String, ProcessTileRec> toprocess = new HashMap<String, ProcessTileRec>();
             /* Accumulate zoomed tiles to be processed (combine triggering subtiles) */
             for(String p : paths) {
+                if(cancelled) return true;
             	File f = new File(p);	/* Make file */
             	/* Find matching prefix */
             	for(PrefixData pd : maptab.values()) { /* Walk through prefixes */
+                    if(cancelled) return true;
             		ProcessTileRec tr = null;
             		/* If big map and matches name pattern */
             		if(pd.isbigmap && f.getName().startsWith(pd.fnprefix) && 
@@ -198,6 +207,7 @@ public class DynmapWorld {
             }
             /* Do processing */
             for(ProcessTileRec s : toprocess.values()) {
+                if(cancelled) return true;
                 processZoomTile(s.pd, s.zf, s.zfname, s.x, s.y);
             }
         }
@@ -412,12 +422,15 @@ public class DynmapWorld {
         }
         FileLockManager.getWriteLock(zf);
         try {
-            TileHashManager hashman = MapManager.mapman.hashman;
+            MapManager mm = MapManager.mapman;
+            if(mm == null)
+                return;
+            TileHashManager hashman = mm.hashman;
             long crc = hashman.calculateTileHash(kzIm.argb_buf); /* Get hash of tile */
             int tilex = ztx/step/2;
             int tiley = zty/step/2;
             String key = world.getName()+".z"+pd.zoomprefix+pd.baseprefix;
-            if((!zf.exists()) || (crc != MapManager.mapman.hashman.getImageHashCode(key, null, tilex, tiley))) {
+            if((!zf.exists()) || (crc != mm.hashman.getImageHashCode(key, null, tilex, tiley))) {
                 try {
                     if(!zf.getParentFile().exists())
                         zf.getParentFile().mkdirs();

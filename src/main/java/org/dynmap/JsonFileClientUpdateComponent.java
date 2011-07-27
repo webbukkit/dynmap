@@ -117,6 +117,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected void writeUpdates() {
         File outputFile;
         File outputTempFile;
+        if(plugin.mapManager == null) return;
         //Handles Updates
         for (DynmapWorld dynmapWorld : plugin.mapManager.getWorlds()) {
             World world = dynmapWorld.world;
@@ -195,6 +196,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     }
     
     protected void webChat(String name, String message) {
+        if(plugin.mapManager == null) return;
         // TODO: Change null to something meaningful.
         plugin.mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
         Log.info(unescapeString(plugin.configuration.getString("webprefix", "\u00A2[WEB] ")) + name + ": " + unescapeString(plugin.configuration.getString("websuffix", "\u00A7f")) + message);
