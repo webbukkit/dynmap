@@ -12,6 +12,17 @@
 }
 
 /*******************
+ * Leaflet overrides
+ */
+.leaflet-control-zoom-in {
+	background-image: url(../images/zoom-in.png) !important;
+}
+
+.leaflet-control-zoom-out {
+	background-image: url(../images/zoom-out.png);
+}
+
+/*******************
  * Page setup
  */
 
