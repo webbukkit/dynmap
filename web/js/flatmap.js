@@ -1,8 +1,8 @@
 var FlatProjection = DynmapProjection.extend({
 	fromLocationToLatLng: function(location) {
 		return new L.LatLng(
-				-location.z / (8 << this.options.mapzoomout),
-				location.x / (8 << this.options.mapzoomout),
+				-location.z / (1 << this.options.mapzoomout),
+				location.x / (1 << this.options.mapzoomout),
 				true);
 	}
 });
