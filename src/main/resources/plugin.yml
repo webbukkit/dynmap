@@ -14,6 +14,9 @@ commands:
            /<command> render - Renders the tile at your location.
            /<command> fullrender - (Attempts to) render entire world from your location.
            /<command> fullrender world - (Attempts to) render entire world 'world'.
+           /<command> radiusrender ## - (Attempts to) render at least ## block radius from your location.
+           /<command> cancelrender - Cancels any active renders on current world
+           /<command> cancelrender world - Cancels any active renders of world 'world'
            /<command> stats - Show render statistics.
            /<command> stats world - Show render statistics for maps on world 'world'.
            /<command> resetstats - Reset render statistics.
