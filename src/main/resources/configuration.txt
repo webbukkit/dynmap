@@ -79,6 +79,24 @@ components:
   #  visibleregions:
   #    - homebase
   #    - miningsite
+  #- class: org.dynmap.regions.RegionsComponent
+  #  type: regions
+  #  name: Residence
+  #  useworldpath: false
+  #  filename: res.yml
+  #  basenode: Residences
+  #  use3dregions: false
+  #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname%</span><br /> Owner <span style="font-weight:bold;">%playerowners%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
+  #  regionstyle:
+  #    strokeColor: "#FF0000"
+  #    strokeOpacity: 0.8
+  #    strokeWeight: 3
+  #    fillColor: "#FF0000"
+  #    fillOpacity: 0.35
+  #  # Optional setting to limit which regions to show, by name - if commented out, all regions are shown
+  #  visibleregions:
+  #    - homebase
+  #    - miningsite
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"
 

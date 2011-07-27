@@ -1,122 +1,115 @@
-regionConstructors['polygon'] = function(map, name, region)
+regionConstructors['polygon'] = function(map, resname, region)
 {
-	if(regionCfg.regiontype == 'worldguard')
-	{
-		region.x1 = region.min.x;
-		region.y1 = region.min.y;
-		region.z1 = region.min.z;
-		region.x2 = region.max.x;
-		region.y2 = region.max.y;
-		region.z2 = region.max.z;
-	}
+  $.each(region.Areas, function(aname, area) {
+    var name = resname + '_' + aname;
 	if(regionCfg.use3dregions)
 	{
 		regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
 			paths: [
-			map.getProjection().fromWorldToLatLng(region.x1,region.y1,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y1,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y1,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x1,region.y1,region.z2)
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y1,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y1,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y1,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y1,area.Z2)
 			],
 			map: map
 			}));
 			google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
-				regionInfo(event, name, region);
+				regionInfo(event, resname, region);
 			});
 		
 		regionPolygons[name+'_top'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
 			paths: [
-			map.getProjection().fromWorldToLatLng(region.x1,region.y2,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y2,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y2,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x1,region.y2,region.z2)
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y2,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y2,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y2,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y2,area.Z2)
 			],
 			map: map
 			}));
 			google.maps.event.addListener(regionPolygons[name+'_top'] , 'click', function(event) {
-				regionInfo(event, name, region);
+				regionInfo(event, resname, region);
 			});
 	
 		regionPolygons[name+'_east'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
 			paths: [
-			map.getProjection().fromWorldToLatLng(region.x1,region.y1,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x1,region.y2,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y2,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y1,region.z1)
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y1,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y2,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y2,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y1,area.Z1)
 			],
 			map: map
 			}));
 			google.maps.event.addListener(regionPolygons[name+'_east'] , 'click', function(event) {
-				regionInfo(event, name, region);
+				regionInfo(event, resname, region);
 			});
 	
 		regionPolygons[name+'_south'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
 			paths: [
-			map.getProjection().fromWorldToLatLng(region.x2,region.y1,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y2,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y2,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y1,region.z2)
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y1,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y2,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y2,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y1,area.Z2)
 			],
 			map: map
 			}));
 			google.maps.event.addListener(regionPolygons[name+'_south'] , 'click', function(event) {
-				regionInfo(event, name, region);
+				regionInfo(event, resname, region);
 			});
 	
 		regionPolygons[name+'_west'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
 			paths: [
-			map.getProjection().fromWorldToLatLng(region.x1,region.y1,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x1,region.y2,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y2,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x2,region.y1,region.z2)
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y1,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y2,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y2,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X2,area.Y1,area.Z2)
 			],
 			map: map
 			}));
 			google.maps.event.addListener(regionPolygons[name+'_west'] , 'click', function(event) {
-				regionInfo(event, name, region);
+				regionInfo(event, resname, region);
 			});
 	
 		regionPolygons[name+'_north'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
 				paths: [
-			map.getProjection().fromWorldToLatLng(region.x1,region.y1,region.z1),
-				map.getProjection().fromWorldToLatLng(region.x1,region.y2,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x1,region.y2,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x1,region.y1,region.z2)
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y1,area.Z1),
+				map.getProjection().fromWorldToLatLng(area.X1,area.Y2,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y2,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X1,area.Y1,area.Z2)
 			],
 			map: map
 			}));
 			google.maps.event.addListener(regionPolygons[name+'_west'] , 'click', function(event) {
-				regionInfo(event, name, region);
+				regionInfo(event, resname, region);
 			});
 	}
 	else
 	{
-		middleY = region.y2;
+		middleY = area.Y2;
 		regionPolygons[name+'_bottom'] = new google.maps.Polygon($.extend(regionCfg.regionstyle, {
 			paths: [
-			map.getProjection().fromWorldToLatLng(region.x1,middleY,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,middleY,region.z1),
-			map.getProjection().fromWorldToLatLng(region.x2,middleY,region.z2),
-			map.getProjection().fromWorldToLatLng(region.x1,middleY,region.z2)
+			map.getProjection().fromWorldToLatLng(area.X1,middleY,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,middleY,area.Z1),
+			map.getProjection().fromWorldToLatLng(area.X2,middleY,area.Z2),
+			map.getProjection().fromWorldToLatLng(area.X1,middleY,area.Z2)
 			],
 			map: map
 			}));
 			google.maps.event.addListener(regionPolygons[name+'_bottom'] , 'click', function(event) {
-				regionInfo(event, name, region);
+				regionInfo(event, resname, region);
 			});
 	}
+  });
 }
 regionConstructors['info'] = function(event, name, region)
 {
-	if(regionCfg.regiontype == 'residence')
+	var flags = "";
+	$.each(region.Permissions.AreaFlags, function(flag, status)
 	{
-		$.each(region.areaflags, function(flag, status)
-		{
-			
-		});
-		var replace = ['%regionname%','%owners%'];
-		var by = [name,region.permissions.owner];
-	}
+		flags += flag+': '+status+'<br />';
+	});
+	var replace = ['%regionname%','%playerowners%','%flags%','%groupowners%', '%playermembers%', '%groupmembers%','%parent%', '%priority%'];
+	var by = [name,region.Permissions.Owner, flags, '', '', '', '', ''];
+	
 	var contentString = arrayReplace(replace, by, regionCfg.infowindow)
 
 	regionInfoWindow.setContent(contentString);
@@ -133,11 +126,11 @@ regionConstructors['update'] = function(map)
 		region.setMap(null);
 	});
 	regionPolygons = {};
-	$.getJSON("standalone/res.json", function(data)
+	$.getJSON("standalone/res_" + map + ".json", function(data)
 	{
 		$.each(data, function(name, residence)
 		{
-			if(map == residence.world)
+			if(map == residence.Permissions.World)
 				makeRegionPolygonCube(dynmap.map, name, residence);
 		});
 	});
