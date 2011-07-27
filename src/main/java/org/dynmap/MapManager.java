@@ -634,6 +634,9 @@ public class MapManager {
     }
 
     public void stopRendering() {
+        /* Tell all worlds to cancel any zoom out processing */
+        for(DynmapWorld w: worlds)
+            w.cancelZoomOutFreshen();
         render_pool.shutdown();
         try {
             render_pool.awaitTermination(5, TimeUnit.SECONDS);
