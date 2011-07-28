@@ -405,7 +405,6 @@ DynMap.prototype = {
 				me.servertime = update.servertime;                
 				var newserverday = (me.servertime > 23100 || me.servertime < 12900);
 				if(me.serverday != newserverday) {
-					console.log('serverday changed', newserverday)
 					me.serverday = newserverday;
 					
 					me.updateBackground();				
