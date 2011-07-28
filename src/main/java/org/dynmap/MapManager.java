@@ -310,7 +310,9 @@ public class MapManager {
                     tile.render(cache);
             }
             else {
-                if ((cache.isEmpty() == false) && tile.render(cache)) {
+            	/* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
+                if (cache.isEmpty() == false) {
+                	tile.render(cache);
                     found.remove(tile);
                     rendered.add(tile);
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
