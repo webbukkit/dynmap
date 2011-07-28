@@ -302,11 +302,11 @@ DynMap.prototype = {
 		$(me).trigger('mapchanging');
 		var mapWorld = map.options.world;
 		if (me.maptype) {
-			$('.compass').removeClass('compass_' + me.maptype.compassview);
-			$('.compass').removeClass('compass_' + me.maptype.name);
+			$('.compass').removeClass('compass_' + me.maptype.options.compassview);
+			$('.compass').removeClass('compass_' + me.maptype.options.name);
 		}
-		$('.compass').addClass('compass_' + map.compassview);
-		$('.compass').addClass('compass_' + map.name);
+		$('.compass').addClass('compass_' + map.options.compassview);
+		$('.compass').addClass('compass_' + map.options.name);
 		var worldChanged = me.world !== map.options.world;
 		var projectionChanged = (me.maptype && me.maptype.getProjection()) !== (map && map.projection);
 
