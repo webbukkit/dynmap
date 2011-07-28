@@ -102,7 +102,7 @@ DynMap.prototype = {
 			me.options.defaultzoom = urlzoom;
 		
 		var map = this.map = new L.Map(mapContainer.get(0), {
-			zoom: 1, //TODO: me.options.defaultzoom || 1,
+			zoom: me.options.defaultzoom || 1,
 			center: new L.LatLng(0, 0),
 			zoomAnimation: true,
 			crs: L.Util.extend({}, L.CRS, {
@@ -180,16 +180,16 @@ DynMap.prototype = {
 				.data('world', world)
 				.appendTo(worldlist);
 			
-			$.each(world.maps, function(index, map) {
+			$.each(world.maps, function(mapindex, map) {
 				//me.map.mapTypes.set(map.world.name + '.' + map.name, map);
 				
 				map.element = $('<li/>')
 					.addClass('map')
 					.append($('<a/>')
-							.attr({ title: map.title, href: '#' })
+							.attr({ title: map.options.title, href: '#' })
 							.addClass('maptype')
-							.css({ backgroundImage: 'url(' + (map.icon || 'images/block_' + map.name + '.png') + ')' })
-							.text(map.title)
+							.css({ backgroundImage: 'url(' + (map.options.icon || ('images/block_' + mapindex + '.png')) + ')' })
+							.text(map.options.title)
 							)
 					.click(function() {
 						me.selectMap(map);
@@ -307,22 +307,34 @@ DynMap.prototype = {
 		}
 		$('.compass').addClass('compass_' + map.compassview);
 		$('.compass').addClass('compass_' + map.name);
-		var worldChanged = me.world !== map.world;
+		var worldChanged = me.world !== map.options.world;
 		var projectionChanged = (me.maptype && me.maptype.getProjection()) !== (map && map.projection);
+
+		var prevzoom = me.map.getZoom(); 					
+
 		if (me.maptype) {
 			me.map.removeLayer(me.maptype);
 		}
+		
 		me.world = mapWorld;
 		me.maptype = map;
-		
+
+				
 		if (projectionChanged || worldChanged) {
-			var centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
-			var centerPoint = me.getProjection().fromLocationToLatLng(centerLocation);
+			var centerPoint;
+			if(worldChanged) {
+				var centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
+				centerPoint = me.getProjection().fromLocationToLatLng(centerLocation);
+			}
+			else {
+				centerPoint = me.map.getCenter();
+			}
 			me.map.setView(centerPoint, 0, true);
 		}
-		
-		me.map.addLayer(me.maptype, false);
-		
+		me.map.addLayer(me.maptype);
+
+		me.map.setZoom(prevzoom);
+				
 		if (worldChanged) {
 			$(me).trigger('worldchanged');
 		}
