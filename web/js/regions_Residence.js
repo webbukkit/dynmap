@@ -17,15 +17,15 @@ regionConstructors['Residence'] = function(dynmap, configuration) {
 					})));
 					
 					boxLayers.push(boxLayer);
-					$.each(residence.Subzones, function(szname, subzone) {
-						$.each(subzone.Areas, function(name2, area2) {
-							var subzoneLayer = configuration.createBoxLayer(area2.X1, area2.X2, area2.Y1, area2.Y2, area2.Z1, area2.Z2);
-							subzoneLayer.bindPopup(configuration.createPopupContent(name2, $.extend(subzone, {
-								owners: { players: [subzone.Permissions.Owner] },
-								flags: subzone.Permissions.AreaFlags
-							})));
-							boxLayers.push(subzoneLayer);
-						});
+				});
+				$.each(residence.Subzones, function(szname, subzone) {
+					$.each(subzone.Areas, function(name2, area2) {
+						var subzoneLayer = configuration.createBoxLayer(area2.X1, area2.X2, area2.Y1, area2.Y2, area2.Z1, area2.Z2);
+						subzoneLayer.bindPopup(configuration.createPopupContent(name2, $.extend(subzone, {
+							owners: { players: [subzone.Permissions.Owner] },
+							flags: subzone.Permissions.AreaFlags
+						})));
+						boxLayers.push(subzoneLayer);
 					});
 				});	
 			}
