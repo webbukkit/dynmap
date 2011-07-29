@@ -319,6 +319,11 @@ DynMap.prototype = {
 		me.world = mapWorld;
 		me.maptype = map;
 
+		me.map.addLayer(me.maptype);
+		if(me.maptype.options.maxZoom < prevzoom)
+			prevzoom = me.maptype.options.maxZoom;
+		me.map.options.maxZoom = me.maptype.options.maxZoom;
+		me.map.options.minZoom = me.maptype.options.minZoom;
 				
 		if (projectionChanged || worldChanged) {
 			var centerPoint;
@@ -329,11 +334,11 @@ DynMap.prototype = {
 			else {
 				centerPoint = me.map.getCenter();
 			}
-			me.map.setView(centerPoint, 0, true);
+			me.map.setView(centerPoint, prevzoom, true);
 		}
-		me.map.addLayer(me.maptype);
-
-		me.map.setZoom(prevzoom);
+		else {			
+			me.map.setZoom(prevzoom);
+		}
 				
 		if (worldChanged) {
 			$(me).trigger('worldchanged');
