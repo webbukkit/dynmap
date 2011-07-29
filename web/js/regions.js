@@ -69,16 +69,24 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 	}
 	
 	function createPopupContent(name, region) {
+		function join(a) {
+			if (a instanceof Array) {
+				return a.join(', ');
+			} else if (typeof a === 'string') {
+				return a;
+			}
+			return null;
+		}
 		var members = region.members || {};
 		return $('<div/>').addClass('regioninfo')
 			.append($('<span/>').addClass('regionname').text(name))
 			.append($('<span/>').addClass('owners')
-				.append(region.owners.players && $('<span/>').addClass('playerowners').text(region.owners.players.concat()))
-				.append(region.owners.groups && $('<span/>').addClass('groupowners').text(region.owners.groups.concat()))
+				.append(region.owners.players && $('<span/>').addClass('playerowners').text(join(region.owners.players)))
+				.append(region.owners.groups && $('<span/>').addClass('groupowners').text(join(region.owners.groups)))
 				)
 			.append($('<span/>').addClass('members')
-				.append(members.players && $('<span/>').addClass('playermembers').text(members.players.concat()))
-				.append(members.groups && $('<span/>').addClass('groupmembers').text(members.groups.concat()))
+				.append(members.players && $('<span/>').addClass('playermembers').text(join(members.players)))
+				.append(members.groups && $('<span/>').addClass('groupmembers').text(join(members.groups)))
 				)
 			.append(region.parent && $('<span/>').addClass('regionparent').text(region.parent))
 			.append(region.flags && function() {
