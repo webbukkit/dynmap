@@ -15,13 +15,59 @@ public class Json {
         return sb.toString();
     }
 
+    public static void escape(String s, StringBuilder s2) {
+        for(int i=0;i<s.length();i++){
+            char ch=s.charAt(i);
+            switch(ch){
+            case '"':
+                s2.append("\\\"");
+                break;
+            case '\\':
+                s2.append("\\\\");
+                break;
+            case '\b':
+                s2.append("\\b");
+                break;
+            case '\f':
+                s2.append("\\f");
+                break;
+            case '\n':
+                s2.append("\\n");
+                break;
+            case '\r':
+                s2.append("\\r");
+                break;
+            case '\t':
+                s2.append("\\t");
+                break;
+            case '/':
+                s2.append("\\/");
+                break;
+            default:
+                if((ch>='\u0000' && ch<='\u001F') || (ch>='\u007F')){
+                    String ss=Integer.toHexString(ch);
+                    s2.append("\\u");
+                    for(int k=0;k<4-ss.length();k++){
+                        s2.append('0');
+                    }
+                    s2.append(ss.toUpperCase());
+                }
+                else{
+                    s2.append(ch);
+                }
+            }
+        }//for
+    }
+
     public static void appendJson(Object o, StringBuilder s) {
         if (o == null) {
             s.append("null");
         } else if (o instanceof Boolean) {
             s.append(((Boolean) o) ? "true" : "false");
         } else if (o instanceof String) {
-            s.append("\"" + JSONObject.escape((String)o) + "\"");
+            s.append("\"");
+            escape((String)o, s);
+            s.append("\"");
         } else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
             s.append(o.toString());
         } else if (o instanceof Map<?, ?>) {
