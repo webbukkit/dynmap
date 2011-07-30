@@ -76,6 +76,7 @@ public class IsoHDPerspective implements HDPerspective {
 
     private static final int CHEST_BLKTYPEID = 54;
     private static final int FENCE_BLKTYPEID = 85;
+    private static final int REDSTONE_BLKTYPEID = 55;
     
     private enum ChestData {
         SINGLE_WEST, SINGLE_SOUTH, SINGLE_EAST, SINGLE_NORTH, LEFT_WEST, LEFT_SOUTH, LEFT_EAST, LEFT_NORTH, RIGHT_WEST, RIGHT_SOUTH, RIGHT_EAST, RIGHT_NORTH
@@ -386,6 +387,62 @@ public class IsoHDPerspective implements HDPerspective {
             
             return cd.ordinal();
         }
+        /**
+         * Generate redstone wire model data:
+         *   0 = NSEW wire
+         *   1 = NS wire
+         *   2 = EW wire
+         *   3 = NE wire
+         *   4 = NW wire
+         *   5 = SE wire
+         *   6 = SW wire
+         *   7 = NSE wire
+         *   8 = NSW wire
+         *   9 = NEW wire
+         *   10 = SEW wire
+         * @param mapiter
+         * @return
+         */
+        private int generateRedstoneWireBlockData(MapIterator mapiter) {
+            /* Check adjacent block IDs */
+            int ids[] = { mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS),  /* To west */
+                mapiter.getBlockTypeIDAt(BlockStep.X_PLUS),            /* To south */
+                mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS),           /* To east */
+                mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) };         /* To north */
+            int flags = 0;
+            for(int i = 0; i < 4; i++)
+                if(ids[i] == REDSTONE_BLKTYPEID) flags |= (1<<i);
+            switch(flags) {
+                case 0: /* Nothing nearby */
+                case 15: /* NSEW */
+                    return 0;   /* NSEW graphic */
+                case 2: /* S */
+                case 8: /* N */
+                case 10: /* NS */
+                    return 1;   /* NS graphic */
+                case 1: /* W */
+                case 4: /* E */
+                case 5: /* EW */
+                    return 2;   /* EW graphic */
+                case 12: /* NE */
+                    return 3;
+                case 9: /* NW */
+                    return 4;
+                case 6: /* SE */
+                    return 5;
+                case 3: /* SW */
+                    return 6;
+                case 14: /* NSE */
+                    return 7;
+                case 11: /* NSW */
+                    return 8;
+                case 13: /* NEW */
+                    return 9;
+                case 7: /* SEW */
+                    return 10;
+            }
+            return 0;
+        }
         private final boolean handleSubModel(short[] model, HDShaderState[] shaderstate, boolean[] shaderdone) {
             boolean firststep = true;
             
@@ -422,6 +479,9 @@ public class IsoHDPerspective implements HDPerspective {
                         break;
                     case CHEST_BLKTYPEID:   /* Special case for chest - need to fake data so we can render */
                         blockdata = generateChestBlockData(mapiter);
+                        break;
+                    case REDSTONE_BLKTYPEID:    /* Special case for redstone - fake data for wire pattern */
+                        blockdata = generateRedstoneWireBlockData(mapiter);
                         break;
                     default:
                         blockdata = mapiter.getBlockData();

@@ -71,6 +71,10 @@ public class TexturePack {
     
     /* Special tile index values */
     private static final int BLOCKINDEX_BLANK = -1;
+    private static final int BLOCKINDEX_REDSTONE_NSEW_TONE = 164;
+    private static final int BLOCKINDEX_REDSTONE_EW_TONE = 165;
+    private static final int BLOCKINDEX_REDSTONE_NSEW = 180;
+    private static final int BLOCKINDEX_REDSTONE_EW = 181;
     private static final int BLOCKINDEX_STATIONARYWATER = 257;
     private static final int BLOCKINDEX_MOVINGWATER = 258;
     private static final int BLOCKINDEX_STATIONARYLAVA = 259;
@@ -344,7 +348,22 @@ public class TexturePack {
         /* Fallbacks */
         terrain_argb[BLOCKINDEX_STATIONARYLAVA] = terrain_argb[255];
         terrain_argb[BLOCKINDEX_MOVINGLAVA] = terrain_argb[255];
-
+        /* Now, build redstone textures with active wire color (since we're not messing with that) */
+        Color tc = new Color();
+        for(i = 0; i < native_scale*native_scale; i++) {
+            if(terrain_argb[BLOCKINDEX_REDSTONE_NSEW_TONE][i] != 0) {
+                /* Overlay NSEW redstone texture with toned wire color */
+                tc.setARGB(terrain_argb[BLOCKINDEX_REDSTONE_NSEW_TONE][i]);
+                tc.blendColor(0xFFC00000);  /* Blend in red */
+                terrain_argb[BLOCKINDEX_REDSTONE_NSEW][i] = tc.getARGB();
+            }
+            if(terrain_argb[BLOCKINDEX_REDSTONE_EW_TONE][i] != 0) {
+                /* Overlay NSEW redstone texture with toned wire color */
+                tc.setARGB(terrain_argb[BLOCKINDEX_REDSTONE_EW_TONE][i]);
+                tc.blendColor(0xFFC00000);  /* Blend in red */
+                terrain_argb[BLOCKINDEX_REDSTONE_EW][i] = tc.getARGB();
+            }
+        }
         img.flush();
     }
     
