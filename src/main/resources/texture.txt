@@ -255,8 +255,8 @@ block:id=54,data=9,topbottom=25,south=42,north=57,east=26,west=26
 block:id=54,data=10,topbottom=25,south=26,north=26,east=42,west=57
 # Chest - right side of double, facing north
 block:id=54,data=11,topbottom=25,south=57,north=42,east=26,west=26
-# Redstone wire (model handling shape - use red wool for color)
-block:id=55,allfaces=129,transparency=TRANSPARENT
+# Redstone wire (use processed tile - pretoned to active)
+block:id=55,allfaces=180,transparency=TRANSPARENT
 # Diamond ore
 block:id=56,allfaces=50
 # Diamond block
