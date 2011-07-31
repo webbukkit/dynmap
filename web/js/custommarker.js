@@ -48,6 +48,8 @@ L.CustomMarker = L.Class.extend({
 		}
 		
 		map.off('viewreset', this._reset, this);
+		
+		map = null;
 	},
 	
 	getLatLng: function() {
@@ -60,6 +62,8 @@ L.CustomMarker = L.Class.extend({
 	},
 	
 	_reset: function() {
+		if(this._map == null)
+			return;
 		var pos = this._map.latLngToLayerPoint(this._latlng);
 		
 		if (this._element) {

@@ -6,9 +6,10 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		player.marker = new L.CustomMarker(markerPosition, { elementCreator: function() {
 			var div = document.createElement('div');
 			var playerImage;
-			
-			$(player.marker._element).toggle(dynmap.world === player.location.world);
-			
+
+			var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
+			player.marker.setLatLng(markerPosition);
+						
 			$(div)
 				.addClass('Marker')
 				.addClass('playerMarker')
@@ -63,28 +64,39 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 					player.healthContainer.css('display','none');
 				}
 			}
+			
 			return div;
 		}});
-		dynmap.map.addLayer(player.marker);
+		if(dynmap.world === player.location.world)
+			dynmap.map.addLayer(player.marker);
 	});
 	$(dynmap).bind('playerremoved', function(event, player) {
 		// Remove the marker.
-		dynmap.map.removeLayer(player.marker);
+		if(dynmap.map.hasLayer(player.marker))
+			dynmap.map.removeLayer(player.marker);
 	});
 	$(dynmap).bind('playerupdated', function(event, player) {
-		// Update the marker.
-		var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
-		$(player.marker._element).toggle(dynmap.world === player.location.world);
-		player.marker.setLatLng(markerPosition);
-		// Update health
-		if (configuration.showplayerhealth) {
-			if (player.health !== undefined && player.armor !== undefined) {
-				player.healthContainer.css('display','block');
-				player.healthBar.css('width', (player.health/2*5) + 'px');
-				player.armorBar.css('width', (player.armor/2*5) + 'px');
-			} else {
-				player.healthContainer.css('display','none');
+		if(dynmap.world === player.location.world) {
+			// Add if needed
+			if(dynmap.map.hasLayer(player.marker) == false)
+				dynmap.map.addLayer(player.marker);
+			else {
+				// Update the marker.
+				var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
+				player.marker.setLatLng(markerPosition);
+				// Update health
+				if (configuration.showplayerhealth) {
+					if (player.health !== undefined && player.armor !== undefined) {
+						player.healthContainer.css('display','block');
+						player.healthBar.css('width', (player.health/2*5) + 'px');
+						player.armorBar.css('width', (player.armor/2*5) + 'px');
+					} else {
+						player.healthContainer.css('display','none');
+					}
+				}
 			}
+		} else if(dynmap.map.hasLayer(player.marker)) {
+			dynmap.map.removeLayer(player.marker);
 		}
 	});
     // Remove marker on start of map change
@@ -93,7 +105,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		for(name in dynmap.players) {
 			var player = dynmap.players[name];
 			// Turn off marker - let update turn it back on 
-			$(player.marker._element).toggle(false);
+			dynmap.map.removeLayer(player.marker);
 		}
 	});
     // Remove marker on map change - let update place it again
@@ -101,9 +113,14 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		var name;
 		for(name in dynmap.players) {
 			var player = dynmap.players[name];
-			var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
-			player.marker.setLatLng(markerPosition);
-			$(player.marker._element).toggle(dynmap.world === player.location.world);
+			if(dynmap.world === player.location.world) {
+				if(dynmap.map.hasLayer(player.marker) == false)
+					dynmap.map.addLayer(player.marker);
+				var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
+				player.marker.setLatLng(markerPosition);
+			} else if(dynmap.map.hasLayer(player.marker)) {
+				dynmap.map.removeLayer(player.marker);
+			}
 		}
 	});
 };
