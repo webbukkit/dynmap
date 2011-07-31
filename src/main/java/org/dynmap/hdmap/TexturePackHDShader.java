@@ -87,7 +87,7 @@ public class TexturePackHDShader implements HDShader {
             c = new Color();
             scaledtp = tp.resampleTexturePack(map.getPerspective().getModelScale());
             /* Biome raw data only works on normal worlds at this point */
-            do_biome_shading = biome_shaded && (cache.getWorld().getEnvironment() != Environment.NORMAL);
+            do_biome_shading = biome_shaded && (cache.getWorld().getEnvironment() == Environment.NORMAL);
         }
         /**
          * Get our shader
