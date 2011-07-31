@@ -22,6 +22,14 @@
 	background-image: url(../images/zoom-out.png);
 }
 
+.leaflet-control-layers a {
+  background-image: url(../images/layers.png);
+}
+
+.leaflet-popup-close-button {
+  background: white url(../images/popup-close.png);
+}
+
 /*******************
  * Page setup
  */
