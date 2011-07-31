@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.Log;
 import org.dynmap.web.HttpRequest;
 import org.dynmap.web.HttpResponse;
 import org.dynmap.web.Json;
@@ -62,7 +63,12 @@ public class RegionHandler extends FileHandler {
             return null;
         regionConfig.load();
         /* Parse region data and store in MemoryInputStream */
-        Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(regions.getString("basenode", "regions"));
+        String bnode = regions.getString("basenode", "regions");
+        Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(bnode);
+        if(regionData == null) {
+            Log.severe("Region data from " + infile.getPath() + " does not include basenode '" + bnode + "'");
+            return null;
+        }
         /* See if we have explicit list of regions to report - limit to this list if we do */
         List<String> idlist = regions.getStrings("visibleregions", null);
         if(idlist != null) {
