@@ -63,12 +63,13 @@
     width: 100%;
     height: 100%;
     background: #000;
+    z-index: 0;
 }
 
 /* Map Controls */
 .gmnoprint{
     margin-top:-75px;
-    margin-left:-20px
+    margin-left:-20px;
 }
 
 
