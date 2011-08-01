@@ -274,9 +274,9 @@ public class KzedMap extends MapType {
     public List<String> baseZoomFilePrefixes() {
         ArrayList<String> s = new ArrayList<String>();
         for(MapTileRenderer r : renderers) {
-            s.add("z" + r.getName());
+            s.add("z" + r.getPrefix());
             if(r.isNightAndDayEnabled())
-                s.add("z" + r.getName() + "_day");
+                s.add("z" + r.getPrefix() + "_day");
         }
         return s;
     }
