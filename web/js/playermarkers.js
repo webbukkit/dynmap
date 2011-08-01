@@ -9,6 +9,10 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 
 			var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
 			player.marker.setLatLng(markerPosition);
+
+			// Only show player faces if canvas supported					
+			if(dynmap.canvassupport == false)
+				configuration.showplayerfaces = false;
 						
 			$(div)
 				.addClass('Marker')
@@ -18,7 +22,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				.append($('<span/>')
 					.addClass(configuration.smallplayerfaces?'playerNameSm':'playerName')
 					.text(player.name));
-			
+
 			if (configuration.showplayerfaces) {
 				if(configuration.smallplayerfaces) {
 					getMinecraftHead(player.account, 16, function(head) {

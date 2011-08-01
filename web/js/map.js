@@ -40,6 +40,7 @@ DynMap.prototype = {
     inittime: new Date().getTime(),
 	followingPlayer: '',
 	missedupdates: 0,
+	canvassupport: !!document.createElement('canvas').getContext,
 	formatUrl: function(name, options) {
 		var url = this.options.url[name];
 		$.each(options, function(n,v) {
@@ -126,7 +127,10 @@ DynMap.prototype = {
 			me.maptype.updateTileSize(me.map.zoom);
 			$(me).trigger('zoomchanged');
 		};
-
+		
+		if(me.canvassupport == false)
+			me.options.showplayerfacesinmenu = false;
+			
 		/*google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 			me.followPlayer(null);
 		});*/
