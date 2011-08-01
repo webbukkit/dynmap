@@ -413,6 +413,10 @@ public class FlatMap extends MapType {
     }
 
     public String getName() {
+        return name;
+    }
+    
+    public String getPrefix() {
         return prefix;
     }
     
@@ -428,9 +432,9 @@ public class FlatMap extends MapType {
 
     public List<String> baseZoomFilePrefixes() {
         ArrayList<String> s = new ArrayList<String>();
-        s.add(getName() + "_128");
+        s.add(getPrefix() + "_128");
         if(night_and_day)
-            s.add(getName()+"_day_128");
+            s.add(getPrefix()+"_day_128");
         return s;
     }
     
@@ -508,7 +512,7 @@ public class FlatMap extends MapType {
 
         @Override
         public String getKey() {
-            return world.world.getName() + "." + map.getName();
+            return world.world.getName() + "." + map.getPrefix();
         }
         
         public boolean isHightestBlockYDataNeeded() { return true; }
