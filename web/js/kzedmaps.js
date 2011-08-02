@@ -28,7 +28,7 @@ var KzedMapType = DynmapTileLayer.extend({
 	getTileName: function(tilePoint, zoom) {
 		var info = this.getTileInfo(tilePoint, zoom);
 		return namedReplace(this.options.bigmap
-				? '{prefix}{nightday}/{scaledx}_{scaledy}/{zoomprefix}{x}_{y}.png'
+				? '{zprefix}{nightday}/{scaledx}_{scaledy}/{zoomprefix}{x}_{y}.png'
 				: '{zoom}{prefix}{nightday}_{x}_{y}.png'
 				, this.getTileInfo(tilePoint, zoom));
 	},
@@ -45,7 +45,8 @@ var KzedMapType = DynmapTileLayer.extend({
 			scaledx: x >> 12,
 			scaledy: y >> 12,
 			zoom: this.zoomprefix(zoomoutlevel),
-			zoomprefix: (zoomoutlevel==0)?"":(this.zoomprefix(zoomoutlevel)+"_"),
+			zoomprefix: (zoomoutlevel<2)?"":(this.zoomprefix(zoomoutlevel-1)+"_"),
+			zprefix: (zoomoutlevel==0)?this.options.prefix:("z"+this.options.prefix),
 			x: x,
 			y: y
 		};
