@@ -12,25 +12,6 @@
 }
 
 /*******************
- * Leaflet overrides
- */
-.leaflet-control-zoom-in {
-	background-image: url(../images/zoom-in.png);
-}
-
-.leaflet-control-zoom-out {
-	background-image: url(../images/zoom-out.png);
-}
-
-.leaflet-control-layers a {
-  background-image: url(../images/layers.png);
-}
-
-.leaflet-popup-close-button {
-  background: white url(../images/popup-close.png);
-}
-
-/*******************
  * Page setup
  */
 
@@ -53,6 +34,22 @@
     padding: 8px 4px;
     font-weight: bold;
 }
+
+.leaflet-control-zoom-in {
+    background-color: #eee;
+	}
+
+.leaflet-control-zoom-out {
+    background-color: #eee;
+	}
+
+.leaflet-control-zoom-in:hover {
+    background-color: #fff;
+	}
+
+.leaflet-control-zoom-out:hover {
+    background-color: #fff;
+	}
 
 
 /*******************
@@ -239,6 +236,7 @@
 .dynmap .panel .clock {
     display: inline-block;
     height: 16px;
+    z-index:50;
 
     font-weight: bold;
     background-repeat: no-repeat;
@@ -287,6 +285,7 @@
     width: 150px;
     height: 60px;
     background: rgba(0,0,0,0.6);
+    z-index:50;
 
     margin: auto;
 }
@@ -534,6 +533,7 @@
 	position: absolute;
 	top: 0px;
 	left: 34px;
+    z-index:20;
 
 	white-space: nowrap;
 
@@ -665,6 +665,7 @@
 	position: absolute;
 	bottom: 0px;
 	left: 14px;
+    z-index:50;
 
     border-color: rgba(0,0,0,0.5);
     background: rgba(0,0,0,0.6);
@@ -685,10 +686,11 @@
 
 	outline: none;
 	color: #fff;
+	background-color: #000000;
 
 	border: 0px;
 	background: rgba(0, 0, 0, 0.6);
-	background: url(../images/chat_cursor.png) rgba(0,0,0,0.6);
+	background-image: url(../images/chat_cursor.png);
 	background-repeat: no-repeat;
 	background-position: 1px center;
 
