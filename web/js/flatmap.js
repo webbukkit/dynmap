@@ -21,7 +21,7 @@ var FlatMapType = DynmapTileLayer.extend({
 	},
 	getTileName: function(tilePoint, zoom) {
 		return namedReplace(this.options.bigmap
-				? '{prefix}{nightday}_128/{scaledx}_{scaledy}/{zoom}_{x}_{y}.png'
+				? '{prefix}{nightday}_128/{scaledx}_{scaledy}/{zoomprefix}{x}_{y}.png'
 				: '{zoom}{prefix}{nightday}_128_{x}_{y}.png'
 				, this.getTileInfo(tilePoint, zoom));
 	}

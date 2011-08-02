@@ -151,7 +151,6 @@ var DynmapTileLayer = L.TileLayer.extend({
 		var izoom = this.options.maxZoom - zoom;
 		var zoomoutlevel = Math.max(0, izoom - this.options.mapzoomin);
 		var scale = 1 << zoomoutlevel;
-		var zoomprefix = this.zoomprefix(zoomoutlevel);
 		var x = scale*tilePoint.x;
 		var y = scale*tilePoint.y;
 		return {
@@ -160,6 +159,7 @@ var DynmapTileLayer = L.TileLayer.extend({
 			scaledx: x >> 5,
 			scaledy: y >> 5,
 			zoom: this.zoomprefix(zoomoutlevel),
+			zoomprefix: (zoomoutlevel==0)?"":(this.zoomprefix(zoomoutlevel)+"_"),
 			x: x,
 			y: y
 		};
