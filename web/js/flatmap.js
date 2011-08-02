@@ -10,7 +10,8 @@ var FlatProjection = DynmapProjection.extend({
 var FlatMapType = DynmapTileLayer.extend({
 	options: {
 		minZoom: 0,
-		maxZoom: 4
+		maxZoom: 4,
+		errorTileUrl: 'images/blank.png'		
 	},
 	initialize: function(options) {
 		options.maxzoomout = options.mapzoomout || options.world.extrazoomout;

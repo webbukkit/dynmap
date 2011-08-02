@@ -14,7 +14,8 @@ var HDMapType = DynmapTileLayer.extend({
 	projection: undefined,
 	options: {
 		minZoom: 0,
-		maxZoom: 0
+		maxZoom: 0,
+		errorTileUrl: 'images/blank.png'
 	},
 	initialize: function(options) {
 		options.maxZoom = options.mapzoomin + options.mapzoomout;
