@@ -179,7 +179,8 @@ function loadjs(url, completed) {
 	
 	// Hack for IE, don't know whether this still applies to IE9.
 	script.onreadystatechange = function() {
-		script.onload();
+		if (script.readyState == 'loaded' || script.readyState == 'complete')
+			script.onload();
 	};
 	(document.head || document.getElementsByTagName('head')[0]).appendChild(script);
 }
