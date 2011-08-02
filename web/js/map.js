@@ -599,18 +599,19 @@ DynMap.prototype = {
 		var me = this;
 		var col = "#000000";
 		if(me.serverday) {
-			if(me.maptype.backgroundday)
-				col = me.maptype.backgroundday;
-			else if(me.maptype.background)
-				col = me.maptype.background;
+			if(me.maptype.options.backgroundday)
+				col = me.maptype.options.backgroundday;
+			else if(me.maptype.options.background)
+				col = me.maptype.options.background;
 		}
 		else {
-			if(me.maptype.backgroundnight)
-				col = me.maptype.backgroundnight;
-			else if(me.maptype.background)
-				col = me.maptype.background;
+			if(me.maptype.options.backgroundnight)
+				col = me.maptype.options.backgroundnight;
+			else if(me.maptype.options.background)
+				col = me.maptype.options.background;
 		}
 		$('.map').css('background', col);
+		$('.leaflet-tile').css('background', col);
 	},
 	getParameterByName: function(name) {
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
