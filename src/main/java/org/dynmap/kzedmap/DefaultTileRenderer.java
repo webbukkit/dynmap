@@ -586,7 +586,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         s(o, "backgroundday", c.getString("backgroundday"));
         s(o, "backgroundnight", c.getString("backgroundnight"));
         s(o, "bigmap", map.isBigWorldMap(world));
-        s(o, "mapzoomin", c.getInteger("mapzoomin", 3));
+        s(o, "mapzoomin", c.getInteger("mapzoomin", 2));
         s(o, "mapzoomout", world.getExtraZoomOutLevels()+1);
         s(o, "compassview", "SE");   /* Always from southeast */
         a(worldObject, "maps", o);
