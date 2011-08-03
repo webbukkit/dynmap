@@ -10,7 +10,16 @@ var KzedProjection = DynmapProjection.extend({
 		var xx = (128 - px) / scale;
 		var yy = py / scale;
 		return new L.LatLng(xx, yy, true);
+	},
+	fromLatLngToLocation: function(latlon, y) {
+		var scale = 1 << this.options.mapzoomout;
+		var px = 128 - (latlon.lat * scale);
+		var py = latlon.lng * scale;
+		var x = (px + py + (y-127))/2;
+		var z = (px - x);
+		return { x: x, y: y, z: z };
 	}
+	
 });
 
 var KzedMapType = DynmapTileLayer.extend({

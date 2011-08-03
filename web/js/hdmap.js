@@ -7,7 +7,16 @@ var HDProjection = DynmapProjection.extend({
 			  xx       / (1 << this.options.mapzoomout)
 			, (128-yy) / (1 << this.options.mapzoomout)
 			, true);
+	},
+	fromLatLngToLocation: function(latlon, y) {
+		var ptw = this.options.maptoworld;
+		var lat = latlon.lat * (1 << this.options.mapzoomout);
+		var lon = 128 - latlon.lng * (1 << this.options.mapzoomout);
+		var x = ptw[0]*lat + ptw[1]*lon + ptw[2]*y;
+		var z = ptw[6]*lat + ptw[7]*lon + ptw[8]*y;
+		return { x: x, y: y, z: z };
 	}
+	
 });
 
 var HDMapType = DynmapTileLayer.extend({

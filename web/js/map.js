@@ -323,6 +323,8 @@ DynMap.prototype = {
 			me.map.removeLayer(me.maptype);
 		}
 		
+		var prevmap = me.maptype;
+	
 		me.world = mapWorld;
 		me.maptype = map;
 
@@ -338,7 +340,13 @@ DynMap.prototype = {
 				centerPoint = me.getProjection().fromLocationToLatLng(centerLocation);
 			}
 			else {
-				centerPoint = me.map.getCenter();
+				var prevloc = null;
+				if(prevmap != null)
+					prevloc = prevmap.getProjection().fromLatLngToLocation(me.map.getCenter(), 64);
+				if(prevloc != null)
+					centerPoint = me.getProjection().fromLocationToLatLng(prevloc);
+				else
+					centerPoint = me.map.getCenter();
 			}
 			me.map.setView(centerPoint, prevzoom, true);
 		}

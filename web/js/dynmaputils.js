@@ -4,6 +4,9 @@ var DynmapProjection = L.Class.extend({
 	},
 	fromLocationToLatLng: function(location) {
 		throw "fromLocationToLatLng not implemented";
+	},
+	fromLatLngToLocation: function(location) {
+		return null;
 	}
 });
 
