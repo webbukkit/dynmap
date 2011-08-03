@@ -14,8 +14,7 @@ var FlatMapType = DynmapTileLayer.extend({
 		errorTileUrl: 'images/blank.png'		
 	},
 	initialize: function(options) {
-		options.maxzoomout = options.mapzoomout || options.world.extrazoomout;
-		options.maxZoom = options.mapzoomin + options.maxzoomout;
+		options.maxZoom = options.mapzoomin + options.mapzoomout;
 		L.Util.setOptions(this, options);
 		this.projection = new FlatProjection({mapzoomout: options.mapzoomout});
 	},
