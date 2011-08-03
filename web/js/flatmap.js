@@ -4,7 +4,13 @@ var FlatProjection = DynmapProjection.extend({
 				-location.z / (1 << this.options.mapzoomout),
 				location.x / (1 << this.options.mapzoomout),
 				true);
+	},
+	fromLatLngToLocation: function(latlon, y) {
+		var z = -latlon.lat * (1 << this.options.mapzoomout);
+		var x = latlon.lng * (1 << this.options.mapzoomout);
+		return { x: x, y: y, z: z };
 	}
+	
 });
 
 var FlatMapType = DynmapTileLayer.extend({
