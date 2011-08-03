@@ -8,12 +8,13 @@ var cloneCanvas = function(self) {
 };
 
 function blitImage(ctx, image, sx ,sy, sw, sh, dx, dy, dw, dh) {
-	var x; var y;
-	for (x=0;x<dw;x++) {
-		for (y=0;y<dh;y++) {
-			ctx.drawImage(image,Math.floor(sx+x*(sw/dw)),Math.floor(sy+y*(sw/dw)),1,1,dx+x,dy+y,1,1);
-		}
-	}	
+	ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+//	var x; var y;
+//	for (x=0;x<dw;x++) {
+//		for (y=0;y<dh;y++) {
+//			ctx.drawImage(image,Math.floor(sx+x*(sw/dw)),Math.floor(sy+y*(sw/dw)),1,1,dx+x,dy+y,1,1);
+//		}
+//	}	
 }
 
 function createMinecraftHead(player,completed,failed) {
@@ -24,7 +25,8 @@ function createMinecraftHead(player,completed,failed) {
 		headCanvas.height = 8;
 		var headContext = headCanvas.getContext('2d');
 		blitImage(headContext, skinImage,  8,8,8,8, 0,0,8,8);
-		blitImage(headContext, skinImage, 40,8,8,8, 0,0,8,8);
+		// Turn off accessory face overlay - causes white faces, and very few skins seem to have them anyway
+		//blitImage(headContext, skinImage, 40,8,8,8, 0,0,8,8);
 		completed(headCanvas);
 	};
 	skinImage.onerror = function() {
