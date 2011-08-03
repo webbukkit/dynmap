@@ -101,9 +101,12 @@ DynMap.prototype = {
 		var urlzoom = me.getIntParameterByName('zoom');
 		if(urlzoom != null)
 			me.options.defaultzoom = urlzoom;
+			
+		if(typeof me.options.defaultzoom == 'undefined')
+			me.options.defaultzoom = 1;
 		
 		var map = this.map = new L.Map(mapContainer.get(0), {
-			zoom: me.options.defaultzoom || 1,
+			zoom: me.options.defaultzoom,
 			center: new L.LatLng(0, 0),
 			zoomAnimation: true,
 			crs: L.Util.extend({}, L.CRS, {
@@ -323,7 +326,6 @@ DynMap.prototype = {
 		me.world = mapWorld;
 		me.maptype = map;
 
-		me.map.addLayer(me.maptype);
 		if(me.maptype.options.maxZoom < prevzoom)
 			prevzoom = me.maptype.options.maxZoom;
 		me.map.options.maxZoom = me.maptype.options.maxZoom;
@@ -343,6 +345,7 @@ DynMap.prototype = {
 		else {			
 			me.map.setZoom(prevzoom);
 		}
+		me.map.addLayer(me.maptype);
 				
 		if (worldChanged) {
 			$(me).trigger('worldchanged');
