@@ -109,6 +109,7 @@ DynMap.prototype = {
 			zoom: me.options.defaultzoom,
 			center: new L.LatLng(0, 0),
 			zoomAnimation: true,
+			attributionControl: false,
 			crs: L.Util.extend({}, L.CRS, {
 				code: 'simple',
 				projection: {
