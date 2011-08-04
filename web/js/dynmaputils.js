@@ -45,9 +45,40 @@ var DynmapTileLayer = L.TileLayer.extend({
 	updateTile: function(tile) {
 		this._loadTile(tile, tile.tilePoint, this._map.getZoom());
 	},
+	// Override to fix loads completing after layer removed
+	_addTilesFromCenterOut: function(bounds) {
+		if(this._container == null)		// Ignore if we've stopped being active layer
+			return;
+		var queue = [],
+			center = bounds.getCenter();
+		
+		for (var j = bounds.min.y; j <= bounds.max.y; j++) {
+			for (var i = bounds.min.x; i <= bounds.max.x; i++) {				
+				if ((i + ':' + j) in this._tiles) { continue; }
+				queue.push(new L.Point(i, j));
+			}
+		}
+		
+		// load tiles in order of their distance to center
+		queue.sort(function(a, b) {
+			return a.distanceTo(center) - b.distanceTo(center);
+		});
+		
+		var fragment = document.createDocumentFragment();
+		
+		this._tilesToLoad = queue.length;
+		for (var k = 0, len = this._tilesToLoad; k < len; k++) {
+			this._addTile(queue[k], fragment);
+		}
+		
+		this._container.appendChild(fragment);
+	},
 	
 	// We should override this, since Leaflet does modulo on tilePoint by default. (https://github.com/CloudMade/Leaflet/blob/master/src/layer/tile/TileLayer.js#L151)
 	_addTile: function(tilePoint) {
+		if(this._container == null)	// Ignore if we're not active layer
+			return;
+			
 		var tilePos = this._getTilePos(tilePoint),
 			zoom = this._map.getZoom(),
 			key = tilePoint.x + ':' + tilePoint.y,
