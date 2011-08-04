@@ -41,7 +41,8 @@ public class IsoHDPerspective implements HDPerspective {
     public double azimuth;  /* Angle in degrees from looking north (0), east (90), south (180), or west (270) */
     public double inclination;  /* Angle in degrees from horizontal (0) to vertical (90) */
     public double scale;    /* Scale - tile pixel widths per block */
-
+    public double maxheight;
+    public double minheight;
     /* Coordinate space for tiles consists of a plane (X, Y), corresponding to the projection of each tile on to the
      * plane of the bottom of the world (X positive to the right, Y positive to the top), with Z+ corresponding to the
      * height above this plane on a vector towards the viewer).  Logically, this makes the parallelogram representing the
@@ -655,7 +656,12 @@ public class IsoHDPerspective implements HDPerspective {
         scale = configuration.getDouble("scale", MIN_SCALE);
         if(scale < MIN_SCALE) scale = MIN_SCALE;
         if(scale > MAX_SCALE) scale = MAX_SCALE;
-        
+        /* Get max and min height */
+        maxheight = configuration.getInteger("maximumheight", 127);
+        if(maxheight > 127) maxheight = 127;
+        minheight = configuration.getInteger("minimumheight", 0);
+        if(minheight < 0) minheight = 0;
+
         /* Generate transform matrix for world-to-tile coordinate mapping */
         /* First, need to fix basic coordinate mismatches before rotation - we want zero azimuth to have north to top
          * (world -X -> tile +Y) and east to right (world -Z to tile +X), with height being up (world +Y -> tile +Z)
@@ -918,7 +924,7 @@ public class IsoHDPerspective implements HDPerspective {
             for(int y = 0; y < tileHeight; y++) {
                 ps.top.x = ps.bottom.x = xbase + x + 0.5;    /* Start at center of pixel at Y=127.5, bottom at Y=-0.5 */
                 ps.top.y = ps.bottom.y = ybase + y + 0.5;
-                ps.top.z = 127.5; ps.bottom.z = -0.5;
+                ps.top.z = maxheight + 0.5; ps.bottom.z = minheight - 0.5;
                 map_to_world.transform(ps.top);            /* Transform to world coordinates */
                 map_to_world.transform(ps.bottom);
                 ps.py = y;
