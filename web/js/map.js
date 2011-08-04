@@ -299,7 +299,7 @@ DynMap.prototype = {
 		});
 	},
 	getProjection: function() { return this.maptype.getProjection(); },
-	selectMap: function(map, completed) {
+	selectMapAndPan: function(map, location, completed) {
 		if (!map) { throw "Cannot select map " + map; }
 		var me = this;
 		
@@ -333,9 +333,12 @@ DynMap.prototype = {
 		me.map.options.maxZoom = me.maptype.options.maxZoom;
 		me.map.options.minZoom = me.maptype.options.minZoom;
 				
-		if (projectionChanged || worldChanged) {
+		if (projectionChanged || worldChanged || location) {
 			var centerPoint;
-			if(worldChanged) {
+			if(location) {
+				centerPoint = me.getProjection().fromLocationToLatLng(location);
+			}
+			else if(worldChanged) {
 				var centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
 				centerPoint = me.getProjection().fromLocationToLatLng(centerLocation);
 			}
@@ -369,28 +372,37 @@ DynMap.prototype = {
 			completed();
 		}
 	},
-	selectWorld: function(world, completed) {
+	selectMap: function(map, completed) {
+		this.selectMapAndPan(map, null, completed);
+	},
+	selectWorldAndPan: function(world, location, completed) {
 		var me = this;
 		if (typeof(world) === 'String') { world = me.worlds[world]; }
 		if (me.world === world) {
-			if (completed) { completed(); }
+			if(location) {
+				var latlng = me.maptype.getProjection().fromLocationToLatLng(location);
+				me.panToLatLng(latlng, completed);
+			}
+			else {
+				if (completed) { completed(); }
+			}
 			return;
 		}
-		me.selectMap(world.defaultmap, completed);
+		me.selectMapAndPan(world.defaultmap, location, completed);
+	},
+	selectWorld: function(world, completed) {
+		this.selectWorldAndPan(world, null, completed);
 	},
 	panToLocation: function(location, completed) {
 		var me = this;
-		var pan = function() {
-			var latlng = me.maptype.getProjection().fromLocationToLatLng(location);
-			me.panToLatLng(latlng, completed);
-		};
 		
 		if (location.world) {
-			me.selectWorld(location.world, function() {
-				pan();
+			me.selectWorldAndPan(location.world, location, function() {
+				if(completed) completed();
 			});
 		} else {
-			pan();
+			var latlng = me.maptype.getProjection().fromLocationToLatLng(location);
+			me.panToLatLng(latlng, completed);
 		}
 	},
 	panToLayerPoint: function(point, completed) {
