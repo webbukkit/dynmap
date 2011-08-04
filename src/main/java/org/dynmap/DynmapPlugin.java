@@ -414,7 +414,7 @@ public class DynmapPlugin extends JavaPlugin {
 
             onblockform = isTrigger("blockformed");
             try {
-                Class cls = Class.forName("org.dynmap.event.block.BlockFormEvent");
+                Class.forName("org.bukkit.event.block.BlockFormEvent");
                 pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FORM, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             } catch (ClassNotFoundException cnfx) {
                 if(onblockform)
@@ -422,7 +422,7 @@ public class DynmapPlugin extends JavaPlugin {
             }
             onblockfade = isTrigger("blockfaded");
             try {
-                Class cls = Class.forName("org.dynmap.event.block.BlockFadeEvent");
+                Class.forName("org.bukkit.event.block.BlockFadeEvent");
                 pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FADE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             } catch (ClassNotFoundException cnfx) {
                 if(onblockfade)
@@ -430,7 +430,7 @@ public class DynmapPlugin extends JavaPlugin {
             }
             onblockspread = isTrigger("blockspread");
             try {
-                Class cls = Class.forName("org.dynmap.event.block.BlockSpreadEvent");
+                Class.forName("org.bukkit.event.block.BlockSpreadEvent");
                 pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_SPREAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
             } catch (ClassNotFoundException cnfx) {
                 if(onblockspread)
