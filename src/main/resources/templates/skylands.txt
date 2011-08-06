@@ -1,4 +1,4 @@
-version: 0.20
+version: 0.20.1
 #
 # Default template for "Skylands" environment worlds (deftemplatesuffix="")
 #

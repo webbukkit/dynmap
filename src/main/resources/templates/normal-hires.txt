@@ -1,4 +1,4 @@
-version: 0.20
+version: 0.20.1
 #
 # Default template for "Normal" environment worlds (deftemplatesuffix="lhires")
 #  Uses the HDMap renderer with view from the SE with the "hires" resolution (16 pixels per block edge)

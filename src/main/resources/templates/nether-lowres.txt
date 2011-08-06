@@ -1,4 +1,4 @@
-version: 0.20
+version: 0.20.1
 #
 # Default template for "Nether" environment worlds (deftemplatesuffix="lowres")
 #  Uses the HDMap renderer with view from the SE with the "lowres" resolution (4 pixels per block edge)
