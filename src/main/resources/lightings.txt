@@ -1,4 +1,4 @@
-version: 0.20
+version: 0.21
 #
 # This file contains default standard lighting profiles.  The contents of this file CAN need to be replaced and updated
 # during upgrades, so new or updated lighting definitions should be done in the custom-lightings.txt file
