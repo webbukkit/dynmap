@@ -53,6 +53,8 @@ block:id=18,data=0,allfaces=2052,transparency=TRANSPARENT
 block:id=18,data=1,allfaces=2132,transparency=TRANSPARENT
 # Leaves (birch)
 block:id=18,data=2,allfaces=2052,transparency=TRANSPARENT
+# Leaves (skyland?)
+block:id=18,data=8,allfaces=2052,transparency=TRANSPARENT
 # Sponge
 block:id=19,allfaces=48
 # Glass
