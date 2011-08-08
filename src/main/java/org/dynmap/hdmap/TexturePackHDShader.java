@@ -131,6 +131,7 @@ public class TexturePackHDShader implements HDShader {
             if(blocktype == 0) {
                 return false;
             }
+            
             /* Get color from textures */
             scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading);
 
@@ -155,13 +156,14 @@ public class TexturePackHDShader implements HDShader {
                 /* Handle light level, if needed */
                 lighting.applyLighting(ps, this, c, tmpcolor);
                 /* If we got alpha from subblock model, use it instead if it is lower */
-                if(subalpha >= 0) {
-                    for(Color clr : tmpcolor) {
-                    	int a = clr.getAlpha();
-                    	if(subalpha < a)
-                    		clr.setAlpha(subalpha);
-                    }
-                }
+                /* (disable for now: weighting is wrong, as crosssection is 2D, not 3D based) */
+//                if(subalpha >= 0) {
+//                    for(Color clr : tmpcolor) {
+//                    	int a = clr.getAlpha();
+//                    	if(subalpha < a)
+//                    		clr.setAlpha(subalpha);
+//                    }
+//                }
                 /* If no previous color contribution, use new color */
                 if(color[0].isTransparent()) {
                     for(int i = 0; i < color.length; i++)
