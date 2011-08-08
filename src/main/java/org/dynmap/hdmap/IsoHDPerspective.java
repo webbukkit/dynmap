@@ -242,8 +242,6 @@ public class IsoHDPerspective implements HDPerspective {
             t = 0;
             /* Compute number of steps and increments for each */
             n = 1;
-
-            int mxout, myout, mzout;
             
             /* If perpendicular to X axis */
             if (dx == 0) {
@@ -552,9 +550,11 @@ public class IsoHDPerspective implements HDPerspective {
             }
         }
         
+        private boolean logit = false;
+        
         private boolean raytraceSubblock(short[] model, boolean firsttime) {
             if(firsttime) {
-            	mt = t + 0.0000001;
+            	mt = t + 0.00000001;
             	xx = top.x + mt *(bottom.x - top.x);  
             	yy = top.y + mt *(bottom.y - top.y);  
             	zz = top.z + mt *(bottom.z - top.z);
@@ -583,7 +583,7 @@ public class IsoHDPerspective implements HDPerspective {
             }
             subalpha = -1;
             boolean skip = !firsttime;	/* Skip first block on continue */
-            while(mt < mtend) {
+            while(mt <= mtend) {
             	if(!skip) {
             		try {
             			int blkalpha = model[modscale*modscale*my + modscale*mz + mx];
@@ -605,8 +605,9 @@ public class IsoHDPerspective implements HDPerspective {
                     mt = mt_next_x;
                     mt_next_x += mdt_dx;
                     laststep = stepx;
-                    if(mx == mxout)
+                    if(mx == mxout) {
                         return true;
+                    }
                 }
                 /* If Y step is next best */
                 else if((mt_next_y <= mt_next_x) && (mt_next_y <= mt_next_z)) {
@@ -614,8 +615,9 @@ public class IsoHDPerspective implements HDPerspective {
                     mt = mt_next_y;
                     mt_next_y += mdt_dy;
                     laststep = stepy;
-                    if(my == myout)
+                    if(my == myout) {
                         return true;
+                    }
                 }
                 /* Else, Z step is next best */
                 else {
@@ -623,22 +625,28 @@ public class IsoHDPerspective implements HDPerspective {
                     mt = mt_next_z;
                     mt_next_z += mdt_dz;
                     laststep = stepz;
-                    if(mz == mzout) 
+                    if(mz == mzout) {
                         return true;
+                    }
                 }
             }
             return true;
         }
         public final int[] getSubblockCoord() {
-            double tt = t + 0.000001;
-            if(subalpha >= 0)
-                tt = mt;
-            double xx = top.x + tt * (bottom.x - top.x);  
-            double yy = top.y + tt * (bottom.y - top.y);  
-            double zz = top.z + tt * (bottom.z - top.z);
-            subblock_xyz[0] = (int)((xx - Math.floor(xx)) * modscale);
-            subblock_xyz[1] = (int)((yy - Math.floor(yy)) * modscale);
-            subblock_xyz[2] = (int)((zz - Math.floor(zz)) * modscale);
+            if(subalpha < 0) {
+                double tt = t + 0.0000001;
+                double xx = top.x + tt * (bottom.x - top.x);  
+                double yy = top.y + tt * (bottom.y - top.y);  
+                double zz = top.z + tt * (bottom.z - top.z);
+                subblock_xyz[0] = (int)((xx - Math.floor(xx)) * modscale);
+                subblock_xyz[1] = (int)((yy - Math.floor(yy)) * modscale);
+                subblock_xyz[2] = (int)((zz - Math.floor(zz)) * modscale);
+            }
+            else {
+                subblock_xyz[0] = mx;
+                subblock_xyz[1] = my;
+                subblock_xyz[2] = mz;
+            }
             return subblock_xyz;
         }
     }
