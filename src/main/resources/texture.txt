@@ -48,11 +48,11 @@ block:id=17,data=1,allsides=116,top=21,bottom=21
 # Wood (birch)
 block:id=17,data=2,allsides=117,top=21,bottom=21
 # Leaves (std)
-block:id=18,data=0,data=4,data=8,allfaces=2052,transparency=TRANSPARENT
+block:id=18,data=0,data=4,data=8,data=12,allfaces=2052,transparency=TRANSPARENT
 # Leaves (spruce/pine)
-block:id=18,data=1,data=5,data=9,allfaces=2132,transparency=TRANSPARENT
+block:id=18,data=1,data=5,data=9,data=13,allfaces=2132,transparency=TRANSPARENT
 # Leaves (birch)
-block:id=18,data=2,data=6,data=10,allfaces=2052,transparency=TRANSPARENT
+block:id=18,data=2,data=6,data=10,data=14,allfaces=2052,transparency=TRANSPARENT
 # Sponge
 block:id=19,allfaces=48
 # Glass
