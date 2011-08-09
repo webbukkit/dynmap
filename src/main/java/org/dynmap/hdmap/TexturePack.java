@@ -885,8 +885,11 @@ public class TexturePack {
     }
     
     private static final int biomeLookup(int[] argb, int width, double rainfall, double temp) {
-        int t = (int)((1.0-temp)*(width-1));
-        int h = width - (int)(temp*rainfall*(width-1)) - 1;
+        int w = width-1;
+        int t = (int)((1.0-temp)*w);
+        int h = (int)((1.0 - (temp*rainfall))*w);
+        if(h > w) h = w;
+        if(t > w) t = w;
         return argb[width*h + t];
     }
 }
