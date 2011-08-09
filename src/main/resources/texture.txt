@@ -53,6 +53,8 @@ block:id=18,data=0,data=4,data=8,data=12,allfaces=2052,transparency=TRANSPARENT
 block:id=18,data=1,data=5,data=9,data=13,allfaces=2132,transparency=TRANSPARENT
 # Leaves (birch)
 block:id=18,data=2,data=6,data=10,data=14,allfaces=2052,transparency=TRANSPARENT
+# Leaves (std-alpha migrated?)
+block:id=18,data=3,data=7,data=11,data=15,allfaces=2052,transparency=TRANSPARENT
 # Sponge
 block:id=19,allfaces=48
 # Glass
