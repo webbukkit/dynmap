@@ -97,6 +97,35 @@ var DynmapTileLayer = L.TileLayer.extend({
 
 		this._container.appendChild(tile);
 	},
+	_loadTile: function(tile, tilePoint, zoom) {
+		var me = this;
+		tile._layer = this;
+		function done() {
+			me._loadingTiles.splice(me._loadingTiles.indexOf(tile), 1);
+			me._nextLoadTile();
+		}
+		tile.onload = function(e) {
+			me._tileOnLoad.apply(this, [e]);
+			done();
+		}
+		tile.onerror = function() {
+			me._tileOnError.apply(this);
+			done();
+		}
+		tile.loadSrc = function() {
+			me._loadingTiles.push(tile);
+			tile.src = me.getTileUrl(tilePoint, zoom);
+		};
+		this._loadQueue.push(tile);
+		this._nextLoadTile();
+	},
+	_nextLoadTile: function() {
+		if (this._loadingTiles.length > 4) { return; }
+		var next = this._loadQueue.pop();
+		if (!next) { return; }
+		
+		next.loadSrc();
+	},
 	
 	_removeOtherTiles: function(bounds) {
 		var kArr, x, y, key;
@@ -134,6 +163,8 @@ var DynmapTileLayer = L.TileLayer.extend({
 		this._updateTileSize();
 		this._tiles = {};
 		this._namedTiles = {};
+		this._loadQueue = [];
+		this._loadingTiles = [];
 		this._cachedTileUrls = {};
 		this._initContainer();
 		this._container.innerHTML = '';
