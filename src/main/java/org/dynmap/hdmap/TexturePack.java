@@ -54,6 +54,7 @@ public class TexturePack {
     private static final String CUSTOMWATERSTILL_PNG = "custom_water_still.png";
     private static final String CUSTOMWATERFLOWING_PNG = "custom_water_flowing.png";
 
+	private static final String STANDARDTP = "standard";
     /* Color modifier codes (x1000 for value in mapping code) */
     private static final int COLORMOD_NONE = 0;
     private static final int COLORMOD_GRASSTONED = 1;
@@ -190,36 +191,57 @@ public class TexturePack {
             /* Try to open zip */
             zf = new ZipFile(f);
             /* Find and load terrain.png */
+            InputStream is;
             ZipEntry ze = zf.getEntry(TERRAIN_PNG); /* Try to find terrain.png */
             if(ze == null) {
-                throw new FileNotFoundException();
+                /* Check for terrain.png under standard texture pack*/
+                File ff = new File(texturedir, STANDARDTP + "/" + TERRAIN_PNG);
+                is = new FileInputStream(ff);
             }
-            InputStream is = zf.getInputStream(ze); /* Get input stream for terrain.png */
+            else {
+            	is = zf.getInputStream(ze); /* Get input stream for terrain.png */
+            }
             loadTerrainPNG(is);
             is.close();
             /* Try to find and load misc/grasscolor.png */
             ze = zf.getEntry(GRASSCOLOR_PNG);
-            if(ze == null)
-                throw new FileNotFoundException();
-            is = zf.getInputStream(ze);
-            loadBiomeShadingImage(is, IMG_GRASSCOLOR);
-            is.close();
+            if(ze == null) {	/* Fall back to standard file */
+                /* Check for misc/grasscolor.png under standard texture pack*/
+                File ff = new File(texturedir, STANDARDTP + "/" + GRASSCOLOR_PNG);
+                is = new FileInputStream(ff);
+            }
+            else {
+            	is = zf.getInputStream(ze);
+            }
+        	loadBiomeShadingImage(is, IMG_GRASSCOLOR);
+        	is.close();
             /* Try to find and load misc/foliagecolor.png */
             ze = zf.getEntry(FOLIAGECOLOR_PNG);
-            if(ze == null)
-                throw new FileNotFoundException();
-            is = zf.getInputStream(ze);
-            loadBiomeShadingImage(is, IMG_FOLIAGECOLOR);
-            is.close();
+            if(ze == null) {
+                /* Check for misc/foliagecolor.png under standard texture pack*/
+                File ff = new File(texturedir, STANDARDTP + "/" + FOLIAGECOLOR_PNG);
+                is = new FileInputStream(ff);
+            }
+            else {
+            	is = zf.getInputStream(ze);
+            }
+        	loadBiomeShadingImage(is, IMG_FOLIAGECOLOR);
+        	is.close();
+           
             /* Try to find and load misc/water.png */
             ze = zf.getEntry(WATER_PNG);
-            if(ze == null)
-                throw new FileNotFoundException();
-            is = zf.getInputStream(ze);
-            loadImage(is, IMG_WATER);
+            if(ze == null) {
+                File ff = new File(texturedir, STANDARDTP + "/" + WATER_PNG);
+                is = new FileInputStream(ff);
+            }
+            else {
+            	is = zf.getInputStream(ze);
+            }
+        	loadImage(is, IMG_WATER);
             patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
             patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
-            is.close();
+        	is.close();
+
             /* Optional files - process if they exist */
             ze = zf.getEntry(CUSTOMLAVAFLOWING_PNG);
             if(ze != null) {
@@ -258,21 +280,33 @@ public class TexturePack {
         try {
             /* Open and load terrain.png */
             f = new File(texturedir, tpname + "/" + TERRAIN_PNG);
+            if(!f.canRead()) {
+                f = new File(texturedir, STANDARDTP + "/" + TERRAIN_PNG);            	
+            }
             fis = new FileInputStream(f);
             loadTerrainPNG(fis);
             fis.close();
             /* Check for misc/grasscolor.png */
             f = new File(texturedir, tpname + "/" + GRASSCOLOR_PNG);
+            if(!f.canRead()) {
+                f = new File(texturedir, STANDARDTP + "/" + GRASSCOLOR_PNG);            	
+            }
             fis = new FileInputStream(f);
             loadBiomeShadingImage(fis, IMG_GRASSCOLOR);
             fis.close();
             /* Check for misc/foliagecolor.png */
             f = new File(texturedir, tpname + "/" + FOLIAGECOLOR_PNG);
+            if(!f.canRead()) {
+                f = new File(texturedir, STANDARDTP + "/" + FOLIAGECOLOR_PNG);            	
+            }
             fis = new FileInputStream(f);
             loadBiomeShadingImage(fis, IMG_FOLIAGECOLOR);
             fis.close();
             /* Check for misc/water.png */
             f = new File(texturedir, tpname + "/" + WATER_PNG);
+            if(!f.canRead()) {
+                f = new File(texturedir, STANDARDTP + "/" + WATER_PNG);            	
+            }
             fis = new FileInputStream(f);
             loadImage(fis, IMG_WATER);
             patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
