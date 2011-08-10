@@ -14,7 +14,7 @@ regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 			return boxCreator(ArrayMax(xs), ArrayMin(xs), region['max-y'], region['min-y'], ArrayMax(zs), ArrayMin(zs));
 		}
 		if(!region.min || !region.max)
-			return [];
+			return null;
 		if(region.max.y <= region.min.y)
 			region.min.y = region.max.y - 1;
 		return boxCreator(region.max.x, region.min.x, region.max.y, region.min.y, region.max.z, region.min.z);
@@ -25,11 +25,16 @@ regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 	$.getJSON('standalone/'+regionFile, function(data) {
 		var boxLayers = [];
 		$.each(data, function(name, region) {
-			var boxLayer = createBoxFromRegion(region, configuration.createBoxLayer);
-			
-			boxLayer.bindPopup(configuration.createPopupContent(name, region));
-			
-			boxLayers.push(boxLayer);
+			// Only handle cuboids for the moment (therefore skipping 'global')
+			if (region.type === 'cuboid') {
+				var boxLayer = createBoxFromRegion(region, configuration.createBoxLayer);
+				// Skip errorous regions.
+				if (boxLayer) {
+					boxLayer.bindPopup(configuration.createPopupContent(name, region));
+					
+					boxLayers.push(boxLayer);
+				}
+			}
 		});
 		configuration.result(new L.LayerGroup(boxLayers));
 		
