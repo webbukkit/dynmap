@@ -21,3 +21,52 @@ commands:
            /<command> stats world - Show render statistics for maps on world 'world'.
            /<command> resetstats - Reset render statistics.
            /<command> resetstats world - Reset render statistics for maps on world 'world'.
+permissions:
+  dynmap.*:
+    description: Gives access to all dynmap functions
+    default: op
+    children:
+      dynmap.render: true
+      dynmap.show.self: true
+      dynmap.show.others: true
+      dynmap.hide.self: true
+      dynmap.hide.others: true
+      dynmap.fullrender: true
+      dynmap.radiusrender: true
+      dynmap.cancelrender: true
+      dynmap.reload: true
+      dynmap.stats: true
+      dynmap.resetstats: true
+  dynmap.render:
+    description: Allows /dynmap render command
+    default: true
+  dynmap.show.self:
+    description: Allows /dynmap show (on self)
+    default: true
+  dynmap.show.others:
+    description: Allows /dynmap show <player>
+    default: op
+  dynmap.hide.self:
+    description: Allows /dynmap hide (on self)
+    default: true
+  dynmap.hide.others:
+    description: Allows /dynmap hide <player>
+    default: op
+  dynmap.fullrender:
+    description: Allows /dynmap fullrender or /dynmap fullrender <world>
+    default: op
+  dynmap.radiusrender:
+    description: Allows /dynmap radiusrender
+    default: op
+  dynmap.cancelrender:
+    description: Allows /dynmap cancelrender <world>
+    default: op
+  dynmap.reload:
+    description: Allows /dynmap reload
+    default: op
+  dynmap.stats:
+    description: Allows /dynmap stats or /dynmap stats <world>
+    default: true
+  dynmap.resetstats:
+    description: Allows /dynmap resetstats or /dynmap resetstats <world>
+    default: op
