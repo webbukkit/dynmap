@@ -32,6 +32,7 @@ public class DynmapWorld {
     public ConfigurationNode configuration;
     public List<Location> seedloc;
     public List<MapChunkCache.VisibilityLimit> visibility_limits;
+    public List<MapChunkCache.VisibilityLimit> hidden_limits;
     public AutoGenerateOption do_autogenerate;
     public MapChunkCache.HiddenChunkStyle hiddenchunkstyle;
     public int servertime;

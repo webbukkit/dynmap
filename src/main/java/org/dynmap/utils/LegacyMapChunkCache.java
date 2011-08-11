@@ -524,6 +524,14 @@ public class LegacyMapChunkCache implements MapChunkCache {
         visible_limits.add(limit);
     }
     /**
+     * Add hidden area limit - can be called more than once 
+     * Needs to be set before chunks are loaded
+     * Coordinates are block coordinates
+     */
+    public void setHiddenRange(VisibilityLimit lim) {
+        Log.severe("LegacyMapChunkCache does not support hidden areas");
+    }
+    /**
      * Set autogenerate - must be done after at least one visible range has been set
      */
     public void setAutoGenerateVisbileRanges(DynmapWorld.AutoGenerateOption generateopt) {

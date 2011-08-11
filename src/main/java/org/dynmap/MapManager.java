@@ -550,6 +550,19 @@ public class MapManager {
                 dynmapWorld.seedloc.add(new Location(w, (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
             }            
         }
+        /* Load hidden limits, if any are defined */
+        List<ConfigurationNode> hidelimits = worldConfiguration.getNodes("hiddenlimits");
+        if(hidelimits != null) {
+            dynmapWorld.hidden_limits = new ArrayList<MapChunkCache.VisibilityLimit>();
+            for(ConfigurationNode vis : hidelimits) {
+                MapChunkCache.VisibilityLimit lim = new MapChunkCache.VisibilityLimit();
+                lim.x0 = vis.getInteger("x0", 0);
+                lim.x1 = vis.getInteger("x1", 0);
+                lim.z0 = vis.getInteger("z0", 0);
+                lim.z1 = vis.getInteger("z1", 0);
+                dynmapWorld.hidden_limits.add(lim);
+            }            
+        }
         String autogen = worldConfiguration.getString("autogenerate-to-visibilitylimits", "none");
         if(autogen.equals("permanent")) {
             dynmapWorld.do_autogenerate = AutoGenerateOption.PERMANENT;
@@ -707,6 +720,13 @@ public class MapManager {
             c.setHiddenFillStyle(w.hiddenchunkstyle);
             c.setAutoGenerateVisbileRanges(w.do_autogenerate);
         }
+        if(w.hidden_limits != null) {
+            for(MapChunkCache.VisibilityLimit limit: w.hidden_limits) {
+                c.setHiddenRange(limit);
+            }
+            c.setHiddenFillStyle(w.hiddenchunkstyle);
+        }
+
         c.setChunks(w.world, chunks);
         if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
             Log.severe("CraftBukkit build does not support biome APIs");
