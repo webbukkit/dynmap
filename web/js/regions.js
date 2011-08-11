@@ -67,6 +67,38 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 				latlng(minx,64,maxz)
 				], configuration.regionstyle);
 	}
+
+	function create3DOutlineLayer(xarray, maxy, miny, zarray) {
+		var toplist = [];
+		var botlist = [];
+		var i;
+		var polylist = [];
+		for(i = 0; i < xarray.length; i++) {
+			toplist[i] = latlng(xarray[i], maxy, zarray[i]);
+			botlist[i] = latlng(xarray[i], miny, zarray[i]);
+		}
+		for(i = 0; i < xarray.length; i++) {
+			var sidelist = [];
+			sidelist[0] = toplist[i];
+			sidelist[1] = botlist[i];
+			sidelist[2] = botlist[(i+1)%xarray.length];
+			sidelist[3] = toplist[(i+1)%xarray.length];
+			polylist[i] = new L.Polygon(sidelist, configuration.regionstyle);
+		}
+		polylist[xarray.length] = new L.Polygon(botlist, configuration.regionstyle);
+		polylist[xarray.length+1] = new L.Polygon(toplist, configuration.regionstyle);
+		
+		return new L.FeatureGroup(polylist);
+	}
+
+	function create2DOutlineLayer(xarray, maxy, miny, zarray) {
+		var llist = [];
+		var i;
+		for(i = 0; i < xarray.length; i++) {
+			llist[i] = latlng(xarray[i], 64, zarray[i]);
+		}
+		return new L.Polygon(llist, configuration.regionstyle);
+	}
 	
 	function createPopupContent(name, region) {
 		function join(a) {
@@ -120,6 +152,7 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 						worldName: worldName,
 						createPopupContent: createPopupContent,
 						createBoxLayer: configuration.use3dregions ? create3DBoxLayer : create2DBoxLayer,
+						createOutlineLayer: configuration.use3dregions ? create3DOutlineLayer : create2DOutlineLayer,
 						result: function(regionsLayer) {
 							activeLayer = regionsLayer;
 							dynmap.map.addLayer(activeLayer);
