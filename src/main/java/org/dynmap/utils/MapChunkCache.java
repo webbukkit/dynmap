@@ -93,6 +93,12 @@ public interface MapChunkCache {
      */
     public void setVisibleRange(VisibilityLimit limit);
     /**
+     * Add hidden area limit - can be called more than once 
+     * Needs to be set before chunks are loaded
+     * Coordinates are block coordinates
+     */
+    public void setHiddenRange(VisibilityLimit limit);
+    /**
      * Set autogenerate - must be done after at least one visible range has been set
      */
     public void setAutoGenerateVisbileRanges(DynmapWorld.AutoGenerateOption do_generate);
