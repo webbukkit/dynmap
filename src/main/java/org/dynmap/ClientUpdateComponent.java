@@ -42,7 +42,9 @@ public class ClientUpdateComponent extends Component {
             s(jp, "account", p.getName());
             /* Don't leak player location for world not visible on maps, or if sendposition disbaled */
             DynmapWorld pworld = MapManager.mapman.worldsLookup.get(p.getWorld().getName());
-            if(configuration.getBoolean("sendpositon", true) && (pworld != null) && pworld.sendposition) {
+            /* Fix typo on 'sendpositon' to 'sendposition', keep bad one in case someone used it */
+            if(configuration.getBoolean("sendposition", true) && configuration.getBoolean("sendpositon", true) &&
+                    (pworld != null) && pworld.sendposition) {
                 s(jp, "world", p.getWorld().getName());
                 s(jp, "x", pl.getX());
                 s(jp, "y", pl.getY());
