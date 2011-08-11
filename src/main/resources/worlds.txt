@@ -35,6 +35,12 @@ worlds:
   #      z0: -1000
   #      x1: -1000
   #      z1: -500
+  #  # Use hiddenlimits to specifically hide portions of your world (the opposite of visibilitylimits)
+  #  hiddenlimits:
+  #    - x0: 100
+  #      z0: 0
+  #      x1: 200
+  #      z1: 0
   #  # Use hidestyle to control how hidden-but-existing chunks are to be rendered (air=empty air (same as ungenerated), stone=a flat stone plain, ocean=a flat ocean)
   #  hidestyle: stone
   #  # Use 'autogenerate-to-visibilitylimits: true' to choose to force the generation of ungenerated chunks while rendering maps on this world, for any chunks within the defined

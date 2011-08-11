@@ -37,6 +37,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean biome, biomeraw, highesty, blockdata;
     private HiddenChunkStyle hidestyle = HiddenChunkStyle.FILL_AIR;
     private List<VisibilityLimit> visible_limits = null;
+    private List<VisibilityLimit> hidden_limits = null;
     private DynmapWorld.AutoGenerateOption generateopt;
     private boolean do_generate = false;
     private boolean do_save = false;
@@ -395,6 +396,14 @@ public class NewMapChunkCache implements MapChunkCache {
                     }
                 }
             }
+            if(vis && (hidden_limits != null)) {
+                for(VisibilityLimit limit : hidden_limits) {
+                    if((chunk.x >= limit.x0) && (chunk.x <= limit.x1) && (chunk.z >= limit.z0) && (chunk.z <= limit.z1)) {
+                        vis = false;
+                        break;
+                    }
+                }
+            }
             /* Check if cached chunk snapshot found */
             ChunkSnapshot ss = MapManager.mapman.sscache.getSnapshot(w.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
             if(ss != null) {
@@ -618,6 +627,29 @@ public class NewMapChunkCache implements MapChunkCache {
         if(visible_limits == null)
             visible_limits = new ArrayList<VisibilityLimit>();
         visible_limits.add(limit);
+    }
+    /**
+     * Add hidden area limit - can be called more than once 
+     * Needs to be set before chunks are loaded
+     * Coordinates are block coordinates
+     */
+    public void setHiddenRange(VisibilityLimit lim) {
+        VisibilityLimit limit = new VisibilityLimit();
+        if(lim.x0 > lim.x1) {
+            limit.x0 = (lim.x1 >> 4); limit.x1 = ((lim.x0+15) >> 4);
+        }
+        else {
+            limit.x0 = (lim.x0 >> 4); limit.x1 = ((lim.x1+15) >> 4);
+        }
+        if(lim.z0 > lim.z1) {
+            limit.z0 = (lim.z1 >> 4); limit.z1 = ((lim.z0+15) >> 4);
+        }
+        else {
+            limit.z0 = (lim.z0 >> 4); limit.z1 = ((lim.z1+15) >> 4);
+        }
+        if(hidden_limits == null)
+            hidden_limits = new ArrayList<VisibilityLimit>();
+        hidden_limits.add(limit);
     }
     @Override
     public boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome) {
