@@ -21,6 +21,7 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
+import org.dynmap.MapType;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.MapIterator.BlockStep;
@@ -967,7 +968,8 @@ public class IsoHDPerspective implements HDPerspective {
             String prefix = shaderstate[i].getMap().getPrefix();
             if(rendered[i]) {
                 renderone = true;
-                String fname = tile.getFilename(prefix);
+                MapType.ImageFormat fmt = shaderstate[i].getMap().getImageFormat();
+                String fname = tile.getFilename(prefix, fmt);
                 File f = new File(tile.getDynmapWorld().worldtilepath, fname);
                 FileLockManager.getWriteLock(f);
                 try {
@@ -977,7 +979,7 @@ public class IsoHDPerspective implements HDPerspective {
                         if(!f.getParentFile().exists())
                             f.getParentFile().mkdirs();
                         try {
-                            FileLockManager.imageIOWrite(im[i].buf_img, "png", f);
+                            FileLockManager.imageIOWrite(im[i].buf_img, fmt.getFileExt(), f);
                         } catch (IOException e) {
                             Debug.error("Failed to save image: " + f.getPath(), e);
                         } catch (java.lang.NullPointerException e) {
@@ -998,7 +1000,7 @@ public class IsoHDPerspective implements HDPerspective {
                 MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered[i]);
                 /* Handle day image, if needed */
                 if(dayim[i] != null) {
-                    fname = tile.getDayFilename(prefix);
+                    fname = tile.getDayFilename(prefix, fmt);
                     f = new File(tile.getDynmapWorld().worldtilepath, fname);
                     FileLockManager.getWriteLock(f);
                     prefix = prefix+"_day";
@@ -1010,7 +1012,7 @@ public class IsoHDPerspective implements HDPerspective {
                             if(!f.getParentFile().exists())
                                 f.getParentFile().mkdirs();
                             try {
-                                FileLockManager.imageIOWrite(dayim[i].buf_img, "png", f);
+                                FileLockManager.imageIOWrite(dayim[i].buf_img, fmt.getFileExt(), f);
                             } catch (IOException e) {
                                 Debug.error("Failed to save image: " + f.getPath(), e);
                             } catch (java.lang.NullPointerException e) {

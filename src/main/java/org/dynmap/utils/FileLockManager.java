@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.awt.image.BufferedImage;
+import java.awt.image.DirectColorModel;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
@@ -145,7 +147,21 @@ public class FileLockManager {
         byte[] rslt;
         synchronized(baos_lock) {
             baos.reset();
-            ImageIO.write(img, type, baos); /* Write to byte array stream - prevent bogus I/O errors */
+            if(type.equals("jpg")) {
+                WritableRaster raster = img.getRaster();
+                WritableRaster newRaster = raster.createWritableChild(0, 0, img.getWidth(),
+                          img.getHeight(), 0, 0, new int[] {0, 1, 2});
+                DirectColorModel cm = (DirectColorModel)img.getColorModel();
+                DirectColorModel newCM = new DirectColorModel(cm.getPixelSize(),
+                cm.getRedMask(), cm.getGreenMask(), cm.getBlueMask());
+                // now create the new buffer that is used ot write the image:
+                BufferedImage rgbBuffer = new BufferedImage(newCM, newRaster, false, null);
+                ImageIO.write(rgbBuffer, type, baos); /* Write to byte array stream - prevent bogus I/O errors */
+                rgbBuffer.flush();
+            }
+            else {
+                ImageIO.write(img, type, baos); /* Write to byte array stream - prevent bogus I/O errors */
+            }
             rslt = baos.toByteArray();
         }
         while(!done) {

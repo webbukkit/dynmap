@@ -27,6 +27,7 @@ public abstract class FileHandler implements HttpHandler {
         mimes.put(".htm", "text/html");
         mimes.put(".js", "text/javascript");
         mimes.put(".png", "image/png");
+        mimes.put(".jpg", "image/jpeg");
         mimes.put(".css", "text/css");
         mimes.put(".txt", "text/plain");
     }

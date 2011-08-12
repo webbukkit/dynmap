@@ -36,7 +36,7 @@ var HDMapType = DynmapTileLayer.extend({
 		// Y is inverted for HD-map.
 		info.y = -info.y;
 		info.scaledy = info.y >> 5;
-		return namedReplace('{prefix}{nightday}/{scaledx}_{scaledy}/{zoom}{x}_{y}.png', info);
+		return namedReplace('{prefix}{nightday}/{scaledx}_{scaledy}/{zoom}{x}_{y}.{fmt}', info);
 	},
 	zoomprefix: function(amount) {
 		// amount == 0 -> ''

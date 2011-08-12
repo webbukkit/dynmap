@@ -1,20 +1,27 @@
 package org.dynmap;
 
-import java.io.File;
 import java.util.List;
 
 import org.bukkit.Location;
-import org.dynmap.utils.MapChunkCache;
 import org.json.simple.JSONObject;
 
 public abstract class MapType {
+    public enum ImageFormat {
+        FORMAT_PNG("png"),
+        FORMAT_JPG("jpg");
+        
+        String ext;
+        ImageFormat(String ext) {
+            this.ext = ext;
+        }
+        public String getFileExt() { return ext; }
+    };
+
     public abstract MapTile[] getTiles(Location l);
 
     public abstract MapTile[] getAdjecentTiles(MapTile tile);
 
     public abstract List<DynmapChunk> getRequiredChunks(MapTile tile);
-
-    public abstract boolean render(MapChunkCache cache, MapTile tile, File outputFile);
     
     public void buildClientConfiguration(JSONObject worldObject, DynmapWorld w) {
     }
@@ -41,6 +48,9 @@ public abstract class MapType {
     public abstract boolean isBigWorldMap(DynmapWorld w);
     /* Return number of zoom levels needed by this map (before extra levels from extrazoomout) */
     public int getMapZoomOutLevels() { return 0; }
+    
+    public ImageFormat getImageFormat() { return ImageFormat.FORMAT_PNG; }
+    
     /**
      * Step sequence for creating zoomed file: first index is top-left, second top-right, third bottom-left, forth bottom-right
      * Values correspond to tile X,Y (0), X+step,Y (1), X,Y+step (2), X+step,Y+step (3) 

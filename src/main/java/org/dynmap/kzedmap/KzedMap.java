@@ -213,7 +213,6 @@ public class KzedMap extends MapType {
         }
     }
 
-    @Override
     public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         if (tile instanceof KzedMapTile) {
             return ((KzedMapTile) tile).renderer.render(cache, (KzedMapTile) tile, outputFile);

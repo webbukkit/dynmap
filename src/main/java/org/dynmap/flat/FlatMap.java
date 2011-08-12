@@ -124,7 +124,6 @@ public class FlatMap extends MapType {
         return result;
     }
 
-    @Override
     public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         FlatMapTile t = (FlatMapTile) tile;
         World w = t.getWorld();

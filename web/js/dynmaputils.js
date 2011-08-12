@@ -260,7 +260,8 @@ var DynmapTileLayer = L.TileLayer.extend({
 			zoom: this.zoomprefix(zoomoutlevel),
 			zoomprefix: (zoomoutlevel==0)?"":(this.zoomprefix(zoomoutlevel)+"_"),
 			x: x,
-			y: y
+			y: y,
+			fmt: this.options['image-format'] || 'png'
 		};
 	}
 });
