@@ -72,6 +72,7 @@ public class TexturePack {
     
     /* Special tile index values */
     private static final int BLOCKINDEX_BLANK = -1;
+    private static final int BLOCKINDEX_GRASSMASK = 38;
     private static final int BLOCKINDEX_REDSTONE_NSEW_TONE = 164;
     private static final int BLOCKINDEX_REDSTONE_EW_TONE = 165;
     private static final int BLOCKINDEX_REDSTONE_NSEW = 180;
@@ -485,6 +486,8 @@ public class TexturePack {
             tp.terrain_argb[idx] = new int[tp.native_scale*tp.native_scale];
             scaleTerrainPNGSubImage(native_scale, tp.native_scale, terrain_argb[idx],  tp.terrain_argb[idx]);
         }
+        /* Special case - some textures are used as masks - need pure alpha (00 or FF) */
+        makeAlphaPure(tp.terrain_argb[BLOCKINDEX_GRASSMASK]); /* Grass side mask */
     }
     private static void scaleTerrainPNGSubImage(int srcscale, int destscale, int[] src_argb, int[] dest_argb) {
         int nativeres = srcscale;
@@ -533,15 +536,18 @@ public class TexturePack {
                             if(wy == 0) continue;
                             /* Accumulate */
                             c.setARGB(src_argb[(ind_y+yy)*nativeres + ind_x + xx]);
-                            accum_red += c.getRed() * wx * wy;
-                            accum_green += c.getGreen() * wx * wy;
-                            accum_blue += c.getBlue() * wx * wy;
-                            accum_alpha += c.getAlpha() * wx * wy;
+                            int a = c.getAlpha();
+                            accum_red += c.getRed() * a * wx * wy;
+                            accum_green += c.getGreen() * a* wx * wy;
+                            accum_blue += c.getBlue() * a * wx * wy;
+                            accum_alpha += a * wx * wy;
                         }
                     }
+                    int newalpha = accum_alpha / (nativeres*nativeres);
+                    if(newalpha == 0) newalpha = 1;
                     /* Generate weighted compnents into color */
-                    c.setRGBA(accum_red / (nativeres*nativeres), accum_green / (nativeres*nativeres), 
-                              accum_blue / (nativeres*nativeres), accum_alpha / (nativeres*nativeres));
+                    c.setRGBA(accum_red / (nativeres*nativeres*newalpha), accum_green / (nativeres*nativeres*newalpha), 
+                              accum_blue / (nativeres*nativeres*newalpha), accum_alpha / (nativeres*nativeres));
                     dest_argb[(y*res) + x] = c.getARGB();
                 }
             }
@@ -582,10 +588,11 @@ public class TexturePack {
                         for(int yy = 0; yy < 2; yy++) {
                             int wy = (yy==0)?wgt_y:(res-wgt_y);
                             if(wy == 0) continue;
-                            accum_red[(ind_y+yy)*res + (ind_x+xx)] += c.getRed() * wx * wy;
-                            accum_green[(ind_y+yy)*res + (ind_x+xx)] += c.getGreen() * wx * wy;
-                            accum_blue[(ind_y+yy)*res + (ind_x+xx)] += c.getBlue() * wx * wy;
-                            accum_alpha[(ind_y+yy)*res + (ind_x+xx)] += c.getAlpha() * wx * wy;
+                            int a = c.getAlpha();
+                            accum_red[(ind_y+yy)*res + (ind_x+xx)] += c.getRed() * a * wx * wy;
+                            accum_green[(ind_y+yy)*res + (ind_x+xx)] += c.getGreen() * a * wx * wy;
+                            accum_blue[(ind_y+yy)*res + (ind_x+xx)] += c.getBlue() * a * wx * wy;
+                            accum_alpha[(ind_y+yy)*res + (ind_x+xx)] += a * wx * wy;
                         }
                     }
                 }
@@ -594,8 +601,10 @@ public class TexturePack {
             for(int y = 0; y < res; y++) {
                 for(int x = 0; x < res; x++) {
                     int off = (y*res) + x;
-                    c.setRGBA(accum_red[off]/(nativeres*nativeres), accum_green[off]/(nativeres*nativeres),
-                          accum_blue[off]/(nativeres*nativeres), accum_alpha[off]/(nativeres*nativeres));
+                    int aa = accum_alpha[off] / (nativeres*nativeres);
+                    if(aa == 0) aa = 1;
+                    c.setRGBA(accum_red[off]/(aa*nativeres*nativeres), accum_green[off]/(aa*nativeres*nativeres),
+                          accum_blue[off]/(aa*nativeres*nativeres), accum_alpha[off] / (nativeres*nativeres));
                     dest_argb[y*res + x] = c.getARGB();
                 }
             }
@@ -881,9 +890,9 @@ public class TexturePack {
                     textid = 68;
                 }
                 else {  /* Else, check the grass color overlay */
-                    int ovclr = terrain_argb[38][v*native_scale+u];
+                    int ovclr = terrain_argb[BLOCKINDEX_GRASSMASK][v*native_scale+u];
                     if((ovclr & 0xFF000000) != 0) { /* Hit? */
-                        texture = terrain_argb[38]; /* Use it */
+                        texture = terrain_argb[BLOCKINDEX_GRASSMASK]; /* Use it */
                         textop = COLORMOD_GRASSTONED;   /* Force grass toning */
                     }
                 }
@@ -925,5 +934,12 @@ public class TexturePack {
         if(h > w) h = w;
         if(t > w) t = w;
         return argb[width*h + t];
+    }
+    
+    private static final void makeAlphaPure(int[] argb) {
+        for(int i = 0; i < argb.length; i++) {
+            if((argb[i] & 0xFF000000) != 0)
+                argb[i] |= 0xFF000000;
+        }
     }
 }
