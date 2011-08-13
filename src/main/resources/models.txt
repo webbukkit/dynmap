@@ -1927,3 +1927,52 @@ layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 -**************-
 ****************
 -*------------*-
+# Redstone repeater (on) facing east
+# Redstone repeater (off) facing east
+block:id=93,id=94,data=0,data=4,data=8,data=12,scale=16
+layer:0,1
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+layer:2,3,4,5,6,7,8,9
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+--------**--**--
+--------**--**--
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+# Redstone repeater (on) facing south
+# Redstone repeater (off) facing south
+block:id=93,id=94,data=1,data=5,data=9,data=13,scale=16
+rotate:id=93,data=0,rot=90
+# Redstone repeater (on) facing west
+# Redstone repeater (off) facing west
+block:id=93,id=94,data=2,data=6,data=10,data=14,scale=16
+rotate:id=93,data=0,rot=180
+# Redstone repeater (on) facing north
+# Redstone repeater (off) facing north
+block:id=93,id=94,data=3,data=7,data=11,data=15,scale=16
+rotate:id=93,data=0,rot=270
