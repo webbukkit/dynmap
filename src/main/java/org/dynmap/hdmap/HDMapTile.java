@@ -76,8 +76,8 @@ public class HDMapTile extends MapTile {
     @Override
     public boolean isBlockTypeDataNeeded() { return MapManager.mapman.hdmapman.isBlockTypeDataNeeded(this); }
     
-    public boolean render(MapChunkCache cache) {
-        return perspective.render(cache, this);
+    public boolean render(MapChunkCache cache, String mapname) {
+        return perspective.render(cache, this, mapname);
     }
     
     public List<DynmapChunk> getRequiredChunks() {

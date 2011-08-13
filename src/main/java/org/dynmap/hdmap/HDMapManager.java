@@ -119,7 +119,7 @@ public class HDMapManager {
     /**
      * Initialize shader states for all shaders for given tile
      */
-    public HDShaderState[] getShaderStateForTile(HDMapTile tile, MapChunkCache cache, MapIterator mapiter) {
+    public HDShaderState[] getShaderStateForTile(HDMapTile tile, MapChunkCache cache, MapIterator mapiter, String mapname) {
         DynmapWorld w = MapManager.mapman.worldsLookup.get(tile.getWorld().getName());
         if(w == null) return new HDShaderState[0];
         ArrayList<HDShaderState> shaders = new ArrayList<HDShaderState>();
@@ -127,6 +127,9 @@ public class HDMapManager {
             if(map instanceof HDMap) {
                 HDMap hdmap = (HDMap)map;
                 if(hdmap.getPerspective() == tile.perspective) {
+                    /* If limited to one map, and this isn't it, skip */
+                    if((mapname != null) && (!hdmap.getName().equals(mapname)))
+                        continue;
                     shaders.add(hdmap.getShader().getStateInstance(hdmap, cache, mapiter));
                 }
             }

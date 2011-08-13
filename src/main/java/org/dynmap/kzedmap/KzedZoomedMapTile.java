@@ -84,7 +84,7 @@ public class KzedZoomedMapTile extends MapTile {
     }
 
     @Override
-    public boolean render(MapChunkCache cache) {
+    public boolean render(MapChunkCache cache, String mapname) {
         return false;
     }
 

@@ -166,15 +166,16 @@ public class MapManager {
         int cxmin, cxmax, czmin, czmax;
         String rendertype;
         boolean cancelled;
+        String mapname;
 
         /* Full world, all maps render */
-        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender) {
-            this(dworld, l, sender, -1);
+        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname) {
+            this(dworld, l, sender, mapname, -1);
             rendertype = "Full render";
         }
         
         /* Full world, all maps render, with optional render radius */
-        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, int radius) {
+        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname, int radius) {
             world = dworld;
             loc = l;
             found = new HashSet<MapTile>();
@@ -193,6 +194,7 @@ public class MapManager {
                 czmax = (l.getBlockZ() + radius+15)>>4;
                 rendertype = "Radius render";
             }
+            this.mapname = mapname;
         }
 
         /* Single tile render - used for incremental renders */
@@ -240,8 +242,17 @@ public class MapManager {
                     /* Advance to next unrendered map */
                     while(map_index < world.maps.size()) {
                         map_index++;    /* Move to next one */
-                        if((map_index < world.maps.size()) && (renderedmaps.contains(world.maps.get(map_index)) == false))
-                            break;
+                        if(map_index >= world.maps.size()) break;
+                        /* If single map render, see if this is our target */
+                        if(mapname != null) {
+                            if(world.maps.get(map_index).getName().equals(mapname)) {
+                                break;
+                            }
+                        }
+                        else {
+                            if(renderedmaps.contains(world.maps.get(map_index)) == false)
+                                break;
+                        }
                     }
                     if(map_index >= world.maps.size()) {    /* Last one done? */
                         sender.sendMessage(rendertype + " of '" + world.world.getName() + "' finished.");
@@ -253,6 +264,8 @@ public class MapManager {
                     /* Build active map list */
                     activemaps = "";
                     for(String n : activemaplist) {
+                        if((mapname != null) && (!mapname.equals(n)))
+                            continue;
                         if(activemaps.length() > 0)
                             activemaps += ",";
                         activemaps += n;
@@ -307,12 +320,12 @@ public class MapManager {
             }
             if(tile0 != null) {    /* Single tile? */
                 if(cache.isEmpty() == false)
-                    tile.render(cache);
+                    tile.render(cache, null);
             }
             else {
             	/* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
                 if (cache.isEmpty() == false) {
-                	tile.render(cache);
+                	tile.render(cache, mapname);
                     found.remove(tile);
                     rendered.add(tile);
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
@@ -434,7 +447,7 @@ public class MapManager {
         }        
     }
 
-    void renderFullWorld(Location l, CommandSender sender) {
+    void renderFullWorld(Location l, CommandSender sender, String mapname) {
         DynmapWorld world = getWorld(l.getWorld().getName());
         if (world == null) {
             sender.sendMessage("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
@@ -448,7 +461,7 @@ public class MapManager {
                 sender.sendMessage(rndr.rendertype + " of world '" + wname + "' already active.");
                 return;
             }
-            rndr = new FullWorldRenderState(world,l,sender);    /* Make new activation record */
+            rndr = new FullWorldRenderState(world,l,sender, mapname);    /* Make new activation record */
             active_renders.put(wname, rndr);    /* Add to active table */
         }
         /* Schedule first tile to be worked */
@@ -457,7 +470,7 @@ public class MapManager {
         sender.sendMessage("Full render starting on world '" + wname + "'...");
     }
 
-    void renderWorldRadius(Location l, CommandSender sender, int radius) {
+    void renderWorldRadius(Location l, CommandSender sender, String mapname, int radius) {
         DynmapWorld world = getWorld(l.getWorld().getName());
         if (world == null) {
             sender.sendMessage("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
@@ -471,7 +484,7 @@ public class MapManager {
                 sender.sendMessage(rndr.rendertype + " of world '" + wname + "' already active.");
                 return;
             }
-            rndr = new FullWorldRenderState(world,l,sender, radius);    /* Make new activation record */
+            rndr = new FullWorldRenderState(world,l,sender, mapname, radius);    /* Make new activation record */
             active_renders.put(wname, rndr);    /* Add to active table */
         }
         /* Schedule first tile to be worked */

@@ -579,14 +579,17 @@ public class DynmapPlugin extends JavaPlugin {
             else if(c.equals("radiusrender") && checkPlayerPermission(sender,"radiusrender")) {
                 if (player != null) {
                     int radius = 0;
+                    String mapname = null;
                     if(args.length > 1) {
                         radius = Integer.parseInt(args[1]); /* Parse radius */
                         if(radius < 0)
                             radius = 0;
+                        if(args.length > 2)
+                            mapname = args[2];
                     }
                     Location loc = player.getLocation();
                     if(loc != null)
-                        mapManager.renderWorldRadius(loc, sender, radius);
+                        mapManager.renderWorldRadius(loc, sender, mapname, radius);
                 }
                 else {
                     sender.sendMessage("Command can only be issued by player.");
@@ -616,18 +619,28 @@ public class DynmapPlugin extends JavaPlugin {
                     }
                 }
             } else if (c.equals("fullrender") && checkPlayerPermission(sender,"fullrender")) {
+                String map = null;
                 if (args.length > 1) {
                     for (int i = 1; i < args.length; i++) {
-                        World w = getServer().getWorld(args[i]);
+                        int dot = args[i].indexOf(":");
+                        World w;
+                        String wname = args[i];
+                        if(dot >= 0) {
+                            wname = args[i].substring(0, dot);
+                            map = args[i].substring(dot+1);
+                        }
+                        w = getServer().getWorld(wname);
                         if(w != null)
-                            mapManager.renderFullWorld(new Location(w, 0, 0, 0),sender);
+                            mapManager.renderFullWorld(new Location(w, 0, 0, 0),sender, map);
                         else
-                            sender.sendMessage("World '" + args[i] + "' not defined/loaded");
+                            sender.sendMessage("World '" + wname + "' not defined/loaded");
                     }
                 } else if (player != null) {
                     Location loc = player.getLocation();
+                    if(args.length > 1)
+                        map = args[1];
                     if(loc != null)
-                        mapManager.renderFullWorld(loc, sender);
+                        mapManager.renderFullWorld(loc, sender, map);
                 } else {
                     sender.sendMessage("World name is required");
                 }

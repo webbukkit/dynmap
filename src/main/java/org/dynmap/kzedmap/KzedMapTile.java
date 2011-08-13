@@ -75,7 +75,7 @@ public class KzedMapTile extends MapTile {
         return getWorld().getName() + ":" + getFilename();
     }
     
-    public boolean render(MapChunkCache cache) {
+    public boolean render(MapChunkCache cache, String mapname) {
         return map.render(cache, this, MapManager.mapman.getTileFile(this));
     }
     

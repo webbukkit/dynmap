@@ -12,9 +12,11 @@ commands:
            /<command> show - shows the player from the map.
            /<command> show TheDude - shows the player 'TheDude' from the map.
            /<command> render - Renders the tile at your location.
-           /<command> fullrender - (Attempts to) render entire world from your location.
-           /<command> fullrender world - (Attempts to) render entire world 'world'.
-           /<command> radiusrender ## - (Attempts to) render at least ## block radius from your location.
+           /<command> fullrender - Render all maps for entire world from your location.
+           /<command> fullrender world - Render all maps for entire world 'world'.
+           /<command> fullrender world:mapname - Render map 'mapname' of world 'world'.
+           /<command> radiusrender ## - Render at least ## block radius from your location on all maps.
+           /<command> radiusrender ## mapname - Render at least ## block radius from your location on map 'mapname'
            /<command> cancelrender - Cancels any active renders on current world
            /<command> cancelrender world - Cancels any active renders of world 'world'
            /<command> stats - Show render statistics.

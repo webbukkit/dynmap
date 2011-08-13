@@ -888,11 +888,11 @@ public class IsoHDPerspective implements HDPerspective {
     }
 
     @Override
-    public boolean render(MapChunkCache cache, HDMapTile tile) {
+    public boolean render(MapChunkCache cache, HDMapTile tile, String mapname) {
         Color rslt = new Color();
         MapIterator mapiter = cache.getIterator(0, 0, 0);
         /* Build shader state object for each shader */
-        HDShaderState[] shaderstate = MapManager.mapman.hdmapman.getShaderStateForTile(tile, cache, mapiter);
+        HDShaderState[] shaderstate = MapManager.mapman.hdmapman.getShaderStateForTile(tile, cache, mapiter, mapname);
         int numshaders = shaderstate.length;
         if(numshaders == 0)
             return false;

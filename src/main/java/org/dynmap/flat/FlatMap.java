@@ -495,7 +495,7 @@ public class FlatMap extends MapType {
         }
 
         @Override
-        public boolean render(MapChunkCache cache) {
+        public boolean render(MapChunkCache cache, String mapname) {
             return map.render(cache, this, MapManager.mapman.getTileFile(this));
         }
 

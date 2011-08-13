@@ -18,7 +18,7 @@ public interface HDPerspective {
     /* Get chunks needed for given tile */
     List<DynmapChunk> getRequiredChunks(MapTile tile);
     /* Render given tile */
-    boolean render(MapChunkCache cache, HDMapTile tile);
+    boolean render(MapChunkCache cache, HDMapTile tile, String mapname);
     
     public boolean isBiomeDataNeeded();
     public boolean isHightestBlockYDataNeeded();
