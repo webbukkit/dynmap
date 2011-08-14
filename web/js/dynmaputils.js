@@ -107,13 +107,12 @@ var DynmapTileLayer = L.TileLayer.extend({
 		
 		this._container.appendChild(fragment);
 	},
-	
+	//Copy and mod of Leaflet method - marked changes with Dynmap: to simplify reintegration
 	_addTile: function(tilePoint, container) {
-		if(this._container == null)		// Ignore if we've stopped being active layer
-			return;
 		var tilePos = this._getTilePos(tilePoint),
 			zoom = this._map.getZoom(),
 			key = tilePoint.x + ':' + tilePoint.y,
+			name = this.getTileName(tilePoint, zoom),	//Dynmap
 			tileLimit = (1 << zoom);
 			
 		// wrap tile coordinates
@@ -133,9 +132,12 @@ var DynmapTileLayer = L.TileLayer.extend({
 		
 		// create tile
 		var tile = this._createTile();
+		tile.tileName = name;	//Dynmap
+		tile.tilePoint = tilePoint;	//Dynmap
 		L.DomUtil.setPosition(tile, tilePos);
 		
 		this._tiles[key] = tile;
+		this._namedTiles[name] = tile;	//Dynmap
         
 		if (this.options.scheme == 'tms') {
 			tilePoint.y = tileLimit - tilePoint.y - 1;
