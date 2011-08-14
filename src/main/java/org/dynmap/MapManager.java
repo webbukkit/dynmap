@@ -658,8 +658,8 @@ public class MapManager {
     }
 
     public void invalidateTile(MapTile tile) {
-        Debug.debug("Invalidating tile " + tile.getFilename());
-        tileQueue.push(tile);
+        if(tileQueue.push(tile))
+            Debug.debug("Invalidating tile " + tile.getFilename());
     }
 
     public static void scheduleDelayedJob(Runnable job, long delay_in_msec) {

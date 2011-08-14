@@ -105,12 +105,21 @@ public class DynmapWorld {
         }
     }
 
+    private static final String COORDSTART = "-0123456789";
     private static class PNGFileFilter implements FilenameFilter {
         String prefix;
         String suffix;
-        public PNGFileFilter(String pre, MapType.ImageFormat fmt) { prefix = pre; suffix = "." + fmt.getFileExt(); }
+        public PNGFileFilter(String pre, MapType.ImageFormat fmt) {
+            if((pre != null) && (pre.length() > 0))
+                prefix = pre; 
+            suffix = "." + fmt.getFileExt();
+        }
         public boolean accept(File f, String n) {
-            if(n.endsWith(suffix) && n.startsWith(prefix)) {
+            if(n.endsWith(suffix)) {
+                if((prefix != null) && (!n.startsWith(prefix)))
+                    return false;
+                if((prefix == null) && (COORDSTART.indexOf(n.charAt(0)) < 0))
+                    return false;
                 File fn = new File(f, n);
                 return fn.isFile();
             }

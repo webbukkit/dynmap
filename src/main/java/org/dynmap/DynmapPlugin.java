@@ -352,8 +352,9 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     Location loc = event.getBlock().getLocation();
                     mm.sscache.invalidateSnapshot(loc);
-                    if(onplace)
+                    if(onplace) {
                         mm.touch(loc);
+                    }
                 }
 
                 @Override
@@ -362,8 +363,9 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     Location loc = event.getBlock().getLocation();
                     mm.sscache.invalidateSnapshot(loc);
-                    if(onbreak)
+                    if(onbreak) {
                         mm.touch(loc);
+                    }
                 }
 
                 @Override
@@ -372,8 +374,9 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     Location loc = event.getBlock().getLocation();
                     mm.sscache.invalidateSnapshot(loc);
-                    if(onleaves)
+                    if(onleaves) {
                         mm.touch(loc);              
+                    }
                 }
                 
                 @Override
@@ -382,8 +385,9 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     Location loc = event.getBlock().getLocation();
                     mm.sscache.invalidateSnapshot(loc);
-                    if(onburn)
+                    if(onburn) {
                         mm.touch(loc);
+                    }
                 }
                 
                 @Override
@@ -392,8 +396,9 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     Location loc = event.getBlock().getLocation();
                     mm.sscache.invalidateSnapshot(loc);
-                    if(onblockform)
+                    if(onblockform) {
                         mm.touch(loc);
+                    }
                 }
                 @Override
                 public void onBlockFade(BlockFadeEvent event) {
@@ -401,8 +406,9 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     Location loc = event.getBlock().getLocation();
                     mm.sscache.invalidateSnapshot(loc);
-                    if(onblockfade)
+                    if(onblockfade) {
                         mm.touch(loc);
+                    }
                 }
                 @Override
                 public void onBlockSpread(BlockSpreadEvent event) {
@@ -410,8 +416,9 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     Location loc = event.getBlock().getLocation();
                     mm.sscache.invalidateSnapshot(loc);
-                    if(onblockspread)
+                    if(onblockspread) {
                         mm.touch(loc);
+                    }
                 }
                 @Override
                 public void onBlockPistonRetract(BlockPistonRetractEvent event) {
@@ -421,8 +428,9 @@ public class DynmapPlugin extends JavaPlugin {
                     Location loc = b.getLocation();
                     mm.sscache.invalidateSnapshot(loc);
                     BlockFace dir = event.getDirection();
-                    if(onpiston)
+                    if(onpiston) {
                         mm.touchVolume(loc, b.getRelative(dir, 2).getLocation());
+                    }
                     for(int i = 0; i < 2; i++) {
                         b = b.getRelative(dir, 1);
                         mm.sscache.invalidateSnapshot(b.getLocation());
@@ -436,8 +444,9 @@ public class DynmapPlugin extends JavaPlugin {
                     Location loc = b.getLocation();
                     mm.sscache.invalidateSnapshot(loc);
                     BlockFace dir = event.getDirection();
-                    if(onpiston)
+                    if(onpiston) {
                         mm.touchVolume(loc, b.getRelative(dir, 1+event.getLength()).getLocation());
+                    }
                     for(int i = 0; i < 1+event.getLength(); i++) {
                          b = b.getRelative(dir, 1);
                          mm.sscache.invalidateSnapshot(b.getLocation());

@@ -40,7 +40,7 @@ public class HDMapTile extends MapTile {
     
     @Override
     public int hashCode() {
-        return perspective.getName().hashCode() ^ getWorld().hashCode();
+        return tx ^ ty ^ perspective.getName().hashCode() ^ getWorld().getName().hashCode();
     }
 
     @Override
@@ -48,11 +48,11 @@ public class HDMapTile extends MapTile {
         if (obj instanceof HDMapTile) {
             return equals((HDMapTile) obj);
         }
-        return super.equals(obj);
+        return false;
     }
 
     public boolean equals(HDMapTile o) {
-        return o.tx == tx && o.ty == ty && o.getWorld().equals(getWorld()) && (perspective.equals(o.perspective));
+        return o.tx == tx && o.ty == ty && (perspective == o.perspective) && (o.getWorld() == getWorld());
     }
 
     public String getKey() {

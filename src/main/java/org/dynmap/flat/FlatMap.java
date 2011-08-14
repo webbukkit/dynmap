@@ -539,6 +539,22 @@ public class FlatMap extends MapType {
         }
 
         @Override
+        public int hashCode() {
+            return x ^ y ^ size ^ map.getName().hashCode();
+        }
+        
+        @Override
+        public boolean equals(Object x) {
+            if(x instanceof FlatMapTile) {
+                return equals((FlatMapTile)x);
+            }
+            return false;
+        }
+        public boolean equals(FlatMapTile o) {
+            return (o.x == x) && (o.y == y) && (o.map == map);
+        }
+        
+        @Override
         public String getKey() {
             return world.world.getName() + "." + map.getPrefix();
         }
