@@ -51,4 +51,7 @@ public abstract class MapTile {
     public abstract boolean isRawBiomeDataNeeded();
     public abstract boolean isBlockTypeDataNeeded();
 
+    public abstract int tileOrdinalX();
+    public abstract int tileOrdinalY();
+    
 }

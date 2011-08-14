@@ -29,6 +29,7 @@ import org.dynmap.utils.LegacyMapChunkCache;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.NewMapChunkCache;
 import org.dynmap.utils.SnapshotCache;
+import org.dynmap.utils.TileFlags;
 
 public class MapManager {
     public AsynchronousQueue<MapTile> tileQueue;
@@ -151,8 +152,8 @@ public class MapManager {
         Location loc;        
         int    map_index = -1;    /* Which map are we on */
         MapType map;
-        HashSet<MapTile> found = null;
-        HashSet<MapTile> rendered = null;
+        TileFlags found = null;
+        TileFlags rendered = null;
         LinkedList<MapTile> renderQueue = null;
         MapTile tile0 = null;
         MapTile tile = null;
@@ -178,8 +179,8 @@ public class MapManager {
         FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname, int radius) {
             world = dworld;
             loc = l;
-            found = new HashSet<MapTile>();
-            rendered = new HashSet<MapTile>();
+            found = new TileFlags();
+            rendered = new TileFlags();
             renderQueue = new LinkedList<MapTile>();
             this.sender = sender;
             if(radius < 0) {
@@ -275,16 +276,16 @@ public class MapManager {
 
                     /* Now, prime the render queue */
                     for (MapTile mt : map.getTiles(loc)) {
-                        if (!found.contains(mt)) {
-                            found.add(mt);
+                        if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
+                            found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
                             renderQueue.add(mt);
                         }
                     }
                     if(world.seedloc != null) {
                         for(Location seed : world.seedloc) {
                             for (MapTile mt : map.getTiles(seed)) {
-                                if (!found.contains(mt)) {
-                                    found.add(mt);
+                                if (!found.getFlag(mt.tileOrdinalX(),mt.tileOrdinalY())) {
+                                    found.setFlag(mt.tileOrdinalX(),mt.tileOrdinalY(), true);
                                     renderQueue.add(mt);
                                 }
                             }
@@ -326,16 +327,17 @@ public class MapManager {
             	/* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
                 if (cache.isEmpty() == false) {
                 	tile.render(cache, mapname);
-                    found.remove(tile);
-                    rendered.add(tile);
+                    found.setFlag(tile.tileOrdinalX(),tile.tileOrdinalY(),false);
+                    rendered.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), true);
                     for (MapTile adjTile : map.getAdjecentTiles(tile)) {
-                        if (!found.contains(adjTile) && !rendered.contains(adjTile)) {
-                            found.add(adjTile);
+                        if (!found.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY()) && 
+                                !rendered.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY())) {
+                            found.setFlag(adjTile.tileOrdinalX(), adjTile.tileOrdinalY(), true);
                             renderQueue.add(adjTile);
                         }
                     }
                 }
-                found.remove(tile);
+                found.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), false);
                 if(!cache.isEmpty()) {
                     rendercnt++;
                     timeaccum += System.currentTimeMillis() - tstart;

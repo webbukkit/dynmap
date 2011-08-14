@@ -87,4 +87,8 @@ public class HDMapTile extends MapTile {
     public MapTile[] getAdjecentTiles() {
         return perspective.getAdjecentTiles(this);
     }
+    
+    public int tileOrdinalX() { return tx; }
+    public int tileOrdinalY() { return ty; }
+
 }

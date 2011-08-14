@@ -91,5 +91,6 @@ public class KzedMapTile extends MapTile {
     public boolean isHightestBlockYDataNeeded() { return false; }
     public boolean isRawBiomeDataNeeded() { return map.isRawBiomeDataNeeded(); }
     public boolean isBlockTypeDataNeeded() { return true; }
-
+    public int tileOrdinalX() { return px >> 7; }
+    public int tileOrdinalY() { return py >> 7; }
 }

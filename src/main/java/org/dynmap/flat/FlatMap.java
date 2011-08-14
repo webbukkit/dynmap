@@ -518,6 +518,9 @@ public class FlatMap extends MapType {
         public boolean isBiomeDataNeeded() { return false; }
         public boolean isRawBiomeDataNeeded() { return false; }
         public boolean isBlockTypeDataNeeded() { return true; }
+        public int tileOrdinalX() { return x; }
+        public int tileOrdinalY() { return y; }
+
     }
     
     @Override

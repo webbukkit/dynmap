@@ -102,5 +102,7 @@ public class KzedZoomedMapTile extends MapTile {
     public boolean isHightestBlockYDataNeeded() { return false; }
     public boolean isRawBiomeDataNeeded() { return originalTile.isRawBiomeDataNeeded(); }
     public boolean isBlockTypeDataNeeded() { return true; }
+    public int tileOrdinalX() { return originalTile.px >> 8; }
+    public int tileOrdinalY() { return originalTile.py >> 8; }
     
 }
