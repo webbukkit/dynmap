@@ -30,15 +30,10 @@ public class AsynchronousQueue<T> {
 
     private T pop() {
         synchronized (lock) {
-            try {
-                T t = queue.removeFirst();
-                if (!set.remove(t)) {
-                    // This should never happen.
-                }
-                return t;
-            } catch (NoSuchElementException e) {
-                return null;
-            }
+            T t = queue.pollFirst();
+            if(t != null)
+                set.remove(t);
+            return t;
         }
     }
 
