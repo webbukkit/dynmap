@@ -19,6 +19,8 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,6 +29,8 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
@@ -332,7 +336,8 @@ public class DynmapPlugin extends JavaPlugin {
     private boolean onblockspread;
     private boolean onleaves;
     private boolean onburn;
-
+    private boolean onpiston;
+    
     public void registerEvents() {
         final PluginManager pm = getServer().getPluginManager();
         final MapManager mm = mapManager;
@@ -345,97 +350,121 @@ public class DynmapPlugin extends JavaPlugin {
                 public void onBlockPlace(BlockPlaceEvent event) {
                     if(event.isCancelled())
                         return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     if(onplace)
                         mm.touch(event.getBlockPlaced().getLocation());
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
 
                 @Override
                 public void onBlockBreak(BlockBreakEvent event) {
                     if(event.isCancelled())
                         return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     if(onbreak)
                         mm.touch(event.getBlock().getLocation());
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
 
                 @Override
                 public void onLeavesDecay(LeavesDecayEvent event) {
                     if(event.isCancelled())
                         return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     if(onleaves)
                         mm.touch(event.getBlock().getLocation());              
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
                 
                 @Override
                 public void onBlockBurn(BlockBurnEvent event) {
                     if(event.isCancelled())
                         return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     if(onburn)
                         mm.touch(event.getBlock().getLocation());
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
                 
                 @Override
                 public void onBlockForm(BlockFormEvent event) {
                     if(event.isCancelled())
                         return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     if(onblockform)
                         mm.touch(event.getBlock().getLocation());
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
                 @Override
                 public void onBlockFade(BlockFadeEvent event) {
                     if(event.isCancelled())
                         return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     if(onblockfade)
                         mm.touch(event.getBlock().getLocation());
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                 }
                 @Override
                 public void onBlockSpread(BlockSpreadEvent event) {
                     if(event.isCancelled())
                         return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     if(onblockspread)
                         mm.touch(event.getBlock().getLocation());
+                }
+                @Override
+                public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+                    if(event.isCancelled())
+                        return;
                     mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Block b = event.getBlock();
+                    if(onpiston)
+                        mm.touch(b.getLocation());
+                    BlockFace dir = event.getDirection();
+                    for(int i = 0; i < 2; i++) {
+                        b = b.getRelative(dir, 1);
+                        mm.sscache.invalidateSnapshot(b.getLocation());
+                        if(onpiston)
+                            mm.touch(b.getLocation());
+                    }
+                }
+                @Override
+                public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Block b = event.getBlock();
+                    if(onpiston)
+                        mm.touch(b.getLocation());
+                    BlockFace dir = event.getDirection();
+                    for(int i = 0; i < 1+event.getLength(); i++) {
+                         b = b.getRelative(dir, 1);
+                         mm.sscache.invalidateSnapshot(b.getLocation());
+                         if(onpiston)
+                             mm.touch(b.getLocation());
+                    }
                 }
             };
             onplace = isTrigger("blockplaced");
             pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PLACE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            
             onbreak = isTrigger("blockbreak");
             pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BREAK, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            
             if(isTrigger("snowform")) Log.info("The 'snowform' trigger has been deprecated due to Bukkit changes - use 'blockformed'");
+            
             onleaves = isTrigger("leavesdecay");
             pm.registerEvent(org.bukkit.event.Event.Type.LEAVES_DECAY, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            
             onburn = isTrigger("blockburn");
             pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BURN, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
 
             onblockform = isTrigger("blockformed");
-            try {
-                Class.forName("org.bukkit.event.block.BlockFormEvent");
-                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FORM, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            } catch (ClassNotFoundException cnfx) {
-                if(onblockform)
-                    Log.info("BLOCK_FORM event not supported by this version of CraftBukkit - event disabled");
-            }
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FORM, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            
             onblockfade = isTrigger("blockfaded");
-            try {
-                Class.forName("org.bukkit.event.block.BlockFadeEvent");
-                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FADE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            } catch (ClassNotFoundException cnfx) {
-                if(onblockfade)
-                    Log.info("BLOCK_FADE event not supported by this version of CraftBukkit - event disabled");
-            }
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FADE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            
             onblockspread = isTrigger("blockspread");
-            try {
-                Class.forName("org.bukkit.event.block.BlockSpreadEvent");
-                pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_SPREAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            } catch (ClassNotFoundException cnfx) {
-                if(onblockspread)
-                    Log.info("BLOCK_SPREAD event not supported by this version of CraftBukkit - event disabled");
-            }
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_SPREAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+
+            onpiston = isTrigger("pistonmoved");
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PISTON_EXTEND, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PISTON_RETRACT, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
         }
         {
             PlayerListener renderTrigger = new PlayerListener() {

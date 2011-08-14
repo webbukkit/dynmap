@@ -73,6 +73,7 @@ public class TexturePack {
     /* Special tile index values */
     private static final int BLOCKINDEX_BLANK = -1;
     private static final int BLOCKINDEX_GRASSMASK = 38;
+    private static final int BLOCKINDEX_PISTONSIDE = 108;
     private static final int BLOCKINDEX_REDSTONE_NSEW_TONE = 164;
     private static final int BLOCKINDEX_REDSTONE_EW_TONE = 165;
     private static final int BLOCKINDEX_REDSTONE_NSEW = 180;
@@ -81,7 +82,9 @@ public class TexturePack {
     private static final int BLOCKINDEX_MOVINGWATER = 258;
     private static final int BLOCKINDEX_STATIONARYLAVA = 259;
     private static final int BLOCKINDEX_MOVINGLAVA = 260;
-    private static final int MAX_BLOCKINDEX = 260;
+    private static final int BLOCKINDEX_PISTONEXTSIDE = 261;
+    private static final int BLOCKINDEX_PISTONSIDE_EXT = 262;
+    private static final int MAX_BLOCKINDEX = 262;
     private static final int BLOCKTABLELEN = MAX_BLOCKINDEX+1;
 
     private static class LoadedImage {
@@ -364,7 +367,7 @@ public class TexturePack {
     
     /* Load terrain.png */
     private void loadTerrainPNG(InputStream is) throws IOException {
-        int i;
+        int i, j;
         /* Load image */
         BufferedImage img = ImageIO.read(is);
         if(img == null) { throw new FileNotFoundException(); }
@@ -397,6 +400,27 @@ public class TexturePack {
                 tc.setARGB(terrain_argb[BLOCKINDEX_REDSTONE_EW_TONE][i]);
                 tc.blendColor(0xFFC00000);  /* Blend in red */
                 terrain_argb[BLOCKINDEX_REDSTONE_EW][i] = tc.getARGB();
+            }
+        }
+        /* Build extended piston side texture - take top 1/4 of piston side, use to make piston extension */
+        terrain_argb[BLOCKINDEX_PISTONEXTSIDE] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[BLOCKINDEX_PISTONSIDE], 0, terrain_argb[BLOCKINDEX_PISTONEXTSIDE], 0,
+                         native_scale * native_scale / 4);
+        for(i = 0; i < native_scale/4; i++) {
+            for(j = 0; j < (3*native_scale/4); j++) {
+                terrain_argb[BLOCKINDEX_PISTONEXTSIDE][native_scale*(native_scale/4 + j) + (3*native_scale/8 + i)] =
+                    terrain_argb[BLOCKINDEX_PISTONSIDE][native_scale*i + j];
+            }
+        }
+        /* Build piston side while extended (cut off top 1/4, replace with rotated top for extension */
+        terrain_argb[BLOCKINDEX_PISTONSIDE_EXT] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[BLOCKINDEX_PISTONSIDE], native_scale*native_scale/4, 
+                         terrain_argb[BLOCKINDEX_PISTONSIDE_EXT], native_scale*native_scale/4,
+                         3 * native_scale * native_scale / 4);  /* Copy bottom 3/4 */
+        for(i = 0; i < native_scale/4; i++) {
+            for(j = 3*native_scale/4; j < native_scale; j++) {
+                terrain_argb[BLOCKINDEX_PISTONSIDE_EXT][native_scale*(j - 3*native_scale/4) + (3*native_scale/8 + i)] =
+                    terrain_argb[BLOCKINDEX_PISTONSIDE][native_scale*i + j];
             }
         }
         img.flush();

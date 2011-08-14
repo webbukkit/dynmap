@@ -1,7 +1,7 @@
 # Mapping of texture resources to block ID and data values
 # block:id=<block-id>,data=<data-val|*>,top=<index>,bottom=<index>,north=<index>,south=<index>,east=<index>,west=<index>,allfaces=<index>,allsides=<index>
 # <index>=0-255 (index of patch in terrain.png), -1=clear, 1xxx=biome tint from grasscolor.png,257=stationary water,258=moving water,
-#      259=stationary lava,260=moving lava,2xxx=biome tint from foliagecolor.png,4xxx=rotate texture 90,
+#      259=stationary lava,260=moving lava,261=extended piston side,262=piston side while extended,2xxx=biome tint from foliagecolor.png,4xxx=rotate texture 90,
 #      5xxx=rotate texture 180, 6xxx=rotate texture 270, 7xxx=flip texture horizontally, 8xxx=shift down 1/2 block, 9=shift down 1/2,flip horiz,
 #      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block
 ######
@@ -116,17 +116,29 @@ block:id=28,data=0,data=4,data=5,top=4195,bottom=4195,allsides=4,transparency=TR
 # Detector rail - incline to south
 block:id=28,data=1,data=2,data=3,top=195,bottom=195,allsides=4,transparency=TRANSPARENT
 # Sticky piston - facing down
-block:id=29,data=0,data=8,top=109,bottom=106,allsides=5108
+block:id=29,data=0,top=109,bottom=106,allsides=5108
 # Sticky piston - facing up
-block:id=29,data=1,data=9,top=106,bottom=109,allsides=108
+block:id=29,data=1,top=106,bottom=109,allsides=108
 # Sticky piston - facing east
-block:id=29,data=2,data=10,east=106,west=109,top=6108,bottom=4108,north=4108,south=6108
+block:id=29,data=2,east=106,west=109,top=6108,bottom=4108,north=4108,south=6108
 # Sticky piston - facing west
-block:id=29,data=3,data=11,west=106,east=109,top=4108,bottom=6108,north=6108,south=4108
+block:id=29,data=3,west=106,east=109,top=4108,bottom=6108,north=6108,south=4108
 # Sticky piston - facing north
-block:id=29,data=4,data=12,north=106,south=109,top=108,bottom=5108,east=6108,west=4108
+block:id=29,data=4,north=106,south=109,top=108,bottom=5108,east=6108,west=4108
 # Sticky piston - facing south
-block:id=29,data=5,data=13,north=109,south=106,top=5108,bottom=108,east=4108,west=6108
+block:id=29,data=5,north=109,south=106,top=5108,bottom=108,east=4108,west=6108
+# Sticky piston - extended facing down
+block:id=29,data=8,top=109,bottom=110,allsides=5262
+# Sticky piston - extended facing up
+block:id=29,data=9,top=110,bottom=109,allsides=262
+# Sticky piston - extended facing east
+block:id=29,data=10,east=110,west=109,top=6262,bottom=4262,north=4262,south=6262
+# Sticky piston - extended facing west
+block:id=29,data=11,west=110,east=109,top=4262,bottom=6262,north=6262,south=4262
+# Sticky piston - extended facing north
+block:id=29,data=12,north=110,south=109,top=262,bottom=5262,east=6262,west=4262
+# Sticky piston - extended facing south
+block:id=29,data=13,north=109,south=110,top=5262,bottom=262,east=4262,west=6262
 # Web
 block:id=30,allfaces=11
 # Dead shrub
@@ -138,19 +150,53 @@ block:id=31,data=2,allsides=1056,top=1000,transparency=TRANSPARENT
 # Dead shrub
 block:id=32,allsides=55,top=20,transparency=TRANSPARENT
 # Piston - facing down
-block:id=33,data=0,data=8,top=109,bottom=107,allsides=5108
+block:id=33,data=0,top=109,bottom=107,allsides=5108
 # Piston - facing up
-block:id=33,data=1,data=9,top=107,bottom=109,allsides=108
+block:id=33,data=1,top=107,bottom=109,allsides=108
 # Piston - facing east
-block:id=33,data=2,data=10,east=107,west=109,top=6108,bottom=4108,north=4108,south=6108
+block:id=33,data=2,east=107,west=109,top=6108,bottom=4108,north=4108,south=6108
 # Piston - facing west
-block:id=33,data=3,data=11,west=107,east=109,top=4108,bottom=6108,north=6108,south=4108
+block:id=33,data=3,west=107,east=109,top=4108,bottom=6108,north=6108,south=4108
 # Piston - facing north
-block:id=33,data=4,data=12,north=107,south=109,top=108,bottom=5108,east=6108,west=4108
+block:id=33,data=4,north=107,south=109,top=108,bottom=5108,east=6108,west=4108
 # Piston - facing south
-block:id=33,data=5,data=13,north=109,south=107,top=5108,bottom=108,east=4108,west=6108
-# Piston extesions - skipped - render all as if closed
-block:id=34
+block:id=33,data=5,north=109,south=107,top=5108,bottom=108,east=4108,west=6108
+# Piston - extended facing down
+block:id=33,data=8,top=109,bottom=110,allsides=5262
+# Piston - extended facing up
+block:id=33,data=9,top=110,bottom=109,allsides=262
+# Piston - extended facing east
+block:id=33,data=10,east=110,west=109,top=6262,bottom=4262,north=4262,south=6262
+# Piston - extended facing west
+block:id=33,data=11,west=110,east=109,top=4262,bottom=6262,north=6262,south=4262
+# Piston - extended facing north
+block:id=33,data=12,north=110,south=109,top=262,bottom=5262,east=6262,west=4262
+# Piston - extended facing south
+block:id=33,data=13,north=109,south=110,top=5262,bottom=262,east=4262,west=6262
+# Piston extension- facing down
+block:id=34,data=0,top=107,bottom=107,allsides=5261
+# Piston extension - facing up
+block:id=34,data=1,top=107,bottom=107,allsides=261
+# Piston extension - facing east
+block:id=34,data=2,east=107,west=107,top=6261,bottom=4261,north=4261,south=6261
+# Piston extension - facing west
+block:id=34,data=3,west=107,east=107,top=4261,bottom=6261,north=6261,south=4261
+# Piston extension - facing north
+block:id=34,data=4,north=107,south=107,top=261,bottom=5261,east=6261,west=4261
+# Piston extension - facing south
+block:id=34,data=5,north=107,south=107,top=5261,bottom=261,east=4261,west=6261
+# Sticky piston extension - facing down
+block:id=34,data=8,top=107,bottom=106,allsides=5261
+# Sticky piston extension - facing up
+block:id=34,data=9,top=106,bottom=107,allsides=261
+# Sticky piston extension - facing east
+block:id=34,data=10,east=106,west=107,top=6261,bottom=4261,north=4261,south=6261
+# Sticky piston extension - facing west
+block:id=34,data=11,west=106,east=107,top=4261,bottom=6261,north=6261,south=4261
+# Sticky piston extension - facing north
+block:id=34,data=12,north=106,south=107,top=261,bottom=5261,east=6261,west=4261
+# Sticky piston extension - facing south
+block:id=34,data=13,north=107,south=106,top=5261,bottom=261,east=4261,west=6261
 # Wool - white
 block:id=35,data=0,allfaces=64
 # Wool - orange
@@ -257,8 +303,12 @@ block:id=54,data=9,topbottom=25,south=42,north=57,east=26,west=26
 block:id=54,data=10,topbottom=25,south=26,north=26,east=42,west=57
 # Chest - right side of double, facing north
 block:id=54,data=11,topbottom=25,south=57,north=42,east=26,west=26
-# Redstone wire (use processed tile - pretoned to active)
-block:id=55,allfaces=180,transparency=TRANSPARENT
+# Redstone wire (all but NS and EW)
+block:id=55,data=0,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,allfaces=180,transparency=TRANSPARENT
+# Redstone wire (EW)
+block:id=55,data=2,allfaces=181,transparency=TRANSPARENT
+# Redstone wire (NS)
+block:id=55,data=1,allfaces=4181,transparency=TRANSPARENT
 # Diamond ore
 block:id=56,allfaces=50
 # Diamond block

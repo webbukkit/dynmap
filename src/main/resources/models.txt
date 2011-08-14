@@ -1976,3 +1976,152 @@ rotate:id=93,data=0,rot=180
 # Redstone repeater (off) facing north
 block:id=93,id=94,data=3,data=7,data=11,data=15,scale=16
 rotate:id=93,data=0,rot=270
+# Sticky piston - extended facing down
+# Piston - extended facing down
+block:id=29,id=33,data=8,scale=8
+layer:0,1
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+layer:2,3,4,5,6,7
+********
+********
+********
+********
+********
+********
+********
+********
+# Sticky piston - extended facing up
+block:id=29,id=33,data=9,scale=8
+layer:0,1,2,3,4,5
+********
+********
+********
+********
+********
+********
+********
+********
+layer:6,7
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+# Sticky piston - extended facing east
+# Piston - extended facing east
+block:id=29,id=33,data=10,scale=8
+layer:0,1,2,5,6,7
+******--
+******--
+******--
+******--
+******--
+******--
+******--
+******--
+layer:3,4
+******--
+******--
+******--
+********
+********
+******--
+******--
+******--
+# Sticky piston - extended facing west
+# Piston - extended facing west
+block:id=29,id=33,data=11,scale=8
+rotate:id=29,data=10,rot=180
+# Sticky piston - extended facing north
+# Piston - extended facing north
+block:id=29,id=33,data=12,scale=8
+rotate:id=29,data=10,rot=270
+# Sticky piston - extended facing south
+# Piston - extended facing south
+block:id=29,id=33,data=13,scale=8
+rotate:id=29,data=10,rot=90
+# Sticky piston extension - extended facing down
+# Piston extension - extended facing down
+block:id=34,data=0,data=8,scale=8
+layer:2,3,4,5,6,7
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+layer:0,1
+********
+********
+********
+********
+********
+********
+********
+********
+# Sticky piston extension - extended facing up
+# Piston extension - extended facing up
+block:id=34,data=1,data=9,scale=8
+layer:0,1,2,3,4,5
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+layer:6,7
+********
+********
+********
+********
+********
+********
+********
+********
+# Sticky piston extension - extended facing east
+# Piston extension - extended facing east
+block:id=34,data=2,data=10,scale=8
+layer:0,1,2,5,6,7
+------**
+------**
+------**
+------**
+------**
+------**
+------**
+------**
+layer:3,4
+------**
+------**
+------**
+********
+********
+------**
+------**
+------**
+# Sticky piston extension - extended facing west
+# Piston extension - extended facing west
+block:id=34,data=3,data=11,scale=8
+rotate:id=34,data=2,rot=180
+# Sticky piston extension - extended facing north
+# Piston extension - extended facing north
+block:id=34,data=4,data=12,scale=8
+rotate:id=34,data=2,rot=270
+# Sticky piston extension - extended facing west
+# Piston extension - extended facing west
+block:id=34,data=5,data=13,scale=8
+rotate:id=34,data=2,rot=90
