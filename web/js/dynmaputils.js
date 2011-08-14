@@ -108,6 +108,43 @@ var DynmapTileLayer = L.TileLayer.extend({
 		this._container.appendChild(fragment);
 	},
 	
+	_addTile: function(tilePoint, container) {
+		if(this._container == null)		// Ignore if we've stopped being active layer
+			return;
+		var tilePos = this._getTilePos(tilePoint),
+			zoom = this._map.getZoom(),
+			key = tilePoint.x + ':' + tilePoint.y,
+			tileLimit = (1 << zoom);
+			
+		// wrap tile coordinates
+		if (!this.options.continuousWorld) {
+			if (!this.options.noWrap) {
+				tilePoint.x = ((tilePoint.x % tileLimit) + tileLimit) % tileLimit;
+			} else if (tilePoint.x < 0 || tilePoint.x >= tileLimit) {
+				this._tilesToLoad--;
+				return;
+			}
+			
+			if (tilePoint.y < 0 || tilePoint.y >= tileLimit) {
+				this._tilesToLoad--;
+				return;
+			}
+		}
+		
+		// create tile
+		var tile = this._createTile();
+		L.DomUtil.setPosition(tile, tilePos);
+		
+		this._tiles[key] = tile;
+        
+		if (this.options.scheme == 'tms') {
+			tilePoint.y = tileLimit - tilePoint.y - 1;
+		}
+
+		this._loadTile(tile, tilePoint, zoom);
+		
+		container.appendChild(tile);
+	},
 	_loadTile: function(tile, tilePoint, zoom) {
 		var me = this;
 		tile._layer = this;
