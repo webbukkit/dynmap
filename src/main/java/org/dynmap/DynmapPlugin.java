@@ -350,72 +350,81 @@ public class DynmapPlugin extends JavaPlugin {
                 public void onBlockPlace(BlockPlaceEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Location loc = event.getBlock().getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     if(onplace)
-                        mm.touch(event.getBlockPlaced().getLocation());
+                        mm.touch(loc);
                 }
 
                 @Override
                 public void onBlockBreak(BlockBreakEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Location loc = event.getBlock().getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     if(onbreak)
-                        mm.touch(event.getBlock().getLocation());
+                        mm.touch(loc);
                 }
 
                 @Override
                 public void onLeavesDecay(LeavesDecayEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Location loc = event.getBlock().getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     if(onleaves)
-                        mm.touch(event.getBlock().getLocation());              
+                        mm.touch(loc);              
                 }
                 
                 @Override
                 public void onBlockBurn(BlockBurnEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Location loc = event.getBlock().getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     if(onburn)
-                        mm.touch(event.getBlock().getLocation());
+                        mm.touch(loc);
                 }
                 
                 @Override
                 public void onBlockForm(BlockFormEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Location loc = event.getBlock().getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     if(onblockform)
-                        mm.touch(event.getBlock().getLocation());
+                        mm.touch(loc);
                 }
                 @Override
                 public void onBlockFade(BlockFadeEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Location loc = event.getBlock().getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     if(onblockfade)
-                        mm.touch(event.getBlock().getLocation());
+                        mm.touch(loc);
                 }
                 @Override
                 public void onBlockSpread(BlockSpreadEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
+                    Location loc = event.getBlock().getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     if(onblockspread)
-                        mm.touch(event.getBlock().getLocation());
+                        mm.touch(loc);
                 }
                 @Override
                 public void onBlockPistonRetract(BlockPistonRetractEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     Block b = event.getBlock();
+                    Location loc = b.getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     BlockFace dir = event.getDirection();
                     if(onpiston)
-                        mm.touchVolume(b.getLocation(), b.getRelative(dir, 2).getLocation());
+                        mm.touchVolume(loc, b.getRelative(dir, 2).getLocation());
                     for(int i = 0; i < 2; i++) {
+                        b = b.getRelative(dir, 1);
                         mm.sscache.invalidateSnapshot(b.getLocation());
                     }
                 }
@@ -423,11 +432,12 @@ public class DynmapPlugin extends JavaPlugin {
                 public void onBlockPistonExtend(BlockPistonExtendEvent event) {
                     if(event.isCancelled())
                         return;
-                    mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     Block b = event.getBlock();
+                    Location loc = b.getLocation();
+                    mm.sscache.invalidateSnapshot(loc);
                     BlockFace dir = event.getDirection();
                     if(onpiston)
-                        mm.touchVolume(b.getLocation(), b.getRelative(dir, 1+event.getLength()).getLocation());
+                        mm.touchVolume(loc, b.getRelative(dir, 1+event.getLength()).getLocation());
                     for(int i = 0; i < 1+event.getLength(); i++) {
                          b = b.getRelative(dir, 1);
                          mm.sscache.invalidateSnapshot(b.getLocation());
