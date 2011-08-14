@@ -26,7 +26,8 @@ var KzedMapType = DynmapTileLayer.extend({
 	options: {
 		minZoom: 0,
 		maxZoom: 4,
-		errorTileUrl: 'images/blank.png'
+		errorTileUrl: 'images/blank.png',
+		continuousWorld: true
 	},
 	initialize: function(options) {
 		options.maxZoom = options.mapzoomin + options.mapzoomout;

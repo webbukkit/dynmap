@@ -108,29 +108,6 @@ var DynmapTileLayer = L.TileLayer.extend({
 		this._container.appendChild(fragment);
 	},
 	
-	// We should override this, since Leaflet does modulo on tilePoint by default. (https://github.com/CloudMade/Leaflet/blob/master/src/layer/tile/TileLayer.js#L151)
-	_addTile: function(tilePoint) {
-		if(this._container == null)	// Ignore if we're not active layer
-			return;
-			
-		var tilePos = this._getTilePos(tilePoint),
-			zoom = this._map.getZoom(),
-			key = tilePoint.x + ':' + tilePoint.y,
-			name = this.getTileName(tilePoint, zoom);
-
-		// create tile
-		var tile = this._createTile();
-		tile.tileName = name;
-		tile.tilePoint = tilePoint;
-		L.DomUtil.setPosition(tile, tilePos);
-
-		this._tiles[key] = tile;
-		this._namedTiles[name] = tile;
-
-		this._loadTile(tile, tilePoint, zoom);
-
-		this._container.appendChild(tile);
-	},
 	_loadTile: function(tile, tilePoint, zoom) {
 		var me = this;
 		tile._layer = this;
