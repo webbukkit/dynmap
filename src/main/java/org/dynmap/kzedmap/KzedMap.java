@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -21,6 +22,7 @@ import org.dynmap.MapType;
 import org.dynmap.MapType.MapStep;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.Vector3D;
 import org.json.simple.JSONObject;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DataBuffer;
@@ -107,6 +109,36 @@ public class KzedMap extends MapType {
         MapTile[] result = new MapTile[tiles.size()];
         tiles.toArray(result);
         return result;
+    }
+
+    @Override
+    public MapTile[] getTiles(Location loc0, Location loc1) {
+        DynmapWorld world = MapManager.mapman.getWorld(loc0.getWorld().getName());
+        ArrayList<MapTile> tiles = new ArrayList<MapTile>();
+        /* Transform both to tile coordinates */
+        int dx = loc0.getBlockX() - anchorx;
+        int dy = loc0.getBlockY() - anchory;
+        int dz = loc0.getBlockZ() - anchorz;
+        int px0 = dx + dz;
+        int py0 = dx - dz - dy;
+        dx = loc0.getBlockX() - anchorx;
+        dy = loc0.getBlockY() - anchory;
+        dz = loc0.getBlockZ() - anchorz;
+        int px1 = dx + dz;
+        int py1 = dx - dz - dy;
+        /* Compute ranges */
+        int mintx = (px1<px0)?px0:px1;
+        int maxtx = (px1<px0)?px1+1:px0+1;
+        int minty = (py1<py0)?py0:py1;
+        int maxty = (py1<py0)?py1+1:py0+1;
+        
+        /* Now, add the tiles for the ranges - not perfect, but it works (some extra tiles on corners possible) */
+        for(int i = mintx >> 7; i <= maxtx >> 7; i++) {
+            for(int j = minty >> 7; j < maxty >> 7; j++) {
+                addTile(tiles, world, i << 7, j << 7);
+            }
+        }
+        return tiles.toArray(new MapTile[tiles.size()]);
     }
 
     @Override

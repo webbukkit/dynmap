@@ -642,6 +642,21 @@ public class MapManager {
         return invalidates;
     }
 
+    public int touchVolume(Location l0, Location l1) {
+        DynmapWorld world = getWorld(l0.getWorld().getName());
+        if (world == null)
+            return 0;
+        int invalidates = 0;
+        for (int i = 0; i < world.maps.size(); i++) {
+            MapTile[] tiles = world.maps.get(i).getTiles(l0, l1);
+            for (int j = 0; j < tiles.length; j++) {
+                invalidateTile(tiles[j]);
+                invalidates++;
+            }
+        }
+        return invalidates;
+    }
+
     public void invalidateTile(MapTile tile) {
         Debug.debug("Invalidating tile " + tile.getFilename());
         tileQueue.push(tile);

@@ -412,14 +412,11 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     Block b = event.getBlock();
-                    if(onpiston)
-                        mm.touch(b.getLocation());
                     BlockFace dir = event.getDirection();
+                    if(onpiston)
+                        mm.touchVolume(b.getLocation(), b.getRelative(dir, 2).getLocation());
                     for(int i = 0; i < 2; i++) {
-                        b = b.getRelative(dir, 1);
                         mm.sscache.invalidateSnapshot(b.getLocation());
-                        if(onpiston)
-                            mm.touch(b.getLocation());
                     }
                 }
                 @Override
@@ -428,14 +425,12 @@ public class DynmapPlugin extends JavaPlugin {
                         return;
                     mm.sscache.invalidateSnapshot(event.getBlock().getLocation());
                     Block b = event.getBlock();
-                    if(onpiston)
-                        mm.touch(b.getLocation());
                     BlockFace dir = event.getDirection();
+                    if(onpiston)
+                        mm.touchVolume(b.getLocation(), b.getRelative(dir, 1+event.getLength()).getLocation());
                     for(int i = 0; i < 1+event.getLength(); i++) {
                          b = b.getRelative(dir, 1);
                          mm.sscache.invalidateSnapshot(b.getLocation());
-                         if(onpiston)
-                             mm.touch(b.getLocation());
                     }
                 }
             };
@@ -492,19 +487,11 @@ public class DynmapPlugin extends JavaPlugin {
                     if(generate_only) {
                         if(!isNewChunk(event))
                             return;
-                        /* Touch extreme corners */
-                        int x = event.getChunk().getX() * 16;
-                        int z = event.getChunk().getZ() * 16;
-                        mm.touch(new Location(event.getWorld(), x, 0, z));
-                        mm.touch(new Location(event.getWorld(), x+15, 127, z));
-                        mm.touch(new Location(event.getWorld(), x+15, 0, z+15));
-                        mm.touch(new Location(event.getWorld(), x, 127, z+15));
                     }
-                    else {
-                        int x = event.getChunk().getX() * 16 + 8;
-                        int z = event.getChunk().getZ() * 16 + 8;
-                        mm.touch(new Location(event.getWorld(), x, 127, z));
-                    }
+                    /* Touch extreme corners */
+                    int x = event.getChunk().getX() << 4;
+                    int z = event.getChunk().getZ() << 4;
+                    mm.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
                 }
                 private boolean isNewChunk(ChunkLoadEvent event) {
                     return event.isNewChunk();

@@ -727,6 +727,68 @@ public class IsoHDPerspective implements HDPerspective {
     }
 
     @Override
+    public MapTile[] getTiles(Location loc0, Location loc1) {
+        DynmapWorld world = MapManager.mapman.getWorld(loc0.getWorld().getName());
+        HashSet<MapTile> tiles = new HashSet<MapTile>();
+        Vector3D blocks[] = new Vector3D[] { new Vector3D(), new Vector3D() };
+        /* Get ordered point - 0=minX,Y,Z, 1=maxX,Y,Z */
+        if(loc0.getBlockX() < loc1.getBlockX()) {
+            blocks[0].x = loc0.getBlockX();
+            blocks[1].x = loc1.getBlockX() + 1;
+        }
+        else {
+            blocks[0].x = loc1.getBlockX();
+            blocks[1].x = loc0.getBlockX() + 1;
+        }
+        if(loc0.getBlockY() < loc1.getBlockY()) {
+            blocks[0].y = loc0.getBlockY();
+            blocks[1].y = loc1.getBlockY() + 1;
+        }
+        else {
+            blocks[0].y = loc1.getBlockY();
+            blocks[1].y = loc0.getBlockY() + 1;
+        }
+        if(loc0.getBlockZ() < loc1.getBlockZ()) {
+            blocks[0].z = loc0.getBlockZ();
+            blocks[1].z = loc1.getBlockZ() + 1;
+        }
+        else {
+            blocks[0].z = loc1.getBlockZ();
+            blocks[1].z = loc0.getBlockZ() + 1;
+        }        
+        Vector3D corner = new Vector3D();
+        Vector3D tcorner = new Vector3D();
+        int mintilex = Integer.MAX_VALUE;
+        int maxtilex = Integer.MIN_VALUE;
+        int mintiley = Integer.MAX_VALUE;
+        int maxtiley = Integer.MIN_VALUE;
+        /* Loop through corners of the prism */
+        for(int i = 0; i < 2; i++) {
+            corner.x = blocks[i].x;
+            for(int j = 0; j < 2; j++) {
+                corner.y = blocks[j].y;
+                for(int k = 0; k < 2; k++) {
+                    corner.z = blocks[k].z;
+                    world_to_map.transform(corner, tcorner);  /* Get map coordinate of corner */
+                    int tx = (int)Math.floor(tcorner.x/tileWidth);
+                    int ty = (int)Math.floor(tcorner.y/tileWidth);
+                    if(mintilex > tx) mintilex = tx;
+                    if(maxtilex < tx) maxtilex = tx;
+                    if(mintiley > ty) mintiley = ty;
+                    if(maxtiley < ty) maxtiley = ty;
+                }
+            }
+        }
+        /* Now, add the tiles for the ranges - not perfect, but it works (some extra tiles on corners possible) */
+        for(int i = mintilex; i <= maxtilex; i++) {
+            for(int j = mintiley; j < maxtiley; j++) {
+                addTile(tiles, world, i, j);
+            }
+        }
+        return tiles.toArray(new MapTile[tiles.size()]);
+    }
+
+    @Override
     public MapTile[] getAdjecentTiles(MapTile tile) {
         HDMapTile t = (HDMapTile) tile;
         DynmapWorld w = t.getDynmapWorld();

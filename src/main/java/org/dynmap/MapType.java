@@ -19,6 +19,8 @@ public abstract class MapType {
 
     public abstract MapTile[] getTiles(Location l);
 
+    public abstract MapTile[] getTiles(Location l0, Location l1);
+
     public abstract MapTile[] getAdjecentTiles(MapTile tile);
 
     public abstract List<DynmapChunk> getRequiredChunks(MapTile tile);

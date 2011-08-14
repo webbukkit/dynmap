@@ -96,6 +96,35 @@ public class FlatMap extends MapType {
     }
 
     @Override
+    public MapTile[] getTiles(Location l0, Location l1) {
+        DynmapWorld w = MapManager.mapman.getWorld(l0.getWorld().getName());
+        int xmin, xmax, zmin, zmax;
+        if(l0.getBlockX() < l1.getBlockX()) {
+            xmin = l0.getBlockX() >> 7;
+            xmax = l1.getBlockX() >> 7;
+        }
+        else {
+            xmin = l1.getBlockX() >> 7;
+            xmax = l0.getBlockX() >> 7;
+        }
+        if(l0.getBlockZ() < l1.getBlockZ()) {
+            zmin = l0.getBlockZ() >> 7;
+            zmax = l1.getBlockZ() >> 7;
+        }
+        else {
+            zmin = l1.getBlockZ() >> 7;
+            zmax = l0.getBlockZ() >> 7;
+        }
+        ArrayList<MapTile> rslt = new ArrayList<MapTile>();
+        for(int i = xmin; i <= xmax; i++) {
+            for(int j = zmin; j < zmax; j++) {
+                rslt.add(new FlatMapTile(w, this, i, j, 128));
+            }
+        }
+        return rslt.toArray(new MapTile[rslt.size()]);
+    }
+    
+    @Override
     public MapTile[] getAdjecentTiles(MapTile tile) {
         FlatMapTile t = (FlatMapTile) tile;
         DynmapWorld w = t.getDynmapWorld();

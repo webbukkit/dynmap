@@ -107,6 +107,11 @@ public class HDMap extends MapType {
     }
 
     @Override
+    public MapTile[] getTiles(Location loc0, Location loc1) {
+        return perspective.getTiles(loc0, loc1);
+    }
+
+    @Override
     public MapTile[] getAdjecentTiles(MapTile tile) {
         return perspective.getAdjecentTiles(tile);
     }
