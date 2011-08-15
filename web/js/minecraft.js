@@ -22,11 +22,16 @@ function createMinecraftHead(player,completed,failed) {
 		var headCanvas = document.createElement('canvas');
 		headCanvas.width = 8;
 		headCanvas.height = 8;
-		var headContext = headCanvas.getContext('2d');
-		blitImage(headContext, skinImage,  8,8,8,8, 0,0,8,8);
-		// Turn off accessory face overlay - causes white faces, and very few skins seem to have them anyway
-		//blitImage(headContext, skinImage, 40,8,8,8, 0,0,8,8);
-		completed(headCanvas);
+		if(headCanvas.getContext) {
+			var headContext = headCanvas.getContext('2d');
+			blitImage(headContext, skinImage,  8,8,8,8, 0,0,8,8);
+			// Turn off accessory face overlay - causes white faces, and very few skins seem to have them anyway
+			//blitImage(headContext, skinImage, 40,8,8,8, 0,0,8,8);
+			completed(headCanvas);
+		}
+		else {
+			failed();
+		}
 	};
 	skinImage.onerror = function() {
 		if (skinImage.src == '//www.minecraft.net/img/char.png') {
