@@ -658,15 +658,17 @@ public class DynmapPlugin extends JavaPlugin {
                 if (args.length > 1) {
                     for (int i = 1; i < args.length; i++) {
                         int dot = args[i].indexOf(":");
-                        World w;
+                        DynmapWorld w;
                         String wname = args[i];
                         if(dot >= 0) {
                             wname = args[i].substring(0, dot);
                             map = args[i].substring(dot+1);
                         }
-                        w = getServer().getWorld(wname);
-                        if(w != null)
-                            mapManager.renderFullWorld(new Location(w, 0, 0, 0),sender, map);
+                        w = mapManager.getWorld(wname);
+                        if(w != null) {
+                            Location loc = new Location(w.world, w.configuration.getFloat("center/x", 0.0f), w.configuration.getFloat("center/y", 64f), w.configuration.getFloat("center/z", 0.0f));
+                            mapManager.renderFullWorld(loc,sender, map);
+                        }
                         else
                             sender.sendMessage("World '" + wname + "' not defined/loaded");
                     }
