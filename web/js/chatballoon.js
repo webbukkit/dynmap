@@ -18,6 +18,8 @@ componentconstructors['chatballoon'] = function(dynmap, configuration) {
 			return;
 		}
 		var player = dynmap.players[message.name];
+		if (!player)
+			return;
 		if (dynmap.world !== player.location.world) {
 			return;
 		}
