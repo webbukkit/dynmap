@@ -18,6 +18,7 @@ import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapManager;
+import org.dynmap.MapType.ImageFormat;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.DynmapBufferedImage;
@@ -276,7 +277,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 if(!fname.getParentFile().exists())
                     fname.getParentFile().mkdirs();
                 try {
-                    FileLockManager.imageIOWrite(img.buf_img, "png", fname);
+                    FileLockManager.imageIOWrite(img.buf_img, ImageFormat.FORMAT_PNG, fname);
                 } catch (IOException e) {
                     Debug.error("Failed to save image: " + fname.getPath(), e);
                 } catch (java.lang.NullPointerException e) {
@@ -306,7 +307,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     if(!dfname.getParentFile().exists())
                         dfname.getParentFile().mkdirs();
                     try {
-                        FileLockManager.imageIOWrite(img_day.buf_img, "png", dfname);
+                        FileLockManager.imageIOWrite(img_day.buf_img, ImageFormat.FORMAT_PNG, dfname);
                     } catch (IOException e) {
                         Debug.error("Failed to save image: " + dfname.getPath(), e);
                     } catch (java.lang.NullPointerException e) {
@@ -390,7 +391,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             zoomFile.getParentFile().mkdirs();
 
         try {
-            FileLockManager.imageIOWrite(zIm, "png", zoomFile);
+            FileLockManager.imageIOWrite(zIm, ImageFormat.FORMAT_PNG, zoomFile);
             Debug.debug("Saved zoom-out tile at " + zoomFile.getName());
         } catch (IOException e) {
             Debug.error("Failed to save zoom-out tile: " + zoomFile.getName(), e);
@@ -589,6 +590,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         s(o, "mapzoomin", c.getInteger("mapzoomin", 2));
         s(o, "mapzoomout", world.getExtraZoomOutLevels()+1);
         s(o, "compassview", "SE");   /* Always from southeast */
+        s(o, "image-format", ImageFormat.FORMAT_PNG.getFileExt());
         a(worldObject, "maps", o);
     }
 }

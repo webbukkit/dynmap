@@ -7,14 +7,26 @@ import org.json.simple.JSONObject;
 
 public abstract class MapType {
     public enum ImageFormat {
-        FORMAT_PNG("png"),
-        FORMAT_JPG("jpg");
-        
+        FORMAT_PNG("png", "png", 0.0f),
+        FORMAT_JPG75("jpg-q75", "jpg", 0.75f),
+        FORMAT_JPG80("jpg-q80", "jpg", 0.80f),
+        FORMAT_JPG85("jpg-q85", "jpg", 0.85f),
+        FORMAT_JPG("jpg", "jpg", 0.85f),
+        FORMAT_JPG90("jpg-q90", "jpg", 0.90f),
+        FORMAT_JPG95("jpg-q95", "jpg", 0.95f),
+        FORMAT_JPG100("jpg-q100", "jpg", 1.00f);
+        String id;
         String ext;
-        ImageFormat(String ext) {
+        float qual;
+        
+        ImageFormat(String id, String ext, float quality) {
+            this.id = id;
             this.ext = ext;
+            this.qual = quality;
         }
+        public String getID() { return id; }
         public String getFileExt() { return ext; }
+        public float getQuality() { return qual; }
     };
 
     public abstract MapTile[] getTiles(Location l);

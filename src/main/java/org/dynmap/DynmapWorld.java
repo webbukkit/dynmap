@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.World;
 import org.bukkit.Location;
 import org.dynmap.debug.Debug;
-import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
@@ -447,7 +446,7 @@ public class DynmapWorld {
                 try {
                     if(!zf.getParentFile().exists())
                         zf.getParentFile().mkdirs();
-                    FileLockManager.imageIOWrite(zIm, pd.fmt.getFileExt(), zf);
+                    FileLockManager.imageIOWrite(zIm, pd.fmt, zf);
                     Debug.debug("Saved zoom-out tile at " + zf.getPath());
                 } catch (IOException e) {
                     Debug.error("Failed to save zoom-out tile: " + zf.getName(), e);

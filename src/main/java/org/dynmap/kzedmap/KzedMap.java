@@ -1,14 +1,9 @@
 package org.dynmap.kzedmap;
 
 import org.dynmap.DynmapWorld;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -19,16 +14,8 @@ import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
-import org.dynmap.MapType.MapStep;
-import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.MapChunkCache;
-import org.dynmap.utils.Vector3D;
 import org.json.simple.JSONObject;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DataBuffer;
-import java.awt.image.WritableRaster;
-import java.awt.image.ColorModel;
-import java.awt.image.Raster;
 
 public class KzedMap extends MapType {
     protected static final Logger log = Logger.getLogger("Minecraft");

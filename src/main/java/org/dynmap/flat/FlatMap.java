@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -23,9 +21,7 @@ import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
-import org.dynmap.MapType.MapStep;
 import org.dynmap.debug.Debug;
-import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
@@ -312,7 +308,7 @@ public class FlatMap extends MapType {
                 if(!outputFile.getParentFile().exists())
                     outputFile.getParentFile().mkdirs();
                 try {
-                    FileLockManager.imageIOWrite(im.buf_img, "png", outputFile);
+                    FileLockManager.imageIOWrite(im.buf_img, ImageFormat.FORMAT_PNG, outputFile);
                 } catch (IOException e) {
                     Debug.error("Failed to save image: " + outputFile.getPath(), e);
                 } catch (java.lang.NullPointerException e) {
@@ -343,7 +339,7 @@ public class FlatMap extends MapType {
                     if(!dayfile.getParentFile().exists())
                         dayfile.getParentFile().mkdirs();
                     try {
-                        FileLockManager.imageIOWrite(im_day.buf_img, "png", dayfile);
+                        FileLockManager.imageIOWrite(im_day.buf_img, ImageFormat.FORMAT_PNG, dayfile);
                     } catch (IOException e) {
                         Debug.error("Failed to save image: " + dayfile.getPath(), e);
                     } catch (java.lang.NullPointerException e) {
@@ -447,7 +443,7 @@ public class FlatMap extends MapType {
     public String getPrefix() {
         return prefix;
     }
-    
+
     /* Get maps rendered concurrently with this map in this world */
     public List<MapType> getMapsSharingRender(DynmapWorld w) {
         return Collections.singletonList((MapType)this);
@@ -585,6 +581,7 @@ public class FlatMap extends MapType {
         s(o, "mapzoomin", c.getInteger("mapzoomin", 3));
         s(o, "mapzoomout", world.getExtraZoomOutLevels());
         s(o, "compassview", "S");   /* Always from south */
+        s(o, "image-format", ImageFormat.FORMAT_PNG.getFileExt());
         a(worldObject, "maps", o);
     }
 }

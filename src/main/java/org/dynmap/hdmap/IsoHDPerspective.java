@@ -1041,7 +1041,7 @@ public class IsoHDPerspective implements HDPerspective {
                         if(!f.getParentFile().exists())
                             f.getParentFile().mkdirs();
                         try {
-                            FileLockManager.imageIOWrite(im[i].buf_img, fmt.getFileExt(), f);
+                            FileLockManager.imageIOWrite(im[i].buf_img, fmt, f);
                         } catch (IOException e) {
                             Debug.error("Failed to save image: " + f.getPath(), e);
                         } catch (java.lang.NullPointerException e) {
@@ -1074,7 +1074,7 @@ public class IsoHDPerspective implements HDPerspective {
                             if(!f.getParentFile().exists())
                                 f.getParentFile().mkdirs();
                             try {
-                                FileLockManager.imageIOWrite(dayim[i].buf_img, fmt.getFileExt(), f);
+                                FileLockManager.imageIOWrite(dayim[i].buf_img, fmt, f);
                             } catch (IOException e) {
                                 Debug.error("Failed to save image: " + f.getPath(), e);
                             } catch (java.lang.NullPointerException e) {

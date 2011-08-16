@@ -91,11 +91,17 @@ public class HDMap extends MapType {
         }
         String fmt = configuration.getString("image-format", "png");
         /* Only allow png or jpg */
-        if(fmt.equals(IMGFORMAT_PNG))
+        for(ImageFormat f : ImageFormat.values()) {
+            if(fmt.equals(f.getID())) {
+                imgformat = f;
+                break;
+            }
+        }
+        if(imgformat == null) {
+            Log.severe("HDMap '"+name+"' set invalid image-format: " + fmt);
             imgformat = ImageFormat.FORMAT_PNG;
-        else
-            imgformat = ImageFormat.FORMAT_JPG;
-    }   
+        }   
+    }
 
     public HDShader getShader() { return shader; }
     public HDPerspective getPerspective() { return perspective; }
