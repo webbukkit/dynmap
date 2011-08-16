@@ -838,6 +838,7 @@ public class MapManager {
         sender.sendMessage("  TOTALS: processed=" + tot.loggedcnt + ", rendered=" + tot.renderedcnt + 
                            ", updated=" + tot.updatedcnt + ", transparent=" + tot.transparentcnt);
         sender.sendMessage("  Cache hit rate: " + sscache.getHitRate() + "%");
+        sender.sendMessage("  Triggered update queue size: " + tileQueue.size());
     }
     /**
      * Reset statistics
