@@ -152,6 +152,7 @@ public class FileLockManager {
         byte[] rslt;
         synchronized(baos_lock) {
             baos.reset();
+            ImageIO.setUseCache(false); /* Don't use file cache - too small to be worth it */
             if(fmt.getFileExt().equals("jpg")) {
                 WritableRaster raster = img.getRaster();
                 WritableRaster newRaster = raster.createWritableChild(0, 0, img.getWidth(),
