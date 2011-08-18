@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -42,6 +43,7 @@ public class MapManager {
     private DynmapPlugin plug_in;
     private long timeslice_int = 0; /* In milliseconds */
     private int max_chunk_loads_per_tick = DEFAULT_CHUNKS_PER_TICK;
+    private int parallelrendercnt = 0;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
@@ -96,7 +98,7 @@ public class MapManager {
     
     private class DynmapScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor {
         DynmapScheduledThreadPoolExecutor() {
-            super(POOL_SIZE);
+            super(POOL_SIZE + parallelrendercnt);
             this.setThreadFactory(new OurThreadFactory());
             /* Set shutdown policy to stop everything */
             setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
@@ -156,7 +158,6 @@ public class MapManager {
         TileFlags rendered = null;
         LinkedList<MapTile> renderQueue = null;
         MapTile tile0 = null;
-        MapTile tile = null;
         int rendercnt = 0;
         CommandSender sender;
         long timeaccum;
@@ -207,7 +208,7 @@ public class MapManager {
         }
 
         public String toString() {
-            return "world=" + world.world.getName() + ", map=" + map + " tile=" + tile;
+            return "world=" + world.world.getName() + ", map=" + map;
         }
         
         public void cleanup() {
@@ -219,6 +220,8 @@ public class MapManager {
         }
         public void run() {
             long tstart = System.currentTimeMillis();
+            MapTile tile = null;
+            List<MapTile> tileset = null;
             
             if(cancelled) {
             	cleanup();
@@ -292,12 +295,80 @@ public class MapManager {
                         }
                     }
                 }
-                tile = renderQueue.pollFirst();
+                if(parallelrendercnt > 1) { /* Doing parallel renders? */
+                    tileset = new ArrayList<MapTile>();
+                    for(int i = 0; i < parallelrendercnt; i++) {
+                        tile = renderQueue.pollFirst();
+                        if(tile != null)
+                            tileset.add(tile);
+                    }
+                }
+                else {
+                    tile = renderQueue.pollFirst();
+                }
             }
             else {    /* Else, single tile render */
                 tile = tile0;
             }
             World w = world.world;
+ 
+            boolean notdone = true;
+            
+            if(tileset != null) {
+                long save_timeaccum = timeaccum;
+                List<Future<Boolean>> rslt = new ArrayList<Future<Boolean>>();
+                final int cnt = tileset.size();
+                for(int i = 1; i < cnt; i++) {   /* Do all but first on other threads */
+                    final MapTile mt = tileset.get(i);
+                    if((mapman != null) && (mapman.render_pool != null)) {
+                        final long ts = tstart;
+                        Future<Boolean> future = mapman.render_pool.submit(new Callable<Boolean>() {
+                            public Boolean call() {
+                                return processTile(mt, mt.world.world, ts, cnt);
+                            }
+                        });
+                        rslt.add(future);
+                    }
+                }
+                /* Now, do our render (first one) */
+                notdone = processTile(tileset.get(0), w, tstart, cnt);
+                /* Now, join with others */
+                for(int i = 0; i < rslt.size(); i++) {
+                    try {
+                        notdone = notdone && rslt.get(i).get();
+                    } catch (ExecutionException xx) {
+                        Log.severe(xx);
+                        notdone = false;
+                    } catch (InterruptedException ix) {
+                        notdone = false;
+                    }
+                }
+                timeaccum = save_timeaccum + System.currentTimeMillis() - tstart;
+            }
+            else {
+                notdone = processTile(tile, w, tstart, 1);
+            }
+            
+            if(notdone) {
+                if(tile0 == null) {    /* fullrender */
+                    long tend = System.currentTimeMillis();
+                    if(timeslice_int > (tend-tstart)) { /* We were fast enough */
+                        scheduleDelayedJob(this, timeslice_int - (tend-tstart));
+                    }
+                    else {  /* Schedule to run ASAP */
+                        scheduleDelayedJob(this, 0);
+                    }
+                }
+                else {
+                    cleanup();
+                }
+            }
+            else {
+                cleanup();
+            }
+        }
+
+        private boolean processTile(MapTile tile, World w, long tstart, int parallelcnt) {
             /* Get list of chunks required for tile */
             List<DynmapChunk> requiredChunks = tile.getRequiredChunks();
             /* If we are doing radius limit render, see if any are inside limits */
@@ -316,56 +387,49 @@ public class MapManager {
                                                       tile.isHightestBlockYDataNeeded(), tile.isBiomeDataNeeded(), 
                                                       tile.isRawBiomeDataNeeded());
             if(cache == null) {
-                cleanup();
-                return; /* Cancelled/aborted */
+                return false; /* Cancelled/aborted */
             }
             if(tile0 != null) {    /* Single tile? */
                 if(cache.isEmpty() == false)
                     tile.render(cache, null);
             }
             else {
-            	/* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
+                /* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
                 if (cache.isEmpty() == false) {
-                	tile.render(cache, mapname);
-                    found.setFlag(tile.tileOrdinalX(),tile.tileOrdinalY(),false);
-                    rendered.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), true);
-                    for (MapTile adjTile : map.getAdjecentTiles(tile)) {
-                        if (!found.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY()) && 
+                    tile.render(cache, mapname);
+                    synchronized(lock) {
+//                        found.setFlag(tile.tileOrdinalX(),tile.tileOrdinalY(),false);
+                        rendered.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), true);
+                        for (MapTile adjTile : map.getAdjecentTiles(tile)) {
+                            if (!found.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY()) && 
                                 !rendered.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY())) {
-                            found.setFlag(adjTile.tileOrdinalX(), adjTile.tileOrdinalY(), true);
-                            renderQueue.add(adjTile);
+                                found.setFlag(adjTile.tileOrdinalX(), adjTile.tileOrdinalY(), true);
+                                renderQueue.add(adjTile);
+                            }
                         }
                     }
                 }
-                found.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), false);
-                if(!cache.isEmpty()) {
-                    rendercnt++;
-                    timeaccum += System.currentTimeMillis() - tstart;
-                    if((rendercnt % 100) == 0) {
-                        double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemaplist.size();
-                        if(activemaplist.size() > 1) 
-                            sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
+                synchronized(lock) {
+//                    found.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), false);
+                    if(!cache.isEmpty()) {
+                        rendercnt++;
+                        timeaccum += System.currentTimeMillis() - tstart;
+                        if((rendercnt % 100) == 0) {
+                            double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemaplist.size();
+                            if(activemaplist.size() > 1) 
+                                sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
                                                w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
-                        else
-                            sender.sendMessage(rendertype + " of map '" + activemaps + "' of '" +
+                            else
+                                sender.sendMessage(rendertype + " of map '" + activemaps + "' of '" +
                                                w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
+                        }
                     }
                 }
             }
             /* And unload what we loaded */
             cache.unloadChunks();
-            if(tile0 == null) {    /* fullrender */
-                long tend = System.currentTimeMillis();
-                if(timeslice_int > (tend-tstart)) { /* We were fast enough */
-                    scheduleDelayedJob(this, timeslice_int - (tend-tstart));
-                }
-                else {  /* Schedule to run ASAP */
-                    scheduleDelayedJob(this, 0);
-                }
-            }
-            else {
-                cleanup();
-            }
+            
+            return true;
         }
         
         public void cancelRender() {
@@ -422,6 +486,7 @@ public class MapManager {
         hdmapman.loadHDPerspectives(plugin);
         hdmapman.loadHDLightings(plugin);
         sscache = new SnapshotCache(configuration.getInteger("snapshotcachesize", 500));
+        parallelrendercnt = configuration.getInteger("parallelrendercnt", 0);
         
         this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
             @Override
@@ -764,33 +829,37 @@ public class MapManager {
             return c;
         }
 
-    	synchronized(loadlock) {
-    		final MapChunkCache cc = c;
-    		long now = System.currentTimeMillis();
-    		
-    		if(cur_tick != (now/50)) {	/* New tick? */
-    			chunks_in_cur_tick = max_chunk_loads_per_tick;
-    			cur_tick = now/50;
-    		}
-    		
-            while(!cc.isDoneLoading()) {
-            	final int cntin = chunks_in_cur_tick;
-            	Future<Integer> f = scheduler.callSyncMethod(plug_in, new Callable<Integer>() {
-            		public Integer call() throws Exception {
-		                return Integer.valueOf(cntin - cc.loadChunks(cntin));
-            		}
-            	});
-            	try {
-            		chunks_in_cur_tick = f.get();
-            	} catch (Exception ix) {
-            		Log.severe(ix);
-            		return null;
-            	}
-        		if(chunks_in_cur_tick == 0) {
-        			chunks_in_cur_tick = max_chunk_loads_per_tick;
-        			try { Thread.sleep(50); } catch (InterruptedException ix) {}
-        		}
+        final MapChunkCache cc = c;
+
+        while(!cc.isDoneLoading()) {
+            synchronized(loadlock) {
+                long now = System.currentTimeMillis();
+                
+                if(cur_tick != (now/50)) {  /* New tick? */
+                    chunks_in_cur_tick = max_chunk_loads_per_tick;
+                    cur_tick = now/50;
+                }
             }
+        	Future<Boolean> f = scheduler.callSyncMethod(plug_in, new Callable<Boolean>() {
+        		public Boolean call() throws Exception {
+        		    boolean exhausted;
+        		    synchronized(loadlock) {
+        		        if(chunks_in_cur_tick > 0)
+        		            chunks_in_cur_tick -= cc.loadChunks(chunks_in_cur_tick);
+        		        exhausted = (chunks_in_cur_tick == 0);
+        		    }
+        		    return exhausted;
+        		}
+        	});
+        	boolean delay;
+        	try {
+    	        delay = f.get();
+        	} catch (Exception ix) {
+        		Log.severe(ix);
+        		return null;
+        	}
+            if(delay)
+                try { Thread.sleep(50); } catch (InterruptedException ix) {}
     	}
         return c;
     }
