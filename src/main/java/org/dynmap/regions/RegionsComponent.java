@@ -38,10 +38,11 @@ public class RegionsComponent extends ClientComponent {
                 }
             });
         } else {
-            plugin.events.addListener("clientupdateswritten", new Event.Listener<Object>() {
+            plugin.events.addListener("clientupdatewritten", new Event.Listener<ClientUpdateEvent>() {
                 @Override
-                public void triggered(Object t) {
-                    parseRegionFile(configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml"));
+                public void triggered(ClientUpdateEvent t) {
+                    World world = t.world.world;
+                    parseRegionFile(configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
                 }
             });
         }
