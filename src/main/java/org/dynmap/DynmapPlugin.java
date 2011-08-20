@@ -27,6 +27,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
+import org.bukkit.event.Event.Type;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -38,6 +39,8 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -355,7 +358,7 @@ public class DynmapPlugin extends JavaPlugin {
     private boolean onplayermove;
     private boolean ongeneratechunk;
     private boolean onloadchunk;
-
+    private boolean onexplosion;
 
     public void registerEvents() {
 
@@ -517,26 +520,25 @@ public class DynmapPlugin extends JavaPlugin {
         if(onplayermove)
             registerEvent(Event.Type.PLAYER_MOVE, playerTrigger);
 
-        /* Register world event triggers */
-        ongeneratechunk = isTrigger("chunkgenerated");
-        if(ongeneratechunk) {
-            try {   /* Test if new enough bukkit to allow this */
-                ChunkLoadEvent.class.getDeclaredMethod("isNewChunk", new Class[0]);
-            } catch (NoSuchMethodException nsmx) {
-                Log.info("Warning: CraftBukkit build does not support function needed for 'chunkgenerated' trigger - disabling");
-                ongeneratechunk = false;
+        /* Register entity event triggers */
+        EntityListener entityTrigger = new EntityListener() {
+            @Override
+            public void onEntityExplode(EntityExplodeEvent event) {
+                List<Block> blocks = event.blockList();
+                for(Block b: blocks) {
+                    Location loc = b.getLocation();
+                    mapManager.sscache.invalidateSnapshot(loc);
+                    if(onexplosion) {
+                        mapManager.touch(loc);
+                    }
+                }
             }
-        }
-        onloadchunk = isTrigger("chunkloaded");
-        if(onloadchunk) { 
-            generate_only = false;
-        }
-        else if (ongeneratechunk) {
-            generate_only = true;
-        }
-        registerEvent(Event.Type.CHUNK_LOAD, ourWorldEventHandler);
-
-        // To link configuration to real loaded worlds.
+        };
+        onexplosion = isTrigger("explosion");
+        registerEvent(Event.Type.ENTITY_EXPLODE, entityTrigger);
+        
+        
+        /* Register world event triggers */
         WorldListener worldTrigger = new WorldListener() {
             @Override
             public void onChunkLoad(ChunkLoadEvent event) {
@@ -558,6 +560,26 @@ public class DynmapPlugin extends JavaPlugin {
                 mapManager.activateWorld(event.getWorld());
             }
         };
+
+        ongeneratechunk = isTrigger("chunkgenerated");
+        if(ongeneratechunk) {
+            try {   /* Test if new enough bukkit to allow this */
+                ChunkLoadEvent.class.getDeclaredMethod("isNewChunk", new Class[0]);
+            } catch (NoSuchMethodException nsmx) {
+                Log.info("Warning: CraftBukkit build does not support function needed for 'chunkgenerated' trigger - disabling");
+                ongeneratechunk = false;
+            }
+        }
+        onloadchunk = isTrigger("chunkloaded");
+        if(onloadchunk) { 
+            generate_only = false;
+        }
+        else if (ongeneratechunk) {
+            generate_only = true;
+        }
+        registerEvent(Event.Type.CHUNK_LOAD, worldTrigger);
+
+        // To link configuration to real loaded worlds.
         registerEvent(Event.Type.WORLD_LOAD, worldTrigger);
     }
 
@@ -1046,6 +1068,21 @@ public class DynmapPlugin extends JavaPlugin {
         }
     };
     
+    private EntityListener ourEntityEventHandler = new EntityListener() {
+        @Override
+        public void onEntityExplode(EntityExplodeEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((EntityListener)l).onEntityExplode(event);
+                }
+            }
+        }
+    };
+    
     /**
      * Register event listener - this will be cleaned up properly on a /dynmap reload, unlike
      * registering with Bukkit directly
@@ -1079,6 +1116,9 @@ public class DynmapPlugin extends JavaPlugin {
                     break;
                 case CUSTOM_EVENT:
                     pm.registerEvent(type, ourCustomEventHandler, Event.Priority.Monitor, this);
+                    break;
+                case ENTITY_EXPLODE:
+                    pm.registerEvent(type, ourEntityEventHandler, Event.Priority.Monitor, this);
                     break;
                 default:
                     Log.severe("registerEvent() in DynmapPlugin does not handle " + type);

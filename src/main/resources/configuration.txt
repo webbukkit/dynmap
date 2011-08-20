@@ -111,8 +111,14 @@ display-whitelist: false
 # How often a tile gets rendered (in seconds).
 renderinterval: 1
 
+# How many tiles on update queue before accelerate render interval
+renderacceleratethreshold: 60
+
+# How often to render tiles when backlog is above renderacceleratethreshold
+renderaccelerateinterval: 0.2
+
 # Zoom-out tile update period - how often to scan for and process tile updates into zoom-out tiles (in seconds)
-zoomoutperiod: 60
+zoomoutperiod: 30
 
 # Tile hashing is used to minimize tile file updates when no changes have occurred - set to false to disable
 enabletilehash: true
@@ -130,6 +136,7 @@ render-triggers:
   - blockfaded
   - blockspread
   - pistonmoved
+  - explosion
 
 # The path where the tile-files are placed.
 tilespath: web/tiles

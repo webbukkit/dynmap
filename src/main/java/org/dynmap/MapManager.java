@@ -488,12 +488,16 @@ public class MapManager {
         sscache = new SnapshotCache(configuration.getInteger("snapshotcachesize", 500));
         parallelrendercnt = configuration.getInteger("parallelrendercnt", 0);
         
-        this.tileQueue = new AsynchronousQueue<MapTile>(new Handler<MapTile>() {
-            @Override
-            public void handle(MapTile t) {
-                scheduleDelayedJob(new FullWorldRenderState(t), 0);
-            }
-        }, (int) (configuration.getDouble("renderinterval", 0.5) * 1000));
+        this.tileQueue = new AsynchronousQueue<MapTile>(
+                new Handler<MapTile>() {
+                @Override
+                public void handle(MapTile t) {
+                    scheduleDelayedJob(new FullWorldRenderState(t), 0);
+                }
+            }, 
+            (int) (configuration.getDouble("renderinterval", 0.5) * 1000),
+            configuration.getInteger("renderacceleratethreshold", 30),
+            (int)(configuration.getDouble("renderaccelerateinterval", 0.2) * 1000));
 
         /* On dedicated thread, so default to no delays */
         timeslice_int = (long)(configuration.getDouble("timesliceinterval", 0.0) * 1000);
