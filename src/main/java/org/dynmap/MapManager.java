@@ -44,6 +44,7 @@ public class MapManager {
     private long timeslice_int = 0; /* In milliseconds */
     private int max_chunk_loads_per_tick = DEFAULT_CHUNKS_PER_TICK;
     private int parallelrendercnt = 0;
+    private int progressinterval = 100;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
@@ -414,7 +415,7 @@ public class MapManager {
                     if(!cache.isEmpty()) {
                         rendercnt++;
                         timeaccum += System.currentTimeMillis() - tstart;
-                        if((rendercnt % 100) == 0) {
+                        if((rendercnt % progressinterval) == 0) {
                             double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemaplist.size();
                             if(activemaplist.size() > 1) 
                                 sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
@@ -487,6 +488,8 @@ public class MapManager {
         hdmapman.loadHDLightings(plugin);
         sscache = new SnapshotCache(configuration.getInteger("snapshotcachesize", 500));
         parallelrendercnt = configuration.getInteger("parallelrendercnt", 0);
+        progressinterval = configuration.getInteger("progressloginterval", 100);
+        if(progressinterval < 100) progressinterval = 100;
         
         this.tileQueue = new AsynchronousQueue<MapTile>(
                 new Handler<MapTile>() {
