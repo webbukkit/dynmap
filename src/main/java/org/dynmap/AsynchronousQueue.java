@@ -12,10 +12,14 @@ public class AsynchronousQueue<T> {
     private Set<T> set = new HashSet<T>();
     private Handler<T> handler;
     private int dequeueTime;
-
-    public AsynchronousQueue(Handler<T> handler, int dequeueTime) {
+    private int accelDequeueTime;
+    private int accelDequeueThresh;
+    
+    public AsynchronousQueue(Handler<T> handler, int dequeueTime, int accelDequeueThresh, int accelDequeueTime) {
         this.handler = handler;
         this.dequeueTime = dequeueTime;
+        this.accelDequeueTime = accelDequeueTime;
+        this.accelDequeueThresh = accelDequeueThresh;
     }
 
     public boolean push(T t) {
@@ -83,7 +87,10 @@ public class AsynchronousQueue<T> {
                 if (t != null) {
                     handler.handle(t);
                 }
-                sleep(dequeueTime);
+                if(set.size() >= accelDequeueThresh)
+                    sleep(accelDequeueTime);
+                else
+                    sleep(dequeueTime);
             }
 
         } catch (Exception ex) {
