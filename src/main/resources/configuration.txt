@@ -165,6 +165,9 @@ timesliceinterval: 0.0
 # Maximum chunk loads per server tick (1/20th of a second) - reducing this below 90 will impact render performance, but also will reduce server thread load
 maxchunkspertick: 200
 
+# Progress report interval for fullrender/radiusrender, in tiles.  Must be 100 or greater
+progressloginterval: 100
+
 # EXPERIMENTAL - parallel fullrender: if defined, number of concurrent threads used for fullrender or radiusrender
 #   Note: setting this will result in much more intensive CPU use, some additional memory use.  Caution should be used when
 #  setting this to equal or exceed the number of physical cores on the system.
