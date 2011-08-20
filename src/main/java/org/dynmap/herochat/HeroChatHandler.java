@@ -258,8 +258,7 @@ public class HeroChatHandler {
         }
         else {
             /* Set up to hear when HeroChat is enabled */
-            server.getPluginManager().registerEvent(Event.Type.PLUGIN_ENABLE,
-                new OurPluginListener(), Event.Priority.Normal, plugin);
+            plugin.registerEvent(Event.Type.PLUGIN_ENABLE, new OurPluginListener());
         }
     }
 
@@ -277,8 +276,7 @@ public class HeroChatHandler {
             return;
         }
         /* Register event handler */
-        plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT,
-                new OurEventListener(), Event.Priority.Monitor, plugin);
+        plugin.registerEvent(Event.Type.CUSTOM_EVENT, new OurEventListener());
         Log.verboseinfo("HeroChat integration active");
     }
     /**
