@@ -43,10 +43,9 @@ public class HeroWebChatComponent extends Component {
         
         // Also make HeroChat announce joins and quits.
         PlayerChatListener playerListener = new PlayerChatListener();
-        PluginManager pm = plugin.getServer().getPluginManager();
-        pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_LOGIN, playerListener, org.bukkit.event.Event.Priority.Monitor, plugin);
-        pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_JOIN, playerListener, org.bukkit.event.Event.Priority.Monitor, plugin);
-        pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_QUIT, playerListener, org.bukkit.event.Event.Priority.Monitor, plugin);
+        plugin.registerEvent(org.bukkit.event.Event.Type.PLAYER_LOGIN, playerListener);
+        plugin.registerEvent(org.bukkit.event.Event.Type.PLAYER_JOIN, playerListener);
+        plugin.registerEvent(org.bukkit.event.Event.Type.PLAYER_QUIT, playerListener);
     }
     
     protected class PlayerChatListener extends PlayerListener {

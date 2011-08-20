@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.CustomEventListener;
+import org.bukkit.event.Event;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -34,12 +38,15 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -68,6 +75,8 @@ public class DynmapPlugin extends JavaPlugin {
     public boolean is_reload = false;
     private boolean generate_only = false;
     private static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
+
+    private HashMap<Event.Type, List<Listener>> event_handlers = new HashMap<Event.Type, List<Listener>>();
 
     public static File dataDirectory;
     public static File tilesDirectory;
@@ -321,6 +330,11 @@ public class DynmapPlugin extends JavaPlugin {
             webServer.shutdown();
             webServer = null;
         }
+        /* Clean up all registered handlers */
+        for(Event.Type t : event_handlers.keySet()) {
+            List<Listener> ll = event_handlers.get(t);
+            ll.clear(); /* Empty list - we use presence of list to remember that we've registered with Bukkit */
+        }
         
         Debug.clearDebuggers();
     }
@@ -337,212 +351,214 @@ public class DynmapPlugin extends JavaPlugin {
     private boolean onleaves;
     private boolean onburn;
     private boolean onpiston;
-    
+    private boolean onplayerjoin;
+    private boolean onplayermove;
+    private boolean ongeneratechunk;
+    private boolean onloadchunk;
+
+
     public void registerEvents() {
-        final PluginManager pm = getServer().getPluginManager();
-        final MapManager mm = mapManager;
 
+        
+        BlockListener blockTrigger = new BlockListener() {
+            @Override
+            public void onBlockPlace(BlockPlaceEvent event) {
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onplace) {
+                    mapManager.touch(loc);
+                }
+            }
+
+            @Override
+            public void onBlockBreak(BlockBreakEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onbreak) {
+                    mapManager.touch(loc);
+                }
+            }
+
+            @Override
+            public void onLeavesDecay(LeavesDecayEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onleaves) {
+                    mapManager.touch(loc);              
+                }
+            }
+            
+            @Override
+            public void onBlockBurn(BlockBurnEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onburn) {
+                    mapManager.touch(loc);
+                }
+            }
+            
+            @Override
+            public void onBlockForm(BlockFormEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onblockform) {
+                    mapManager.touch(loc);
+                }
+            }
+
+            @Override
+            public void onBlockFade(BlockFadeEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onblockfade) {
+                    mapManager.touch(loc);
+                }
+            }
+            
+            @Override
+            public void onBlockSpread(BlockSpreadEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onblockspread) {
+                    mapManager.touch(loc);
+                }
+            }
+            
+            @Override
+            public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+                if(event.isCancelled())
+                    return;
+                Block b = event.getBlock();
+                Location loc = b.getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                BlockFace dir = event.getDirection();
+                if(onpiston) {
+                    mapManager.touchVolume(loc, b.getRelative(dir, 2).getLocation());
+                }
+                for(int i = 0; i < 2; i++) {
+                    b = b.getRelative(dir, 1);
+                    mapManager.sscache.invalidateSnapshot(b.getLocation());
+                }
+            }
+            @Override
+            public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+                if(event.isCancelled())
+                    return;
+                Block b = event.getBlock();
+                Location loc = b.getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                BlockFace dir = event.getDirection();
+                if(onpiston) {
+                    mapManager.touchVolume(loc, b.getRelative(dir, 1+event.getLength()).getLocation());
+                }
+                for(int i = 0; i < 1+event.getLength(); i++) {
+                     b = b.getRelative(dir, 1);
+                     mapManager.sscache.invalidateSnapshot(b.getLocation());
+                }
+            }
+        };
+        
         // To trigger rendering.
-        {
-            BlockListener renderTrigger = new BlockListener() {
-                
-                @Override
-                public void onBlockPlace(BlockPlaceEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Location loc = event.getBlock().getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    if(onplace) {
-                        mm.touch(loc);
-                    }
-                }
+        onplace = isTrigger("blockplaced");
+        registerEvent(Event.Type.BLOCK_PLACE, blockTrigger);
+            
+        onbreak = isTrigger("blockbreak");
+        registerEvent(Event.Type.BLOCK_BREAK, blockTrigger);
+            
+        if(isTrigger("snowform")) Log.info("The 'snowform' trigger has been deprecated due to Bukkit changes - use 'blockformed'");
+            
+        onleaves = isTrigger("leavesdecay");
+        registerEvent(Event.Type.LEAVES_DECAY, blockTrigger);
+            
+        onburn = isTrigger("blockburn");
+        registerEvent(Event.Type.BLOCK_BURN, blockTrigger);
 
-                @Override
-                public void onBlockBreak(BlockBreakEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Location loc = event.getBlock().getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    if(onbreak) {
-                        mm.touch(loc);
-                    }
-                }
+        onblockform = isTrigger("blockformed");
+        registerEvent(Event.Type.BLOCK_FORM, blockTrigger);
+            
+        onblockfade = isTrigger("blockfaded");
+        registerEvent(Event.Type.BLOCK_FADE, blockTrigger);
+            
+        onblockspread = isTrigger("blockspread");
+        registerEvent(Event.Type.BLOCK_SPREAD, blockTrigger);
 
-                @Override
-                public void onLeavesDecay(LeavesDecayEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Location loc = event.getBlock().getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    if(onleaves) {
-                        mm.touch(loc);              
-                    }
-                }
-                
-                @Override
-                public void onBlockBurn(BlockBurnEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Location loc = event.getBlock().getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    if(onburn) {
-                        mm.touch(loc);
-                    }
-                }
-                
-                @Override
-                public void onBlockForm(BlockFormEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Location loc = event.getBlock().getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    if(onblockform) {
-                        mm.touch(loc);
-                    }
-                }
-                @Override
-                public void onBlockFade(BlockFadeEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Location loc = event.getBlock().getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    if(onblockfade) {
-                        mm.touch(loc);
-                    }
-                }
-                @Override
-                public void onBlockSpread(BlockSpreadEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Location loc = event.getBlock().getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    if(onblockspread) {
-                        mm.touch(loc);
-                    }
-                }
-                @Override
-                public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Block b = event.getBlock();
-                    Location loc = b.getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    BlockFace dir = event.getDirection();
-                    if(onpiston) {
-                        mm.touchVolume(loc, b.getRelative(dir, 2).getLocation());
-                    }
-                    for(int i = 0; i < 2; i++) {
-                        b = b.getRelative(dir, 1);
-                        mm.sscache.invalidateSnapshot(b.getLocation());
-                    }
-                }
-                @Override
-                public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-                    if(event.isCancelled())
-                        return;
-                    Block b = event.getBlock();
-                    Location loc = b.getLocation();
-                    mm.sscache.invalidateSnapshot(loc);
-                    BlockFace dir = event.getDirection();
-                    if(onpiston) {
-                        mm.touchVolume(loc, b.getRelative(dir, 1+event.getLength()).getLocation());
-                    }
-                    for(int i = 0; i < 1+event.getLength(); i++) {
-                         b = b.getRelative(dir, 1);
-                         mm.sscache.invalidateSnapshot(b.getLocation());
-                    }
-                }
-            };
-            onplace = isTrigger("blockplaced");
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PLACE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            
-            onbreak = isTrigger("blockbreak");
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BREAK, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            
-            if(isTrigger("snowform")) Log.info("The 'snowform' trigger has been deprecated due to Bukkit changes - use 'blockformed'");
-            
-            onleaves = isTrigger("leavesdecay");
-            pm.registerEvent(org.bukkit.event.Event.Type.LEAVES_DECAY, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            
-            onburn = isTrigger("blockburn");
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_BURN, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+        onpiston = isTrigger("pistonmoved");
+        registerEvent(Event.Type.BLOCK_PISTON_EXTEND, blockTrigger);
+        registerEvent(Event.Type.BLOCK_PISTON_RETRACT, blockTrigger);
+        /* Register player event trigger handlers */
+        PlayerListener playerTrigger = new PlayerListener() {
+            @Override
+            public void onPlayerJoin(PlayerJoinEvent event) {
+                mapManager.touch(event.getPlayer().getLocation());
+            }
 
-            onblockform = isTrigger("blockformed");
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FORM, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            
-            onblockfade = isTrigger("blockfaded");
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_FADE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            
-            onblockspread = isTrigger("blockspread");
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_SPREAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+            @Override
+            public void onPlayerMove(PlayerMoveEvent event) {
+                mapManager.touch(event.getPlayer().getLocation());
+            }
+        };
 
-            onpiston = isTrigger("pistonmoved");
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PISTON_EXTEND, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            pm.registerEvent(org.bukkit.event.Event.Type.BLOCK_PISTON_RETRACT, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+        onplayerjoin = isTrigger("playerjoin");
+        onplayermove = isTrigger("playermove");
+        if(onplayerjoin)
+            registerEvent(Event.Type.PLAYER_JOIN, playerTrigger);
+        if(onplayermove)
+            registerEvent(Event.Type.PLAYER_MOVE, playerTrigger);
+
+        /* Register world event triggers */
+        ongeneratechunk = isTrigger("chunkgenerated");
+        if(ongeneratechunk) {
+            try {   /* Test if new enough bukkit to allow this */
+                ChunkLoadEvent.class.getDeclaredMethod("isNewChunk", new Class[0]);
+            } catch (NoSuchMethodException nsmx) {
+                Log.info("Warning: CraftBukkit build does not support function needed for 'chunkgenerated' trigger - disabling");
+                ongeneratechunk = false;
+            }
         }
-        {
-            PlayerListener renderTrigger = new PlayerListener() {
-                @Override
-                public void onPlayerJoin(PlayerJoinEvent event) {
-                    mm.touch(event.getPlayer().getLocation());
-                }
-
-                @Override
-                public void onPlayerMove(PlayerMoveEvent event) {
-                    mm.touch(event.getPlayer().getLocation());
-                }
-            };
-            if (isTrigger("playerjoin"))
-                pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_JOIN, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            if (isTrigger("playermove"))
-                pm.registerEvent(org.bukkit.event.Event.Type.PLAYER_MOVE, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
+        onloadchunk = isTrigger("chunkloaded");
+        if(onloadchunk) { 
+            generate_only = false;
         }
-        {
-            WorldListener renderTrigger = new WorldListener() {
-                @Override
-                public void onChunkLoad(ChunkLoadEvent event) {
-                    if(ignore_chunk_loads)
-                        return;
+        else if (ongeneratechunk) {
+            generate_only = true;
+        }
+        registerEvent(Event.Type.CHUNK_LOAD, ourWorldEventHandler);
+
+        // To link configuration to real loaded worlds.
+        WorldListener worldTrigger = new WorldListener() {
+            @Override
+            public void onChunkLoad(ChunkLoadEvent event) {
+                if(ignore_chunk_loads)
+                    return;
+                if(onloadchunk || ongeneratechunk) {
                     if(generate_only) {
-                        if(!isNewChunk(event))
+                        if(!event.isNewChunk())
                             return;
                     }
                     /* Touch extreme corners */
                     int x = event.getChunk().getX() << 4;
                     int z = event.getChunk().getZ() << 4;
-                    mm.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
-                }
-                private boolean isNewChunk(ChunkLoadEvent event) {
-                    return event.isNewChunk();
-                }
-            };
-            boolean ongenerate = isTrigger("chunkgenerated");
-            if(ongenerate) {
-                try {   /* Test if new enough bukkit to allow this */
-                    ChunkLoadEvent.class.getDeclaredMethod("isNewChunk", new Class[0]);
-                } catch (NoSuchMethodException nsmx) {
-                    Log.info("Warning: CraftBukkit build does not support function needed for 'chunkgenerated' trigger - disabling");
-                    ongenerate = false;
+                    mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
                 }
             }
-            if(isTrigger("chunkloaded")) {
-                generate_only = false;
-                pm.registerEvent(org.bukkit.event.Event.Type.CHUNK_LOAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            }
-            else if(ongenerate) {
-                generate_only = true;
-                pm.registerEvent(org.bukkit.event.Event.Type.CHUNK_LOAD, renderTrigger, org.bukkit.event.Event.Priority.Monitor, this);
-            }
-        }
-
-        // To link configuration to real loaded worlds.
-        WorldListener worldListener = new WorldListener() {
             @Override
             public void onWorldLoad(WorldLoadEvent event) {
-                mm.activateWorld(event.getWorld());
+                mapManager.activateWorld(event.getWorld());
             }
         };
-        pm.registerEvent(org.bukkit.event.Event.Type.WORLD_LOAD, worldListener, org.bukkit.event.Event.Priority.Monitor, this);
+        registerEvent(Event.Type.WORLD_LOAD, worldTrigger);
     }
 
     private static File combinePaths(File parent, String path) {
@@ -830,5 +846,247 @@ public class DynmapPlugin extends JavaPlugin {
             }
             return true;
         }
+    }
+
+    
+    private BlockListener ourBlockEventHandler = new BlockListener() {
+        
+        @Override
+        public void onBlockPlace(BlockPlaceEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockPlace(event);
+                }
+            }
+        }
+
+        @Override
+        public void onBlockBreak(BlockBreakEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockBreak(event);
+                }
+            }
+        }
+
+        @Override
+        public void onLeavesDecay(LeavesDecayEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onLeavesDecay(event);
+                }
+            }
+        }
+        
+        @Override
+        public void onBlockBurn(BlockBurnEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockBurn(event);
+                }
+            }
+        }
+        
+        @Override
+        public void onBlockForm(BlockFormEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockForm(event);
+                }
+            }
+        }
+        @Override
+        public void onBlockFade(BlockFadeEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockFade(event);
+                }
+            }
+        }
+        @Override
+        public void onBlockSpread(BlockSpreadEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockSpread(event);
+                }
+            }
+        }
+        @Override
+        public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockPistonRetract(event);
+                }
+            }
+        }
+        @Override
+        public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockPistonExtend(event);
+                }
+            }
+        }
+    };
+    private PlayerListener ourPlayerEventHandler = new PlayerListener() {
+        @Override
+        public void onPlayerJoin(PlayerJoinEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((PlayerListener)l).onPlayerJoin(event);
+                }
+            }
+        }
+
+        @Override
+        public void onPlayerMove(PlayerMoveEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((PlayerListener)l).onPlayerMove(event);
+                }
+            }
+        }
+        
+        @Override
+        public void onPlayerQuit(PlayerQuitEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((PlayerListener)l).onPlayerQuit(event);
+                }
+            }
+        }
+        
+        @Override
+        public void onPlayerChat(PlayerChatEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((PlayerListener)l).onPlayerChat(event);
+                }
+            }
+        }
+    };
+
+    private WorldListener ourWorldEventHandler = new WorldListener() {
+        @Override
+        public void onWorldLoad(WorldLoadEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((WorldListener)l).onWorldLoad(event);
+                }
+            }
+        }
+        @Override
+        public void onChunkLoad(ChunkLoadEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((WorldListener)l).onChunkLoad(event);
+                }
+            }
+        }
+    };
+    
+    private CustomEventListener ourCustomEventHandler = new CustomEventListener() {
+        @Override
+        public void onCustomEvent(Event event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((CustomEventListener)l).onCustomEvent(event);
+                }
+            }
+        }
+    };
+    
+    /**
+     * Register event listener - this will be cleaned up properly on a /dynmap reload, unlike
+     * registering with Bukkit directly
+     */
+    public void registerEvent(Event.Type type, Listener listener) {
+        List<Listener> ll = event_handlers.get(type);
+        PluginManager pm = getServer().getPluginManager();
+        if(ll == null) {
+            switch(type) {  /* See if it is a type we're brokering */
+                case PLAYER_LOGIN:
+                case PLAYER_CHAT:
+                case PLAYER_JOIN:
+                case PLAYER_QUIT:
+                case PLAYER_MOVE:
+                    pm.registerEvent(type, ourPlayerEventHandler, Event.Priority.Monitor, this);
+                    break;
+                case BLOCK_PLACE:
+                case BLOCK_BREAK:
+                case LEAVES_DECAY:
+                case BLOCK_BURN:
+                case BLOCK_FORM:
+                case BLOCK_FADE:
+                case BLOCK_SPREAD:
+                case BLOCK_PISTON_EXTEND:
+                case BLOCK_PISTON_RETRACT:
+                     pm.registerEvent(type, ourBlockEventHandler, Event.Priority.Monitor, this);
+                    break;
+                case WORLD_LOAD:
+                case CHUNK_LOAD:
+                    pm.registerEvent(type, ourWorldEventHandler, Event.Priority.Monitor, this);
+                    break;
+                case CUSTOM_EVENT:
+                    pm.registerEvent(type, ourCustomEventHandler, Event.Priority.Monitor, this);
+                    break;
+                default:
+                    Log.severe("registerEvent() in DynmapPlugin does not handle " + type);
+                    return;
+            }
+            ll = new ArrayList<Listener>();
+            event_handlers.put(type, ll);   /* Add list for this event */
+        }
+        ll.add(listener);
     }
 }
