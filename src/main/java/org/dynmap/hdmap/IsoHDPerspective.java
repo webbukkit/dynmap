@@ -781,7 +781,7 @@ public class IsoHDPerspective implements HDPerspective {
         }
         /* Now, add the tiles for the ranges - not perfect, but it works (some extra tiles on corners possible) */
         for(int i = mintilex; i <= maxtilex; i++) {
-            for(int j = mintiley; j < maxtiley; j++) {
+            for(int j = mintiley; j <= maxtiley; j++) {
                 addTile(tiles, world, i, j);
             }
         }
