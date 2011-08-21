@@ -47,6 +47,7 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.Plugin;
@@ -544,16 +545,16 @@ public class DynmapPlugin extends JavaPlugin {
             public void onChunkLoad(ChunkLoadEvent event) {
                 if(ignore_chunk_loads)
                     return;
-                if(onloadchunk || ongeneratechunk) {
-                    if(generate_only) {
-                        if(!event.isNewChunk())
-                            return;
-                    }
-                    /* Touch extreme corners */
-                    int x = event.getChunk().getX() << 4;
-                    int z = event.getChunk().getZ() << 4;
-                    mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
-                }
+                /* Touch extreme corners */
+                int x = event.getChunk().getX() << 4;
+                int z = event.getChunk().getZ() << 4;
+                mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
+            }
+            @Override
+            public void onChunkPopulate(ChunkPopulateEvent event) {
+                int x = event.getChunk().getX() << 4;
+                int z = event.getChunk().getZ() << 4;
+                mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
             }
             @Override
             public void onWorldLoad(WorldLoadEvent event) {
@@ -563,21 +564,12 @@ public class DynmapPlugin extends JavaPlugin {
 
         ongeneratechunk = isTrigger("chunkgenerated");
         if(ongeneratechunk) {
-            try {   /* Test if new enough bukkit to allow this */
-                ChunkLoadEvent.class.getDeclaredMethod("isNewChunk", new Class[0]);
-            } catch (NoSuchMethodException nsmx) {
-                Log.info("Warning: CraftBukkit build does not support function needed for 'chunkgenerated' trigger - disabling");
-                ongeneratechunk = false;
-            }
+            registerEvent(Event.Type.CHUNK_POPULATED, worldTrigger);
         }
         onloadchunk = isTrigger("chunkloaded");
         if(onloadchunk) { 
-            generate_only = false;
+            registerEvent(Event.Type.CHUNK_LOAD, worldTrigger);
         }
-        else if (ongeneratechunk) {
-            generate_only = true;
-        }
-        registerEvent(Event.Type.CHUNK_LOAD, worldTrigger);
 
         // To link configuration to real loaded worlds.
         registerEvent(Event.Type.WORLD_LOAD, worldTrigger);
@@ -1053,6 +1045,16 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             }
         }
+        @Override
+        public void onChunkPopulate(ChunkPopulateEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((WorldListener)l).onChunkPopulate(event);
+                }
+            }
+        }
     };
     
     private CustomEventListener ourCustomEventHandler = new CustomEventListener() {
@@ -1112,6 +1114,7 @@ public class DynmapPlugin extends JavaPlugin {
                     break;
                 case WORLD_LOAD:
                 case CHUNK_LOAD:
+                case CHUNK_POPULATED:
                     pm.registerEvent(type, ourWorldEventHandler, Event.Priority.Monitor, this);
                     break;
                 case CUSTOM_EVENT:
