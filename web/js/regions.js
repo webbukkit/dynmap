@@ -106,30 +106,24 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 				return a.join(', ');
 			} else if (typeof a === 'string') {
 				return a;
+			} else {
+				return "";
 			}
-			return null;
 		}
 		var members = region.members || {};
+		var popup = this.infowindow || '<div class="infowindow"><span style="font-size:120%;">%regionname%</span><br /> Owner <span style="font-weight:bold;">%playerowners%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>';
+		popup = popup.replace('%regionname%', name);
+		popup = popup.replace('%playerowners%', join(region.owners.players));
+		popup = popup.replace('%groupowners%', join(region.owners.groups));
+		popup = popup.replace('%playermembers%', join(members.players));
+		popup = popup.replace('%groupmembers%', join(members.groups));
+		var regionflags = "";
+		$.each(region.flags, function(name, value) {
+			regionflags = regionflags + "<span>" + name + ": " + value + "</span><br>";
+		});
+		popup = popup.replace('%flags%', regionflags);
 		return $('<div/>').addClass('regioninfo')
-			.append($('<span/>').addClass('regionname').text(name))
-			.append($('<span/>').addClass('owners')
-				.append(region.owners.players && $('<span/>').addClass('playerowners').text(join(region.owners.players)))
-				.append(region.owners.groups && $('<span/>').addClass('groupowners').text(join(region.owners.groups)))
-				)
-			.append($('<span/>').addClass('members')
-				.append(members.players && $('<span/>').addClass('playermembers').text(join(members.players)))
-				.append(members.groups && $('<span/>').addClass('groupmembers').text(join(members.groups)))
-				)
-			.append(region.parent && $('<span/>').addClass('regionparent').text(region.parent))
-			.append(region.flags && function() {
-				var regionflags = $('<span/>').addClass('regionflags');
-				$.each(region.flags, function(name, value) {
-					regionflags.append($('<span/>').addClass('regionflag').text(name + ': ' + value));
-				});
-				return regionflags;
-			}())
-			.append($('<span/>').addClass('regionpriority').text(region.priority))
-			[0];
+			.append(popup)[0];
 	}
 	
 	var self = this;
