@@ -41,7 +41,8 @@ public class RegionHandler extends FileHandler {
         /* If using worldpath, format is either plugins/<plugin>/<worldname>/<filename> OR 
          * plugins/<plugin>/worlds/<worldname>/<filename>
          */
-        File basepath = new File("plugins", regions.getString("name", "WorldGuard"));
+        String regiontype = regions.getString("name", "WorldGuard");
+        File basepath = new File("plugins", regiontype);
         if(basepath.exists() == false)
             return null;
         if(regions.getBoolean("useworldpath", false)) {
@@ -71,13 +72,30 @@ public class RegionHandler extends FileHandler {
         }
         /* See if we have explicit list of regions to report - limit to this list if we do */
         List<String> idlist = regions.getStrings("visibleregions", null);
-        if(idlist != null) {
+        List<String> hidlist = regions.getStrings("hiddenregions", null);
+        if((idlist != null) || (hidlist != null)) {
             @SuppressWarnings("unchecked")
             HashSet<String> ids = new HashSet<String>((Collection<? extends String>) regionData.keySet());
             for(String id : ids) {
-                /* If not in list, remove it */
-                if(!idlist.contains(id)) {
+                /* If include list defined, and we're not in it, remove */
+                if((idlist != null) && (!idlist.contains(id))) {
                     regionData.remove(id);
+                }
+                /* If exclude list defined, and we're on it, remove */
+                else if((hidlist != null) && (hidlist.contains(id))) {
+                    /* If residence, we want to zap the areas list, so that we still get subregions */
+                    if(regiontype.equals("Residence")) {
+                        Map<?,?> m = (Map<?,?>)regionData.get(id);
+                        if(m != null) {
+                            Map<?,?> a = (Map<?,?>)m.get("Areas");
+                            if(a != null) {
+                                a.clear();
+                            }
+                        }
+                    }
+                    else {
+                        regionData.remove(id);
+                    }
                 }
             }
         }
