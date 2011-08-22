@@ -5,11 +5,12 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 	// Compatibility with older configurations.
 	if (configuration.regionstyle) {
 		configuration.regionstyle = $.extend({
-			stroke: true,
-			color: configuration.strokeColor,
-			opacity: configuration.strokeOpacity,
-			weight: configuration.strokeWeight,
-			fill: true
+			stroke: (configuration.regionstyle.strokeOpacity > 0.0),
+			color: configuration.regionstyle.strokeColor,
+			opacity: configuration.regionstyle.strokeOpacity,
+			weight: configuration.regionstyle.strokeWeight,
+			fill: (configuration.regionstyle.fillOpacity > 0.0),
+			smoothFactor: 0.0
 		}, configuration.regionstyle);
 	}
 	
