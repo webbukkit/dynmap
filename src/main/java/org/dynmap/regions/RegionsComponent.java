@@ -20,13 +20,27 @@ import org.dynmap.web.Json;
 
 public class RegionsComponent extends ClientComponent {
 
+    private TownyConfigHandler towny;
+    private String regiontype;
+    
     public RegionsComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
         
         // For internal webserver.
         String fname = configuration.getString("filename", "regions.yml");
-        plugin.webServer.handlers.put("/standalone/" + fname.substring(0, fname.lastIndexOf('.')) + "_*", new RegionHandler(configuration));
+
+        regiontype = configuration.getString("name", "WorldGuard");
+
         
+        /* Load special handler for Towny */
+        if(regiontype.equals("Towny")) {
+            towny = new TownyConfigHandler(configuration);
+            plugin.webServer.handlers.put("/standalone/towny_*", new RegionHandler(configuration));
+        }
+        else {
+            plugin.webServer.handlers.put("/standalone/" + fname.substring(0, fname.lastIndexOf('.')) + "_*", new RegionHandler(configuration));
+            
+        }
         // For external webserver.
         //Parse region file for multi world style
         if (configuration.getBoolean("useworldpath", false)) {
@@ -34,7 +48,7 @@ public class RegionsComponent extends ClientComponent {
                 @Override
                 public void triggered(ClientUpdateEvent t) {
                     World world = t.world.world;
-                    parseRegionFile(world.getName() + "/" + configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
+                    parseRegionFile(world.getName(), world.getName() + "/" + configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
                 }
             });
         } else {
@@ -42,36 +56,44 @@ public class RegionsComponent extends ClientComponent {
                 @Override
                 public void triggered(ClientUpdateEvent t) {
                     World world = t.world.world;
-                    parseRegionFile(configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
+                    parseRegionFile(world.getName(), configuration.getString("filename", "regions.yml"), configuration.getString("filename", "regions.yml").replace(".", "_" + world.getName() + ".yml"));
                 }
             });
         }
     }
 
     //handles parsing and writing region json files
-    private void parseRegionFile(String regionFile, String outputFileName)
+    private void parseRegionFile(String wname, String regionFile, String outputFileName)
     {
         File outputFile;
         org.bukkit.util.config.Configuration regionConfig = null;
-        String regiontype = configuration.getString("name", "WorldGuard");
-        if(configuration.getBoolean("useworldpath", false))
-        {
-            if(new File("plugins/"+configuration.getString("name", "WorldGuard"), regionFile).exists())
-                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype, regionFile));
-            else if(new File("plugins/"+regiontype+"/worlds", regionFile).exists())
-                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype+"/worlds", regionFile));
+        Map<?, ?> regionData;
+        File webWorldPath;
+        
+        if(regiontype.equals("Towny")) {
+            regionData = towny.getRegionData(wname);
+            outputFileName = "towny_" + wname + ".json";
+            webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
         }
-        else
-            regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype, regionFile));
-        //File didn't exist
-        if(regionConfig == null)
-            return;
-        regionConfig.load();
+        else {
+            if(configuration.getBoolean("useworldpath", false))
+            {
+                if(new File("plugins/"+configuration.getString("name", "WorldGuard"), regionFile).exists())
+                    regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype, regionFile));
+                else if(new File("plugins/"+regiontype+"/worlds", regionFile).exists())
+                    regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype+"/worlds", regionFile));
+            }
+            else
+                regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype, regionFile));
+            //File didn't exist
+            if(regionConfig == null)
+                return;
+            regionConfig.load();
 
-        outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf("."))+".json";
-
-        File webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
-        Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(configuration.getString("basenode", "regions"));
+            regionData = (Map<?, ?>) regionConfig.getProperty(configuration.getString("basenode", "regions"));
+            outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf("."))+".json";
+            webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
+        }
         /* See if we have explicit list of regions to report - limit to this list if we do */
         List<String> idlist = configuration.getStrings("visibleregions", null);
         List<String> hidlist = configuration.getStrings("hiddenregions", null);

@@ -115,8 +115,11 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 		popup = popup.replace('%regionname%', name);
 		popup = popup.replace('%playerowners%', join(region.owners.players));
 		popup = popup.replace('%groupowners%', join(region.owners.groups));
+		popup = popup.replace('%playermanagers%', join(region.associates || ""));
 		popup = popup.replace('%playermembers%', join(members.players));
 		popup = popup.replace('%groupmembers%', join(members.groups));
+		popup = popup.replace('%parent%', region.parent || "");
+		popup = popup.replace('%priority%', region.priority || "");
 		var regionflags = "";
 		$.each(region.flags, function(name, value) {
 			regionflags = regionflags + "<span>" + name + ": " + value + "</span><br>";
