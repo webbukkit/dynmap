@@ -22,8 +22,14 @@ import java.io.ByteArrayInputStream;
 
 public class RegionHandler extends FileHandler {
     private ConfigurationNode regions;
+    private String regiontype;
+    private TownyConfigHandler towny;
     public RegionHandler(ConfigurationNode regions) {
         this.regions = regions;
+        regiontype = regions.getString("name", "WorldGuard");
+        if(regiontype.equals("Towny")) {
+            towny = new TownyConfigHandler(regions);
+        }
     }
     @Override
     protected InputStream getFileInput(String path, HttpRequest request, HttpResponse response) {
@@ -37,38 +43,43 @@ public class RegionHandler extends FileHandler {
         Configuration regionConfig = null;
         File infile;
         String regionFile;
+        Map<?, ?> regionData;
         
-        /* If using worldpath, format is either plugins/<plugin>/<worldname>/<filename> OR 
-         * plugins/<plugin>/worlds/<worldname>/<filename>
-         */
-        String regiontype = regions.getString("name", "WorldGuard");
-        File basepath = new File("plugins", regiontype);
-        if(basepath.exists() == false)
-            return null;
-        if(regions.getBoolean("useworldpath", false)) {
-            regionFile = worldname + "/" + regions.getString("filename", "regions.yml");
-            infile = new File(basepath, regionFile);
-            if(!infile.exists()) {
-                infile = new File(basepath, "worlds/" + regionFile);
+        if(regiontype.equals("Towny")) {
+            regionData = towny.getRegionData(worldname);
+        }
+        else {
+            /* If using worldpath, format is either plugins/<plugin>/<worldname>/<filename> OR 
+             * plugins/<plugin>/worlds/<worldname>/<filename>
+             */
+            File basepath = new File("plugins", regiontype);
+            if(basepath.exists() == false)
+                return null;
+            if(regions.getBoolean("useworldpath", false)) {
+                regionFile = worldname + "/" + regions.getString("filename", "regions.yml");
+                infile = new File(basepath, regionFile);
+                if(!infile.exists()) {
+                    infile = new File(basepath, "worlds/" + regionFile);
+                }
             }
-        }
-        else {  /* Else, its plugins/<plugin>/<filename> */
-            regionFile = regions.getString("filename", "regions.yml");
-            infile = new File(basepath, regionFile);
-        }
-        if(infile.exists()) {
-            regionConfig = new Configuration(infile);
-        }
-        //File didn't exist
-        if(regionConfig == null)
-            return null;
-        regionConfig.load();
-        /* Parse region data and store in MemoryInputStream */
-        String bnode = regions.getString("basenode", "regions");
-        Map<?, ?> regionData = (Map<?, ?>) regionConfig.getProperty(bnode);
-        if(regionData == null) {
-            Log.severe("Region data from " + infile.getPath() + " does not include basenode '" + bnode + "'");
-            return null;
+            else {  /* Else, its plugins/<plugin>/<filename> */
+                regionFile = regions.getString("filename", "regions.yml");
+                infile = new File(basepath, regionFile);
+            }
+            if(infile.exists()) {
+                regionConfig = new Configuration(infile);
+            }
+            //File didn't exist
+            if(regionConfig == null)
+                return null;
+            regionConfig.load();
+            /* Parse region data and store in MemoryInputStream */
+            String bnode = regions.getString("basenode", "regions");
+            regionData = (Map<?, ?>) regionConfig.getProperty(bnode);
+            if(regionData == null) {
+                Log.severe("Region data from " + infile.getPath() + " does not include basenode '" + bnode + "'");
+                return null;
+            }
         }
         /* See if we have explicit list of regions to report - limit to this list if we do */
         List<String> idlist = regions.getStrings("visibleregions", null);
