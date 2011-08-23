@@ -1,6 +1,6 @@
 regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 	// Helper function.
-	function createBoxFromRegion(region, boxCreator) {
+	function createBoxFromRegion(name, region, boxCreator) {
 		function ArrayMax( array ) {
 		return Math.max.apply( Math, array );
 		}
@@ -11,16 +11,16 @@ regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 			var i;
 			var xs = region.points.map(function(p) { return p.x; });
 			var zs = region.points.map(function(p) { return p.z; });
-			return boxCreator(ArrayMax(xs), ArrayMin(xs), region['max-y'], region['min-y'], ArrayMax(zs), ArrayMin(zs));
+			return boxCreator(ArrayMax(xs), ArrayMin(xs), region['max-y'], region['min-y'], ArrayMax(zs), ArrayMin(zs), configuration.getStyle(name));
 		}
 		if(!region.min || !region.max)
 			return null;
 		if(region.max.y <= region.min.y)
 			region.min.y = region.max.y - 1;
-		return boxCreator(region.max.x, region.min.x, region.max.y, region.min.y, region.max.z, region.min.z);
+		return boxCreator(region.max.x, region.min.x, region.max.y, region.min.y, region.max.z, region.min.z, configuration.getStyle(name));
 	}
 
-	function createOutlineFromRegion(region, outCreator) {
+	function createOutlineFromRegion(name, region, outCreator) {
 		var xarray = [];
 		var zarray = [];
 		if(region.points) {
@@ -38,7 +38,7 @@ regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 			ymin = region['min-y'];
 		if(ymax < ymin) ymax = ymin;			
 
-		return outCreator(xarray, ymax, ymin, zarray);
+		return outCreator(xarray, ymax, ymin, zarray, configuration.getStyle(name));
 	}
 	
 	var regionFile = configuration.filename.substr(0, configuration.filename.lastIndexOf('.'));
@@ -48,7 +48,7 @@ regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 		$.each(data, function(name, region) {
 			// Only handle cuboids for the moment (therefore skipping 'global')
 			if (region.type === 'cuboid') {
-				var boxLayer = createBoxFromRegion(region, configuration.createBoxLayer);
+				var boxLayer = createBoxFromRegion(name, region, configuration.createBoxLayer);
 				// Skip errorous regions.
 				if (boxLayer) {
 					boxLayer.bindPopup(configuration.createPopupContent(name, region));
@@ -57,7 +57,7 @@ regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 				}
 			}
 			else if(region.type === 'poly2d') {
-				var outLayer = createOutlineFromRegion(region, configuration.createOutlineLayer);
+				var outLayer = createOutlineFromRegion(name, region, configuration.createOutlineLayer);
 				if (outLayer) {
 				    outLayer.bindPopup(configuration.createPopupContent(name, region));
 				    boxLayers.push(outLayer);
