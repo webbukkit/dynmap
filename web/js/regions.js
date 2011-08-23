@@ -5,13 +5,46 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 	// Compatibility with older configurations.
 	if (configuration.regionstyle) {
 		configuration.regionstyle = $.extend({
-			stroke: (configuration.regionstyle.strokeOpacity > 0.0),
+			stroke: true,
 			color: configuration.regionstyle.strokeColor,
-			opacity: configuration.regionstyle.strokeOpacity,
+			opacity: configuration.regionstyle.strokeOpacity || 0.01,
 			weight: configuration.regionstyle.strokeWeight,
-			fill: (configuration.regionstyle.fillOpacity > 0.0),
-			smoothFactor: 0.0
+			fill: true,
+			smoothFactor: 0.0,
+			fillOpacity: configuration.regionstyle.fillOpacity || 0.01,
+			fillColor: configuration.regionstyle.fillColor
 		}, configuration.regionstyle);
+	}
+	
+	function getStyle(name, group) {
+		var style = $.extend({}, configuration.regionstyle);
+		if(configuration.groupstyle && group && configuration.groupstyle[group]) {
+			var cs = configuration.groupstyle[group];
+			if(cs.strokeColor)
+				style.color = cs.strokeColor;
+			if(cs.strokeOpacity)
+				style.opacity = cs.strokeOpacity;
+			if(cs.strokeWeight)
+				style.weight = cs.strokeWeight;
+			if(cs.fillOpacity)
+				style.fillOpacity = cs.fillOpacity;
+			if(cs.fillColor)
+				style.fillColor = cs.fillColor;
+		}
+		if(configuration.customstyle && name && configuration.customstyle[name]) {
+			var cs = configuration.customstyle[name];
+			if(cs.strokeColor)
+				style.color = cs.strokeColor;
+			if(cs.strokeOpacity)
+				style.opacity = cs.strokeOpacity;
+			if(cs.strokeWeight)
+				style.weight = cs.strokeWeight;
+			if(cs.fillOpacity)
+				style.fillOpacity = cs.fillOpacity;
+			if(cs.fillColor)
+				style.fillColor = cs.fillColor;
+		}
+		return style;
 	}
 	
 	// Helper functions
@@ -19,57 +52,57 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 		return dynmap.getProjection().fromLocationToLatLng(new Location(undefined, x,y,z));
 	}
 	
-	function create3DBoxLayer(maxx, minx, maxy, miny, maxz, minz) {
+	function create3DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
 		return new L.FeatureGroup([
 			new L.Polygon([
 				latlng(minx,miny,minz),
 				latlng(maxx,miny,minz),
 				latlng(maxx,miny,maxz),
 				latlng(minx,miny,maxz)
-				], configuration.regionstyle),
+				], style),
 			new L.Polygon([
 				latlng(minx,maxy,minz),
 				latlng(maxx,maxy,minz),
 				latlng(maxx,maxy,maxz),
 				latlng(minx,maxy,maxz)
-				], configuration.regionstyle),
+				], style),
 			new L.Polygon([
 				latlng(minx,miny,minz),
 				latlng(minx,maxy,minz),
 				latlng(maxx,maxy,minz),
 				latlng(maxx,miny,minz)
-				], configuration.regionstyle),
+				], style),
 			new L.Polygon([
 				latlng(maxx,miny,minz),
 				latlng(maxx,maxy,minz),
 				latlng(maxx,maxy,maxz),
 				latlng(maxx,miny,maxz)
-				], configuration.regionstyle),
+				], style),
 			new L.Polygon([
 				latlng(minx,miny,maxz),
 				latlng(minx,maxy,maxz),
 				latlng(maxx,maxy,maxz),
 				latlng(maxx,miny,maxz)
-				], configuration.regionstyle),
+				], style),
 			new L.Polygon([
 				latlng(minx,miny,minz),
 				latlng(minx,maxy,minz),
 				latlng(minx,maxy,maxz),
 				latlng(minx,miny,maxz)
-				], configuration.regionstyle)
+				], style)
 			]);
 	}
 	
-	function create2DBoxLayer(maxx, minx, maxy, miny, maxz, minz) {
+	function create2DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
 		return new L.Polygon([
 				latlng(minx,64,minz),
 				latlng(maxx,64,minz),
 				latlng(maxx,64,maxz),
 				latlng(minx,64,maxz)
-				], configuration.regionstyle);
+				], style);
 	}
 
-	function create3DOutlineLayer(xarray, maxy, miny, zarray) {
+	function create3DOutlineLayer(xarray, maxy, miny, zarray, style) {
 		var toplist = [];
 		var botlist = [];
 		var i;
@@ -84,21 +117,21 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 			sidelist[1] = botlist[i];
 			sidelist[2] = botlist[(i+1)%xarray.length];
 			sidelist[3] = toplist[(i+1)%xarray.length];
-			polylist[i] = new L.Polygon(sidelist, configuration.regionstyle);
+			polylist[i] = new L.Polygon(sidelist, style);
 		}
-		polylist[xarray.length] = new L.Polygon(botlist, configuration.regionstyle);
-		polylist[xarray.length+1] = new L.Polygon(toplist, configuration.regionstyle);
+		polylist[xarray.length] = new L.Polygon(botlist, style);
+		polylist[xarray.length+1] = new L.Polygon(toplist, style);
 		
 		return new L.FeatureGroup(polylist);
 	}
 
-	function create2DOutlineLayer(xarray, maxy, miny, zarray) {
+	function create2DOutlineLayer(xarray, maxy, miny, zarray, style) {
 		var llist = [];
 		var i;
 		for(i = 0; i < xarray.length; i++) {
 			llist[i] = latlng(xarray[i], 64, zarray[i]);
 		}
-		return new L.Polygon(llist, configuration.regionstyle);
+		return new L.Polygon(llist, style);
 	}
 	
 	function createPopupContent(name, region) {
@@ -121,6 +154,7 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 		popup = popup.replace('%groupmembers%', join(members.groups));
 		popup = popup.replace('%parent%', region.parent || "");
 		popup = popup.replace('%priority%', region.priority || "");
+		popup = popup.replace('%nation%', region.nation || "");
 		var regionflags = "";
 		$.each(region.flags, function(name, value) {
 			regionflags = regionflags + "<span>" + name + ": " + value + "</span><br>";
@@ -151,6 +185,7 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 						createPopupContent: createPopupContent,
 						createBoxLayer: configuration.use3dregions ? create3DBoxLayer : create2DBoxLayer,
 						createOutlineLayer: configuration.use3dregions ? create3DOutlineLayer : create2DOutlineLayer,
+						getStyle: getStyle,
 						result: function(regionsLayer) {
 							activeLayer = regionsLayer;
 							dynmap.map.addLayer(activeLayer);

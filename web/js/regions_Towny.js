@@ -1,6 +1,6 @@
 regionConstructors['Towny'] = function(dynmap, configuration) {
 	// Helper function.
-	function createOutlineFromRegion(region, outCreator) {
+	function createOutlineFromRegion(name, region, outCreator) {
 		var xarray = [];
 		var zarray = [];
 		if(region.points) {
@@ -13,14 +13,14 @@ regionConstructors['Towny'] = function(dynmap, configuration) {
 		var ymin = 64;
 		var ymax = 65;
 
-		return outCreator(xarray, ymax, ymin, zarray);
+		return outCreator(xarray, ymax, ymin, zarray, configuration.getStyle(name, region.nation));
 	}
 	
 	var regionFile = 'towny_'+configuration.worldName+'.json';
 	$.getJSON('standalone/'+regionFile, function(data) {
 		var boxLayers = [];
 		$.each(data, function(name, region) {
-			var outLayer = createOutlineFromRegion(region, configuration.createOutlineLayer);
+			var outLayer = createOutlineFromRegion(name, region, configuration.createOutlineLayer);
 			if (outLayer) {
 			    outLayer.bindPopup(configuration.createPopupContent(name, 
 			    	$.extend(region, {

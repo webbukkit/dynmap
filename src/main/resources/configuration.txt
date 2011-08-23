@@ -65,6 +65,7 @@ components:
   #  type: logo
   #  text: "Dynmap"
   #  linkurl: "http://forums.bukkit.org/threads/dynmap.489/"
+  
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
   #  name: WorldGuard
@@ -73,11 +74,9 @@ components:
   #  basenode: regions
   #  use3dregions: true
   #  regionstyle:
-  #    stroke: true
-  #    color: "#FF0000"
-  #    opacity: 0.8
-  #    weight: 3
-  #    fill: true
+  #    strokeColor: "#FF0000"
+  #    strokeOpacity: 0.8
+  #    strokeWeight: 3
   #    fillColor: "#FF0000"
   #    fillOpacity: 0.35
   #  # Optional setting to limit which regions to show, by name - if commented out, all regions are shown
@@ -88,6 +87,11 @@ components:
   #  hiddenregions:
   #    - hiddenplace
   #    - secretsite
+  #  # Optional per-region overrides for regionstyle (any defined replace those in regionstyle)
+  #  customstyle:
+  #    homebase:
+  #      strokeColor: "#00FF00"
+  
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
   #  name: Residence
@@ -110,11 +114,20 @@ components:
   #  hiddenregions:
   #    - hiddenplace
   #    - secretsite
+  #  # Optional per-region overrides for regionstyle (any defined replace those in regionstyle)
+  #  customstyle:
+  #    homebase:
+  #      strokeColor: "#00FF00"
+  #  # Optional groups (subareas under a residence) overrides for regionstyle (any defined replace those in regionstyle)
+  #  groupstyle:
+  #    homebase:
+  #      strokeColor: "#007F00"
+
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
   #  name: Towny
   #  use3dregions: false
-  #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname%</span><br /> Mayor <span style="font-weight:bold;">%playerowners%</span><br /> Associates <span style="font-weight:bold;">%playermanagers%</span><br/>Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
+  #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname% (%nation%)</span><br /> Mayor <span style="font-weight:bold;">%playerowners%</span><br /> Associates <span style="font-weight:bold;">%playermanagers%</span><br/>Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
   #  regionstyle:
   #    strokeColor: "#FF0000"
   #    strokeOpacity: 0.8
@@ -129,6 +142,15 @@ components:
   #  hiddenregions:
   #    - hiddenplace
   #    - secretsite
+  #  # Optional per-town overrides for regionstyle (any defined replace those in regionstyle)
+  #  customstyle:
+  #    homebase:
+  #      strokeColor: "#00FF00"
+  #  # Optional per-nation overrides for regionstyle (any defined replace those in regionstyle)
+  #  groupstyle:
+  #    MyNation:
+  #      strokeColor: "#007F00"
+  
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"
 

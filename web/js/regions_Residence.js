@@ -9,7 +9,7 @@ regionConstructors['Residence'] = function(dynmap, configuration) {
 		$.each(data, function(name, residence) {
 			if(configuration.worldName == residence.Permissions.World) {
 				$.each(residence.Areas, function(aname, area) {
-					var boxLayer = configuration.createBoxLayer(area.X1, area.X2, area.Y1, area.Y2, area.Z1, area.Z2);
+					var boxLayer = configuration.createBoxLayer(area.X1, area.X2, area.Y1, area.Y2, area.Z1, area.Z2, configuration.getStyle(name));
 					
 					boxLayer.bindPopup(configuration.createPopupContent(name, $.extend(residence, {
 						owners: { players: [residence.Permissions.Owner] },
@@ -20,7 +20,7 @@ regionConstructors['Residence'] = function(dynmap, configuration) {
 				});
 				$.each(residence.Subzones, function(szname, subzone) {
 					$.each(subzone.Areas, function(name2, area2) {
-						var subzoneLayer = configuration.createBoxLayer(area2.X1, area2.X2, area2.Y1, area2.Y2, area2.Z1, area2.Z2);
+						var subzoneLayer = configuration.createBoxLayer(area2.X1, area2.X2, area2.Y1, area2.Y2, area2.Z1, area2.Z2, configuration.getStyle(name+"."+szname, name));
 						subzoneLayer.bindPopup(configuration.createPopupContent(name + '.' + szname, $.extend(subzone, {
 							owners: { players: [subzone.Permissions.Owner] },
 							flags: subzone.Permissions.AreaFlags
