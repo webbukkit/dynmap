@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.dynmap.Log;
 
 public class OpPermissions implements PermissionProvider {
     public HashSet<String> opCommands = new HashSet<String>();
@@ -12,6 +13,7 @@ public class OpPermissions implements PermissionProvider {
         for (String opCommand : opCommands) {
             this.opCommands.add(opCommand);
         }
+        Log.info("Using ops.txt for access control");
     }
 
     @Override

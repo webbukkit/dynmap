@@ -4,6 +4,7 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.dynmap.Log;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -17,6 +18,7 @@ public class NijikokunPermissions implements PermissionProvider {
         if (permissionsPlugin == null)
             return null;
         server.getPluginManager().enablePlugin(permissionsPlugin);
+        Log.info("Using Permissions " + permissionsPlugin.getDescription().getVersion() + " for access control");
         return new NijikokunPermissions(permissionsPlugin, name);
     }
 
