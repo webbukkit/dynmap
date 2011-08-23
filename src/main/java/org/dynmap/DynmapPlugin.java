@@ -58,6 +58,7 @@ import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.hdmap.TexturePack;
+import org.dynmap.permissions.BukkitPermissions;
 import org.dynmap.permissions.NijikokunPermissions;
 import org.dynmap.permissions.OpPermissions;
 import org.dynmap.permissions.PermissionProvider;
@@ -199,6 +200,8 @@ public class DynmapPlugin extends JavaPlugin {
         events = new Events();
         
         permissions = NijikokunPermissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = BukkitPermissions.create("dynmap");
         if (permissions == null)
             permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload" });
 
