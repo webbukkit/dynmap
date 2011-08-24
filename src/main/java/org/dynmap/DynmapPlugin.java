@@ -44,6 +44,7 @@ import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -74,6 +75,7 @@ public class DynmapPlugin extends JavaPlugin {
     public HashSet<String> enabledTriggers = new HashSet<String>();
     public PermissionProvider permissions;
     public ComponentManager componentManager = new ComponentManager();
+    public PlayerFaces playerfacemgr;
     public Events events = new Events();
     public String deftemplatesuffix = "";
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
@@ -252,6 +254,8 @@ public class DynmapPlugin extends JavaPlugin {
         mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
 
+        playerfacemgr = new PlayerFaces(this);
+        
         loadWebserver();
 
         enabledTriggers.clear();
@@ -342,6 +346,7 @@ public class DynmapPlugin extends JavaPlugin {
             List<Listener> ll = event_handlers.get(t);
             ll.clear(); /* Empty list - we use presence of list to remember that we've registered with Bukkit */
         }
+        playerfacemgr = null;
         
         Debug.clearDebuggers();
     }
@@ -989,6 +994,16 @@ public class DynmapPlugin extends JavaPlugin {
             if(ll != null) {
                 for(Listener l : ll) {
                     ((PlayerListener)l).onPlayerJoin(event);
+                }
+            }
+        }
+        @Override
+        public void onPlayerLogin(PlayerLoginEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((PlayerListener)l).onPlayerLogin(event);
                 }
             }
         }
