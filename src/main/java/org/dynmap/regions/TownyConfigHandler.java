@@ -39,19 +39,30 @@ public class TownyConfigHandler {
      */
     public Map<String, Object> getRegionData(String wname) {
         Map<String, Object> rslt = new HashMap<String, Object>();
-        /* List towns directory - process all towns there */
-        File towndir = new File("plugins/Towny/data/towns");
-        File[] towns = towndir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".txt");
+        Properties p = new Properties();
+        FileInputStream fis = null;
+        /* Read world data for this world */
+        try {
+            fis = new FileInputStream("plugins/Towny/data/worlds/" + wname + ".txt");    /* Open and load file */
+            p.load(fis);
+        } catch (IOException iox) {
+            Log.severe("Error loading Towny world file " + wname + ".txt");
+        } finally {
+            if(fis != null) {
+                try { fis.close(); } catch (IOException iox) {}
             }
-        });
-        for(File town : towns) {
-            Map<?,?> td = processTown(town, wname);
+        }
+        /* Get towns list for our world */
+        String t = p.getProperty("towns", "");
+        String towns[] = t.split(",");	/* Split on commas */
+        /* List towns directory - process all towns there */
+        for(String town : towns) {
+        	town = town.trim();
+        	if(town.length() == 0) continue;
+    		File tfile = new File("plugins/Towny/data/towns/" + town + ".txt");
+            Map<?,?> td = processTown(tfile, wname);
             if(td != null) {
-                String fn = town.getName();
-                rslt.put(fn.substring(0, fn.lastIndexOf('.')), td);
+                rslt.put(town, td);
             }
         }
         return rslt;
