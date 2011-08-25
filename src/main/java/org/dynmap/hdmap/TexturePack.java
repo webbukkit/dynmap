@@ -369,6 +369,7 @@ public class TexturePack {
     private void loadTerrainPNG(InputStream is) throws IOException {
         int i, j;
         /* Load image */
+        ImageIO.setUseCache(false);
         BufferedImage img = ImageIO.read(is);
         if(img == null) { throw new FileNotFoundException(); }
         terrain_width = img.getWidth();
@@ -429,6 +430,7 @@ public class TexturePack {
     /* Load image into image array */
     private void loadImage(InputStream is, int idx) throws IOException {
         /* Load image */
+    	ImageIO.setUseCache(false);
         BufferedImage img = ImageIO.read(is);
         if(img == null) { throw new FileNotFoundException(); }
         imgs[idx] = new LoadedImage();
@@ -642,6 +644,7 @@ public class TexturePack {
             }
         }
         BufferedImage img = DynmapBufferedImage.createBufferedImage(outbuf, terrain_width, terrain_height);
+        ImageIO.setUseCache(false);
         ImageIO.write(img, "png", f);
     }
 
