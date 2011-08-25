@@ -72,18 +72,18 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			return div;
 		}});
 		if(dynmap.world === player.location.world)
-			dynmap.map.addLayer(player.marker);
+			dynmap.playermarkergroup.addLayer(player.marker);
 	});
 	$(dynmap).bind('playerremoved', function(event, player) {
 		// Remove the marker.
 		if(dynmap.map.hasLayer(player.marker))
-			dynmap.map.removeLayer(player.marker);
+			dynmap.playermarkergroup.removeLayer(player.marker);
 	});
 	$(dynmap).bind('playerupdated', function(event, player) {
 		if(dynmap.world === player.location.world) {
 			// Add if needed
 			if(dynmap.map.hasLayer(player.marker) == false)
-				dynmap.map.addLayer(player.marker);
+				dynmap.playermarkergroup.addLayer(player.marker);
 			else {
 				// Update the marker.
 				var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
@@ -100,7 +100,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				}
 			}
 		} else if(dynmap.map.hasLayer(player.marker)) {
-			dynmap.map.removeLayer(player.marker);
+			dynmap.playermarkergroup.removeLayer(player.marker);
 		}
 	});
     // Remove marker on start of map change
@@ -109,7 +109,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		for(name in dynmap.players) {
 			var player = dynmap.players[name];
 			// Turn off marker - let update turn it back on 
-			dynmap.map.removeLayer(player.marker);
+			dynmap.playermarkergroup.removeLayer(player.marker);
 		}
 	});
     // Remove marker on map change - let update place it again
@@ -119,12 +119,15 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			var player = dynmap.players[name];
 			if(dynmap.world === player.location.world) {
 				if(dynmap.map.hasLayer(player.marker) == false)
-					dynmap.map.addLayer(player.marker);
+					dynmap.playermarkergroup.addLayer(player.marker);
 				var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
 				player.marker.setLatLng(markerPosition);
 			} else if(dynmap.map.hasLayer(player.marker)) {
-				dynmap.map.removeLayer(player.marker);
+				dynmap.playermarkergroup.removeLayer(player.marker);
 			}
 		}
 	});
+	dynmap.playermarkergroup = new L.LayerGroup();
+	dynmap.map.addLayer(dynmap.playermarkergroup);
+	dynmap.layercontrol.addOverlay(dynmap.playermarkergroup, 'Players');
 };
