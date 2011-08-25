@@ -53,44 +53,38 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 	}
 	
 	function create3DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
-		return new L.FeatureGroup([
-			new L.Polygon([
+		return new L.MultiPolygon([
+			[
 				latlng(minx,miny,minz),
 				latlng(maxx,miny,minz),
 				latlng(maxx,miny,maxz),
 				latlng(minx,miny,maxz)
-				], style),
-			new L.Polygon([
+			],[
 				latlng(minx,maxy,minz),
 				latlng(maxx,maxy,minz),
 				latlng(maxx,maxy,maxz),
 				latlng(minx,maxy,maxz)
-				], style),
-			new L.Polygon([
+			],[
 				latlng(minx,miny,minz),
 				latlng(minx,maxy,minz),
 				latlng(maxx,maxy,minz),
 				latlng(maxx,miny,minz)
-				], style),
-			new L.Polygon([
+			],[
 				latlng(maxx,miny,minz),
 				latlng(maxx,maxy,minz),
 				latlng(maxx,maxy,maxz),
 				latlng(maxx,miny,maxz)
-				], style),
-			new L.Polygon([
+			],[
 				latlng(minx,miny,maxz),
 				latlng(minx,maxy,maxz),
 				latlng(maxx,maxy,maxz),
 				latlng(maxx,miny,maxz)
-				], style),
-			new L.Polygon([
+			],[
 				latlng(minx,miny,minz),
 				latlng(minx,maxy,minz),
 				latlng(minx,maxy,maxz),
 				latlng(minx,miny,maxz)
-				], style)
-			]);
+			]], style);
 	}
 	
 	function create2DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
@@ -117,12 +111,12 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 			sidelist[1] = botlist[i];
 			sidelist[2] = botlist[(i+1)%xarray.length];
 			sidelist[3] = toplist[(i+1)%xarray.length];
-			polylist[i] = new L.Polygon(sidelist, style);
+			polylist[i] = sidelist;
 		}
-		polylist[xarray.length] = new L.Polygon(botlist, style);
-		polylist[xarray.length+1] = new L.Polygon(toplist, style);
+		polylist[xarray.length] = botlist;
+		polylist[xarray.length+1] = toplist;
 		
-		return new L.FeatureGroup(polylist);
+		return new L.MultiPolygon(polylist, style);
 	}
 
 	function create2DOutlineLayer(xarray, maxy, miny, zarray, style) {
