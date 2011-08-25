@@ -165,6 +165,7 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 		var activeLayer = undefined;
 		function undraw() {
 			if (activeLayer) {
+				dynmap.layercontrol.removeLayer(activeLayer);
 				dynmap.map.removeLayer(activeLayer);
 				activeLayer = undefined;
 			}
@@ -183,6 +184,7 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 						result: function(regionsLayer) {
 							activeLayer = regionsLayer;
 							dynmap.map.addLayer(activeLayer);
+							dynmap.layercontrol.addOverlay(activeLayer, regionType);
 						}
 					}));
 			}

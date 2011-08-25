@@ -43,6 +43,12 @@ if (!Array.prototype.indexOf) {
 	    }
 }
 
+var DynmapLayerControl = L.Control.Layers.extend({
+	getPosition: function() {
+		return L.Control.Position.TOP_LEFT;
+	}
+});
+	
 	
 var DynmapTileLayer = L.TileLayer.extend({
 	_currentzoom: undefined,
