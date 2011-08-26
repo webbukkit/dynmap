@@ -91,6 +91,8 @@ components:
   #  customstyle:
   #    homebase:
   #      strokeColor: "#00FF00"
+  #  # Optional - make layer hidden by default
+  #  hidebydefault: true
   
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
@@ -122,6 +124,8 @@ components:
   #  groupstyle:
   #    homebase:
   #      strokeColor: "#007F00"
+  #  # Optional - make layer hidden by default
+  #  hidebydefault: true
 
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
@@ -150,6 +154,8 @@ components:
   #  groupstyle:
   #    MyNation:
   #      strokeColor: "#007F00"
+  #  # Optional - make layer hidden by default
+  #  hidebydefault: true
   
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"

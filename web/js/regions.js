@@ -162,12 +162,10 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 	loadcss('css/regions.css');
 	var regionType = configuration.name;
 	loadjs('js/regions_' + regionType + '.js', function() {
-		var activeLayer = undefined;
+		configuration.activeLayer = undefined;
 		function undraw() {
-			if (activeLayer) {
-				dynmap.layercontrol.removeLayer(activeLayer);
-				dynmap.map.removeLayer(activeLayer);
-				activeLayer = undefined;
+			if (configuration.activeLayer) {
+				configuration.activeLayer.clearLayers();
 			}
 		}
 		function redraw() {
@@ -182,15 +180,24 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 						createOutlineLayer: configuration.use3dregions ? create3DOutlineLayer : create2DOutlineLayer,
 						getStyle: getStyle,
 						result: function(regionsLayer) {
-							activeLayer = regionsLayer;
-							dynmap.map.addLayer(activeLayer);
-							dynmap.layercontrol.addOverlay(activeLayer, regionType);
+							if(configuration.activeLayer) {	/* Not first time */
+								for(var i in regionsLayer._layers) {
+									configuration.activeLayer.addLayer(regionsLayer._layers[i]);
+								}
+								regionsLayer.clearLayers();
+							}
+							else {
+								configuration.activeLayer = regionsLayer;
+								if(!configuration.hidebydefault)
+									dynmap.map.addLayer(configuration.activeLayer);
+								dynmap.layercontrol.addOverlay(configuration.activeLayer, regionType);
+							}
 						}
 					}));
 			}
 		}
 		$(dynmap).bind('mapchanged', redraw);
 		$(dynmap).bind('mapchanging', undraw);
-		redraw();
+		redraw(true);
 	});
 }
