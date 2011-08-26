@@ -35,6 +35,14 @@
     font-weight: bold;
 }
 
+.leaflet-control-layers {
+    background-color: #bbb;
+}
+
+.leaflet-control-layers:hover {
+    background-color: #fff;
+}
+
 .leaflet-control-zoom-in {
     background-color: #eee;
 	}
