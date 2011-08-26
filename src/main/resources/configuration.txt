@@ -55,6 +55,8 @@ components:
     showplayerhealth: true
     # Option to make player faces small - don't use with showplayerhealth
     smallplayerfaces: false
+  #  # Optional - make player faces layer hidden by default
+  #  hidebydefault: true
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent

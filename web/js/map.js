@@ -284,13 +284,15 @@ DynMap.prototype = {
 		
 		me.selectMap(me.defaultworld.defaultmap);
 		
+		var componentstoload = 0;
 		var configset = { };
 		$.each(me.options.components, function(index, configuration) {
-			if(!configset[configuration.type])
+			if(!configset[configuration.type]) {
 				configset[configuration.type] = [];
+				componentstoload++;
+			}
 			configset[configuration.type].push(configuration);
 		});
-		var componentstoload = configset.length;
 		
 		$.each(configset, function(type, configlist) {
 			loadjs('js/' + type + '.js', function() {

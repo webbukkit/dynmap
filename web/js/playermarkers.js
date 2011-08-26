@@ -128,6 +128,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 		}
 	});
 	dynmap.playermarkergroup = new L.LayerGroup();
-	dynmap.map.addLayer(dynmap.playermarkergroup);
+	if(!configuration.hidebydefault)
+		dynmap.map.addLayer(dynmap.playermarkergroup);
 	dynmap.layercontrol.addOverlay(dynmap.playermarkergroup, 'Players');
 };
