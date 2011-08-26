@@ -284,12 +284,21 @@ DynMap.prototype = {
 		
 		me.selectMap(me.defaultworld.defaultmap);
 		
-		var componentstoload = me.options.components.length;
+		var configset = { };
 		$.each(me.options.components, function(index, configuration) {
-			loadjs('js/' + configuration.type + '.js', function() {
-				var componentconstructor = componentconstructors[configuration.type];
+			if(!configset[configuration.type])
+				configset[configuration.type] = [];
+			configset[configuration.type].push(configuration);
+		});
+		var componentstoload = configset.length;
+		
+		$.each(configset, function(type, configlist) {
+			loadjs('js/' + type + '.js', function() {
+				var componentconstructor = componentconstructors[type];
 				if (componentconstructor) {
-					me.components.push(new componentconstructor(me, configuration));
+					$.each(configlist, function(idx, configuration) {
+						me.components.push(new componentconstructor(me, configuration));
+					});
 				} else {
 					// Could not load component. We'll ignore this for the moment.
 				}
@@ -323,8 +332,7 @@ DynMap.prototype = {
 		var prevzoom = me.map.getZoom(); 					
 
 		if (me.maptype) {
-			me.layercontrol.removeLayer(me.maptype);
-			//me.map.removeLayer(me.maptype);
+			me.map.removeLayer(me.maptype);
 		}
 		
 		var prevmap = me.maptype;
@@ -361,7 +369,6 @@ DynMap.prototype = {
 			me.map.setZoom(prevzoom);
 		}
 		me.map.addLayer(me.maptype);
-		//me.layercontrol.addBaseLayer(me.maptype, 'Tiles');
 				
 		if (worldChanged) {
 			$(me).trigger('worldchanged');
