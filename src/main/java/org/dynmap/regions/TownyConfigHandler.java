@@ -124,14 +124,33 @@ public class TownyConfigHandler {
                 n = n.substring(idx+1); /* Process remainder as coordinate */
             }
             if(!worldmatch) continue;
-            String[] v = n.split(",");
-            if(v.length == 2) {
+            
+            java.util.regex.Matcher towny075Match = towny075Pattern.matcher(n);
+            if (towny075Match.matches()) {
+                // Towny Advanced >= 0.75
                 try {
-                    int[] vv = new int[] { Integer.valueOf(v[0]), Integer.valueOf(v[1]) };
+                    //int plotType = Integer.valueOf(towny075Match.group(1));
+                    int[] vv = new int[] { Integer.valueOf(towny075Match.group(2)), Integer.valueOf(towny075Match.group(3)) };
                     blks.setFlag(vv[0], vv[1], true);
                     nodevals.add(vv);
-                } catch (NumberFormatException nfx) {
+                } catch(NumberFormatException nfx) {
                     Log.severe("Error parsing block list in Towny - " + townfile.getPath());
+                    return null;
+                }
+            } else {
+                // Towny Advanced < 0.75
+                String[] v = n.split(",");
+                if(v.length == 2) {
+                    try {
+                        int[] vv = new int[] { Integer.valueOf(v[0]), Integer.valueOf(v[1]) };
+                        blks.setFlag(vv[0], vv[1], true);
+                        nodevals.add(vv);
+                    } catch (NumberFormatException nfx) {
+                        Log.severe("Error parsing block list in Towny - " + townfile.getPath());
+                        return null;
+                    }
+                } else {
+                    Log.severe("Invalid block list format in Towny - " + townfile.getPath());
                     return null;
                 }
             }
