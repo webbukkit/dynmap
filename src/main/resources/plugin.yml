@@ -1,6 +1,6 @@
 name: dynmap
 main: org.dynmap.DynmapPlugin
-version: "0.21"
+version: "0.22"
 authors: [FrozenCow, mikeprimm, zeeZ]
 softdepend: [Permissions]
 commands:

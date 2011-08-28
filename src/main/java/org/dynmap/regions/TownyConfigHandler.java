@@ -32,7 +32,12 @@ public class TownyConfigHandler {
         }
         Configuration tcfg = new Configuration(cfgfile);
         tcfg.load();
-        townblocksize = tcfg.getInt("town_block_size", 16); /* Get block size */        
+        String tbsize = tcfg.getNode("town").getString("town_block_size", "16");
+        try {
+            townblocksize = Integer.valueOf(tbsize);
+        } catch (NumberFormatException nfx) {
+            townblocksize = 16;
+        }
     }
     /**
      * Get map of attributes for given world
@@ -124,8 +129,13 @@ public class TownyConfigHandler {
                 n = n.substring(idx+1); /* Process remainder as coordinate */
             }
             if(!worldmatch) continue;
+            
+            int bidx = n.indexOf(']');
+            if(bidx >= 0) {    /* If 0.75 block type present, skip it (we don't care yet) */
+                n = n.substring(bidx+1);
+            }
             String[] v = n.split(",");
-            if(v.length == 2) {
+            if(v.length >= 2) { /* Price in 0.75 is third - don't care :) */
                 try {
                     int[] vv = new int[] { Integer.valueOf(v[0]), Integer.valueOf(v[1]) };
                     blks.setFlag(vv[0], vv[1], true);
@@ -134,6 +144,11 @@ public class TownyConfigHandler {
                     Log.severe("Error parsing block list in Towny - " + townfile.getPath());
                     return null;
                 }
+            } else if(n.startsWith("|")){   /* End of list? */
+                
+            } else {
+                Log.severe("Invalid block list format in Towny - " + townfile.getPath());
+                return null;
             }
         }
         /* If nothing in this world, skip */
