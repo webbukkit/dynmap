@@ -32,7 +32,12 @@ public class TownyConfigHandler {
         }
         Configuration tcfg = new Configuration(cfgfile);
         tcfg.load();
-        townblocksize = tcfg.getInt("town_block_size", 16); /* Get block size */        
+        String tbsize = tcfg.getNode("town").getString("town_block_size", "16");
+        try {
+            townblocksize = Integer.valueOf(tbsize);
+        } catch (NumberFormatException nfx) {
+            townblocksize = 16;
+        }
     }
     /**
      * Get map of attributes for given world
