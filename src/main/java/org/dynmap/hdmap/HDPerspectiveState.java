@@ -21,6 +21,10 @@ public interface HDPerspectiveState {
      */
     int getBlockData();
     /**
+     * Get current block render data
+     */
+    int getBlockRenderData();
+    /**
      * Get direction of last block step
      */
     BlockStep getLastBlockStep();
