@@ -95,6 +95,7 @@ public class IsoHDPerspective implements HDPerspective {
     private class OurPerspectiveState implements HDPerspectiveState {
         int blocktypeid = 0;
         int blockdata = 0;
+        int blockrenderdata = -1;
         int lastblocktypeid = 0;
         Vector3D top, bottom;
         int px, py;
@@ -193,6 +194,10 @@ public class IsoHDPerspective implements HDPerspective {
          * Get current block data
          */
         public final int getBlockData() { return blockdata; }
+        /**
+         * Get current block render data
+         */
+        public final int getBlockRenderData() { return blockrenderdata; }
         /**
          * Get direction of last block step
          */
@@ -473,22 +478,23 @@ public class IsoHDPerspective implements HDPerspective {
                 	skiptoair = false;
             }
             else if(nonairhit || (blocktypeid != 0)) {
+                blockdata = mapiter.getBlockData();            	
                 switch(blocktypeid) {
                     case FENCE_BLKTYPEID:   /* Special case for fence - need to fake data so we can render properly */
-                        blockdata = generateFenceBlockData(mapiter);
+                        blockrenderdata = generateFenceBlockData(mapiter);
                         break;
                     case CHEST_BLKTYPEID:   /* Special case for chest - need to fake data so we can render */
-                        blockdata = generateChestBlockData(mapiter);
+                        blockrenderdata = generateChestBlockData(mapiter);
                         break;
                     case REDSTONE_BLKTYPEID:    /* Special case for redstone - fake data for wire pattern */
-                        blockdata = generateRedstoneWireBlockData(mapiter);
+                        blockrenderdata = generateRedstoneWireBlockData(mapiter);
                         break;
                     default:
-                        blockdata = mapiter.getBlockData();
-                        break;
+                    	blockrenderdata = -1;
+                    	break;
                 }
                 /* Look up to see if block is modelled */
-                short[] model = scalemodels.getScaledModel(blocktypeid, blockdata);
+                short[] model = scalemodels.getScaledModel(blocktypeid, blockdata, blockrenderdata);
                 if(model != null) {
                     return handleSubModel(model, shaderstate, shaderdone);
                 }

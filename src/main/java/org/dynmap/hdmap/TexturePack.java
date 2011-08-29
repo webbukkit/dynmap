@@ -120,12 +120,15 @@ public class TexturePack {
         private List<Integer> blockids;
         private int databits;
         private BlockTransparency bt;
+        private boolean userender;
         private static HDTextureMap[] texmaps;
         private static BlockTransparency transp[];
+        private static boolean userenderdata[];
         
         private static void initializeTable() {
             texmaps = new HDTextureMap[16*BLOCKTABLELEN];
             transp = new BlockTransparency[BLOCKTABLELEN];
+            userenderdata = new boolean[BLOCKTABLELEN];
             HDTextureMap blank = new HDTextureMap();
             for(int i = 0; i < texmaps.length; i++)
                 texmaps[i] = blank;
@@ -136,6 +139,7 @@ public class TexturePack {
         private HDTextureMap() {
             blockids = Collections.singletonList(Integer.valueOf(0));
             databits = 0xFFFF;
+            userender = false;
             faces = new int[] { BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK };
             
             for(int i = 0; i < texmaps.length; i++) {
@@ -143,11 +147,12 @@ public class TexturePack {
             }
         }
         
-        public HDTextureMap(List<Integer> blockids, int databits, int[] faces, BlockTransparency trans) {
+        public HDTextureMap(List<Integer> blockids, int databits, int[] faces, BlockTransparency trans, boolean userender) {
             this.faces = faces;
             this.blockids = blockids;
             this.databits = databits;
             this.bt = trans;
+            this.userender = userender;
         }
         
         public void addToTable() {
@@ -159,11 +164,15 @@ public class TexturePack {
                     }
                 }
                 transp[blkid] = bt; /* Transparency is only blocktype based right now */
+                userenderdata[blkid] = userender;	/* Ditto for using render data */
             }
         }
         
-        public static HDTextureMap getMap(int blkid, int blkdata) {
-            return texmaps[(blkid<<4) + blkdata];
+        public static HDTextureMap getMap(int blkid, int blkdata, int blkrenderdata) {
+        	if(userenderdata[blkid])
+        		return texmaps[(blkid<<4) + blkrenderdata];
+        	else
+        		return texmaps[(blkid<<4) + blkdata];
         }
         
         public static BlockTransparency getTransparency(int blkid) {
@@ -704,6 +713,7 @@ public class TexturePack {
                     line = line.substring(6);
                     BlockTransparency trans = BlockTransparency.OPAQUE;
                     String[] args = line.split(",");
+                    boolean userenderdata = false;
                     for(String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
@@ -759,12 +769,15 @@ public class TexturePack {
                                 Log.severe("Texture mapping has invalid transparency setting - " + av[1] + " - line " + rdr.getLineNumber() + " of " + txtname);
                             }
                         }
+                        else if(av[0].equals("userenderdata")) {
+                    		userenderdata = av[1].equals("true");
+                        }
                     }
                     /* If no data bits, assume all */
                     if(databits < 0) databits = 0xFFFF;
                     /* If we have everything, build block */
                     if(blkids.size() > 0) {
-                        HDTextureMap map = new HDTextureMap(blkids, databits, faces, trans);
+                        HDTextureMap map = new HDTextureMap(blkids, databits, faces, trans, userenderdata);
                         map.addToTable();
                         cnt++;
                     }
@@ -795,7 +808,7 @@ public class TexturePack {
      */
     public final void readColor(final HDPerspectiveState ps, final MapIterator mapiter, final Color rslt, final int blkid, final int lastblocktype, final boolean biome_shaded) {
         int blkdata = ps.getBlockData();
-        HDTextureMap map = HDTextureMap.getMap(blkid, blkdata);
+        HDTextureMap map = HDTextureMap.getMap(blkid, blkdata, ps.getBlockRenderData());
         BlockStep laststep = ps.getLastBlockStep();
         int textid = map.faces[laststep.ordinal()]; /* Get index of texture source */
         if(textid < 0) {

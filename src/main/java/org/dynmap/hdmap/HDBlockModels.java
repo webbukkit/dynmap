@@ -31,11 +31,11 @@ public class HDBlockModels {
     public static class HDScaledBlockModels {
         private short[][][] modelvectors;
         
-        public final short[] getScaledModel(int blocktype, int blockdata) {
+        public final short[] getScaledModel(int blocktype, int blockdata, int blockrenderdata) {
             if(modelvectors[blocktype] == null) {
                 return null;
             }
-            return modelvectors[blocktype][blockdata];
+            return modelvectors[blocktype][(blockrenderdata>=0)?blockrenderdata:blockdata];
         }
     }
     
