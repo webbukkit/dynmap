@@ -21,6 +21,7 @@ import org.dynmap.web.Json;
 public class RegionsComponent extends ClientComponent {
 
     private TownyConfigHandler towny;
+    private FactionsConfigHandler factions;
     private String regiontype;
     
     public RegionsComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
@@ -36,6 +37,11 @@ public class RegionsComponent extends ClientComponent {
         if(regiontype.equals("Towny")) {
             towny = new TownyConfigHandler(configuration);
             plugin.webServer.handlers.put("/standalone/towny_*", new RegionHandler(configuration));
+        }
+        /* Load special handler for Factions */
+        else if(regiontype.equals("Factions")) {
+            factions = new FactionsConfigHandler(configuration);
+            plugin.webServer.handlers.put("/standalone/factions_*", new RegionHandler(configuration));
         }
         else {
             plugin.webServer.handlers.put("/standalone/" + fname.substring(0, fname.lastIndexOf('.')) + "_*", new RegionHandler(configuration));
@@ -73,6 +79,11 @@ public class RegionsComponent extends ClientComponent {
         if(regiontype.equals("Towny")) {
             regionData = towny.getRegionData(wname);
             outputFileName = "towny_" + wname + ".json";
+            webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
+        }
+        else if(regiontype.equals("Factions")) {
+            regionData = factions.getRegionData(wname);
+            outputFileName = "factions_" + wname + ".json";
             webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
         }
         else {
