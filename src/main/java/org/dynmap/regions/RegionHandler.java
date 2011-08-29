@@ -24,11 +24,15 @@ public class RegionHandler extends FileHandler {
     private ConfigurationNode regions;
     private String regiontype;
     private TownyConfigHandler towny;
+    private FactionsConfigHandler factions;
     public RegionHandler(ConfigurationNode regions) {
         this.regions = regions;
         regiontype = regions.getString("name", "WorldGuard");
         if(regiontype.equals("Towny")) {
             towny = new TownyConfigHandler(regions);
+        }
+        else if(regiontype.equals("Factions")) {
+            factions = new FactionsConfigHandler(regions);
         }
     }
     @Override
@@ -47,6 +51,9 @@ public class RegionHandler extends FileHandler {
         
         if(regiontype.equals("Towny")) {
             regionData = towny.getRegionData(worldname);
+        }
+        else if(regiontype.equals("Factions")) {
+            regionData = factions.getRegionData(worldname);
         }
         else {
             /* If using worldpath, format is either plugins/<plugin>/<worldname>/<filename> OR 
