@@ -76,7 +76,14 @@ public class KzedMapTile extends MapTile {
     }
     
     public boolean render(MapChunkCache cache, String mapname) {
-        return map.render(cache, this, MapManager.mapman.getTileFile(this));
+    	boolean rslt = false;
+    	for(MapTileRenderer r : map.renderers) {
+    		if((mapname == null) || (r.getName().equals(mapname))) {
+    			KzedMapTile t = new KzedMapTile(world, map, r, px, py);
+    			rslt |= map.render(cache, t, MapManager.mapman.getTileFile(t));
+    		}
+    	}
+        return rslt;
     }
     
     public List<DynmapChunk> getRequiredChunks() {
