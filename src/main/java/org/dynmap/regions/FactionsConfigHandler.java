@@ -39,11 +39,12 @@ public class FactionsConfigHandler {
      * Get map of attributes for given world
      */
     public Map<String, Object> getRegionData(String wname) {
+        Map<String, Object> rslt = new HashMap<String, Object>();
         /* Load factions.json file */
         File faction = new File("plugins/Factions/factions.json");
         if(faction.canRead() == false) {    /* Can't read config */
             Log.severe("Cannot find Faction file - " + faction.getPath());
-            return null;
+            return rslt;
         }
         JSONObject fact = null;
         try {
@@ -56,12 +57,12 @@ public class FactionsConfigHandler {
             Log.severe("Exception while parsing factions.json.", ex);
         }
         if(fact == null)
-            return null;
+            return rslt;
         /* Load board.json */
         File board = new File("plugins/Factions/board.json");
         if(board.canRead() == false) {    /* Can't read config */
             Log.severe("Cannot find Faction file - " + board.getPath());
-            return null;
+            return rslt;
         }
         JSONObject blocks = null;
         try {
@@ -74,14 +75,13 @@ public class FactionsConfigHandler {
             Log.severe("Exception while parsing board.json.", ex);
         }
         if(blocks == null)
-            return null;
+            return rslt;
         /* Get value from board.json for requested world */
         Object wb = blocks.get(wname);
         if((wb == null) || (!(wb instanceof JSONObject))) {
-            return null;
+            return rslt;
         }
         JSONObject wblocks = (JSONObject)wb;
-        Map<String, Object> rslt = new HashMap<String, Object>();
         /* Now go through the factions list, and find outline */
         for(Object factid : fact.keySet()) {
             int fid = 0;
