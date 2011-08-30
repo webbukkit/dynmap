@@ -32,7 +32,12 @@ public class TownyConfigHandler {
         }
         Configuration tcfg = new Configuration(cfgfile);
         tcfg.load();
-        String tbsize = tcfg.getNode("town").getString("town_block_size", "16");
+        org.bukkit.util.config.ConfigurationNode townnode = tcfg.getNode("town");
+        String tbsize = "16";
+        if(townnode != null)
+            tbsize = townnode.getString("town_block_size", "16");
+        else
+            tbsize = tcfg.getString("town_block_size", "16");
         try {
             townblocksize = Integer.valueOf(tbsize);
         } catch (NumberFormatException nfx) {
