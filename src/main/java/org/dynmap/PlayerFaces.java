@@ -56,16 +56,21 @@ public class PlayerFaces {
             int[] faceaccessory = new int[64];  /* 8x8 of face accessory */
             /* Get buffered image for face at 8x8 */
             DynmapBufferedImage face8x8 = DynmapBufferedImage.allocateBufferedImage(8, 8);
-            int[] bgcolor = new int[1];
-            img.getRGB(0, 0, 1, 1, bgcolor, 0, 1);  /* Get BG color (for accessory face) */
             img.getRGB(8, 8, 8, 8, face8x8.argb_buf, 0, 8); /* Read face from image */
             img.getRGB(40, 8, 8, 8, faceaccessory, 0, 8); /* Read face accessory from image */
-            /* Apply accessory to face: first element is transparency color so only ones not matching it */
+            /* Apply accessory to face: see if anything is transparent (if so, apply accessory */
+            boolean transp = false;
             for(int i = 0; i < 64; i++) {
-                if(faceaccessory[i] != bgcolor[0]) 
-                    face8x8.argb_buf[i] = faceaccessory[i];
-                else if(face8x8.argb_buf[i] == bgcolor[0])
-                    face8x8.argb_buf[i] = 0;
+            	if((faceaccessory[i] & 0xFF000000) == 0) {
+            		transp = true;
+            		break;
+            	}
+            }
+            if(transp) {
+                for(int i = 0; i < 64; i++) {
+                	if((faceaccessory[i] & 0xFF000000) != 0)
+                		face8x8.argb_buf[i] = faceaccessory[i];
+                }
             }
             /* Write 8x8 file */
             File img_8x8 = new File(faces8x8dir, playername + ".png");
