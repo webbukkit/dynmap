@@ -260,7 +260,7 @@ updaterate: 2000
 
 showplayerfacesinmenu: true
 
-# Set sidebaropened: true to pin menu sidebar opened
+# Set sidebaropened: 'true' to pin menu sidebar opened permanently, 'pinned' to default the sidebar to pinned, but allow it to unpin
 #sidebaropened: true
 
 joinmessage: "%playername% joined"
