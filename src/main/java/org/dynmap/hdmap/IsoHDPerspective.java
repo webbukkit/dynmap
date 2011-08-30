@@ -22,6 +22,7 @@ import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.MapType.ImageFormat;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.MapIterator.BlockStep;
@@ -971,6 +972,9 @@ public class IsoHDPerspective implements HDPerspective {
         DynmapBufferedImage dayim[] = new DynmapBufferedImage[numshaders];
         int[][] argb_buf = new int[numshaders][];
         int[][] day_argb_buf = new int[numshaders][];
+        boolean isjpg[] = new boolean[numshaders];
+        int bgday[] = new int[numshaders];
+        int bgnight[] = new int[numshaders];
         
         for(int i = 0; i < numshaders; i++) {
             HDShader shader = shaderstate[i].getShader();
@@ -985,6 +989,9 @@ public class IsoHDPerspective implements HDPerspective {
                 dayim[i] = DynmapBufferedImage.allocateBufferedImage(tileWidth, tileHeight);
                 day_argb_buf[i] = dayim[i].argb_buf;
             }
+            isjpg[i] = shaderstate[i].getMap().getImageFormat() != ImageFormat.FORMAT_PNG;
+            bgday[i] = shaderstate[i].getMap().getBackgroundARGBDay();
+            bgnight[i] = shaderstate[i].getMap().getBackgroundARGBNight();
         }
         
         /* Create perspective state object */
@@ -996,6 +1003,7 @@ public class IsoHDPerspective implements HDPerspective {
         double ybase = tile.ty * tileHeight;
         boolean shaderdone[] = new boolean[numshaders];
         boolean rendered[] = new boolean[numshaders];
+        
         for(int x = 0; x < tileWidth; x++) {
             ps.px = x;
             for(int y = 0; y < tileHeight; y++) {
@@ -1018,10 +1026,20 @@ public class IsoHDPerspective implements HDPerspective {
                         rendered[i] = true;
                     }
                     shaderstate[i].getRayColor(rslt, 0);
-                    argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                    if(isjpg[i] && rslt.isTransparent()) {
+                        argb_buf[i][(tileHeight-y-1)*tileWidth + x] = bgnight[i];
+                    }
+                    else {
+                        argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                    }
                     if(day_argb_buf[i] != null) {
                         shaderstate[i].getRayColor(rslt, 1);
-                        day_argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                        if(isjpg[i] && rslt.isTransparent()) {
+                            day_argb_buf[i][(tileHeight-y-1)*tileWidth + x] = bgday[i];
+                        }
+                        else {
+                            day_argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                        }
                     }
                 }
             }

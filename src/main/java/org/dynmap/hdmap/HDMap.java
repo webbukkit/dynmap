@@ -28,6 +28,8 @@ public class HDMap extends MapType {
     private ConfigurationNode configuration;
     private int mapzoomout;
     private MapType.ImageFormat imgformat;
+    private int bgcolornight;
+    private int bgcolorday;
 
     public static final String IMGFORMAT_PNG = "png";
     public static final String IMGFORMAT_JPG = "jpg";
@@ -100,7 +102,20 @@ public class HDMap extends MapType {
         if(imgformat == null) {
             Log.severe("HDMap '"+name+"' set invalid image-format: " + fmt);
             imgformat = ImageFormat.FORMAT_PNG;
-        }   
+        }
+        /* Get color info */
+        String c = configuration.getString("background");
+        if(c != null) {
+            bgcolorday = bgcolornight = parseColor(c);
+        }
+        c = configuration.getString("backgroundday");
+        if(c != null) {
+            bgcolorday = parseColor(c);
+        }
+        c = configuration.getString("backgroundnight");
+        if(c != null) {
+            bgcolornight = parseColor(c);
+        }
     }
 
     public HDShader getShader() { return shader; }
@@ -221,5 +236,37 @@ public class HDMap extends MapType {
         
         a(worldObject, "maps", o);
 
+    }
+    
+    private static int parseColor(String c) {
+        int v = 0;
+        if(c.startsWith("#")) {
+            c = c.substring(1);
+            if(c.length() == 3) {   /* #rgb */
+                try {
+                    v = Integer.valueOf(c, 16);
+                } catch (NumberFormatException nfx) {
+                    return 0;
+                }
+                v = 0xFF000000 | ((v & 0xF00) << 12) | ((v & 0x0F0) << 8) | ((v & 0x00F) << 4);
+            }
+            else if(c.length() == 6) {  /* #rrggbb */
+                try {
+                    v = Integer.valueOf(c, 16);
+                } catch (NumberFormatException nfx) {
+                    return 0;
+                }
+                v = 0xFF000000 | (v & 0xFFFFFF);
+            }
+        }
+        return v;
+    }
+    
+    public int getBackgroundARGBDay() {
+        return bgcolorday;
+    }
+    
+    public int getBackgroundARGBNight() {
+        return bgcolornight;
     }
 }
