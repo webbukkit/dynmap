@@ -20,7 +20,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "spammessage", c.getString("spammessage", "You may only chat once every %interval% seconds."));
                 s(t, "webprefix", unescapeString(c.getString("webprefix", "[WEB] ")));
                 s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
-                s(t, "sidebaropened", c.getBoolean("sidebaropened", false));
+                s(t, "sidebaropened", c.getString("sidebaropened", "false"));
                 
                 DynmapWorld defaultWorld = null;
                 String defmap = null;

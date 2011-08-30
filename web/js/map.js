@@ -145,10 +145,15 @@ DynMap.prototype = {
 		var panel;
 		var sidebar;
 		var pinbutton;
-		if(!me.options.sidebaropened) {
+			
+		if(me.options.sidebaropened != 'true') { // false or pinned
+			var pincls = 'pinned'
+			if(me.options.sidebaropened == 'false')
+				pincls = '';
+				
 			sidebar = me.sidebar = $('<div/>')
-				.addClass('sidebar')
-				.appendTo(container);
+					.addClass('sidebar ' + pincls)
+					.appendTo(container);
 
 			panel = $('<div/>')
 				.addClass('panel')
@@ -271,7 +276,7 @@ DynMap.prototype = {
 			.append(link=$('<input type="text" />'))
 			.data('link', link)
 			.appendTo(container);*/
-        if(!me.options.sidebaropened) {
+        if(me.options.sidebaropened != 'true') {
             $('<div/>')
                 .addClass('hitbar')
                 .appendTo(panel);
