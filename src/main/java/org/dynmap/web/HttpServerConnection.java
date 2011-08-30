@@ -111,6 +111,12 @@ public class HttpServerConnection extends Thread {
             out.append(field.getValue());
             out.append("\r\n");
         }
+        for(Entry<String, String> custom : HttpServer.getCustomHeaders().entrySet()) {
+            out.append(custom.getKey());
+            out.append(": ");
+            out.append(custom.getValue());
+            out.append("\r\n");
+        }
         out.append("\r\n");
         out.flush();
     }
