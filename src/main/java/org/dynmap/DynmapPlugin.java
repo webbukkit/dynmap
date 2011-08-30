@@ -303,6 +303,19 @@ public class DynmapPlugin extends JavaPlugin {
         boolean checkbannedips = configuration.getBoolean("check-banned-ips", true);
         int maxconnections = configuration.getInteger("max-sessions", 30);
         if(maxconnections < 2) maxconnections = 2;
+        /* Load customized response headers, if any */
+        ConfigurationNode custhttp = configuration.getNode("http-response-headers");
+        HashMap<String, String> custhdrs = new HashMap<String,String>();
+        if(custhttp != null) {
+            for(String k : custhttp.keySet()) {
+                String v = custhttp.getString(k);
+                if(v != null) {
+                    custhdrs.put(k, v);
+                }
+            }
+        }
+        HttpServer.setCustomHeaders(custhdrs);
+        
         if(allow_symlinks)
         	Log.verboseinfo("Web server is permitting symbolic links");
         else

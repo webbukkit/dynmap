@@ -10,8 +10,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -34,6 +36,7 @@ public class HttpServer extends Thread {
     private Object lock = new Object();
     private HashSet<HttpServerConnection> active_connections = new HashSet<HttpServerConnection>();
     private HashSet<HttpServerConnection> keepalive_connections = new HashSet<HttpServerConnection>();
+    private static Map<String, String> headers = new HashMap<String,String>();
 
     public HttpServer(InetAddress bindAddress, int port, boolean check_banned_ips, int max_sessions) {
         this.bindAddress = bindAddress;
@@ -188,5 +191,11 @@ public class HttpServer extends Thread {
     		return true;
     	}
     	return false;
+    }
+    public static Map<String,String> getCustomHeaders() {
+        return headers;
+    }
+    public static void setCustomHeaders(Map<String,String> hdrs) {
+        headers = hdrs;
     }
 }
