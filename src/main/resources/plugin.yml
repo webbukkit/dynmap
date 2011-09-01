@@ -23,6 +23,11 @@ commands:
            /<command> stats world - Show render statistics for maps on world 'world'.
            /<command> resetstats - Reset render statistics.
            /<command> resetstats world - Reset render statistics for maps on world 'world'.
+  dmarker:
+    description: Manipulate map markers
+    usage: |
+           /<command> add <label> - add new marker at current location (use double-quotes if spaces needed)
+           
 permissions:
   dynmap.*:
     description: Gives access to all dynmap functions
@@ -39,6 +44,7 @@ permissions:
       dynmap.reload: true
       dynmap.stats: true
       dynmap.resetstats: true
+      dynmap.marker.add: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -72,3 +78,7 @@ permissions:
   dynmap.resetstats:
     description: Allows /dynmap resetstats or /dynmap resetstats <world>
     default: op
+  dynmap.marker.add:
+    description: Allows /dmarker add
+    default: op
+    

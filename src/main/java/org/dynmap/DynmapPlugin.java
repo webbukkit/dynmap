@@ -59,6 +59,8 @@ import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.hdmap.TexturePack;
+import org.dynmap.markers.MarkerAPI;
+import org.dynmap.markers.impl.MarkerAPIImpl;
 import org.dynmap.permissions.BukkitPermissions;
 import org.dynmap.permissions.NijikokunPermissions;
 import org.dynmap.permissions.OpPermissions;
@@ -85,6 +87,8 @@ public class DynmapPlugin extends JavaPlugin {
 
     private HashMap<Event.Type, List<Listener>> event_handlers = new HashMap<Event.Type, List<Listener>>();
 
+    private MarkerAPI   markerapi;
+    
     public static File dataDirectory;
     public static File tilesDirectory;
     
@@ -208,6 +212,9 @@ public class DynmapPlugin extends JavaPlugin {
             permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload" });
 
         dataDirectory = this.getDataFolder();
+        
+        /* Initialize marker API, if not already done */
+        MarkerAPI m_api = getMarkerAPI();
         /* Load block models */
         HDBlockModels.loadModels(dataDirectory);
         /* Load texture mappings */
@@ -278,11 +285,11 @@ public class DynmapPlugin extends JavaPlugin {
         if (!configuration.getBoolean("disable-webserver", false)) {
             startWebserver();
         }
-
+        
         /* Print version info */
         PluginDescriptionFile pdfFile = this.getDescription();
         Log.info("version " + pdfFile.getVersion() + " is enabled" );
-        
+
         events.<Object>trigger("initialized", null);
     }
 
@@ -640,6 +647,9 @@ public class DynmapPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if(cmd.getName().equalsIgnoreCase("dmarker")) {
+            return MarkerAPIImpl.onCommand(this, sender, cmd, commandLabel, args);
+        }
         if (!cmd.getName().equalsIgnoreCase("dynmap"))
             return false;
         Player player = null;
@@ -768,7 +778,7 @@ public class DynmapPlugin extends JavaPlugin {
         return false;
     }
 
-    private boolean checkPlayerPermission(CommandSender sender, String permission) {
+    public boolean checkPlayerPermission(CommandSender sender, String permission) {
         if (!(sender instanceof Player) || sender.isOp()) {
             return true;
         } else if (!permissions.has(sender, permission.toLowerCase())) {
@@ -1162,5 +1172,11 @@ public class DynmapPlugin extends JavaPlugin {
             event_handlers.put(type, ll);   /* Add list for this event */
         }
         ll.add(listener);
+    }
+    
+    public MarkerAPI getMarkerAPI() {
+        if(markerapi == null) 
+            markerapi = MarkerAPIImpl.initializeMarkerAPI(this);
+        return markerapi;
     }
 }
