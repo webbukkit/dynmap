@@ -362,11 +362,11 @@ block:id=66,data=1,top=128,bottom=128,allsides=4,transparency=TRANSPARENT
 # Rail - incline to south
 block:id=66,data=2,data=3,top=128,bottom=128,north=128,south=128,transparency=TRANSPARENT
 # Rails - northeast corner
-block:id=66,data=6,topbottom=4112,transparency=TRANSPARENT
+block:id=66,data=6,topbottom=6112,transparency=TRANSPARENT
 # Rails - southeast corner
 block:id=66,data=7,topbottom=5112,transparency=TRANSPARENT
 # Rails - southwest corner
-block:id=66,data=8,topbottom=6112,transparency=TRANSPARENT
+block:id=66,data=8,topbottom=4112,transparency=TRANSPARENT
 # Rails - northwest corner
 block:id=66,data=9,topbottom=112,transparency=TRANSPARENT
 # Cobblestone Stairs
