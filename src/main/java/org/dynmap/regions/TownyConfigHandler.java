@@ -119,6 +119,8 @@ public class TownyConfigHandler {
         }
         /* Get block list */
         String blocks = p.getProperty("townBlocks");
+        if(blocks == null)	/* Skip if no blocks */
+        	return null;
         String[] nodes = blocks.split(";"); /* Split into list */
         TileFlags blks = new TileFlags();
         LinkedList<int[]> nodevals = new LinkedList<int[]>();
