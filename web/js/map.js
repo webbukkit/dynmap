@@ -499,6 +499,9 @@ DynMap.prototype = {
 							},
 							playerquit: function() {
 								$(me).trigger('playerquit', [ update.playerName ]);
+							},
+							component: function() {
+								$(me).trigger('component.' + update.ctype, [ update ]);
 							}
 						});
 					}

@@ -87,7 +87,7 @@ public class DynmapPlugin extends JavaPlugin {
 
     private HashMap<Event.Type, List<Listener>> event_handlers = new HashMap<Event.Type, List<Listener>>();
 
-    private MarkerAPI   markerapi;
+    private MarkerAPIImpl   markerapi;
     
     public static File dataDirectory;
     public static File tilesDirectory;
@@ -252,8 +252,6 @@ public class DynmapPlugin extends JavaPlugin {
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
             Log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
         }
-        /* Initialize marker API (after tilesDirectory is ready) */
-        MarkerAPI m_api = getMarkerAPI();
 
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
         playerList.load();
@@ -367,7 +365,10 @@ public class DynmapPlugin extends JavaPlugin {
             ll.clear(); /* Empty list - we use presence of list to remember that we've registered with Bukkit */
         }
         playerfacemgr = null;
-        
+        if(markerapi != null) {
+            markerapi.cleanup(this);
+            markerapi = null;
+        }
         Debug.clearDebuggers();
     }
     
@@ -1173,10 +1174,24 @@ public class DynmapPlugin extends JavaPlugin {
         }
         ll.add(listener);
     }
-    
+    /**
+     * ** This is the public API for other plugins to use for accessing the Marker API **
+     * This method can return null if the 'markers' component has not been configured - 
+     * a warning message will be issued to the server.log in this event.
+     * 
+     * @return MarkerAPI, or null if not configured
+     */
     public MarkerAPI getMarkerAPI() {
-        if(markerapi == null) 
-            markerapi = MarkerAPIImpl.initializeMarkerAPI(this);
+        if(markerapi == null) {
+            Log.warning("Marker API has been requested, but is not enabled.  Uncomment or add 'markers' component to configuration.txt.");
+        }
         return markerapi;
+    }
+    
+    /**
+     * Register markers API - used by component to supply marker API to plugin
+     */
+    public void registerMarkerAPI(MarkerAPIImpl api) {
+        markerapi = api;
     }
 }

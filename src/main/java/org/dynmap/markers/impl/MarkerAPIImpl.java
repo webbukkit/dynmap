@@ -28,6 +28,7 @@ import org.dynmap.DynmapWorld;
 import org.dynmap.Event;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.Client.ComponentMessage;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
@@ -58,11 +59,53 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         "silvermedal", "silverstar", "star", "sun", "temple", "theater", "tornado", "tower", "tree", "truck", "up",
         "walk", "warning", "world", "wrench", "yellowflag"
     };
+
+    /* Component messages for client updates */
+    public static class MarkerComponentMessage extends ComponentMessage {
+        public String ctype = "markers";
+    }
     
+    public static class MarkerUpdated extends MarkerComponentMessage {
+        public String msg;
+        public int x, y, z;
+        public String id;
+        public String label;
+        public String icon;
+        public String set;
+        
+        public MarkerUpdated(Marker m, boolean deleted) {
+            this.id = m.getMarkerID();
+            this.label = m.getLabel();
+            this.x = m.getX();
+            this.y = m.getY();
+            this.z = m.getZ();
+            this.set = m.getMarkerSet().getMarkerSetID();
+            this.icon = m.getMarkerIcon().getMarkerIconID();
+            if(deleted) 
+                msg = "markerdeleted";
+            else
+                msg = "markerupdated";
+        }
+    }
+    
+    public static class MarkerSetUpdated extends MarkerComponentMessage {
+        public String msg;
+        public String id;
+        public String label;
+        public MarkerSetUpdated(MarkerSet markerset, boolean deleted) {
+            this.id = markerset.getMarkerSetID();
+            this.label = markerset.getMarkerSetLabel();
+            if(deleted)
+                msg = "setdeleted";
+            else
+                msg = "setupdated";
+        }
+    }
+
     /**
      * Singleton initializer
      */
-    public static MarkerAPI initializeMarkerAPI(DynmapPlugin plugin) {
+    public static MarkerAPIImpl initializeMarkerAPI(DynmapPlugin plugin) {
         if(api != null) {
             api.cleanup(plugin);
         }
@@ -106,7 +149,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     /**
      * Cleanup
      */
-    private void cleanup(DynmapPlugin plugin) {
+    public void cleanup(DynmapPlugin plugin) {
         plugin.events.removeListener("worldactivated", api);
 
         for(MarkerIconImpl icn : markericons.values())
@@ -324,7 +367,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             api.writeMarkersFile(marker.getWorld());
         /* Enqueue client update */
         if(MapManager.mapman != null)
-            MapManager.mapman.pushUpdate(marker.getWorld(), new Client.MarkerUpdate(marker, update == MarkerUpdate.DELETED));
+            MapManager.mapman.pushUpdate(marker.getWorld(), new MarkerUpdated(marker, update == MarkerUpdate.DELETED));
     }
     /**
      * Signal marker set update
@@ -338,7 +381,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             api.freshenMarkerFiles();
         /* Enqueue client update */
         if(MapManager.mapman != null)
-            MapManager.mapman.pushUpdate(new Client.MarkerSetUpdate(markerset, update == MarkerUpdate.DELETED));
+            MapManager.mapman.pushUpdate(new MarkerSetUpdated(markerset, update == MarkerUpdate.DELETED));
     }
     
     /**
@@ -359,6 +402,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }));
 
     public static boolean onCommand(DynmapPlugin plugin, CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if(api == null) {
+            sender.sendMessage("Markers component is not enabled.");
+            return false;
+        }
         if(args.length == 0)
             return false;
         Player player = null;
@@ -369,7 +416,6 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         if (!commands.contains(c)) {
             return false;
         }
-        if(api == null) return false;
         /* Process commands */
         if(c.equals("add") && plugin.checkPlayerPermission(sender, "marker.add")) {
             if(player == null) {
@@ -421,9 +467,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         Map<String, Object> markerdata = new HashMap<String, Object>();
 
         File f = new File(markertiledir, "marker_" + wname + ".json");
-        
-        markerdata.put("timestamp", Long.valueOf(System.currentTimeMillis()));   /* Add timestamp */
-        
+                
+        Map<String, Object> worlddata = new HashMap<String, Object>();
+        worlddata.put("timestamp", Long.valueOf(System.currentTimeMillis()));   /* Add timestamp */
+
         for(MarkerSet ms : markersets.values()) {
             HashMap<String, Object> msdata = new HashMap<String, Object>();
             msdata.put("label", ms.getMarkerSetLabel());
@@ -436,6 +483,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 mdata.put("y", m.getY());
                 mdata.put("z", m.getZ());
                 mdata.put("icon", m.getMarkerIcon().getMarkerIconID());
+                mdata.put("label", m.getLabel());
                 /* Add to markers */
                 markers.put(m.getMarkerID(), mdata);
             }
@@ -443,10 +491,12 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             
             markerdata.put(ms.getMarkerSetID(), msdata);    /* Add marker set data to world marker data */
         }
+        worlddata.put("sets", markerdata);
+
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(f);
-            fos.write(Json.stringifyJson(markerdata).getBytes());
+            fos.write(Json.stringifyJson(worlddata).getBytes());
         } catch (FileNotFoundException ex) {
             Log.severe("Exception while writing JSON-file.", ex);
         } catch (IOException ioe) {
