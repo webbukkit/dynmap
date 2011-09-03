@@ -2,6 +2,7 @@ package org.dynmap.markers.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,28 +14,37 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.Client;
+import org.dynmap.ClientUpdateEvent;
 import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapWorld;
+import org.dynmap.Event;
 import org.dynmap.Log;
+import org.dynmap.MapManager;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
+import org.dynmap.web.Json;
 
 /**
  * Implementation class for MarkerAPI - should not be called directly
  */
-public class MarkerAPIImpl implements MarkerAPI {
+public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private File markerpersist;
     private File markerdir; /* Local store for markers (internal) */
     private File markertiledir; /* Marker directory for web server (under tiles) */
     private HashMap<String, MarkerIconImpl> markericons = new HashMap<String, MarkerIconImpl>();
     private HashMap<String, MarkerSetImpl> markersets = new HashMap<String, MarkerSetImpl>();
     
+    private Server server;
     static MarkerAPIImpl api;
 
     /* Built-in icons */
@@ -54,9 +64,10 @@ public class MarkerAPIImpl implements MarkerAPI {
      */
     public static MarkerAPI initializeMarkerAPI(DynmapPlugin plugin) {
         if(api != null) {
-            api.cleanup();
+            api.cleanup(plugin);
         }
         api = new MarkerAPIImpl();
+        api.server = plugin.getServer();
         /* Initialize persistence file name */
         api.markerpersist = new File(plugin.getDataFolder(), "markers.yml");
         /* Load persistence */
@@ -84,6 +95,10 @@ public class MarkerAPIImpl implements MarkerAPI {
         for(MarkerIcon ico : api.getMarkerIcons()) {
             api.publishMarkerIcon(ico);
         }
+        /* Freshen files */
+        api.freshenMarkerFiles();
+        /* Add listener so we update marker files for other worlds as they become active */
+        plugin.events.addListener("worldactivated", api);
         
         return api;
     }
@@ -91,7 +106,9 @@ public class MarkerAPIImpl implements MarkerAPI {
     /**
      * Cleanup
      */
-    private void cleanup() {
+    private void cleanup(DynmapPlugin plugin) {
+        plugin.events.removeListener("worldactivated", api);
+
         for(MarkerIconImpl icn : markericons.values())
             icn.cleanup();
         markericons.clear();
@@ -225,7 +242,6 @@ public class MarkerAPIImpl implements MarkerAPI {
      */
     static void saveMarkers() {
         if(api != null) {
-            Log.info("saveMarkers()");
             Configuration conf = new Configuration(api.markerpersist);  /* Make configuration object */
             /* First, save icon definitions */
             HashMap<String, Object> icons = new HashMap<String,Object>();
@@ -252,15 +268,23 @@ public class MarkerAPIImpl implements MarkerAPI {
             /* And write it out */
             if(!conf.save())
                 Log.severe("Error writing markers - " + api.markerpersist.getPath());
+            /* Refresh JSON files */
+            api.freshenMarkerFiles();
+        }
+    }
+
+    private void freshenMarkerFiles() {
+        if(MapManager.mapman != null) {
+            for(DynmapWorld w : MapManager.mapman.worlds) {
+                writeMarkersFile(w.world.getName());
+            }
         }
     }
     
     /**
      * Load persistence
      */
-    private boolean loadMarkers() {
-        cleanup();
-        
+    private boolean loadMarkers() {        
         Configuration conf = new Configuration(api.markerpersist);  /* Make configuration object */
         conf.load();    /* Load persistence */
         /* Get icons */
@@ -295,6 +319,12 @@ public class MarkerAPIImpl implements MarkerAPI {
      */
     static void markerUpdated(MarkerImpl marker, MarkerUpdate update) {
         Log.info("markerUpdated(" + marker.getMarkerID() + "," + update + ")");
+        /* Freshen marker file for the world for this marker */
+        if(api != null)
+            api.writeMarkersFile(marker.getWorld());
+        /* Enqueue client update */
+        if(MapManager.mapman != null)
+            MapManager.mapman.pushUpdate(marker.getWorld(), new Client.MarkerUpdate(marker, update == MarkerUpdate.DELETED));
     }
     /**
      * Signal marker set update
@@ -303,6 +333,12 @@ public class MarkerAPIImpl implements MarkerAPI {
      */
     static void markerSetUpdated(MarkerSetImpl markerset, MarkerUpdate update) {
         Log.info("markerSetUpdated(" + markerset.getMarkerSetID() + "," + update + ")");
+        /* Freshen all marker files */
+        if(api != null)
+            api.freshenMarkerFiles();
+        /* Enqueue client update */
+        if(MapManager.mapman != null)
+            MapManager.mapman.pushUpdate(new Client.MarkerSetUpdate(markerset, update == MarkerUpdate.DELETED));
     }
     
     /**
@@ -376,5 +412,53 @@ public class MarkerAPIImpl implements MarkerAPI {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Write markers file for given world
+     */
+    public void writeMarkersFile(String wname) {
+        Map<String, Object> markerdata = new HashMap<String, Object>();
+
+        File f = new File(markertiledir, "marker_" + wname + ".json");
+        
+        markerdata.put("timestamp", Long.valueOf(System.currentTimeMillis()));   /* Add timestamp */
+        
+        for(MarkerSet ms : markersets.values()) {
+            HashMap<String, Object> msdata = new HashMap<String, Object>();
+            msdata.put("label", ms.getMarkerSetLabel());
+            HashMap<String, Object> markers = new HashMap<String, Object>();
+            for(Marker m : ms.getMarkers()) {
+                if(m.getWorld().equals(wname) == false) continue;
+                
+                HashMap<String, Object> mdata = new HashMap<String, Object>();
+                mdata.put("x", m.getX());
+                mdata.put("y", m.getY());
+                mdata.put("z", m.getZ());
+                mdata.put("icon", m.getMarkerIcon().getMarkerIconID());
+                /* Add to markers */
+                markers.put(m.getMarkerID(), mdata);
+            }
+            msdata.put("markers", markers); /* Add markers to set data */
+            
+            markerdata.put(ms.getMarkerSetID(), msdata);    /* Add marker set data to world marker data */
+        }
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(f);
+            fos.write(Json.stringifyJson(markerdata).getBytes());
+        } catch (FileNotFoundException ex) {
+            Log.severe("Exception while writing JSON-file.", ex);
+        } catch (IOException ioe) {
+            Log.severe("Exception while writing JSON-file.", ioe);
+        } finally {
+            if(fos != null) try { fos.close(); } catch (IOException x) {}
+        }
+    }
+
+    @Override
+    public void triggered(DynmapWorld t) {
+        /* Update markers for now-active world */
+        writeMarkersFile(t.world.getName());
     }
 }
