@@ -6,7 +6,8 @@ package org.dynmap.markers;
 public interface MarkerIcon {
     /** Default marker icon - always exists */
     public static final String DEFAULT = "default";
-    
+
+        
     /**
      * Get ID of the marker icon (unique among marker icons)
      * @return ID
@@ -17,4 +18,9 @@ public interface MarkerIcon {
      * @return icon label
      */
     public String getMarkerIconLabel();
+    /**
+     * Is builtin marker
+     * @return true
+     */
+    public boolean isBuiltIn();
 }

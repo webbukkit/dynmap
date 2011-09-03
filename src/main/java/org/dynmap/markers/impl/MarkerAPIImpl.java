@@ -1,6 +1,11 @@
 package org.dynmap.markers.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,10 +30,24 @@ import org.dynmap.markers.MarkerSet;
  */
 public class MarkerAPIImpl implements MarkerAPI {
     private File markerpersist;
+    private File markerdir; /* Local store for markers (internal) */
+    private File markertiledir; /* Marker directory for web server (under tiles) */
     private HashMap<String, MarkerIconImpl> markericons = new HashMap<String, MarkerIconImpl>();
     private HashMap<String, MarkerSetImpl> markersets = new HashMap<String, MarkerSetImpl>();
     
     static MarkerAPIImpl api;
+
+    /* Built-in icons */
+    private static final String[] builtin_icons = {
+        "anchor", "bank", "basket", "beer", "bighouse", "blueflag", "bomb", "bookshelf", "bricks", "bronzemedal", "bronzestar",
+        "building", "cake", "camera", "cart", "caution", "chest", "church", "coins", "comment", "compass", "construction",
+        "cross", "cup", "cutlery", "default", "diamond", "dog", "door", "down", "drink", "exclamation", "factory",
+        "fire", "flower", "gear", "goldmedal", "goldstar", "greenflag", "hammer", "heart", "house", "key", "king",
+        "left", "lightbulb", "lighthouse", "lock", "orangeflag", "pin", "pinkflag", "pirateflag", "pointdown", "pointleft",
+        "pointright", "pointup", "purpleflag", "queen", "redflag", "right", "ruby", "scales", "skull", "shield", "sign",
+        "silvermedal", "silverstar", "star", "sun", "temple", "theater", "tornado", "tower", "tree", "truck", "up",
+        "walk", "warning", "world", "wrench", "yellowflag"
+    };
     
     /**
      * Singleton initializer
@@ -43,12 +62,29 @@ public class MarkerAPIImpl implements MarkerAPI {
         /* Load persistence */
         api.loadMarkers();
         /* Fill in default icons and sets, if needed */
-        if(api.getMarkerIcon(MarkerIcon.DEFAULT) == null) {
-            api.createMarkerIcon(MarkerIcon.DEFAULT, "Marker", null);
+        for(int i = 0; i < builtin_icons.length; i++) {
+            String id = builtin_icons[i];
+            if(api.getMarkerIcon(id) == null) {
+                api.createBuiltinMarkerIcon(id, id);
+            }
         }
         if(api.getMarkerSet(MarkerSet.DEFAULT) == null) {
             api.createMarkerSet(MarkerSet.DEFAULT, "Markers", null, true);
         }
+        /* Build paths for markers */
+        api.markerdir = new File(plugin.getDataFolder(), "markers");
+        if(api.markerdir.mkdirs() == false) {   /* Create directory if needed */
+            Log.severe("Error creating markers directory - " + api.markerdir.getPath());
+        }
+        api.markertiledir = new File(DynmapPlugin.tilesDirectory, "_markers_");
+        if(api.markertiledir.mkdirs() == false) {   /* Create directory if needed */
+            Log.severe("Error creating markers directory - " + api.markertiledir.getPath());
+        }
+        /* Now publish marker files to the tiles directory */
+        for(MarkerIcon ico : api.getMarkerIcons()) {
+            api.publishMarkerIcon(ico);
+        }
+        
         return api;
     }
     
@@ -62,6 +98,54 @@ public class MarkerAPIImpl implements MarkerAPI {
         for(MarkerSetImpl set : markersets.values())
             set.cleanup();
         markersets.clear();
+    }
+
+    private MarkerIcon createBuiltinMarkerIcon(String id, String label) {
+        if(markericons.containsKey(id)) return null;    /* Exists? */
+        MarkerIconImpl ico = new MarkerIconImpl(id, label, true);
+        markericons.put(id, ico);   /* Add to set */
+        return ico;
+    }
+
+    private void publishMarkerIcon(MarkerIcon ico) {
+        byte[] buf = new byte[512];
+        InputStream in = null;
+        File infile = new File(markerdir, ico.getMarkerIconID() + ".png");  /* Get source file name */
+        File outfile = new File(markertiledir, ico.getMarkerIconID() + ".png"); /* Destination */
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(outfile);
+        } catch (IOException iox) {
+            Log.severe("Cannot write marker to tilespath - " + outfile.getPath());
+            return;
+        }
+        if(ico.isBuiltIn()) {
+            in = getClass().getResourceAsStream("/markers/" + ico.getMarkerIconID() + ".png");
+        }
+        else if(infile.canRead()) {  /* If it exists and is readable */
+            try {
+                in = new FileInputStream(infile);   
+            } catch (IOException iox) {
+                Log.severe("Error opening marker " + infile.getPath() + " - " + iox);
+            }
+        }
+        if(in == null) {    /* Not found, use default marker */
+            in = getClass().getResourceAsStream("/markers/marker.png");
+            if(in == null)
+                return;
+        }
+        /* Copy to destination */
+        try {
+            int len;
+            while((len = in.read(buf)) > 0) {
+               out.write(buf, 0, len); 
+            }
+        } catch (IOException iox) {
+            Log.severe("Error writing marker to tilespath - " + outfile.getPath());
+        } finally {
+            if(in != null) try { in.close(); } catch (IOException x){}
+            if(out != null) try { out.close(); } catch (IOException x){}
+        }
     }
     
     @Override
@@ -100,11 +184,29 @@ public class MarkerAPIImpl implements MarkerAPI {
     }
 
     @Override
-    public MarkerIcon createMarkerIcon(String id, String label, File markerfile) {
+    public MarkerIcon createMarkerIcon(String id, String label, InputStream marker_png) {
         if(markericons.containsKey(id)) return null;    /* Exists? */
-        MarkerIconImpl ico = new MarkerIconImpl(id, label);
-        
+        MarkerIconImpl ico = new MarkerIconImpl(id, label, false);
+        /* Copy icon resource into marker directory */
+        File f = new File(markerdir, id + ".png");
+        FileOutputStream fos = null;
+        try {
+            byte[] buf = new byte[512];
+            int len;
+            fos = new FileOutputStream(f);
+            while((len = marker_png.read(buf)) > 0) {
+                fos.write(buf, 0, len);
+            }
+        } catch (IOException iox) {
+            Log.severe("Error copying marker - " + f.getPath());
+            return null;
+        } finally {
+            if(fos != null) try { fos.close(); } catch (IOException x) {}
+        }
         markericons.put(id, ico);   /* Add to set */
+
+        /* Publish the marker */
+        publishMarkerIcon(ico);
         
         saveMarkers();  /* Save results */
         

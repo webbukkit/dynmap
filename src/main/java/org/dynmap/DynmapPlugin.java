@@ -213,8 +213,6 @@ public class DynmapPlugin extends JavaPlugin {
 
         dataDirectory = this.getDataFolder();
         
-        /* Initialize marker API, if not already done */
-        MarkerAPI m_api = getMarkerAPI();
         /* Load block models */
         HDBlockModels.loadModels(dataDirectory);
         /* Load texture mappings */
@@ -254,6 +252,8 @@ public class DynmapPlugin extends JavaPlugin {
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
             Log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
         }
+        /* Initialize marker API (after tilesDirectory is ready) */
+        MarkerAPI m_api = getMarkerAPI();
 
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
         playerList.load();

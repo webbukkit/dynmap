@@ -9,18 +9,21 @@ import org.dynmap.markers.MarkerIcon;
 class MarkerIconImpl implements MarkerIcon {
     private String iconid;
     private String label;
+    private boolean is_builtin;
     
     MarkerIconImpl(String id) {
         iconid = id;
         label = id;
+        is_builtin = false;
     }
 
-    MarkerIconImpl(String id, String lbl) {
+    MarkerIconImpl(String id, String lbl, boolean is_builtin) {
         iconid = id;
         if(lbl != null)
             label = lbl;
         else
             label = id;
+        this.is_builtin = is_builtin;
     }
 
     void cleanup() {
@@ -36,12 +39,20 @@ class MarkerIconImpl implements MarkerIcon {
     public String getMarkerIconLabel() {
         return label;
     }
+    
+    @Override
+    public boolean isBuiltIn() {
+        return is_builtin;
+    }
 
     /**
      * Get configuration node to be saved
      * @return node
      */
     Map<String, Object> getPersistentData() {
+        if(is_builtin)
+            return null;
+        
         HashMap<String, Object> node = new HashMap<String, Object>();
         node.put("label", label);
 
@@ -49,6 +60,9 @@ class MarkerIconImpl implements MarkerIcon {
     }
 
     boolean loadPersistentData(ConfigurationNode node) {
+        if(is_builtin)
+            return false;
+        
         label = node.getString("label", iconid);
 
         return true;

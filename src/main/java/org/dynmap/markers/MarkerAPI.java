@@ -1,6 +1,7 @@
 package org.dynmap.markers;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Set;
 
 /**
@@ -42,8 +43,8 @@ public interface MarkerAPI {
      * Register a new marker icon
      * @param id - ID of marker icon (must be unique among marker icons - letters, numbers, periods, underscores only)
      * @param label - label for marker icon
-     * @param markerfile - file containing PNG encoded icon for marker (will be copied)
+     * @param marker_png - stream containing PNG encoded icon for marker (will be read and copied)
      * @return marker icon object, or null if failed
      */
-    public MarkerIcon createMarkerIcon(String id, String label, File markerfile);
+    public MarkerIcon createMarkerIcon(String id, String label, InputStream marker_png);
 }
