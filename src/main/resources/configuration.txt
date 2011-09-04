@@ -40,6 +40,10 @@ components:
   #    #- Trade
   #    #- Haggle
   
+  # Note: this component is needed for the dmarker commands, and for the Marker API to be available to other plugins
+  - class: org.dynmap.MarkersComponent
+    type: markers
+    
   - class: org.dynmap.ClientComponent
     type: chat
   - class: org.dynmap.ClientComponent

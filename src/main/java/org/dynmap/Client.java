@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.bukkit.ChatColor;
+import org.dynmap.markers.Marker;
+import org.dynmap.markers.MarkerSet;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONStreamAware;
 
@@ -77,4 +79,8 @@ public class Client {
         }
     }
 
+    public static class ComponentMessage extends Update {
+        public String type = "component";
+        /* Each subclass must provide 'ctype' string for component 'type' */
+    }
 }

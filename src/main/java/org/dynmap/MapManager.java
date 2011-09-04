@@ -790,7 +790,8 @@ public class MapManager {
 
     public void pushUpdate(String worldName, Object update) {
         DynmapWorld world = getWorld(worldName);
-        world.updates.pushUpdate(update);
+        if(world != null)
+            world.updates.pushUpdate(update);
     }
 
     public Object[] getWorldUpdates(String worldName, long since) {
