@@ -40,6 +40,7 @@ import org.dynmap.web.Json;
  */
 public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private File markerpersist;
+    private File markerpersist_old;
     private File markerdir; /* Local store for markers (internal) */
     private File markertiledir; /* Marker directory for web server (under tiles) */
     private HashMap<String, MarkerIconImpl> markericons = new HashMap<String, MarkerIconImpl>();
@@ -113,6 +114,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         api.server = plugin.getServer();
         /* Initialize persistence file name */
         api.markerpersist = new File(plugin.getDataFolder(), "markers.yml");
+        api.markerpersist_old = new File(plugin.getDataFolder(), "markers.yml.old");
         /* Load persistence */
         api.loadMarkers();
         /* Fill in default icons and sets, if needed */
@@ -308,6 +310,9 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 }
             }
             conf.setProperty("sets", sets);
+            /* And shift old file file out */
+            if(api.markerpersist_old.exists()) api.markerpersist_old.delete();
+            if(api.markerpersist.exists()) api.markerpersist.renameTo(api.markerpersist_old);
             /* And write it out */
             if(!conf.save())
                 Log.severe("Error writing markers - " + api.markerpersist.getPath());
@@ -467,6 +472,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         Map<String, Object> markerdata = new HashMap<String, Object>();
 
         File f = new File(markertiledir, "marker_" + wname + ".json");
+        File fnew = new File(markertiledir, "marker_" + wname + ".json.new");
                 
         Map<String, Object> worlddata = new HashMap<String, Object>();
         worlddata.put("timestamp", Long.valueOf(System.currentTimeMillis()));   /* Add timestamp */
@@ -495,7 +501,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(f);
+            fos = new FileOutputStream(fnew);
             fos.write(Json.stringifyJson(worlddata).getBytes());
         } catch (FileNotFoundException ex) {
             Log.severe("Exception while writing JSON-file.", ex);
@@ -503,6 +509,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             Log.severe("Exception while writing JSON-file.", ioe);
         } finally {
             if(fos != null) try { fos.close(); } catch (IOException x) {}
+            if(f.exists()) f.delete();
+            fnew.renameTo(f);
         }
     }
 

@@ -747,3 +747,35 @@
 .balloonmessage {
 	word-wrap: break-word;
 }
+
+/* Marker styles */
+.dynmap .mapMarker .markerName {
+	display: none;
+	z-index: 101;
+}
+
+.dynmap .mapMarker:hover .markerName,
+.dynmap .mapMarker .markerName-show {
+    display: block;
+	position: absolute;
+	top: -8px;
+	left: 10px;
+	z-index: 18;
+	
+	white-space: nowrap;
+
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    
+}
+
+.dynmap .mapMarker .markerIcon16x16 {
+	position: absolute;
+	top: -8px;
+	left: -8px;
+	z-index: 18;
+}
