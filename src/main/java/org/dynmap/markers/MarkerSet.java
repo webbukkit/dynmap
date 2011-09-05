@@ -36,6 +36,12 @@ public interface MarkerSet {
      */
     public Marker   findMarker(String id);
     /**
+     * Find marker by label - best matching substring
+     * @param lbl - label to find (same = best match)
+     * @return marker, or null if none found
+     */
+    public Marker   findMarkerByLabel(String lbl);
+    /**
      * Get ID of marker set - unique among marker sets
      * @return ID
      */

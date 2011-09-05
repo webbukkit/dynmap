@@ -409,7 +409,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         "add", "movehere", "update", "delete", "list", "icons" 
     }));
 
-    /* Parse argument strings : handle 'attrib=value' and quoted strings */
+    /* Parse argument strings : handle 'attrib:value' and quoted strings */
     private static Map<String,String> parseArgs(String[] args, CommandSender snd) {
         HashMap<String,String> rslt = new HashMap<String,String>();
         /* Build command line, so we can parse our way - make sure there is trailing space */
@@ -438,7 +438,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     sb.append(c);
                 }
             }
-            else if(c == '=') { /* var=value */
+            else if(c == ':') { /* var:value */
                 varid = sb.toString();  /* Save variable ID */
                 sb.setLength(0);
             }
@@ -513,7 +513,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     sender.sendMessage("Error creating marker");
                 }
                 else {
-                    sender.sendMessage("Added marker id='" + m.getMarkerID() + "' (" + m.getLabel() + ") to set '" + set.getMarkerSetID() + "'");
+                    sender.sendMessage("Added marker id:'" + m.getMarkerID() + "' (" + m.getLabel() + ") to set '" + set.getMarkerSetID() + "'");
                 }
             }
             else {
@@ -529,8 +529,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 /* Parse arguements */
                 Map<String,String> parms = parseArgs(args, sender);
                 if(parms == null) return true;
-                if(parms.get("id") == null) {
-                    sender.sendMessage("id=<marker-id> required");
+                if((parms.get("id") == null) && (parms.get("label") == null)) {
+                    sender.sendMessage("<label> or id:<marker-id> required");
                     return true;
                 }
                 if(parms.get("set") == null) {
@@ -541,17 +541,27 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
                     return true;
                 }
-                Marker marker = set.findMarker(parms.get("id"));
-                if(marker == null) {    /* No marker */
-                    sender.sendMessage("Error: marker not found - " + parms.get("id"));
-                    return true;
+                Marker marker;
+                if(parms.get("id") != null) {
+                    marker = set.findMarker(parms.get("id"));
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: marker not found - " + parms.get("id"));
+                        return true;
+                    }
+                }
+                else {
+                    marker = set.findMarkerByLabel(parms.get("label"));
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: marker not found - " + parms.get("label"));
+                        return true;
+                    }
                 }
                 Location loc = player.getLocation();
                 marker.setLocation(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ());
-                sender.sendMessage("Updated location of marker id=" + parms.get("id") + " (" + marker.getLabel() + ")");
+                sender.sendMessage("Updated location of marker id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
             }
             else {
-                sender.sendMessage("id=<marker-id> required");
+                sender.sendMessage("<label> or id:<marker-id> required");
             }
         }
         /* Update other attributes of marker - must have ID parameter */
@@ -560,8 +570,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 /* Parse arguements */
                 Map<String,String> parms = parseArgs(args, sender);
                 if(parms == null) return true;
-                if(parms.get("id") == null) {
-                    sender.sendMessage("id=<marker-id> required");
+                if((parms.get("id") == null) && (parms.get("label") == null)) {
+                    sender.sendMessage("<label> or id:<marker-id> required");
                     return true;
                 }
                 if(parms.get("set") == null) {
@@ -572,13 +582,23 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
                     return true;
                 }
-                Marker marker = set.findMarker(parms.get("id"));
-                if(marker == null) {    /* No marker */
-                    sender.sendMessage("Error: marker not found - " + parms.get("id"));
-                    return true;
+                Marker marker;
+                if(parms.get("id") != null) {
+                    marker = set.findMarker(parms.get("id"));
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: marker not found - " + parms.get("id"));
+                        return true;
+                    }
                 }
-                if(parms.get("label") != null) {    /* Label set? */
-                    marker.setLabel(parms.get("label"));
+                else {
+                    marker = set.findMarkerByLabel(parms.get("label"));
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: marker not found - " + parms.get("label"));
+                        return true;
+                    }
+                }
+                if(parms.get("newlabel") != null) {    /* Label set? */
+                    marker.setLabel(parms.get("newlabel"));
                 }
                 if(parms.get("icon") != null) {
                     MarkerIcon ico = api.getMarkerIcon(parms.get("icon"));
@@ -588,10 +608,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     }
                     marker.setMarkerIcon(ico);
                 }
-                sender.sendMessage("Updated marker id=" + parms.get("id") + " (" + marker.getLabel() + ")");
+                sender.sendMessage("Updated marker id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
             }
             else {
-                sender.sendMessage("id=<marker-id> required");
+                sender.sendMessage("<label> or id:<marker-id> required");
             }
         }
         /* Delete marker - must have ID parameter */
@@ -600,8 +620,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 /* Parse arguements */
                 Map<String,String> parms = parseArgs(args, sender);
                 if(parms == null) return true;
-                if(parms.get("id") == null) {
-                    sender.sendMessage("id=<marker-id> required");
+                if((parms.get("id") == null) && (parms.get("label") == null)) {
+                    sender.sendMessage("<label> or id:<marker-id> required");
                     return true;
                 }
                 if(parms.get("set") == null) {
@@ -612,16 +632,26 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
                     return true;
                 }
-                Marker marker = set.findMarker(parms.get("id"));
-                if(marker == null) {    /* No marker */
-                    sender.sendMessage("Error: marker not found - " + parms.get("id"));
-                    return true;
+                Marker marker;
+                if(parms.get("id") != null) {
+                    marker = set.findMarker(parms.get("id"));
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: marker not found - " + parms.get("id"));
+                        return true;
+                    }
+                }
+                else {
+                    marker = set.findMarkerByLabel(parms.get("label"));
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: marker not found - " + parms.get("label"));
+                        return true;
+                    }
                 }
                 marker.deleteMarker();
-                sender.sendMessage("Deleted marker id=" + parms.get("id"));
+                sender.sendMessage("Deleted marker id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
             }
             else {
-                sender.sendMessage("id=<marker-id> required");
+                sender.sendMessage("<label> or id:<marker-id> required");
             }
         }
         /* List markers */
@@ -639,15 +669,15 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             Set<Marker> markers = set.getMarkers();
             for(Marker m : markers) {
-                sender.sendMessage(m.getMarkerID() + ": label=\"" + m.getLabel() + "\", set=" + m.getMarkerSet().getMarkerSetID() + 
-                                   ", world=" + m.getWorld() + ", x=" + m.getX() + ", y=" + m.getY() + ", z=" + m.getZ());
+                sender.sendMessage(m.getMarkerID() + ": label:\"" + m.getLabel() + "\", set:" + m.getMarkerSet().getMarkerSetID() + 
+                                   ", world:" + m.getWorld() + ", x:" + m.getX() + ", y:" + m.getY() + ", z:" + m.getZ());
             }
         }
         /* List icons */
         else if(c.equals("icons") && plugin.checkPlayerPermission(sender, "marker.icons")) {
             Set<MarkerIcon> icons = api.getMarkerIcons();
             for(MarkerIcon ico : icons) {
-                sender.sendMessage(ico.getMarkerIconID() + ": label=\"" + ico.getMarkerIconLabel() + "\", builtin=" + ico.isBuiltIn());
+                sender.sendMessage(ico.getMarkerIconID() + ": label:\"" + ico.getMarkerIconLabel() + "\", builtin:" + ico.isBuiltIn());
             }
         }
         else {
