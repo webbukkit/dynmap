@@ -28,7 +28,7 @@ public interface MarkerSet {
      * @param is_persistent - if true, marker is persistent (saved and reloaded on restart).  If set is not persistent, this must be false.
      * @return created marker, or null if cannot be created.
      */
-    public Marker createMarker(String id, String label, String world, int x, int y, int z, MarkerIcon icon, boolean is_persistent);
+    public Marker createMarker(String id, String label, String world, double x, double y, double z, MarkerIcon icon, boolean is_persistent);
     /**
      * Get marker by ID
      * @param id - ID of the marker

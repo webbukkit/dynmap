@@ -15,7 +15,7 @@ class MarkerImpl implements Marker {
     private String markerid;
     private String label;
     private MarkerSetImpl markerset;
-    private int x, y, z;
+    private double x, y, z;
     private String world;
     private MarkerIconImpl icon;
     private boolean ispersistent;
@@ -31,7 +31,7 @@ class MarkerImpl implements Marker {
      * @param icon - marker icon
      * @param persistent - true if persistent
      */
-    MarkerImpl(String id, String lbl, String world, int x, int y, int z, MarkerIconImpl icon, boolean persistent, MarkerSetImpl set) {
+    MarkerImpl(String id, String lbl, String world, double x, double y, double z, MarkerIconImpl icon, boolean persistent, MarkerSetImpl set) {
         markerid = id;
         if(lbl != null)
             label = lbl;
@@ -61,9 +61,9 @@ class MarkerImpl implements Marker {
      */
     boolean loadPersistentData(ConfigurationNode node) {
         label = node.getString("label", markerid);
-        x = node.getInt("x", 0);
-        y = node.getInt("y", 64);
-        z = node.getInt("z", 0);
+        x = node.getDouble("x", 0);
+        y = node.getDouble("y", 64);
+        z = node.getDouble("z", 0);
         world = node.getString("world", "world");
         icon = MarkerAPIImpl.getMarkerIconImpl(node.getString("icon", MarkerIcon.DEFAULT)); 
         ispersistent = true;    /* Loaded from config, so must be */
@@ -142,9 +142,9 @@ class MarkerImpl implements Marker {
             return null;
         HashMap<String, Object> node = new HashMap<String, Object>();
         node.put("label", label);
-        node.put("x", Integer.valueOf(x));
-        node.put("y", Integer.valueOf(y));
-        node.put("z", Integer.valueOf(z));
+        node.put("x", Double.valueOf(x));
+        node.put("y", Double.valueOf(y));
+        node.put("z", Double.valueOf(z));
         node.put("world", world);
         node.put("icon", icon.getMarkerIconID());
 
@@ -155,19 +155,19 @@ class MarkerImpl implements Marker {
         return world;
     }
     @Override
-    public int getX() {
+    public double getX() {
         return x;
     }
     @Override
-    public int getY() {
+    public double getY() {
         return y;
     }
     @Override
-    public int getZ() {
+    public double getZ() {
         return z;
     }
     @Override
-    public void setLocation(String worldid, int x, int y, int z) {
+    public void setLocation(String worldid, double x, double y, double z) {
         this.world = worldid;
         this.x = x;
         this.y = y;

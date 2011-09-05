@@ -26,7 +26,13 @@ commands:
   dmarker:
     description: Manipulate map markers
     usage: |
-           /<command> add <label> - add new marker at current location (use double-quotes if spaces needed)
+           /<command> add <label> - add new marker with generated ID at current location (use double-quotes if spaces needed)
+           /<command> add id=<id> <label> - add new marker with given ID at current location (use double-quotes if spaces needed)
+           /<command> movehere id=<id> - move marker with given ID to current location
+           /<command> update id=<id> <label> icon=<icon> - update marker with given ID with new label and/or icon
+           /<command> delete id=<id> - delete marker with given ID
+           /<command> list - list details of all markers
+           /<command> icons - list details of all icons
            
 permissions:
   dynmap.*:
@@ -45,6 +51,11 @@ permissions:
       dynmap.stats: true
       dynmap.resetstats: true
       dynmap.marker.add: true
+      dynmap.marker.update: true
+      dynmap.marker.movehere: true
+      dynmap.marker.delete: true
+      dynmap.marker.list: true
+      dynmap.marker.icons: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -81,4 +92,17 @@ permissions:
   dynmap.marker.add:
     description: Allows /dmarker add
     default: op
+  dynmap.marker.update:
+    description: Allows /dmarker update
+    default: op
+  dynmap.marker.movehere:
+    description: Allows /dmarker movehere
+    default: op
+  dynmap.marker.delete:
+    description: Allows /dmarker delete
+    default: op
+  dynmap.marker.list:
+    description: Allows /dmarker list
+  dynmap.marker.icons:
+    description: Allows /dmarker icons
     

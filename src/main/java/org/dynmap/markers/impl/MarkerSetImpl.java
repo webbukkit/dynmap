@@ -57,7 +57,7 @@ class MarkerSetImpl implements MarkerSet {
     }
 
     @Override
-    public Marker createMarker(String id, String label, String world, int x, int y, int z, MarkerIcon icon, boolean is_persistent) {
+    public Marker createMarker(String id, String label, String world, double x, double y, double z, MarkerIcon icon, boolean is_persistent) {
         if(id == null) {    /* If not defined, generate unique one */
             int i = 0;
             do {

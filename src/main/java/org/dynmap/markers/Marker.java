@@ -29,17 +29,17 @@ public interface Marker {
      * Get marker's X coordinate
      * @return x coordinate
      */
-    public int getX();
+    public double getX();
     /**
      * Get marker's Y coordinate
      * @return y coordinate
      */
-    public int getY();
+    public double getY();
     /**
      * Get marker's Z coordinate
      * @return z coordinate
      */
-    public int getZ();
+    public double getZ();
     /**
      * Update the marker's location
      * @param worldid - world ID
@@ -47,7 +47,7 @@ public interface Marker {
      * @param y - y coord
      * @param z - z coord
      */
-    public void setLocation(String worldid, int x, int y, int z);
+    public void setLocation(String worldid, double x, double y, double z);
     /**
      * Get the marker's icon
      * @return marker icon

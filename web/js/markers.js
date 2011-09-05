@@ -4,23 +4,31 @@ var dynmapmarkersets = {};
 componentconstructors['markers'] = function(dynmap, configuration) {
 	var me = this;
 
-	function removeall() {
+	function removeAllMarkers() {
 		$.each(dynmapmarkersets, function(setname, set) {
 			$.each(set.markers, function(mname, marker) {
 				set.layergroup.removeLayer(marker.our_marker);
 			});
-			dynmap.layercontrol.removeLayer(set.layergroup);
 		});
 	}
 			
 	function loadmarkers(world) {
-		removeall();
-		dynmapmarkersets = {};	
+		removeAllMarkers();
 		$.getJSON(dynmap.options.tileUrl+'_markers_/marker_'+world+'.json', function(data) {
 			var ts = data.timestamp;
 			$.each(data.sets, function(name, markerset) {
-				dynmapmarkersets[name] = markerset;
-				createMarkerSet(markerset);
+				if(!dynmapmarkersets[name]) {
+					dynmapmarkersets[name] = markerset;
+					createMarkerSet(markerset);
+				}
+				else {
+					if(dynmapmarkersets[name].label != markerset.label) {
+						dynmapmarkersets[name].label = markerset.label;
+						dynmap.layercontrol.removeLayer(dynmapmarkersets[name].layergroup);
+						dynmap.layercontrol.addOverlay(dynmapmarkersets[name].layergroup, dynmapmarkersets[name].label);
+					}
+					dynmapmarkersets[name].markers = markerset.markers;
+				}
 				$.each(markerset.markers, function(name, marker) {
 					createMarker(markerset, marker);
 				});
@@ -45,7 +53,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				.addClass('mapMarker')
 				.append($('<img/>').addClass('markerIcon16x16').attr({ src: dynmap.options.tileUrl+'_markers_/'+marker.icon+'.png' }))
 				.append($('<span/>')
-					.addClass('markerName')
+					.addClass(configuration.showlabel?'markerName-show':'markerName')
 					.text(marker.label));
 			return div;
 		}});
@@ -77,6 +85,26 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			}
 			delete dynmapmarkersets[msg.set].markers[msg.id];
 		}
+		else if(msg.msg == 'setupdated') {
+			if(!dynmapmarkersets[msg.id]) {
+				dynmapmarkersets[msg.id] = { label: msg.label, markers:{} };
+				createMarkerSet(dynmapmarkersets[msg.id]);
+			}
+			else {
+				if(dynmapmarkersets[msg.id].label != msg.label) {
+					dynmapmarkersets[msg.id].label = msg.label;
+					dynmap.layercontrol.removeLayer(dynmapmarkersets[msg.id].layergroup);
+					dynmap.layercontrol.addOverlay(dynmapmarkersets[msg.id].layergroup, dynmapmarkersets[msg.id].label);
+				}
+			}
+		}
+		else if(msg.msg == 'setdeleted') {
+			if(dynmapmarkersets[msg.id]) {
+				dynmap.layercontrol.removeLayer(dynmapmarkersets[msg.id].layergroup);
+				delete dynmapmarkersets[msg.id].layergroup;
+				delete dynmapmarkersets[msg.id];
+			}
+		}		
 	});
 	
     // Remove marker on start of map change

@@ -68,7 +68,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     
     public static class MarkerUpdated extends MarkerComponentMessage {
         public String msg;
-        public int x, y, z;
+        public double x, y, z;
         public String id;
         public String label;
         public String icon;
@@ -115,26 +115,29 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         /* Initialize persistence file name */
         api.markerpersist = new File(plugin.getDataFolder(), "markers.yml");
         api.markerpersist_old = new File(plugin.getDataFolder(), "markers.yml.old");
-        /* Load persistence */
-        api.loadMarkers();
         /* Fill in default icons and sets, if needed */
         for(int i = 0; i < builtin_icons.length; i++) {
             String id = builtin_icons[i];
-            if(api.getMarkerIcon(id) == null) {
-                api.createBuiltinMarkerIcon(id, id);
-            }
+            api.createBuiltinMarkerIcon(id, id);
         }
+        /* Load persistence */
+        api.loadMarkers();
+        /* Initialize default marker set, if needed */
         if(api.getMarkerSet(MarkerSet.DEFAULT) == null) {
             api.createMarkerSet(MarkerSet.DEFAULT, "Markers", null, true);
         }
         /* Build paths for markers */
         api.markerdir = new File(plugin.getDataFolder(), "markers");
-        if(api.markerdir.mkdirs() == false) {   /* Create directory if needed */
-            Log.severe("Error creating markers directory - " + api.markerdir.getPath());
+        if(api.markerdir.isDirectory() == false) {
+            if(api.markerdir.mkdirs() == false) {   /* Create directory if needed */
+                Log.severe("Error creating markers directory - " + api.markerdir.getPath());
+            }
         }
         api.markertiledir = new File(DynmapPlugin.tilesDirectory, "_markers_");
-        if(api.markertiledir.mkdirs() == false) {   /* Create directory if needed */
-            Log.severe("Error creating markers directory - " + api.markertiledir.getPath());
+        if(api.markertiledir.isDirectory() == false) {
+            if(api.markertiledir.mkdirs() == false) {   /* Create directory if needed */
+                Log.severe("Error creating markers directory - " + api.markertiledir.getPath());
+            }
         }
         /* Now publish marker files to the tiles directory */
         for(MarkerIcon ico : api.getMarkerIcons()) {
@@ -403,9 +406,63 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
 
     private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[] {
-        "add", "update", "delete", "list" 
+        "add", "movehere", "update", "delete", "list", "icons" 
     }));
 
+    /* Parse argument strings : handle 'attrib=value' and quoted strings */
+    private static Map<String,String> parseArgs(String[] args, CommandSender snd) {
+        HashMap<String,String> rslt = new HashMap<String,String>();
+        /* Build command line, so we can parse our way - make sure there is trailing space */
+        String cmdline = "";
+        for(int i = 1; i < args.length; i++) {
+            cmdline += args[i] + " ";
+        }
+        boolean inquote = false;
+        StringBuilder sb = new StringBuilder();
+        String varid = null;
+        for(int i = 0; i < cmdline.length(); i++) {
+            char c = cmdline.charAt(i);
+            if(inquote) {   /* If in quote, accumulate until end or another quote */
+                if(c == '\"') { /* End quote */
+                    inquote = false;
+                    if(varid == null) { /* No varid? */
+                        rslt.put("label", sb.toString());
+                    }
+                    else {
+                        rslt.put(varid, sb.toString());
+                        varid = null;
+                    }
+                    sb.setLength(0);
+                }
+                else {
+                    sb.append(c);
+                }
+            }
+            else if(c == '=') { /* var=value */
+                varid = sb.toString();  /* Save variable ID */
+                sb.setLength(0);
+            }
+            else if(c == ' ') { /* Ending space? */
+                if(varid == null) { /* No varid? */
+                    rslt.put("label", sb.toString());
+                }
+                else {
+                    rslt.put(varid, sb.toString());
+                    varid = null;
+                }
+                sb.setLength(0);
+            }
+            else {
+                sb.append(c);
+            }
+        }
+        if(inquote) {   /* If still in quote, syntax error */
+            snd.sendMessage("Error: unclosed doublequote");
+            return null;
+        }
+        return rslt;
+    }
+    
     public static boolean onCommand(DynmapPlugin plugin, CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if(api == null) {
             sender.sendMessage("Markers component is not enabled.");
@@ -427,36 +484,170 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 sender.sendMessage("Command can only be used by player");
             }
             else if(args.length > 1) {
-                String lbl = args[1];
-                if(lbl.charAt(0) == '"') {  /* Starts with doublequote */
-                    lbl = lbl.substring(1); /* Trim it off */
-                    int idx = 2;
-                    while(lbl.indexOf('"') < 0) {
-                        if(idx < args.length) {
-                            lbl = lbl + " " + args[idx];
-                            idx++;
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    idx = lbl.indexOf('"');
-                    if(idx >= 0) lbl = lbl.substring(0, idx);
-                }
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+
                 Location loc = player.getLocation();
-                /* Add new marker (generic ID and default set) */
-                MarkerSet set = api.getMarkerSet(MarkerSet.DEFAULT);
-                MarkerIcon ico = api.getMarkerIcon(MarkerIcon.DEFAULT);
-                Marker m = set.createMarker(null, lbl, loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), ico, true);
+                /* Fill in defaults for missing parameters */
+                if(parms.get("icon") == null) {
+                    parms.put("icon", MarkerIcon.DEFAULT);
+                }
+                if(parms.get("set") == null) {
+                    parms.put("set", MarkerSet.DEFAULT);
+                }
+                /* Add new marker */
+                MarkerSet set = api.getMarkerSet(parms.get("set"));
+                if(set == null) {
+                    sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
+                    return true;
+                }
+                MarkerIcon ico = api.getMarkerIcon(parms.get("icon"));
+                if(ico == null) {
+                    sender.sendMessage("Error: invalid icon - " + parms.get("icon"));
+                    return true;
+                }
+                Marker m = set.createMarker(parms.get("id"), parms.get("label"), 
+                        loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), ico, true);
                 if(m == null) {
                     sender.sendMessage("Error creating marker");
                 }
                 else {
-                    sender.sendMessage("Added marker id='" + m.getMarkerID() + "' (" + m.getLabel() + ") to marker set " + set.getMarkerSetID());
+                    sender.sendMessage("Added marker id='" + m.getMarkerID() + "' (" + m.getLabel() + ") to set '" + set.getMarkerSetID() + "'");
                 }
             }
             else {
                 sender.sendMessage("Marker label required");
+            }
+        }
+        /* Update position of bookmark - must have ID parameter */
+        else if(c.equals("movehere") && plugin.checkPlayerPermission(sender, "marker.movehere")) {
+            if(player == null) {
+                sender.sendMessage("Command can only be used by player");
+            }
+            else if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                if(parms.get("id") == null) {
+                    sender.sendMessage("id=<marker-id> required");
+                    return true;
+                }
+                if(parms.get("set") == null) {
+                    parms.put("set", MarkerSet.DEFAULT);
+                }
+                MarkerSet set = api.getMarkerSet(parms.get("set"));
+                if(set == null) {
+                    sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
+                    return true;
+                }
+                Marker marker = set.findMarker(parms.get("id"));
+                if(marker == null) {    /* No marker */
+                    sender.sendMessage("Error: marker not found - " + parms.get("id"));
+                    return true;
+                }
+                Location loc = player.getLocation();
+                marker.setLocation(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ());
+                sender.sendMessage("Updated location of marker id=" + parms.get("id") + " (" + marker.getLabel() + ")");
+            }
+            else {
+                sender.sendMessage("id=<marker-id> required");
+            }
+        }
+        /* Update other attributes of marker - must have ID parameter */
+        else if(c.equals("update") && plugin.checkPlayerPermission(sender, "marker.update")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                if(parms.get("id") == null) {
+                    sender.sendMessage("id=<marker-id> required");
+                    return true;
+                }
+                if(parms.get("set") == null) {
+                    parms.put("set", MarkerSet.DEFAULT);
+                }
+                MarkerSet set = api.getMarkerSet(parms.get("set"));
+                if(set == null) {
+                    sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
+                    return true;
+                }
+                Marker marker = set.findMarker(parms.get("id"));
+                if(marker == null) {    /* No marker */
+                    sender.sendMessage("Error: marker not found - " + parms.get("id"));
+                    return true;
+                }
+                if(parms.get("label") != null) {    /* Label set? */
+                    marker.setLabel(parms.get("label"));
+                }
+                if(parms.get("icon") != null) {
+                    MarkerIcon ico = api.getMarkerIcon(parms.get("icon"));
+                    if(ico == null) {
+                        sender.sendMessage("Error: invalid icon - " + parms.get("icon"));
+                        return true;
+                    }
+                    marker.setMarkerIcon(ico);
+                }
+                sender.sendMessage("Updated marker id=" + parms.get("id") + " (" + marker.getLabel() + ")");
+            }
+            else {
+                sender.sendMessage("id=<marker-id> required");
+            }
+        }
+        /* Delete marker - must have ID parameter */
+        else if(c.equals("delete") && plugin.checkPlayerPermission(sender, "marker.delete")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                if(parms.get("id") == null) {
+                    sender.sendMessage("id=<marker-id> required");
+                    return true;
+                }
+                if(parms.get("set") == null) {
+                    parms.put("set", MarkerSet.DEFAULT);
+                }
+                MarkerSet set = api.getMarkerSet(parms.get("set"));
+                if(set == null) {
+                    sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
+                    return true;
+                }
+                Marker marker = set.findMarker(parms.get("id"));
+                if(marker == null) {    /* No marker */
+                    sender.sendMessage("Error: marker not found - " + parms.get("id"));
+                    return true;
+                }
+                marker.deleteMarker();
+                sender.sendMessage("Deleted marker id=" + parms.get("id"));
+            }
+            else {
+                sender.sendMessage("id=<marker-id> required");
+            }
+        }
+        /* List markers */
+        else if(c.equals("list") && plugin.checkPlayerPermission(sender, "marker.list")) {
+            /* Parse arguements */
+            Map<String,String> parms = parseArgs(args, sender);
+            if(parms == null) return true;
+            if(parms.get("set") == null) {
+                parms.put("set", MarkerSet.DEFAULT);
+            }
+            MarkerSet set = api.getMarkerSet(parms.get("set"));
+            if(set == null) {
+                sender.sendMessage("Error: invalid marker set - " + parms.get("set"));
+                return true;
+            }
+            Set<Marker> markers = set.getMarkers();
+            for(Marker m : markers) {
+                sender.sendMessage(m.getMarkerID() + ": label=\"" + m.getLabel() + "\", set=" + m.getMarkerSet().getMarkerSetID() + 
+                                   ", world=" + m.getWorld() + ", x=" + m.getX() + ", y=" + m.getY() + ", z=" + m.getZ());
+            }
+        }
+        /* List icons */
+        else if(c.equals("icons") && plugin.checkPlayerPermission(sender, "marker.icons")) {
+            Set<MarkerIcon> icons = api.getMarkerIcons();
+            for(MarkerIcon ico : icons) {
+                sender.sendMessage(ico.getMarkerIconID() + ": label=\"" + ico.getMarkerIconLabel() + "\", builtin=" + ico.isBuiltIn());
             }
         }
         else {

@@ -43,6 +43,8 @@ components:
   # Note: this component is needed for the dmarker commands, and for the Marker API to be available to other plugins
   - class: org.dynmap.MarkersComponent
     type: markers
+    # If set, shows labels all the time (default is only on hover)
+    #showlabel: true
     
   - class: org.dynmap.ClientComponent
     type: chat
