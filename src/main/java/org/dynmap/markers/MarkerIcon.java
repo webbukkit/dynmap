@@ -6,7 +6,8 @@ package org.dynmap.markers;
 public interface MarkerIcon {
     /** Default marker icon - always exists */
     public static final String DEFAULT = "default";
-
+    /** Default sign marker icon - always exists */
+    public static final String SIGN = "sign";
         
     /**
      * Get ID of the marker icon (unique among marker icons)

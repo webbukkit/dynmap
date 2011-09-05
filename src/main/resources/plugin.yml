@@ -58,6 +58,7 @@ permissions:
       dynmap.marker.delete: true
       dynmap.marker.list: true
       dynmap.marker.icons: true
+      dynmap.marker.sign: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -107,4 +108,7 @@ permissions:
     description: Allows /dmarker list
   dynmap.marker.icons:
     description: Allows /dmarker icons
-    
+  dynmap.marker.sign:
+    description: Allows creation of markers using signs
+    default: op
+        

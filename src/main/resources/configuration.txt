@@ -45,6 +45,8 @@ components:
     type: markers
     # If set, shows labels all the time (default is only on hover)
     #showlabel: true
+    # If set, enables support for using signs for markers
+    #enablesigns: true
     
   - class: org.dynmap.ClientComponent
     type: chat
