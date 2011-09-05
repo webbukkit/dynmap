@@ -268,12 +268,15 @@ public class MapManager {
                     activemaplist = map.getMapNamesSharingRender(world);
                     /* Build active map list */
                     activemaps = "";
-                    for(String n : activemaplist) {
-                        if((mapname != null) && (!mapname.equals(n)))
-                            continue;
-                        if(activemaps.length() > 0)
-                            activemaps += ",";
-                        activemaps += n;
+                    if(mapname != null) {
+                        activemaps = mapname;
+                    }
+                    else {
+                        for(String n : activemaplist) {
+                            if(activemaps.length() > 0)
+                                activemaps += ",";
+                            activemaps += n;
+                        }
                     }
                     /* Mark all the concurrently rendering maps rendered */
                     renderedmaps.addAll(map.getMapsSharingRender(world));
