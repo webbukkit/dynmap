@@ -15,7 +15,7 @@ public class MarkersComponent extends ClientComponent {
         api = MarkerAPIImpl.initializeMarkerAPI(plugin);
         plugin.registerMarkerAPI(api);
         /* If configuration has enabled sign support, prime it too */
-        if(configuration.getBoolean("enablesigns", true)) {
+        if(configuration.getBoolean("enablesigns", false)) {
             signmgr = MarkerSignManager.initializeSignManager(plugin);
         }
     }
