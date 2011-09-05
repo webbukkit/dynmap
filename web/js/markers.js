@@ -17,20 +17,25 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		$.getJSON(dynmap.options.tileUrl+'_markers_/marker_'+world+'.json', function(data) {
 			var ts = data.timestamp;
 			$.each(data.sets, function(name, markerset) {
-				if(!dynmapmarkersets[name]) {
-					dynmapmarkersets[name] = markerset;
-					createMarkerSet(markerset);
+				var ms = dynmapmarkersets[name];
+				if(!ms) {
+					ms = { label: markerset.label, markers: {} } ;
+					createMarkerSet(ms, ts);
 				}
 				else {
-					if(dynmapmarkersets[name].label != markerset.label) {
-						dynmapmarkersets[name].label = markerset.label;
-						dynmap.layercontrol.removeLayer(dynmapmarkersets[name].layergroup);
-						dynmap.layercontrol.addOverlay(dynmapmarkersets[name].layergroup, dynmapmarkersets[name].label);
+					if(ms.label != markerset.label) {
+						ms.label = markerset.label;
+						dynmap.layercontrol.removeLayer(ms.layergroup);
+						dynmap.layercontrol.addOverlay(ms.layergroup, ms.label);
 					}
-					dynmapmarkersets[name].markers = markerset.markers;
+					ms.markers = {};
+					ms.timestamp = ts;
 				}
-				$.each(markerset.markers, function(name, marker) {
-					createMarker(markerset, marker);
+				dynmapmarkersets[name] = ms;
+				$.each(markerset.markers, function(mname, marker) {
+					ms.markers[mname] = { label: marker.label, x: marker.x, y: marker.y, z:marker.z,
+						icon: marker.icon };
+					createMarker(ms, ms.markers[mname], ts);
 				});
 			});
 		});
@@ -40,7 +45,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		return dynmap.getProjection().fromLocationToLatLng({ x: marker.x, y: marker.y, z: marker.z });
 	}
 	
-	function createMarker(set, marker) {
+	function createMarker(set, marker, ts) {
 		var markerPosition = getPosition(marker);
 		marker.our_marker = new L.CustomMarker(markerPosition, { elementCreator: function() {
 			var div = document.createElement('div');
@@ -57,22 +62,23 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 					.text(marker.label));
 			return div;
 		}});
-		
+		marker.timestamp = ts;
 		set.layergroup.addLayer(marker.our_marker);
 	}
 	
-	function createMarkerSet(set) {
+	function createMarkerSet(set, ts) {
 		set.layergroup = new L.LayerGroup();
+		set.timestamp = ts;
 		dynmap.map.addLayer(set.layergroup);
 		dynmap.layercontrol.addOverlay(set.layergroup, set.label);
 	}
 	
 	$(dynmap).bind('component.markers', function(event, msg) {
-		console.log('got marker event - ' + msg.ctype + ', ' + msg.msg);
 		if(msg.msg == 'markerupdated') {
 			var marker = dynmapmarkersets[msg.set].markers[msg.id];
 			if(marker && marker.our_marker) {
 				dynmapmarkersets[msg.set].layergroup.removeLayer(marker.our_marker);
+				delete marker.our_marker;
 			}
 			marker = { x: msg.x, y: msg.y, z: msg.z, icon: msg.icon, label: msg.label };
 			dynmapmarkersets[msg.set].markers[msg.id] = marker;

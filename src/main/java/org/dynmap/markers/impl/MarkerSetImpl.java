@@ -87,6 +87,21 @@ class MarkerSetImpl implements MarkerSet {
     }
 
     @Override
+    public Marker   findMarkerByLabel(String lbl) {
+        Marker match = null;
+        int matchlen = Integer.MAX_VALUE;
+        for(Marker m : markers.values()) {
+            if(m.getLabel().contains(lbl)) {
+                if(matchlen > m.getLabel().length()) {
+                    match = m;
+                    matchlen = m.getLabel().length();
+                }
+            }
+        }
+        return match;
+    }
+
+    @Override
     public String getMarkerSetID() {
         return setid;
     }

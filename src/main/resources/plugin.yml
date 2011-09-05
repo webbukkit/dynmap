@@ -26,11 +26,13 @@ commands:
   dmarker:
     description: Manipulate map markers
     usage: |
-           /<command> add <label> - add new marker with generated ID at current location (use double-quotes if spaces needed)
-           /<command> add id=<id> <label> - add new marker with given ID at current location (use double-quotes if spaces needed)
-           /<command> movehere id=<id> - move marker with given ID to current location
-           /<command> update id=<id> <label> icon=<icon> - update marker with given ID with new label and/or icon
-           /<command> delete id=<id> - delete marker with given ID
+           /<command> add <label> - add new marker with given label at current location (use double-quotes if spaces needed)
+           /<command> add id:<id> <label> - add new marker with given ID at current location (use double-quotes if spaces needed)
+           /<command> movehere <label> - move marker with given label to current location
+           /<command> movehere id:<id> - move marker with given ID to current location
+           /<command> update <label> icon:<icon> newlabel:<newlabel>- update marker with given ID with new label and/or icon
+           /<command> delete <label> - delete marker with given label
+           /<command> delete id:<id> - delete marker with given ID
            /<command> list - list details of all markers
            /<command> icons - list details of all icons
            
