@@ -438,13 +438,18 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     sb.append(c);
                 }
             }
+            else if(c == '\"') {    /* Start of quote? */
+                inquote = true;
+            }
             else if(c == ':') { /* var:value */
                 varid = sb.toString();  /* Save variable ID */
                 sb.setLength(0);
             }
             else if(c == ' ') { /* Ending space? */
                 if(varid == null) { /* No varid? */
-                    rslt.put("label", sb.toString());
+                    if(sb.length() > 0) {
+                        rslt.put("label", sb.toString());
+                    }
                 }
                 else {
                     rslt.put(varid, sb.toString());
