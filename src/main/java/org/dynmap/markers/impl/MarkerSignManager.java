@@ -123,6 +123,6 @@ public class MarkerSignManager {
     }
     
     private static String getSignMarkerID(Location loc) {
-        return "$sign-" + loc.getWorld().getName() + "/" + loc.getBlockX() + "/" + loc.getBlockY() + "/" + loc.getBlockZ();
+        return "_sign_" + loc.getWorld().getName() + "_" + loc.getBlockX() + "_" + loc.getBlockY() + "_" + loc.getBlockZ();
     }
 }
