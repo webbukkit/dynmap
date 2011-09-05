@@ -369,7 +369,6 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
      * @param update - type of update
      */
     static void markerUpdated(MarkerImpl marker, MarkerUpdate update) {
-        Log.info("markerUpdated(" + marker.getMarkerID() + "," + update + ")");
         /* Freshen marker file for the world for this marker */
         if(api != null)
             api.writeMarkersFile(marker.getWorld());
@@ -383,7 +382,6 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
      * @param update - type of update
      */
     static void markerSetUpdated(MarkerSetImpl markerset, MarkerUpdate update) {
-        Log.info("markerSetUpdated(" + markerset.getMarkerSetID() + "," + update + ")");
         /* Freshen all marker files */
         if(api != null)
             api.freshenMarkerFiles();
