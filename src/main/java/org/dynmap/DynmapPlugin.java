@@ -39,6 +39,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -1152,7 +1153,7 @@ public class DynmapPlugin extends JavaPlugin {
                 case BLOCK_SPREAD:
                 case BLOCK_PISTON_EXTEND:
                 case BLOCK_PISTON_RETRACT:
-                     pm.registerEvent(type, ourBlockEventHandler, Event.Priority.Monitor, this);
+                    pm.registerEvent(type, ourBlockEventHandler, Event.Priority.Monitor, this);
                     break;
                 case WORLD_LOAD:
                 case CHUNK_LOAD:
