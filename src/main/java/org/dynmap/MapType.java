@@ -28,6 +28,12 @@ public abstract class MapType {
         public String getFileExt() { return ext; }
         public float getQuality() { return qual; }
     };
+    
+    public static class ZoomInfo {
+        public String prefix;
+        public int  background_argb;
+        public ZoomInfo(String pre, int bg) { prefix = pre; background_argb = bg; }
+    }
 
     public abstract MapTile[] getTiles(Location l);
 
@@ -54,7 +60,7 @@ public abstract class MapType {
         X_MINUS_Y_MINUS
     }
     public abstract MapStep zoomFileMapStep();
-    public abstract List<String> baseZoomFilePrefixes();
+    public abstract List<ZoomInfo> baseZoomFileInfo();
     public abstract int baseZoomFileStepSize();
     /* How many bits of coordinate are shifted off to make big world directory name */
     public abstract int getBigWorldShift();
@@ -64,7 +70,11 @@ public abstract class MapType {
     public int getMapZoomOutLevels() { return 0; }
     
     public ImageFormat getImageFormat() { return ImageFormat.FORMAT_PNG; }
-    
+
+    public int getBackgroundARGBNight() { return 0; }
+
+    public int getBackgroundARGBDay() { return 0; }
+
     /**
      * Step sequence for creating zoomed file: first index is top-left, second top-right, third bottom-left, forth bottom-right
      * Values correspond to tile X,Y (0), X+step,Y (1), X,Y+step (2), X+step,Y+step (3) 

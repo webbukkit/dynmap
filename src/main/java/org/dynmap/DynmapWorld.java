@@ -1,10 +1,12 @@
 package org.dynmap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.Location;
+import org.dynmap.MapType.ImageFormat;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
@@ -151,6 +153,7 @@ public class DynmapWorld {
         boolean neg_step_y;
     	String baseprefix;
     	int zoomlevel;
+    	int background;
     	String zoomprefix;
     	String fnprefix;
         String zfnprefix;
@@ -233,7 +236,7 @@ public class DynmapWorld {
             /* If level is above top needed for this map, skip */
             if(zoomlevel > (this.extrazoomoutlevels + mt.getMapZoomOutLevels()))
                 continue;
-            List<String> pfx = mt.baseZoomFilePrefixes();
+            List<MapType.ZoomInfo> pfx = mt.baseZoomFileInfo();
             int stepsize = mt.baseZoomFileStepSize();
             int bigworldshift = mt.getBigWorldShift();
             boolean neg_step_x = false;
@@ -252,13 +255,14 @@ public class DynmapWorld {
                     break;
             }
             int[] stepseq = mt.zoomFileStepSequence();
-            for(String p : pfx) {
+            for(MapType.ZoomInfo p : pfx) {
                 PrefixData pd = new PrefixData();
                 pd.stepsize = stepsize;
                 pd.neg_step_x = neg_step_x;
                 pd.neg_step_y = neg_step_y;
                 pd.stepseq = stepseq;
-                pd.baseprefix = p;
+                pd.baseprefix = p.prefix;
+                pd.background = p.background_argb;
                 pd.zoomlevel = zoomlevel;
                 pd.zoomprefix = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz".substring(0, zoomlevel);
                 pd.bigworldshift = bigworldshift;
@@ -279,7 +283,7 @@ public class DynmapWorld {
                     pd.zfnprefix = "z" + pd.fnprefix;
                 }
                 
-                maptab.put(p, pd);
+                maptab.put(p.prefix, pd);
             }
         }
         return maptab;
@@ -430,6 +434,16 @@ public class DynmapWorld {
                     /* blit scaled rendered tile onto zoom-out tile */
                     zIm.setRGB(((i>>1) != 0)?0:width/2, (i & 1) * height/2, width/2, height/2, argb, 0, width);
                 }
+                else if((pd.background != 0) && (pd.fmt != ImageFormat.FORMAT_PNG)) {
+                    Arrays.fill(argb, pd.background);
+                    /* blit scaled rendered tile onto zoom-out tile */
+                    zIm.setRGB(((i>>1) != 0)?0:width/2, (i & 1) * height/2, width/2, height/2, argb, 0, width);
+                }
+            }
+            else if((pd.background != 0) && (pd.fmt != ImageFormat.FORMAT_PNG)) {
+                Arrays.fill(argb, pd.background);
+                /* blit scaled rendered tile onto zoom-out tile */
+                zIm.setRGB(((i>>1) != 0)?0:width/2, (i & 1) * height/2, width/2, height/2, argb, 0, width);
             }
         }
         FileLockManager.getWriteLock(zf);

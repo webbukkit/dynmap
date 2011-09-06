@@ -454,11 +454,11 @@ public class FlatMap extends MapType {
         return Collections.singletonList(name);
     }
 
-    public List<String> baseZoomFilePrefixes() {
-        ArrayList<String> s = new ArrayList<String>();
-        s.add(getPrefix() + "_128");
+    public List<ZoomInfo> baseZoomFileInfo() {
+        ArrayList<ZoomInfo> s = new ArrayList<ZoomInfo>();
+        s.add(new ZoomInfo(getPrefix() + "_128", 0));
         if(night_and_day)
-            s.add(getPrefix()+"_day_128");
+            s.add(new ZoomInfo(getPrefix()+"_day_128", 0));
         return s;
     }
     
