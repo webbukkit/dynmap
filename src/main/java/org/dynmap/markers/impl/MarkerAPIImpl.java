@@ -404,7 +404,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
 
     private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[] {
-        "add", "movehere", "update", "delete", "list", "icons" 
+        "add", "movehere", "update", "delete", "list", "icons", "addset", "deleteset", "listsets" 
     }));
 
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
@@ -681,6 +681,83 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             Set<MarkerIcon> icons = api.getMarkerIcons();
             for(MarkerIcon ico : icons) {
                 sender.sendMessage(ico.getMarkerIconID() + ": label:\"" + ico.getMarkerIconLabel() + "\", builtin:" + ico.isBuiltIn());
+            }
+        }
+        else if(c.equals("addset") && plugin.checkPlayerPermission(sender, "marker.addset")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                if((parms.get("id") == null) && (parms.get("label") == null)) {
+                    sender.sendMessage("<label> or id:<marker-id> required");
+                    return true;
+                }
+                if(parms.get("label") == null)
+                    parms.put("label", parms.get("id"));
+                if(parms.get("id") == null)
+                    parms.put("id", parms.get("label"));
+                /* See if marker set exists */
+                MarkerSet set = api.getMarkerSet(parms.get("id"));
+                if(set != null) {
+                    sender.sendMessage("Error: set already exists - id:" + set.getMarkerSetID());
+                    return true;
+                }
+                /* Create new set */
+                set = api.createMarkerSet(parms.get("id"), parms.get("label"), null, true);
+                if(set == null) {
+                    sender.sendMessage("Error creating marker set");
+                }
+                else {
+                    sender.sendMessage("Added marker set id:'" + set.getMarkerSetID() + "' (" + set.getMarkerSetLabel() + ")");
+                }
+            }
+            else {
+                sender.sendMessage("<label> or id:<set-id> required");
+            }
+        }
+        else if(c.equals("deleteset") && plugin.checkPlayerPermission(sender, "marker.deleteset")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                if((parms.get("id") == null) && (parms.get("label") == null)) {
+                    sender.sendMessage("<label> or id:<marker-id> required");
+                    return true;
+                }
+                if(parms.get("id") != null) {
+                    MarkerSet set = api.getMarkerSet(parms.get("id"));
+                    if(set == null) {
+                        sender.sendMessage("Error: set does not exist - id:" + set.getMarkerSetID());
+                        return true;
+                    }
+                    set.deleteMarkerSet();
+                }
+                else {
+                    Set<MarkerSet> sets = api.getMarkerSets();
+                    MarkerSet set = null;
+                    for(MarkerSet s : sets) {
+                        if(s.getMarkerSetLabel().equals(parms.get("label"))) {
+                            set = s;
+                            break;
+                        }
+                    }
+                    if(set == null) {
+                        sender.sendMessage("Error: matching set not found");
+                        return true;                        
+                    }
+                    set.deleteMarkerSet();
+                }
+                sender.sendMessage("Deleted marker set");
+            }
+            else {
+                sender.sendMessage("<label> or id:<set-id> required");
+            }
+        }
+        /* List sets */
+        else if(c.equals("listsets") && plugin.checkPlayerPermission(sender, "marker.listsets")) {
+            Set<MarkerSet> sets = api.getMarkerSets();
+            for(MarkerSet set : sets) {
+                sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\"");
             }
         }
         else {
