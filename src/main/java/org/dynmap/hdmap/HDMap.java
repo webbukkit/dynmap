@@ -143,11 +143,11 @@ public class HDMap extends MapType {
     }
 
     @Override
-    public List<String> baseZoomFilePrefixes() {
-        ArrayList<String> s = new ArrayList<String>();
-        s.add(prefix);
+    public List<ZoomInfo> baseZoomFileInfo() {
+        ArrayList<ZoomInfo> s = new ArrayList<ZoomInfo>();
+        s.add(new ZoomInfo(prefix, getBackgroundARGBNight()));
         if(lighting.isNightAndDayEnabled())
-            s.add(prefix + "_day");
+            s.add(new ZoomInfo(prefix + "_day", getBackgroundARGBDay()));
         return s;
     }
 
@@ -259,6 +259,7 @@ public class HDMap extends MapType {
                 v = 0xFF000000 | (v & 0xFFFFFF);
             }
         }
+
         return v;
     }
     

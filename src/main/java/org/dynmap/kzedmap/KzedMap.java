@@ -289,12 +289,12 @@ public class KzedMap extends MapType {
          return false;
      }
 
-    public List<String> baseZoomFilePrefixes() {
-        ArrayList<String> s = new ArrayList<String>();
+    public List<ZoomInfo> baseZoomFileInfo() {
+        ArrayList<ZoomInfo> s = new ArrayList<ZoomInfo>();
         for(MapTileRenderer r : renderers) {
-            s.add("z" + r.getPrefix());
+            s.add(new ZoomInfo("z" + r.getPrefix(), 0));
             if(r.isNightAndDayEnabled())
-                s.add("z" + r.getPrefix() + "_day");
+                s.add(new ZoomInfo("z" + r.getPrefix() + "_day", 0));
         }
         return s;
     }
