@@ -35,6 +35,11 @@ commands:
            /<command> delete id:<id> - delete marker with given ID
            /<command> list - list details of all markers
            /<command> icons - list details of all icons
+           /<command> addset <label> - add marker set with given label (ID=label)
+           /<command> addset id:<id> <label> - add marker set with given ID and label
+           /<command> deleteset <label> - delete marker set with given label
+           /<command> deleteset id:<id> - delete marker set with given ID
+           /<command> listsets - list all marker sets
            
 permissions:
   dynmap.*:
@@ -59,6 +64,9 @@ permissions:
       dynmap.marker.list: true
       dynmap.marker.icons: true
       dynmap.marker.sign: true
+      dynmap.marker.addset: true
+      dynmap.marker.deleteset: true
+      dynmap.marker.listsets: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -106,9 +114,20 @@ permissions:
     default: op
   dynmap.marker.list:
     description: Allows /dmarker list
+    default: true
   dynmap.marker.icons:
     description: Allows /dmarker icons
+    default: true
   dynmap.marker.sign:
     description: Allows creation of markers using signs
     default: op
+  dynmap.marker.addset:
+    description: Allows /dmarker addset
+    default: op
+  dynmap.marker.deleteset:
+    description: Allows /dmarker deleteset
+    default: op
+  dynmap.marker.listsets:
+    description: Allows /dmarker listsets
+    default: true
         
