@@ -9,6 +9,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$.each(set.markers, function(mname, marker) {
 				set.layergroup.removeLayer(marker.our_marker);
 			});
+			set.markers = {};
 		});
 	}
 			
