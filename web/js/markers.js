@@ -70,7 +70,8 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	function createMarkerSet(set, ts) {
 		set.layergroup = new L.LayerGroup();
 		set.timestamp = ts;
-		dynmap.map.addLayer(set.layergroup);
+		if(!configuration.hidebydefault)
+			dynmap.map.addLayer(set.layergroup);
 		dynmap.layercontrol.addOverlay(set.layergroup, set.label);
 	}
 	
