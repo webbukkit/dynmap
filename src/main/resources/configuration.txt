@@ -47,6 +47,8 @@ components:
     #showlabel: true
     # If set, enables support for using signs for markers
     #enablesigns: true
+    # If set, make markers layer hidden by default
+    #hidebydefault: true
     
   - class: org.dynmap.ClientComponent
     type: chat
