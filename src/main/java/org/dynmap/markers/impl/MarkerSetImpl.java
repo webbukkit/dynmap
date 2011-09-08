@@ -112,7 +112,7 @@ class MarkerSetImpl implements MarkerSet {
     }
 
     @Override
-    public void setMarketSetLabel(String lbl) {
+    public void setMarkerSetLabel(String lbl) {
         label = lbl;
         MarkerAPIImpl.markerSetUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)
