@@ -40,6 +40,7 @@ commands:
            /<command> deleteset <label> - delete marker set with given label
            /<command> deleteset id:<id> - delete marker set with given ID
            /<command> listsets - list all marker sets
+           /<command> addicon id:<id> <label> file:"filename" - install new icon
            
 permissions:
   dynmap.*:
@@ -67,6 +68,7 @@ permissions:
       dynmap.marker.addset: true
       dynmap.marker.deleteset: true
       dynmap.marker.listsets: true
+      dynmap.marker.addicon: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -130,4 +132,7 @@ permissions:
   dynmap.marker.listsets:
     description: Allows /dmarker listsets
     default: true
-        
+  dynmap.marker.addicon:
+    description: Allows /dmarker addicon
+    default: op
+            
