@@ -404,7 +404,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
 
     private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[] {
-        "add", "movehere", "update", "delete", "list", "icons", "addset", "deleteset", "listsets" 
+        "add", "movehere", "update", "delete", "list", "icons", "addset", "deleteset", "listsets", "addicon"
     }));
 
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
@@ -758,6 +758,51 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             Set<MarkerSet> sets = api.getMarkerSets();
             for(MarkerSet set : sets) {
                 sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\"");
+            }
+        }
+        /* Add new icon */
+        else if(c.equals("addicon") && plugin.checkPlayerPermission(sender, "marker.addicon")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                if(parms.get("id") == null) {
+                    sender.sendMessage("id:<icon-id> required");
+                    return true;
+                }
+                if(parms.get("file") == null) {
+                    sender.sendMessage("file:\"filename\" required");
+                    return true;
+                }
+                String id = parms.get("id");
+                if(parms.get("label") == null)
+                    parms.put("label", id);
+                MarkerIcon ico = api.getMarkerIcon(id);
+                if(ico != null) {
+                    sender.sendMessage("Icon '" + id + "' already defined.");
+                    return true;
+                }
+                /* Open stream to filename */
+                File iconf = new File(parms.get("file"));
+                FileInputStream fis = null;
+                try {
+                    fis = new FileInputStream(iconf);
+                    /* Create new icon */
+                    MarkerIcon mi = api.createMarkerIcon(parms.get("id"), parms.get("label"), fis);
+                    if(mi == null) {
+                        sender.sendMessage("Error creating icon");
+                        return true;
+                    }
+                } catch (IOException iox) {
+                    sender.sendMessage("Error loading icon file - " + iox);
+                } finally {
+                    if(fis != null) {
+                        try { fis.close(); } catch (IOException iox) {}
+                    }
+                }
+            }
+            else {
+                sender.sendMessage("id:<set-id> and file:\"filename\" required");
             }
         }
         else {
