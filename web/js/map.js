@@ -290,8 +290,9 @@ DynMap.prototype = {
 
 		if(dynmapversion != me.options.dynmapversion) {
 			me.alertbox
-				.text('Web files are not matched with plugin version: All files need to be same version (' + me.options.dynmapverion + ')')
+				.text('Web files are not matched with plugin version: All files need to be same version (' + me.options.dynmapversion + ')')
 				.show();
+			return;
 		}
 		
 		me.selectMap(me.defaultworld.defaultmap);
