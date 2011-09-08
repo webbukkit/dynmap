@@ -1,6 +1,7 @@
 "use strict";
 //if (!console) console = { log: function() {} }; 
 
+var dynmapversion = "0.22";	// This needs to match plugin verison
 var componentconstructors = {};
 var maptypes = {};
 var map = null;	// Leaflet assumes top-level 'map'...
@@ -286,6 +287,12 @@ DynMap.prototype = {
 			.addClass('alertbox')
 			.hide()
 			.appendTo(container);
+
+		if(dynmapversion != me.options.dynmapversion) {
+			me.alertbox
+				.text('Web files are not matched with plugin version: All files need to be same version (' + me.options.dynmapverion + ')')
+				.show();
+		}
 		
 		me.selectMap(me.defaultworld.defaultmap);
 		
