@@ -21,6 +21,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "webprefix", unescapeString(c.getString("webprefix", "[WEB] ")));
                 s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
                 s(t, "sidebaropened", c.getString("sidebaropened", "false"));
+                s(t, "dynmapversion", plugin.getDescription().getVersion());
                 
                 DynmapWorld defaultWorld = null;
                 String defmap = null;
