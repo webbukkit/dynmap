@@ -8,6 +8,8 @@ public interface MarkerIcon {
     public static final String DEFAULT = "default";
     /** Default sign marker icon - always exists */
     public static final String SIGN = "sign";
+    /** Default world marker icon - always exists */
+    public static final String WORLD = "world";
         
     /**
      * Get ID of the marker icon (unique among marker icons)

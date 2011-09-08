@@ -50,6 +50,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
+import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.Plugin;
@@ -1098,6 +1099,16 @@ public class DynmapPlugin extends JavaPlugin {
                 }
             }
         }
+        @Override
+        public void onSpawnChange(SpawnChangeEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((WorldListener)l).onSpawnChange(event);
+                }
+            }
+        }
     };
     
     private CustomEventListener ourCustomEventHandler = new CustomEventListener() {
@@ -1158,6 +1169,7 @@ public class DynmapPlugin extends JavaPlugin {
                 case WORLD_LOAD:
                 case CHUNK_LOAD:
                 case CHUNK_POPULATED:
+                case SPAWN_CHANGE:
                     pm.registerEvent(type, ourWorldEventHandler, Event.Priority.Monitor, this);
                     break;
                 case CUSTOM_EVENT:

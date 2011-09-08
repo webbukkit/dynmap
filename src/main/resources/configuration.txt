@@ -49,6 +49,12 @@ components:
     #enablesigns: true
     # If set, make markers layer hidden by default
     #hidebydefault: true
+    # If set, show spawn points on each world
+    showspawn: true
+    # Marker used for spawn point
+    spawnicon: world
+    # Label for spawn points
+    spawnlabel: "Spawn"
     
   - class: org.dynmap.ClientComponent
     type: chat
