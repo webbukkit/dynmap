@@ -55,7 +55,7 @@ public interface MarkerSet {
      * Update label for marker set
      * @param lbl - label for marker set
      */
-    public void setMarketSetLabel(String lbl);
+    public void setMarkerSetLabel(String lbl);
     /**
      * Test if marker set is persistent
      * @return true if the set is persistent
