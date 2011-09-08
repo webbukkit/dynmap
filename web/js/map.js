@@ -307,7 +307,9 @@ DynMap.prototype = {
 			configset[configuration.type].push(configuration);
 		});
 		
+		var tobeloaded = {};
 		$.each(configset, function(type, configlist) {
+		    tobeloaded[type] = true;
 			loadjs('js/' + type + '.js', function() {
 				var componentconstructor = componentconstructors[type];
 				if (componentconstructor) {
@@ -317,6 +319,7 @@ DynMap.prototype = {
 				} else {
 					// Could not load component. We'll ignore this for the moment.
 				}
+				delete tobeloaded[type];
 				componentstoload--;
 				if (componentstoload == 0) {
 					// Actually start updating once all components are loaded.
@@ -324,6 +327,17 @@ DynMap.prototype = {
 				}
 			});
 		});
+		setTimeout(function() {
+			$.each(configset, function(type, configlist) {
+				if(tobeloaded[type]) {
+					me.alertbox
+						.text('Error loading js/' + type + '.js')
+						.show();
+				}
+			});
+			if(componentstoload > 0)
+				setTimeout(function() { me.update(); }, me.options.updaterate);
+		}, 15000); 
 	},
 	getProjection: function() { return this.maptype.getProjection(); },
 	selectMapAndPan: function(map, location, completed) {
