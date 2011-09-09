@@ -86,4 +86,14 @@ public interface MarkerSet {
      * Delete marker set
      */
     public void deleteMarkerSet();
+    /**
+     * Set hide/show default
+     * @param hide - if true, layer for set will be hidden by default
+     */
+    public void setHideByDefault(boolean hide);
+    /**
+     * Get hide/show default
+     * @return true if layer for set will be hidden by default
+     */
+    public boolean getHideByDefault();
 }

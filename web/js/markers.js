@@ -20,7 +20,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$.each(data.sets, function(name, markerset) {
 				var ms = dynmapmarkersets[name];
 				if(!ms) {
-					ms = { label: markerset.label, markers: {} } ;
+					ms = { label: markerset.label, hide: markerset.hide, markers: {} } ;
 					createMarkerSet(ms, ts);
 				}
 				else {
@@ -30,6 +30,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 						dynmap.layercontrol.addOverlay(ms.layergroup, ms.label);
 					}
 					ms.markers = {};
+					ms.hide = markerset.hide;
 					ms.timestamp = ts;
 				}
 				dynmapmarkersets[name] = ms;
@@ -70,7 +71,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	function createMarkerSet(set, ts) {
 		set.layergroup = new L.LayerGroup();
 		set.timestamp = ts;
-		if(!configuration.hidebydefault)
+		if(!set.hide)
 			dynmap.map.addLayer(set.layergroup);
 		dynmap.layercontrol.addOverlay(set.layergroup, set.label);
 	}

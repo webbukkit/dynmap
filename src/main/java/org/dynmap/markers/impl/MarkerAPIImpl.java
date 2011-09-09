@@ -123,9 +123,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         /* Load persistence */
         api.loadMarkers();
         /* Initialize default marker set, if needed */
-        if(api.getMarkerSet(MarkerSet.DEFAULT) == null) {
-            api.createMarkerSet(MarkerSet.DEFAULT, "Markers", null, true);
+        MarkerSet set = api.getMarkerSet(MarkerSet.DEFAULT);
+        if(set == null) {
+            set = api.createMarkerSet(MarkerSet.DEFAULT, "Markers", null, true);
         }
+        
         /* Build paths for markers */
         api.markerdir = new File(plugin.getDataFolder(), "markers");
         if(api.markerdir.isDirectory() == false) {
@@ -404,7 +406,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
 
     private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[] {
-        "add", "movehere", "update", "delete", "list", "icons", "addset", "deleteset", "listsets", "addicon"
+        "add", "movehere", "update", "delete", "list", "icons", "addset", "updateset", "deleteset", "listsets", "addicon"
     }));
 
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
@@ -708,7 +710,51 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     sender.sendMessage("Error creating marker set");
                 }
                 else {
+                    String h = parms.get("hide");
+                    if((h != null) && (h.equals("true")))
+                        set.setHideByDefault(true);
                     sender.sendMessage("Added marker set id:'" + set.getMarkerSetID() + "' (" + set.getMarkerSetLabel() + ")");
+                }
+            }
+            else {
+                sender.sendMessage("<label> or id:<set-id> required");
+            }
+        }
+        else if(c.equals("updateset") && plugin.checkPlayerPermission(sender, "marker.updateset")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                if((parms.get("id") == null) && (parms.get("label") == null)) {
+                    sender.sendMessage("<label> or id:<marker-id> required");
+                    return true;
+                }
+                MarkerSet set = null;
+                if(parms.get("id") != null) {
+                    set = api.getMarkerSet(parms.get("id"));
+                    if(set == null) {
+                        sender.sendMessage("Error: set does not exist - id:" + set.getMarkerSetID());
+                        return true;
+                    }
+                }
+                else {
+                    Set<MarkerSet> sets = api.getMarkerSets();
+                    for(MarkerSet s : sets) {
+                        if(s.getMarkerSetLabel().equals(parms.get("label"))) {
+                            set = s;
+                            break;
+                        }
+                    }
+                    if(set == null) {
+                        sender.sendMessage("Error: matching set not found");
+                        return true;                        
+                    }
+                }
+                if(parms.get("newLabel") != null) {
+                    set.setMarkerSetLabel(parms.get("netlabel"));
+                }
+                if(parms.get("hide") != null) {
+                    set.setHideByDefault(parms.get("hide").equals("true"));
                 }
             }
             else {
@@ -757,7 +803,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         else if(c.equals("listsets") && plugin.checkPlayerPermission(sender, "marker.listsets")) {
             Set<MarkerSet> sets = api.getMarkerSets();
             for(MarkerSet set : sets) {
-                sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\"");
+                sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\", hide=" + set.getHideByDefault());
             }
         }
         /* Add new icon */
@@ -826,6 +872,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         for(MarkerSet ms : markersets.values()) {
             HashMap<String, Object> msdata = new HashMap<String, Object>();
             msdata.put("label", ms.getMarkerSetLabel());
+            msdata.put("hide", ms.getHideByDefault());
             HashMap<String, Object> markers = new HashMap<String, Object>();
             for(Marker m : ms.getMarkers()) {
                 if(m.getWorld().equals(wname) == false) continue;

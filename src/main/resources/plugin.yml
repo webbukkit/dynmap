@@ -66,6 +66,7 @@ permissions:
       dynmap.marker.icons: true
       dynmap.marker.sign: true
       dynmap.marker.addset: true
+      dynmap.marker.updateset: true
       dynmap.marker.deleteset: true
       dynmap.marker.listsets: true
       dynmap.marker.addicon: true
@@ -125,6 +126,9 @@ permissions:
     default: op
   dynmap.marker.addset:
     description: Allows /dmarker addset
+    default: op
+  dynmap.marker.updateset:
+    description: Allows /dmarker updateset
     default: op
   dynmap.marker.deleteset:
     description: Allows /dmarker deleteset
