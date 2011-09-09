@@ -16,8 +16,19 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/web/</directory>
+      <outputDirectory>/dynmap/web/</outputDirectory>
+	  <includes>
+		<include>version.js</include>
+	  </includes>
+      <filtered>true</filtered>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/web</directory>
       <outputDirectory>/dynmap/web</outputDirectory>
+	  <excludes>
+		<exclude>version.js</exclude>
+	  </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/colorschemes</directory>
@@ -32,7 +43,9 @@
   </fileSets>
   <files>
   	<file>
-  		<source>${project.build.directory}/${artifactId}-${version}.jar</source>
-  		<outputDirectory>/</outputDirectory>
-  		<destName>dynmap.jar</destName></file></files>
+  	  <source>${project.build.directory}/${artifactId}-${version}.jar</source>
+  	  <outputDirectory>/</outputDirectory>
+  	  <destName>dynmap.jar</destName>
+	</file>
+  </files>
 </assembly>

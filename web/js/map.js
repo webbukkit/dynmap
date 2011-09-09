@@ -1,7 +1,6 @@
 "use strict";
 //if (!console) console = { log: function() {} }; 
 
-var dynmapversion = "0.22";	// This needs to match plugin verison
 var componentconstructors = {};
 var maptypes = {};
 var map = null;	// Leaflet assumes top-level 'map'...
