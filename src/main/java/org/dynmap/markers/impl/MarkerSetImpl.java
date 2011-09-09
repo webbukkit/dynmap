@@ -20,7 +20,7 @@ class MarkerSetImpl implements MarkerSet {
     private String setid;
     private String label;
     private HashMap<String, MarkerIconImpl> allowedicons = null;
-    
+    private boolean hide_by_def;
     private boolean ispersistent;
     
     MarkerSetImpl(String id) {
@@ -204,6 +204,7 @@ class MarkerSetImpl implements MarkerSet {
             setnode.put("allowedicons", allowed);
         }
         setnode.put("markers", node);
+        setnode.put("hide", hide_by_def);
         return setnode;
     }
 
@@ -236,8 +237,22 @@ class MarkerSetImpl implements MarkerSet {
                     Log.info("Error loading allowed icon '" + id + "' for set '" + setid + "'");
             }
         }
+        hide_by_def = node.getBoolean("hide", false);
         ispersistent = true;
         
         return true;
+    }
+    @Override
+    public void setHideByDefault(boolean hide) {
+        if(hide_by_def != hide) {
+            hide_by_def = hide;
+            MarkerAPIImpl.markerSetUpdated(this, MarkerUpdate.UPDATED);
+            if(ispersistent)
+                MarkerAPIImpl.saveMarkers();
+        }
+    }
+    @Override
+    public boolean getHideByDefault() {
+        return hide_by_def;
     }
 }
