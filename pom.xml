@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.dynmap</groupId>
   <artifactId>dynmap</artifactId>
-  <version>0.22</version>
+  <version>0.23</version>
   <name>dynmap</name>
     <properties>
        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,6 +13,24 @@
   	<url>https://github.com/FrozenCow/dynmap/issues</url>
   </issueManagement>
   <build>
+	  <resources>
+		<resource>
+		  <directory>src/main/resources</directory>
+		  <filtering>true</filtering>
+		  <includes>
+			<include>*.yml</include>
+			<include>*.txt</include>
+		  </includes>
+		</resource>
+		<resource>
+		  <directory>src/main/resources</directory>
+		  <filtering>false</filtering>
+		  <excludes>
+			<exclude>*.yml</exclude>
+			<exclude>*.txt</exclude>
+		  </excludes>
+		</resource>
+	  </resources>
       <plugins>
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
