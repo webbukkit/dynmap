@@ -1,6 +1,8 @@
 # Wood Stair - up south
 # Cobblestone Stair - up south
-block:id=53,id=67,data=0,scale=2
+# Brick Stair - up south
+# Stone Brick Stair - up south
+block:id=53,id=67,id=108,id=109,data=0,scale=2
 layer:0
 **
 **
@@ -9,15 +11,21 @@ layer:1
 **  
 # Wood Stair - up north
 # Cobblestone Stair - up north
-block:id=53,id=67,data=1,scale=2
+# Brick Stair - up north
+# Stone Brick Stair - up north
+block:id=53,id=67,id=108,id=109,data=1,scale=2
 rotate:id=53,data=0,rot=180
 # Wood Stair - up west
 # Cobblestone Stair - up west
-block:id=53,id=67,data=2,scale=2
+# Brick Stair - up west
+# Stone Brick Stair - up west
+block:id=53,id=67,id=108,id=109,data=2,scale=2
 rotate:id=53,data=0,rot=90
 # Wood Stair - up east
 # Cobblestone Stair - up east
-block:id=53,id=67,data=3,scale=2
+# Brick Stair - up east
+# Stone Brick Stair - up east
+block:id=53,id=67,id=108,id=109,data=3,scale=2
 rotate:id=53,data=0,rot=270
 # Slab (stone, sandstone, wood, cobblestone)
 block:id=44,data=*,scale=4

@@ -251,6 +251,10 @@ block:id=43,data=1,top=176,bottom=208,allsides=192
 block:id=43,data=2,allsides=4,topbottom=4004
 # Double Slab - Cobblestone
 block:id=43,data=3,allfaces=16
+# Double Slab - Brick
+block:id=43,data=4,allfaces=7
+# Double Slab - Stone Brick
+block:id=43,data=5,allfaces=54
 # Slab - stone
 block:id=44,data=0,allsides=5,topbottom=6,transparency=SEMITRANSPARENT
 # Slab - Sandstone
@@ -259,6 +263,10 @@ block:id=44,data=1,top=176,bottom=208,allsides=192,transparency=SEMITRANSPARENT
 block:id=44,data=2,allsides=4,topbottom=4004,transparency=SEMITRANSPARENT
 # Slab - Cobblestone
 block:id=44,data=3,allfaces=16,transparency=SEMITRANSPARENT
+# Slab - Brick
+block:id=44,data=4,allfaces=7,transparency=SEMITRANSPARENT
+# Slab - Stone Brick
+block:id=44,data=5,allfaces=54,transparency=SEMITRANSPARENT
 # Brick Block
 block:id=45,allfaces=7
 # TNT
@@ -439,3 +447,27 @@ block:id=94,top=147,allsides=1,bottom=1,transparency=TRANSPARENT
 block:id=95,top=25,south=27,north=27,east=26,west=26
 # Trap door
 block:id=96,topbottom=84,allsides=4,transparency=TRANSPARENT
+# Stone w/ silverfish inside
+block:id=97,allfaces=1
+# Stone Bricks
+block:id=98,allfaces=54
+# Brown Mushroom Blocks
+block:id=99,allfaces=126
+# Red Mushroom Blocks
+block:id=100,allfaces=125
+# Iron bars
+block:id=101,allfaces=85,transparency=TRANSPARENT
+# Glass pane
+block:id=102,allsides=49,topbottom=148,transparency=TRANSPARENT
+# Watermellon
+block:id=103,allsides=136,topbottom=137
+# 104 (mossy stone bricks?)
+# 105 (cracked stone bricks?)
+# Vines
+block:id=106,allsides=1143,transparency=TRANSPARENT
+# Fence gate
+block:id=107,allsides=4,topbottom=4004,transparency=TRANSPARENT
+# Brick stair
+block:id=108,allfaces=7
+# Stone brick stair
+block:id=109,allfaces=54
