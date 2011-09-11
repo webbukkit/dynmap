@@ -779,3 +779,24 @@
 	left: -8px;
 	z-index: 18;
 }
+
+.dynmap .coord-control {
+	color: #000;
+	
+    border: 1px solid rgba(128,128,128,0.6);
+    background-color: #bbb;
+    border-style: solid;
+    
+	padding: 2px;
+	width: 80px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.dynmap .coord-control .coord-control-label {
+
+}
+
+.dynmap .coord-control .coord-control-value {
+    font-weight: bold;
+}
