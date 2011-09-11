@@ -77,6 +77,11 @@ components:
     type: timeofdayclock
     showdigitalclock: true
     #showweather: true
+  # Mouse pointer world coordinate display
+  - class: org.dynmap.ClientComponent
+    type: coord
+    label: "Location"
+    
   #- class: org.dynmap.ClientComponent
   #  type: logo
   #  text: "Dynmap"
