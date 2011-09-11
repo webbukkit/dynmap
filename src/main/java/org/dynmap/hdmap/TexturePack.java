@@ -74,6 +74,7 @@ public class TexturePack {
     private static final int BLOCKINDEX_BLANK = -1;
     private static final int BLOCKINDEX_GRASSMASK = 38;
     private static final int BLOCKINDEX_PISTONSIDE = 108;
+    private static final int BLOCKINDEX_GLASSPANETOP = 148;
     private static final int BLOCKINDEX_REDSTONE_NSEW_TONE = 164;
     private static final int BLOCKINDEX_REDSTONE_EW_TONE = 165;
     private static final int BLOCKINDEX_REDSTONE_NSEW = 180;
@@ -84,7 +85,8 @@ public class TexturePack {
     private static final int BLOCKINDEX_MOVINGLAVA = 260;
     private static final int BLOCKINDEX_PISTONEXTSIDE = 261;
     private static final int BLOCKINDEX_PISTONSIDE_EXT = 262;
-    private static final int MAX_BLOCKINDEX = 262;
+    private static final int BLOCKINDEX_PANETOP_X = 263;
+    private static final int MAX_BLOCKINDEX = 263;
     private static final int BLOCKTABLELEN = MAX_BLOCKINDEX+1;
 
     private static class LoadedImage {
@@ -433,6 +435,15 @@ public class TexturePack {
                     terrain_argb[BLOCKINDEX_PISTONSIDE][native_scale*i + j];
             }
         }
+        /* Build glass pane top in NSEW config (we use model to clip it) */
+        terrain_argb[BLOCKINDEX_PANETOP_X] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[BLOCKINDEX_GLASSPANETOP], 0, terrain_argb[BLOCKINDEX_PANETOP_X], 0, native_scale*native_scale);
+        for(i = native_scale*7/16; i < native_scale*9/16; i++) {
+            for(j = 0; j < native_scale; j++) {
+                terrain_argb[BLOCKINDEX_PANETOP_X][native_scale*i + j] = terrain_argb[BLOCKINDEX_PANETOP_X][native_scale*j + i];
+            }
+        }
+        
         img.flush();
     }
     
