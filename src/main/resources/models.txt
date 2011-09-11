@@ -1339,7 +1339,7 @@ layer:6,7
 --*--*--
 --------
 --------
- Tall grass
+# Tall grass
 block:id=31,data=1,scale=16
 layer:0,1,2,3,4,5,6,7,8,9
 *--------------*
@@ -2090,3 +2090,269 @@ rotate:id=34,data=2,rot=270
 # Piston extension - extended facing west
 block:id=34,data=5,data=13,scale=8
 rotate:id=34,data=2,rot=90
+# Glass pane - no adjacent (0), all adjacent (15)
+# Iron fence - no adjacent (0), all adjacent (15)
+block:id=102,id=101,data=0,data=15,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+****************
+****************
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+# Glass pane - N adjacent (1)
+# Iron fence - N adjacent (1)
+block:id=102,id=101,data=1,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+# Glass pane - E adjacent (2)
+# Iron fence - E adjacent (2)
+block:id=102,id=101,data=2,scale=16
+rotate:id=102,data=1,rot=90
+# Glass pane - S adjacent (4)
+# Iron fence - S adjacent (4)
+block:id=102,id=101,data=4,scale=16
+rotate:id=102,data=1,rot=180
+# Glass pane - W adjacent (8)
+# Iron fence - W adjacent (8)
+block:id=102,id=101,data=8,scale=16
+rotate:id=102,data=1,rot=270
+# Glass pane - NS adjacent (5)
+# Iron fence - NS adjacent (5)
+block:id=102,id=101,data=5,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+# Glass pane - EW adjacent (10)
+# Iron fence - EW adjacent (10)
+block:id=102,id=101,data=10,scale=16
+rotate:id=102,data=5,rot=90
+# Glass pane - NSE adjacent (7)
+# Iron fence - NSE adjacent (7)
+block:id=102,id=101,data=7,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------*********
+-------*********
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+# Glass pane - ESW adjacent (14)
+# Iron fence - ESW adjacent (14)
+block:id=102,id=101,data=14,scale=16
+rotate:id=102,data=7,rot=90
+# Glass pane - SWN adjacent (13)
+# Iron fence - SWN adjacent (13)
+block:id=102,id=101,data=13,scale=16
+rotate:id=102,data=7,rot=180
+# Glass pane - WNE adjacent (11)
+# Iron fence - WNE adjacent (11)
+block:id=102,id=101,data=11,scale=16
+rotate:id=102,data=7,rot=270
+# Glass pane - SE adjacent (6)
+# Iron fence - SE adjacent (6)
+block:id=102,id=101,data=6,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+-------*********
+-------*********
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+# Glass pane - SW adjacent (12)
+# Iron fence - SW adjacent (12)
+block:id=102,id=101,data=12,scale=16
+rotate:id=102,data=6,rot=90
+# Glass pane - NW adjacent (9)
+# Iron fence - NW adjacent (9)
+block:id=102,id=101,data=9,scale=16
+rotate:id=102,data=6,rot=180
+# Glass pane - NE adjacent (3)
+# Iron fence - NE adjacent (3)
+block:id=102,id=101,data=3,scale=16
+rotate:id=102,data=6,rot=270
+# Web
+block:id=30,data=*,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+*--------------*
+-*------------*-
+--*----------*--
+---*--------*---
+----*------*----
+-----*----*-----
+------*--*------
+-------**-------
+-------**-------
+------*--*------
+-----*----*-----
+----*------*----
+---*--------*---
+--*----------*--
+-*------------*-
+*--------------*
+# Vines - N side of block
+block:id=106,data=2,scale=8
+layer:0,1,2,3,4,5,6,7
+********
+--------
+--------
+--------
+--------
+--------
+--------
+--------
+# Vines - E side of block
+block:id=106,data=4,scale=8
+rotate:id=106,data=2,rot=90
+# Vines - S side of block
+block:id=106,data=8,scale=8
+rotate:id=106,data=2,rot=180
+# Vines - W side of block
+block:id=106,data=1,scale=8
+rotate:id=106,data=2,rot=270
+# Vines - N+E sides of block
+block:id=106,data=6,scale=8
+layer:0,1,2,3,4,5,6,7
+********
+-------*
+-------*
+-------*
+-------*
+-------*
+-------*
+-------*
+# Vines - E+S side of block
+block:id=106,data=12,scale=8
+rotate:id=106,data=6,rot=90
+# Vines - S+W side of block
+block:id=106,data=9,scale=8
+rotate:id=106,data=6,rot=180
+# Vines - W+N side of block
+block:id=106,data=3,scale=8
+rotate:id=106,data=6,rot=270
+# Vines - N+S sides of block
+block:id=106,data=10,scale=8
+layer:0,1,2,3,4,5,6,7
+********
+--------
+--------
+--------
+--------
+--------
+--------
+********
+# Vines - E+W side of block
+block:id=106,data=5,scale=8
+rotate:id=106,data=10,rot=90
+# Vines - N+E+W sides of block
+block:id=106,data=7,scale=8
+layer:0,1,2,3,4,5,6,7
+********
+*------*
+*------*
+*------*
+*------*
+*------*
+*------*
+*------*
+# Vines - N+E+S side of block
+block:id=106,data=14,scale=8
+rotate:id=106,data=7,rot=90
+# Vines - E+S+W side of block
+block:id=106,data=13,scale=8
+rotate:id=106,data=7,rot=180
+# Vines - N+S+W side of block
+block:id=106,data=11,scale=8
+rotate:id=106,data=7,rot=270
+# Vines - N+S+E+W sides of block
+block:id=106,data=15,scale=8
+layer:0,1,2,3,4,5,6,7
+********
+*------*
+*------*
+*------*
+*------*
+*------*
+*------*
+********
+# Fence gate - north and south neighbor
+block:id=107,data=5,scale=16
+layer:6,7,8,12,13,14
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+----------------
+----------------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+-------**-------
+# Fence gate - east and west neighbor
+block:id=107,data=10,scale=16
+rotate:id=107,data=5,rot=90
