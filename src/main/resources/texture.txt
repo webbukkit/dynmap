@@ -503,8 +503,10 @@ block:id=101,allsides=85,topbottom=22,transparency=TRANSPARENT
 block:id=102,allsides=12049,topbottom=12263,transparency=TRANSPARENT
 # Watermellon
 block:id=103,allsides=136,topbottom=137
-# Pumpkin stem (104)
-# Melon stem (105)
+# Pumpkin stem 
+block:id=104,allsides=1111
+# Melon stem
+block:id=105,allsides=1111
 # Vines
 block:id=106,allsides=1143,transparency=TRANSPARENT
 # Fence gate
