@@ -55,8 +55,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         "building", "cake", "camera", "cart", "caution", "chest", "church", "coins", "comment", "compass", "construction",
         "cross", "cup", "cutlery", "default", "diamond", "dog", "door", "down", "drink", "exclamation", "factory",
         "fire", "flower", "gear", "goldmedal", "goldstar", "greenflag", "hammer", "heart", "house", "key", "king",
-        "left", "lightbulb", "lighthouse", "lock", "orangeflag", "pin", "pinkflag", "pirateflag", "pointdown", "pointleft",
-        "pointright", "pointup", "purpleflag", "queen", "redflag", "right", "ruby", "scales", "skull", "shield", "sign",
+        "left", "lightbulb", "lighthouse", "lock", "minecart", "orangeflag", "pin", "pinkflag", "pirateflag", "pointdown", "pointleft",
+        "pointright", "pointup", "portal", "purpleflag", "queen", "redflag", "right", "ruby", "scales", "skull", "shield", "sign",
         "silvermedal", "silverstar", "star", "sun", "temple", "theater", "tornado", "tower", "tree", "truck", "up",
         "walk", "warning", "world", "wrench", "yellowflag"
     };
