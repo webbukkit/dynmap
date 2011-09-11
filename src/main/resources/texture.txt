@@ -455,10 +455,48 @@ block:id=98,data=0,allfaces=54
 block:id=98,data=1,allfaces=100
 # Cracked Stone Bricks
 block:id=98,data=2,allfaces=101
-# Brown Mushroom Blocks
-block:id=99,allfaces=126
-# Red Mushroom Blocks
-block:id=100,allfaces=125
+# Brown Mushroom Block - inside
+# Red Mushroom Block - inside
+block:id=99,id=100,data=0,allfaces=142
+# Brown Mushroom Block - N-E-top cap color
+block:id=99,data=1,top=126,north=126,east=126,south=142,west=142,bottom=142
+# Red Mushroom Block - N-E-top cap color
+block:id=100,data=1,top=125,north=125,east=125,south=142,west=142,bottom=142
+# Brown Mushroom Block - E-top cap color
+block:id=99,data=2,top=126,east=126,north=142,south=142,west=142,bottom=142
+# Red Mushroom Block - E-top cap color
+block:id=100,data=2,top=125,east=125,north=142,south=142,west=142,bottom=142
+# Brown Mushroom Block - S-E-top cap color
+block:id=99,data=3,top=126,south=126,east=126,north=142,west=142,bottom=142
+# Red Mushroom Block - S-E-top cap color
+block:id=100,data=3,top=125,south=125,east=125,north=142,west=142,bottom=142
+# Brown Mushroom Block - N-top cap color
+block:id=99,data=4,top=126,north=126,east=142,south=142,west=142,bottom=142
+# Red Mushroom Block - N-top cap color
+block:id=100,data=4,top=125,north=125,east=142,south=142,west=142,bottom=142
+# Brown Mushroom Block - top cap color
+block:id=99,data=5,top=126,north=142,east=142,south=142,west=142,bottom=142
+# Red Mushroom Block - top cap color
+block:id=100,data=5,top=125,north=142,east=142,south=142,west=142,bottom=142
+# Brown Mushroom Block - top-S cap color
+block:id=99,data=6,top=126,south=126,north=142,east=142,west=142,bottom=142
+# Red Mushroom Block - top-S cap color
+block:id=100,data=6,top=125,south=125,north=142,east=142,west=142,bottom=142
+# Brown Mushroom Block - N-W cap color
+block:id=99,data=7,top=126,north=126,west=126,south=142,east=142,bottom=142
+# Red Mushroom Block - N-W cap color
+block:id=100,data=7,top=125,north=125,west=125,south=142,east=142,bottom=142
+# Brown Mushroom Block - top-W cap color
+block:id=99,data=8,top=126,west=126,north=142,east=142,south=142,bottom=142
+# Red Mushroom Block - top-W cap color
+block:id=100,data=8,top=125,west=125,north=142,east=142,south=142,bottom=142
+# Brown Mushroom Block - top-S-W cap color
+block:id=99,data=9,top=126,west=126,south=126,north=142,east=142,bottom=142
+# Red Mushroom Block - top-S-W cap color
+block:id=100,data=9,top=125,west=125,south=125,north=142,east=142,bottom=142
+# Brown Mushroom Block - stem
+# Red Mushroom Block - stem
+block:id=99,id=100,data=10,topbottom=142,allsides=141
 # Iron bars
 block:id=101,allsides=85,topbottom=22,transparency=TRANSPARENT
 # Glass pane
