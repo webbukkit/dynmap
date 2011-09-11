@@ -80,7 +80,9 @@ public class IsoHDPerspective implements HDPerspective {
     private static final int CHEST_BLKTYPEID = 54;
     private static final int FENCE_BLKTYPEID = 85;
     private static final int REDSTONE_BLKTYPEID = 55;
-    
+    private static final int IRONFENCE_BLKTYPEID = 101;
+    private static final int GLASSPANE_BLKTYPEID = 102;
+    private static final int FENCEGATE_BLKTYPEID = 107;
     private enum ChestData {
         SINGLE_WEST, SINGLE_SOUTH, SINGLE_EAST, SINGLE_NORTH, LEFT_WEST, LEFT_SOUTH, LEFT_EAST, LEFT_NORTH, RIGHT_WEST, RIGHT_SOUTH, RIGHT_EAST, RIGHT_NORTH
     };
@@ -326,20 +328,25 @@ public class IsoHDPerspective implements HDPerspective {
         }
         private int generateFenceBlockData(MapIterator mapiter) {
             int blockdata = 0;
+            int id;
             /* Check north */
-            if(mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) == FENCE_BLKTYPEID) {    /* Fence? */
+            id = mapiter.getBlockTypeIDAt(BlockStep.X_MINUS);
+            if((id == FENCE_BLKTYPEID) || (id == FENCEGATE_BLKTYPEID)) {    /* Fence? */
                 blockdata |= 1;
             }
             /* Look east */
-            if(mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS) == FENCE_BLKTYPEID) {    /* Fence? */
+            id = mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS);
+            if((id == FENCE_BLKTYPEID) || (id == FENCEGATE_BLKTYPEID)) {    /* Fence? */
                 blockdata |= 2;
             }
             /* Look south */
-            if(mapiter.getBlockTypeIDAt(BlockStep.X_PLUS) == FENCE_BLKTYPEID) {    /* Fence? */
+            id = mapiter.getBlockTypeIDAt(BlockStep.X_PLUS);
+            if((id == FENCE_BLKTYPEID) || (id == FENCEGATE_BLKTYPEID)) {    /* Fence? */
                 blockdata |= 4;
             }
             /* Look west */
-            if(mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS) == FENCE_BLKTYPEID) {    /* Fence? */
+            id = mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS);
+            if((id == FENCE_BLKTYPEID) || (id == FENCEGATE_BLKTYPEID)) {    /* Fence? */
                 blockdata |= 8;
             }
             return blockdata;
@@ -449,6 +456,42 @@ public class IsoHDPerspective implements HDPerspective {
             }
             return 0;
         }
+        /**
+         * Generate block render data for glass pane and iron fence.
+         *  - bit 0 = X-minus axis
+         *  - bit 1 = Z-minus axis
+         *  - bit 2 = X-plus axis
+         *  - bit 3 = Z-plus axis
+         *  
+         * @param mapiter - iterator
+         * @param typeid - ID of our material (test is for adjacent material OR nontransparent)
+         * @return
+         */
+        private int generateIronFenceGlassBlockData(MapIterator mapiter, int typeid) {
+            int blockdata = 0;
+            int id;
+            /* Check north */
+            id = mapiter.getBlockTypeIDAt(BlockStep.X_MINUS);
+            if((id == typeid) || ((id > 0) && (HDTextureMap.getTransparency(id) == BlockTransparency.OPAQUE))) {
+                blockdata |= 1;
+            }
+            /* Look east */
+            id = mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS);
+            if((id == typeid) || ((id > 0) && (HDTextureMap.getTransparency(id) == BlockTransparency.OPAQUE))) {
+                blockdata |= 2;
+            }
+            /* Look south */
+            id = mapiter.getBlockTypeIDAt(BlockStep.X_PLUS);
+            if((id == typeid) || ((id > 0) && (HDTextureMap.getTransparency(id) == BlockTransparency.OPAQUE))) {
+                blockdata |= 4;
+            }
+            /* Look west */
+            id = mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS);
+            if((id == typeid) || ((id > 0) && (HDTextureMap.getTransparency(id) == BlockTransparency.OPAQUE))) {
+                blockdata |= 8;
+            }
+            return blockdata;
+        }
         private final boolean handleSubModel(short[] model, HDShaderState[] shaderstate, boolean[] shaderdone) {
             boolean firststep = true;
             
@@ -482,6 +525,7 @@ public class IsoHDPerspective implements HDPerspective {
                 blockdata = mapiter.getBlockData();            	
                 switch(blocktypeid) {
                     case FENCE_BLKTYPEID:   /* Special case for fence - need to fake data so we can render properly */
+                    case FENCEGATE_BLKTYPEID:   /* Special case for fence gate */
                         blockrenderdata = generateFenceBlockData(mapiter);
                         break;
                     case CHEST_BLKTYPEID:   /* Special case for chest - need to fake data so we can render */
@@ -489,6 +533,10 @@ public class IsoHDPerspective implements HDPerspective {
                         break;
                     case REDSTONE_BLKTYPEID:    /* Special case for redstone - fake data for wire pattern */
                         blockrenderdata = generateRedstoneWireBlockData(mapiter);
+                        break;
+                    case IRONFENCE_BLKTYPEID:   /* Special case for iron fence - fake data for adjacent block info */
+                    case GLASSPANE_BLKTYPEID:   /* Special case for glass pane - fake data for adjacent block info */
+                        blockrenderdata = generateIronFenceGlassBlockData(mapiter, blocktypeid);
                         break;
                     default:
                     	blockrenderdata = -1;
