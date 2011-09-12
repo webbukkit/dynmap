@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -478,9 +479,14 @@ public class DynmapPlugin extends JavaPlugin {
                 Block b = event.getBlock();
                 Location loc = b.getLocation();
                 mapManager.sscache.invalidateSnapshot(loc);
-                BlockFace dir = event.getDirection();
+                BlockFace dir;
+                try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
+                    dir = event.getDirection();
+                } catch (ClassCastException ccx) {
+                    dir = BlockFace.NORTH;
+                }
                 if(onpiston) {
-                    mapManager.touchVolume(loc, b.getRelative(dir, 2).getLocation());
+                        mapManager.touchVolume(loc, b.getRelative(dir, 2).getLocation());
                 }
                 for(int i = 0; i < 2; i++) {
                     b = b.getRelative(dir, 1);
@@ -492,9 +498,17 @@ public class DynmapPlugin extends JavaPlugin {
                 if(event.isCancelled())
                     return;
                 Block b = event.getBlock();
+                /* Avoid bogus piston events from Bukkit */
+                if((b.getType() != Material.PISTON_BASE) && (b.getType() != Material.PISTON_STICKY_BASE))
+                    return;
                 Location loc = b.getLocation();
                 mapManager.sscache.invalidateSnapshot(loc);
-                BlockFace dir = event.getDirection();
+                BlockFace dir;
+                try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
+                    dir = event.getDirection();
+                } catch (ClassCastException ccx) {
+                    dir = BlockFace.NORTH;
+                }
                 if(onpiston) {
                     mapManager.touchVolume(loc, b.getRelative(dir, 1+event.getLength()).getLocation());
                 }
