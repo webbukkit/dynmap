@@ -525,7 +525,6 @@ public class IsoHDPerspective implements HDPerspective {
                 blockdata = mapiter.getBlockData();            	
                 switch(blocktypeid) {
                     case FENCE_BLKTYPEID:   /* Special case for fence - need to fake data so we can render properly */
-                    case FENCEGATE_BLKTYPEID:   /* Special case for fence gate */
                         blockrenderdata = generateFenceBlockData(mapiter);
                         break;
                     case CHEST_BLKTYPEID:   /* Special case for chest - need to fake data so we can render */
