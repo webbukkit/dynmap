@@ -137,39 +137,51 @@ public class IsoHDPerspective implements HDPerspective {
             mapiter = mi;
             this.isnether = isnether;
         }
+        private final void updateSemitransparentLight() {
+    		BlockStep [] steps = { BlockStep.Y_PLUS, BlockStep.X_MINUS, BlockStep.X_PLUS, 
+    				BlockStep.Z_MINUS, BlockStep.Z_PLUS };
+        	emitlevel = skylevel = 0;
+        	for(BlockStep s : steps) {
+        		mapiter.stepPosition(s);
+        		int v = mapiter.getBlockEmittedLight();
+        		if(v > emitlevel) emitlevel = v;
+        		v = mapiter.getBlockSkyLight();
+        		if(v > skylevel) skylevel = v;
+        		mapiter.unstepPosition(s);
+        	}
+        }
         /**
          * Update sky and emitted light 
          */
         private final void updateLightLevel() {
             /* Look up transparency for current block */
             BlockTransparency bt = HDTextureMap.getTransparency(blocktypeid);
-            if(bt == BlockTransparency.TRANSPARENT) {
-                skylevel = mapiter.getBlockSkyLight();
-                emitlevel = mapiter.getBlockEmittedLight();
-            }
-            else if(HDTextureMap.getTransparency(lastblocktypeid) != BlockTransparency.SEMITRANSPARENT) {
-                mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
-                if(mapiter.getY() < 128) {
-                    emitlevel = mapiter.getBlockEmittedLight();
-                    skylevel = mapiter.getBlockSkyLight();
-                } else {
-                    emitlevel = 0;
-                    skylevel = 15;
-                }
-                mapiter.stepPosition(laststep);
-            }
-            else {
-                mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
-                if(mapiter.getY() < 128) {
-                    mapiter.stepPosition(BlockStep.Y_PLUS); /* Look above */
-                    emitlevel = mapiter.getBlockEmittedLight();
-                    skylevel = mapiter.getBlockSkyLight();
-                    mapiter.stepPosition(BlockStep.Y_MINUS);
-                } else {
-                    emitlevel = 0;
-                    skylevel = 15;
-                }
-                mapiter.stepPosition(laststep);
+            switch(bt) {
+            	case TRANSPARENT:
+            		skylevel = mapiter.getBlockSkyLight();
+            		emitlevel = mapiter.getBlockEmittedLight();
+            		break;
+            	case OPAQUE:
+        			if(HDTextureMap.getTransparency(lastblocktypeid) != BlockTransparency.SEMITRANSPARENT) {
+                		mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
+                		if(mapiter.getY() < 128) {
+                			emitlevel = mapiter.getBlockEmittedLight();
+                			skylevel = mapiter.getBlockSkyLight();
+                		} else {
+                			emitlevel = 0;
+                			skylevel = 15;
+                		}
+                		mapiter.stepPosition(laststep);
+        			}
+        			else {
+                		mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
+                		updateSemitransparentLight();
+                		mapiter.stepPosition(laststep);
+        			}
+        			break;
+            	case SEMITRANSPARENT:
+            		updateSemitransparentLight();
+            		break;
             }
         }
         /**
