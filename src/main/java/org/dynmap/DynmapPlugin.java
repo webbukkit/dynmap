@@ -498,9 +498,6 @@ public class DynmapPlugin extends JavaPlugin {
                 if(event.isCancelled())
                     return;
                 Block b = event.getBlock();
-                /* Avoid bogus piston events from Bukkit */
-                if((b.getType() != Material.PISTON_BASE) && (b.getType() != Material.PISTON_STICKY_BASE))
-                    return;
                 Location loc = b.getLocation();
                 mapManager.sscache.invalidateSnapshot(loc);
                 BlockFace dir;
