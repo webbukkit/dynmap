@@ -368,10 +368,9 @@ public class DynmapPlugin extends JavaPlugin {
             ll.clear(); /* Empty list - we use presence of list to remember that we've registered with Bukkit */
         }
         playerfacemgr = null;
-        if(markerapi != null) {
-            markerapi.cleanup(this);
-            markerapi = null;
-        }
+        
+        /* Don't clean up markerAPI - other plugins may still be accessing it */
+        
         Debug.clearDebuggers();
     }
     

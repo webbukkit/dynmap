@@ -22,9 +22,12 @@ public class MarkersComponent extends ClientComponent {
     
     public MarkersComponent(DynmapPlugin plugin, ConfigurationNode configuration) {
         super(plugin, configuration);
-        /* Register API with plugin */
-        api = MarkerAPIImpl.initializeMarkerAPI(plugin);
-        plugin.registerMarkerAPI(api);
+        /* Register API with plugin, if needed */
+        api = (MarkerAPIImpl)plugin.getMarkerAPI();
+        if(api == null) {
+            api = MarkerAPIImpl.initializeMarkerAPI(plugin);
+            plugin.registerMarkerAPI(api);
+        }
         /* If configuration has enabled sign support, prime it too */
         if(configuration.getBoolean("enablesigns", false)) {
             signmgr = MarkerSignManager.initializeSignManager(plugin);
@@ -84,11 +87,6 @@ public class MarkersComponent extends ClientComponent {
             MarkerSignManager.terminateSignManager(this.plugin);
             signmgr = null;
         }
-        if(api != null) {
-            /* Clean up API registered with plugin */
-            plugin.registerMarkerAPI(null);
-            api.cleanup(this.plugin);
-            api = null;
-        }
+        /* Don't unregister API - other plugins might be using it, and we want to keep non-persistent markers */
     }
 }
