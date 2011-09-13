@@ -37,10 +37,16 @@ commands:
            /<command> icons - list details of all icons
            /<command> addset <label> - add marker set with given label (ID=label)
            /<command> addset id:<id> <label> - add marker set with given ID and label
+           /<command> updateset id:<id> newlabel:<label> - update marker set with given ID
+           /<command> updateset <label> newlabel:<label> - update marker set with given label
            /<command> deleteset <label> - delete marker set with given label
            /<command> deleteset id:<id> - delete marker set with given ID
            /<command> listsets - list all marker sets
            /<command> addicon id:<id> <label> file:"filename" - install new icon
+           /<command> updateicon id:<id> newlabel:<label> file:"filename" - update existing icon
+           /<command> updateicon <label> newlabel:<label> file:"filename" - update existing icon
+           /<command> deleteicon id:<id> - remove icon 
+           /<command> deleteicon <label> - remove icon 
            
 permissions:
   dynmap.*:
@@ -70,6 +76,8 @@ permissions:
       dynmap.marker.deleteset: true
       dynmap.marker.listsets: true
       dynmap.marker.addicon: true
+      dynmap.marker.updateicon: true
+      dynmap.marker.deleteicon: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -138,5 +146,11 @@ permissions:
     default: true
   dynmap.marker.addicon:
     description: Allows /dmarker addicon
+    default: op
+  dynmap.marker.updateicon:
+    description: Allows /dmarker updateicon
+    default: op
+  dynmap.marker.deleteicon:
+    description: Allows /dmarker deleteicon
     default: op
             

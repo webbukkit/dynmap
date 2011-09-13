@@ -1,5 +1,7 @@
 package org.dynmap.markers;
 
+import java.io.InputStream;
+
 /**
  * This defines the public interface to a marker icon, for use with the MarkerAPI
  */
@@ -21,6 +23,19 @@ public interface MarkerIcon {
      * @return icon label
      */
     public String getMarkerIconLabel();
+    /**
+     * Set label for marker icon
+     */
+    public void setMarkerIconLabel(String lbl);
+    /**
+     * Replace icon image for icon
+     * @param in - input stream for PNG file
+     */
+    public void setMarkerIconImage(InputStream in);
+    /**
+     * Delete icon (not functional on builtin icons)
+     */
+    public void deleteIcon();
     /**
      * Is builtin marker
      * @return true

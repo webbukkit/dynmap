@@ -72,6 +72,11 @@ public interface MarkerSet {
      */
     public void addAllowedMarkerIcon(MarkerIcon icon);
     /**
+     * Remove marker icon from allowed set (must have been created restricted)
+     * @param icon - icon to be added
+     */
+    public void removeAllowedMarkerIcon(MarkerIcon icon);
+    /**
      * Test if marker icon is allowed
      * @param icon - marker icon
      * @return true if allowed, false if not

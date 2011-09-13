@@ -141,6 +141,16 @@ class MarkerSetImpl implements MarkerSet {
         if(ispersistent)
             MarkerAPIImpl.saveMarkers();
     }
+
+    @Override
+    public void removeAllowedMarkerIcon(MarkerIcon icon) {
+        if(!(icon instanceof MarkerIconImpl)) return;
+        if(allowedicons == null) return;
+        allowedicons.remove(icon.getMarkerIconID());
+        MarkerAPIImpl.markerSetUpdated(this, MarkerUpdate.UPDATED);
+        if(ispersistent)
+            MarkerAPIImpl.saveMarkers();
+    }
     
     @Override
     public boolean isAllowedMarkerIcon(MarkerIcon icon) {

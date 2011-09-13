@@ -1,9 +1,14 @@
 package org.dynmap.markers.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.Log;
 import org.dynmap.markers.MarkerIcon;
 
 class MarkerIconImpl implements MarkerIcon {
@@ -39,7 +44,27 @@ class MarkerIconImpl implements MarkerIcon {
     public String getMarkerIconLabel() {
         return label;
     }
+
+    @Override
+    public void setMarkerIconLabel(String lbl) {
+        if(lbl == null) lbl = iconid;
+        if(label.equals(lbl) == false) {
+            label = lbl;
+            MarkerAPIImpl.saveMarkers();
+        }
+    }
     
+    @Override
+    public void setMarkerIconImage(InputStream in) {
+        if(MarkerAPIImpl.api.loadMarkerIconStream(this.iconid, in))
+            MarkerAPIImpl.api.publishMarkerIcon(this);
+    }
+
+    @Override
+    public void deleteIcon() {
+        MarkerAPIImpl.removeIcon(this);
+    }
+
     @Override
     public boolean isBuiltIn() {
         return is_builtin;
