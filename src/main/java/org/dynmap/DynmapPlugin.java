@@ -647,6 +647,44 @@ public class DynmapPlugin extends JavaPlugin {
         }
     }
 
+    /* Parse argument strings : handle quoted strings */
+    public static String[] parseArgs(String[] args, CommandSender snd) {
+        ArrayList<String> rslt = new ArrayList<String>();
+        /* Build command line, so we can parse our way - make sure there is trailing space */
+        String cmdline = "";
+        for(int i = 0; i < args.length; i++) {
+            cmdline += args[i] + " ";
+        }
+        boolean inquote = false;
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < cmdline.length(); i++) {
+            char c = cmdline.charAt(i);
+            if(inquote) {   /* If in quote, accumulate until end or another quote */
+                if(c == '\"') { /* End quote */
+                    inquote = false;
+                }
+                else {
+                    sb.append(c);
+                }
+            }
+            else if(c == '\"') {    /* Start of quote? */
+                inquote = true;
+            }
+            else if(c == ' ') { /* Ending space? */
+                rslt.add(sb.toString());
+                sb.setLength(0);
+            }
+            else {
+                sb.append(c);
+            }
+        }
+        if(inquote) {   /* If still in quote, syntax error */
+            snd.sendMessage("Error: unclosed doublequote");
+            return null;
+        }
+        return rslt.toArray(new String[rslt.size()]);
+    }
+
     private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[] {
         "render",
         "hide",
@@ -668,6 +706,12 @@ public class DynmapPlugin extends JavaPlugin {
         Player player = null;
         if (sender instanceof Player)
             player = (Player) sender;
+        /* Re-parse args - handle doublequotes */
+        args = parseArgs(args, sender);
+        
+        if(args == null)
+            return false;
+
         if (args.length > 0) {
             String c = args[0];
             if (!commands.contains(c)) {
