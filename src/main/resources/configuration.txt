@@ -73,6 +73,8 @@ components:
   #  hidebydefault: true
   #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
   #  layerprio: 1
+  #  # Optional - label for player marker layer (default is 'Players')
+  #  label: "Players"
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent
