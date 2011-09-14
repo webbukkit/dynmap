@@ -101,4 +101,12 @@ public interface MarkerSet {
      * @return true if layer for set will be hidden by default
      */
     public boolean getHideByDefault();
+    /**
+     * Set layer ordering priority (0=default, low before high in layer order)
+     */
+    public void setLayerPriority(int prio);
+    /**
+     * Get layer ordering priority (0=default, low before high in layer order)
+     */
+    public int getLayerPriority();
 }

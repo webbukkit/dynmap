@@ -71,6 +71,8 @@ components:
     smallplayerfaces: false
   #  # Optional - make player faces layer hidden by default
   #  hidebydefault: true
+  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
+  #  layerprio: 1
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent
@@ -114,6 +116,8 @@ components:
   #      strokeColor: "#00FF00"
   #  # Optional - make layer hidden by default
   #  hidebydefault: true
+  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
+  #  layerprio: 1
   
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
@@ -147,6 +151,8 @@ components:
   #      strokeColor: "#007F00"
   #  # Optional - make layer hidden by default
   #  hidebydefault: true
+  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
+  #  layerprio: 1
 
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
@@ -202,6 +208,8 @@ components:
   #      strokeColor: "#00FF00"
   #  # Optional - make layer hidden by default
   #  hidebydefault: true
+  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
+  #  layerprio: 1
   
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"

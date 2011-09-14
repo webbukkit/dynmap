@@ -22,6 +22,7 @@ class MarkerSetImpl implements MarkerSet {
     private HashMap<String, MarkerIconImpl> allowedicons = null;
     private boolean hide_by_def;
     private boolean ispersistent;
+    private int prio = 0;
     
     MarkerSetImpl(String id) {
         setid = id;
@@ -215,6 +216,7 @@ class MarkerSetImpl implements MarkerSet {
         }
         setnode.put("markers", node);
         setnode.put("hide", hide_by_def);
+        setnode.put("layerprio", prio);
         return setnode;
     }
 
@@ -248,6 +250,7 @@ class MarkerSetImpl implements MarkerSet {
             }
         }
         hide_by_def = node.getBoolean("hide", false);
+        prio = node.getInt("layerprio", 0);
         ispersistent = true;
         
         return true;
@@ -265,4 +268,18 @@ class MarkerSetImpl implements MarkerSet {
     public boolean getHideByDefault() {
         return hide_by_def;
     }
+    @Override
+    public void setLayerPriority(int prio) {
+        if(this.prio != prio) {
+            this.prio = prio;
+            MarkerAPIImpl.markerSetUpdated(this, MarkerUpdate.UPDATED);
+            if(ispersistent)
+                MarkerAPIImpl.saveMarkers();
+        }
+    }
+    @Override
+    public int getLayerPriority() {
+        return this.prio;
+    }
+
 }

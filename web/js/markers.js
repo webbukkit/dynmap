@@ -20,14 +20,15 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$.each(data.sets, function(name, markerset) {
 				var ms = dynmapmarkersets[name];
 				if(!ms) {
-					ms = { label: markerset.label, hide: markerset.hide, markers: {} } ;
+					ms = { label: markerset.label, hide: markerset.hide, layerprio: markerset.layerprio, markers: {} } ;
 					createMarkerSet(ms, ts);
 				}
 				else {
 					if(ms.label != markerset.label) {
 						ms.label = markerset.label;
-						dynmap.layercontrol.removeLayer(ms.layergroup);
-						dynmap.layercontrol.addOverlay(ms.layergroup, ms.label);
+						//dynmap.layercontrol.removeLayer(ms.layergroup);
+						//dynmap.layercontrol.addOverlay(ms.layergroup, ms.label);
+						dynmap.addToLayerSelector(ms.layergroup, ms.label, ms.layerprio || 0);
 					}
 					ms.markers = {};
 					ms.hide = markerset.hide;
@@ -73,7 +74,9 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		set.timestamp = ts;
 		if(!set.hide)
 			dynmap.map.addLayer(set.layergroup);
-		dynmap.layercontrol.addOverlay(set.layergroup, set.label);
+//		dynmap.layercontrol.addOverlay(set.layergroup, set.label);
+		dynmap.addToLayerSelector(set.layergroup, set.label, set.layerprio || 0);
+
 	}
 	
 	$(dynmap).bind('component.markers', function(event, msg) {
@@ -96,20 +99,24 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}
 		else if(msg.msg == 'setupdated') {
 			if(!dynmapmarkersets[msg.id]) {
-				dynmapmarkersets[msg.id] = { label: msg.label, markers:{} };
+				dynmapmarkersets[msg.id] = { label: msg.label, layerprio: msg.layerprio, markers:{} };
 				createMarkerSet(dynmapmarkersets[msg.id]);
 			}
 			else {
 				if(dynmapmarkersets[msg.id].label != msg.label) {
 					dynmapmarkersets[msg.id].label = msg.label;
-					dynmap.layercontrol.removeLayer(dynmapmarkersets[msg.id].layergroup);
-					dynmap.layercontrol.addOverlay(dynmapmarkersets[msg.id].layergroup, dynmapmarkersets[msg.id].label);
+					//dynmap.layercontrol.removeLayer(dynmapmarkersets[msg.id].layergroup);
+					//dynmap.layercontrol.addOverlay(dynmapmarkersets[msg.id].layergroup, dynmapmarkersets[msg.id].label);
+					dynmap.addToLayerSelector(dynmapmarkersets[msg.id].layergroup, dynmapmarkersets[msg.id].label, 
+						dynmapmarkersets[msg.id].layerprio || 0);
+					
 				}
 			}
 		}
 		else if(msg.msg == 'setdeleted') {
 			if(dynmapmarkersets[msg.id]) {
-				dynmap.layercontrol.removeLayer(dynmapmarkersets[msg.id].layergroup);
+				//dynmap.layercontrol.removeLayer(dynmapmarkersets[msg.id].layergroup);
+				dynmap.removeFromLayerSelector(dynmapmarkersets[msg.id].layergroup);
 				delete dynmapmarkersets[msg.id].layergroup;
 				delete dynmapmarkersets[msg.id];
 			}

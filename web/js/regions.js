@@ -190,7 +190,8 @@ componentconstructors['regions'] = function(dynmap, configuration) {
 								configuration.activeLayer = regionsLayer;
 								if(!configuration.hidebydefault)
 									dynmap.map.addLayer(configuration.activeLayer);
-								dynmap.layercontrol.addOverlay(configuration.activeLayer, regionType);
+								//dynmap.layercontrol.addOverlay(configuration.activeLayer, regionType);
+								dynmap.addToLayerSelector(configuration.activeLayer, regionType, configuration.layerprio || 0);
 							}
 						}
 					}));

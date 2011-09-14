@@ -424,6 +424,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private static final String ARG_HIDE = "hide";
     private static final String ARG_ICON = "icon";
     private static final String ARG_SET = "set";
+    private static final String ARG_PRIO = "prio";
 
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
     private static Map<String,String> parseArgs(String[] args, CommandSender snd) {
@@ -487,7 +488,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
 
     
     public static boolean onCommand(DynmapPlugin plugin, CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        String id, setid, file, label, newlabel, iconid;
+        String id, setid, file, label, newlabel, iconid, prio;
         
         if(api == null) {
             sender.sendMessage("Markers component is not enabled.");
@@ -734,6 +735,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 if(parms == null) return true;
                 id = parms.get(ARG_ID);
                 label = parms.get(ARG_LABEL);
+                prio = parms.get(ARG_PRIO);
                 if((id == null) && (label == null)) {
                     sender.sendMessage("<label> or id:<marker-id> required");
                     return true;
@@ -757,6 +759,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     String h = parms.get(ARG_HIDE);
                     if((h != null) && (h.equals("true")))
                         set.setHideByDefault(true);
+                    if(prio != null) {
+                        try {
+                            set.setLayerPriority(Integer.valueOf(prio));
+                        } catch (NumberFormatException nfx) {
+                            sender.sendMessage("Invalid priority: " + prio);
+                        }
+                    }
                     sender.sendMessage("Added marker set id:'" + set.getMarkerSetID() + "' (" + set.getMarkerSetLabel() + ")");
                 }
             }
@@ -771,6 +780,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 if(parms == null) return true;
                 id = parms.get(ARG_ID);
                 label = parms.get(ARG_LABEL);
+                prio = parms.get(ARG_PRIO);
                 if((id == null) && (label == null)) {
                     sender.sendMessage("<label> or id:<marker-id> required");
                     return true;
@@ -803,6 +813,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 String hide = parms.get(ARG_HIDE);
                 if(hide != null) {
                     set.setHideByDefault(hide.equals("true"));
+                }
+                if(prio != null) {
+                    try {
+                        set.setLayerPriority(Integer.valueOf(prio));
+                    } catch (NumberFormatException nfx) {
+                        sender.sendMessage("Invalid priority: " + prio);
+                    }
                 }
                 sender.sendMessage("Marker set '" + set.getMarkerSetID() + "' updated");
             }
@@ -855,7 +872,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             Set<String> setids = new TreeSet<String>(api.markersets.keySet());
             for(String s : setids) {
                 MarkerSet set = api.markersets.get(s);
-                sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\", hide=" + set.getHideByDefault());
+                sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\", hide:" + set.getHideByDefault() + ", prio:" + set.getLayerPriority());
             }
         }
         /* Add new icon */
@@ -1025,6 +1042,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             HashMap<String, Object> msdata = new HashMap<String, Object>();
             msdata.put("label", ms.getMarkerSetLabel());
             msdata.put("hide", ms.getHideByDefault());
+            msdata.put("layerprio", ms.getLayerPriority());
             HashMap<String, Object> markers = new HashMap<String, Object>();
             for(Marker m : ms.getMarkers()) {
                 if(m.getWorld().equals(wname) == false) continue;

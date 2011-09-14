@@ -698,6 +698,46 @@ DynMap.prototype = {
 				}
 		}
 		return null;
+	},
+	
+	layersetlist: [],
+	
+	addToLayerSelector: function(layer, name, priority) {
+		var me = this;
+		var i;
+		for(i = 0; i < me.layersetlist.length; i++) {
+			if(me.layersetlist[i].layer === layer) {
+				me.layersetlist[i].priority = priority;
+				me.layersetlist[i].name = name;
+				break;
+			}
+		}
+		if(i >= me.layersetlist.length) {
+			me.layersetlist[i] = { layer: layer, priority: priority, name: name };
+		}
+		me.layersetlist.sort(function(a, b) {
+			if(a.priority != b.priority)
+				return a.priority - b.priority;
+			else
+				return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
+		});
+		for(i = 0; i < me.layersetlist.length; i++) {
+			me.layercontrol.removeLayer(me.layersetlist[i].layer);
+		}
+		for(i = 0; i < me.layersetlist.length; i++) {
+			me.layercontrol.addOverlay(me.layersetlist[i].layer, me.layersetlist[i].name);
+		}
+	},
+	removeFromLayerSelector: function(layer) {
+		var me = this;
+		var i;
+		for(i = 0; i < me.layersetlist.length; i++) {
+			if(me.layersetlist[i].layer === layer) {
+				me.layersetlist.splice(i, 1);
+				me.layercontrol.removeLayer(layer);
+				break;
+			}
+		}
 	}
 	// TODO: Enable hash-links.
 /*	updateLink: function() {
