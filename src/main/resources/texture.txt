@@ -448,7 +448,11 @@ block:id=95,top=25,south=27,north=27,east=26,west=26
 # Trap door
 block:id=96,topbottom=84,allsides=4,transparency=TRANSPARENT
 # Stone w/ silverfish inside
-block:id=97,allfaces=1
+block:id=97,data=0,allfaces=1
+# Cobblestone w/ silverfish inside
+block:id=97,data=1,allfaces=16
+# Stone Bricks w/ silverfish inside
+block:id=97,data=2,allfaces=54
 # Stone Bricks
 block:id=98,data=0,allfaces=54
 # Mossy Stone Bricks
