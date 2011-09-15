@@ -799,27 +799,27 @@ public class IsoHDPerspective implements HDPerspective {
         Vector3D blocks[] = new Vector3D[] { new Vector3D(), new Vector3D() };
         /* Get ordered point - 0=minX,Y,Z, 1=maxX,Y,Z */
         if(loc0.getBlockX() < loc1.getBlockX()) {
-            blocks[0].x = loc0.getBlockX();
+            blocks[0].x = loc0.getBlockX() - 1;
             blocks[1].x = loc1.getBlockX() + 1;
         }
         else {
-            blocks[0].x = loc1.getBlockX();
+            blocks[0].x = loc1.getBlockX() - 1;
             blocks[1].x = loc0.getBlockX() + 1;
         }
         if(loc0.getBlockY() < loc1.getBlockY()) {
-            blocks[0].y = loc0.getBlockY();
+            blocks[0].y = loc0.getBlockY() - 1;
             blocks[1].y = loc1.getBlockY() + 1;
         }
         else {
-            blocks[0].y = loc1.getBlockY();
+            blocks[0].y = loc1.getBlockY() - 1;
             blocks[1].y = loc0.getBlockY() + 1;
         }
         if(loc0.getBlockZ() < loc1.getBlockZ()) {
-            blocks[0].z = loc0.getBlockZ();
+            blocks[0].z = loc0.getBlockZ() - 1;
             blocks[1].z = loc1.getBlockZ() + 1;
         }
         else {
-            blocks[0].z = loc1.getBlockZ();
+            blocks[0].z = loc1.getBlockZ() - 1;
             blocks[1].z = loc0.getBlockZ() + 1;
         }        
         Vector3D corner = new Vector3D();

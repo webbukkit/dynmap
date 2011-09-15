@@ -589,13 +589,13 @@ public class DynmapPlugin extends JavaPlugin {
                 /* Touch extreme corners */
                 int x = event.getChunk().getX() << 4;
                 int z = event.getChunk().getZ() << 4;
-                mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
+                mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+16, 128, z+16));
             }
             @Override
             public void onChunkPopulate(ChunkPopulateEvent event) {
                 int x = event.getChunk().getX() << 4;
                 int z = event.getChunk().getZ() << 4;
-                mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+15, 127, z+15));
+                mapManager.touchVolume(new Location(event.getWorld(), x, 0, z), new Location(event.getWorld(), x+16, 128, z+16));
             }
             @Override
             public void onWorldLoad(WorldLoadEvent event) {
