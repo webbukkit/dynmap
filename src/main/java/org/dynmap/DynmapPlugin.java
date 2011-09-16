@@ -1254,7 +1254,9 @@ public class DynmapPlugin extends JavaPlugin {
         }
         return markerapi;
     }
-    
+    public boolean markerAPIInitialized() {
+        return (markerapi != null);
+    }
     /**
      * Register markers API - used by component to supply marker API to plugin
      */

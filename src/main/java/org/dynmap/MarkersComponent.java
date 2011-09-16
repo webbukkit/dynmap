@@ -24,7 +24,10 @@ public class MarkersComponent extends ClientComponent {
         super(plugin, configuration);
         /* Register API with plugin, if needed */
         api = (MarkerAPIImpl)plugin.getMarkerAPI();
-        if(api == null) {
+        if(plugin.markerAPIInitialized()) {
+            api = (MarkerAPIImpl)plugin.getMarkerAPI();
+        }
+        else {
             api = MarkerAPIImpl.initializeMarkerAPI(plugin);
             plugin.registerMarkerAPI(api);
         }
