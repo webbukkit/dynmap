@@ -410,7 +410,7 @@ block:id=79,allfaces=12067,transparency=TRANSPARENT
 # Snow block
 block:id=80,allfaces=66
 # Cactus
-block:id=81,top=69,allsides=70,bottom=71,transparency=TRANSPARENT
+block:id=81,top=69,allsides=70,bottom=71,transparency=SEMITRANSPARENT
 # Clay block
 block:id=82,allfaces=72
 # Sugar Cane
