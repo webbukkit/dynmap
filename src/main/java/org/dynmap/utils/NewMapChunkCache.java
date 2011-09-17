@@ -24,10 +24,12 @@ import org.dynmap.utils.MapIterator.BlockStep;
 public class NewMapChunkCache implements MapChunkCache {
     private static boolean init = false;
     private static Method poppreservedchunk = null;
-    private static Method getsnapshot2 = null;
-    private static Method getemptysnapshot = null;
     private static Method gethandle = null;
     private static Method removeentities = null;
+    private static Method getworldchunkmgr = null;
+    private static Method getraindata = null;
+    private static Method gettempdata = null;
+    private static Method getworldhandle = null;
     
     private World w;
     private List<DynmapChunk> chunks;
@@ -313,16 +315,14 @@ public class NewMapChunkCache implements MapChunkCache {
             try {
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftWorld");
                 poppreservedchunk = c.getDeclaredMethod("popPreservedChunk", new Class[] { int.class, int.class });
-                /* getEmptyChunkSnapshot(int x, int z, boolean includeBiome, boolean includeBiomeTempRain) */
-                getemptysnapshot = c.getDeclaredMethod("getEmptyChunkSnapshot", new Class[] { int.class, int.class,
-                    boolean.class, boolean.class });
+                /* getHandle() */
+                getworldhandle = c.getDeclaredMethod("getHandle", new Class[0]);
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
             /* Get CraftChunk.getChunkSnapshot(boolean,boolean,boolean) and CraftChunk.getHandle() */
             try {
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftChunk");
-                getsnapshot2 = c.getDeclaredMethod("getChunkSnapshot", new Class[] { boolean.class, boolean.class, boolean.class });
                 gethandle = c.getDeclaredMethod("getHandle", new Class[0]);
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
@@ -334,6 +334,23 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
+            /* Get WorldChunkManager.b(float[],int,int,int,int) and WorldChunkManager.a(float[],int,int,int,int) */
+            try {
+                Class c = Class.forName("net.minecraft.server.WorldChunkManager");
+                getraindata = c.getDeclaredMethod("b", new Class[] { float[].class, int.class, int.class, int.class, int.class });
+                gettempdata = c.getDeclaredMethod("a", new Class[] { float[].class, int.class, int.class, int.class, int.class });
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
+
+            /* getWorldChunkManager() */
+            try {
+                Class c = Class.forName("net.minecraft.server.World");
+                getworldchunkmgr = c.getDeclaredMethod("getWorldChunkManager", new Class[0]);
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
+
             init = true;
         }
     }
@@ -376,7 +393,76 @@ public class NewMapChunkCache implements MapChunkCache {
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
     }
+
+    private static class RawBiomeChunkFacade implements ChunkSnapshot {
+        private ChunkSnapshot ss;
+        private double[] temp;
+        private double[] rain;
+
+        RawBiomeChunkFacade(ChunkSnapshot ss, double[] temp, double[] rain) {
+            this.ss = ss;
+            this.temp = temp;
+            this.rain = rain;
+        }
+        /* Need these for interface, but not used */
+        public final int getX() { return ss.getX(); }
+        public final int getZ() { return ss.getZ(); }
+        public final String getWorldName() { return ss.getWorldName(); }
+        public final Biome getBiome(int x, int z) { return ss.getBiome(x, z); }
+        public final double getRawBiomeTemperature(int x, int z) { return temp[(z<<4) | x]; }
+        public final double getRawBiomeRainfall(int x, int z) { return rain[(z<<4) | x]; }
+        public final long getCaptureFullTime() { return ss.getCaptureFullTime(); }
+        public final int getBlockTypeId(int x, int y, int z) { return ss.getBlockTypeId(x, y, z); }
+        public final int getBlockData(int x, int y, int z) { return ss.getBlockData(x, y, z); }
+        public final int getBlockSkyLight(int x, int y, int z) { return ss.getBlockSkyLight(x, y, z); }
+        public final int getBlockEmittedLight(int x, int y, int z) { return ss.getBlockEmittedLight(x, y, z); }
+        public final int getHighestBlockYAt(int x, int z) { return ss.getHighestBlockYAt(x, z); }
+    }
+
+    private boolean did_biome_check = false;
+    private boolean need_biome_fix = false;
     
+    private ChunkSnapshot handleRawBiomeFix(World w, Chunk c, ChunkSnapshot ss) {
+        if(did_biome_check == false) {  /* See if biome fix needed */
+            need_biome_fix = true;
+            for(int i = 0; need_biome_fix && (i < 16); i++) {
+                for(int j = 0; need_biome_fix && (j < 16); j++) {
+                    if(ss.getRawBiomeRainfall(i, j) != 0.0)
+                        need_biome_fix = false;
+                    if(ss.getRawBiomeTemperature(i, j) != 0.0)
+                        need_biome_fix = false;
+                }
+            }
+            if(need_biome_fix) {
+                need_biome_fix = (getraindata != null) && (gettempdata != null) && (getworldhandle != null) && (getworldchunkmgr != null);
+            }
+            did_biome_check = true;
+        }
+        if(need_biome_fix) {
+            try {
+                Object ww = getworldhandle.invoke(w);
+                Object wcm = getworldchunkmgr.invoke(ww);
+                if(wcm != null) {
+                    double[] rain = new double[256];
+                    double[] temp = new double[256];
+                    float[] data = (float[])getraindata.invoke(wcm, (float[])null, c.getX()<<4, c.getZ()<<4,16,16);
+                    for(int i = 0; i < 256; i++) {
+                        rain[i] = data[i];
+                    }
+                    data = (float[])gettempdata.invoke(wcm, (float[])null, c.getX()<<4, c.getZ()<<4,16,16);
+                    for(int i = 0; i < 256; i++) {
+                        temp[i] = data[i];
+                    }
+                    ss = new RawBiomeChunkFacade(ss, temp, rain);
+                }
+            } catch (InvocationTargetException itx) {
+            } catch (IllegalArgumentException e) {
+            } catch (IllegalAccessException e) {
+            }
+        }
+        return ss;
+    }
+
     public int loadChunks(int max_to_load) {
         int cnt = 0;
         if(iterator == null)
@@ -436,21 +522,15 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
                 else {
                     Chunk c = w.getChunkAt(chunk.x, chunk.z);
-                    if(getsnapshot2 != null) {
-                        try {
-                            if(blockdata || highesty)
-                                ss = (ChunkSnapshot)getsnapshot2.invoke(c, highesty, biome, biomeraw);
-                            else
-                                ss = (ChunkSnapshot)getemptysnapshot.invoke(w, chunk.x, chunk.z, biome, biomeraw);
-                        } catch (InvocationTargetException itx) {
-                        } catch (IllegalArgumentException e) {
-                        } catch (IllegalAccessException e) {
-                        }
-                    }
+                    if(blockdata || highesty)
+                        ss = c.getChunkSnapshot(highesty, biome, biomeraw);
                     else
-                        ss = c.getChunkSnapshot();
-                    if(ss != null)
+                        ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
+                    if(ss != null) {
+                        if(biomeraw)
+                            ss = handleRawBiomeFix(w, c, ss);
                         MapManager.mapman.sscache.putSnapshot(w.getName(), chunk.x, chunk.z, ss, blockdata, biome, biomeraw, highesty);
+                    }
                 }
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
             }
@@ -653,8 +733,6 @@ public class NewMapChunkCache implements MapChunkCache {
     }
     @Override
     public boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome) {
-        if((getsnapshot2 == null) && (biome || rawbiome))
-            return false;
         this.biome = biome;
         this.biomeraw = rawbiome;
         this.highesty = highestblocky;
