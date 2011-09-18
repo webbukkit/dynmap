@@ -288,6 +288,14 @@ public class MapManager {
                             renderQueue.add(mt);
                         }
                     }
+                    /* Add spawn location too (helps with some worlds where 0,64,0 may not be generated */
+                    Location sloc = world.world.getSpawnLocation();
+                    for (MapTile mt : map.getTiles(sloc)) {
+                        if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
+                            found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
+                            renderQueue.add(mt);
+                        }
+                    }
                     if(world.seedloc != null) {
                         for(Location seed : world.seedloc) {
                             for (MapTile mt : map.getTiles(seed)) {
