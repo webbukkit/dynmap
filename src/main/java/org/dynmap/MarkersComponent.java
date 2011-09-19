@@ -23,7 +23,6 @@ public class MarkersComponent extends ClientComponent {
     public MarkersComponent(DynmapPlugin plugin, ConfigurationNode configuration) {
         super(plugin, configuration);
         /* Register API with plugin, if needed */
-        api = (MarkerAPIImpl)plugin.getMarkerAPI();
         if(plugin.markerAPIInitialized()) {
             api = (MarkerAPIImpl)plugin.getMarkerAPI();
         }
