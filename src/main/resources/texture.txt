@@ -340,9 +340,9 @@ block:id=59,data=6,allsides=94,top=1000,transparency=TRANSPARENT
 # Crops (size 8)
 block:id=59,data=7,allsides=95,top=1000,transparency=TRANSPARENT
 # Farmland (dry)
-block:id=60,data=0,allfaces=87
+block:id=60,data=0,top=87,allsides=2,bottom=2
 # Farmland (wet)
-block:id=60,data=1,data=2,data=3,data=4,data=5,data=6,data=7,data=8,allfaces=88
+block:id=60,data=1,data=2,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,top=86,allsides=2,bottom=2
 # Furnace (facing east)
 block:id=61,data=2,top=62,east=61,south=45,north=45,west=45,bottom=62
 # Furnace (facing west)
