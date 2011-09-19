@@ -344,15 +344,23 @@ block:id=60,data=0,top=87,allsides=2,bottom=2
 # Farmland (wet)
 block:id=60,data=1,data=2,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,top=86,allsides=2,bottom=2
 # Furnace (facing east)
-block:id=61,data=2,top=62,east=61,south=45,north=45,west=45,bottom=62
+block:id=61,data=2,top=62,east=44,south=45,north=45,west=45,bottom=62
 # Furnace (facing west)
-block:id=61,data=3,top=62,west=61,south=45,north=45,east=45,bottom=62
+block:id=61,data=3,top=62,west=44,south=45,north=45,east=45,bottom=62
 # Furnace (facing north)
-block:id=61,data=4,top=62,north=61,south=45,east=45,west=45,bottom=62
+block:id=61,data=4,top=62,north=44,south=45,east=45,west=45,bottom=62
 # Furnace (facing south)
-block:id=61,data=5,top=62,south=61,north=45,east=45,west=45,bottom=62
+block:id=61,data=5,top=62,south=44,north=45,east=45,west=45,bottom=62
+# Burning Furnace (facing east)
+block:id=62,data=2,top=62,east=61,south=45,north=45,west=45,bottom=62
+# Burning Furnace (facing west)
+block:id=62,data=3,top=62,west=61,south=45,north=45,east=45,bottom=62
+# Burning Furnace (facing north)
+block:id=62,data=4,top=62,north=61,south=45,east=45,west=45,bottom=62
+# Burning Furnace (facing south)
+block:id=62,data=5,top=62,south=61,north=45,east=45,west=45,bottom=62
 # Signpost
-block:id=62,allsides=4,topbottom=4004,transparency=TRANSPARENT
+block:id=63,allsides=4,topbottom=4004,transparency=TRANSPARENT
 # Wooden Door - bottom
 block:id=64,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,allsides=97,topbottom=4,transparency=TRANSPARENT
 # Wooden Door - top

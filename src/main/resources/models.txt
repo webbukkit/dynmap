@@ -860,13 +860,13 @@ layer:2,3,4,5
 *-------
 *-------
 # Wall sign - facing west
-block:id=68,data=3,scale=4
+block:id=68,data=3,scale=8
 rotate:id=68,data=2,rot=180
 # Wall sign - facing north
-block:id=68,data=4,scale=4
+block:id=68,data=4,scale=8
 rotate:id=68,data=2,rot=270
 # Wall sign - facing south
-block:id=68,data=5,scale=4
+block:id=68,data=5,scale=8
 rotate:id=68,data=2,rot=90
 # Redstone wire (NSEW)
 block:id=55,data=0,scale=16
