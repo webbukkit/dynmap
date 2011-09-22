@@ -1,7 +1,9 @@
 package org.dynmap;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -45,6 +47,16 @@ public class AsynchronousQueue<T> {
         return set.size();
     }
 
+    public List<T> popAll() {
+        List<T> s;
+        synchronized(lock) {
+            s = new ArrayList<T>(queue);
+            queue.clear();
+            set.clear();
+        }
+        return s;
+    }
+    
     public void start() {
         synchronized (lock) {
             thread = new Thread(new Runnable() {

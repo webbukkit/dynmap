@@ -5,6 +5,7 @@ import java.util.List;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapTile;
+import org.dynmap.MapType;
 import org.dynmap.utils.MapChunkCache;
 
 public class KzedZoomedMapTile extends MapTile {
@@ -40,6 +41,11 @@ public class KzedZoomedMapTile extends MapTile {
     public KzedZoomedMapTile(DynmapWorld world, KzedMapTile original) {
         super(world);
         this.originalTile = original;
+    }
+    
+    @Override
+    protected String saveTileData() {
+        return originalTile.saveTileData();
     }
 
     public int getTileX() {

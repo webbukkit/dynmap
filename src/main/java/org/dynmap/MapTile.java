@@ -1,6 +1,8 @@
 package org.dynmap;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.bukkit.World;
@@ -54,4 +56,29 @@ public abstract class MapTile {
     public abstract int tileOrdinalX();
     public abstract int tileOrdinalY();
     
+    public ConfigurationNode saveTile() {
+        ConfigurationNode cn = new ConfigurationNode();
+        cn.put("class", this.getClass().getName());
+        cn.put("data", saveTileData());
+        return cn;
+    }
+    
+    protected abstract String saveTileData();
+    
+    public static MapTile restoreTile(DynmapWorld w, ConfigurationNode node) {
+        String cn = node.getString("class");
+        String dat = node.getString("data");
+        if((cn == null) || (dat == null)) return null;
+        try {
+            Class cls = Class.forName(cn);
+            Constructor con = cls.getConstructor(DynmapWorld.class, String.class);
+            return (MapTile)con.newInstance(w, dat);
+        } catch (ClassNotFoundException cnfx) {
+        } catch (NoSuchMethodException nsmx) {
+        } catch (InvocationTargetException itx) {
+        } catch (IllegalAccessException iax) {
+        } catch (InstantiationException ix) {
+        }
+        return null;
+    }
 }

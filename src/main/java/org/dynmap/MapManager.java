@@ -45,6 +45,7 @@ public class MapManager {
     private int max_chunk_loads_per_tick = DEFAULT_CHUNKS_PER_TICK;
     private int parallelrendercnt = 0;
     private int progressinterval = 100;
+    private boolean saverestorepending = true;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
@@ -501,6 +502,7 @@ public class MapManager {
         parallelrendercnt = configuration.getInteger("parallelrendercnt", 0);
         progressinterval = configuration.getInteger("progressloginterval", 100);
         if(progressinterval < 100) progressinterval = 100;
+        saverestorepending = configuration.getBoolean("saverestorepending", true);
         
         this.tileQueue = new AsynchronousQueue<MapTile>(
                 new Handler<MapTile>() {
@@ -708,6 +710,54 @@ public class MapManager {
         }
         worldsLookup.put(w.getName(), dynmapWorld);
         plug_in.events.trigger("worldactivated", dynmapWorld);
+        /* Now, restore any pending renders for this world */
+        if(saverestorepending)
+            loadPending(dynmapWorld);
+    }
+    
+    private void loadPending(DynmapWorld w) {
+        File f = new File(plug_in.getDataFolder(), w.world.getName() + ".pending");
+        if(f.exists()) {
+            org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
+            saved.load();
+            ConfigurationNode cn = new ConfigurationNode(saved);
+            /* Get the saved tile definitions */
+            List<ConfigurationNode> tiles = cn.getNodes("tiles");
+            if(tiles != null) {
+                int cnt = 0;
+                for(ConfigurationNode tile : tiles) {
+                    MapTile mt = MapTile.restoreTile(w, tile);  /* Restore tile, if possible */
+                    if(mt != null) {
+                        invalidateTile(mt);
+                        cnt++;
+                    }
+                }
+                if(cnt > 0)
+                    Log.info("Loaded " + cnt + " pending tile renders for world '" + w.world.getName());
+            }
+            f.delete(); /* And clean it up */
+        }
+    }
+    
+    private void savePending() {
+        List<MapTile> mt = tileQueue.popAll();
+        for(DynmapWorld w : worlds) {
+            File f = new File(plug_in.getDataFolder(), w.world.getName() + ".pending");
+            org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
+            ArrayList<ConfigurationNode> savedtiles = new ArrayList<ConfigurationNode>();
+            for(MapTile tile : mt) {
+                if(tile.getDynmapWorld() != w) continue;
+                ConfigurationNode tilenode = tile.saveTile();
+                if(tilenode != null) {
+                    savedtiles.add(tilenode);
+                }
+            }
+            if(savedtiles.size() > 0) { /* Something to save? */
+                saved.setProperty("tiles", savedtiles);
+                saved.save();
+                Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.world.getName());
+            }
+        }
     }
 
     public int touch(Location l) {
@@ -773,6 +823,9 @@ public class MapManager {
         tileQueue.stop();
         mapman = null;
         hdmapman = null;
+        
+        if(saverestorepending)
+            savePending();
     }
 
     private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();

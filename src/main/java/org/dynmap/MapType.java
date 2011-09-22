@@ -80,4 +80,5 @@ public abstract class MapType {
      * Values correspond to tile X,Y (0), X+step,Y (1), X,Y+step (2), X+step,Y+step (3) 
      */
     public abstract int[] zoomFileStepSequence();
+    
 }
