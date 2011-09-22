@@ -7,6 +7,8 @@ import org.dynmap.MapType;
 
 import java.util.List;
 import org.dynmap.MapTile;
+import org.dynmap.kzedmap.KzedMap;
+import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.utils.MapChunkCache;
 
 public class HDMapTile extends MapTile {
@@ -18,6 +20,22 @@ public class HDMapTile extends MapTile {
         this.perspective = perspective;
         this.tx = tx;
         this.ty = ty;
+    }
+
+    public HDMapTile(DynmapWorld world, String parm) throws Exception {
+        super(world);
+        
+        String[] parms = parm.split(",");
+        if(parms.length < 3) throw new Exception("wrong parameter count");
+        this.tx = Integer.parseInt(parms[0]);
+        this.ty = Integer.parseInt(parms[1]);
+        this.perspective = MapManager.mapman.hdmapman.perspectives.get(parms[2]);
+        if(this.perspective == null) throw new Exception("invalid perspective");
+    }
+    
+    @Override
+    protected String saveTileData() {
+        return String.format("%d,%d,%s", tx, ty, perspective.getName());
     }
 
     @Override

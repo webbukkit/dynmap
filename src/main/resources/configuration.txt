@@ -228,6 +228,9 @@ renderacceleratethreshold: 60
 # How often to render tiles when backlog is above renderacceleratethreshold
 renderaccelerateinterval: 0.2
 
+# Save and restore pending tile renders - prevents their loss on server shutdown or /reload
+saverestorepending: true
+
 # Zoom-out tile update period - how often to scan for and process tile updates into zoom-out tiles (in seconds)
 zoomoutperiod: 30
 

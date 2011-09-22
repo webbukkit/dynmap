@@ -3,11 +3,13 @@ package org.dynmap.kzedmap;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapManager;
+import org.dynmap.MapType;
 
 import java.io.File;
 import java.util.List;
 
 import org.dynmap.MapTile;
+import org.dynmap.flat.FlatMap;
 import org.dynmap.utils.MapChunkCache;
 
 public class KzedMapTile extends MapTile {
@@ -26,6 +28,35 @@ public class KzedMapTile extends MapTile {
         this.renderer = renderer;
         this.px = px;
         this.py = py;
+    }
+
+    public KzedMapTile(DynmapWorld world, String parm) throws Exception {
+        super(world);
+        
+        String[] parms = parm.split(",");
+        if(parms.length < 4) throw new Exception("wrong parameter count");
+        this.px = Integer.parseInt(parms[0]);
+        this.py = Integer.parseInt(parms[1]);
+        
+        for(MapType t : world.maps) {
+            if(t.getName().equals(parms[2]) && (t instanceof KzedMap)) {
+                this.map = (KzedMap)t;
+                break;
+            }
+        }
+        if(this.map == null) throw new Exception("invalid map");
+        for(MapTileRenderer r : map.renderers) {
+            if(r.getName().equals(parms[3])) {
+                this.renderer = r;
+                break;
+            }
+        }
+        if(this.renderer == null) throw new Exception("invalid renderer");
+    }
+    
+    @Override
+    protected String saveTileData() {
+        return String.format("%d,%d,%s,%s", px, py, map.getName(), renderer.getName());
     }
 
     @Override

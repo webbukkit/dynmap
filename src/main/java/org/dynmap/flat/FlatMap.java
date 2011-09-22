@@ -495,6 +495,28 @@ public class FlatMap extends MapType {
             this.size = size;
         }
 
+        public FlatMapTile(DynmapWorld world, String parm) throws Exception {
+            super(world);
+            
+            String[] parms = parm.split(",");
+            if(parms.length < 4) throw new Exception("wrong parameter count");
+            this.x = Integer.parseInt(parms[0]);
+            this.y = Integer.parseInt(parms[1]);
+            this.size = Integer.parseInt(parms[2]);
+            for(MapType t : world.maps) {
+                if(t.getName().equals(parms[3]) && (t instanceof FlatMap)) {
+                    this.map = (FlatMap)t;
+                    break;
+                }
+            }
+            if(this.map == null) throw new Exception("invalid map");
+        }
+        
+        @Override
+        protected String saveTileData() {
+            return String.format("%d,%d,%d,%s", x, y, size, map.getName());
+        }
+        
         @Override
         public String getFilename() {
             if(fname == null) {
