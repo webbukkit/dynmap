@@ -2,7 +2,8 @@
 # Cobblestone Stair - up south
 # Brick Stair - up south
 # Stone Brick Stair - up south
-block:id=53,id=67,id=108,id=109,data=0,scale=2
+# Nether brick stair - up south
+block:id=53,id=67,id=108,id=109,id=114,data=0,scale=2
 layer:0
 **
 **
@@ -13,19 +14,22 @@ layer:1
 # Cobblestone Stair - up north
 # Brick Stair - up north
 # Stone Brick Stair - up north
-block:id=53,id=67,id=108,id=109,data=1,scale=2
+# Nether brick stair - up north
+block:id=53,id=67,id=108,id=109,id=114,data=1,scale=2
 rotate:id=53,data=0,rot=180
 # Wood Stair - up west
 # Cobblestone Stair - up west
 # Brick Stair - up west
 # Stone Brick Stair - up west
-block:id=53,id=67,id=108,id=109,data=2,scale=2
+# Nether brick stair - up west
+block:id=53,id=67,id=108,id=109,id=114,data=2,scale=2
 rotate:id=53,data=0,rot=90
 # Wood Stair - up east
 # Cobblestone Stair - up east
 # Brick Stair - up east
 # Stone Brick Stair - up east
-block:id=53,id=67,id=108,id=109,data=3,scale=2
+# Nether brick stair - up east
+block:id=53,id=67,id=108,id=109,id=114,data=3,scale=2
 rotate:id=53,data=0,rot=270
 # Slab (stone, sandstone, wood, cobblestone)
 block:id=44,data=*,scale=4
@@ -171,7 +175,8 @@ block:id=50,id=75,id=76,data=4,scale=16
 rotate:id=50,data=1,rot=270
 # Fence - (data is faked: 1=north,2=east,4=south,8=west)
 # Fence - no neighbors
-block:id=85,data=0,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=0,scale=16
 layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 ----------------
 ----------------
@@ -190,7 +195,8 @@ layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 ----------------
 ----------------
 # Fence - just north neighbor
-block:id=85,data=1,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=1,scale=16
 layer:0,1,2,3,4,5,9,10,11,15
 ----------------
 ----------------
@@ -226,16 +232,20 @@ layer:6,7,8,12,13,14
 ----------------
 ----------------
 # Fence - just east neighbor
-block:id=85,data=2,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=2,scale=16
 rotate:id=85,data=1,rot=90
 # Fence - just south neighbor
-block:id=85,data=4,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=4,scale=16
 rotate:id=85,data=1,rot=180
 # Fence - just south neighbor
-block:id=85,data=8,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=8,scale=16
 rotate:id=85,data=1,rot=270
 # Fence - north and east neighbor
-block:id=85,data=3,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=3,scale=16
 layer:0,1,2,3,4,5,9,10,11,15
 ----------------
 ----------------
@@ -271,16 +281,20 @@ layer:6,7,8,12,13,14
 ----------------
 ----------------
 # Fence - east and south neighbor
-block:id=85,data=6,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=6,scale=16
 rotate:id=85,data=3,rot=90
 # Fence - south and west neighbor
-block:id=85,data=12,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=12,scale=16
 rotate:id=85,data=3,rot=180
 # Fence - west and north neighbor
-block:id=85,data=9,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=9,scale=16
 rotate:id=85,data=3,rot=270
 # Fence - north and south neighbor
-block:id=85,data=5,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=5,scale=16
 layer:0,1,2,3,4,5,9,10,11,15
 ----------------
 ----------------
@@ -316,10 +330,12 @@ layer:6,7,8,12,13,14
 -------**-------
 -------**-------
 # Fence - east and west neighbor
-block:id=85,data=10,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=10,scale=16
 rotate:id=85,data=5,rot=90
 # Fence - north, east and south neighbor
-block:id=85,data=7,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=7,scale=16
 layer:0,1,2,3,4,5,9,10,11,15
 ----------------
 ----------------
@@ -355,16 +371,20 @@ layer:6,7,8,12,13,14
 -------**-------
 -------**-------
 # Fence - east, south and west neighbor
-block:id=85,data=14,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=14,scale=16
 rotate:id=85,data=7,rot=90
 # Fence - south, west and north neighbor
-block:id=85,data=13,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=13,scale=16
 rotate:id=85,data=7,rot=180
 # Fence - west, north and east neighbor
-block:id=85,data=11,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=11,scale=16
 rotate:id=85,data=7,rot=270
 # Fence - north, south, east, west neightbors
-block:id=85,data=15,scale=16
+# Nether Brick Fence
+block:id=85,id=113,data=15,scale=16
 layer:0,1,2,3,4,5,9,10,11,15
 ----------------
 ----------------
@@ -2231,7 +2251,8 @@ rotate:id=102,data=6,rot=180
 block:id=102,id=101,data=3,scale=16
 rotate:id=102,data=6,rot=270
 # Web
-block:id=30,data=*,scale=16
+# Nether Wart
+block:id=30,id=115,data=*,scale=16
 layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 *--------------*
 -*------------*-
@@ -2472,3 +2493,22 @@ layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 ----------------
 ----------------
 ----------------
+# Lily pad
+block:id=111,scale=16
+layer:0
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************

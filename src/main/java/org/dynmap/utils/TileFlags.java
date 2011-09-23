@@ -1,6 +1,9 @@
 package org.dynmap.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * scalable flags primitive - used for keeping track of potentially huge number of tiles
  * 
@@ -15,6 +18,37 @@ public class TileFlags {
 	private long[] last_row;
 	
 	public TileFlags() {
+	}
+	
+	public List<String> save() {
+	    ArrayList<String> v = new ArrayList<String>();
+	    StringBuilder sb = new StringBuilder();
+	    for(Map.Entry<Long, long[]> ent : chunkmap.entrySet()) {
+	        sb.append(String.format("%lx", ent.getKey().longValue()));
+	        long[] val = ent.getValue();
+	        for(long vv : val) {
+	            sb.append(String.format(":%lx", vv));
+	        }
+	        v.add(sb.toString());
+	        sb.setLength(0);
+	    }
+	    return v;
+	}
+	
+	public void load(List<String> vals) {
+	    clear();
+	    for(String v : vals) {
+	        String[] tok = v.split(":");
+	        long[] row = new long[64];
+	        try {
+	            long rowaddr = Long.parseLong(tok[0], 16);
+	            for(int i = 0; (i < 64) && (i < (tok.length-1)); i++) {
+	                row[i] = Long.parseLong(tok[i+1], 16);
+	            }
+	            chunkmap.put(rowaddr, row);
+	        } catch (NumberFormatException nfx) {
+	        }
+	    }
 	}
 	
 	public boolean getFlag(int x, int y) {
