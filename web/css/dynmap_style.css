@@ -717,6 +717,15 @@
 	padding: 1px;
 }
 
+.scrollback {
+    max-height:6em !important;
+}
+
+.scrollback:hover {
+	overflow-y: auto !important;
+}
+
+
 .messagerow {
 	position: relative;
 	max-height: 200px;
