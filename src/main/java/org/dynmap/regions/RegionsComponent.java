@@ -108,7 +108,7 @@ public class RegionsComponent extends ClientComponent {
         /* See if we have explicit list of regions to report - limit to this list if we do */
         List<String> idlist = configuration.getStrings("visibleregions", null);
         List<String> hidlist = configuration.getStrings("hiddenregions", null);
-        if((idlist != null) || (hidlist != null)) {
+        if((regionData != null) && ((idlist != null) || (hidlist != null))) {
             @SuppressWarnings("unchecked")
             HashSet<String> ids = new HashSet<String>((Collection<? extends String>) regionData.keySet());
             for(String id : ids) {
