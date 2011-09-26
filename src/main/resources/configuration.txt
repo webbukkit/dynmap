@@ -63,6 +63,7 @@ components:
     type: chatbox
     showplayerfaces: true
     messagettl: 5
+    scrollback: 100
   - class: org.dynmap.ClientComponent
     type: playermarkers
     showplayerfaces: true

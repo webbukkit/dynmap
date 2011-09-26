@@ -6,7 +6,12 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	var messagelist = $('<div/>')
 		.addClass('messagelist')
 		.appendTo(chat);
-	
+
+	if (dynmap.options.scrollback) {
+		messagelist.addClass('scrollback')
+			.click( function() { $(this).hide(); } );		 
+	}
+
 	if (dynmap.options.allowwebchat) {
 		var chatinput = $('<input/>')
 			.addClass('chatinput')
@@ -25,10 +30,22 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 				}
 			})
 			.appendTo(chat);
+
+		if (dynmap.options.scrollback) {
+			chatinput.click(function(){ 
+				var m = $('.messagelist');
+				m.show().scrollTop(m.scrollHeight());
+			});
+		}
 	}
 	
 	var addrow = function(row) {
-		setTimeout(function() { row.remove(); }, (configuration.messagettl * 1000));
+		if (dynmap.options.scrollback) {
+			var c = messagelist.children();
+			c.slice(0, Math.max(0, c.length-dynmap.options.scrollback)).each(function(index, elem){ $(elem).remove(); });
+		} else {
+			setTimeout(function() { row.remove(); }, (configuration.messagettl * 1000));
+		}
 		messagelist.append(row);
 		messagelist.show();
 		messagelist.scrollTop(messagelist.scrollHeight());
@@ -50,7 +67,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	
 	$(dynmap).bind('chat', function(event, message) {
 		var playerName = message.name;
-        var playerAccount = message.account;
+		var playerAccount = message.account;
 		var messageRow = $('<div/>')
 			.addClass('messagerow');
 
@@ -58,7 +75,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			.addClass('messageicon');
 
 		if (message.source === 'player' && configuration.showplayerfaces &&
-            playerAccount) {
+			playerAccount) {
 			getMinecraftHead(playerAccount, 16, function(head) {
 				messageRow.icon = $(head)
 					.addClass('playerIcon')
@@ -66,13 +83,13 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			});
 		}
 
-        var playerChannelContainer = '';
-        if (message.channel) {
-            playerChannelContainer = $('<span/>').addClass('messagetext')
-            .text('[' + message.channel + '] ')
-            .appendTo(messageRow);
-        }
-            
+		var playerChannelContainer = '';
+		if (message.channel) {
+			playerChannelContainer = $('<span/>').addClass('messagetext')
+			.text('[' + message.channel + '] ')
+			.appendTo(messageRow);
+		}
+			
 		if (message.source === 'player' && configuration.showworld) {
 			var playerWorldContainer = $('<span/>')
 			 .addClass('messagetext')
