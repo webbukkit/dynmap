@@ -19,6 +19,7 @@ import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
@@ -35,11 +36,11 @@ import org.dynmap.utils.MapIterator;
  *    misc/water.png - still water tile (required))
  *    misc/grasscolor.png - tone for grass color, biome sensitive (required)
  *    misc/foliagecolor.png - tone for leaf color, biome sensitive (required)
+ *    misc/watercolor.png - tone for water color, biome sensitive (required)
  *    custom_lava_still.png - custom still lava animation (optional)
  *    custom_lava_flowing.png - custom flowing lava animation (optional)
  *    custom_water_still.png - custom still water animation (optional)
  *    custom_water_flowing.png - custom flowing water animation (optional)
- *    BetterGlass/*.png - mod-based improved windows (future optional)
  */
 public class TexturePack {
     /* Loaded texture packs */
@@ -48,6 +49,7 @@ public class TexturePack {
     private static final String TERRAIN_PNG = "terrain.png";
     private static final String GRASSCOLOR_PNG = "misc/grasscolor.png";
     private static final String FOLIAGECOLOR_PNG = "misc/foliagecolor.png";
+    private static final String WATERCOLOR_PNG = "misc/watercolor.png";
     private static final String WATER_PNG = "misc/water.png";
     private static final String CUSTOMLAVASTILL_PNG = "custom_lava_still.png";
     private static final String CUSTOMLAVAFLOWING_PNG = "custom_lava_flowing.png";
@@ -59,7 +61,7 @@ public class TexturePack {
     private static final int COLORMOD_NONE = 0;
     private static final int COLORMOD_GRASSTONED = 1;
     private static final int COLORMOD_FOLIAGETONED = 2;
-    private static final int COLORMOD_WATERTONED = 3;   /* Not used */
+    private static final int COLORMOD_WATERTONED = 3;
     private static final int COLORMOD_ROT90 = 4;
     private static final int COLORMOD_ROT180 = 5;
     private static final int COLORMOD_ROT270 = 6;
@@ -106,7 +108,8 @@ public class TexturePack {
     private static final int IMG_CUSTOMWATERSTILL = 4;
     private static final int IMG_CUSTOMLAVAMOVING = 5;
     private static final int IMG_CUSTOMLAVASTILL = 6;
-    private static final int IMG_CNT = 7;
+    private static final int IMG_WATERCOLOR = 7;
+    private static final int IMG_CNT = 8;
     
     private LoadedImage[] imgs = new LoadedImage[IMG_CNT];
 
@@ -242,6 +245,18 @@ public class TexturePack {
             }
         	loadBiomeShadingImage(is, IMG_FOLIAGECOLOR);
         	is.close();
+            /* Try to find and load misc/watercolor.png */
+            ze = zf.getEntry(WATERCOLOR_PNG);
+            if(ze == null) {    /* Fall back to standard file */
+                /* Check for misc/watercolor.png under standard texture pack*/
+                File ff = new File(texturedir, STANDARDTP + "/" + WATERCOLOR_PNG);
+                is = new FileInputStream(ff);
+            }
+            else {
+                is = zf.getInputStream(ze);
+            }
+            loadBiomeShadingImage(is, IMG_WATERCOLOR);
+            is.close();
            
             /* Try to find and load misc/water.png */
             ze = zf.getEntry(WATER_PNG);
@@ -316,6 +331,14 @@ public class TexturePack {
             }
             fis = new FileInputStream(f);
             loadBiomeShadingImage(fis, IMG_FOLIAGECOLOR);
+            fis.close();
+            /* Check for misc/watercolor.png */
+            f = new File(texturedir, tpname + "/" + WATERCOLOR_PNG);
+            if(!f.canRead()) {
+                f = new File(texturedir, STANDARDTP + "/" + WATERCOLOR_PNG);                
+            }
+            fis = new FileInputStream(f);
+            loadBiomeShadingImage(fis, IMG_WATERCOLOR);
             fis.close();
             /* Check for misc/water.png */
             f = new File(texturedir, tpname + "/" + WATER_PNG);
@@ -817,7 +840,8 @@ public class TexturePack {
     /**
      * Read color for given subblock coordinate, with given block id and data and face
      */
-    public final void readColor(final HDPerspectiveState ps, final MapIterator mapiter, final Color rslt, final int blkid, final int lastblocktype, final boolean biome_shaded) {
+    public final void readColor(final HDPerspectiveState ps, final MapIterator mapiter, final Color rslt, final int blkid, final int lastblocktype,
+            final boolean biome_shaded, final boolean swamp_shaded) {
         int blkdata = ps.getBlockData();
         HDTextureMap map = HDTextureMap.getMap(blkid, blkdata, ps.getBlockRenderData());
         BlockStep laststep = ps.getLastBlockStep();
@@ -865,6 +889,10 @@ public class TexturePack {
             if(blkid == lastblocktype) {
                 rslt.setTransparent();
                 return;
+            }
+            /* If warer block, to watercolor tone op */
+            if((blkid == 8) || (blkid == 9)) {
+                textop = COLORMOD_WATERTONED;
             }
         }
 
@@ -954,27 +982,30 @@ public class TexturePack {
         /* Read color from texture */
         rslt.setARGB(texture[v*native_scale + u]);
 
-        LoadedImage li;
+        LoadedImage li = null;
         /* Switch based on texture modifier */
         switch(textop) {
             case COLORMOD_GRASSTONED:
                 li = imgs[IMG_GRASSCOLOR];
-                if((li.argb == null) || (!biome_shaded)) {
-                    rslt.blendColor(li.trivial_color);
-                }
-                else {
-                    rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
-                }
                 break;
             case COLORMOD_FOLIAGETONED:
                 li = imgs[IMG_FOLIAGECOLOR];
-                if((li.argb == null) || (!biome_shaded)) {
-                    rslt.blendColor(li.trivial_color);
-                }
-                else {
-                    rslt.blendColor(biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature()));
-                }
                 break;
+            case COLORMOD_WATERTONED:
+                li = imgs[IMG_WATERCOLOR];
+                break;
+        }
+        if(li != null) {
+            int clr;
+            if((li.argb == null) || (!biome_shaded)) {
+                clr = li.trivial_color;
+            }
+            else {
+                clr = biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+            }
+            if(swamp_shaded && (mapiter.getBiome() == Biome.SWAMPLAND))
+                clr = (clr & 0xFF000000) | (((clr & 0x00FEFEFE) + 0x4E0E4E) / 2);
+            rslt.blendColor(clr);
         }
     }
     
