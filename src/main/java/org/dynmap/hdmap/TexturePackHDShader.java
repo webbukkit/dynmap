@@ -6,6 +6,7 @@ import org.bukkit.World.Environment;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
+import org.dynmap.MapManager;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
@@ -15,12 +16,14 @@ public class TexturePackHDShader implements HDShader {
     private String name;
     private TexturePack tp;
     private boolean biome_shaded;
+    private boolean swamp_shaded;
     
     public TexturePackHDShader(ConfigurationNode configuration) {
         tpname = configuration.getString("texturepack", "minecraft");
         name = configuration.getString("name", tpname);
         tp = TexturePack.getTexturePack(tpname);
         biome_shaded = configuration.getBoolean("biomeshaded", true);
+        swamp_shaded = configuration.getBoolean("swampshaded", MapManager.mapman.getSwampShading());
         if(tp == null) {
             Log.severe("Error: shader '" + name + "' cannot load texture pack '" + tpname + "'");
         }
@@ -28,7 +31,7 @@ public class TexturePackHDShader implements HDShader {
     
     @Override
     public boolean isBiomeDataNeeded() { 
-        return false; 
+        return true; 
     }
     
     @Override
@@ -71,6 +74,7 @@ public class TexturePackHDShader implements HDShader {
         private HDLighting lighting;
         private int lastblkid;
         private boolean do_biome_shading;
+        private boolean do_swamp_shading;
         
         private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
@@ -88,6 +92,7 @@ public class TexturePackHDShader implements HDShader {
             scaledtp = tp.resampleTexturePack(map.getPerspective().getModelScale());
             /* Biome raw data only works on normal worlds at this point */
             do_biome_shading = biome_shaded && (cache.getWorld().getEnvironment() == Environment.NORMAL);
+            do_swamp_shading = do_biome_shading && swamp_shaded;
         }
         /**
          * Get our shader
@@ -133,7 +138,7 @@ public class TexturePackHDShader implements HDShader {
             }
             
             /* Get color from textures */
-            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading);
+            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading, do_swamp_shading);
 
             if (c.getAlpha() > 0) {
                 int subalpha = ps.getSubmodelAlpha();

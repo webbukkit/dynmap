@@ -43,7 +43,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean isempty = true;
 
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-
+    private Biome[][] biomess;    /* Biome snapshots (workaround) - same index as snaparray */
+    
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
@@ -95,7 +96,7 @@ public class NewMapChunkCache implements MapChunkCache {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
         public Biome getBiome() {
-            return snap.getBiome(bx, bz);
+            return biomess[chunkindex][bx | (bz<<4)];
         }
         public double getRawBiomeTemperature() {
             return snap.getRawBiomeTemperature(bx, bz);
@@ -404,6 +405,14 @@ public class NewMapChunkCache implements MapChunkCache {
                     }
                 }
             }
+            if(biome) {
+                Biome[] b = new Biome[256];
+                for(int ii = 0; ii < 256; ii++) {
+                    b[ii] = w.getBiome((chunk.x<<4)+(ii & 0xF), (chunk.z<<4) + (ii >> 4));
+                }
+                if(biomess == null) biomess = new Biome[snaparray.length][];
+                biomess[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = b;
+            }
             /* Check if cached chunk snapshot found */
             ChunkSnapshot ss = MapManager.mapman.sscache.getSnapshot(w.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
             if(ss != null) {
@@ -498,6 +507,8 @@ public class NewMapChunkCache implements MapChunkCache {
                     snaparray[i] = EMPTY;
                 else if(snaparray[i] != EMPTY)
                     isempty = false;
+                if(biome && biomess[i] == null)
+                    biomess[i] = new Biome[256];
             }
         }
         return cnt;
@@ -561,8 +572,8 @@ public class NewMapChunkCache implements MapChunkCache {
         return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
     }
     public Biome getBiome(int x, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getBiome(x & 0xF, z & 0xF);
+        Biome[] b = biomess[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+        return b[(x & 0xF) | ((z & 0xF)<<4)];
     }
     public double getRawBiomeTemperature(int x, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
