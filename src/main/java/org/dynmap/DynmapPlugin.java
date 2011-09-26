@@ -83,6 +83,7 @@ public class DynmapPlugin extends JavaPlugin {
     public PlayerFaces playerfacemgr;
     public Events events = new Events();
     public String deftemplatesuffix = "";
+    boolean swampshading = false;
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
     private boolean generate_only = false;
@@ -248,6 +249,8 @@ public class DynmapPlugin extends JavaPlugin {
 
         Log.verbose = configuration.getBoolean("verbose", true);
         deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
+        /* Default swamp shading off for 1.8, on after */
+        swampshading = configuration.getBoolean("swampshaded", !getServer().getVersion().contains("(MC: 1.8"));
         
         loadDebuggers();
 

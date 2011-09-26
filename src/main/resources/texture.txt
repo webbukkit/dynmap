@@ -520,7 +520,7 @@ block:id=104,allsides=1111,transparency=TRANSPARENT
 # Melon stem
 block:id=105,allsides=1111,transparency=TRANSPARENT
 # Vines
-block:id=106,allsides=1143,transparency=TRANSPARENT
+block:id=106,allsides=2143,transparency=TRANSPARENT
 # Fence gate
 block:id=107,allsides=4,topbottom=4004,transparency=TRANSPARENT
 # Brick stair

@@ -46,7 +46,6 @@ public class MapManager {
     private int parallelrendercnt = 0;
     private int progressinterval = 100;
     private boolean saverestorepending = true;
-    private boolean swampshading = false;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
@@ -504,8 +503,6 @@ public class MapManager {
         progressinterval = configuration.getInteger("progressloginterval", 100);
         if(progressinterval < 100) progressinterval = 100;
         saverestorepending = configuration.getBoolean("saverestorepending", true);
-        /* Default swamp shading off for 1.8, on after */
-        swampshading = configuration.getBoolean("swampshaded", !plugin.getServer().getVersion().contains("(MC: 1.8"));
         
         this.tileQueue = new AsynchronousQueue<MapTile>(
                 new Handler<MapTile>() {
@@ -1004,6 +1001,6 @@ public class MapManager {
     }    
     
     public boolean getSwampShading() {
-        return swampshading;
+        return plug_in.swampshading;
     }
 }
