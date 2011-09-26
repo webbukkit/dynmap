@@ -237,6 +237,9 @@ zoomoutperiod: 30
 # Tile hashing is used to minimize tile file updates when no changes have occurred - set to false to disable
 enabletilehash: true
 
+# Optional - control darkening of biome-shaded colors in swamp biomes (1.9+) - default is true for 1.9+, false for 1.8.x
+#swampshaded: false
+
 render-triggers:
   #- chunkloaded
   #- playermove
