@@ -24,10 +24,10 @@ public class TileFlags {
 	    ArrayList<String> v = new ArrayList<String>();
 	    StringBuilder sb = new StringBuilder();
 	    for(Map.Entry<Long, long[]> ent : chunkmap.entrySet()) {
-	        sb.append(String.format("%lx", ent.getKey().longValue()));
+	        sb.append(String.format("%x", ent.getKey().longValue()));
 	        long[] val = ent.getValue();
 	        for(long vv : val) {
-	            sb.append(String.format(":%lx", vv));
+	            sb.append(String.format(":%x", vv));
 	        }
 	        v.add(sb.toString());
 	        sb.setLength(0);

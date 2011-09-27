@@ -165,7 +165,7 @@ public class MapManager {
         long timeaccum;
         HashSet<MapType> renderedmaps = new HashSet<MapType>();
         String activemaps;
-        List<String> activemaplist;
+        int activemapcnt;
         /* Min and max limits for chunk coords (for radius limit) */
         int cxmin, cxmax, czmin, czmax;
         String rendertype;
@@ -209,6 +209,99 @@ public class MapManager {
             cxmax = czmax = Integer.MAX_VALUE;
         }
 
+        FullWorldRenderState(ConfigurationNode n) throws Exception {
+            String w = n.getString("world", "");
+            world = getWorld(w);
+            if(world == null) throw new Exception();
+            loc = new Location(world.world, n.getDouble("locX", 0.0), n.getDouble("locY", 0.0), n.getDouble("locZ", 0.0));
+            String m = n.getString("map","");
+            map_index = n.getInteger("mapindex", -1);
+            map = world.maps.get(map_index);
+            if((map == null) || (map.getName().equals(m) == false)) throw new Exception();
+            found = new TileFlags();
+            List<String> sl = n.getStrings("found", null);
+            if(sl != null)
+                found.load(sl);
+            rendered = new TileFlags();
+            sl = n.getStrings("rendered", null);
+            if(sl != null)
+                rendered.load(sl);
+            renderQueue = new LinkedList<MapTile>();
+            List<ConfigurationNode> tl = n.getNodes("queue");
+            if(tl != null) {
+                for(ConfigurationNode cn : tl) {
+                    MapTile mt = MapTile.restoreTile(world, cn);
+                    if(mt != null) {
+                        renderQueue.add(mt);
+                    }
+                }
+            }
+            rendercnt = n.getInteger("count", 0);
+            timeaccum = n.getInteger("timeaccum", 0);
+            renderedmaps = new HashSet<MapType>();
+            sl = n.getStrings("renderedmaps", null);
+            if(sl != null) {
+                for(String s : sl) {
+                    for(int i = 0; i < world.maps.size(); i++) {
+                        MapType mt = world.maps.get(i);
+                        if(mt.getName().equals(s)) {
+                            renderedmaps.add(mt);
+                            break;
+                        }
+                    }
+                }
+                if(sl.size() > renderedmaps.size()) {   /* Missed one or more? */
+                    throw new Exception();
+                }
+            }
+            activemaps = n.getString("activemaps", "");
+            activemapcnt = n.getInteger("activemapcnt", 0);
+            cxmin = n.getInteger("cxmin", 0);
+            cxmax = n.getInteger("cxmax", 0);
+            czmin = n.getInteger("czmin", 0);
+            czmax = n.getInteger("czmax", 0);
+            rendertype = n.getString("rendertype", "");
+            mapname = n.getString("mapname", "");
+            sender = plug_in.getServer().getConsoleSender();
+        }
+        
+        public HashMap<String,Object> saveState() {
+            HashMap<String,Object> v = new HashMap<String,Object>();
+            
+            v.put("world", world.world.getName());
+            v.put("locX", loc.getX());
+            v.put("locY", loc.getY());
+            v.put("locZ", loc.getZ());
+            v.put("mapindex", map_index);
+            v.put("map", map.getName());
+            v.put("found", found.save());
+            v.put("rendered", rendered.save());
+            LinkedList<ConfigurationNode> queue = new LinkedList<ConfigurationNode>();
+            for(MapTile tq : renderQueue) {
+                ConfigurationNode n = tq.saveTile();
+                if(n != null)
+                    queue.add(n);
+            }
+            v.put("queue", queue);
+            v.put("count", rendercnt);
+            v.put("timeaccum", timeaccum);
+            LinkedList<String> rmaps = new LinkedList<String>();
+            for(MapType mt : renderedmaps) {
+                rmaps.add(mt.getName());
+            }
+            v.put("renderedmaps", rmaps);
+            v.put("activemaps", activemaps);
+            v.put("activemapcnt", activemapcnt);
+            v.put("cxmin", cxmin);
+            v.put("cxmax", cxmax);
+            v.put("czmin", czmin);
+            v.put("czmax", czmax);
+            v.put("rendertype", rendertype);
+            v.put("mapname", mapname);
+            
+            return v;
+        }
+        
         public String toString() {
             return "world=" + world.world.getName() + ", map=" + map;
         }
@@ -233,8 +326,8 @@ public class MapManager {
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
-                        double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1)/(double)activemaplist.size();
-                        if(activemaplist.size() > 1) 
+                        double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1)/(double)activemapcnt;
+                        if(activemapcnt > 1) 
                             sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
                                world.world.getName() + "' completed - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
                         else
@@ -266,17 +359,20 @@ public class MapManager {
                         return;
                     }
                     map = world.maps.get(map_index);
-                    activemaplist = map.getMapNamesSharingRender(world);
+                    List<String> activemaplist = map.getMapNamesSharingRender(world);
                     /* Build active map list */
                     activemaps = "";
                     if(mapname != null) {
                         activemaps = mapname;
+                        activemapcnt = 1;
                     }
                     else {
+                        activemapcnt = 0;
                         for(String n : activemaplist) {
                             if(activemaps.length() > 0)
                                 activemaps += ",";
                             activemaps += n;
+                            activemapcnt++;
                         }
                     }
                     /* Mark all the concurrently rendering maps rendered */
@@ -428,8 +524,8 @@ public class MapManager {
                         rendercnt++;
                         timeaccum += System.currentTimeMillis() - tstart;
                         if((rendercnt % progressinterval) == 0) {
-                            double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemaplist.size();
-                            if(activemaplist.size() > 1) 
+                            double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemapcnt;
+                            if(activemapcnt > 1) 
                                 sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
                                                w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
                             else
@@ -716,7 +812,8 @@ public class MapManager {
     }
     
     private void loadPending(DynmapWorld w) {
-        File f = new File(plug_in.getDataFolder(), w.world.getName() + ".pending");
+        String wname = w.world.getName();
+        File f = new File(plug_in.getDataFolder(), wname + ".pending");
         if(f.exists()) {
             org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
             saved.load();
@@ -733,8 +830,19 @@ public class MapManager {
                     }
                 }
                 if(cnt > 0)
-                    Log.info("Loaded " + cnt + " pending tile renders for world '" + w.world.getName());
+                    Log.info("Loaded " + cnt + " pending tile renders for world '" + wname);
             }
+            /* Get saved render job, if any */
+            ConfigurationNode job = cn.getNode("job");
+            if(job != null) {
+                try {
+                    FullWorldRenderState j = new FullWorldRenderState(job);
+                    active_renders.put(wname, j);
+                } catch (Exception x) {
+                    Log.info("Unable to restore render job for world '" + wname + "' - map configuration changed");
+                }
+            }
+            
             f.delete(); /* And clean it up */
         }
     }
@@ -742,6 +850,7 @@ public class MapManager {
     private void savePending() {
         List<MapTile> mt = tileQueue.popAll();
         for(DynmapWorld w : worlds) {
+            boolean dosave = false;
             File f = new File(plug_in.getDataFolder(), w.world.getName() + ".pending");
             org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
             ArrayList<ConfigurationNode> savedtiles = new ArrayList<ConfigurationNode>();
@@ -754,6 +863,16 @@ public class MapManager {
             }
             if(savedtiles.size() > 0) { /* Something to save? */
                 saved.setProperty("tiles", savedtiles);
+                dosave = true;
+                Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.world.getName());
+            }
+            FullWorldRenderState job = active_renders.get(w.world.getName());
+            if(job != null) {
+                saved.setProperty("job", job.saveState());
+                dosave = true;
+                Log.info("Saved active render job in world '" + w.world.getName());
+            }
+            if(dosave) {
                 saved.save();
                 Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.world.getName());
             }
@@ -809,6 +928,11 @@ public class MapManager {
         render_pool = new DynmapScheduledThreadPoolExecutor();
         scheduleDelayedJob(new DoZoomOutProcessing(), 60000);
         scheduleDelayedJob(new CheckWorldTimes(), 5000);
+        /* Resume pending jobs */
+        for(FullWorldRenderState job : active_renders.values()) {
+            scheduleDelayedJob(job, 5000);
+            Log.info("Resumed render starting on world '" + job.world.world.getName() + "'...");
+        }
     }
 
     public void stopRendering() {
