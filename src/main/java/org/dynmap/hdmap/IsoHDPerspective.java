@@ -1088,19 +1088,22 @@ public class IsoHDPerspective implements HDPerspective {
                         rendered[i] = true;
                     }
                     shaderstate[i].getRayColor(rslt, 0);
-                    if(isjpg[i] && rslt.isTransparent()) {
+                    int c_argb = rslt.getARGB();
+                    if(c_argb != 0) rendered[i] = true;
+                    if(isjpg[i] && (c_argb == 0)) {
                         argb_buf[i][(tileHeight-y-1)*tileWidth + x] = bgnight[i];
                     }
                     else {
-                        argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                        argb_buf[i][(tileHeight-y-1)*tileWidth + x] = c_argb;
                     }
                     if(day_argb_buf[i] != null) {
                         shaderstate[i].getRayColor(rslt, 1);
-                        if(isjpg[i] && rslt.isTransparent()) {
+                        c_argb = rslt.getARGB();
+                        if(isjpg[i] && (c_argb == 0)) {
                             day_argb_buf[i][(tileHeight-y-1)*tileWidth + x] = bgday[i];
                         }
                         else {
-                            day_argb_buf[i][(tileHeight-y-1)*tileWidth + x] = rslt.getARGB();
+                            day_argb_buf[i][(tileHeight-y-1)*tileWidth + x] = c_argb;
                         }
                     }
                 }
