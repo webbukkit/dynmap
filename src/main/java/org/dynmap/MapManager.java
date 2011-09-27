@@ -262,7 +262,7 @@ public class MapManager {
             czmax = n.getInteger("czmax", 0);
             rendertype = n.getString("rendertype", "");
             mapname = n.getString("mapname", null);
-            sender = plug_in.getServer().getConsoleSender();
+            sender = null;
         }
         
         public HashMap<String,Object> saveState() {
@@ -329,10 +329,10 @@ public class MapManager {
                     if(map_index >= 0) { /* Finished a map? */
                         double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1)/(double)activemapcnt;
                         if(activemapcnt > 1) 
-                            sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
+                            sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
                                world.world.getName() + "' completed - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
                         else
-                            sender.sendMessage(rendertype + " of map '" + activemaps + "' of '" +
+                            sendMessage(rendertype + " of map '" + activemaps + "' of '" +
                                  world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                     }                	
                     found.clear();
@@ -355,7 +355,7 @@ public class MapManager {
                         }
                     }
                     if(map_index >= world.maps.size()) {    /* Last one done? */
-                        sender.sendMessage(rendertype + " of '" + world.world.getName() + "' finished.");
+                        sendMessage(rendertype + " of '" + world.world.getName() + "' finished.");
                         cleanup();
                         return;
                     }
@@ -527,10 +527,10 @@ public class MapManager {
                         if((rendercnt % progressinterval) == 0) {
                             double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemapcnt;
                             if(activemapcnt > 1) 
-                                sender.sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
+                                sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
                                                w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
                             else
-                                sender.sendMessage(rendertype + " of map '" + activemaps + "' of '" +
+                                sendMessage(rendertype + " of map '" + activemaps + "' of '" +
                                                w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
                         }
                     }
@@ -544,6 +544,15 @@ public class MapManager {
         
         public void cancelRender() {
         	cancelled = true;
+        }
+        
+        public void sendMessage(String msg) {
+            if(sender != null) {
+                sender.sendMessage(msg);
+            }
+            else {
+                Log.info(msg);
+            }
         }
     }
 
