@@ -7,7 +7,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 		.addClass('messagelist')
 		.appendTo(chat);
 
-	if (dynmap.options.scrollback) {
+	if (configuration.scrollback) {
 		messagelist.addClass('scrollback')
 			.click( function() { $(this).hide(); } );		 
 	}
@@ -31,7 +31,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			})
 			.appendTo(chat);
 
-		if (dynmap.options.scrollback) {
+		if (configuration.scrollback) {
 			chatinput.click(function(){ 
 				var m = $('.messagelist');
 				m.show().scrollTop(m.scrollHeight());
@@ -40,9 +40,9 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	}
 	
 	var addrow = function(row) {
-		if (dynmap.options.scrollback) {
+		if (configuration.scrollback) {
 			var c = messagelist.children();
-			c.slice(0, Math.max(0, c.length-dynmap.options.scrollback)).each(function(index, elem){ $(elem).remove(); });
+			c.slice(0, Math.max(0, c.length-configuration.scrollback)).each(function(index, elem){ $(elem).remove(); });
 		} else {
 			setTimeout(function() { row.remove(); }, (configuration.messagettl * 1000));
 		}
