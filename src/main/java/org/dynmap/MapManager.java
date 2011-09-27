@@ -261,7 +261,7 @@ public class MapManager {
             czmin = n.getInteger("czmin", 0);
             czmax = n.getInteger("czmax", 0);
             rendertype = n.getString("rendertype", "");
-            mapname = n.getString("mapname", "");
+            mapname = n.getString("mapname", null);
             sender = plug_in.getServer().getConsoleSender();
         }
         
@@ -269,9 +269,9 @@ public class MapManager {
             HashMap<String,Object> v = new HashMap<String,Object>();
             
             v.put("world", world.world.getName());
-            v.put("locX", loc.getX());
-            v.put("locY", loc.getY());
-            v.put("locZ", loc.getZ());
+            v.put("locX", loc.getBlockX());
+            v.put("locY", loc.getBlockY());
+            v.put("locZ", loc.getBlockZ());
             v.put("mapindex", map_index);
             v.put("map", map.getName());
             v.put("found", found.save());
@@ -297,7 +297,8 @@ public class MapManager {
             v.put("czmin", czmin);
             v.put("czmax", czmax);
             v.put("rendertype", rendertype);
-            v.put("mapname", mapname);
+            if(mapname != null)
+                v.put("mapname", mapname);
             
             return v;
         }

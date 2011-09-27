@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.dynmap.Log;
 /**
  * scalable flags primitive - used for keeping track of potentially huge number of tiles
  * 
@@ -24,10 +26,11 @@ public class TileFlags {
 	    ArrayList<String> v = new ArrayList<String>();
 	    StringBuilder sb = new StringBuilder();
 	    for(Map.Entry<Long, long[]> ent : chunkmap.entrySet()) {
-	        sb.append(String.format("%x", ent.getKey().longValue()));
+	        long v1 = ent.getKey().longValue();
+	        sb.append(String.format("%x/%x", ((v1>>32)&0xFFFFFFFFL), (v1 & 0xFFFFFFFFL) ));
 	        long[] val = ent.getValue();
 	        for(long vv : val) {
-	            sb.append(String.format(":%x", vv));
+	            sb.append(String.format(":%x/%x", ((vv>>32) & 0xFFFFFFFFL), (vv & 0xFFFFFFFFL)));
 	        }
 	        v.add(sb.toString());
 	        sb.setLength(0);
@@ -41,12 +44,15 @@ public class TileFlags {
 	        String[] tok = v.split(":");
 	        long[] row = new long[64];
 	        try {
-	            long rowaddr = Long.parseLong(tok[0], 16);
+	            String ss[] = tok[0].split("/");
+	            long rowaddr = (Long.parseLong(ss[0], 16)<<32) | Long.parseLong(ss[1],16);
 	            for(int i = 0; (i < 64) && (i < (tok.length-1)); i++) {
-	                row[i] = Long.parseLong(tok[i+1], 16);
+	                ss = tok[i+1].split("/");
+	                row[i] = (Long.parseLong(ss[0], 16)<<32) | Long.parseLong(ss[1],16);
 	            }
 	            chunkmap.put(rowaddr, row);
 	        } catch (NumberFormatException nfx) {
+	            Log.info("parse error - " + nfx);
 	        }
 	    }
 	}
