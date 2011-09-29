@@ -57,6 +57,8 @@ public class HDMapManager {
             }
         }
         Log.info("Loaded " + shaders.size() + " shaders.");
+        /* Update ore mappings, if needed */
+        TexturePack.handleHideOres();
     }
 
     public void loadHDPerspectives(DynmapPlugin plugin) {

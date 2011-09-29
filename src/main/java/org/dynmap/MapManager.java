@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
@@ -46,6 +47,7 @@ public class MapManager {
     private int parallelrendercnt = 0;
     private int progressinterval = 100;
     private boolean saverestorepending = true;
+    private boolean hideores = false;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
@@ -597,8 +599,13 @@ public class MapManager {
     public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
         plug_in = plugin;
         mapman = this;
+
+        /* Get block hiding data, if any */
+        hideores = configuration.getBoolean("hideores", false);
+
         /* Clear color scheme */
         ColorScheme.reset();
+        
         /* Initialize HD map manager */
         hdmapman = new HDMapManager();  
         hdmapman.loadHDShaders(plugin);
@@ -1136,5 +1143,23 @@ public class MapManager {
     
     public boolean getSwampShading() {
         return plug_in.swampshading;
+    }
+    
+    public boolean getHideOres() {
+        return hideores;
+    }
+    /* Map block ID to aliased ID - used to hide ores */
+    public int getBlockIDAlias(int id) {
+        if(!hideores) return id;
+        switch(id) {
+            case 14:    /* Gold Ore */
+            case 15:    /* Iron Ore */
+            case 16:    /* Coal Ore */
+            case 21:    /* Lapis Lazuli Ore */
+            case 56:    /* Diamond Ore */
+            case 73:    /* Redstone ore */
+                return 1;   /* Stone */
+        }
+        return id;
     }
 }

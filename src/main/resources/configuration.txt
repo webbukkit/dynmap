@@ -240,6 +240,9 @@ enabletilehash: true
 # Optional - control darkening of biome-shaded colors in swamp biomes (1.9+) - default is true for 1.9+, false for 1.8.x
 #swampshaded: false
 
+# Optional - hide ores: render as normal stone (so that they aren't revealed by maps)
+#hideores: true
+
 render-triggers:
   #- chunkloaded
   #- playermove

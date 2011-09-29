@@ -50,6 +50,7 @@ worlds:
   #   Use 'template: mycustomtemplate' to use the properties specified in the template 'mycustomtemplate' to this world. Default it is set to the environment-name (normal or nether).
   #  template: mycustomtemplate
   #   Rest of comes from template - uncomment to tailor for world specifically
+  #  # World center - default is spawn point
   #  center:
   #    x: 0
   #    y: 64

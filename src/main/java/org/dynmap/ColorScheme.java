@@ -28,6 +28,15 @@ public class ColorScheme {
         this.biomecolors = biomecolors;
         this.raincolors = raincolors;
         this.tempcolors = tempcolors;
+        if(MapManager.mapman.getHideOres()) {
+            for(int i = 0; i < colors.length; i++) {
+                int id = MapManager.mapman.getBlockIDAlias(i);
+                if(id != i) {
+                    this.colors[i] = this.colors[id];
+                    this.datacolors[i] = this.datacolors[id];
+                }
+            }
+        }
     }
 
     private static File getColorSchemeDirectory() {

@@ -23,6 +23,7 @@ import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
+import org.dynmap.MapManager;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.kzedmap.KzedMap;
@@ -183,6 +184,13 @@ public class TexturePack {
         public static BlockTransparency getTransparency(int blkid) {
             return transp[blkid];
         }
+        
+        private static void remapTexture(int id, int srcid) {
+            for(int i = 0; i < 16; i++) {
+                texmaps[(id<<4)+i] = texmaps[(srcid<<4)+i];
+            }
+        }
+
     }
     /** Get or load texture pack */
     public static TexturePack getTexturePack(String tpname) {
@@ -837,6 +845,20 @@ public class TexturePack {
             }
         }
     }
+
+    /* Process any ore hiding mappings */
+    public static void handleHideOres() {
+        /* Now, fix mapping if we're hiding any ores */
+        if(MapManager.mapman.getHideOres()) {
+            for(int i = 0; i < 256; i++) {
+                int id = MapManager.mapman.getBlockIDAlias(i);
+                if(id != i) {   /* New mapping? */
+                    HDTextureMap.remapTexture(i, id);
+                }
+            }
+        }
+    }
+
     /**
      * Read color for given subblock coordinate, with given block id and data and face
      */
