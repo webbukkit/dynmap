@@ -73,7 +73,7 @@ public class RegionsComponent extends ClientComponent {
     {
         File outputFile;
         org.bukkit.util.config.Configuration regionConfig = null;
-        Map<?, ?> regionData;
+        Map<?, ?> regionData = null;
         File webWorldPath;
         
         if(regiontype.equals("Towny")) {
@@ -86,10 +86,27 @@ public class RegionsComponent extends ClientComponent {
             outputFileName = "factions_" + wname + ".json";
             webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
         }
+        else if(regiontype.equals("Residence")) {
+            File f = new File("plugins/Residence/Save/Worlds", "res_" + wname + ".yml");
+            if(f.exists()) {
+                regionConfig = new org.bukkit.util.config.Configuration(f);
+            }
+            else {
+                f = new File("plugins/Residence", "res.yml");
+                if(f.exists()) {
+                    regionConfig = new org.bukkit.util.config.Configuration(f);
+                }
+            }
+            if(regionConfig == null) return;
+            outputFileName = "res_" + wname + ".json";
+            webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
+            regionConfig.load();
+            regionData = (Map<?, ?>) regionConfig.getProperty("Residences");
+        }
         else {
             if(configuration.getBoolean("useworldpath", false))
             {
-                if(new File("plugins/"+configuration.getString("name", "WorldGuard"), regionFile).exists())
+                if(new File("plugins/"+regiontype, regionFile).exists())
                     regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype, regionFile));
                 else if(new File("plugins/"+regiontype+"/worlds", regionFile).exists())
                     regionConfig = new org.bukkit.util.config.Configuration(new File("plugins/"+regiontype+"/worlds", regionFile));

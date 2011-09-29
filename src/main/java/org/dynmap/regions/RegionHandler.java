@@ -55,6 +55,25 @@ public class RegionHandler extends FileHandler {
         else if(regiontype.equals("Factions")) {
             regionData = factions.getRegionData(worldname);
         }
+        else if(regiontype.equals("Residence")) {
+            File f = new File("plugins/Residence/Save/Worlds", "res_" + worldname + ".yml");
+            if(f.exists()) {
+                regionConfig = new org.bukkit.util.config.Configuration(f);
+            }
+            else {
+                f = new File("plugins/Residence", "res.yml");
+                if(f.exists()) {
+                    regionConfig = new org.bukkit.util.config.Configuration(f);
+                }
+            }
+            if(regionConfig == null) return null;
+            regionConfig.load();
+            regionData = (Map<?, ?>) regionConfig.getProperty("Residences");
+            if(regionData == null) {
+                Log.severe("Region data from " + f.getPath() + " does not include basenode 'Residences'");
+                return null;
+            }
+        }
         else {
             /* If using worldpath, format is either plugins/<plugin>/<worldname>/<filename> OR 
              * plugins/<plugin>/worlds/<worldname>/<filename>
