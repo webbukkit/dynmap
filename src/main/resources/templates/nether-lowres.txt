@@ -9,12 +9,12 @@ templates:
   # Nether world template (HDMap lowres)
   nether-lowres:
     enabled: true
-  #  # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
-  #  extrazoomout: 3
-    center:
-      x: 0
-      y: 64
-      z: 0
+    # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+    extrazoomout: 2
+    #center:
+    #  x: 0
+    #  y: 64
+    #  z: 0
     maps:
       - class: org.dynmap.hdmap.HDMap
         name: flat

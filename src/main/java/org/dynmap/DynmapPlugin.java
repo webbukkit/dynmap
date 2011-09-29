@@ -787,7 +787,8 @@ public class DynmapPlugin extends JavaPlugin {
                         }
                         w = mapManager.getWorld(wname);
                         if(w != null) {
-                            Location loc = new Location(w.world, w.configuration.getFloat("center/x", 0.0f), w.configuration.getFloat("center/y", 64f), w.configuration.getFloat("center/z", 0.0f));
+                            Location spawn = w.world.getSpawnLocation();
+                            Location loc = new Location(w.world, w.configuration.getDouble("center/x", spawn.getX()), w.configuration.getDouble("center/y", spawn.getY()), w.configuration.getDouble("center/z", spawn.getZ()));
                             mapManager.renderFullWorld(loc,sender, map);
                         }
                         else

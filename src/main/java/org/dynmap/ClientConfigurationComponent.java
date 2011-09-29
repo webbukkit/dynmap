@@ -3,6 +3,7 @@ package org.dynmap;
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 
+import org.bukkit.Location;
 import org.dynmap.Event.Listener;
 import org.json.simple.JSONObject;
 
@@ -31,9 +32,10 @@ public class ClientConfigurationComponent extends Component {
                     JSONObject wo = new JSONObject();
                     s(wo, "name", wn.getString("name"));
                     s(wo, "title", wn.getString("title"));
-                    s(wo, "center/x", wn.getFloat("center/x", 0.0f));
-                    s(wo, "center/y", wn.getFloat("center/y", 64.0f));
-                    s(wo, "center/z", wn.getFloat("center/z", 0.0f));
+                    Location spawn = world.world.getSpawnLocation();
+                    s(wo, "center/x", wn.getDouble("center/x", spawn.getX()));
+                    s(wo, "center/y", wn.getDouble("center/y", spawn.getY()));
+                    s(wo, "center/z", wn.getDouble("center/z", spawn.getZ()));
                     s(wo, "bigworld", world.bigworld);
                     s(wo, "extrazoomout", world.getExtraZoomOutLevels());
                     a(t, "worlds", wo);
