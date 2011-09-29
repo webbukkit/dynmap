@@ -63,7 +63,8 @@ components:
     type: chatbox
     showplayerfaces: true
     messagettl: 5
-    scrollback: 100
+    # Optional: set number of lines in scrollable message history: if set, messagettl is not used to age out messages
+    #scrollback: 100
   - class: org.dynmap.ClientComponent
     type: playermarkers
     showplayerfaces: true
