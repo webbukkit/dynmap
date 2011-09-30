@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,12 +52,16 @@ public class TownyConfigHandler {
      */
     public Map<String, Object> getRegionData(String wname) {
         Map<String, Object> rslt = new HashMap<String, Object>();
-        Properties p = new Properties();
         FileInputStream fis = null;
-        /* Read world data for this world */
+        List<String> towns = new LinkedList<String>();
+        /* Get town list */
         try {
-            fis = new FileInputStream("plugins/Towny/data/worlds/" + wname + ".txt");    /* Open and load file */
-            p.load(fis);
+            fis = new FileInputStream("plugins/Towny/data/towns.txt");    /* Open and load file */
+            LineNumberReader rdr = new LineNumberReader(new InputStreamReader(fis));
+            String id;
+            while((id = rdr.readLine()) != null) {
+                towns.add(id);
+            }
         } catch (IOException iox) {
             Log.severe("Error loading Towny world file " + wname + ".txt");
         } finally {
@@ -62,9 +69,6 @@ public class TownyConfigHandler {
                 try { fis.close(); } catch (IOException iox) {}
             }
         }
-        /* Get towns list for our world */
-        String t = p.getProperty("towns", "");
-        String towns[] = t.split(",");	/* Split on commas */
         /* List towns directory - process all towns there */
         for(String town : towns) {
         	town = town.trim();
@@ -125,7 +129,6 @@ public class TownyConfigHandler {
         TileFlags blks = new TileFlags();
         LinkedList<int[]> nodevals = new LinkedList<int[]>();
         boolean worldmatch = false;
-        
         for(String n: nodes) {
             /* Is world prefix? */
             int idx = n.indexOf(':');
