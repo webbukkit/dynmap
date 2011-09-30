@@ -84,6 +84,8 @@ public class DynmapPlugin extends JavaPlugin {
     public Events events = new Events();
     public String deftemplatesuffix = "";
     boolean swampshading = false;
+    boolean fencejoin = false;
+
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
     private boolean generate_only = false;
@@ -251,6 +253,8 @@ public class DynmapPlugin extends JavaPlugin {
         deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
         /* Default swamp shading off for 1.8, on after */
         swampshading = configuration.getBoolean("swampshaded", !getServer().getVersion().contains("(MC: 1.8"));
+        /* Default fence-to-block-join off for 1.8, on after */
+        fencejoin = configuration.getBoolean("fence-to-block-join", !getServer().getVersion().contains("(MC: 1.8"));
         
         loadDebuggers();
 

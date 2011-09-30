@@ -1144,7 +1144,11 @@ public class MapManager {
     public boolean getSwampShading() {
         return plug_in.swampshading;
     }
-    
+
+    public boolean getFenceJoin() {
+        return plug_in.fencejoin;
+    }
+
     public boolean getHideOres() {
         return hideores;
     }
