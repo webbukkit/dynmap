@@ -33,3 +33,8 @@ lightings:
       shadowstrength: 1.0
       ambientlight: 8
       night-and-day: true
+    # Shadows enabled nether
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: nethershadows
+      shadowstrength: 0.5
+      

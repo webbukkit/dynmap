@@ -32,7 +32,7 @@ templates:
         prefix: nt
         perspective: iso_SE_30_hires
         shader: stdtexture
-        lighting: shadows
+        lighting: nethershadows
         # Map background color (day or night)
         background: "#300806"
         mapzoomin: 1

@@ -33,7 +33,7 @@ templates:
         prefix: nt
         perspective: iso_SE_60_lowres
         shader: stdtexture
-        lighting: default
+        lighting: nethershadows
         # Map background color (day or night)
         background: "#300806"
         # Adjust extra zoom in levels - default is 2

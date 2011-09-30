@@ -34,5 +34,6 @@ templates:
             prefix: nt
             maximumheight: 127
             colorscheme: default
+            shadowstrength: 0.5
             # Map background color (day or night)
             background: "#300806"
