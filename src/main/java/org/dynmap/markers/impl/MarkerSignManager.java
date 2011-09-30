@@ -53,7 +53,10 @@ public class MarkerSignManager {
                         evt.setLine(i, "");
                     }
                     else if(label.length() == 0) {
-                        label = v;
+                        label = escapeMarkup(v);
+                    }
+                    else {
+                        label = label + "<br/>" + escapeMarkup(v);
                     }
                 }
                 /* Get the set and see if the marker is already defined */
@@ -76,7 +79,7 @@ public class MarkerSignManager {
                     marker.setMarkerIcon(mi);
                 }
                 else {  /* Make new marker */
-                    marker = ms.createMarker(id, label, loc.getWorld().getName(), loc.getX() + 0.5, loc.getY() + 0.5, loc.getZ() + 0.5,
+                    marker = ms.createMarker(id, label, true, loc.getWorld().getName(), loc.getX() + 0.5, loc.getY() + 0.5, loc.getZ() + 0.5,
                                              mi, true);
                     if(marker == null) {
                         if(p != null) p.sendMessage("Bad marker - [dynmap] sign invalid");
@@ -107,6 +110,14 @@ public class MarkerSignManager {
     }
     private static SignListener sl = null;  /* Do once - /dynmap reload doesn't reset listeners */
 
+    private static String escapeMarkup(String v) {
+        v = v.replace("&", "&amp;");
+        v = v.replace("\"", "&quote;");
+        v = v.replace("<", "&lt;");
+        v = v.replace(">", "&gt;");
+        return v;
+    }
+    
     public static MarkerSignManager initializeSignManager(DynmapPlugin plugin) {
         mgr = new MarkerSignManager();
         if(sl == null) {
