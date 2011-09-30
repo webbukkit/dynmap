@@ -37,4 +37,4 @@ lightings:
     - class: org.dynmap.hdmap.ShadowHDLighting
       name: nethershadows
       shadowstrength: 0.5
-      
+      ambientlight: 4
