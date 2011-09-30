@@ -59,6 +59,10 @@ class MarkerSetImpl implements MarkerSet {
 
     @Override
     public Marker createMarker(String id, String label, String world, double x, double y, double z, MarkerIcon icon, boolean is_persistent) {
+        return createMarker(id, label, false, world, x, y, z, icon, is_persistent);
+    }
+    @Override
+    public Marker createMarker(String id, String label, boolean markup, String world, double x, double y, double z, MarkerIcon icon, boolean is_persistent) {
         if(id == null) {    /* If not defined, generate unique one */
             int i = 0;
             do {
@@ -72,7 +76,7 @@ class MarkerSetImpl implements MarkerSet {
         if((allowedicons != null) && (allowedicons.containsKey(icon.getMarkerIconID()) == false)) return null;
         /* Create marker */
         is_persistent = is_persistent && this.ispersistent;
-        MarkerImpl marker = new MarkerImpl(id, label, world, x, y, z, (MarkerIconImpl)icon, is_persistent, this);
+        MarkerImpl marker = new MarkerImpl(id, label, markup, world, x, y, z, (MarkerIconImpl)icon, is_persistent, this);
         markers.put(id, marker);    /* Add to set */
         if(is_persistent)
             MarkerAPIImpl.saveMarkers();

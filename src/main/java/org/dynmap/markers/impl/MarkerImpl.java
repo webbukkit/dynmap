@@ -14,6 +14,7 @@ import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 class MarkerImpl implements Marker {
     private String markerid;
     private String label;
+    private boolean markup;
     private MarkerSetImpl markerset;
     private double x, y, z;
     private String world;
@@ -24,6 +25,7 @@ class MarkerImpl implements Marker {
      * Create marker
      * @param id - marker ID
      * @param lbl - label
+     * @param markup - if true, label is HTML markup
      * @param world - world id
      * @param x - x coord
      * @param y - y coord
@@ -31,12 +33,13 @@ class MarkerImpl implements Marker {
      * @param icon - marker icon
      * @param persistent - true if persistent
      */
-    MarkerImpl(String id, String lbl, String world, double x, double y, double z, MarkerIconImpl icon, boolean persistent, MarkerSetImpl set) {
+    MarkerImpl(String id, String lbl, boolean markup, String world, double x, double y, double z, MarkerIconImpl icon, boolean persistent, MarkerSetImpl set) {
         markerid = id;
         if(lbl != null)
             label = lbl;
         else
             label = id;
+        this.markup = markup;
         this.x = x; this.y = y; this.z = z;
         this.world = world;
         this.icon = icon;
@@ -52,6 +55,7 @@ class MarkerImpl implements Marker {
         markerid = id;
         markerset = set;
         label = id;
+        markup = false;
         x = z = 0; y = 64; world = "world";
         icon = MarkerAPIImpl.getMarkerIconImpl(MarkerIcon.DEFAULT);
     }
@@ -61,6 +65,7 @@ class MarkerImpl implements Marker {
      */
     boolean loadPersistentData(ConfigurationNode node) {
         label = node.getString("label", markerid);
+        markup = node.getBoolean("markup", false);
         x = node.getDouble("x", 0);
         y = node.getDouble("y", 64);
         z = node.getDouble("z", 0);
@@ -127,7 +132,13 @@ class MarkerImpl implements Marker {
 
     @Override
     public void setLabel(String lbl) {
+        setLabel(lbl, false);
+    }
+    
+    @Override
+    public void setLabel(String lbl, boolean markup) {
         label = lbl;
+        this.markup = markup;
         MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)
             MarkerAPIImpl.saveMarkers();
@@ -142,6 +153,7 @@ class MarkerImpl implements Marker {
             return null;
         HashMap<String, Object> node = new HashMap<String, Object>();
         node.put("label", label);
+        node.put("markup", markup);
         node.put("x", Double.valueOf(x));
         node.put("y", Double.valueOf(y));
         node.put("z", Double.valueOf(z));
@@ -175,5 +187,9 @@ class MarkerImpl implements Marker {
         MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)
             MarkerAPIImpl.saveMarkers();
+    }
+    @Override
+    public boolean isLabelMarkup() {
+        return markup;
     }
 }

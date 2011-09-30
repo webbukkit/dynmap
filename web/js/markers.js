@@ -36,7 +36,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				}
 				dynmapmarkersets[name] = ms;
 				$.each(markerset.markers, function(mname, marker) {
-					ms.markers[mname] = { label: marker.label, x: marker.x, y: marker.y, z:marker.z,
+					ms.markers[mname] = { label: marker.label, markup: marker.markup, x: marker.x, y: marker.y, z:marker.z,
 						icon: marker.icon };
 					createMarker(ms, ms.markers[mname], ts);
 				});
@@ -59,8 +59,14 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$(div)
 				.addClass('Marker')
 				.addClass('mapMarker')
-				.append($('<img/>').addClass('markerIcon16x16').attr({ src: dynmap.options.tileUrl+'_markers_/'+marker.icon+'.png' }))
-				.append($('<span/>')
+				.append($('<img/>').addClass('markerIcon16x16').attr({ src: dynmap.options.tileUrl+'_markers_/'+marker.icon+'.png' }));
+			if(marker.markup) {
+				$(div).append($('<span/>')
+					.addClass(configuration.showlabel?'markerName-show':'markerName')
+					.append(marker.label));
+			}
+			else
+				$(div).append($('<span/>')
 					.addClass(configuration.showlabel?'markerName-show':'markerName')
 					.text(marker.label));
 			return div;
@@ -86,7 +92,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				dynmapmarkersets[msg.set].layergroup.removeLayer(marker.our_marker);
 				delete marker.our_marker;
 			}
-			marker = { x: msg.x, y: msg.y, z: msg.z, icon: msg.icon, label: msg.label };
+			marker = { x: msg.x, y: msg.y, z: msg.z, icon: msg.icon, label: msg.label, markup: msg.markup };
 			dynmapmarkersets[msg.set].markers[msg.id] = marker;
 			createMarker(dynmapmarkersets[msg.set], marker);
 		}

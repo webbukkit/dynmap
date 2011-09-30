@@ -1053,6 +1053,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 mdata.put("z", m.getZ());
                 mdata.put("icon", m.getMarkerIcon().getMarkerIconID());
                 mdata.put("label", m.getLabel());
+                mdata.put("markup", m.isLabelMarkup());
                 /* Add to markers */
                 markers.put(m.getMarkerID(), mdata);
             }

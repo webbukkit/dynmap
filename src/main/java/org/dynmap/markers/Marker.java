@@ -68,7 +68,17 @@ public interface Marker {
      */
     public String getLabel();
     /**
-     * Update the marker's label
+     * Update the marker's label (plain text)
      */
     public void setLabel(String lbl);
+    /**
+     * Update the marker's label and markup flag
+     * @param label - label string
+     * @param markup - if true, label is processed as HTML (innerHTML for <span> used for label); false implies plaintext
+     */
+    public void setLabel(String lbl, boolean markup);
+    /**
+     * Test if marker label is processed as HTML
+     */
+    public boolean isLabelMarkup();
 }
