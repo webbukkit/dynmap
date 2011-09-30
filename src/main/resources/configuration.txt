@@ -245,6 +245,9 @@ enabletilehash: true
 # Optional - hide ores: render as normal stone (so that they aren't revealed by maps)
 #hideores: true
 
+# Optional - control rendering of fences (joining to blocks, as in 1.9+) - default is true for 1.9+, false for 1.8.x
+#fence-to-block-join: true
+
 render-triggers:
   #- chunkloaded
   #- playermove
