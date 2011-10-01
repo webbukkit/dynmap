@@ -142,13 +142,13 @@ block:id=29,data=13,north=109,south=110,top=5262,bottom=262,east=4262,west=6262
 # Web
 block:id=30,allfaces=11
 # Dead shrub
-block:id=31,data=0,allsides=55,top=20,transparency=TRANSPARENT
+block:id=31,data=0,allsides=55,transparency=TRANSPARENT
 # Tall Grass
 block:id=31,data=1,allfaces=1039,transparency=TRANSPARENT
 # Fern
-block:id=31,data=2,allsides=1056,top=1000,transparency=TRANSPARENT
+block:id=31,data=2,allsides=1056,transparency=TRANSPARENT
 # Dead shrub
-block:id=32,allsides=55,top=20,transparency=TRANSPARENT
+block:id=32,allsides=55,transparency=TRANSPARENT
 # Piston - facing down
 block:id=33,data=0,top=109,bottom=107,allsides=5108
 # Piston - facing up
@@ -232,13 +232,13 @@ block:id=35,data=15,allfaces=113
 # Block move by piston - don't render
 block:id=36
 # Dandelion
-block:id=37,allsides=13,top=162,transparency=TRANSPARENT
+block:id=37,allsides=13,transparency=TRANSPARENT
 # Rose
-block:id=38,allsides=12,top=129,transparency=TRANSPARENT
+block:id=38,allsides=12,transparency=TRANSPARENT
 # Brown mushroom
-block:id=39,allsides=29,top=161,transparency=TRANSPARENT
+block:id=39,allsides=29,transparency=TRANSPARENT
 # Red mushroom
-block:id=40,allsides=28,top=129,transparency=TRANSPARENT
+block:id=40,allsides=28,transparency=TRANSPARENT
 # Gold block
 block:id=41,allfaces=23
 # Iron block
@@ -324,21 +324,21 @@ block:id=57,allfaces=24
 # Crafting table
 block:id=58,topbottom=43,east=59,west=59,north=60,south=60
 # Crops (size 1)
-block:id=59,data=0,allsides=88,top=1000,transparency=TRANSPARENT
+block:id=59,data=0,allsides=88,transparency=TRANSPARENT
 # Crops (size 2)
-block:id=59,data=1,allsides=89,top=1000,transparency=TRANSPARENT
+block:id=59,data=1,allsides=89,transparency=TRANSPARENT
 # Crops (size 3)
-block:id=59,data=2,allsides=90,top=1000,transparency=TRANSPARENT
+block:id=59,data=2,allsides=90,transparency=TRANSPARENT
 # Crops (size 4)
-block:id=59,data=3,allsides=91,top=1000,transparency=TRANSPARENT
+block:id=59,data=3,allsides=91,transparency=TRANSPARENT
 # Crops (size 5)
-block:id=59,data=4,allsides=92,top=1000,transparency=TRANSPARENT
+block:id=59,data=4,allsides=92,transparency=TRANSPARENT
 # Crops (size 6)
-block:id=59,data=5,allsides=93,top=1000,transparency=TRANSPARENT
+block:id=59,data=5,allsides=93,transparency=TRANSPARENT
 # Crops (size 7)
-block:id=59,data=6,allsides=94,top=1000,transparency=TRANSPARENT
+block:id=59,data=6,allsides=94,transparency=TRANSPARENT
 # Crops (size 8)
-block:id=59,data=7,allsides=95,top=1000,transparency=TRANSPARENT
+block:id=59,data=7,allsides=95,transparency=TRANSPARENT
 # Farmland (dry)
 block:id=60,data=0,top=87,allsides=2,bottom=2
 # Farmland (wet)
