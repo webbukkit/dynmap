@@ -3,6 +3,8 @@ package org.dynmap;
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -66,6 +68,22 @@ public class ClientUpdateComponent extends Component {
                 s(jp, "armor", 0);
             }
             a(u, "players", jp);
+        }
+        if(configuration.getBoolean("includehiddenplayers", false)) {
+            Set<Player> hidden = plugin.playerList.getHiddenPlayers();
+            for(Player p : hidden) {
+                JSONObject jp = new JSONObject();
+                s(jp, "type", "player");
+                s(jp, "name", ChatColor.stripColor(p.getDisplayName()));
+                s(jp, "account", p.getName());
+                s(jp, "world", "-hidden-player-");
+                s(jp, "x", 0.0);
+                s(jp, "y", 64.0);
+                s(jp, "z", 0.0);
+                s(jp, "health", 0);
+                s(jp, "armor", 0);
+                a(u, "players", jp);
+            }
         }
 
         s(u, "updates", new JSONArray());

@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -100,5 +101,18 @@ public class PlayerList {
         Player[] result = new Player[visiblePlayers.size()];
         visiblePlayers.toArray(result);
         return result;
+    }
+    
+    public Set<Player> getHiddenPlayers() {
+        HashSet<Player> hidden = new HashSet<Player>();
+        Player[] onlinePlayers = server.getOnlinePlayers();
+        boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
+        for (int i = 0; i < onlinePlayers.length; i++) {
+            Player p = onlinePlayers[i];
+            if (useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase())) {
+                hidden.add(p);
+            }
+        }
+        return hidden;
     }
 }

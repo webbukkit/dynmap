@@ -21,6 +21,7 @@ components:
     webchat-interval: 5
     hidewebchatip: false
     trustclientname: false
+    includehiddenplayers: false
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
@@ -28,6 +29,7 @@ components:
   #  allowwebchat: false
   #  webchat-interval: 5
   #  hidewebchatip: false
+  #  includehiddenplayers: false
   
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
