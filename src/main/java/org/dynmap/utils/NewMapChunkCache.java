@@ -1,5 +1,6 @@
 package org.dynmap.utils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,6 +28,13 @@ public class NewMapChunkCache implements MapChunkCache {
     private static Method poppreservedchunk = null;
     private static Method gethandle = null;
     private static Method removeentities = null;
+    private static Method getworldchunkmgr = null;
+    private static Method getbiomedata = null;
+    private static Method getworldhandle = null;    
+    private static Field  chunkbiome = null;
+    private static boolean canusebiomefix = false;
+    private static boolean biomefixtested = false;
+    private static boolean biomefixneeded = false;
     
     private World w;
     private List<DynmapChunk> chunks;
@@ -41,9 +49,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean do_generate = false;
     private boolean do_save = false;
     private boolean isempty = true;
-    private static final Biome[] EMPTYBIOME = new Biome[256];
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    private Biome[][] biomess;    /* Biome snapshots (workaround) - same index as snaparray */
     
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
@@ -54,7 +60,6 @@ public class NewMapChunkCache implements MapChunkCache {
     public class OurMapIterator implements MapIterator {
         private int x, y, z, chunkindex, bx, bz;  
         private ChunkSnapshot snap;
-        private Biome[] bio;
         private BlockStep laststep;
         private int typeid = -1;
         private int blkdata = -1;
@@ -71,10 +76,8 @@ public class NewMapChunkCache implements MapChunkCache {
             this.bz = z & 0xF;
             try {
                 snap = snaparray[chunkindex];
-                bio = biomess[chunkindex];
             } catch (ArrayIndexOutOfBoundsException aioobx) {
                 snap = EMPTY;
-                bio = EMPTYBIOME;
             }
             laststep = BlockStep.Y_MINUS;
             typeid = blkdata = -1;
@@ -99,7 +102,7 @@ public class NewMapChunkCache implements MapChunkCache {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
         public Biome getBiome() {
-            return bio[bx | (bz<<4)];
+            return snap.getBiome(bx, bz);
         }
         public double getRawBiomeTemperature() {
             return snap.getRawBiomeTemperature(bx, bz);
@@ -120,10 +123,8 @@ public class NewMapChunkCache implements MapChunkCache {
                             bx = 0;
                             chunkindex++;
                             snap = snaparray[chunkindex];
-                            bio = biomess[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
-                            bio = EMPTYBIOME;
                         }
                     }
                     break;
@@ -138,10 +139,8 @@ public class NewMapChunkCache implements MapChunkCache {
                             bz = 0;
                             chunkindex += x_dim;
                             snap = snaparray[chunkindex];
-                            bio = biomess[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
-                            bio = EMPTYBIOME;
                         }
                     }
                     break;
@@ -153,10 +152,8 @@ public class NewMapChunkCache implements MapChunkCache {
                             bx = 15;
                             chunkindex--;
                             snap = snaparray[chunkindex];
-                            bio = biomess[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
-                            bio = EMPTYBIOME;
                         }
                     }
                     break;
@@ -171,10 +168,8 @@ public class NewMapChunkCache implements MapChunkCache {
                             bz = 15;
                             chunkindex -= x_dim;
                             snap = snaparray[chunkindex];
-                            bio = biomess[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
-                            bio = EMPTYBIOME;
                         }
                     }
                     break;
@@ -324,6 +319,8 @@ public class NewMapChunkCache implements MapChunkCache {
             try {
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftWorld");
                 poppreservedchunk = c.getDeclaredMethod("popPreservedChunk", new Class[] { int.class, int.class });
+                /* getHandle() */
+                getworldhandle = c.getDeclaredMethod("getHandle", new Class[0]);
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
@@ -341,8 +338,40 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
+            
+            /* Get WorldChunkManager.b(float[],int,int,int,int) and WorldChunkManager.a(float[],int,int,int,int) */
+            try {
+                Class c = Class.forName("net.minecraft.server.WorldChunkManager");
+                Class biomebasearray = Class.forName("[Lnet.minecraft.server.BiomeBase;");
+                getbiomedata = c.getDeclaredMethod("a", new Class[] { biomebasearray, int.class, int.class, int.class, int.class });
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
+            
+            /* getWorldChunkManager() */
+            try {
+                Class c = Class.forName("net.minecraft.server.World");
+                getworldchunkmgr = c.getDeclaredMethod("getWorldChunkManager", new Class[0]);
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
+            /* Get CraftChunkSnapshot.biome field */
+            try {
+                Class c = Class.forName("org.bukkit.craftbukkit.CraftChunkSnapshot");
+                chunkbiome = c.getDeclaredField("biome");
+                chunkbiome.setAccessible(true);
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchFieldException nsmx) {
+            }
 
             init = true;
+            if((getworldchunkmgr != null) && (getbiomedata != null) && (getworldhandle != null) && (chunkbiome != null)) {
+                canusebiomefix = true;
+            }
+            else {
+                biomefixtested = true;
+                biomefixneeded = false;
+            }
         }
     }
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -386,7 +415,6 @@ public class NewMapChunkCache implements MapChunkCache {
         }
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
-        biomess = new Biome[snaparray.length][];
     }
 
     public int loadChunks(int max_to_load) {
@@ -416,13 +444,6 @@ public class NewMapChunkCache implements MapChunkCache {
                         break;
                     }
                 }
-            }
-            if(biome) {
-                Biome[] b = new Biome[256];
-                for(int ii = 0; ii < 256; ii++) {
-                    b[ii] = w.getBiome((chunk.x<<4)+(ii & 0xF), (chunk.z<<4) + (ii >> 4));
-                }
-                biomess[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = b;
             }
             /* Check if cached chunk snapshot found */
             ChunkSnapshot ss = MapManager.mapman.sscache.getSnapshot(w.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
@@ -461,6 +482,10 @@ public class NewMapChunkCache implements MapChunkCache {
                     else
                         ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
                     if(ss != null) {
+                        if(!biomefixtested) /* Test for biome fix */
+                            testIfBiomeFixNeeded(w, ss);
+                        if(biomefixneeded && biome)  /* If needed, apply it */
+                            doBiomeFix(w, ss);
                         MapManager.mapman.sscache.putSnapshot(w.getName(), chunk.x, chunk.z, ss, blockdata, biome, biomeraw, highesty);
                     }
                 }
@@ -518,11 +543,44 @@ public class NewMapChunkCache implements MapChunkCache {
                     snaparray[i] = EMPTY;
                 else if(snaparray[i] != EMPTY)
                     isempty = false;
-                if(biome && biomess[i] == null)
-                    biomess[i] = new Biome[256];
             }
         }
         return cnt;
+    }
+    /**
+     * Test if biome fix needed, using loaded snapshot
+     */
+    private boolean testIfBiomeFixNeeded(World w, ChunkSnapshot ss) {
+        if(biomefixtested == false) {
+            biomefixtested = true;
+            for(int i = 0; (!biomefixneeded) && (i < 16); i++) {
+                for(int j = 0; j < 16; j++) {
+                    if(w.getBiome((ss.getX()<<4)+i, (ss.getZ()<<4)+j) != ss.getBiome(i, j)) {   /* Mismatch? */
+                        biomefixneeded = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return biomefixneeded;
+    }
+    /**
+     * Use biome fix to patch snapshot data
+     */
+    private void doBiomeFix(World w, ChunkSnapshot ss) {
+        if(biomefixneeded && canusebiomefix) {
+            try {
+                Object wh = getworldhandle.invoke(w);   /* World.getHandle() */
+                Object wcm = getworldchunkmgr.invoke(wh);   /* CraftWorld.getWorldChunkManager() */
+                Object biomefield = chunkbiome.get(ss); /* Get ss.biome */
+                if(biomefield != null) {
+                    getbiomedata.invoke(wcm, biomefield, (int)(ss.getX()<<4), (int)(ss.getZ()<<4), 16, 16); /* Get biome data */
+                }
+            } catch (InvocationTargetException itx) {
+            } catch (IllegalArgumentException e) {
+            } catch (IllegalAccessException e) {
+            }
+        }
     }
     /**
      * Test if done loading
@@ -583,8 +641,8 @@ public class NewMapChunkCache implements MapChunkCache {
         return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
     }
     public Biome getBiome(int x, int z) {
-        Biome[] b = biomess[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return b[(x & 0xF) | ((z & 0xF)<<4)];
+        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
+        return ss.getBiome(x & 0xF, z & 0xF);
     }
     public double getRawBiomeTemperature(int x, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
