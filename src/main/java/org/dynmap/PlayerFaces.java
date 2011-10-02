@@ -26,7 +26,8 @@ public class PlayerFaces {
     private File faces8x8dir;
     private File faces16x16dir;
     private File faces32x32dir;
-
+    private boolean fetchskins;
+    private boolean refreshskins;
     
     private class LoadPlayerImages implements Runnable {
         public String playername;
@@ -34,10 +35,20 @@ public class PlayerFaces {
             this.playername = playername;
         }
         public void run() {
+            File img_8x8 = new File(faces8x8dir, playername + ".png");
+            File img_16x16 = new File(faces16x16dir, playername + ".png");
+            File img_32x32 = new File(faces32x32dir, playername + ".png");
+            boolean has_8x8 = img_8x8.exists();
+            boolean has_16x16 = img_16x16.exists();
+            boolean has_32x32 = img_32x32.exists();
+            boolean missing_any = !(has_8x8 && has_16x16 && has_32x32);
+            
             BufferedImage img = null;
             try {
-                URL url = new URL("http://s3.amazonaws.com/MinecraftSkins/" + playername + ".png");
-                img = ImageIO.read(url);    /* Load skin for player */
+                if(fetchskins && (refreshskins || missing_any)) {
+                    URL url = new URL("http://s3.amazonaws.com/MinecraftSkins/" + playername + ".png");
+                    img = ImageIO.read(url);    /* Load skin for player */
+                }
             } catch (IOException iox) {
                 Debug.debug("Error loading skin for '" + playername + "' - " + iox);
             }
@@ -73,49 +84,52 @@ public class PlayerFaces {
                 }
             }
             /* Write 8x8 file */
-            File img_8x8 = new File(faces8x8dir, playername + ".png");
-            FileLockManager.getWriteLock(img_8x8);
-            try {
-                FileLockManager.imageIOWrite(face8x8.buf_img, ImageFormat.FORMAT_PNG, img_8x8);
-            } catch (IOException iox) {
-                Log.severe("Cannot write player icon " + img_8x8.getPath());
-            }
-            FileLockManager.releaseWriteLock(img_8x8);
-            /* Make 16x16 version */
-            DynmapBufferedImage face16x16 = DynmapBufferedImage.allocateBufferedImage(16, 16);
-            for(int i = 0; i < 16; i++) {
-                for(int j = 0; j < 16; j++) {
-                    face16x16.argb_buf[i*16+j] = face8x8.argb_buf[(i/2)*8 + (j/2)];
+            if(refreshskins || (!has_8x8)) {
+                FileLockManager.getWriteLock(img_8x8);
+                try {
+                    FileLockManager.imageIOWrite(face8x8.buf_img, ImageFormat.FORMAT_PNG, img_8x8);
+                } catch (IOException iox) {
+                    Log.severe("Cannot write player icon " + img_8x8.getPath());
                 }
+                FileLockManager.releaseWriteLock(img_8x8);
             }
             /* Write 16x16 file */
-            File img_16x16 = new File(faces16x16dir, playername + ".png");
-            FileLockManager.getWriteLock(img_16x16);
-            try {
-                FileLockManager.imageIOWrite(face16x16.buf_img, ImageFormat.FORMAT_PNG, img_16x16);
-            } catch (IOException iox) {
-                Log.severe("Cannot write player icon " + img_16x16.getPath());
-            }
-            FileLockManager.releaseWriteLock(img_16x16);
-            DynmapBufferedImage.freeBufferedImage(face16x16);
-
-            /* Make 32x32 version */
-            DynmapBufferedImage face32x32 = DynmapBufferedImage.allocateBufferedImage(32, 32);
-            for(int i = 0; i < 32; i++) {
-                for(int j = 0; j < 32; j++) {
-                    face32x32.argb_buf[i*32+j] = face8x8.argb_buf[(i/4)*8 + (j/4)];
+            if(refreshskins || (!has_16x16)) {
+                /* Make 16x16 version */
+                DynmapBufferedImage face16x16 = DynmapBufferedImage.allocateBufferedImage(16, 16);
+                for(int i = 0; i < 16; i++) {
+                    for(int j = 0; j < 16; j++) {
+                        face16x16.argb_buf[i*16+j] = face8x8.argb_buf[(i/2)*8 + (j/2)];
+                    }
                 }
+                FileLockManager.getWriteLock(img_16x16);
+                try {
+                    FileLockManager.imageIOWrite(face16x16.buf_img, ImageFormat.FORMAT_PNG, img_16x16);
+                } catch (IOException iox) {
+                    Log.severe("Cannot write player icon " + img_16x16.getPath());
+                }
+                FileLockManager.releaseWriteLock(img_16x16);
+                DynmapBufferedImage.freeBufferedImage(face16x16);
             }
+
             /* Write 32x32 file */
-            File img_32x32 = new File(faces32x32dir, playername + ".png");
-            FileLockManager.getWriteLock(img_32x32);
-            try {
-                FileLockManager.imageIOWrite(face32x32.buf_img, ImageFormat.FORMAT_PNG, img_32x32);
-            } catch (IOException iox) {
-                Log.severe("Cannot write player icon " + img_32x32.getPath());
+            if(refreshskins || (!has_32x32)) {
+                /* Make 32x32 version */
+                DynmapBufferedImage face32x32 = DynmapBufferedImage.allocateBufferedImage(32, 32);
+                for(int i = 0; i < 32; i++) {
+                    for(int j = 0; j < 32; j++) {
+                        face32x32.argb_buf[i*32+j] = face8x8.argb_buf[(i/4)*8 + (j/4)];
+                    }
+                }
+                FileLockManager.getWriteLock(img_32x32);
+                try {
+                    FileLockManager.imageIOWrite(face32x32.buf_img, ImageFormat.FORMAT_PNG, img_32x32);
+                } catch (IOException iox) {
+                    Log.severe("Cannot write player icon " + img_32x32.getPath());
+                }
+                FileLockManager.releaseWriteLock(img_32x32);
+                DynmapBufferedImage.freeBufferedImage(face32x32);
             }
-            FileLockManager.releaseWriteLock(img_32x32);
-            DynmapBufferedImage.freeBufferedImage(face32x32);
             
             DynmapBufferedImage.freeBufferedImage(face8x8);
             /* TODO: signal update for player icon to client */
@@ -124,13 +138,20 @@ public class PlayerFaces {
     private class LoginListener extends PlayerListener {
         @Override
         public void onPlayerLogin(PlayerLoginEvent event) {
-            MapManager.scheduleDelayedJob(new LoadPlayerImages(event.getPlayer().getName()), 0);
+            Runnable job = new LoadPlayerImages(event.getPlayer().getName());
+            if(fetchskins)
+                MapManager.scheduleDelayedJob(job, 0);
+            else
+                job.run();
         }
     }
     public PlayerFaces(DynmapPlugin plugin) {
         this.plugin = plugin;
+        fetchskins = plugin.configuration.getBoolean("fetchskins", true);    /* Control whether to fetch skins */ 
+        refreshskins = plugin.configuration.getBoolean("refreshskins", true);    /* Control whether to update existing fetched skins or faces */ 
+
         plugin.registerEvent(Type.PLAYER_LOGIN, new LoginListener());
-        facesdir = new File(plugin.tilesDirectory, "faces");
+        facesdir = new File(DynmapPlugin.tilesDirectory, "faces");
         facesdir.mkdirs();  /* Make sure directory exists */
         faces8x8dir = new File(facesdir, "8x8");
         faces8x8dir.mkdirs();
@@ -139,6 +160,4 @@ public class PlayerFaces {
         faces32x32dir = new File(facesdir, "32x32");
         faces32x32dir.mkdirs();
     }
-
-    
 }

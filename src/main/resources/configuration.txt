@@ -258,6 +258,12 @@ enabletilehash: true
 # Optional - control rendering of fences (joining to blocks, as in 1.9+) - default is true for 1.9+, false for 1.8.x
 #fence-to-block-join: true
 
+# Control loading of player faces (if set to false, skins are never fetched)
+#fetchskins: false
+
+# Control updating of player faces, once loaded (if faces are being managed by other apps or manually)
+#refreshskins: false
+
 render-triggers:
   #- chunkloaded
   #- playermove
