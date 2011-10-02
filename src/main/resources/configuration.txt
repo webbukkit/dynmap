@@ -45,16 +45,17 @@ components:
   # Note: this component is needed for the dmarker commands, and for the Marker API to be available to other plugins
   - class: org.dynmap.MarkersComponent
     type: markers
-    # If set, shows labels all the time (default is only on hover)
     #showlabel: true
-    # If set, enables support for using signs for markers
     #enablesigns: true
-    # If set, show spawn points on each world
+    # (optional) add spawn point markers to standard marker layer
     showspawn: true
-    # Marker used for spawn point
     spawnicon: world
-    # Label for spawn points
     spawnlabel: "Spawn"
+    # (optional) layer for showing offline player's positions
+    #showofflineplayers: true
+    #offlinelabel: "Offline"
+    #offlineicon: offlineuser
+    #offlinehidebydefault: true
     
   - class: org.dynmap.ClientComponent
     type: chat
