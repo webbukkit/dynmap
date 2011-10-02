@@ -482,7 +482,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     else
                         ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
                     if(ss != null) {
-                        if(!biomefixtested) /* Test for biome fix */
+                        if((!biomefixtested) && biome) /* Test for biome fix */
                             testIfBiomeFixNeeded(w, ss);
                         if(biomefixneeded && biome)  /* If needed, apply it */
                             doBiomeFix(w, ss);
@@ -557,6 +557,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 for(int j = 0; j < 16; j++) {
                     if(w.getBiome((ss.getX()<<4)+i, (ss.getZ()<<4)+j) != ss.getBiome(i, j)) {   /* Mismatch? */
                         biomefixneeded = true;
+                        Log.info("Biome Snapshot fix active");
                         break;
                     }
                 }
