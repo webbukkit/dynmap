@@ -137,23 +137,20 @@ DynMap.prototype = {
 		/*google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 			me.followPlayer(null);
 		});*/
-
-		me.layercontrol = new DynmapLayerControl();
-		map.addControl(me.layercontrol);
 		
 		// Sidebar
 		var panel;
 		var sidebar;
 		var pinbutton;
-			
+		var nopanel = (me.getParameterByName('nopanel') == 'true');
+
 		if(me.options.sidebaropened != 'true') { // false or pinned
 			var pincls = 'pinned'
 			if(me.options.sidebaropened == 'false')
 				pincls = '';
 				
 			sidebar = me.sidebar = $('<div/>')
-					.addClass('sidebar ' + pincls)
-					.appendTo(container);
+					.addClass('sidebar ' + pincls);
 
 			panel = $('<div/>')
 				.addClass('panel')
@@ -169,13 +166,14 @@ DynMap.prototype = {
 		}
 		else {
 			sidebar = me.sidebar = $('<div/>')
-				.addClass('sidebar pinned')
-				.appendTo(container);
+				.addClass('sidebar pinned');
 
 			panel = $('<div/>')
 				.addClass('panel')
 				.appendTo(sidebar);
 		}
+		if(!nopanel)
+			sidebar.appendTo(container);
         
 		// Worlds
 		var worldlist;
@@ -704,6 +702,12 @@ DynMap.prototype = {
 	
 	addToLayerSelector: function(layer, name, priority) {
 		var me = this;
+
+		if(!me.layercontrol) {		
+			me.layercontrol = new DynmapLayerControl();
+			map.addControl(me.layercontrol);
+		}
+		
 		var i;
 		for(i = 0; i < me.layersetlist.length; i++) {
 			if(me.layersetlist[i].layer === layer) {
