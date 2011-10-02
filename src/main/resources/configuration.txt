@@ -95,7 +95,13 @@ components:
   #  type: logo
   #  text: "Dynmap"
   #  linkurl: "http://forums.bukkit.org/threads/dynmap.489/"
-  
+
+  #- class: org.dynmap.ClientComponent
+  #  type: inactive
+  #  timeout: 1800 # in seconds (1800 seconds = 30 minutes)
+  #  redirecturl: inactive.html
+  #  #showmessage: 'You were inactive for too long.'
+
   #- class: org.dynmap.regions.RegionsComponent
   #  type: regions
   #  name: WorldGuard
