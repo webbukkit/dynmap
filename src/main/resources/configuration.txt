@@ -94,6 +94,7 @@ components:
   #- class: org.dynmap.ClientComponent
   #  type: logo
   #  text: "Dynmap"
+  #  #logourl: "images/block_surface.png"
   #  linkurl: "http://forums.bukkit.org/threads/dynmap.489/"
 
   #- class: org.dynmap.ClientComponent
