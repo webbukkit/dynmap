@@ -115,4 +115,9 @@ public class PlayerList {
         }
         return hidden;
     }
+    
+    public boolean isVisiblePlayer(Player p) {
+        boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
+        return (!(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase())));
+    }
 }

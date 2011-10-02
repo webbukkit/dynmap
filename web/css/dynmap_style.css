@@ -787,6 +787,10 @@
 	margin-left: -8px;
 }
 
+.dynmap .mapMarker .markerName_offline_players {
+	font-style: italic; 
+}
+
 .dynmap .coord-control {
 	color: #000;
 	

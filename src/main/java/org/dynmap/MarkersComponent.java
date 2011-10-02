@@ -1,7 +1,13 @@
 package org.dynmap;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Type;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -19,8 +25,12 @@ public class MarkersComponent extends ClientComponent {
     private MarkerSignManager signmgr;
     private MarkerIcon spawnicon;
     private String spawnlbl;
+    private MarkerSet offlineset;
+    private MarkerIcon offlineicon;
     
-    public MarkersComponent(DynmapPlugin plugin, ConfigurationNode configuration) {
+    private static final String OFFLINE_PLAYERS_SETID = "offline_players";
+    
+    public MarkersComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
         super(plugin, configuration);
         /* Register API with plugin, if needed */
         if(plugin.markerAPIInitialized()) {
@@ -64,6 +74,52 @@ public class MarkersComponent extends ClientComponent {
                 Location loc = world.getSpawnLocation();
                 if(loc != null)
                     addUpdateWorld(world, loc);
+            }
+        }
+        /* If showing offline players as markers */
+        if(configuration.getBoolean("showofflineplayers", false)) {
+            /* Make set, if needed */
+            offlineset = api.getMarkerSet(OFFLINE_PLAYERS_SETID);
+            if(offlineset == null) {
+                offlineset = api.createMarkerSet(OFFLINE_PLAYERS_SETID, configuration.getString("offlinelabel", "Offline"), null, true);
+            }
+            offlineset.setHideByDefault(configuration.getBoolean("offlinehidebydefault", true));
+            
+            offlineicon = api.getMarkerIcon(configuration.getString("offlineicon", "offlineuser"));
+            
+            /* Add listener for players coming and going */
+            PlayerListener pl = new PlayerListener() {
+                @Override
+                public void onPlayerJoin(PlayerJoinEvent event) {
+                    Player p = event.getPlayer();
+                    Marker m = offlineset.findMarker(p.getName());
+                    if(m != null) {
+                        m.deleteMarker();
+                    }
+                }
+                @Override
+                public void onPlayerQuit(PlayerQuitEvent event) {
+                    Player p = event.getPlayer();
+                    Marker m = offlineset.findMarker(p.getName());
+                    if(m != null) {
+                        m.deleteMarker();
+                    }
+                    if(plugin.playerList.isVisiblePlayer(p)) {
+                        Location loc = p.getLocation();
+                        m = offlineset.createMarker(p.getName(), ChatColor.stripColor(p.getDisplayName()), false,
+                                                loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(),
+                                                offlineicon, true);
+                    }
+                }
+            };
+            plugin.registerEvent(Type.PLAYER_JOIN, pl);
+            plugin.registerEvent(Type.PLAYER_QUIT, pl);
+        }
+        else {
+            /* Make set, if needed */
+            offlineset = api.getMarkerSet(OFFLINE_PLAYERS_SETID);
+            if(offlineset != null) {
+                offlineset.deleteMarkerSet();
             }
         }
     }

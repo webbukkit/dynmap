@@ -20,7 +20,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$.each(data.sets, function(name, markerset) {
 				var ms = dynmapmarkersets[name];
 				if(!ms) {
-					ms = { label: markerset.label, hide: markerset.hide, layerprio: markerset.layerprio, markers: {} } ;
+					ms = { id: name, label: markerset.label, hide: markerset.hide, layerprio: markerset.layerprio, markers: {} } ;
 					createMarkerSet(ms, ts);
 				}
 				else {
@@ -63,11 +63,13 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			if(marker.markup) {
 				$(div).append($('<span/>')
 					.addClass(configuration.showlabel?'markerName-show':'markerName')
+					.addClass('markerName_' + set.id)
 					.append(marker.label));
 			}
 			else
 				$(div).append($('<span/>')
 					.addClass(configuration.showlabel?'markerName-show':'markerName')
+					.addClass('markerName_' + set.id)
 					.text(marker.label));
 			return div;
 		}});
@@ -105,7 +107,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}
 		else if(msg.msg == 'setupdated') {
 			if(!dynmapmarkersets[msg.id]) {
-				dynmapmarkersets[msg.id] = { label: msg.label, layerprio: msg.layerprio, markers:{} };
+				dynmapmarkersets[msg.id] = { id: msg.id, label: msg.label, layerprio: msg.layerprio, markers:{} };
 				createMarkerSet(dynmapmarkersets[msg.id]);
 			}
 			else {
