@@ -1124,12 +1124,46 @@ public class IsoHDPerspective implements HDPerspective {
             long crc = hashman.calculateTileHash(argb_buf[i]);
             boolean tile_update = false;
             String prefix = shaderstate[i].getMap().getPrefix();
-            if(rendered[i]) {
-                renderone = true;
-                MapType.ImageFormat fmt = shaderstate[i].getMap().getImageFormat();
-                String fname = tile.getFilename(prefix, fmt);
-                File f = new File(tile.getDynmapWorld().worldtilepath, fname);
+
+            MapType.ImageFormat fmt = shaderstate[i].getMap().getImageFormat();
+            String fname = tile.getFilename(prefix, fmt);
+            File f = new File(tile.getDynmapWorld().worldtilepath, fname);
+            FileLockManager.getWriteLock(f);
+            try {
+                if(rendered[i])
+                    renderone = true;
+                if((!f.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), prefix, tile.tx, tile.ty))) {
+                    /* Wrap buffer as buffered image */
+                    Debug.debug("saving image " + f.getPath());
+                    if(!f.getParentFile().exists())
+                        f.getParentFile().mkdirs();
+                    try {
+                        FileLockManager.imageIOWrite(im[i].buf_img, fmt, f);
+                    } catch (IOException e) {
+                        Debug.error("Failed to save image: " + f.getPath(), e);
+                    } catch (java.lang.NullPointerException e) {
+                        Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
+                    }
+                    MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(fname));
+                    hashman.updateHashCode(tile.getKey(), prefix, tile.tx, tile.ty, crc);
+                    tile.getDynmapWorld().enqueueZoomOutUpdate(f);
+                    tile_update = true;
+                }
+                else {
+                    Debug.debug("skipping image " + f.getPath() + " - hash match");
+                }
+            } finally {
+                FileLockManager.releaseWriteLock(f);
+                DynmapBufferedImage.freeBufferedImage(im[i]);
+            }
+            MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered[i]);
+            /* Handle day image, if needed */
+            if(dayim[i] != null) {
+                fname = tile.getDayFilename(prefix, fmt);
+                f = new File(tile.getDynmapWorld().worldtilepath, fname);
                 FileLockManager.getWriteLock(f);
+                prefix = prefix+"_day";
+                tile_update = false;
                 try {
                     if((!f.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), prefix, tile.tx, tile.ty))) {
                         /* Wrap buffer as buffered image */
@@ -1137,7 +1171,7 @@ public class IsoHDPerspective implements HDPerspective {
                         if(!f.getParentFile().exists())
                             f.getParentFile().mkdirs();
                         try {
-                            FileLockManager.imageIOWrite(im[i].buf_img, fmt, f);
+                            FileLockManager.imageIOWrite(dayim[i].buf_img, fmt, f);
                         } catch (IOException e) {
                             Debug.error("Failed to save image: " + f.getPath(), e);
                         } catch (java.lang.NullPointerException e) {
@@ -1153,43 +1187,9 @@ public class IsoHDPerspective implements HDPerspective {
                     }
                 } finally {
                     FileLockManager.releaseWriteLock(f);
-                    DynmapBufferedImage.freeBufferedImage(im[i]);
+                    DynmapBufferedImage.freeBufferedImage(dayim[i]);
                 }
                 MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered[i]);
-                /* Handle day image, if needed */
-                if(dayim[i] != null) {
-                    fname = tile.getDayFilename(prefix, fmt);
-                    f = new File(tile.getDynmapWorld().worldtilepath, fname);
-                    FileLockManager.getWriteLock(f);
-                    prefix = prefix+"_day";
-                    tile_update = false;
-                    try {
-                        if((!f.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), prefix, tile.tx, tile.ty))) {
-                            /* Wrap buffer as buffered image */
-                            Debug.debug("saving image " + f.getPath());
-                            if(!f.getParentFile().exists())
-                                f.getParentFile().mkdirs();
-                            try {
-                                FileLockManager.imageIOWrite(dayim[i].buf_img, fmt, f);
-                            } catch (IOException e) {
-                                Debug.error("Failed to save image: " + f.getPath(), e);
-                            } catch (java.lang.NullPointerException e) {
-                                Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
-                            }
-                            MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(fname));
-                            hashman.updateHashCode(tile.getKey(), prefix, tile.tx, tile.ty, crc);
-                            tile.getDynmapWorld().enqueueZoomOutUpdate(f);
-                            tile_update = true;
-                        }
-                        else {
-                            Debug.debug("skipping image " + f.getPath() + " - hash match");
-                        }
-                    } finally {
-                        FileLockManager.releaseWriteLock(f);
-                        DynmapBufferedImage.freeBufferedImage(dayim[i]);
-                    }
-                    MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered[i]);
-                }
             }
         }
         return renderone;
