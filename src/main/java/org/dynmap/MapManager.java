@@ -1145,6 +1145,10 @@ public class MapManager {
         return plug_in.swampshading;
     }
 
+    public boolean getWaterBiomeShading() {
+        return plug_in.waterbiomeshading;
+    }
+
     public boolean getFenceJoin() {
         return plug_in.fencejoin;
     }

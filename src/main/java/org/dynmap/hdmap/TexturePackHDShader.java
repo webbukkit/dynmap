@@ -17,6 +17,7 @@ public class TexturePackHDShader implements HDShader {
     private TexturePack tp;
     private boolean biome_shaded;
     private boolean swamp_shaded;
+    private boolean waterbiomeshaded;
     
     public TexturePackHDShader(ConfigurationNode configuration) {
         tpname = configuration.getString("texturepack", "minecraft");
@@ -24,6 +25,7 @@ public class TexturePackHDShader implements HDShader {
         tp = TexturePack.getTexturePack(tpname);
         biome_shaded = configuration.getBoolean("biomeshaded", true);
         swamp_shaded = configuration.getBoolean("swampshaded", MapManager.mapman.getSwampShading());
+        waterbiomeshaded = configuration.getBoolean("waterbiomeshaded", MapManager.mapman.getWaterBiomeShading());
         if(tp == null) {
             Log.severe("Error: shader '" + name + "' cannot load texture pack '" + tpname + "'");
         }
@@ -75,6 +77,7 @@ public class TexturePackHDShader implements HDShader {
         private int lastblkid;
         private boolean do_biome_shading;
         private boolean do_swamp_shading;
+        private boolean do_water_shading;
         
         private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
@@ -93,6 +96,7 @@ public class TexturePackHDShader implements HDShader {
             /* Biome raw data only works on normal worlds at this point */
             do_biome_shading = biome_shaded && (cache.getWorld().getEnvironment() == Environment.NORMAL);
             do_swamp_shading = do_biome_shading && swamp_shaded;
+            do_water_shading = do_biome_shading && waterbiomeshaded;
         }
         /**
          * Get our shader
@@ -138,7 +142,7 @@ public class TexturePackHDShader implements HDShader {
             }
             
             /* Get color from textures */
-            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading, do_swamp_shading);
+            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading, do_swamp_shading, do_water_shading);
 
             if (c.getAlpha() > 0) {
                 int subalpha = ps.getSubmodelAlpha();

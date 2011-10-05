@@ -863,7 +863,7 @@ public class TexturePack {
      * Read color for given subblock coordinate, with given block id and data and face
      */
     public final void readColor(final HDPerspectiveState ps, final MapIterator mapiter, final Color rslt, final int blkid, final int lastblocktype,
-            final boolean biome_shaded, final boolean swamp_shaded) {
+            final boolean biome_shaded, final boolean swamp_shaded, final boolean water_shaded) {
         int blkdata = ps.getBlockData();
         HDTextureMap map = HDTextureMap.getMap(blkid, blkdata, ps.getBlockRenderData());
         BlockStep laststep = ps.getLastBlockStep();
@@ -1014,7 +1014,8 @@ public class TexturePack {
                 li = imgs[IMG_FOLIAGECOLOR];
                 break;
             case COLORMOD_WATERTONED:
-                li = imgs[IMG_WATERCOLOR];
+                if(water_shaded)
+                    li = imgs[IMG_WATERCOLOR];
                 break;
         }
         if(li != null) {
