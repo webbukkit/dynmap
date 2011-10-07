@@ -377,9 +377,9 @@ public class NewMapChunkCache implements MapChunkCache {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setChunks(World w, List<DynmapChunk> chunks) {
         this.w = w;
-        if(w.getEnvironment() != Environment.NORMAL) {
-            biome = biomeraw = false;
-        }
+        //if(w.getEnvironment() != Environment.NORMAL) {
+        //    biome = biomeraw = false;
+        //}
         this.chunks = chunks;
         if(poppreservedchunk == null) {
             /* Get CraftWorld.popPreservedChunk(x,z) - reduces memory bloat from map traversals (optional) */
@@ -423,7 +423,7 @@ public class NewMapChunkCache implements MapChunkCache {
             iterator = chunks.listIterator();
         
         DynmapPlugin.setIgnoreChunkLoads(true);
-        boolean isnormral = w.getEnvironment() == Environment.NORMAL;
+        //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
         // Load the required chunks.
         while((cnt < max_to_load) && iterator.hasNext()) {
             DynmapChunk chunk = iterator.next();
@@ -726,13 +726,13 @@ public class NewMapChunkCache implements MapChunkCache {
     }
     @Override
     public boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome) {
-        if((w != null) && (w.getEnvironment() != Environment.NORMAL)) {
-            this.biome = this.biomeraw = false;
-        }
-        else {
+//        if((w != null) && (w.getEnvironment() != Environment.NORMAL)) {
+//            this.biome = this.biomeraw = false;
+//        }
+//        else {
             this.biome = biome;
             this.biomeraw = rawbiome;
-        }
+//        }
         this.highesty = highestblocky;
         this.blockdata = blockdata;
         return true;
