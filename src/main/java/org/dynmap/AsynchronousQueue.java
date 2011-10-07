@@ -2,15 +2,14 @@ package org.dynmap;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class AsynchronousQueue<T> {
     private Object lock = new Object();
     private Thread thread;
-    private LinkedList<T> queue = new LinkedList<T>();
+    private LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<T>();
     private Set<T> set = new HashSet<T>();
     private Handler<T> handler;
     private int dequeueTime;
@@ -29,21 +28,20 @@ public class AsynchronousQueue<T> {
 
     public boolean push(T t) {
         synchronized (lock) {
-            if (set.add(t)) {
-                queue.addLast(t);
-                return true;
+            if (!set.add(t)) {
+                return false;
             }
-            return false;
         }
+        queue.offer(t);
+        return true;
     }
 
-    private T pop() {
+    private T pop() throws InterruptedException {
+        T t = queue.take();
         synchronized (lock) {
-            T t = queue.pollFirst();
-            if(t != null)
-                set.remove(t);
-            return t;
+            set.remove(t);
         }
+        return t;
     }
     
     public boolean remove(T t) {
@@ -124,7 +122,6 @@ public class AsynchronousQueue<T> {
                 	synchronized(lock) {
                 		pendingcnt++;
                 	}
-                	Log.info("handle(" + t + ")");
                     handler.handle(t);
                 }
                 if(set.size() >= accelDequeueThresh)
@@ -148,7 +145,6 @@ public class AsynchronousQueue<T> {
     }
     
     public void done(T t) {
-    	Log.info("done(" + t + ")");
         synchronized (lock) {
         	if(pendingcnt > 0) pendingcnt--;
         	lock.notifyAll();

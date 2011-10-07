@@ -207,7 +207,6 @@ public class MapManager {
         FullWorldRenderState(MapTile t) {
             world = getWorld(t.getWorld().getName());
             tile0 = t;
-            Log.info("job(" + t + ")");
             cxmin = czmin = Integer.MIN_VALUE;
             cxmax = czmax = Integer.MAX_VALUE;
         }
@@ -627,7 +626,9 @@ public class MapManager {
                 new Handler<MapTile>() {
                 @Override
                 public void handle(MapTile t) {
-                    scheduleDelayedJob(new FullWorldRenderState(t), 0);
+                    FullWorldRenderState job = new FullWorldRenderState(t);
+                    if(!scheduleDelayedJob(job, 0))
+                        job.cleanup();
                 }
             }, 
             (int) (configuration.getDouble("renderinterval", 0.5) * 1000),
@@ -937,18 +938,21 @@ public class MapManager {
             Debug.debug("Invalidating tile " + tile.getFilename());
     }
 
-    public static void scheduleDelayedJob(Runnable job, long delay_in_msec) {
+    public static boolean scheduleDelayedJob(Runnable job, long delay_in_msec) {
         if((mapman != null) && (mapman.render_pool != null)) {
             if(delay_in_msec > 0)
                 mapman.render_pool.schedule(job, delay_in_msec, TimeUnit.MILLISECONDS);
             else
                 mapman.render_pool.execute(job);
+            return true;
         }
+        else
+            return false;
     }
                                                                        
     public void startRendering() {
-        tileQueue.start();
         render_pool = new DynmapScheduledThreadPoolExecutor();
+        tileQueue.start();
         scheduleDelayedJob(new DoZoomOutProcessing(), 60000);
         scheduleDelayedJob(new CheckWorldTimes(), 5000);
         /* Resume pending jobs */
