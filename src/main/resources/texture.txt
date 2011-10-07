@@ -543,3 +543,15 @@ block:id=115,data=0,allsides=226,transparency=TRANSPARENT
 block:id=115,data=1,data=2,allsides=227,transparency=TRANSPARENT
 # Nether Wart (large)
 block:id=115,data=3,data=4,data=5,data=6,data=7,allsides=228,transparency=TRANSPARENT
+# Enchantment table
+block:id=116,data=*,top=166,allsides=182,bottom=183,transparency=TRANSPARENT
+# Brewing stand
+block:id=117,data=*,topbottom=156,allsides=157,transparency=TRANSPARENT
+# Cauldron
+block:id=118,data=*,top=139,bottom=155,allsides=154,transparency=TRANSPARENT
+# Air portal (need black-with-stars texture - using obsidian for now)
+block:id=119,data=*,topbottom=37
+# Air portal frame (no damage)
+block:id=120,data=0,allfaces=159
+# Air portal fram (damaged face)
+block:id=120,data=1,allfaces=158
