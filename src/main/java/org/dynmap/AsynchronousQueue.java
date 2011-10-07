@@ -16,12 +16,15 @@ public class AsynchronousQueue<T> {
     private int dequeueTime;
     private int accelDequeueTime;
     private int accelDequeueThresh;
+    private int pendingcnt;
+    private int pendinglimit;
     
-    public AsynchronousQueue(Handler<T> handler, int dequeueTime, int accelDequeueThresh, int accelDequeueTime) {
+    public AsynchronousQueue(Handler<T> handler, int dequeueTime, int accelDequeueThresh, int accelDequeueTime, int pendinglimit) {
         this.handler = handler;
         this.dequeueTime = dequeueTime;
         this.accelDequeueTime = accelDequeueTime;
         this.accelDequeueThresh = accelDequeueThresh;
+        this.pendinglimit = pendinglimit;
     }
 
     public boolean push(T t) {
@@ -41,6 +44,16 @@ public class AsynchronousQueue<T> {
                 set.remove(t);
             return t;
         }
+    }
+    
+    public boolean remove(T t) {
+        synchronized (lock) {
+            if (set.remove(t)) {
+                queue.remove(t);
+            	return true;
+            }
+        }
+        return false;
     }
 
     public int size() {
@@ -95,8 +108,23 @@ public class AsynchronousQueue<T> {
     private void running() {
         try {
             while (Thread.currentThread() == thread) {
+            	synchronized(lock) {
+            		while(pendingcnt >= pendinglimit) {
+            			try {
+            				lock.wait(accelDequeueTime);
+            			} catch (InterruptedException ix) {
+            				if(Thread.currentThread() != thread)
+            					return;
+            				throw ix;
+            			}
+            		}
+            	}
                 T t = pop();
                 if (t != null) {
+                	synchronized(lock) {
+                		pendingcnt++;
+                	}
+                	Log.info("handle(" + t + ")");
                     handler.handle(t);
                 }
                 if(set.size() >= accelDequeueThresh)
@@ -117,5 +145,13 @@ public class AsynchronousQueue<T> {
             return false;
         }
         return true;
+    }
+    
+    public void done(T t) {
+    	Log.info("done(" + t + ")");
+        synchronized (lock) {
+        	if(pendingcnt > 0) pendingcnt--;
+        	lock.notifyAll();
+        }
     }
 }

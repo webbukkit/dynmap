@@ -207,6 +207,7 @@ public class MapManager {
         FullWorldRenderState(MapTile t) {
             world = getWorld(t.getWorld().getName());
             tile0 = t;
+            Log.info("job(" + t + ")");
             cxmin = czmin = Integer.MIN_VALUE;
             cxmax = czmax = Integer.MAX_VALUE;
         }
@@ -314,6 +315,9 @@ public class MapManager {
                 synchronized(lock) {
                     active_renders.remove(world.world.getName());
                 }
+            }
+            else {
+                tileQueue.done(tile0);            	
             }
         }
         public void run() {
@@ -506,6 +510,8 @@ public class MapManager {
                     tile.render(cache, null);
             }
             else {
+        		/* Remove tile from tile queue, since we're processing it already */
+            	tileQueue.remove(tile);
                 /* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
                 if (cache.isEmpty() == false) {
                     tile.render(cache, mapname);
@@ -626,7 +632,7 @@ public class MapManager {
             }, 
             (int) (configuration.getDouble("renderinterval", 0.5) * 1000),
             configuration.getInteger("renderacceleratethreshold", 30),
-            (int)(configuration.getDouble("renderaccelerateinterval", 0.2) * 1000));
+            (int)(configuration.getDouble("renderaccelerateinterval", 0.2) * 1000), 1);
 
         /* On dedicated thread, so default to no delays */
         timeslice_int = (long)(configuration.getDouble("timesliceinterval", 0.0) * 1000);
@@ -1121,6 +1127,10 @@ public class MapManager {
                            ", updated=" + tot.updatedcnt + ", transparent=" + tot.transparentcnt);
         sender.sendMessage("  Cache hit rate: " + sscache.getHitRate() + "%");
         sender.sendMessage("  Triggered update queue size: " + tileQueue.size());
+        String act = "";
+        for(String wn : active_renders.keySet())
+        	act += wn + " ";
+        sender.sendMessage("  Active render jobs: " + act);
     }
     /**
      * Reset statistics
