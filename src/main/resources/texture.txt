@@ -554,4 +554,4 @@ block:id=119,data=*,topbottom=37
 # Air portal frame (no damage)
 block:id=120,data=0,allfaces=159
 # Air portal fram (damaged face)
-block:id=120,data=1,allfaces=158
+block:id=120,data=1,allsides=158
