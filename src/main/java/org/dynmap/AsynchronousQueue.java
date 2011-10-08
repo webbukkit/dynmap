@@ -36,12 +36,16 @@ public class AsynchronousQueue<T> {
         return true;
     }
 
-    private T pop() throws InterruptedException {
-        T t = queue.take();
-        synchronized (lock) {
-            set.remove(t);
+    private T pop() {
+        try {
+            T t = queue.take();
+            synchronized (lock) {
+                set.remove(t);
+            }
+            return t;
+        } catch (InterruptedException ix) {
+            return null;
         }
-        return t;
     }
     
     public boolean remove(T t) {
