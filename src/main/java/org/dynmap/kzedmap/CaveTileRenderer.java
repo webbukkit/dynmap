@@ -7,9 +7,10 @@ import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
-
+	private boolean iflit;
     public CaveTileRenderer(ConfigurationNode configuration) {
         super(configuration);
+        iflit = configuration.getBoolean("onlyiflit", false);
     }
 
     public boolean isNightAndDayEnabled() { return false; }
@@ -63,6 +64,8 @@ public class CaveTileRenderer extends DefaultTileRenderer {
             }
 
             if (id == 0 && !air) {
+            	if(iflit && (mapiter.getBlockEmittedLight() == 0))
+            		continue;
                 int cr, cg, cb;
                 int mult = 256;
 
