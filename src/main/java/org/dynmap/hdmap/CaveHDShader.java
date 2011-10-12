@@ -11,10 +11,12 @@ import org.json.simple.JSONObject;
 
 public class CaveHDShader implements HDShader {
     private String name;
+    private boolean iflit;
 
     
     public CaveHDShader(ConfigurationNode configuration) {
         name = (String) configuration.get("name");
+        iflit = configuration.getBoolean("onlyiflit", false);
     }
     
     @Override
@@ -44,7 +46,7 @@ public class CaveHDShader implements HDShader {
 
     @Override
     public boolean isEmittedLightLevelNeeded() {
-        return false;
+        return iflit;
     }
 
     @Override
@@ -111,6 +113,9 @@ public class CaveHDShader implements HDShader {
                     return false;
             }
             if (!air) {
+            	if(iflit && (ps.getEmittedLightLevel() == 0)) {
+            		return false;
+            	}
                 int cr, cg, cb;
                 int mult = 256;
 
