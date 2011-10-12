@@ -268,6 +268,16 @@ public class DynmapPlugin extends JavaPlugin {
 
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
         playerList.load();
+        PlayerListener pl = new PlayerListener() {
+            public void onPlayerJoin(PlayerJoinEvent evt) {
+                playerList.updateOnlinePlayers(null);
+            }
+            public void onPlayerQuit(PlayerQuitEvent evt) {
+                playerList.updateOnlinePlayers(evt.getPlayer());
+            }
+        };
+        registerEvent(Type.PLAYER_JOIN, pl);
+        registerEvent(Type.PLAYER_QUIT, pl);
 
         mapManager = new MapManager(this, configuration);
         mapManager.startRendering();

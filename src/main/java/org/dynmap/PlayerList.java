@@ -19,11 +19,13 @@ public class PlayerList {
     private HashSet<String> hiddenPlayerNames = new HashSet<String>();
     private File hiddenPlayersFile;
     private ConfigurationNode configuration;
+    private Player[] online;
 
     public PlayerList(Server server, File hiddenPlayersFile, ConfigurationNode configuration) {
         this.server = server;
         this.hiddenPlayersFile = hiddenPlayersFile;
         this.configuration = configuration;
+        updateOnlinePlayers(null);
     }
 
     public void save() {
@@ -75,10 +77,11 @@ public class PlayerList {
     // TODO: Clean this up... one day
     public Player[] getVisiblePlayers(String worldName) {
         ArrayList<Player> visiblePlayers = new ArrayList<Player>();
-        Player[] onlinePlayers = server.getOnlinePlayers();
+        Player[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
+            if(p == null) continue;
             if (p.getWorld().getName().equals(worldName) && !(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
                 visiblePlayers.add(p);
             }
@@ -90,10 +93,11 @@ public class PlayerList {
 
     public Player[] getVisiblePlayers() {
         ArrayList<Player> visiblePlayers = new ArrayList<Player>();
-        Player[] onlinePlayers = server.getOnlinePlayers();
+        Player[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
+            if(p == null) continue;
             if (!(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
                 visiblePlayers.add(p);
             }
@@ -105,10 +109,11 @@ public class PlayerList {
     
     public Set<Player> getHiddenPlayers() {
         HashSet<Player> hidden = new HashSet<Player>();
-        Player[] onlinePlayers = server.getOnlinePlayers();
+        Player[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         for (int i = 0; i < onlinePlayers.length; i++) {
             Player p = onlinePlayers[i];
+            if(p == null) continue;
             if (useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase())) {
                 hidden.add(p);
             }
@@ -119,5 +124,20 @@ public class PlayerList {
     public boolean isVisiblePlayer(Player p) {
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         return (!(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase())));
+    }
+    
+    /**
+     * Call this from server thread to update player list safely
+     */
+    void updateOnlinePlayers(Player skipone) {    
+        Player[] players = server.getOnlinePlayers();
+        Player[] pl = new Player[players.length];
+        System.arraycopy(players, 0, pl, 0, pl.length);
+        if(skipone != null) {
+            for(int i = 0; i < pl.length; i++)
+                if(pl[i] == skipone)
+                    pl[i] = null;
+        }
+        online = pl;
     }
 }
