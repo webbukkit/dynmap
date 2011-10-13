@@ -102,18 +102,21 @@ public class CaveHDShader implements HDShader {
             int blocktype = ps.getBlockTypeID();
             switch (blocktype) {
                 case 0:
-                case 20:
-                case 18:
                 case 17:
+                case 18:
+                case 20:
+                case 64:
+                case 71:
                 case 78:
                 case 79:
+                    blocktype = 0;
                     break;
                 default:
                     air = false;
                     return false;
             }
-            if (!air) {
-            	if(iflit && (ps.getEmittedLightLevel() == 0)) {
+            if ((blocktype == 0) && !air) {
+            	if(iflit && (ps.getMapIterator().getBlockEmittedLight() == 0)) {
             		return false;
             	}
                 int cr, cg, cb;

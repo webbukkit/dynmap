@@ -241,6 +241,10 @@ public class IsoHDPerspective implements HDPerspective {
          */
         public final int getPixelY() { return py; }
         /**
+         * Get map iterator
+         */
+        public final MapIterator getMapIterator() { return mapiter; }
+        /**
          * Return submodel alpha value (-1 if no submodel rendered)
          */
         public int getSubmodelAlpha() {

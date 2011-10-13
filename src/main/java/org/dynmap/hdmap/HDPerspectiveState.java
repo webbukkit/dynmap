@@ -1,5 +1,6 @@
 package org.dynmap.hdmap;
 
+import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.utils.Vector3D;
 
@@ -56,4 +57,8 @@ public interface HDPerspectiveState {
      * Return subblock coordinates of current ray position
      */
     int[] getSubblockCoord();
+    /**
+     * Get map iterator
+     */
+    MapIterator getMapIterator();
 }

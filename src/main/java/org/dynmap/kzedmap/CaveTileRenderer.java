@@ -19,6 +19,7 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
         MapIterator mapiter) {
         boolean air = true;
+        int emitted = 0;
         result.setTransparent();
         for (;;) {
             if (mapiter.getY() < 0)
@@ -31,6 +32,8 @@ public class CaveTileRenderer extends DefaultTileRenderer {
                 else
                     isnether = false;
             }
+            if(iflit && (!air))
+                emitted = mapiter.getBlockEmittedLight();
 
             switch (seq) {
             case 0:
@@ -48,9 +51,11 @@ public class CaveTileRenderer extends DefaultTileRenderer {
             seq = (seq + 1) & 3;
 
             switch (id) {
-            case 20:
-            case 18:
             case 17:
+            case 18:
+            case 20:
+            case 64:
+            case 71:
             case 78:
             case 79:
                 id = 0;
@@ -64,8 +69,9 @@ public class CaveTileRenderer extends DefaultTileRenderer {
             }
 
             if (id == 0 && !air) {
-            	if(iflit && (mapiter.getBlockEmittedLight() == 0))
+            	if(iflit && (emitted == 0)) {
             		continue;
+            	}
                 int cr, cg, cb;
                 int mult = 256;
 
