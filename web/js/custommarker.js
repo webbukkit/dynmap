@@ -108,5 +108,27 @@ L.CustomMarker = L.Class.extend({
 	_fireMouseEvent: function(e) {
 		this.fire(e.type);
 		L.DomEvent.stopPropagation(e);
+	},
+	
+	openPopup: function() {
+		this._popup.setLatLng(this._latlng);
+		this._map.openPopup(this._popup);
+		
+		return this;
+	},
+	
+	closePopup: function() {
+		if (this._popup) {
+			this._popup._close();
+		}
+	},
+	
+	bindPopup: function(content, options) {
+		this._popup = new L.Popup(options);
+		this._popup.setContent(content);
+		this.on('click', this.openPopup, this);
+		
+		return this;
 	}
+	
 });

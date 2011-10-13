@@ -81,4 +81,14 @@ public interface Marker {
      * Test if marker label is processed as HTML
      */
     public boolean isLabelMarkup();
+    /**
+     * Set marker description (HTML markup shown in popup when clicked)
+     * @param desc - HTML markup description
+     */
+    public void setDescription(String desc);
+    /**
+     * Get marker description
+     * @return descrption
+     */
+    public String getDescription();
 }

@@ -15,6 +15,7 @@ class MarkerImpl implements Marker {
     private String markerid;
     private String label;
     private boolean markup;
+    private String desc;
     private MarkerSetImpl markerset;
     private double x, y, z;
     private String world;
@@ -43,6 +44,7 @@ class MarkerImpl implements Marker {
         this.x = x; this.y = y; this.z = z;
         this.world = world;
         this.icon = icon;
+        this.desc = null;
         ispersistent = persistent;
         markerset = set;
     }
@@ -56,6 +58,7 @@ class MarkerImpl implements Marker {
         markerset = set;
         label = id;
         markup = false;
+        desc = null;
         x = z = 0; y = 64; world = "world";
         icon = MarkerAPIImpl.getMarkerIconImpl(MarkerIcon.DEFAULT);
     }
@@ -70,6 +73,7 @@ class MarkerImpl implements Marker {
         y = node.getDouble("y", 64);
         z = node.getDouble("z", 0);
         world = node.getString("world", "world");
+        desc = node.getString("desc", null);
         icon = MarkerAPIImpl.getMarkerIconImpl(node.getString("icon", MarkerIcon.DEFAULT)); 
         ispersistent = true;    /* Loaded from config, so must be */
         
@@ -159,6 +163,8 @@ class MarkerImpl implements Marker {
         node.put("z", Double.valueOf(z));
         node.put("world", world);
         node.put("icon", icon.getMarkerIconID());
+        if(desc != null)
+            node.put("desc", desc);
 
         return node;
     }
@@ -192,4 +198,21 @@ class MarkerImpl implements Marker {
     public boolean isLabelMarkup() {
         return markup;
     }
+    @Override
+    public void setDescription(String desc) {
+        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+            this.desc = desc;
+            MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);
+            if(ispersistent)
+                MarkerAPIImpl.saveMarkers();
+        }
+    }
+    /**
+     * Get marker description
+     * @return descrption
+     */
+    public String getDescription() {
+        return this.desc;
+    }
+
 }

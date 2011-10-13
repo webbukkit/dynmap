@@ -37,7 +37,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				dynmapmarkersets[name] = ms;
 				$.each(markerset.markers, function(mname, marker) {
 					ms.markers[mname] = { label: marker.label, markup: marker.markup, x: marker.x, y: marker.y, z:marker.z,
-						icon: marker.icon };
+						icon: marker.icon, desc: marker.desc };
 					createMarker(ms, ms.markers[mname], ts);
 				});
 			});
@@ -74,6 +74,11 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			return div;
 		}});
 		marker.timestamp = ts;
+		if(marker.desc) {
+			var popup = document.createElement('div');
+			$(popup).addClass('MarkerPopup').append(marker.desc);
+			marker.our_marker.bindPopup(popup, {});
+		}
 		set.layergroup.addLayer(marker.our_marker);
 	}
 	
@@ -94,7 +99,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				dynmapmarkersets[msg.set].layergroup.removeLayer(marker.our_marker);
 				delete marker.our_marker;
 			}
-			marker = { x: msg.x, y: msg.y, z: msg.z, icon: msg.icon, label: msg.label, markup: msg.markup };
+			marker = { x: msg.x, y: msg.y, z: msg.z, icon: msg.icon, label: msg.label, markup: msg.markup, desc: msg.desc };
 			dynmapmarkersets[msg.set].markers[msg.id] = marker;
 			createMarker(dynmapmarkersets[msg.set], marker);
 		}
