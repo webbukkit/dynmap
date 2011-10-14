@@ -18,6 +18,7 @@ import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapManager;
+import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.MapType.ImageFormat;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
@@ -589,7 +590,10 @@ public class DefaultTileRenderer implements MapTileRenderer {
         s(o, "bigmap", map.isBigWorldMap(world));
         s(o, "mapzoomin", c.getInteger("mapzoomin", 2));
         s(o, "mapzoomout", world.getExtraZoomOutLevels()+1);
-        s(o, "compassview", "SE");   /* Always from southeast */
+        if(MapManager.mapman.getCompassMode() != CompassMode.PRE19)
+            s(o, "compassview", "NE");   /* Always from northeast */
+        else
+            s(o, "compassview", "SE");   /* Always from southeast */
         s(o, "image-format", ImageFormat.FORMAT_PNG.getFileExt());
         a(worldObject, "maps", o);
     }

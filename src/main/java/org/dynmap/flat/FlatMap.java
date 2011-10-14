@@ -17,6 +17,7 @@ import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
@@ -602,7 +603,10 @@ public class FlatMap extends MapType {
         s(o, "bigmap", this.isBigWorldMap(world));
         s(o, "mapzoomin", c.getInteger("mapzoomin", 3));
         s(o, "mapzoomout", world.getExtraZoomOutLevels());
-        s(o, "compassview", "S");   /* Always from south */
+        if(MapManager.mapman.getCompassMode() != CompassMode.PRE19)
+            s(o, "compassview", "E");   /* Always from east */
+        else
+            s(o, "compassview", "S");   /* Always from south */
         s(o, "image-format", ImageFormat.FORMAT_PNG.getFileExt());
         a(worldObject, "maps", o);
     }

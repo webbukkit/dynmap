@@ -18,6 +18,7 @@ import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
@@ -737,6 +738,10 @@ public class IsoHDPerspective implements HDPerspective {
             return;
         }
         azimuth = configuration.getDouble("azimuth", 135.0);    /* Get azimuth (default to classic kzed POV */
+        /* Fix azimuth so that we respect new north, if that is requested (newnorth = oldeast) */
+        if(MapManager.mapman.getCompassMode() == CompassMode.NEWNORTH) {
+            azimuth = (azimuth + 90.0); if(azimuth >= 360.0) azimuth = azimuth - 360.0;
+        }
         inclination = configuration.getDouble("inclination", 60.0);
         if(inclination > MAX_INCLINATION) inclination = MAX_INCLINATION;
         if(inclination < MIN_INCLINATION) inclination = MIN_INCLINATION;
@@ -1239,7 +1244,9 @@ public class IsoHDPerspective implements HDPerspective {
         s(mapObject, "scale", scale);
         s(mapObject, "worldtomap", world_to_map.toJSON());
         s(mapObject, "maptoworld", map_to_world.toJSON());
-        int dir = ((360 + (int)(22.5+azimuth)) / 45) % 8;;
+        int dir = ((360 + (int)(22.5+azimuth)) / 45) % 8;
+        if(MapManager.mapman.getCompassMode() != CompassMode.PRE19)
+            dir = (dir + 6) % 8;
         s(mapObject, "compassview", directions[dir]);
 
     }

@@ -266,6 +266,11 @@ enabletilehash: true
 # Control updating of player faces, once loaded (if faces are being managed by other apps or manually)
 #refreshskins: false
 
+# Control behavior for new (1.9+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
+#   default is 'pre19' for 1.8 server (existing orientation), 'newrose' for 1.9+ (preserve maps, rotate rose)
+#   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
+#compass-mode: newnorth
+
 render-triggers:
   #- chunkloaded
   #- playermove

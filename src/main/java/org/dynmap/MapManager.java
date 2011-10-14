@@ -24,6 +24,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
+import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
 import org.dynmap.hdmap.HDMapManager;
@@ -1165,6 +1166,10 @@ public class MapManager {
 
     public boolean getFenceJoin() {
         return plug_in.fencejoin;
+    }
+    
+    public CompassMode getCompassMode() {
+        return plug_in.compassmode;
     }
 
     public boolean getHideOres() {

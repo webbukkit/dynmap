@@ -1,10 +1,7 @@
 package org.dynmap;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -18,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -40,7 +36,6 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -54,7 +49,6 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -86,6 +80,13 @@ public class DynmapPlugin extends JavaPlugin {
     boolean swampshading = false;
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
+    public CompassMode compassmode = CompassMode.PRE19;
+
+    public enum CompassMode {
+        PRE19,  /* Default for 1.8 and earlier (east is Z+) */
+        NEWROSE,    /* Use same map orientation, fix rose */
+        NEWNORTH    /* Use new map orientation */
+    };
 
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
@@ -258,6 +259,14 @@ public class DynmapPlugin extends JavaPlugin {
         waterbiomeshading = configuration.getBoolean("waterbiomeshaded", !getServer().getVersion().contains("(MC: 1.8"));
         /* Default fence-to-block-join off for 1.8, on after */
         fencejoin = configuration.getBoolean("fence-to-block-join", !getServer().getVersion().contains("(MC: 1.8"));
+        /* Default compassmode to pre19, to newrose after */
+        String cmode = configuration.getString("compass-mode", getServer().getVersion().contains("(MC: 1.8")?"pre19":"newrose");
+        if(cmode.equals("newnorth"))
+            compassmode = CompassMode.NEWNORTH;
+        else if(cmode.equals("newrose"))
+            compassmode = CompassMode.NEWROSE;
+        else
+            compassmode = CompassMode.PRE19;
         
         loadDebuggers();
 
