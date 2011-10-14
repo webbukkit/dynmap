@@ -3,7 +3,7 @@
 # <index>=0-255 (index of patch in terrain.png), -1=clear, 1xxx=biome tint from grasscolor.png,257=stationary water,258=moving water,
 #      259=stationary lava,260=moving lava,261=extended piston side,262=piston side while extended,263=glass pane top,2xxx=biome tint from foliagecolor.png,4xxx=rotate texture 90,
 #      5xxx=rotate texture 180, 6xxx=rotate texture 270, 7xxx=flip texture horizontally, 8xxx=shift down 1/2 block, 9=shift down 1/2,flip horiz,
-#      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block,3xxx=biome tint from watercolor.png
+#      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block,3xxx=biome tint from watercolor.png, 264=air portal with eye
 ######
 # Stone
 block:id=1,allfaces=1
@@ -551,7 +551,9 @@ block:id=117,data=*,topbottom=156,allsides=157,transparency=TRANSPARENT
 block:id=118,data=*,top=139,bottom=155,allsides=154,transparency=TRANSPARENT
 # Air portal (need black-with-stars texture - using obsidian for now)
 block:id=119,data=*,topbottom=37
-# Air portal frame (no damage)
-block:id=120,data=0,allfaces=159
-# Air portal fram (damaged face)
-block:id=120,data=1,allsides=158
+# Air portal frame (no eye)
+block:id=120,data=0,data=1,data=2,data=3,top=158,allsides=159,bottom=175
+# Air portal fram (eye installed)
+block:id=120,data=4,data=5,data=6,data=7,top=264,allsides=159,bottom=175
+# White stone
+block:id=121,data=*,allfaces=175

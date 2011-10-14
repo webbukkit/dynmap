@@ -78,8 +78,10 @@ public class TexturePack {
     private static final int BLOCKINDEX_GRASSMASK = 38;
     private static final int BLOCKINDEX_PISTONSIDE = 108;
     private static final int BLOCKINDEX_GLASSPANETOP = 148;
+    private static final int BLOCKINDEX_AIRFRAME = 158;
     private static final int BLOCKINDEX_REDSTONE_NSEW_TONE = 164;
     private static final int BLOCKINDEX_REDSTONE_EW_TONE = 165;
+    private static final int BLOCKINDEX_EYEOFENDER = 174;
     private static final int BLOCKINDEX_REDSTONE_NSEW = 180;
     private static final int BLOCKINDEX_REDSTONE_EW = 181;
     private static final int BLOCKINDEX_STATIONARYWATER = 257;
@@ -89,7 +91,8 @@ public class TexturePack {
     private static final int BLOCKINDEX_PISTONEXTSIDE = 261;
     private static final int BLOCKINDEX_PISTONSIDE_EXT = 262;
     private static final int BLOCKINDEX_PANETOP_X = 263;
-    private static final int MAX_BLOCKINDEX = 263;
+    private static final int BLOCKINDEX_AIRFRAME_EYE = 264;
+    private static final int MAX_BLOCKINDEX = 264;
     private static final int BLOCKTABLELEN = MAX_BLOCKINDEX+1;
 
     private static class LoadedImage {
@@ -472,6 +475,14 @@ public class TexturePack {
         for(i = native_scale*7/16; i < native_scale*9/16; i++) {
             for(j = 0; j < native_scale; j++) {
                 terrain_argb[BLOCKINDEX_PANETOP_X][native_scale*i + j] = terrain_argb[BLOCKINDEX_PANETOP_X][native_scale*j + i];
+            }
+        }
+        /* Build air frame with eye overlay */
+        terrain_argb[BLOCKINDEX_AIRFRAME_EYE] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[BLOCKINDEX_AIRFRAME], 0, terrain_argb[BLOCKINDEX_AIRFRAME_EYE], 0, native_scale*native_scale);
+        for(i = native_scale/4; i < native_scale*3/4; i++) {
+            for(j = native_scale/4; j < native_scale*3/4; j++) {
+                terrain_argb[BLOCKINDEX_AIRFRAME_EYE][native_scale*i + j] = terrain_argb[BLOCKINDEX_EYEOFENDER][native_scale*i + j];
             }
         }
         
