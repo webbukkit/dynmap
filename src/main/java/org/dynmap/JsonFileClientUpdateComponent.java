@@ -93,10 +93,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         int retrycnt = 0;
         boolean done = false;
         while(!done) {
+            FileOutputStream fos = null;
             try {
-                FileOutputStream fos = new FileOutputStream(outputTempFile);
+                fos = new FileOutputStream(outputTempFile);
                 fos.write(clientConfiguration.toJSONString().getBytes("UTF-8"));
                 fos.close();
+                fos = null;
                 outputFile.delete();
                 outputTempFile.renameTo(outputFile);
                 done = true;
@@ -108,6 +110,14 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 else {
                     Log.severe("Exception while writing JSON-configuration-file.", ioe);
                     done = true;
+                }
+            } finally {
+                if(fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException iox) {
+                    }
+                    fos = null;
                 }
             }
         }
@@ -132,10 +142,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             int retrycnt = 0;
             boolean done = false;
             while(!done) {
+                FileOutputStream fos = null;
                 try {
-                    FileOutputStream fos = new FileOutputStream(outputTempFile);
+                    fos = new FileOutputStream(outputTempFile);
                     fos.write(Json.stringifyJson(update).getBytes("UTF-8"));
                     fos.close();
+                    fos = null;
                     outputFile.delete();
                     outputTempFile.renameTo(outputFile);
                     done = true;
@@ -147,6 +159,14 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                     else {
                         Log.severe("Exception while writing JSON-file.", ioe);
                         done = true;
+                    }
+                } finally {
+                    if(fos != null) {
+                        try {
+                            fos.close();
+                        } catch (IOException iox) {
+                        }
+                        fos = null;
                     }
                 }
             }
@@ -160,14 +180,23 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         File webchatFile = getStandaloneFile("dynmap_webchat.json");
         if (webchatFile.exists() && lastTimestamp != 0) {
             JSONArray jsonMsgs = null;
+            Reader inputFileReader = null;
             try {
-                Reader inputFileReader = new InputStreamReader(new FileInputStream(webchatFile), cs_utf8);
+                inputFileReader = new InputStreamReader(new FileInputStream(webchatFile), cs_utf8);
                 jsonMsgs = (JSONArray) parser.parse(inputFileReader);
-                inputFileReader.close();
             } catch (IOException ex) {
                 Log.severe("Exception while reading JSON-file.", ex);
             } catch (ParseException ex) {
                 Log.severe("Exception while parsing JSON-file.", ex);
+            } finally {
+                if(inputFileReader != null) {
+                    try {
+                        inputFileReader.close();
+                    } catch (IOException iox) {
+                        
+                    }
+                    inputFileReader = null;
+                }
             }
 
             if (jsonMsgs != null) {

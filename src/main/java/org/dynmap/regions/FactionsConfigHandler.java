@@ -47,14 +47,21 @@ public class FactionsConfigHandler {
             return rslt;
         }
         JSONObject fact = null;
+        Reader inputFileReader = null;
         try {
-            Reader inputFileReader = new InputStreamReader(new FileInputStream(faction), cs_utf8);
+            inputFileReader = new InputStreamReader(new FileInputStream(faction), cs_utf8);
             fact = (JSONObject) parser.parse(inputFileReader);
-            inputFileReader.close();
         } catch (IOException ex) {
             Log.severe("Exception while reading factions.json.", ex);
         } catch (ParseException ex) {
             Log.severe("Exception while parsing factions.json.", ex);
+        } finally {
+            if(inputFileReader != null) {
+                try {
+                    inputFileReader.close();
+                } catch (IOException iox) {}
+                inputFileReader = null;
+            }
         }
         if(fact == null)
             return rslt;
@@ -66,13 +73,19 @@ public class FactionsConfigHandler {
         }
         JSONObject blocks = null;
         try {
-            Reader inputFileReader = new InputStreamReader(new FileInputStream(board), cs_utf8);
+            inputFileReader = new InputStreamReader(new FileInputStream(board), cs_utf8);
             blocks = (JSONObject) parser.parse(inputFileReader);
-            inputFileReader.close();
         } catch (IOException ex) {
             Log.severe("Exception while reading board.json.", ex);
         } catch (ParseException ex) {
             Log.severe("Exception while parsing board.json.", ex);
+        } finally {
+            if(inputFileReader != null) {
+                try {
+                    inputFileReader.close();
+                } catch (IOException iox) {}
+                inputFileReader = null;
+            }
         }
         if(blocks == null)
             return rslt;

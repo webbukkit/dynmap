@@ -157,14 +157,21 @@ public class RegionsComponent extends ClientComponent {
         else {
             outputFile = new File(plugin.getDataFolder(), webWorldPath.toString());
         }
+        FileOutputStream fos = null;
         try {
-            FileOutputStream fos = new FileOutputStream(outputFile);
+            fos = new FileOutputStream(outputFile);
             fos.write(Json.stringifyJson(regionData).getBytes());
-            fos.close();
         } catch (FileNotFoundException ex) {
             Log.severe("Exception while writing JSON-file.", ex);
         } catch (IOException ioe) {
             Log.severe("Exception while writing JSON-file.", ioe);
+        } finally {
+            if(fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException iox) {}
+                fos = null;
+            }
         }
     }
 
