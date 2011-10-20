@@ -5,26 +5,7 @@ import org.bukkit.Location;
 /**
  * This defines the public interface to a marker object, for use with the MarkerAPI
  */
-public interface Marker {
-    /**
-     * Get ID of the marker (unique string within the MarkerSet)
-     * @return id of marker
-     */
-    public String getMarkerID();
-    /**
-     * Get the marker set for the marker
-     * @return marker set
-     */
-    public MarkerSet getMarkerSet();
-    /**
-     * Delete the marker
-     */
-    public void deleteMarker();
-    /**
-     * Get marker's world ID
-     * @return world id
-     */
-    public String getWorld();
+public interface Marker extends GenericMarker {
     /**
      * Get marker's X coordinate
      * @return x coordinate
@@ -59,10 +40,6 @@ public interface Marker {
      * @return true if new marker icon set, false if not allowed
      */
     public boolean setMarkerIcon(MarkerIcon icon);
-    /**
-     * Test if marker is persistent
-     */
-    public boolean isPersistentMarker();
     /**
      * Get the marker's label
      */

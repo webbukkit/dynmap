@@ -10,6 +10,7 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.Log;
+import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
@@ -17,6 +18,7 @@ import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 
 class MarkerSetImpl implements MarkerSet {
     private HashMap<String, MarkerImpl> markers = new HashMap<String, MarkerImpl>();
+    private HashMap<String, AreaMarkerImpl> areamarkers = new HashMap<String, AreaMarkerImpl>();
     private String setid;
     private String label;
     private HashMap<String, MarkerIconImpl> allowedicons = null;
@@ -49,12 +51,19 @@ class MarkerSetImpl implements MarkerSet {
     void cleanup() {
         for(MarkerImpl m : markers.values())
             m.cleanup();
+        for(AreaMarkerImpl m : areamarkers.values())
+            m.cleanup();
         markers.clear();
     }
     
     @Override
     public Set<Marker> getMarkers() {
         return new HashSet<Marker>(markers.values());
+    }
+
+    @Override
+    public Set<AreaMarker> getAreaMarkers() {
+        return new HashSet<AreaMarker>(areamarkers.values());
     }
 
     @Override
@@ -196,6 +205,18 @@ class MarkerSetImpl implements MarkerSet {
         }
         MarkerAPIImpl.markerUpdated(marker, MarkerUpdate.DELETED);
     }
+    /**
+     * Remove marker from set
+     * 
+     * @param marker
+     */
+    void removeAreaMarker(AreaMarkerImpl marker) {
+        markers.remove(marker.getMarkerID());   /* Remove from set */
+        if(ispersistent && marker.isPersistentMarker()) {   /* If persistent */
+            MarkerAPIImpl.saveMarkers();        /* Drive save */
+        }
+        MarkerAPIImpl.areaMarkerUpdated(marker, MarkerUpdate.DELETED);
+    }
 
     /**
      * Get configuration node to be saved
@@ -211,6 +232,13 @@ class MarkerSetImpl implements MarkerSet {
                 node.put(id, m.getPersistentData());
             }
         }
+        HashMap<String, Object> anode = new HashMap<String, Object>();
+        for(String id : areamarkers.keySet()) {
+            AreaMarkerImpl m = areamarkers.get(id);
+            if(m.isPersistentMarker()) {
+                anode.put(id, m.getPersistentData());
+            }
+        }
         /* Make top level node */
         HashMap<String, Object> setnode = new HashMap<String, Object>();
         setnode.put("label", label);
@@ -219,6 +247,7 @@ class MarkerSetImpl implements MarkerSet {
             setnode.put("allowedicons", allowed);
         }
         setnode.put("markers", node);
+        setnode.put("areas", anode);
         setnode.put("hide", hide_by_def);
         setnode.put("layerprio", prio);
         return setnode;
@@ -239,6 +268,19 @@ class MarkerSetImpl implements MarkerSet {
                 }
                 else {
                     Log.info("Error loading marker '" + id + "' for set '" + setid + "'");
+                    marker.cleanup();
+                }
+            }
+        }
+        ConfigurationNode areamarkernode = node.getNode("areas");
+        if(areamarkernode != null) {
+            for(String id : areamarkernode.getKeys()) {
+                AreaMarkerImpl marker = new AreaMarkerImpl(id, this);   /* Make and load marker */
+                if(marker.loadPersistentData(areamarkernode.getNode(id))) {
+                    areamarkers.put(id, marker);
+                }
+                else {
+                    Log.info("Error loading area marker '" + id + "' for set '" + setid + "'");
                     marker.cleanup();
                 }
             }
@@ -284,6 +326,48 @@ class MarkerSetImpl implements MarkerSet {
     @Override
     public int getLayerPriority() {
         return this.prio;
+    }
+
+    @Override
+    public AreaMarker createAreaMarker(String id, String lbl, boolean markup, String world, double[] x, double[] z, double ytop, double ybottom, boolean persistent) {
+        if(id == null) {    /* If not defined, generate unique one */
+            int i = 0;
+            do {
+                i++;
+                id = "area_" + i; 
+            } while(areamarkers.containsKey(id));
+        }
+        if(areamarkers.containsKey(id)) return null;    /* Duplicate ID? */
+        /* Create marker */
+        persistent = persistent && this.ispersistent;
+        AreaMarkerImpl marker = new AreaMarkerImpl(id, label, markup, world, x, z, ytop, ybottom, persistent, this);
+        areamarkers.put(id, marker);    /* Add to set */
+        if(persistent)
+            MarkerAPIImpl.saveMarkers();
+        
+        MarkerAPIImpl.areaMarkerUpdated(marker, MarkerUpdate.CREATED);  /* Signal create */
+
+        return marker;
+    }
+
+    @Override
+    public AreaMarker findAreaMarker(String id) {
+        return areamarkers.get(id);
+    }
+
+    @Override
+    public AreaMarker findAreaMarkerByLabel(String lbl) {
+        AreaMarker match = null;
+        int matchlen = Integer.MAX_VALUE;
+        for(AreaMarker m : areamarkers.values()) {
+            if(m.getLabel().contains(lbl)) {
+                if(matchlen > m.getLabel().length()) {
+                    match = m;
+                    matchlen = m.getLabel().length();
+                }
+            }
+        }
+        return match;
     }
 
 }

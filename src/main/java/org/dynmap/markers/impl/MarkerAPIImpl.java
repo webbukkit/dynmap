@@ -31,6 +31,7 @@ import org.dynmap.Event;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.Client.ComponentMessage;
+import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
@@ -90,7 +91,47 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 msg = "markerupdated";
         }
     }
-    
+
+    public static class AreaMarkerUpdated extends MarkerComponentMessage {
+        public String msg;
+        public double ytop, ybottom;
+        public double[] x;
+        public double[] z;
+        public int strokeWeight;
+        public double strokeOpacity;
+        public int strokeColor;
+        public double fillOpacity;
+        public int fillColor;
+        public String id;
+        public String label;
+        public String set;
+        
+        public AreaMarkerUpdated(AreaMarker m, boolean deleted) {
+            this.id = m.getMarkerID();
+            this.label = m.getLabel();
+            this.ytop = m.getTopY();
+            this.ybottom = m.getBottomY();
+            int cnt = m.getCornerCount();
+            x = new double[cnt];
+            z = new double[cnt];
+            for(int i = 0; i < cnt; i++) {
+                x[i] = m.getCornerX(i);
+                z[i] = m.getCornerZ(i);
+            }
+            strokeColor = m.getLineColor();
+            strokeWeight = m.getLineWeight();
+            strokeOpacity = m.getFillOpacity();
+            fillColor = m.getFillColor();
+            fillOpacity = m.getFillOpacity();
+            
+            this.set = m.getMarkerSet().getMarkerSetID();
+            if(deleted) 
+                msg = "areamarkerdeleted";
+            else
+                msg = "areamarkerupdated";
+        }
+    }
+
     public static class MarkerSetUpdated extends MarkerComponentMessage {
         public String msg;
         public String id;
@@ -385,6 +426,19 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         /* Enqueue client update */
         if(MapManager.mapman != null)
             MapManager.mapman.pushUpdate(marker.getWorld(), new MarkerUpdated(marker, update == MarkerUpdate.DELETED));
+    }
+    /**
+     * Signal area marker update
+     * @param marker - updated marker
+     * @param update - type of update
+     */
+    static void areaMarkerUpdated(AreaMarkerImpl marker, MarkerUpdate update) {
+        /* Freshen marker file for the world for this marker */
+        if(api != null)
+            api.writeMarkersFile(marker.getWorld());
+        /* Enqueue client update */
+        if(MapManager.mapman != null)
+            MapManager.mapman.pushUpdate(marker.getWorld(), new AreaMarkerUpdated(marker, update == MarkerUpdate.DELETED));
     }
     /**
      * Signal marker set update
@@ -1060,6 +1114,31 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 markers.put(m.getMarkerID(), mdata);
             }
             msdata.put("markers", markers); /* Add markers to set data */
+
+            HashMap<String, Object> areas = new HashMap<String, Object>();
+            for(AreaMarker m : ms.getAreaMarkers()) {
+                if(m.getWorld().equals(wname) == false) continue;
+                
+                HashMap<String, Object> mdata = new HashMap<String, Object>();
+                int cnt = m.getCornerCount();
+                double xx[] = new double[cnt];
+                double zz[] = new double[cnt];
+                for(int i = 0; i < cnt; i++) {
+                    xx[i] = m.getCornerX(i);
+                    zz[i] = m.getCornerZ(i);
+                }
+                mdata.put("x", xx);
+                mdata.put("ytop", m.getTopY());
+                mdata.put("ybottom", m.getBottomY());
+                mdata.put("z", zz);
+                mdata.put("label", m.getLabel());
+                mdata.put("markup", m.isLabelMarkup());
+                if(m.getDescription() != null)
+                    mdata.put("desc", m.getDescription());
+                /* Add to markers */
+                areas.put(m.getMarkerID(), mdata);
+            }
+            msdata.put("areas", areas); /* Add areamarkers to set data */
             
             markerdata.put(ms.getMarkerSetID(), msdata);    /* Add marker set data to world marker data */
         }
