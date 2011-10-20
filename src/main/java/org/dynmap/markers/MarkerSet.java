@@ -16,6 +16,11 @@ public interface MarkerSet {
      */
     public Set<Marker> getMarkers();
     /**
+     * Get set of all area markers currently in the set
+     * @return set of area markers (set is copy - safe to iterate)
+     */
+    public Set<AreaMarker> getAreaMarkers();
+    /**
      * Create a new marker in the marker set
      * 
      * @param id - ID of the marker - must be unique within the set: if null, unique ID is generated
@@ -56,6 +61,31 @@ public interface MarkerSet {
      * @return marker, or null if none found
      */
     public Marker   findMarkerByLabel(String lbl);
+    /** 
+     * Create area marker
+     * @param id - marker ID
+     * @param lbl - label
+     * @param markup - if true, label is HTML markup
+     * @param world - world id
+     * @param x - x coord list
+     * @param z - z coord list
+     * @param ytop - top y coordinate
+     * @param ybottom - bottom y coordinate
+     * @param persistent - true if persistent
+     */
+    public AreaMarker createAreaMarker(String id, String lbl, boolean markup, String world, double x[], double z[], double ytop, double ybottom, boolean persistent);
+    /**
+     * Get area marker by ID
+     * @param id - ID of the area marker
+     * @return marker, or null if cannot be found
+     */
+    public AreaMarker   findAreaMarker(String id);
+    /**
+     * Find area marker by label - best matching substring
+     * @param lbl - label to find (same = best match)
+     * @return marker, or null if none found
+     */
+    public AreaMarker   findAreaMarkerByLabel(String lbl);
     /**
      * Get ID of marker set - unique among marker sets
      * @return ID
