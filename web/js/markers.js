@@ -91,6 +91,87 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		dynmap.addToLayerSelector(set.layergroup, set.label, set.layerprio || 0);
 
 	}
+
+	// Helper functions
+	latlng = function(x, y, z) {
+		return dynmap.getProjection().fromLocationToLatLng(new Location(undefined, x,y,z));
+	}
+	
+	function create3DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
+		return new L.MultiPolygon([
+			[
+				latlng(minx,miny,minz),
+				latlng(maxx,miny,minz),
+				latlng(maxx,miny,maxz),
+				latlng(minx,miny,maxz)
+			],[
+				latlng(minx,maxy,minz),
+				latlng(maxx,maxy,minz),
+				latlng(maxx,maxy,maxz),
+				latlng(minx,maxy,maxz)
+			],[
+				latlng(minx,miny,minz),
+				latlng(minx,maxy,minz),
+				latlng(maxx,maxy,minz),
+				latlng(maxx,miny,minz)
+			],[
+				latlng(maxx,miny,minz),
+				latlng(maxx,maxy,minz),
+				latlng(maxx,maxy,maxz),
+				latlng(maxx,miny,maxz)
+			],[
+				latlng(minx,miny,maxz),
+				latlng(minx,maxy,maxz),
+				latlng(maxx,maxy,maxz),
+				latlng(maxx,miny,maxz)
+			],[
+				latlng(minx,miny,minz),
+				latlng(minx,maxy,minz),
+				latlng(minx,maxy,maxz),
+				latlng(minx,miny,maxz)
+			]], style);
+	}
+	
+	function create2DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
+		return new L.Polygon([
+				latlng(minx,64,minz),
+				latlng(maxx,64,minz),
+				latlng(maxx,64,maxz),
+				latlng(minx,64,maxz)
+				], style);
+	}
+
+	function create3DOutlineLayer(xarray, maxy, miny, zarray, style) {
+		var toplist = [];
+		var botlist = [];
+		var i;
+		var polylist = [];
+		for(i = 0; i < xarray.length; i++) {
+			toplist[i] = latlng(xarray[i], maxy, zarray[i]);
+			botlist[i] = latlng(xarray[i], miny, zarray[i]);
+		}
+		for(i = 0; i < xarray.length; i++) {
+			var sidelist = [];
+			sidelist[0] = toplist[i];
+			sidelist[1] = botlist[i];
+			sidelist[2] = botlist[(i+1)%xarray.length];
+			sidelist[3] = toplist[(i+1)%xarray.length];
+			polylist[i] = sidelist;
+		}
+		polylist[xarray.length] = botlist;
+		polylist[xarray.length+1] = toplist;
+		
+		return new L.MultiPolygon(polylist, style);
+	}
+
+	function create2DOutlineLayer(xarray, maxy, miny, zarray, style) {
+		var llist = [];
+		var i;
+		for(i = 0; i < xarray.length; i++) {
+			llist[i] = latlng(xarray[i], 64, zarray[i]);
+		}
+		return new L.Polygon(llist, style);
+	}
 	
 	$(dynmap).bind('component.markers', function(event, msg) {
 		if(msg.msg == 'markerupdated') {
