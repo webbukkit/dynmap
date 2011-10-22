@@ -20,7 +20,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$.each(data.sets, function(name, markerset) {
 				var ms = dynmapmarkersets[name];
 				if(!ms) {
-					ms = { id: name, label: markerset.label, hide: markerset.hide, layerprio: markerset.layerprio, markers: {} } ;
+					ms = { id: name, label: markerset.label, hide: markerset.hide, layerprio: markerset.layerprio, markers: {}, areas: {} } ;
 					createMarkerSet(ms, ts);
 				}
 				else {
@@ -31,6 +31,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 						dynmap.addToLayerSelector(ms.layergroup, ms.label, ms.layerprio || 0);
 					}
 					ms.markers = {};
+					ms.areas = {};
 					ms.hide = markerset.hide;
 					ms.timestamp = ts;
 				}
@@ -39,6 +40,12 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 					ms.markers[mname] = { label: marker.label, markup: marker.markup, x: marker.x, y: marker.y, z:marker.z,
 						icon: marker.icon, desc: marker.desc };
 					createMarker(ms, ms.markers[mname], ts);
+				});
+				$.each(markerset.areas, function(aname, area) {
+					ms.areas[aname] = { label: area.label, markup: area.markup, desc: area.desc, x: area.x, z: area.z,
+						ytop: area.ytop, ybottom: area.ybottom, color: area.color, weight: area.weight, opacity: area.opacity,
+						fillcolor: area.fillcolor, fillopacity: area.fillopacity };
+					createArea(ms, ms.areas[aname], ts);
 				});
 			});
 		});
@@ -90,6 +97,41 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 //		dynmap.layercontrol.addOverlay(set.layergroup, set.label);
 		dynmap.addToLayerSelector(set.layergroup, set.label, set.layerprio || 0);
 
+	}
+
+	function createArea(set, area, ts) {
+		var style = { color: area.color, opacity: area.opacity, weight: area.weight, fillOpacity: area.fillopacity, fillColor: area.fillcolor };
+
+		if(area.x.length == 2) {	/* Only 2 points */
+			if(area.ytop == area.ybottom) {
+				area.our_area = create2DBoxLayer(area.x[0], area.x[1], area.ytop, area.ybottom, area.z[0], area.z[1], style);
+			}
+			else {
+				area.our_area = create3DBoxLayer(area.x[0], area.x[1], area.ytop, area.ybottom, area.z[0], area.z[1], style);
+			}
+		}
+		else {
+			if(area.ytop == area.ybottom) {
+				area.our_area = create2DOutlineLayer(area.x, area.ytop, area.ybottom, area.z, style);
+			}
+			else {
+				area.our_area = create3DOutlineLayer(area.x, area.ytop, area.ybottom, area.z, style);
+			}
+		}
+		area.timestamp = ts;
+		var popup = document.createElement('div');
+		if(area.desc) {
+			$(popup).addClass('AreaPopup').append(area.desc);
+		}
+		else if(area.markup) {
+			$(popup).addClass('AreaPopup').append(area.label);
+		}
+		else {
+			$(popup).text(area.label);
+		}		
+		area.our_area.bindPopup(popup, {});
+		
+		set.layergroup.addLayer(area.our_area);
 	}
 
 	// Helper functions
@@ -182,7 +224,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			}
 			marker = { x: msg.x, y: msg.y, z: msg.z, icon: msg.icon, label: msg.label, markup: msg.markup, desc: msg.desc };
 			dynmapmarkersets[msg.set].markers[msg.id] = marker;
-			createMarker(dynmapmarkersets[msg.set], marker);
+			createMarker(dynmapmarkersets[msg.set], marker, msg.timestamp);
 		}
 		else if(msg.msg == 'markerdeleted') {
 			var marker = dynmapmarkersets[msg.set].markers[msg.id];
@@ -215,6 +257,24 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				delete dynmapmarkersets[msg.id];
 			}
 		}		
+		else if(msg.msg == 'areaupdated') {
+			var area = dynmapmarkersets[msg.set].areas[msg.id];
+			if(area && area.our_area) {
+				dynmapmarkersets[msg.set].layergroup.removeLayer(area.our_area);
+				delete area.our_area;
+			}
+			area = { x: msg.x, ytop: msg.ytop, ybottom: msg.ybottom, z: msg.z, label: msg.label, markup: msg.markup, desc: msg.desc,
+				color: msg.color, weight: msg.weight, opacity: msg.opacity, fillcolor: msg.fillcolor, fillopacity: msg.fillopacity };
+			dynmapmarkersets[msg.set].areas[msg.id] = area;
+			createArea(dynmapmarkersets[msg.set], area, msg.timestamp);
+		}
+		else if(msg.msg == 'areadeleted') {
+			var area = dynmapmarkersets[msg.set].areas[msg.id];
+			if(area && area.our_area) {
+				dynmapmarkersets[msg.set].layergroup.removeLayer(area.our_area);
+			}
+			delete dynmapmarkersets[msg.set].areas[msg.id];
+		}
 	});
 	
     // Remove marker on start of map change
@@ -222,6 +282,9 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		$.each(dynmapmarkersets, function(setname, set) {
 			$.each(set.markers, function(mname, marker) {
 				set.layergroup.removeLayer(marker.our_marker);
+			});
+			$.each(set.areas, function(aname, area) {
+				set.layergroup.removeLayer(area.our_area);
 			});
 		});
 	});
@@ -234,6 +297,9 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				marker.our_marker.setLatLng(markerPosition);
 				if(dynmap.map.hasLayer(marker.our_marker) == false)
 					set.layergroup.addLayer(marker.our_marker);
+			});
+			$.each(set.areas, function(aname, area) {
+				createArea(set, area, area.timestamp);
 			});
 		});
 	});
