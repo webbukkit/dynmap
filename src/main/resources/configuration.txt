@@ -151,6 +151,7 @@ components:
   #  visibleregions:
   #    - homebase
   #    - miningsite
+  #    - area.subzone1
   #  # Optional setting to hide specific regions, by name
   #  hiddenregions:
   #    - hiddenplace
@@ -316,7 +317,7 @@ maxchunkspertick: 200
 # Progress report interval for fullrender/radiusrender, in tiles.  Must be 100 or greater
 progressloginterval: 100
 
-# EXPERIMENTAL - parallel fullrender: if defined, number of concurrent threads used for fullrender or radiusrender
+# Parallel fullrender: if defined, number of concurrent threads used for fullrender or radiusrender
 #   Note: setting this will result in much more intensive CPU use, some additional memory use.  Caution should be used when
 #  setting this to equal or exceed the number of physical cores on the system.
 #parallelrendercnt: 4

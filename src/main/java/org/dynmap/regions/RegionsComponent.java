@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.World;
 import org.dynmap.ClientComponent;
@@ -122,36 +123,9 @@ public class RegionsComponent extends ClientComponent {
             outputFileName = outputFileName.substring(0, outputFileName.lastIndexOf("."))+".json";
             webWorldPath = new File(plugin.getWebPath()+"/standalone/", outputFileName);
         }
-        /* See if we have explicit list of regions to report - limit to this list if we do */
-        List<String> idlist = configuration.getStrings("visibleregions", null);
-        List<String> hidlist = configuration.getStrings("hiddenregions", null);
-        if((regionData != null) && ((idlist != null) || (hidlist != null))) {
-            @SuppressWarnings("unchecked")
-            HashSet<String> ids = new HashSet<String>((Collection<? extends String>) regionData.keySet());
-            for(String id : ids) {
-                /* If include list defined, and we're not in it, remove */
-                if((idlist != null) && (!idlist.contains(id))) {
-                    regionData.remove(id);
-                }
-                /* If exclude list defined, and we're on it, remove */
-                else if((hidlist != null) && (hidlist.contains(id))) {
-                    /* If residence, we want to zap the areas list, so that we still get subregions */
-                    if(regiontype.equals("Residence")) {
-                        Map<?,?> m = (Map<?,?>)regionData.get(id);
-                        if(m != null) {
-                            Map<?,?> a = (Map<?,?>)m.get("Areas");
-                            if(a != null) {
-                                a.clear();
-                            }
-                        }
-                    }
-                    else {
-                        regionData.remove(id);
-                    }
-                }
-            }
-        }
-       
+        /* Process out hidden data */
+        filterOutHidden(configuration.getStrings("visibleregions", null), configuration.getStrings("hiddenregions", null), regionData, regiontype);
+
         if (webWorldPath.isAbsolute())
             outputFile = webWorldPath;
         else {
@@ -175,4 +149,50 @@ public class RegionsComponent extends ClientComponent {
         }
     }
 
+    public static void filterOutHidden(List<String> idlist, List<String> hidlist, Map<?,?> regionData, String regiontype) {
+        /* See if we have explicit list of regions to report - limit to this list if we do */
+        if((regionData != null) && ((idlist != null) || (hidlist != null))) {
+            @SuppressWarnings("unchecked")
+            HashSet<String> ids = new HashSet<String>((Collection<? extends String>) regionData.keySet());
+            for(String id : ids) {
+                /* If include list defined, and we're not in it, remove */
+                if((idlist != null) && (!idlist.contains(id))) {
+                    regionData.remove(id);
+                }
+                /* If exclude list defined, and we're on it, remove */
+                else if(hidlist != null) {
+                    if(hidlist.contains(id)) {
+                        /* If residence, we want to zap the areas list, so that we still get subregions */
+                        if(regiontype.equals("Residence")) {
+                            Map<?,?> m = (Map<?,?>)regionData.get(id);
+                            if(m != null) {
+                                Map<?,?> a = (Map<?,?>)m.get("Areas");
+                                if(a != null) {
+                                    a.clear();
+                                }
+                            }
+                        }
+                        else {
+                            regionData.remove(id);
+                        }
+                    }
+                    if(regiontype.equals("Residence")) {
+                        Map<?,?> m = (Map<?,?>)regionData.get(id);
+                        if(m != null) {
+                            m = (Map<?,?>)m.get("Subzones");
+                            if(m != null) {
+                                Set<?> ks = m.keySet();
+                                for(Object k : ks) {
+                                    String sid = id + "." + k;
+                                    if(hidlist.contains(sid)) {
+                                        m.remove(k);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

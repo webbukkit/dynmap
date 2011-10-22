@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.util.config.Configuration;
 import org.dynmap.ConfigurationNode;
@@ -108,34 +109,8 @@ public class RegionHandler extends FileHandler {
             }
         }
         /* See if we have explicit list of regions to report - limit to this list if we do */
-        List<String> idlist = regions.getStrings("visibleregions", null);
-        List<String> hidlist = regions.getStrings("hiddenregions", null);
-        if((idlist != null) || (hidlist != null)) {
-            @SuppressWarnings("unchecked")
-            HashSet<String> ids = new HashSet<String>((Collection<? extends String>) regionData.keySet());
-            for(String id : ids) {
-                /* If include list defined, and we're not in it, remove */
-                if((idlist != null) && (!idlist.contains(id))) {
-                    regionData.remove(id);
-                }
-                /* If exclude list defined, and we're on it, remove */
-                else if((hidlist != null) && (hidlist.contains(id))) {
-                    /* If residence, we want to zap the areas list, so that we still get subregions */
-                    if(regiontype.equals("Residence")) {
-                        Map<?,?> m = (Map<?,?>)regionData.get(id);
-                        if(m != null) {
-                            Map<?,?> a = (Map<?,?>)m.get("Areas");
-                            if(a != null) {
-                                a.clear();
-                            }
-                        }
-                    }
-                    else {
-                        regionData.remove(id);
-                    }
-                }
-            }
-        }
+        RegionsComponent.filterOutHidden(regions.getStrings("visibleregions", null), regions.getStrings("hiddenregions", null), regionData, regiontype);
+
         try {
             ByteArrayOutputStream fos = new ByteArrayOutputStream();
             fos.write(Json.stringifyJson(regionData).getBytes());
