@@ -1,5 +1,6 @@
 package org.dynmap;
 
+import org.bukkit.Location;
 import org.dynmap.markers.MarkerAPI;
 
 /**
@@ -29,4 +30,13 @@ public interface DynmapAPI {
      * @param msg - message to be sent
      */
     public boolean sendBroadcastToWeb(String sender, String msg);
+    /**
+     * Trigger update on tiles associated with given locations.  If two locations provided,
+     * the volume is the rectangular prism ("cuboid") with the two locations on opposite corners.
+     * 
+     * @param l0 - first location (required)
+     * @param l1 - second location (if null, only single point invalidated (l0))
+     * @return number of tiles queued to be rerendered
+     */
+    public int triggerRenderOfVolume(Location l0, Location l1);
 }
