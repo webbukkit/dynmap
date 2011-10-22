@@ -211,7 +211,7 @@ class MarkerSetImpl implements MarkerSet {
      * @param marker
      */
     void removeAreaMarker(AreaMarkerImpl marker) {
-        markers.remove(marker.getMarkerID());   /* Remove from set */
+        areamarkers.remove(marker.getMarkerID());   /* Remove from set */
         if(ispersistent && marker.isPersistentMarker()) {   /* If persistent */
             MarkerAPIImpl.saveMarkers();        /* Drive save */
         }
@@ -329,7 +329,7 @@ class MarkerSetImpl implements MarkerSet {
     }
 
     @Override
-    public AreaMarker createAreaMarker(String id, String lbl, boolean markup, String world, double[] x, double[] z, double ytop, double ybottom, boolean persistent) {
+    public AreaMarker createAreaMarker(String id, String lbl, boolean markup, String world, double[] x, double[] z, boolean persistent) {
         if(id == null) {    /* If not defined, generate unique one */
             int i = 0;
             do {
@@ -340,7 +340,7 @@ class MarkerSetImpl implements MarkerSet {
         if(areamarkers.containsKey(id)) return null;    /* Duplicate ID? */
         /* Create marker */
         persistent = persistent && this.ispersistent;
-        AreaMarkerImpl marker = new AreaMarkerImpl(id, label, markup, world, x, z, ytop, ybottom, persistent, this);
+        AreaMarkerImpl marker = new AreaMarkerImpl(id, lbl, markup, world, x, z, persistent, this);
         areamarkers.put(id, marker);    /* Add to set */
         if(persistent)
             MarkerAPIImpl.saveMarkers();
