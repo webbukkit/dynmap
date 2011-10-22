@@ -99,11 +99,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public double ytop, ybottom;
         public double[] x;
         public double[] z;
-        public int strokeWeight;
-        public double strokeOpacity;
-        public int strokeColor;
-        public double fillOpacity;
-        public int fillColor;
+        public int weight;
+        public double opacity;
+        public String color;
+        public double fillopacity;
+        public String fillcolor;
         public String id;
         public String label;
         public String set;
@@ -120,17 +120,17 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 x[i] = m.getCornerX(i);
                 z[i] = m.getCornerZ(i);
             }
-            strokeColor = m.getLineColor();
-            strokeWeight = m.getLineWeight();
-            strokeOpacity = m.getFillOpacity();
-            fillColor = m.getFillColor();
-            fillOpacity = m.getFillOpacity();
+            color = String.format("#%06X", m.getLineColor());
+            weight = m.getLineWeight();
+            opacity = m.getLineOpacity();
+            fillcolor = String.format("#%06X", m.getFillColor());
+            fillopacity = m.getFillOpacity();
             
             this.set = m.getMarkerSet().getMarkerSetID();
             if(deleted) 
-                msg = "areamarkerdeleted";
+                msg = "areadeleted";
             else
-                msg = "areamarkerupdated";
+                msg = "areaupdated";
         }
     }
 
@@ -468,6 +468,51 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             markerSetUpdated(markerset, MarkerUpdate.DELETED); /* Signal delete of set */
         }
     }
+    
+    private static boolean processAreaArgs(CommandSender sender, AreaMarker marker, Map<String,String> parms) {
+        String val = null;
+        try {
+        double ytop = marker.getTopY();
+        double ybottom = marker.getBottomY();
+        int scolor = marker.getLineColor();
+        int fcolor = marker.getFillColor();
+        double sopacity = marker.getLineOpacity();
+        double fopacity = marker.getFillOpacity();
+        int sweight = marker.getLineWeight();
+
+        val = parms.get(ARG_STROKECOLOR);
+        if(val != null)
+            scolor = Integer.parseInt(val, 16);
+        val = parms.get(ARG_FILLCOLOR);
+        if(val != null)
+            fcolor = Integer.parseInt(val, 16);
+        val = parms.get(ARG_STROKEOPACITY);
+        if(val != null)
+            sopacity = Double.parseDouble(val);
+        val = parms.get(ARG_FILLOPACITY);
+        if(val != null)
+            fopacity = Double.parseDouble(val);
+        val = parms.get(ARG_STROKEWEIGHT);
+        if(val != null)
+            sweight = Integer.parseInt(val);
+        val = parms.get(ARG_YTOP);
+        if(val != null)
+            ytop = Double.parseDouble(val);
+        val = parms.get(ARG_YBOTTOM);
+        if(val != null)
+            ybottom = Double.parseDouble(val);
+        marker.setLineStyle(sweight, sopacity, scolor);
+        marker.setFillStyle(fopacity, fcolor);
+        if(ytop >= ybottom)
+            marker.setRangeY(ytop, ybottom);
+        else
+            marker.setRangeY(ybottom, ytop);
+        } catch (NumberFormatException nfx) {
+            sender.sendMessage("Invalid parameter format: " + val);
+            return false;
+        }
+        return true;
+    }
 
     private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[] {
         "add", "movehere", "update", "delete", "list", "icons", "addset", "updateset", "deleteset", "listsets", "addicon", "updateicon",
@@ -486,6 +531,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private static final String ARG_STROKEOPACITY = "opacity";
     private static final String ARG_FILLCOLOR = "fillcolor";
     private static final String ARG_FILLOPACITY = "fillopacity";
+    private static final String ARG_YTOP = "ytop";
+    private static final String ARG_YBOTTOM = "ybottom";
     
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
     private static Map<String,String> parseArgs(String[] args, CommandSender snd) {
@@ -1188,6 +1235,9 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 sender.sendMessage("Error creating area");
             }
             else {
+                /* Process additional attributes, if any */
+                processAreaArgs(sender, m, parms);
+                
                 sender.sendMessage("Added area id:'" + m.getMarkerID() + "' (" + m.getLabel() + ") to set '" + set.getMarkerSetID() + "'");
                 api.pointaccum.remove(pid); /* Clear corner list */
             }
@@ -1308,34 +1358,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 if(newlabel != null) {    /* Label set? */
                     marker.setLabel(newlabel);
                 }
-                int scolor = marker.getLineColor();
-                int fcolor = marker.getFillColor();
-                double sopacity = marker.getLineOpacity();
-                double fopacity = marker.getFillOpacity();
-                int sweight = marker.getLineWeight();
-                val = null;
-                try {
-                    val = parms.get(ARG_STROKECOLOR);
-                    if(val != null)
-                        scolor = Integer.parseInt(val, 16);
-                    val = parms.get(ARG_FILLCOLOR);
-                    if(val != null)
-                        fcolor = Integer.parseInt(val, 16);
-                    val = parms.get(ARG_STROKEOPACITY);
-                    if(val != null)
-                        sopacity = Double.parseDouble(val);
-                    val = parms.get(ARG_FILLOPACITY);
-                    if(val != null)
-                        fopacity = Double.parseDouble(val);
-                    val = parms.get(ARG_STROKEWEIGHT);
-                    if(val != null)
-                        sweight = Integer.parseInt(val);
-                    marker.setLineStyle(sweight, sopacity, scolor);
-                    marker.setFillStyle(fopacity, fcolor);
-                } catch (NumberFormatException nfx) {
-                    sender.sendMessage("Invalid parameter format: " + val);
+                if(!processAreaArgs(sender,marker, parms))
                     return true;
-                }
                 sender.sendMessage("Updated area id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
             }
             else {
@@ -1399,8 +1423,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 mdata.put("ytop", m.getTopY());
                 mdata.put("ybottom", m.getBottomY());
                 mdata.put("z", zz);
-                mdata.put("color", String.format("#%06x", m.getLineColor()));
-                mdata.put("fillcolor", String.format("#%06x", m.getFillColor()));
+                mdata.put("color", String.format("#%06X", m.getLineColor()));
+                mdata.put("fillcolor", String.format("#%06X", m.getFillColor()));
                 mdata.put("opacity", m.getLineOpacity());
                 mdata.put("fillopacity", m.getFillOpacity());
                 mdata.put("weight", m.getLineWeight());
