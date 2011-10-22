@@ -1307,6 +1307,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         return false;
     }
     /**
+     * Trigger update on tiles associated with given locations.  If two locations provided,
+     * the volume is the rectangular prism ("cuboid") with the two locations on opposite corners.
+     * 
+     * @param l0 - first location (required)
+     * @param l1 - second location (if null, only single point invalidated (l0))
+     * @return number of tiles queued to be rerendered
+     */
+    public int triggerRenderOfVolume(Location l0, Location l1) {
+        if(mapManager != null) {
+            if(l1 == null)
+                return mapManager.touch(l0);
+            else
+                return mapManager.touchVolume(l0, l1);
+        }
+        return 0;
+    }
+
+    /**
      * Register markers API - used by component to supply marker API to plugin
      */
     public void registerMarkerAPI(MarkerAPIImpl api) {
