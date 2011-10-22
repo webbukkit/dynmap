@@ -97,10 +97,11 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			 .appendTo(messageRow);
 		}
 
-		var playerNameContainer = $('<span/>')
-			.addClass('messagetext')
-			.text(' '+message.name+': ');
-
+		var playerNameContainer = '';
+		if(message.name) {
+			playerNameContainer = $('<span/>').addClass('messagetext').text(' '+message.name+': ');
+		}
+		
 		var playerMessageContainer = $('<span/>')
 			.addClass('messagetext')
 			.text(message.text);

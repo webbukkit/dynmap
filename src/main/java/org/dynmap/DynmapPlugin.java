@@ -66,7 +66,7 @@ import org.dynmap.web.HttpServer;
 import org.dynmap.web.handlers.ClientConfigurationHandler;
 import org.dynmap.web.handlers.FilesystemHandler;
 
-public class DynmapPlugin extends JavaPlugin {
+public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public HttpServer webServer = null;
     public MapManager mapManager = null;
     public PlayerList playerList;
@@ -723,7 +723,8 @@ public class DynmapPlugin extends JavaPlugin {
         "radiusrender",
         "reload",
         "stats",
-        "resetstats" }));
+        "resetstats",
+        "sendtoweb" }));
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -859,6 +860,12 @@ public class DynmapPlugin extends JavaPlugin {
                     mapManager.resetStats(sender, null);
                 else
                     mapManager.resetStats(sender, args[1]);
+            } else if (c.equals("sendtoweb") && checkPlayerPermission(sender, "sendtoweb")) {
+                String msg = "";
+                for(int i = 1; i < args.length; i++) {
+                    msg += args[i] + " ";
+                }
+                this.sendBroadcastToWeb("dynmap", msg);
             }
             return true;
         }
@@ -1286,6 +1293,18 @@ public class DynmapPlugin extends JavaPlugin {
     }
     public boolean markerAPIInitialized() {
         return (markerapi != null);
+    }
+    /**
+     * Send generic message to all web users
+     * @param sender - label for sender of message ("[<sender>] nessage") - if null, no from notice
+     * @param msg - message to be sent
+     */
+    public boolean sendBroadcastToWeb(String sender, String msg) {
+        if(mapManager != null) {
+            mapManager.pushUpdate(new Client.ChatMessage("plugin", sender, "", msg, ""));
+            return true;
+        }
+        return false;
     }
     /**
      * Register markers API - used by component to supply marker API to plugin

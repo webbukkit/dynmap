@@ -23,6 +23,8 @@ commands:
            /<command> stats world - Show render statistics for maps on world 'world'.
            /<command> resetstats - Reset render statistics.
            /<command> resetstats world - Reset render statistics for maps on world 'world'.
+           /<command> sendtoweb msg - Send message to web users
+            
   dmarker:
     description: Manipulate map markers
     usage: |
@@ -74,6 +76,7 @@ permissions:
       dynmap.reload: true
       dynmap.stats: true
       dynmap.resetstats: true
+      dynmap.sendtoweb: true
       dynmap.marker.add: true
       dynmap.marker.update: true
       dynmap.marker.movehere: true
@@ -124,6 +127,9 @@ permissions:
     default: true
   dynmap.resetstats:
     description: Allows /dynmap resetstats or /dynmap resetstats <world>
+    default: op
+  dynmap.sendtoweb:
+    description: Allows /dynmap sendtoweb
     default: op
   dynmap.marker.add:
     description: Allows /dmarker add
