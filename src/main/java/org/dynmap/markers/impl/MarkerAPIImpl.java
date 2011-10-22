@@ -7,9 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -48,7 +50,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private File markertiledir; /* Marker directory for web server (under tiles) */
     private HashMap<String, MarkerIconImpl> markericons = new HashMap<String, MarkerIconImpl>();
     private HashMap<String, MarkerSetImpl> markersets = new HashMap<String, MarkerSetImpl>();
-    
+    private HashMap<String, List<Location>> pointaccum = new HashMap<String, List<Location>>();
     private Server server;
     static MarkerAPIImpl api;
 
@@ -469,7 +471,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
 
     private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[] {
         "add", "movehere", "update", "delete", "list", "icons", "addset", "updateset", "deleteset", "listsets", "addicon", "updateicon",
-        "deleteicon"
+        "deleteicon", "addcorner", "clearcorners", "addarea", "listareas", "deletearea", "updatearea"
     }));
     private static final String ARG_LABEL = "label";
     private static final String ARG_ID = "id";
@@ -479,7 +481,12 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private static final String ARG_ICON = "icon";
     private static final String ARG_SET = "set";
     private static final String ARG_PRIO = "prio";
-
+    private static final String ARG_STROKEWEIGHT = "weight";
+    private static final String ARG_STROKECOLOR = "color";
+    private static final String ARG_STROKEOPACITY = "opacity";
+    private static final String ARG_FILLCOLOR = "fillcolor";
+    private static final String ARG_FILLOPACITY = "fillopacity";
+    
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
     private static Map<String,String> parseArgs(String[] args, CommandSender snd) {
         HashMap<String,String> rslt = new HashMap<String,String>();
@@ -543,6 +550,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     
     public static boolean onCommand(DynmapPlugin plugin, CommandSender sender, Command cmd, String commandLabel, String[] args) {
         String id, setid, file, label, newlabel, iconid, prio;
+        String val;
         
         if(api == null) {
             sender.sendMessage("Markers component is not enabled.");
@@ -583,7 +591,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 /* Add new marker */
                 MarkerSet set = api.getMarkerSet(setid);
                 if(set == null) {
-                    sender.sendMessage("Error: invalid marker set - " + setid);
+                    sender.sendMessage("Error: invalid set - " + setid);
                     return true;
                 }
                 MarkerIcon ico = api.getMarkerIcon(iconid);
@@ -625,7 +633,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 }
                 MarkerSet set = api.getMarkerSet(setid);
                 if(set == null) {
-                    sender.sendMessage("Error: invalid marker set - " + setid);
+                    sender.sendMessage("Error: invalid set - " + setid);
                     return true;
                 }
                 Marker marker;
@@ -669,7 +677,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 }
                 MarkerSet set = api.getMarkerSet(setid);
                 if(set == null) {
-                    sender.sendMessage("Error: invalid marker set - " + setid);
+                    sender.sendMessage("Error: invalid set - " + setid);
                     return true;
                 }
                 Marker marker;
@@ -724,7 +732,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 }
                 MarkerSet set = api.getMarkerSet(setid);
                 if(set == null) {
-                    sender.sendMessage("Error: invalid marker set - " + setid);
+                    sender.sendMessage("Error: invalid set - " + setid);
                     return true;
                 }
                 Marker marker;
@@ -760,7 +768,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             MarkerSet set = api.getMarkerSet(setid);
             if(set == null) {
-                sender.sendMessage("Error: invalid marker set - " + setid);
+                sender.sendMessage("Error: invalid set - " + setid);
                 return true;
             }
             Set<Marker> markers = set.getMarkers();
@@ -807,7 +815,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 /* Create new set */
                 set = api.createMarkerSet(id, label, null, true);
                 if(set == null) {
-                    sender.sendMessage("Error creating marker set");
+                    sender.sendMessage("Error creating set");
                 }
                 else {
                     String h = parms.get(ARG_HIDE);
@@ -820,7 +828,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                             sender.sendMessage("Invalid priority: " + prio);
                         }
                     }
-                    sender.sendMessage("Added marker set id:'" + set.getMarkerSetID() + "' (" + set.getMarkerSetLabel() + ")");
+                    sender.sendMessage("Added set id:'" + set.getMarkerSetID() + "' (" + set.getMarkerSetLabel() + ")");
                 }
             }
             else {
@@ -836,7 +844,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 label = parms.get(ARG_LABEL);
                 prio = parms.get(ARG_PRIO);
                 if((id == null) && (label == null)) {
-                    sender.sendMessage("<label> or id:<marker-id> required");
+                    sender.sendMessage("<label> or id:<set-id> required");
                     return true;
                 }
                 MarkerSet set = null;
@@ -875,7 +883,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                         sender.sendMessage("Invalid priority: " + prio);
                     }
                 }
-                sender.sendMessage("Marker set '" + set.getMarkerSetID() + "' updated");
+                sender.sendMessage("Set '" + set.getMarkerSetID() + "' updated");
             }
             else {
                 sender.sendMessage("<label> or id:<set-id> required");
@@ -915,7 +923,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     }
                     set.deleteMarkerSet();
                 }
-                sender.sendMessage("Deleted marker set");
+                sender.sendMessage("Deleted set");
             }
             else {
                 sender.sendMessage("<label> or id:<set-id> required");
@@ -1074,6 +1082,266 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 sender.sendMessage("<label> or id:<icon-id> required");
             }
         }
+        /* Add point to accumulator */
+        else if(c.equals("addcorner") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
+            Location loc = null;
+            if(player == null) {
+                id = "-console-";
+            }
+            else {
+                id = player.getName();
+                loc = player.getLocation();
+            }
+            List<Location> ll = api.pointaccum.get(id); /* Find list */
+            
+            if(args.length > 2) {   /* Enough for coord */
+                World w = null;
+                if(args.length == 3) {  /* No world */
+                    if(ll == null) {    /* No points?  Error */
+                        sender.sendMessage("First added corner needs world ID after coordinates");
+                        return true;
+                    }
+                    else {
+                        w = ll.get(0).getWorld();   /* Use same world */
+                    }
+                }
+                else {  /* Get world ID */
+                    w = api.server.getWorld(args[3]);
+                    if(w == null) {
+                        sender.sendMessage("Invalid world ID: " + args[3]);
+                        return true;
+                    }
+                }
+                try {
+                    loc = new Location(w, Double.parseDouble(args[1]), 64.0, Double.parseDouble(args[2]));
+                } catch (NumberFormatException nfx) {
+                    sender.sendMessage("Bad format: /dmarker addcorner <x> <z> <world>");
+                    return true;
+                }
+            }
+            if(loc == null) {
+                sender.sendMessage("Console must supply corner coordinates: <x> <z> <world>");
+                return true;
+            }
+            if(ll == null) {
+                ll = new ArrayList<Location>();
+                api.pointaccum.put(id, ll);
+            }
+            else {  /* Else, if list exists, see if world matches */
+                if(ll.get(0).getWorld().equals(loc.getWorld()) == false) {
+                    ll.clear(); /* Reset list - point on new world */
+                }
+            }
+            ll.add(loc);
+            sender.sendMessage("Added corner #" + ll.size() + " at {" + loc.getX() + "," + loc.getY() + "," + loc.getZ() + "} to list");
+        }
+        else if(c.equals("clearcorners") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
+            if(player == null) {
+                id = "-console-";
+            }
+            else {
+                id = player.getName();
+            }
+            api.pointaccum.remove(id);
+            sender.sendMessage("Cleared corner list");
+        }
+        else if(c.equals("addarea") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
+            String pid;
+            if(player == null) {
+                pid = "-console-";
+            }
+            else {
+                pid = player.getName();
+            }
+            List<Location> ll = api.pointaccum.get(pid); /* Find list */
+            if((ll == null) || (ll.size() < 2)) {   /* Not enough points? */
+                sender.sendMessage("At least two corners must be added with /dmarker addcorner before an area can be added");
+                return true;
+            }
+            /* Parse arguements */
+            Map<String,String> parms = parseArgs(args, sender);
+            if(parms == null) return true;
+            setid = parms.get(ARG_SET);
+            id = parms.get(ARG_ID);
+            label = parms.get(ARG_LABEL);
+            /* Fill in defaults for missing parameters */
+            if(setid == null) {
+                setid = MarkerSet.DEFAULT;
+            }
+            /* Add new marker */
+            MarkerSet set = api.getMarkerSet(setid);
+            if(set == null) {
+                sender.sendMessage("Error: invalid set - " + setid);
+                return true;
+            }
+            /* Make coord list */
+            double[] xx = new double[ll.size()];
+            double[] zz = new double[ll.size()];
+            for(int i = 0; i < ll.size(); i++) {
+                Location loc = ll.get(i);
+                xx[i] = loc.getX();
+                zz[i] = loc.getZ();
+            }
+            /* Make area marker */
+            AreaMarker m = set.createAreaMarker(id, label, false, ll.get(0).getWorld().getName(), xx, zz, true);
+            if(m == null) {
+                sender.sendMessage("Error creating area");
+            }
+            else {
+                sender.sendMessage("Added area id:'" + m.getMarkerID() + "' (" + m.getLabel() + ") to set '" + set.getMarkerSetID() + "'");
+                api.pointaccum.remove(pid); /* Clear corner list */
+            }
+        }
+        /* List areas */
+        else if(c.equals("listareas") && plugin.checkPlayerPermission(sender, "marker.listareas")) {
+            /* Parse arguements */
+            Map<String,String> parms = parseArgs(args, sender);
+            if(parms == null) return true;
+            setid = parms.get(ARG_SET);
+            if(setid == null) {
+                setid = MarkerSet.DEFAULT;
+            }
+            MarkerSet set = api.getMarkerSet(setid);
+            if(set == null) {
+                sender.sendMessage("Error: invalid set - " + setid);
+                return true;
+            }
+            Set<AreaMarker> markers = set.getAreaMarkers();
+            TreeMap<String, AreaMarker> sortmarkers = new TreeMap<String, AreaMarker>();
+            for(AreaMarker m : markers) {
+                sortmarkers.put(m.getMarkerID(), m);
+            }
+            for(String s : sortmarkers.keySet()) {
+                AreaMarker m = sortmarkers.get(s);
+                String ptlist = "{ ";
+                for(int i = 0; i < m.getCornerCount(); i++) {
+                    ptlist += "{" + m.getCornerX(i) + "," + m.getCornerZ(i)+ "} ";
+                }
+                ptlist += "}";
+                sender.sendMessage(m.getMarkerID() + ": label:\"" + m.getLabel() + "\", set:" + m.getMarkerSet().getMarkerSetID() + 
+                                   ", world:" + m.getWorld() + ", corners:" + ptlist + 
+                                   ", weight: " + m.getLineWeight() + ", color:" + String.format("%06x", m.getLineColor()) +
+                                   ", opacity: " + m.getLineOpacity() + ", fillcolor: " + String.format("%06x", m.getFillColor()) +
+                                   ", fillopacity: " + m.getFillOpacity());
+            }
+        }
+        /* Delete area - must have ID parameter */
+        else if(c.equals("deletearea") && plugin.checkPlayerPermission(sender, "marker.deletearea")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                id = parms.get(ARG_ID);
+                label = parms.get(ARG_LABEL);
+                setid = parms.get(ARG_SET);
+                if((id == null) && (label == null)) {
+                    sender.sendMessage("<label> or id:<area-id> required");
+                    return true;
+                }
+                if(setid == null) {
+                    setid = MarkerSet.DEFAULT;
+                }
+                MarkerSet set = api.getMarkerSet(setid);
+                if(set == null) {
+                    sender.sendMessage("Error: invalid set - " + setid);
+                    return true;
+                }
+                AreaMarker marker;
+                if(id != null) {
+                    marker = set.findAreaMarker(id);
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: area not found - " + id);
+                        return true;
+                    }
+                }
+                else {
+                    marker = set.findAreaMarkerByLabel(label);
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: area not found - " + label);
+                        return true;
+                    }
+                }
+                marker.deleteMarker();
+                sender.sendMessage("Deleted area id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
+            }
+            else {
+                sender.sendMessage("<label> or id:<area-id> required");
+            }
+        }
+        /* Update other attributes of area - must have ID parameter */
+        else if(c.equals("updatearea") && plugin.checkPlayerPermission(sender, "marker.updatearea")) {
+            if(args.length > 1) {
+                /* Parse arguements */
+                Map<String,String> parms = parseArgs(args, sender);
+                if(parms == null) return true;
+                id = parms.get(ARG_ID);
+                label = parms.get(ARG_LABEL);
+                setid = parms.get(ARG_SET);
+                if((id == null) && (label == null)) {
+                    sender.sendMessage("<label> or id:<area-id> required");
+                    return true;
+                }
+                if(setid == null) {
+                    setid = MarkerSet.DEFAULT;
+                }
+                MarkerSet set = api.getMarkerSet(setid);
+                if(set == null) {
+                    sender.sendMessage("Error: invalid set - " + setid);
+                    return true;
+                }
+                AreaMarker marker;
+                if(id != null) {
+                    marker = set.findAreaMarker(id);
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: area not found - " + id);
+                        return true;
+                    }
+                }
+                else {
+                    marker = set.findAreaMarkerByLabel(label);
+                    if(marker == null) {    /* No marker */
+                        sender.sendMessage("Error: area not found - " + label);
+                        return true;
+                    }
+                }
+                newlabel = parms.get(ARG_NEWLABEL);
+                if(newlabel != null) {    /* Label set? */
+                    marker.setLabel(newlabel);
+                }
+                int scolor = marker.getLineColor();
+                int fcolor = marker.getFillColor();
+                double sopacity = marker.getLineOpacity();
+                double fopacity = marker.getFillOpacity();
+                int sweight = marker.getLineWeight();
+                val = null;
+                try {
+                    val = parms.get(ARG_STROKECOLOR);
+                    if(val != null)
+                        scolor = Integer.parseInt(val, 16);
+                    val = parms.get(ARG_FILLCOLOR);
+                    if(val != null)
+                        fcolor = Integer.parseInt(val, 16);
+                    val = parms.get(ARG_STROKEOPACITY);
+                    if(val != null)
+                        sopacity = Double.parseDouble(val);
+                    val = parms.get(ARG_FILLOPACITY);
+                    if(val != null)
+                        fopacity = Double.parseDouble(val);
+                    val = parms.get(ARG_STROKEWEIGHT);
+                    if(val != null)
+                        sweight = Integer.parseInt(val);
+                    marker.setLineStyle(sweight, sopacity, scolor);
+                    marker.setFillStyle(fopacity, fcolor);
+                } catch (NumberFormatException nfx) {
+                    sender.sendMessage("Invalid parameter format: " + val);
+                    return true;
+                }
+                sender.sendMessage("Updated area id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
+            }
+            else {
+                sender.sendMessage("<label> or id:<area-id> required");
+            }
+        }
         else {
             return false;
         }
@@ -1121,16 +1389,21 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 
                 HashMap<String, Object> mdata = new HashMap<String, Object>();
                 int cnt = m.getCornerCount();
-                double xx[] = new double[cnt];
-                double zz[] = new double[cnt];
+                List<Double> xx = new ArrayList<Double>();
+                List<Double> zz = new ArrayList<Double>();
                 for(int i = 0; i < cnt; i++) {
-                    xx[i] = m.getCornerX(i);
-                    zz[i] = m.getCornerZ(i);
+                    xx.add(m.getCornerX(i));
+                    zz.add(m.getCornerZ(i));
                 }
                 mdata.put("x", xx);
                 mdata.put("ytop", m.getTopY());
                 mdata.put("ybottom", m.getBottomY());
                 mdata.put("z", zz);
+                mdata.put("color", String.format("#%06x", m.getLineColor()));
+                mdata.put("fillcolor", String.format("#%06x", m.getFillColor()));
+                mdata.put("opacity", m.getLineOpacity());
+                mdata.put("fillopacity", m.getFillOpacity());
+                mdata.put("weight", m.getLineWeight());
                 mdata.put("label", m.getLabel());
                 mdata.put("markup", m.isLabelMarkup());
                 if(m.getDescription() != null)

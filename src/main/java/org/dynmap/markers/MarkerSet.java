@@ -69,11 +69,9 @@ public interface MarkerSet {
      * @param world - world id
      * @param x - x coord list
      * @param z - z coord list
-     * @param ytop - top y coordinate
-     * @param ybottom - bottom y coordinate
      * @param persistent - true if persistent
      */
-    public AreaMarker createAreaMarker(String id, String lbl, boolean markup, String world, double x[], double z[], double ytop, double ybottom, boolean persistent);
+    public AreaMarker createAreaMarker(String id, String lbl, boolean markup, String world, double x[], double z[], boolean persistent);
     /**
      * Get area marker by ID
      * @param id - ID of the area marker

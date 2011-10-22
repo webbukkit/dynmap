@@ -45,12 +45,10 @@ class AreaMarkerImpl implements AreaMarker {
      * @param world - world id
      * @param x - x coord list
      * @param z - z coord list
-     * @param ytop - top y coordinate
-     * @param ybottom - bottom y coordinate
      * @param persistent - true if persistent
      * @param set - marker set
      */
-    AreaMarkerImpl(String id, String lbl, boolean markup, String world, double x[], double z[], double ytop, double ybottom, boolean persistent, MarkerSetImpl set) {
+    AreaMarkerImpl(String id, String lbl, boolean markup, String world, double x[], double z[], boolean persistent, MarkerSetImpl set) {
         markerid = id;
         if(lbl != null)
             label = lbl;
@@ -165,11 +163,11 @@ class AreaMarkerImpl implements AreaMarker {
         HashMap<String, Object> node = new HashMap<String, Object>();
         node.put("label", label);
         node.put("markup", markup);
-        double[] xx = new double[corners.size()];
-        double[] zz = new double[corners.size()];
-        for(int i = 0; i < xx.length; i++) {
-            xx[i] = corners.get(i).x;
-            zz[i] = corners.get(i).z;
+        List<Double> xx = new ArrayList<Double>();
+        List<Double> zz = new ArrayList<Double>();
+        for(int i = 0; i < corners.size(); i++) {
+            xx.add(corners.get(i).x);
+            zz.add(corners.get(i).z);
         }
         node.put("x", xx);
         node.put("ytop", Double.valueOf(ytop));

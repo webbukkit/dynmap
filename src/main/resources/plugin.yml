@@ -47,6 +47,16 @@ commands:
            /<command> updateicon <label> newlabel:<label> file:"filename" - update existing icon
            /<command> deleteicon id:<id> - remove icon 
            /<command> deleteicon <label> - remove icon 
+           /<command> addcorner - add corner to corner list using current location
+           /<command> addcorner <x> <z> <world> - add corner with given x and z coordinate on given world to corner list
+           /<command> clearcorners - clear corner list
+           /<command> addarea <label> - add new area with given label using corner list
+           /<command> addarea id:<id> <label> - add new area with given ID using corner list
+           /<command> deletearea <label> - delete area with given label
+           /<command> deletearea id:<id> <label> - delete area with given ID
+           /<command> listareas - list details of all areas
+           /<command> updatearea <label> <arg>:<value> ... - update attributes of area with given label
+           /<command> updatearea id:<id> <arg>:<value> ... - update attributes of area with given ID
            
 permissions:
   dynmap.*:
@@ -78,6 +88,10 @@ permissions:
       dynmap.marker.addicon: true
       dynmap.marker.updateicon: true
       dynmap.marker.deleteicon: true
+      dynmap.marker.addarea: true
+      dynmap.marker.updatearea: true
+      dynmap.marker.listareas: true
+      dynmap.marker.deletearea: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -153,4 +167,16 @@ permissions:
   dynmap.marker.deleteicon:
     description: Allows /dmarker deleteicon
     default: op
-            
+  dynmap.marker.addarea:
+    description: Allows /dmarker addarea, /dmarker addcorner, /dmarker clearcorners
+    default: op            
+  dynmap.marker.updatearea:
+    description: Allows /dmarker updatearea
+    default: op            
+  dynmap.marker.listareas:
+    description: Allows /dmarker listareas
+    default: op            
+  dynmap.marker.deletearea:
+    description: Allows /dmarker deletearea
+    default: op
+    
