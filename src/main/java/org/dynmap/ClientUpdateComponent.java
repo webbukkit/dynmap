@@ -6,8 +6,10 @@ import static org.dynmap.JSONUtils.s;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,6 +30,8 @@ public class ClientUpdateComponent extends Component {
         JSONObject u = e.update;
         long since = e.timestamp;
         String worldName = world.getName();
+        int hideifshadow = configuration.getInteger("hideifshadow", 15);
+        int hideifunder = configuration.getInteger("hideifundercover", 15);
         
         s(u, "servertime", world.getTime() % 24000);
         s(u, "hasStorm", world.hasStorm());
@@ -39,14 +43,26 @@ public class ClientUpdateComponent extends Component {
             Player p = players[i];
             Location pl = p.getLocation();
             JSONObject jp = new JSONObject();
+            boolean hide = false;
+            
             s(jp, "type", "player");
             s(jp, "name", ChatColor.stripColor(p.getDisplayName()));
             s(jp, "account", p.getName());
+            if(hideifshadow < 15) {
+                if(pl.getBlock().getLightLevel() <= hideifshadow)
+                    hide = true;
+            }
+            if(hideifunder < 15) {
+                /*TODO: when pull accepted for getSkyLightLevel(), switch to that */
+                if(pl.getWorld().getHighestBlockYAt(pl) > pl.getBlockY())
+                    hide = true;
+            }
+            
             /* Don't leak player location for world not visible on maps, or if sendposition disbaled */
             DynmapWorld pworld = MapManager.mapman.worldsLookup.get(p.getWorld().getName());
             /* Fix typo on 'sendpositon' to 'sendposition', keep bad one in case someone used it */
             if(configuration.getBoolean("sendposition", true) && configuration.getBoolean("sendpositon", true) &&
-                    (pworld != null) && pworld.sendposition) {
+                    (pworld != null) && pworld.sendposition && (!hide)) {
                 s(jp, "world", p.getWorld().getName());
                 s(jp, "x", pl.getX());
                 s(jp, "y", pl.getY());
@@ -59,7 +75,7 @@ public class ClientUpdateComponent extends Component {
                 s(jp, "z", 0.0);
             }
             /* Only send health if enabled AND we're on visible world */
-            if (configuration.getBoolean("sendhealth", false) && (pworld != null) && pworld.sendhealth) {
+            if (configuration.getBoolean("sendhealth", false) && (pworld != null) && pworld.sendhealth && (!hide)) {
                 s(jp, "health", p.getHealth());
                 s(jp, "armor", Armor.getArmorPoints(p));
             }

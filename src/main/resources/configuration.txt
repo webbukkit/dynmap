@@ -22,6 +22,10 @@ components:
     hidewebchatip: false
     trustclientname: false
     includehiddenplayers: false
+  #  # Optional - make players hidden when they are inside/underground/in shadows (#=light level: 0=full shadow,15=sky)
+  #  hideifshadow: 4
+  #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
+  #  hideifundercover: 14
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
@@ -30,7 +34,9 @@ components:
   #  webchat-interval: 5
   #  hidewebchatip: false
   #  includehiddenplayers: false
-  
+  #  hideifshadow: 4
+  #  hideifundercover: 14
+   
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
   #- class: org.dynmap.herochat.HeroWebChatComponent
