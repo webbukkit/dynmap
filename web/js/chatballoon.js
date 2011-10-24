@@ -30,7 +30,7 @@ componentconstructors['chatballoon'] = function(dynmap, configuration) {
 				layer: new L.Popup({autoPan: configuration.focuschatballoons, closeButton: false}),
 				content: $('<div/>').addClass('balloonmessages')[0]
 			};
-			popup.layer.setContent(popup.content);
+			popup.layer.setContent($(popup.content).html());
 			
 			popup.close = function() {
 				if (popup.timeout) { window.clearTimeout(popup.timeout); }
@@ -51,7 +51,7 @@ componentconstructors['chatballoon'] = function(dynmap, configuration) {
 			$(children[0]).remove();
 		}
 		
-		popup.layer.setContent(popup.content);
+		popup.layer.setContent($(popup.content).html());
 		
 		if (popup.timeout) { window.clearTimeout(popup.timeout); }
 		popup.timeout = window.setTimeout(function() {
