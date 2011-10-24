@@ -23,7 +23,7 @@ var config = {
 	// For standalone (jsonfile) webserver.
 	// url: {
 	// configuration: 'standalone/dynmap_config.json',
-	// update: 'standalone/dynmap_{world}.json',
+	// update: 'standalone/dynmap_{world}.json?_={timestamp}',
 	// sendmessage: 'standalone/sendmessage.php'
 	// },
 
