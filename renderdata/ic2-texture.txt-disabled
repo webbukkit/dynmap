@@ -1,0 +1,42 @@
+# Industrial Craft 2 Block mapping
+# rename file to ic2-texture.txt to make active
+#
+# Files
+texturefile:id=blk0,filename=ic2/sprites/block_0.png,xcount=16,ycount=16
+texturefile:id=cable,filename=ic2/sprites/block_cable.png,xcount=16,ycount=16
+texturefile:id=elec,filename=ic2/sprites/block_electric.png,xcount=16,ycount=16
+texturefile:id=gen,filename=ic2/sprites/block_generator.png,xcount=16,ycount=16
+texturefile:id=mach,filename=ic2/sprites/block_machine.png,xcount=16,ycount=16
+texturefile:id=mach2,filename=ic2/sprites/block_machine2.png,xcount=16,ycount=16
+texturefile:id=pers,filename=ic2/sprites/block_personal.png,xcount=16,ycount=16
+# Blocks
+# blockAlloy=231
+# blockAlloyGlass=230
+# blockCable=228
+# blockDoorAlloy=229
+# blockDynamite=236
+# blockDynamiteRemote=235
+# blockElectric=227
+# blockFenceIron=232
+# blockGenerator=246
+# blockHarz=240
+# blockITNT=239
+# blockLuminator=226
+# blockMachine=250
+# blockMachine2=223
+# blockMetal=224
+# blockMiningPipe=245
+# blockMiningTip=244
+# blockNuke=237
+# blockOreCopper=249
+# blockOreTin=248
+# blockOreUran=247
+# blockPersonal=225
+# blockReactorChamber=233
+# blockRubLeaves=242
+block:id=242,data=*,allfaces=2040,transparency=TRANSPARENT,txtid=blk0
+# blockRubSapling=241
+block:id:241,data=*,allsides=2038,transparency=TRANSPARENT,txtid=blk0
+# blockRubWood=243
+block:id=243,data=*,topbottom=47,allsides=44,txtid=blk0
+# blockRubber=234

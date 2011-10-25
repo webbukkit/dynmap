@@ -92,8 +92,16 @@ public class TexturePack {
     private static final int BLOCKINDEX_PISTONSIDE_EXT = 262;
     private static final int BLOCKINDEX_PANETOP_X = 263;
     private static final int BLOCKINDEX_AIRFRAME_EYE = 264;
-    private static final int MAX_BLOCKINDEX = 264;
-    private static final int BLOCKTABLELEN = MAX_BLOCKINDEX+1;
+    private static final int MAX_BLOCKINDEX = 264;  /* Index of last static tile definition */
+    private static final int BLOCKTABLELEN = 1000;  /* Leave room for dynmaic tiles */
+
+    private static int next_dynamic_tile = MAX_BLOCKINDEX+1;
+    private static class DynamicTileFile {
+        String filename;
+        int tilecnt_x, tilecnt_y;   /* Number of tiles horizontally and vertically */
+        int tile_to_dyntile[];      /* Mapping from tile index in tile file to dynamic ID in global tile table (terrain_argb): 0=unassigned */
+    }
+    private static ArrayList<DynamicTileFile> addonfiles = new ArrayList<DynamicTileFile>();
 
     private static class LoadedImage {
         int[] argb;
@@ -114,8 +122,8 @@ public class TexturePack {
     private static final int IMG_CUSTOMLAVASTILL = 6;
     private static final int IMG_WATERCOLOR = 7;
     private static final int IMG_CNT = 8;
-    
-    private LoadedImage[] imgs = new LoadedImage[IMG_CNT];
+    /* 0-(IMG_CNT-1) are fixed, IMG_CNT+x is dynamic file x */
+    private LoadedImage[] imgs;
 
     private HashMap<Integer, TexturePack> scaled_textures;
     
@@ -215,6 +223,8 @@ public class TexturePack {
     private TexturePack(String tpname) throws FileNotFoundException {
         ZipFile zf = null;
         File texturedir = getTexturePackDirectory();
+        /* Set up for enough files */
+        imgs = new LoadedImage[IMG_CNT + addonfiles.size()];
         File f = new File(texturedir, tpname);
         try {
             /* Try to open zip */
@@ -308,6 +318,21 @@ public class TexturePack {
                 loadImage(is, IMG_CUSTOMWATERSTILL);
                 patchTextureWithImage(IMG_CUSTOMWATERSTILL, BLOCKINDEX_STATIONARYWATER);
             }
+
+            /* Loop through dynamic files */
+            for(int i = 0; i < addonfiles.size(); i++) {
+                DynamicTileFile dtf = addonfiles.get(i);
+                ze = zf.getEntry(dtf.filename);
+                if(ze == null) {
+                    File ff = new File(texturedir, STANDARDTP + "/" + dtf.filename);
+                    is = new FileInputStream(ff);
+                }
+                else {
+                    is = zf.getInputStream(ze);
+                }
+                loadDynamicImage(is, i);
+                is.close();
+            }
             
             zf.close();
             return;
@@ -388,6 +413,17 @@ public class TexturePack {
                 fis = new FileInputStream(f);
                 loadImage(fis, IMG_CUSTOMWATERSTILL);
                 patchTextureWithImage(IMG_CUSTOMWATERSTILL, BLOCKINDEX_STATIONARYWATER);
+                fis.close();
+            }
+            /* Loop through dynamic files */
+            for(int i = 0; i < addonfiles.size(); i++) {
+                DynamicTileFile dtf = addonfiles.get(i);
+                f = new File(texturedir, tpname + "/" + dtf.filename);
+                if(!f.canRead()) {
+                    f = new File(texturedir, STANDARDTP + "/" + dtf.filename);             
+                }
+                fis = new FileInputStream(f);
+                loadDynamicImage(fis, i);
                 fis.close();
             }
         } catch (IOException iox) {
@@ -503,6 +539,29 @@ public class TexturePack {
         img.flush();
     }
 
+    /* Load dynamic texture files, and patch into terrain_argb */
+    private void loadDynamicImage(InputStream is, int idx) throws IOException {
+        loadImage(is, idx+IMG_CNT); /* Load image file */
+        DynamicTileFile dtf = addonfiles.get(idx);  /* Get tile file definition */
+        LoadedImage li = imgs[idx+IMG_CNT];
+        int dim = li.width / dtf.tilecnt_x; /* Dimension of each tile */
+        int old_argb[] = new int[dim*dim];
+        for(int x = 0; x < dtf.tilecnt_x; x++) {
+            for(int y = 0; y < dtf.tilecnt_y; y++) {
+                if(dtf.tile_to_dyntile[y*dtf.tilecnt_x + x] > 0) {    /* dynamic ID? */
+                    /* Copy source tile */
+                    for(int j = 0; j < dim; j++) {
+                        System.arraycopy(li.argb, (y*dim+j)*li.width + (x*dim), old_argb, j*dim, dim); 
+                    }
+                    /* Rescale to match rest of terrain PNG */
+                    int new_argb[] = new int[native_scale*native_scale];
+                    scaleTerrainPNGSubImage(dim, native_scale, old_argb, new_argb);
+                    terrain_argb[dtf.tile_to_dyntile[y*dtf.tilecnt_x + x]] = new_argb;
+                }
+                
+            }
+        }
+    }
     /* Load biome shading image into image array */
     private void loadBiomeShadingImage(InputStream is, int idx) throws IOException {
         loadImage(is, idx); /* Get image */
@@ -727,23 +786,21 @@ public class TexturePack {
         else
             Log.severe("Error loading texture.txt");
         
-        File custom = new File(datadir, "renderdata/custom-texture.txt");
-        if(custom.canRead()) {
-            try {
-                in = new FileInputStream(custom);
-                loadTextureFile(in, custom.getPath());
-            } catch (IOException iox) {
-                Log.severe("Error loading renderdata/custom-texture.txt - " + iox);
-            } finally {
-                if(in != null) { try { in.close(); } catch (IOException x) {} in = null; }
-            }
-        }
-        else {
-            try {
-                FileWriter fw = new FileWriter(custom);
-                fw.write("# The user is free to add new and custom texture mappings here - Dynmap's install will not overwrite it\n");
-                fw.close();
-            } catch (IOException iox) {
+        File renderdir = new File(datadir, "renderdata");
+        String[] files = renderdir.list();
+        for(String fname : files) {
+            if(fname.endsWith("-texture.txt")) {
+                File custom = new File(renderdir, fname);
+                if(custom.canRead()) {
+                    try {
+                        in = new FileInputStream(custom);
+                        loadTextureFile(in, custom.getPath());
+                    } catch (IOException iox) {
+                        Log.severe("Error loading " + custom.getPath() + " - " + iox);
+                    } finally {
+                        if(in != null) { try { in.close(); } catch (IOException x) {} in = null; }
+                    }
+                }
             }
         }
     }
@@ -754,6 +811,7 @@ public class TexturePack {
     private static void loadTextureFile(InputStream txtfile, String txtname) {
         LineNumberReader rdr = null;
         int cnt = 0;
+        HashMap<String,Integer> filetoidx = new HashMap<String,Integer>();
 
         try {
             String line;
@@ -762,6 +820,7 @@ public class TexturePack {
                 if(line.startsWith("block:")) {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
                     int databits = -1;
+                    int srctxtid = -1;
                     int faces[] = new int[] { -1, -1, -1, -1, -1, -1 };
                     line = line.substring(6);
                     BlockTransparency trans = BlockTransparency.OPAQUE;
@@ -825,6 +884,22 @@ public class TexturePack {
                         else if(av[0].equals("userenderdata")) {
                     		userenderdata = av[1].equals("true");
                         }
+                        else if(av[0].equals("txtid")) {
+                            if(filetoidx.containsKey(av[1]))
+                                srctxtid = filetoidx.get(av[1]);
+                            else
+                                Log.severe("Format error - line " + rdr.getLineNumber() + " of " + txtname);
+                        }
+                    }
+                    /* If we have source texture, need to map values to dynamic ids */
+                    if(srctxtid >= 0) {
+                        for(int i = 0; i < faces.length; i++) {
+                            if(faces[i] < 0) continue;  /* Leave invalid IDs alone */
+                            
+                            int relid = faces[i] % 1000;   /* Get relative ID */
+                            /* Map to assigned ID in global tile table: preserve modifier */
+                            faces[i] = (faces[i] - relid) + findOrAddDynamicTile(srctxtid, relid); 
+                        }
                     }
                     /* If no data bits, assume all */
                     if(databits < 0) databits = 0xFFFF;
@@ -836,6 +911,35 @@ public class TexturePack {
                     }
                     else {
                         Log.severe("Texture mapping missing required parameters = line " + rdr.getLineNumber() + " of " + txtname);
+                    }
+                }
+                else if(line.startsWith("texturefile:")) {
+                    line = line.substring(line.indexOf(':')+1);
+                    String[] args = line.split(",");
+                    int xdim = 16, ydim = 16;
+                    String fname = null;
+                    String id = null;
+                    for(String arg : args) {
+                        String[] aval = arg.split("=");
+                        if(aval.length < 2)
+                            continue;
+                        if(aval[0].equals("id"))
+                            id = aval[1];
+                        else if(aval[0].equals("filename"))
+                            fname = aval[1];
+                        else if(aval[0].equals("xcount"))
+                            xdim = Integer.parseInt(aval[1]);
+                        else if(aval[0].equals("ycount"))
+                            ydim = Integer.parseInt(aval[1]);
+                    }
+                    if((fname != null) && (id != null)) {
+                        /* Register the file */
+                        int fid = findOrAddDynamicTileFile(fname, xdim, ydim);
+                        filetoidx.put(id, fid); /* Save lookup */
+                    }
+                    else {
+                        Log.severe("Format error - line " + rdr.getLineNumber() + " of " + txtname);
+                        return;
                     }
                 }
                 else if(line.startsWith("#") || line.startsWith(";")) {
@@ -1057,5 +1161,50 @@ public class TexturePack {
             if((argb[i] & 0xFF000000) != 0)
                 argb[i] |= 0xFF000000;
         }
+    }
+
+    /**
+     * Add new dynmaic file definition, or return existing
+     * 
+     * @param fname
+     * @param xdim
+     * @param ydim
+     * @return dynamic file index
+     */
+    private static int findOrAddDynamicTileFile(String fname, int xdim, int ydim) {
+        DynamicTileFile f;
+        /* Find existing, if already there */
+        for(int i = 0; i < addonfiles.size(); i++) {
+            f = addonfiles.get(i);
+            if(f.filename.equals(fname))
+                return i;
+        }
+        /* Add new tile file entry */
+        f = new DynamicTileFile();
+        f.filename = fname;
+        f.tilecnt_x = xdim;
+        f.tilecnt_y = ydim;
+        f.tile_to_dyntile = new int[xdim*ydim];
+        addonfiles.add(f);
+        
+        return addonfiles.size()-1;
+    }
+    /**
+     * Add or find dynamic tile index of given dynamic tile
+     * @param dynfile_idx - index of file
+     * @param tile_id - ID of tile within file
+     * @return global tile ID
+     */
+    private static int findOrAddDynamicTile(int dynfile_idx, int tile_id) {
+        DynamicTileFile f = addonfiles.get(dynfile_idx);
+        if(f == null) {
+            Log.warning("Invalid add-on file index: " + dynfile_idx);
+            return 0;
+        }
+        if(f.tile_to_dyntile[tile_id] == 0) {   /* Not assigned yet? */
+            f.tile_to_dyntile[tile_id] = next_dynamic_tile;
+            next_dynamic_tile++;    /* Allocate next ID */
+        }
+        return f.tile_to_dyntile[tile_id];
     }
 }
