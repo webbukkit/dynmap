@@ -10,33 +10,188 @@ texturefile:id=mach,filename=ic2/sprites/block_machine.png,xcount=16,ycount=16
 texturefile:id=mach2,filename=ic2/sprites/block_machine2.png,xcount=16,ycount=16
 texturefile:id=pers,filename=ic2/sprites/block_personal.png,xcount=16,ycount=16
 # Blocks
-# blockAlloy=231
-# blockAlloyGlass=230
-# blockCable=228
-# blockDoorAlloy=229
-# blockDynamite=236
-# blockDynamiteRemote=235
-# blockElectric=227
-# blockFenceIron=232
-# blockGenerator=246
-# blockHarz=240
-# blockITNT=239
-# blockLuminator=226
-# blockMachine=250
+# blockScaffold=220
+#  data=*
+block:id=220,data=*,allsides=116,topbottom=117,txtid=blk0
+#  data=2
+block:id=220,data=2,allfaces=118,txtid=blk0
+# blockWall=221
+#  data=0
+block:id=221,data=0,allfaces=96,txtid=blk0
+#  data=1
+block:id=221,data=1,allfaces=97,txtid=blk0
+#  data=2
+block:id=221,data=2,allfaces=98,txtid=blk0
+#  data=3
+block:id=221,data=3,allfaces=99,txtid=blk0
+#  data=4
+block:id=221,data=4,allfaces=100,txtid=blk0
+#  data=5
+block:id=221,data=5,allfaces=101,txtid=blk0
+#  data=6
+block:id=221,data=6,allfaces=102,txtid=blk0
+#  data=7
+block:id=221,data=7,allfaces=103,txtid=blk0
+#  data=8
+block:id=221,data=8,allfaces=104,txtid=blk0
+#  data=9
+block:id=221,data=9,allfaces=105,txtid=blk0
+#  data=10
+block:id=221,data=10,allfaces=106,txtid=blk0
+#  data=11
+block:id=221,data=11,allfaces=107,txtid=blk0
+#  data=12
+block:id=221,data=12,allfaces=108,txtid=blk0
+#  data=13
+block:id=221,data=13,allfaces=109,txtid=blk0
+#  data=14
+block:id=221,data=14,allfaces=110,txtid=blk0
+#  data=15
+block:id=221,data=15,allfaces=111,txtid=blk0
+# blockFoam=222
+block:id=222,data=*,allfaces=37
 # blockMachine2=223
-# blockMetal=224
-# blockMiningPipe=245
-# blockMiningTip=244
-# blockNuke=237
-# blockOreCopper=249
-# blockOreTin=248
-# blockOreUran=247
+#  data=0
+block:id=223,data=0,top=0,bottom=16,north=32,south=48,east=64,west=80,txtid=mach2
+#  data=1
+block:id=223,data=1,top=1,bottom=17,north=33,south=49,east=65,west=81,txtid=mach2
+# blockMetal=224 
+#  data=0 (copper)
+block:id=224,data=0,allfaces=93,txtid=blk0
+#  data=1 (tin)
+block:id=224,data=1,allfaces=94,txtid=blk0
+#  data=2 (bronze)
+block:id=224,data=2,allfaces=78,txtid=blk0
+#  data=3 (uranium)
+block:id=224,data=3,topbottom=79,allsides=95,txtid=blk0
 # blockPersonal=225
+#  data=0
+block:id=225,data=0,bottom=0,top=16,north=32,south=48,east=64,west=80,txtid=pers
+#  data=1
+block:id=225,data=1,bottom=1,top=17,north=33,south=49,east=65,west=81,txtid=pers
+# blockLuminator=226
+block:id=226,data=*,allfaces=31,txtid=blk0
+# blockElectric=227
+#  data=0
+block:id=227,data=0,bottom=0,top=16,north=32,south=48,east=64,west=80,txtid=elec
+#  data=1
+block:id=227,data=1,bottom=1,top=17,north=33,south=49,east=65,west=81,txtid=elec
+#  data=2
+block:id=227,data=2,bottom=2,top=18,north=34,south=50,east=66,west=82,txtid=elec
+#  data=3
+block:id=227,data=3,bottom=3,top=19,north=35,south=51,east=67,west=83,txtid=elec
+#  data=4
+block:id=227,data=4,bottom=4,top=20,north=36,south=52,east=68,west=84,txtid=elec
+#  data=5
+block:id=227,data=5,bottom=5,top=21,north=37,south=53,east=69,west=85,txtid=elec
+# blockCable=228
+#  data=0
+block:id=228,data=0,allfaces=0,txtid=cable
+#  data=1
+block:id=228,data=1,allfaces=16,txtid=cable
+#  data=2
+block:id=228,data=2,allfaces=32,txtid=cable
+#  data=3
+block:id=228,data=3,allfaces=48,txtid=cable
+#  data=4
+block:id=228,data=4,allfaces=64,txtid=cable
+#  data=5
+block:id=228,data=5,allfaces=80,txtid=cable
+#  data=6
+block:id=228,data=6,allfaces=96,txtid=cable
+#  data=7
+block:id=228,data=7,allfaces=112,txtid=cable
+#  data=8
+block:id=228,data=8,allfaces=128,txtid=cable
+#  data=9
+block:id=228,data=9,allfaces=144,txtid=cable
+#  data=10
+block:id=228,data=10,allfaces=160,txtid=cable
+# blockDoorAlloy=229
+#   data=0-7 (bottom)
+block:id=229,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,allsides=15,topbottom=12,transparency=TRANSPARENT,txtid=blk0
+#   data=8-15 (top)
+block:id=229,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=14,topbottom=12,transparency=TRANSPARENT,txtid=blk0
+# blockAlloyGlass=230
+block:id=230,data=*,allfaces=13,txtid=blk0,transparency=TRANSPARENT
+# blockAlloy=231
+block:id=231,data=*,allfaces=12,txtid=blk0
+# blockFenceIron=232
+block:id=232,data=*,allfaces=1,txtid=blk0,transparency=TRANSPARENT
 # blockReactorChamber=233
+block:id=233,data=*,bottom=16,top=17,allsides=67,txtid=blk0
+# blockRubber=234
+block:id=234,data=*,allfaces=40,txtid=blk0
+# blockDynamiteRemote=235
+block:id=235,data=*,allsides=56,txtid=blk0
+# blockDynamite=236
+block:id=236,data=*,allsides=57,txtid=blk0
+# blockNuke=237
+block:id=237,data=*,bottom=61,top=62,allsides=63,txtid=blk0
+# ?=238
+# blockITNT=239
+block:id=239,data=*,bottom=58,top=59,allsides=60,txtid=blk0
+# blockHarz=240
+block:id=240,data=*,allfaces=43,txtid=blk0
+# blockRubSapling=241
+block:id=241,data=*,allsides=2038,transparency=TRANSPARENT,txtid=blk0
 # blockRubLeaves=242
 block:id=242,data=*,allfaces=2040,transparency=TRANSPARENT,txtid=blk0
-# blockRubSapling=241
-block:id:241,data=*,allsides=2038,transparency=TRANSPARENT,txtid=blk0
 # blockRubWood=243
 block:id=243,data=*,topbottom=47,allsides=44,txtid=blk0
-# blockRubber=234
+# blockMiningTip=244
+block:id=244,data=*,allfaces=36,txtid=blk0
+# blockMiningPipe=245
+block:id=245,data=*,allfaces=35,txtid=blk0
+# blockGenerator=246
+#  data=0
+block:id=246,data=0,bottom=0,top=16,north=32,south=48,east=64,west=80,txtid=gen
+#  data=1
+block:id=246,data=1,bottom=1,top=17,north=33,south=49,east=65,west=81,txtid=gen
+#  data=2
+block:id=246,data=2,bottom=2,top=18,north=34,south=50,east=66,west=82,txtid=gen
+#  data=3
+block:id=246,data=3,bottom=3,top=19,north=35,south=51,east=67,west=83,txtid=gen
+#  data=4
+block:id=246,data=4,bottom=4,top=20,north=36,south=52,east=68,west=84,txtid=gen
+#  data=5
+block:id=246,data=5,bottom=5,top=21,north=37,south=53,east=69,west=85,txtid=gen
+# blockOreUran=247
+block:id=247,data=*,allfaces=34,txtid=blk0
+# blockOreTin=248
+block:id=248,data=*,allfaces=33,txtid=blk0
+# blockOreCopper=249
+block:id=249,data=*,allfaces=32,txtid=blk0
+# blockMachine=250
+#  data=0
+block:id=250,data=0,bottom=0,top=16,north=32,south=48,east=64,west=80,txtid=mach
+#  data=1
+block:id=250,data=1,bottom=1,top=17,north=33,south=49,east=65,west=81,txtid=mach
+#  data=2
+block:id=250,data=2,bottom=2,top=18,north=34,south=50,east=66,west=82,txtid=mach
+#  data=3
+block:id=250,data=3,bottom=3,top=19,north=35,south=51,east=67,west=83,txtid=mach
+#  data=4
+block:id=250,data=4,bottom=4,top=20,north=36,south=52,east=68,west=84,txtid=mach
+#  data=5
+block:id=250,data=5,bottom=5,top=21,north=37,south=53,east=69,west=85,txtid=mach
+#  data=6
+block:id=250,data=6,bottom=6,top=22,north=38,south=54,east=70,west=86,txtid=mach
+#  data=7
+block:id=250,data=7,bottom=7,top=23,north=39,south=55,east=71,west=87,txtid=mach
+#  data=8
+block:id=250,data=8,bottom=8,top=24,north=40,south=56,east=72,west=88,txtid=mach
+#  data=9
+block:id=250,data=9,bottom=9,top=25,north=41,south=57,east=73,west=89,txtid=mach
+#  data=10
+block:id=250,data=10,bottom=10,top=26,north=42,south=58,east=74,west=90,txtid=mach
+#  data=11
+block:id=250,data=11,bottom=11,top=27,north=43,south=59,east=75,west=91,txtid=mach
+#  data=12
+block:id=250,data=12,bottom=12,top=28,north=44,south=60,east=76,west=92,txtid=mach
+#  data=13
+block:id=250,data=13,bottom=13,top=29,north=45,south=61,east=77,west=93,txtid=mach
+#  data=14
+block:id=250,data=14,bottom=14,top=30,north=46,south=62,east=78,west=94,txtid=mach
+#  data=15
+block:id=250,data=15,bottom=15,top=31,north=47,south=63,east=79,west=95,txtid=mach
