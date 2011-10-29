@@ -788,17 +788,19 @@ public class TexturePack {
         
         File renderdir = new File(datadir, "renderdata");
         String[] files = renderdir.list();
-        for(String fname : files) {
-            if(fname.endsWith("-texture.txt")) {
-                File custom = new File(renderdir, fname);
-                if(custom.canRead()) {
-                    try {
-                        in = new FileInputStream(custom);
-                        loadTextureFile(in, custom.getPath());
-                    } catch (IOException iox) {
-                        Log.severe("Error loading " + custom.getPath() + " - " + iox);
-                    } finally {
-                        if(in != null) { try { in.close(); } catch (IOException x) {} in = null; }
+        if(files != null) {
+            for(String fname : files) {
+                if(fname.endsWith("-texture.txt")) {
+                    File custom = new File(renderdir, fname);
+                    if(custom.canRead()) {
+                        try {
+                            in = new FileInputStream(custom);
+                            loadTextureFile(in, custom.getPath());
+                        } catch (IOException iox) {
+                            Log.severe("Error loading " + custom.getPath() + " - " + iox);
+                        } finally {
+                            if(in != null) { try { in.close(); } catch (IOException x) {} in = null; }
+                        }
                     }
                 }
             }

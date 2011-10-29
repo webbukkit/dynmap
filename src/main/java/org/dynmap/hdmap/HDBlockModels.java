@@ -293,20 +293,22 @@ public class HDBlockModels {
         }
         File customdir = new File(datadir, "renderdata");
         String[] files = customdir.list();
-        for(String fn : files) {
-            if(fn.endsWith("-models.txt") == false)
-                continue;
-            File custom = new File(customdir, fn);
-            if(custom.canRead()) {
-                try {
-                    in = new FileInputStream(custom);
-                    loadModelFile(in, custom.getPath());
-                } catch (IOException iox) {
-                    Log.severe("Error loading " + custom.getPath());
-                } finally {
-                    if(in != null) { 
-                        try { in.close(); } catch (IOException iox) {}
-                        in = null;
+        if(files != null) {
+            for(String fn : files) {
+                if(fn.endsWith("-models.txt") == false)
+                    continue;
+                File custom = new File(customdir, fn);
+                if(custom.canRead()) {
+                    try {
+                        in = new FileInputStream(custom);
+                        loadModelFile(in, custom.getPath());
+                    } catch (IOException iox) {
+                        Log.severe("Error loading " + custom.getPath());
+                    } finally {
+                        if(in != null) { 
+                            try { in.close(); } catch (IOException iox) {}
+                            in = null;
+                        }
                     }
                 }
             }
