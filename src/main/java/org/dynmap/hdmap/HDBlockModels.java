@@ -417,7 +417,7 @@ public class HDBlockModels {
                     ArrayList<Integer> blkids = new ArrayList<Integer>();
                     line = line.substring(8);
                     String[] args = line.split(",");
-                    List<Integer> map = null;
+                    List<Integer> map = new ArrayList<Integer>();
                     int linktype = 0;
                     for(String a : args) {
                         String[] av = a.split("=");
@@ -429,11 +429,10 @@ public class HDBlockModels {
                             linktype = Integer.parseInt(av[1]);
                         }
                         else if(av[0].equals("linkid")) {
-                            if(map == null) map = new ArrayList<Integer>();
                             map.add(Integer.parseInt(av[1]));
                         }
                     }
-                    if(map != null) {
+                    if(linktype > 0) {
                         int[] mapids = new int[map.size()];
                         for(int i = 0; i < mapids.length; i++)
                             mapids[i] = map.get(i);
