@@ -516,6 +516,38 @@ public class IsoHDPerspective implements HDPerspective {
             }
             return blockdata;
         }
+        private final boolean containsID(int id, int[] linkids) {
+            for(int lid: linkids)
+                if(id == lid)
+                    return true;
+            return false;
+        }
+        private int generateWireBlockData(MapIterator mapiter, int[] linkids) {
+            int blockdata = 0;
+            int id;
+            /* Check north */
+            id = mapiter.getBlockTypeIDAt(BlockStep.X_MINUS);
+            if(containsID(id, linkids)) {
+                blockdata |= 1;
+            }
+            /* Look east */
+            id = mapiter.getBlockTypeIDAt(BlockStep.Z_MINUS);
+            if(containsID(id, linkids)) {
+                blockdata |= 2;
+            }
+            /* Look south */
+            id = mapiter.getBlockTypeIDAt(BlockStep.X_PLUS);
+            if(containsID(id, linkids)) {
+                blockdata |= 4;
+            }
+            /* Look west */
+            id = mapiter.getBlockTypeIDAt(BlockStep.Z_PLUS);
+            if(containsID(id, linkids)) {
+                blockdata |= 8;
+            }
+            return blockdata;
+        }
+
         private final boolean handleSubModel(short[] model, HDShaderState[] shaderstate, boolean[] shaderdone) {
             boolean firststep = true;
             
@@ -535,6 +567,11 @@ public class IsoHDPerspective implements HDPerspective {
             }
             return false;
         }
+        private static final int FENCE_ALGORITHM = 1;
+        private static final int CHEST_ALGORITHM = 2;
+        private static final int REDSTONE_ALGORITHM = 3;
+        private static final int GLASS_IRONFENCE_ALG = 4;
+        private static final int WIRE_ALGORITHM = 5;
         /**
          * Process visit of ray to block
          */
@@ -547,21 +584,23 @@ public class IsoHDPerspective implements HDPerspective {
             }
             else if(nonairhit || (blocktypeid != 0)) {
                 blockdata = mapiter.getBlockData();            	
-                switch(blocktypeid) {
-                    case FENCE_BLKTYPEID:   /* Special case for fence - need to fake data so we can render properly */
-                    case NETHERFENCE_BLKTYPEID:
+                switch(HDBlockModels.getLinkAlgID(blocktypeid)) {
+                    case FENCE_ALGORITHM:   /* Fence algorithm */
                         blockrenderdata = generateFenceBlockData(mapiter, blocktypeid);
                         break;
-                    case CHEST_BLKTYPEID:   /* Special case for chest - need to fake data so we can render */
+                    case CHEST_ALGORITHM:
                         blockrenderdata = generateChestBlockData(mapiter);
                         break;
-                    case REDSTONE_BLKTYPEID:    /* Special case for redstone - fake data for wire pattern */
+                    case REDSTONE_ALGORITHM:
                         blockrenderdata = generateRedstoneWireBlockData(mapiter);
                         break;
-                    case IRONFENCE_BLKTYPEID:   /* Special case for iron fence - fake data for adjacent block info */
-                    case GLASSPANE_BLKTYPEID:   /* Special case for glass pane - fake data for adjacent block info */
+                    case GLASS_IRONFENCE_ALG:
                         blockrenderdata = generateIronFenceGlassBlockData(mapiter, blocktypeid);
                         break;
+                    case WIRE_ALGORITHM:
+                        blockrenderdata = generateWireBlockData(mapiter, HDBlockModels.getLinkIDs(blocktypeid));
+                        break;
+                    case 0:
                     default:
                     	blockrenderdata = -1;
                     	break;

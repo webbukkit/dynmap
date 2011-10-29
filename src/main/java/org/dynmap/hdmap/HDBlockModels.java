@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.dynmap.Log;
@@ -25,6 +26,8 @@ public class HDBlockModels {
     private long blockflags[];
     private int nativeres;
     private HashMap<Integer, short[]> scaledblocks;
+    private static int linkalg[] = new int[256];
+    private static int linkmap[][] = new int[256][];
     
     private static HashMap<Integer, HDBlockModels> models_by_id_data = new HashMap<Integer, HDBlockModels>();
     
@@ -49,10 +52,6 @@ public class HDBlockModels {
         this.databits = databits;
         this.nativeres = m.nativeres;
         this.blockflags = m.blockflags;
-        for(int i = 0; i < 16; i++) {
-            if((databits & (1<<i)) != 0)
-                models_by_id_data.put((blockid<<4)+i, this);
-        }
     }
     /**
      * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
@@ -99,6 +98,22 @@ public class HDBlockModels {
             blockflags[nativeres*y+z] |= (1 << x);
         else
             blockflags[nativeres*y+z] &= ~(1 << x);            
+    }
+    /**
+     * Get link algorithm
+     * @param blkid - block ID
+     * @return 0=no link alg
+     */
+    public static final int getLinkAlgID(int blkid) {
+        return linkalg[blkid];
+    }
+    /**
+     * Get link block IDs
+     * @param blkid - block ID
+     * @return array of block IDs to link with
+     */
+    public static final int[] getLinkIDs(int blkid) {
+        return linkmap[blkid];
     }
     /**
      * Get scaled map of block: will return array of alpha levels, corresponding to how much of the
@@ -276,26 +291,24 @@ public class HDBlockModels {
             loadModelFile(in, "models.txt");
             try { in.close(); } catch (IOException iox) {} in = null;
         }
-        File custom = new File(datadir, "renderdata/custom-models.txt");
-        if(custom.canRead()) {
-            try {
-                in = new FileInputStream(custom);
-                loadModelFile(in, custom.getPath());
-            } catch (IOException iox) {
-                Log.severe("Error loading " + custom.getPath());
-            } finally {
-                if(in != null) { 
-                    try { in.close(); } catch (IOException iox) {}
-                    in = null;
+        File customdir = new File(datadir, "renderdata");
+        String[] files = customdir.list();
+        for(String fn : files) {
+            if(fn.endsWith("-models.txt") == false)
+                continue;
+            File custom = new File(customdir, fn);
+            if(custom.canRead()) {
+                try {
+                    in = new FileInputStream(custom);
+                    loadModelFile(in, custom.getPath());
+                } catch (IOException iox) {
+                    Log.severe("Error loading " + custom.getPath());
+                } finally {
+                    if(in != null) { 
+                        try { in.close(); } catch (IOException iox) {}
+                        in = null;
+                    }
                 }
-            }
-        }
-        else {
-            try {
-                FileWriter fw = new FileWriter(custom);
-                fw.write("# The user is free to add new and custom models here - Dynmap's install will not overwrite it\n");
-                fw.close();
-            } catch (IOException iox) {
             }
         }
     }
@@ -397,6 +410,36 @@ public class HDBlockModels {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+                else if(line.startsWith("linkmap:")) {
+                    ArrayList<Integer> blkids = new ArrayList<Integer>();
+                    line = line.substring(8);
+                    String[] args = line.split(",");
+                    List<Integer> map = null;
+                    int linktype = 0;
+                    for(String a : args) {
+                        String[] av = a.split("=");
+                        if(av.length < 2) continue;
+                        if(av[0].equals("id")) {
+                            blkids.add(Integer.parseInt(av[1]));
+                        }
+                        else if(av[0].equals("linkalg")) {
+                            linktype = Integer.parseInt(av[1]);
+                        }
+                        else if(av[0].equals("linkid")) {
+                            if(map == null) map = new ArrayList<Integer>();
+                            map.add(Integer.parseInt(av[1]));
+                        }
+                    }
+                    if(map != null) {
+                        int[] mapids = new int[map.size()];
+                        for(int i = 0; i < mapids.length; i++)
+                            mapids[i] = map.get(i);
+                        for(Integer bid : blkids) {
+                            linkalg[bid] = linktype;
+                            linkmap[bid] = mapids;
                         }
                     }
                 }

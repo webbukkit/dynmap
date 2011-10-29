@@ -31,6 +31,8 @@ rotate:id=53,data=0,rot=90
 # Nether brick stair - up east
 block:id=53,id=67,id=108,id=109,id=114,data=3,scale=2
 rotate:id=53,data=0,rot=270
+# Chest - set render alg
+linkmap:id=54,linkalg=2
 # Slab (stone, sandstone, wood, cobblestone)
 block:id=44,data=*,scale=4
 layer:0,1
@@ -173,6 +175,9 @@ rotate:id=50,data=1,rot=90
 # Redstone torch off - pointing east
 block:id=50,id=75,id=76,data=4,scale=16
 rotate:id=50,data=1,rot=270
+# Fence - set render algorithm
+# Nether brick fence - set render alg
+linkmap:id=85,id=113,linkalg=1
 # Fence - (data is faked: 1=north,2=east,4=south,8=west)
 # Fence - no neighbors
 # Nether Brick Fence
@@ -876,6 +881,8 @@ rotate:id=68,data=2,rot=270
 # Wall sign - facing south
 block:id=68,data=5,scale=8
 rotate:id=68,data=2,rot=90
+# Redstone - render alg
+linkmap:id=55,linkalg=3
 # Redstone wire (NSEW)
 block:id=55,data=0,scale=16
 layer:0,1
@@ -1904,6 +1911,9 @@ rotate:id=34,data=2,rot=270
 # Piston extension - extended facing west
 block:id=34,data=5,data=13,scale=8
 rotate:id=34,data=2,rot=90
+# Glass pane - render alg
+# Iron fence - render alg
+linkmap:id=101,id=102,linkalg=4
 # Glass pane - no adjacent (0), all adjacent (15)
 # Iron fence - no adjacent (0), all adjacent (15)
 block:id=102,id=101,data=0,data=15,scale=16
