@@ -672,10 +672,10 @@ public class TexturePack {
                 for(int x = 0; x < res; x++, off++) {
                     int ind_x = offsets[x];
                     int wgt_x = weights[x];
-                    int accum_red = 0;
-                    int accum_green = 0;
-                    int accum_blue = 0;
-                    int accum_alpha = 0;
+                    double accum_red = 0;
+                    double accum_green = 0;
+                    double accum_blue = 0;
+                    double accum_alpha = 0;
                     for(int xx = 0; xx < 2; xx++) {
                         int wx = (xx==0)?wgt_x:(nativeres-wgt_x);
                         if(wx == 0) continue;
@@ -685,17 +685,18 @@ public class TexturePack {
                             /* Accumulate */
                             c.setARGB(src_argb[(ind_y+yy)*nativeres + ind_x + xx]);
                             int w = wx * wy;
-                            accum_red += c.getRed() * w;
-                            accum_green += c.getGreen() * w;
-                            accum_blue += c.getBlue() * w;
-                            accum_alpha += c.getAlpha() * w;
+                            double a = (double)w * (double)c.getAlpha();
+                            accum_red += c.getRed() * a;
+                            accum_green += c.getGreen() * a;
+                            accum_blue += c.getBlue() * a;
+                            accum_alpha += a;
                         }
                     }
-                    int newalpha = accum_alpha / (nativeres*nativeres);
-                    if(newalpha == 0) newalpha = 1;
+                    double newalpha = accum_alpha;
+                    if(newalpha == 0.0) newalpha = 1.0;
                     /* Generate weighted compnents into color */
-                    c.setRGBA(accum_red / (nativeres*nativeres), accum_green / (nativeres*nativeres), 
-                              accum_blue / (nativeres*nativeres), accum_alpha / (nativeres*nativeres));
+                    c.setRGBA((int)(accum_red / newalpha), (int)(accum_green / newalpha), 
+                              (int)(accum_blue / newalpha), (int)(accum_alpha / (nativeres*nativeres)));
                     dest_argb[(y*res) + x] = c.getARGB();
                 }
             }
@@ -717,10 +718,10 @@ public class TexturePack {
                     weights[idx] = (offsets[idx]*nativeres + nativeres) - v;
                 }
             }
-            int accum_red[] = new int[res*res];
-            int accum_green[] = new int[res*res];
-            int accum_blue[] = new int[res*res];
-            int accum_alpha[] = new int[res*res];
+            double accum_red[] = new double[res*res];
+            double accum_green[] = new double[res*res];
+            double accum_blue[] = new double[res*res];
+            double accum_alpha[] = new double[res*res];
             
             /* Now, use weights and indices to fill in scaled map */
             for(int y = 0; y < nativeres; y++) {
@@ -736,11 +737,12 @@ public class TexturePack {
                         for(int yy = 0; yy < 2; yy++) {
                             int wy = (yy==0)?wgt_y:(res-wgt_y);
                             if(wy == 0) continue;
-                            int w = wx * wy;
-                            accum_red[(ind_y+yy)*res + (ind_x+xx)] += c.getRed() * w;
-                            accum_green[(ind_y+yy)*res + (ind_x+xx)] += c.getGreen() * w;
-                            accum_blue[(ind_y+yy)*res + (ind_x+xx)] += c.getBlue() * w;
-                            accum_alpha[(ind_y+yy)*res + (ind_x+xx)] += c.getAlpha() * w;
+                            double w = wx * wy;
+                            double a = w * c.getAlpha();
+                            accum_red[(ind_y+yy)*res + (ind_x+xx)] += c.getRed() * a;
+                            accum_green[(ind_y+yy)*res + (ind_x+xx)] += c.getGreen() * a;
+                            accum_blue[(ind_y+yy)*res + (ind_x+xx)] += c.getBlue() * a;
+                            accum_alpha[(ind_y+yy)*res + (ind_x+xx)] += a;
                         }
                     }
                 }
@@ -749,10 +751,10 @@ public class TexturePack {
             for(int y = 0; y < res; y++) {
                 for(int x = 0; x < res; x++) {
                     int off = (y*res) + x;
-                    int aa = accum_alpha[off] / (nativeres*nativeres);
-                    if(aa == 0) aa = 1;
-                    c.setRGBA(accum_red[off]/(nativeres*nativeres), accum_green[off]/(nativeres*nativeres),
-                          accum_blue[off]/(nativeres*nativeres), accum_alpha[off] / (nativeres*nativeres));
+                    double aa = accum_alpha[off];
+                    if(aa == 0.0) aa = 1.0;
+                    c.setRGBA((int)(accum_red[off]/aa), (int)(accum_green[off]/aa),
+                          (int)(accum_blue[off]/aa), (int)(accum_alpha[off] / (nativeres*nativeres)));
                     dest_argb[y*res + x] = c.getARGB();
                 }
             }
