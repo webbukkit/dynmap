@@ -724,6 +724,18 @@ public class MapManager {
     	}
     }
     
+    void purgeQueue(CommandSender sender) {
+        if(tileQueue != null) {
+            int cnt = 0;
+            List<MapTile> popped = tileQueue.popAll();
+            if(popped != null) {
+                cnt = popped.size();
+                popped.clear();
+            }
+            sender.sendMessage("Purged " + cnt + " tiles from queue");
+        }
+    }
+    
     public void activateWorld(World w) {
         ConfigurationNode worldConfiguration = plug_in.getWorldConfiguration(w);
         if (!worldConfiguration.getBoolean("enabled", false)) {

@@ -217,7 +217,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap");
         if (permissions == null)
-            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload" });
+            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload", "purgequeue" });
 
         dataDirectory = this.getDataFolder();
         
@@ -724,7 +724,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         "reload",
         "stats",
         "resetstats",
-        "sendtoweb" }));
+        "sendtoweb",
+        "purgequeue" }));
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -846,6 +847,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 } else {
                     sender.sendMessage("World name is required");
                 }
+            } else if (c.equals("purgequeue") && checkPlayerPermission(sender, "purgequeue")) {
+                mapManager.purgeQueue(sender);
             } else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
                 sender.sendMessage("Reloading Dynmap...");
                 reload();
