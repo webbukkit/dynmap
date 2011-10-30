@@ -1,3 +1,6 @@
+# Industrial Craft 2 Texture mapping
+# define ic2-support: true in configuration.txt to enable
+enabled:ic2-support
 # Wire - set render alg
 linkmap:id=228,linkalg=5,linkid=223,linkid=225,linkid=226,linkid=227,linkid=228,linkid=233,linkid=237,linkid=246,linkid=250
 # Wire - (data is faked: 1=north,2=east,4=south,8=west)
@@ -195,4 +198,4 @@ block:id=232,data=11,scale=16
 rotate:id=232,data=7,rot=270
 # Iron Fence - north, south, east, west neightbors
 block:id=232,data=15,scale=16
-layer:id=232,data=15,rot=0
+rotate:id=232,data=15,rot=0

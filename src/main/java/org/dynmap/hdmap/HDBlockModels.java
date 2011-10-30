@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
 
 /**
@@ -279,7 +280,7 @@ public class HDBlockModels {
     /**
      * Load models 
      */
-    public static void loadModels(File datadir) {
+    public static void loadModels(File datadir, ConfigurationNode config) {
         /* Reset models-by-ID-Data cache */
         models_by_id_data.clear();
         /* Reset scaled models by scale cache */
@@ -288,7 +289,7 @@ public class HDBlockModels {
         /* Load block models */
         InputStream in = TexturePack.class.getResourceAsStream("/models.txt");
         if(in != null) {
-            loadModelFile(in, "models.txt");
+            loadModelFile(in, "models.txt", config);
             try { in.close(); } catch (IOException iox) {} in = null;
         }
         File customdir = new File(datadir, "renderdata");
@@ -301,7 +302,7 @@ public class HDBlockModels {
                 if(custom.canRead()) {
                     try {
                         in = new FileInputStream(custom);
-                        loadModelFile(in, custom.getPath());
+                        loadModelFile(in, custom.getPath(), config);
                     } catch (IOException iox) {
                         Log.severe("Error loading " + custom.getPath());
                     } finally {
@@ -317,7 +318,7 @@ public class HDBlockModels {
     /**
      * Load models from file
      */
-    private static void loadModelFile(InputStream in, String fname) {
+    private static void loadModelFile(InputStream in, String fname, ConfigurationNode config) {
         LineNumberReader rdr = null;
         int cnt = 0;
         try {
@@ -445,6 +446,22 @@ public class HDBlockModels {
                     }
                 }
                 else if(line.startsWith("#") || line.startsWith(";")) {
+                }
+                else if(line.startsWith("enabled:")) {  /* Test if texture file is enabled */
+                    line = line.substring(8).trim();
+                    if(line.startsWith("true")) {   /* We're enabled? */
+                        /* Nothing to do - keep processing */
+                    }
+                    else if(line.startsWith("false")) { /* Disabled */
+                        return; /* Quit */
+                    }
+                    /* If setting is not defined or false, quit */
+                    else if(config.getBoolean(line, false) == false) {
+                        return;
+                    }
+                    else {
+                        Log.info(line + " models enabled");
+                    }
                 }
                 else if(layerbits != 0) {   /* If we're working pattern lines */
                     /* Layerbits determine Y, rows count from North to South (X=0 to X=N-1), columns Z are West to East (N-1 to 0) */

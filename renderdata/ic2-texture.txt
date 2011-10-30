@@ -1,6 +1,6 @@
 # Industrial Craft 2 Block mapping
-# rename file to ic2-texture.txt to make active
-#
+# define ic2-support: true in configuration.txt to enable
+enabled:ic2-support
 # Files
 texturefile:id=blk0,filename=ic2/sprites/block_0.png,xcount=16,ycount=16
 texturefile:id=cable,filename=ic2/sprites/block_cable.png,xcount=16,ycount=16

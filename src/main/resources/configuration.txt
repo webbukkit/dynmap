@@ -278,6 +278,9 @@ enabletilehash: true
 #   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
 #compass-mode: newnorth
 
+# Enable Industrial Craft 2 block rendering support
+#ic2-support: true
+
 render-triggers:
   #- chunkloaded
   #- playermove

@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 
 import org.bukkit.block.Biome;
 import org.dynmap.Color;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
@@ -772,7 +773,7 @@ public class TexturePack {
     /**
      * Load texture pack mappings
      */
-    public static void loadTextureMapping(File datadir) {
+    public static void loadTextureMapping(File datadir, ConfigurationNode config) {
         /* Start clean with texture packs - need to be loaded after mapping */
         packs.clear();
         /* Initialize map with blank map for all entries */
@@ -780,7 +781,7 @@ public class TexturePack {
         /* Load block models */
         InputStream in = TexturePack.class.getResourceAsStream("/texture.txt");
         if(in != null) {
-            loadTextureFile(in, "texture.txt");
+            loadTextureFile(in, "texture.txt", config);
             if(in != null) { try { in.close(); } catch (IOException x) {} in = null; }
         }
         else
@@ -795,7 +796,7 @@ public class TexturePack {
                     if(custom.canRead()) {
                         try {
                             in = new FileInputStream(custom);
-                            loadTextureFile(in, custom.getPath());
+                            loadTextureFile(in, custom.getPath(), config);
                         } catch (IOException iox) {
                             Log.severe("Error loading " + custom.getPath() + " - " + iox);
                         } finally {
@@ -810,7 +811,7 @@ public class TexturePack {
     /**
      * Load texture pack mappings from texture.txt file
      */
-    private static void loadTextureFile(InputStream txtfile, String txtname) {
+    private static void loadTextureFile(InputStream txtfile, String txtname, ConfigurationNode config) {
         LineNumberReader rdr = null;
         int cnt = 0;
         HashMap<String,Integer> filetoidx = new HashMap<String,Integer>();
@@ -945,6 +946,22 @@ public class TexturePack {
                     }
                 }
                 else if(line.startsWith("#") || line.startsWith(";")) {
+                }
+                else if(line.startsWith("enabled:")) {  /* Test if texture file is enabled */
+                    line = line.substring(8).trim();
+                    if(line.startsWith("true")) {   /* We're enabled? */
+                        /* Nothing to do - keep processing */
+                    }
+                    else if(line.startsWith("false")) { /* Disabled */
+                        return; /* Quit */
+                    }
+                    /* If setting is not defined or false, quit */
+                    else if(config.getBoolean(line, false) == false) {
+                        return;
+                    }
+                    else {
+                        Log.info(line + " textures enabled");
+                    }
                 }
             }
             Log.verboseinfo("Loaded " + cnt + " texture mappings from " + txtname);

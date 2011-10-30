@@ -221,11 +221,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         dataDirectory = this.getDataFolder();
         
-        /* Load block models */
-        HDBlockModels.loadModels(dataDirectory);
-        /* Load texture mappings */
-        TexturePack.loadTextureMapping(dataDirectory);
-        
         /* Initialize confguration.txt if needed */
         File f = new File(this.getDataFolder(), "configuration.txt");
         if(!createDefaultFileFromResource("/configuration.txt", f)) {
@@ -237,6 +232,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
 
+        /* Load block models */
+        HDBlockModels.loadModels(dataDirectory, configuration);
+        /* Load texture mappings */
+        TexturePack.loadTextureMapping(dataDirectory, configuration);
+        
         /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
         f = new File(this.getDataFolder(), "worlds.txt");
         if(!createDefaultFileFromResource("/worlds.txt", f)) {
