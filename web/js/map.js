@@ -71,6 +71,8 @@ DynMap.prototype = {
 			me.defaultworld = me.defaultworld || world;
 		});
 		var urlarg = me.getParameterByName('worldname');
+		if(urlarg == "")
+			urlarg = me.options.defaultworld || "";
 		if(urlarg != "") {
 		    me.defaultworld = me.worlds[urlarg] || me.defaultworld;
 		}
