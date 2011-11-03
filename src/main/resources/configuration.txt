@@ -281,6 +281,9 @@ enabletilehash: true
 # Enable Industrial Craft 2 block rendering support
 #ic2-support: true
 
+# Enabled BuildCraft block rendering support
+#buildcraft-support: true
+
 render-triggers:
   #- chunkloaded
   #- playermove

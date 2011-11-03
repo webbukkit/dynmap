@@ -1,0 +1,259 @@
+# BuildCraft Block mapping
+# define buildcraft-support: true in configuration.txt to enable
+enabled:buildcraft-support
+# Pipe - set render alg
+linkmap:id=145,linkalg=5,linkid=146,linkid=147,linkid=148,linkid=149,linkid=156,linkid=159,linkid=166
+linkmap:id=146,linkalg=5,linkid=145,linkid=146,linkid=147,linkid=148,linkid=149,linkid=156,linkid=159,linkid=166
+linkmap:id=147,linkalg=5,linkid=145,linkid=146,linkid=147,linkid=148,linkid=149,linkid=156,linkid=159,linkid=166
+linkmap:id=148,linkalg=5,linkid=145,linkid=146,linkid=147,linkid=149,linkid=156,linkid=159,linkid=166
+linkmap:id=149,linkalg=5,linkid=145,linkid=146,linkid=147,linkid=148,linkid=149,linkid=156,linkid=159,linkid=166
+linkmap:id=156,linkalg=5,linkid=145,linkid=146,linkid=147,linkid=148,linkid=149,linkid=159,linkid=166
+linkmap:id=159,linkalg=5,linkid=145,linkid=146,linkid=147,linkid=148,linkid=149,linkid=156,linkid=159,linkid=166
+linkmap:id=166,linkalg=5,linkid=145,linkid=146,linkid=147,linkid=148,linkid=149,linkid=156,linkid=159,linkid=166
+# Frame
+linkmap:id=160,linkalg=5,linkid=160
+# Pipe - (data is faked: 1=north,2=east,4=south,8=west)
+# Pipe - no neighbors
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=0,scale=4
+layer:1,2
+----
+-**-
+-**-
+----
+# Pipe - just north neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=1,scale=4
+layer:1,2
+-**-
+-**-
+-**-
+----
+# Pipe - just east neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=2,scale=4
+rotate:id=145,data=1,rot=90
+# Pipe - just south neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=4,scale=4
+rotate:id=145,data=1,rot=180
+# Pipe - just south neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=8,scale=4
+rotate:id=145,data=1,rot=270
+# Pipe - north and east neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=3,scale=4
+layer:1,2
+-**-
+-***
+-***
+----
+# Pipe - east and south neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=6,scale=4
+rotate:id=145,data=3,rot=90
+# Pipe - south and west neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=12,scale=4
+rotate:id=145,data=3,rot=180
+# Pipe - west and north neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=9,scale=4
+rotate:id=145,data=3,rot=270
+# Pipe - north and south neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=5,scale=4
+layer:1,2
+-**-
+-**-
+-**-
+-**-
+# Pipe - east and west neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=10,scale=4
+rotate:id=145,data=5,rot=90
+# Pipe - north, east and south neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=7,scale=4
+layer:1,2
+-**-
+-***
+-***
+-**-
+# Pipe - east, south and west neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=14,scale=4
+rotate:id=145,data=7,rot=90
+# Pipe - south, west and north neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=13,scale=4
+rotate:id=145,data=7,rot=180
+# Pipe - west, north and east neighbor
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=11,scale=4
+rotate:id=145,data=7,rot=270
+# Pipe - north, south, east, west neightbors
+# Frame
+block:id=145,id=146,id=147,id=148,id=149,id=156,id=159,id=166,id=160,data=15,scale=4
+layer:1,2
+-**-
+****
+****
+-**-
+# Drill - set render alg
+linkmap:id=151,linkalg=5
+# Drill - (data is faked: 1=north,2=east,4=south,8=west)
+# Drill - no neighbors
+block:id=151,data=0,scale=4
+layer:0,1,2,3
+----
+-**-
+-**-
+----
+# Drill - just north neighbor
+block:id=151,data=1,scale=4
+layer:0,3
+----
+-**-
+-**-
+----
+layer:1,2
+-**-
+-**-
+-**-
+----
+# Drill - just east neighbor
+block:id=151,data=2,scale=4
+rotate:id=151,data=1,rot=90
+# Drill - just south neighbor
+block:id=151,data=4,scale=4
+rotate:id=151,data=1,rot=180
+# Drill - just south neighbor
+block:id=151,data=8,scale=4
+rotate:id=151,data=1,rot=270
+# Drill - north and east neighbor
+block:id=151,data=3,scale=4
+layer:0,3
+----
+-**-
+-**-
+----
+layer:1,2
+-**-
+-***
+-***
+----
+# Drill - east and south neighbor
+block:id=151,data=6,scale=4
+rotate:id=151,data=3,rot=90
+# Drill - south and west neighbor
+block:id=151,data=12,scale=4
+rotate:id=151,data=3,rot=180
+# Drill - west and north neighbor
+block:id=151,data=9,scale=4
+rotate:id=151,data=3,rot=270
+# Drill - north and south neighbor
+block:id=151,data=5,scale=4
+layer:0,3
+----
+-**-
+-**-
+----
+layer:1,2
+-**-
+-**-
+-**-
+-**-
+# Drill - east and west neighbor
+block:id=151,data=10,scale=4
+rotate:id=151,data=5,rot=90
+# Drill - north, east and south neighbor
+block:id=151,data=7,scale=4
+layer:0,3
+----
+-**-
+-**-
+----
+layer:1,2
+-**-
+-***
+-***
+-**-
+# Drill - east, south and west neighbor
+block:id=151,data=14,scale=4
+rotate:id=151,data=7,rot=90
+# Drill - south, west and north neighbor
+block:id=151,data=13,scale=4
+rotate:id=151,data=7,rot=180
+# Drill - west, north and east neighbor
+block:id=151,data=11,scale=4
+rotate:id=151,data=7,rot=270
+# Drill - north, south, east, west neightbors
+block:id=151,data=15,scale=4
+layer:0,3
+----
+-**-
+-**-
+----
+layer:1,2
+-**-
+****
+****
+-**-
+# Marker
+block:id=154,data=*,scale=8
+layer:0,1,2,3,4,5,6,7
+--------
+--------
+---**---
+--****--
+--****--
+---**---
+--------
+--------
+# Engine
+block:id=161,data=*,scale=8
+layer:2,3
+********
+********
+********
+********
+********
+********
+********
+********
+layer:4,5,6,7
+--------
+--------
+--****--
+--****--
+--****--
+--****--
+--------
+--------
+# Oil, flowing
+block:id=162,data=*,scale=4
+layer:0
+****
+****
+****
+****
+# Oil
+block:id=163,data=*,scale=4
+layer:0,1
+****
+****
+****
+****
+# Tank
+block:id=165,data=*,scale=8
+layer:0,1,2,3,4,5,6,7
+--------
+-******-
+-******-
+-******-
+-******-
+-******-
+-******-
+--------

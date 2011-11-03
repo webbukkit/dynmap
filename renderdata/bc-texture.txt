@@ -1,0 +1,69 @@
+# BuildCraft Block mapping
+# define buildcraft-support: true in configuration.txt to enable
+enabled:buildcraft-support
+# Files
+texturefile:id=blk,filename=buildcraft/block_textures.png,xcount=16,ycount=16
+texturefile:id=wood,filename=buildcraft/base_wood.png,xcount=4,ycount=2
+texturefile:id=iron,filename=buildcraft/base_iron.png,xcount=4,ycount=2
+texturefile:id=stone,filename=buildcraft/base_stone.png,xcount=4,ycount=2
+# WOODEN_PIPE_ID      = 145
+block:id=145,data=*,allfaces=16,txtid=blk,transparency=TRANSPARENT
+# STONE_PIPE_ID       = 146
+block:id=146,data=*,allfaces=29,txtid=blk,transparency=TRANSPARENT
+# IRON_PIPE_ID        = 147
+block:id=147,data=*,allfaces=19,txtid=blk,transparency=TRANSPARENT
+# GOLDEN_PIPE_ID      = 148
+block:id=148,data=*,allfaces=20,txtid=blk,transparency=TRANSPARENT
+# DIAMOND_PIPE_ID     = 149
+block:id=149,data=*,allfaces=21,txtid=blk,transparency=TRANSPARENT
+# MINING_WELL_ID      = 150
+block:id=150,data=2,east=35,top=4036,north=37,south=37,west=38,bottom=38,txtid=blk
+block:id=150,data=3,west=35,top=4036,north=37,south=37,east=38,bottom=38,txtid=blk
+block:id=150,data=4,north=35,top=4036,east=37,west=37,south=38,bottom=38,txtid=blk
+block:id=150,data=5,south=35,top=4036,east=37,west=37,north=38,bottom=38,txtid=blk
+# DRILL_ID            = 151
+block:id=151,data=*,allfaces=32,txtid=blk,transparency=TRANSPARENT
+# AUTO_WORKBENCH_ID   = 152
+block:id=152,data=*,allsides=44,topbottom=4043
+# QUARRY_ID           = 153
+block:id=153,data=2,east=39,top=4040,north=38,south=38,west=38,bottom=38,txtid=blk
+block:id=153,data=3,west=39,top=4040,north=38,south=38,east=38,bottom=38,txtid=blk
+block:id=153,data=4,north=39,top=4040,east=38,west=38,south=38,bottom=38,txtid=blk
+block:id=153,data=5,south=39,top=4040,east=38,west=38,north=38,bottom=38,txtid=blk
+# MARKER_ID           = 154
+block:id=154,data=*,allsides=57,txtid=blk,transparency=TRANSPARENT
+# FILLER_ID           = 155
+block:id=155,data=*,allsides=66,topbottom=4065,txtid=blk
+# OBSIDIAN_PIPE_ID    = 156
+block:id=156,data=*,allfaces=28,txtid=blk,transparency=TRANSPARENT
+# BUILDER_ID          = 157
+block:id=157,data=2,east=55,top=4054,north=3,south=3,west=3,bottom=3,txtid=blk
+block:id=157,data=3,west=55,top=4054,north=3,south=3,east=3,bottom=3,txtid=blk
+block:id=157,data=4,north=55,top=4054,east=3,west=3,south=3,bottom=3,txtid=blk
+block:id=157,data=5,south=55,top=4054,east=3,west=3,north=3,bottom=3,txtid=blk
+# TEMPLATE_ID         = 158
+block:id=158,data=2,east=52,top=4050,north=48,south=48,west=48,bottom=48,txtid=blk
+block:id=158,data=3,west=52,top=4050,north=48,south=48,east=48,bottom=48,txtid=blk
+block:id=158,data=4,north=52,top=4050,east=48,west=48,south=48,bottom=48,txtid=blk
+block:id=158,data=5,south=52,top=4050,east=48,west=48,north=48,bottom=48,txtid=blk
+# COBBLESTONE_PIPE_ID = 159
+block:id=159,data=*,allfaces=17,txtid=blk,transparency=TRANSPARENT
+# FRAME_ID            = 160
+block:id=160,data=*,allfaces=34,txtid=blk,transparency=TRANSPARENT
+# ENGINE_ID           = 161
+block:id=161,data=0,north=8004,east=8005,south=8006,west=8007,top=1,bottom=2,txtid=wood
+block:id=161,data=1,north=8004,east=8005,south=8006,west=8007,top=1,bottom=2,txtid=stone
+block:id=161,data=2,north=8004,east=8005,south=8006,west=8007,top=1,bottom=2,txtid=iron
+# OIL_MOVING_ID       = 162
+block:id=162,data=*,allfaces=223,txtid=blk
+# OIL_STILL_ID        = 163
+block:id=163,data=*,allfaces=223,txtid=blk
+# PUMP_ID             = 164
+block:id=164,data=*,allsides=99,top=4064,bottom=100,txtid=blk
+# TANK_ID             = 165
+block:id=165,data=*,allsides=96,topbottom=98,txtid=blk,transparency=TRANSPARENT
+# GENERIC_PIPE_ID     = 166 : entity data based, so we can't handle it yet: just map to one type (iron)
+block:id=166,data=*,allfaces=18,txtid=blk,transparency=TRANSPARENT
+# REFINERY_ID         = 167 - funky texture mapping - just do tank for now
+block:id=167,data=*,allsides=96,topbottom=98,txtid=blk,transparency=TRANSPARENT
+# DOCKING_STATION_ID  = 168
