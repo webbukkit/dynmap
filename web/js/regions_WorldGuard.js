@@ -17,7 +17,7 @@ regionConstructors['WorldGuard'] = function(dynmap, configuration) {
 			return null;
 		if(region.max.y <= region.min.y)
 			region.min.y = region.max.y - 1;
-		return boxCreator(region.max.x, region.min.x, region.max.y, region.min.y, region.max.z, region.min.z, configuration.getStyle(name));
+		return boxCreator(region.max.x+1, region.min.x, region.max.y, region.min.y, region.max.z+1, region.min.z, configuration.getStyle(name));
 	}
 
 	function createOutlineFromRegion(name, region, outCreator) {
