@@ -454,7 +454,7 @@ block:id=94,top=147,allsides=1,bottom=1,transparency=TRANSPARENT
 # Locked Chest
 block:id=95,top=25,south=27,north=27,east=26,west=26
 # Trap door
-block:id=96,topbottom=84,allsides=4,transparency=TRANSPARENT
+block:id=96,allfaces=84,transparency=TRANSPARENT
 # Stone w/ silverfish inside
 block:id=97,data=0,allfaces=1
 # Cobblestone w/ silverfish inside
