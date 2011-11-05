@@ -167,7 +167,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
     /* Table of default templates - all are resources in dynmap.jar unnder templates/, and go in templates directory when needed */
     private static final String[] stdtemplates = { "normal.txt", "nether.txt", "skylands.txt", "normal-lowres.txt", 
-        "nether-lowres.txt", "skylands-lowres.txt", "normal-hires.txt", "nether-hires.txt", "skylands-hires.txt"
+        "nether-lowres.txt", "skylands-lowres.txt", "normal-hires.txt", "nether-hires.txt", "skylands-hires.txt",
+        "normal-vlowres.txt", "skylands-vlowres.txt", "nether-vlowres.txt"
     };
     
     private static final String CUSTOM_PREFIX = "custom-";

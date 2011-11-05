@@ -22,7 +22,7 @@ templates:
         prefix: flat
         perspective: iso_S_90_lowres
         shader: stdtexture
-        lighting: default
+        lighting: nethershadows
         # Map background color (day or night)
         background: "#300806"
         mapzoomin: 1

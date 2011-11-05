@@ -22,7 +22,7 @@ templates:
         prefix: flat
         perspective: iso_S_90_lowres
         shader: stdtexture
-        lighting: default
+        lighting: shadows
         mapzoomin: 1
       - class: org.dynmap.hdmap.HDMap
         name: surface

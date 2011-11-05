@@ -22,7 +22,7 @@ templates:
         prefix: flat
         perspective: iso_S_90_lowres
         shader: stdtexture
-        lighting: default
+        lighting: shadows
         # Background color for map during the day
         backgroundday: "#153E7E"
         # Background color for map during the night
