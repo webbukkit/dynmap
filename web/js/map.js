@@ -396,6 +396,12 @@ DynMap.prototype = {
 
 		var prevzoom = me.map.getZoom(); 					
 
+		var prevworld = me.world;
+		
+		if(worldChanged && me.world) {
+			me.world.lastcenter = me.maptype.getProjection().fromLatLngToLocation(me.map.getCenter(), 64);
+		}
+		
 		if (me.maptype) {
 			me.map.removeLayer(me.maptype);
 		}
@@ -416,7 +422,11 @@ DynMap.prototype = {
 				centerPoint = me.getProjection().fromLocationToLatLng(location);
 			}
 			else if(worldChanged) {
-				var centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
+				var centerLocation;
+				if(mapWorld.lastcenter)
+					centerLocation = mapWorld.lastcenter;
+				else
+					centerLocation = $.extend({ x: 0, y: 64, z: 0 }, mapWorld.center);
 				centerPoint = me.getProjection().fromLocationToLatLng(centerLocation);
 			}
 			else {
