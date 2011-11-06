@@ -18,8 +18,18 @@ public class SimpleWebChatComponent extends Component {
             public void triggered(ChatEvent t) {
                 DynmapWebChatEvent evt = new DynmapWebChatEvent(t.source, t.name, t.message);
                 plugin.getServer().getPluginManager().callEvent(evt);
-                if(evt.isCancelled() == false)
-                    plugin.getServer().broadcastMessage(unescapeString(plugin.configuration.getString("webprefix", "\u00A72[WEB] ")) + t.name + ": " + unescapeString(plugin.configuration.getString("websuffix", "\u00A7f")) + t.message);
+                if(evt.isCancelled() == false) {
+                    String msg;
+                    String msgfmt = plugin.configuration.getString("webmsgformat", null);
+                    if(msgfmt != null) {
+                        msgfmt = unescapeString(msgfmt);
+                        msg = msgfmt.replaceAll("%playername%", t.name).replaceAll("%message%", t.message);
+                    }
+                    else {
+                        msg = unescapeString(plugin.configuration.getString("webprefix", "\u00A72[WEB] ")) + t.name + ": " + unescapeString(plugin.configuration.getString("websuffix", "\u00A7f")) + t.message;
+                    }
+                    plugin.getServer().broadcastMessage(msg);
+                }
             }
         });
         
