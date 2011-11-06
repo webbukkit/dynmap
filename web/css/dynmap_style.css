@@ -533,6 +533,10 @@
 	overflow:hidden;
 }
 
+.worldlist {
+	overflow:hidden;
+}
+
 /*******************
  * players on the map
  */

@@ -176,12 +176,39 @@ DynMap.prototype = {
 		}
 		if(!nopanel)
 			sidebar.appendTo(container);
+
+		// World scrollbuttons
+		var upbtn_world = $('<div/>')
+		.addClass('scrollup')
+		.bind('mousedown mouseup', function(event){ 
+		    if(event.type == 'mousedown'){
+				worldlist.animate({"scrollTop": "-=300px"}, 3000, 'linear');
+		    }else{
+		        worldlist.stop(); 
+		    }
+		});
+		var downbtn_world = $('<div/>')
+		.addClass('scrolldown')
+		.bind('mousedown mouseup', function(event){ 
+		    if(event.type == 'mousedown'){ 
+				worldlist.animate({"scrollTop": "+=300px"}, 3000, 'linear');
+		    }else{ 
+		        worldlist.stop(); 
+		    }
+		});
         
 		// Worlds
 		var worldlist;
 		$('<fieldset/>')
 			.append($('<legend/>').text('Map Types'))
-			.append(me.worldlist = worldlist = $('<ul/>').addClass('worldlist'))
+			.append(upbtn_world)
+			.append(me.worldlist = worldlist = $('<ul/>').addClass('worldlist')
+				.bind('mousewheel', function(event, delta){ 
+					this.scrollTop -= (delta * 10);
+					event.preventDefault();
+				})
+			)
+			.append(downbtn_world)
 			.appendTo(panel);
 		
 		$.each(me.worlds, function(index, world) {
@@ -250,6 +277,16 @@ DynMap.prototype = {
 			.appendTo(panel);
 		
 		var updateHeight = function() {
+			if(sidebar.innerHeight() > (2*worldlist.scrollHeight())) { /* Big enough */
+				worldlist.height(worldlist.scrollHeight());
+				upbtn_world.toggle(false);
+				downbtn_world.toggle(false);
+			}
+			else{
+				worldlist.height(sidebar.innerHeight() / 2);
+				upbtn_world.toggle(true);
+				downbtn_world.toggle(true);
+			}				
 			playerlist.height(sidebar.innerHeight() - (playerlist.offset().top - worldlist.offset().top) - 64); // here we need a fix to avoid the static value, but it works fine this way :P
 			var scrollable = playerlist.scrollHeight() > playerlist.height();
 			upbtn.toggle(scrollable);
