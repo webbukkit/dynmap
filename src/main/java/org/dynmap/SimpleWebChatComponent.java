@@ -59,14 +59,16 @@ public class SimpleWebChatComponent extends Component {
 
         @Override
         public void onPlayerJoin(PlayerJoinEvent event) {
-            if(plugin.mapManager != null)
+            if((plugin.mapManager != null) && (plugin.playerList != null) && (plugin.playerList.isVisiblePlayer(event.getPlayer()))) {
                 plugin.mapManager.pushUpdate(new Client.PlayerJoinMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+            }
         }
 
         @Override
         public void onPlayerQuit(PlayerQuitEvent event) {
-            if(plugin.mapManager != null)
+            if((plugin.mapManager != null) && (plugin.playerList != null) && (plugin.playerList.isVisiblePlayer(event.getPlayer()))) {
                 plugin.mapManager.pushUpdate(new Client.PlayerQuitMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+            }
         }
     }
 

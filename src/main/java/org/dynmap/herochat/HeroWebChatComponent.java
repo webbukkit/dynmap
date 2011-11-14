@@ -60,12 +60,16 @@ public class HeroWebChatComponent extends Component {
     protected class PlayerChatListener extends PlayerListener {
         @Override
         public void onPlayerJoin(PlayerJoinEvent event) {
-            plugin.mapManager.pushUpdate(new Client.PlayerJoinMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+            if((plugin.mapManager != null) && (plugin.playerList != null) && (plugin.playerList.isVisiblePlayer(event.getPlayer()))) {
+                plugin.mapManager.pushUpdate(new Client.PlayerJoinMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+            }
         }
 
         @Override
         public void onPlayerQuit(PlayerQuitEvent event) {
-            plugin.mapManager.pushUpdate(new Client.PlayerQuitMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+            if((plugin.mapManager != null) && (plugin.playerList != null) && (plugin.playerList.isVisiblePlayer(event.getPlayer()))) {
+                plugin.mapManager.pushUpdate(new Client.PlayerQuitMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+            }
         }
     }
 }
