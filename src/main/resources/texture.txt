@@ -557,3 +557,5 @@ block:id=120,data=0,data=1,data=2,data=3,top=158,allsides=159,bottom=175
 block:id=120,data=4,data=5,data=6,data=7,top=264,allsides=159,bottom=175
 # White stone
 block:id=121,data=*,allfaces=175
+# Dragon Egg
+block:id=122,data=*,allfaces=167
