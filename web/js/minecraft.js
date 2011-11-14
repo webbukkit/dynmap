@@ -31,3 +31,24 @@ function getMinecraftTime(servertime) {
 		night: !day
 	};
 }
+
+function chat_encoder(message) {
+    if (dynmap.options.cyrillic) {
+    	if(message.source === 'player') {
+        	var utftext = "";
+        	for (var n = 0; n < message.text.length; n++) {
+	        	var c = message.text.charCodeAt(n);
+            	if (c >= 192) {
+            	var c = message.text.charCodeAt(n);
+                	utftext += String.fromCharCode(c+848);
+            	}
+            	else if (c == 184) { utftext += String.fromCharCode(1105); }
+            	else {
+                	utftext += String.fromCharCode(c);
+            	}
+        	}
+        	return utftext
+	    }
+    }
+    return message.text;
+}

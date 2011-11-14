@@ -104,7 +104,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 		
 		var playerMessageContainer = $('<span/>')
 			.addClass('messagetext')
-			.text(message.text);
+			.text(chat_encoder(message));
 
 		messageRow.append(playerIconContainer,playerChannelContainer,playerNameContainer,playerMessageContainer);
 		addrow(messageRow);

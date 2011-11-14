@@ -43,7 +43,7 @@ componentconstructors['chatballoon'] = function(dynmap, configuration) {
 		}
 		
 		// Add line to balloon.
-		$('<div/>').addClass('balloonmessage').text(message.text).appendTo(popup.content);
+		$('<div/>').addClass('balloonmessage').text(chat_encoder(message)).appendTo(popup.content);
 
 		// Remove older lines when too many messages are shown.
 		var children = $(popup.content).children();

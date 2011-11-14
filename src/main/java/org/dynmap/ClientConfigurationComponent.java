@@ -23,6 +23,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
                 s(t, "sidebaropened", c.getString("sidebaropened", "false"));
                 s(t, "dynmapversion", plugin.getDescription().getVersion());
+                s(t, "cyrillic", c.getBoolean("cyrillic-support", false));
                 
                 DynmapWorld defaultWorld = null;
                 String defmap = null;

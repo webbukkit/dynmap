@@ -369,6 +369,9 @@ defaultzoom: 0
 defaultworld: world
 defaultmap: flat
 
+# Option to enable workaround for incorrectly encoded unicode in Cyrillic MC/Bukkit (not good for other code pages)
+#cyrillic-support: true
+
 # NOTE: the 'templates' section is now found in the 'templates' directory
 #  Templates CAN still be defined in configuration.txt, as before 0.20
 templates:
