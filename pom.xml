@@ -42,6 +42,27 @@
               </configuration>
           </plugin>
           <plugin>
+          	<groupId>org.apache.maven.plugins</groupId>
+          	<artifactId>maven-shade-plugin</artifactId>
+          	<version>1.5</version>
+          	<executions>
+          		<execution>
+          			<phase>package</phase>
+          			<goals>
+          				<goal>shade</goal>
+          			</goals>
+		            <configuration>
+        		      <artifactSet>
+                		<excludes>
+                  		  <exclude>org.bukkit:bukkit:jar:*</exclude>
+                  		  <exclude>com.nijikokun.bukkit:Permissions:jar:*</exclude>                  		  
+                		</excludes>
+              		  </artifactSet>
+            		</configuration>
+          		</execution>
+          	</executions>
+          </plugin>
+          <plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
     				<descriptors>
@@ -64,27 +85,6 @@
     				</execution>
 				</executions>
 			</plugin>
-          <plugin>
-          	<groupId>org.apache.maven.plugins</groupId>
-          	<artifactId>maven-shade-plugin</artifactId>
-          	<version>1.5</version>
-          	<executions>
-          		<execution>
-          			<phase>package</phase>
-          			<goals>
-          				<goal>shade</goal>
-          			</goals>
-		            <configuration>
-        		      <artifactSet>
-                		<excludes>
-                  		  <exclude>org.bukkit:bukkit:jar:*</exclude>
-                  		  <exclude>com.nijikokun.bukkit:Permissions:jar:*</exclude>                  		  
-                		</excludes>
-              		  </artifactSet>
-            		</configuration>
-          		</execution>
-          	</executions>
-          </plugin>
       </plugins>
   </build>
   <dependencies>
