@@ -9,8 +9,8 @@ commands:
     usage: |
            /<command> hide - hides the player from the map.
            /<command> hide TheDude - hides the player 'TheDude' from the map.
-           /<command> show - shows the player from the map.
-           /<command> show TheDude - shows the player 'TheDude' from the map.
+           /<command> show - shows the player on the map.
+           /<command> show TheDude - shows the player 'TheDude' on the map.
            /<command> render - Renders the tile at your location.
            /<command> fullrender - Render all maps for entire world from your location.
            /<command> fullrender world - Render all maps for entire world 'world'.
