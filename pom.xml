@@ -7,10 +7,10 @@
     <properties>
        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-  <url>http://github.com/FrozenCow/dynmap/</url>
+  <url>http://github.com/webbukkit/dynmap/</url>
   <issueManagement>
   	<system>GitHub</system>
-  	<url>https://github.com/FrozenCow/dynmap/issues</url>
+  	<url>https://github.com/webbukkit/dynmap/issues</url>
   </issueManagement>
   <build>
 	  <resources>
@@ -78,6 +78,13 @@
   	  <version>0.0.1-SNAPSHOT</version>
   	  <type>jar</type>
       <scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.dynmap</groupId>
+  		<artifactId>dynmap-api</artifactId>
+  		<version>0.25</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
   	</dependency>
   </dependencies>
 </project>

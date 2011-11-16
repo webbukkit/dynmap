@@ -1,7 +1,7 @@
 name: dynmap
 main: org.dynmap.DynmapPlugin
 version: "${project.version}"
-authors: [FrozenCow, mikeprimm, zeeZ]
+authors: [FrozenCow, mikeprimm]
 softdepend: [Permissions]
 commands:
   dynmap:
