@@ -75,7 +75,7 @@ public class MarkerSignManager {
                 Marker marker = ms.findMarker(id);
                 /* If exists, update it */
                 if(marker != null) {
-                    marker.setLabel(label);
+                    marker.setLabel(label, true);
                     marker.setMarkerIcon(mi);
                 }
                 else {  /* Make new marker */

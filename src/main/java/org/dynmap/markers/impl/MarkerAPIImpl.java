@@ -78,6 +78,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public String label;
         public String icon;
         public String set;
+        public boolean markup;
+        public String desc;
         
         public MarkerUpdated(Marker m, boolean deleted) {
             this.id = m.getMarkerID();
@@ -87,6 +89,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             this.z = m.getZ();
             this.set = m.getMarkerSet().getMarkerSetID();
             this.icon = m.getMarkerIcon().getMarkerIconID();
+            this.markup = m.isLabelMarkup();
+            this.desc = m.getDescription();
             if(deleted) 
                 msg = "markerdeleted";
             else
