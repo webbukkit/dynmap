@@ -107,6 +107,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public String id;
         public String label;
         public String set;
+        public String desc;
         
         public AreaMarkerUpdated(AreaMarker m, boolean deleted) {
             this.id = m.getMarkerID();
@@ -125,6 +126,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             opacity = m.getLineOpacity();
             fillcolor = String.format("#%06X", m.getFillColor());
             fillopacity = m.getFillOpacity();
+            desc = m.getDescription();
             
             this.set = m.getMarkerSet().getMarkerSetID();
             if(deleted) 

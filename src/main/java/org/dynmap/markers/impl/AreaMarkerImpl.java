@@ -272,6 +272,19 @@ class AreaMarkerImpl implements AreaMarker {
     }
     @Override
     public void setCornerLocations(double[] x, double[] z) {
+        /* Check if equals */
+        if(x.length == corners.size()) {
+            boolean match = true;
+            for(int i = 0; i < x.length; i++) {
+                Coord c = corners.get(i);
+                if((c.x != x[i]) || (c.z != z[i])) {
+                    match = false;
+                    break;
+                }
+            }
+            if(match)
+                return;
+        }
         corners.clear();
         for(int i = 0; (i < x.length) && (i < z.length); i++) {
             corners.add(new Coord(x[i], z[i]));
