@@ -101,6 +101,9 @@ DynMap.prototype = {
 			.addClass('map')
 			.appendTo(container);
 
+		if(me.options.title)
+			document.title = me.options.title;
+			
 		var urlzoom = me.getIntParameterByName('zoom');
 		if(urlzoom != null)
 			me.options.defaultzoom = urlzoom;
