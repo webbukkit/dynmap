@@ -10,6 +10,10 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				set.layergroup.removeLayer(marker.our_marker);
 			});
 			set.markers = {};
+			$.each(set.areas, function(aname, area) {
+				set.layergroup.removeLayer(area.our_area);
+			});
+			set.areas = {};			
 		});
 	}
 			
