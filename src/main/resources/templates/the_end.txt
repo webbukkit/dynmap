@@ -1,0 +1,34 @@
+version: 0.20
+#
+# Default template for "The End" environment worlds (deftemplatesuffix="")
+#
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-the_end.txt' if you wish to customize it
+#
+templates:
+  # The End world template (classic render)
+  the_end:
+    enabled: true
+  #  # If bigworld set to true, use alternate directory layout better suited to large worlds
+  #  bigworld: true
+  #  # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+  #  extrazoomout: 3
+    #center:
+    #  x: 0
+    #  y: 64
+    #  z: 0
+    maps:
+      - class: org.dynmap.flat.FlatMap
+        name: flat
+        title: "Flat"
+        prefix: flat
+        colorscheme: default
+        # The textured setting makes the flat render toning much more consistent with the other maps: set to 'none' for the original flat texture, 'smooth' for blended tile top colors, 'dither' for dither pattern
+        textured: smooth
+      - class: org.dynmap.kzedmap.KzedMap
+        renderers:
+          - class: org.dynmap.kzedmap.DefaultTileRenderer
+            name: the_end
+            title: "Surface"
+            prefix: st
+            maximumheight: 127
+            colorscheme: default

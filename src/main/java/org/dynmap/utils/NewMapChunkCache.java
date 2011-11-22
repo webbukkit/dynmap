@@ -95,13 +95,13 @@ public class NewMapChunkCache implements MapChunkCache {
         public final int getHighestBlockYAt() {
             return snap.getHighestBlockYAt(bx, bz);
         }
-        public final int getBlockSkyLight() {
+        public int getBlockSkyLight() {
             return snap.getBlockSkyLight(bx, y, bz);
         }
         public final int getBlockEmittedLight() {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
-        public Biome getBiome() {
+        public final Biome getBiome() {
             return snap.getBiome(bx, bz);
         }
         public double getRawBiomeTemperature() {
@@ -234,6 +234,15 @@ public class NewMapChunkCache implements MapChunkCache {
         }
      }
 
+    private class OurEndMapIterator extends OurMapIterator {
+
+        OurEndMapIterator(int x0, int y0, int z0) {
+            super(x0, y0, z0);
+        }
+        public final int getBlockSkyLight() {
+            return 15;
+        }
+    }
     /**
      * Chunk cache for representing unloaded chunk (or air)
      */
@@ -377,9 +386,6 @@ public class NewMapChunkCache implements MapChunkCache {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setChunks(World w, List<DynmapChunk> chunks) {
         this.w = w;
-        //if(w.getEnvironment() != Environment.NORMAL) {
-        //    biome = biomeraw = false;
-        //}
         this.chunks = chunks;
         if(poppreservedchunk == null) {
             /* Get CraftWorld.popPreservedChunk(x,z) - reduces memory bloat from map traversals (optional) */
@@ -658,6 +664,8 @@ public class NewMapChunkCache implements MapChunkCache {
      * Get cache iterator
      */
     public MapIterator getIterator(int x, int y, int z) {
+        if(w.getEnvironment().toString().equals("THE_END"))
+            return new OurEndMapIterator(x, y, z);
         return new OurMapIterator(x, y, z);
     }
     /**
@@ -726,13 +734,8 @@ public class NewMapChunkCache implements MapChunkCache {
     }
     @Override
     public boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome) {
-//        if((w != null) && (w.getEnvironment() != Environment.NORMAL)) {
-//            this.biome = this.biomeraw = false;
-//        }
-//        else {
-            this.biome = biome;
-            this.biomeraw = rawbiome;
-//        }
+        this.biome = biome;
+        this.biomeraw = rawbiome;
         this.highesty = highestblocky;
         this.blockdata = blockdata;
         return true;
