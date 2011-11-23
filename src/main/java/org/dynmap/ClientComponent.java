@@ -9,15 +9,21 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 public class ClientComponent extends Component {
-
+    private boolean disabled;
+    
     public ClientComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
         plugin.events.addListener("buildclientconfiguration", new Event.Listener<JSONObject>() {
             @Override
             public void triggered(JSONObject root) {
-                buildClientConfiguration(root);
+                if(!disabled)
+                    buildClientConfiguration(root);
             }
         });
+    }
+    
+    protected void disableComponent() {
+        disabled = true;
     }
     
     protected void buildClientConfiguration(JSONObject root) {
