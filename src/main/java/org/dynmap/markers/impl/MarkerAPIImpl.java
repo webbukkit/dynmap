@@ -23,6 +23,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
 import org.dynmap.Client;
@@ -52,6 +53,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private HashMap<String, MarkerSetImpl> markersets = new HashMap<String, MarkerSetImpl>();
     private HashMap<String, List<Location>> pointaccum = new HashMap<String, List<Location>>();
     private Server server;
+    private Plugin dynmap;
     static MarkerAPIImpl api;
 
     /* Built-in icons */
@@ -153,6 +155,23 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 msg = "setupdated";
         }
     }
+    
+    private boolean stop = false;
+    private Set<String> dirty_worlds = new HashSet<String>();
+    
+    private class DoFileWrites implements Runnable {
+        public void run() {
+            if(stop)
+                return;
+            
+            for(String world : dirty_worlds) {
+                writeMarkersFile(world);
+            }
+            dirty_worlds.clear();
+            
+            server.getScheduler().scheduleSyncDelayedTask(dynmap, this, 20);
+        }
+    }
 
     /**
      * Singleton initializer
@@ -162,6 +181,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             api.cleanup(plugin);
         }
         api = new MarkerAPIImpl();
+        api.dynmap = plugin;
         api.server = plugin.getServer();
         /* Initialize persistence file name */
         api.markerpersist = new File(plugin.getDataFolder(), "markers.yml");
@@ -200,8 +220,14 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         api.freshenMarkerFiles();
         /* Add listener so we update marker files for other worlds as they become active */
         plugin.events.addListener("worldactivated", api);
+
+        api.scheduleWriteJob(); /* Start write job */
         
         return api;
+    }
+    
+    private void scheduleWriteJob() {
+        server.getScheduler().scheduleSyncDelayedTask(dynmap, new DoFileWrites(), 20);
     }
     
     /**
@@ -210,6 +236,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     public void cleanup(DynmapPlugin plugin) {
         plugin.events.removeListener("worldactivated", api);
 
+        stop = true;
         for(MarkerIconImpl icn : markericons.values())
             icn.cleanup();
         markericons.clear();
@@ -386,7 +413,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private void freshenMarkerFiles() {
         if(MapManager.mapman != null) {
             for(DynmapWorld w : MapManager.mapman.worlds) {
-                writeMarkersFile(w.world.getName());
+                dirty_worlds.add(w.world.getName());
             }
         }
     }
@@ -430,7 +457,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     static void markerUpdated(MarkerImpl marker, MarkerUpdate update) {
         /* Freshen marker file for the world for this marker */
         if(api != null)
-            api.writeMarkersFile(marker.getWorld());
+            api.dirty_worlds.add(marker.getWorld());
         /* Enqueue client update */
         if(MapManager.mapman != null)
             MapManager.mapman.pushUpdate(marker.getWorld(), new MarkerUpdated(marker, update == MarkerUpdate.DELETED));
@@ -443,7 +470,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     static void areaMarkerUpdated(AreaMarkerImpl marker, MarkerUpdate update) {
         /* Freshen marker file for the world for this marker */
         if(api != null)
-            api.writeMarkersFile(marker.getWorld());
+            api.dirty_worlds.add(marker.getWorld());
         /* Enqueue client update */
         if(MapManager.mapman != null)
             MapManager.mapman.pushUpdate(marker.getWorld(), new AreaMarkerUpdated(marker, update == MarkerUpdate.DELETED));
@@ -1381,7 +1408,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     /**
      * Write markers file for given world
      */
-    public void writeMarkersFile(String wname) {
+    private void writeMarkersFile(String wname) {
         Map<String, Object> markerdata = new HashMap<String, Object>();
 
         File f = new File(markertiledir, "marker_" + wname + ".json");
@@ -1465,7 +1492,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     @Override
     public void triggered(DynmapWorld t) {
         /* Update markers for now-active world */
-        writeMarkersFile(t.world.getName());
+        dirty_worlds.add(t.world.getName());
     }
 
     /* Remove icon */
