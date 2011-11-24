@@ -81,7 +81,7 @@ public class KzedZoomedMapTile extends MapTile {
         if (obj instanceof KzedZoomedMapTile) {
             return ((KzedZoomedMapTile) obj).originalTile.equals(originalTile);
         }
-        return super.equals(obj);
+        return false;
     }
     
 

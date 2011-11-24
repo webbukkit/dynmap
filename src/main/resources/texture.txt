@@ -92,29 +92,35 @@ block:id=26,data=11,top=6135,bottom=6135,south=152,east=7151,west=151,transparen
 # Bed - foot - pointing south
 block:id=26,data=3,top=6134,bottom=6134,north=149,east=7150,west=150,transparency=TRANSPARENT
 # Powered rail - heading east-west - unpowered
+block:id=27,data=0,top=4163,bottom=4163,transparency=TRANSPARENT
 # Powered rail - incline to east - unpowered
 # Powered rail - incline to west - unpowered
-block:id=27,data=0,data=4,data=5,top=4163,bottom=4163,allsides=4,transparency=TRANSPARENT
+block:id=27,data=4,data=5,top=4163,bottom=4163,east=163,west=163,transparency=TRANSPARENT
 # Powered rail - heading east-west - powered
+block:id=27,data=8,top=4179,bottom=4179,transparency=TRANSPARENT
 # Powered rail - incline to east - powered
 # Powered rail - incline to west - powered
-block:id=27,data=8,data=12,data=13,top=4179,bottom=4179,allsides=4,transparency=TRANSPARENT
+block:id=27,data=12,data=13,top=4179,bottom=4179,east=179,west=179,transparency=TRANSPARENT
 # Powered rail - heading north-south - unpowered
+block:id=27,data=1,top=163,bottom=163,transparency=TRANSPARENT
 # Powered rail - inclined to north - unpowered
 # Powered rail - inclined to south - unpowered
-block:id=27,data=1,data=2,data=3,top=163,bottom=163,allsides=4,transparency=TRANSPARENT
-# Powered rail - heading north-sout - powered
+block:id=27,data=2,data=3,top=163,bottom=163,north=163,south=163,transparency=TRANSPARENT
+# Powered rail - heading north-south - powered
+block:id=27,data=9,top=179,bottom=179,transparency=TRANSPARENT
 # Powered rail - inclined to north - powered
 # Powered rail - inclined to south - powered
-block:id=27,data=9,data=10,data=11,top=179,bottom=179,allsides=4,transparency=TRANSPARENT
+block:id=27,data=10,data=11,top=179,bottom=179,north=179,south=179,transparency=TRANSPARENT
 # Detector rail - heading east-west
+block:id=28,data=0,top=4195,bottom=4195,transparency=TRANSPARENT
 # Detector rail - incline to east
 # Detector rail - incline to west
-block:id=28,data=0,data=4,data=5,top=4195,bottom=4195,allsides=4,transparency=TRANSPARENT
+block:id=28,data=4,data=5,top=4195,bottom=4195,east=195,west=195,transparency=TRANSPARENT
 # Detector rail - heading north-south
+block:id=28,data=1,top=195,bottom=195,transparency=TRANSPARENT
 # Detector rail - incline to north
 # Detector rail - incline to south
-block:id=28,data=1,data=2,data=3,top=195,bottom=195,allsides=4,transparency=TRANSPARENT
+block:id=28,data=2,data=3,top=195,bottom=195,north=195,south=195,transparency=TRANSPARENT
 # Sticky piston - facing down
 block:id=29,data=0,top=109,bottom=106,allsides=5108
 # Sticky piston - facing up
@@ -377,7 +383,7 @@ block:id=66,data=0,top=4128,bottom=4128,transparency=TRANSPARENT
 # Rail - incline to west
 block:id=66,data=4,data=5,top=4128,bottom=4128,east=128,west=128,transparency=TRANSPARENT
 # Rail - heading north-south
-block:id=66,data=1,top=128,bottom=128,allsides=4,transparency=TRANSPARENT
+block:id=66,data=1,top=128,bottom=128,transparency=TRANSPARENT
 # Rail - incline to north
 # Rail - incline to south
 block:id=66,data=2,data=3,top=128,bottom=128,north=128,south=128,transparency=TRANSPARENT

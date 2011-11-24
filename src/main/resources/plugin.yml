@@ -8,7 +8,7 @@ commands:
     description: Controls Dynmap.
     usage: |
            /<command> hide - hides the player from the map.
-           /<command> hide TheDude - hides the player 'TheDude' from the map.
+           /<command> hide TheDude - hides the player 'TheDude' on the map.
            /<command> show - shows the player on the map.
            /<command> show TheDude - shows the player 'TheDude' on the map.
            /<command> render - Renders the tile at your location.
@@ -21,6 +21,7 @@ commands:
            /<command> cancelrender world - Cancels any active renders of world 'world'
            /<command> stats - Show render statistics.
            /<command> stats world - Show render statistics for maps on world 'world'.
+           /<command> triggerstats - Show render trigger statistics
            /<command> resetstats - Reset render statistics.
            /<command> resetstats world - Reset render statistics for maps on world 'world'.
            /<command> sendtoweb msg - Send message to web users
@@ -125,7 +126,7 @@ permissions:
     description: Allows /dynmap reload
     default: op
   dynmap.stats:
-    description: Allows /dynmap stats or /dynmap stats <world>
+    description: Allows /dynmap stats, /dynmap stats <world>, or /dynmap triggerstats
     default: true
   dynmap.resetstats:
     description: Allows /dynmap resetstats or /dynmap resetstats <world>

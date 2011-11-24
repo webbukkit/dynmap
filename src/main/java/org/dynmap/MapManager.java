@@ -80,6 +80,14 @@ public class MapManager {
         int updatedcnt;
         int transparentcnt;
     }
+    
+    private HashMap<String, TriggerStats> trigstats = new HashMap<String, TriggerStats>();
+    
+    private static class TriggerStats {
+        long callsmade;
+        long callswithtiles;
+        long tilesqueued;
+    }
 
     public DynmapWorld getWorld(String name) {
         DynmapWorld world = worldsLookup.get(name);
@@ -862,8 +870,8 @@ public class MapManager {
                 for(ConfigurationNode tile : tiles) {
                     MapTile mt = MapTile.restoreTile(w, tile);  /* Restore tile, if possible */
                     if(mt != null) {
-                        invalidateTile(mt);
-                        cnt++;
+                        if(invalidateTile(mt))
+                            cnt++;
                     }
                 }
                 if(cnt > 0)
@@ -916,7 +924,7 @@ public class MapManager {
         }
     }
 
-    public int touch(Location l) {
+    public int touch(Location l, String reason) {
         DynmapWorld world = getWorld(l.getWorld().getName());
         if (world == null)
             return 0;
@@ -924,14 +932,26 @@ public class MapManager {
         for (int i = 0; i < world.maps.size(); i++) {
             MapTile[] tiles = world.maps.get(i).getTiles(l);
             for (int j = 0; j < tiles.length; j++) {
-                invalidateTile(tiles[j]);
-                invalidates++;
+                if(invalidateTile(tiles[j]))
+                    invalidates++;
+            }
+        }
+        if(reason != null) {
+            TriggerStats ts = trigstats.get(reason);
+            if(ts == null) {
+                ts = new TriggerStats();
+                trigstats.put(reason, ts);
+            }
+            ts.callsmade++;
+            if(invalidates > 0) {
+                ts.callswithtiles++;
+                ts.tilesqueued += invalidates;
             }
         }
         return invalidates;
     }
 
-    public int touchVolume(Location l0, Location l1) {
+    public int touchVolume(Location l0, Location l1, String reason) {
         DynmapWorld world = getWorld(l0.getWorld().getName());
         if (world == null)
             return 0;
@@ -939,16 +959,27 @@ public class MapManager {
         for (int i = 0; i < world.maps.size(); i++) {
             MapTile[] tiles = world.maps.get(i).getTiles(l0, l1);
             for (int j = 0; j < tiles.length; j++) {
-                invalidateTile(tiles[j]);
-                invalidates++;
+                if(invalidateTile(tiles[j]))
+                    invalidates++;
+            }
+        }
+        if(reason != null) {
+            TriggerStats ts = trigstats.get(reason);
+            if(ts == null) {
+                ts = new TriggerStats();
+                trigstats.put(reason, ts);
+            }
+            ts.callsmade++;
+            if(invalidates > 0) {
+                ts.callswithtiles++;
+                ts.tilesqueued += invalidates;
             }
         }
         return invalidates;
     }
 
-    public void invalidateTile(MapTile tile) {
-        if(tileQueue.push(tile))
-            Debug.debug("Invalidating tile " + tile.getFilename());
+    public boolean invalidateTile(MapTile tile) {
+        return tileQueue.push(tile);
     }
 
     public static boolean scheduleDelayedJob(Runnable job, long delay_in_msec) {
@@ -1150,6 +1181,19 @@ public class MapManager {
         sender.sendMessage("  Active render jobs: " + act);
     }
     /**
+     * Print trigger statistics command
+     */
+    public void printTriggerStats(CommandSender sender) {
+        sender.sendMessage("Render Trigger Statistics:");
+        synchronized(lock) {
+            for(String k: new TreeSet<String>(trigstats.keySet())) {
+                TriggerStats ts = trigstats.get(k);
+                sender.sendMessage("  " + k + ": calls=" + ts.callsmade + ", calls-adding-tiles=" + ts.callswithtiles + ", tiles-added=" + ts.tilesqueued);
+            }
+        }
+    }
+
+    /**
      * Reset statistics
      */
     public void resetStats(CommandSender sender, String prefix) {
@@ -1162,6 +1206,12 @@ public class MapManager {
                 ms.renderedcnt = 0;
                 ms.updatedcnt = 0;
                 ms.transparentcnt = 0;
+            }
+            for(String k : trigstats.keySet()) {
+                TriggerStats ts = trigstats.get(k);
+                ts.callsmade = 0;
+                ts.callswithtiles = 0;
+                ts.tilesqueued = 0;
             }
         }
         sscache.resetStats();

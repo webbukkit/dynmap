@@ -24,16 +24,32 @@ public class RegionsComponent extends ClientComponent {
     private TownyConfigHandler towny;
     private FactionsConfigHandler factions;
     private String regiontype;
+
+    private static String deprecated_ids[] = { "Residence", "Factions", "Towny", "WorldGuard" };
+    private static String deprecated_new_plugins[] = { "dynmap-residence", "Dynmap-Factions", "Dynmap-Towny", "Dynmap-WorldGuard" };
     
     public RegionsComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
+
+        regiontype = configuration.getString("name", "WorldGuard");
+        /* Check if a deprecated component */
+        for(int i = 0; i < deprecated_ids.length; i++) {
+            if(regiontype.equals(deprecated_ids[i])) {  /* If match */
+                /* See if new plugin is installed - disable if it is */
+                if(plugin.getServer().getPluginManager().getPlugin(deprecated_new_plugins[i]) != null) {
+                    Log.info("Region component for '" + regiontype + "' disabled, replaced by '" + deprecated_new_plugins[i] + "' plugin, which is installed");
+                    disableComponent();
+                    return;
+                }
+                else {
+                    Log.info("Region component for '" + regiontype + "' has been DEPRECATED - migrate to '" + deprecated_new_plugins[i] + "' plugin");
+                }
+            }
+        }
         
         // For internal webserver.
         String fname = configuration.getString("filename", "regions.yml");
 
-        regiontype = configuration.getString("name", "WorldGuard");
-
-        
         /* Load special handler for Towny */
         if(regiontype.equals("Towny")) {
             towny = new TownyConfigHandler(configuration);

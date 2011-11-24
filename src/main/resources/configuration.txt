@@ -113,129 +113,6 @@ components:
   #  timeout: 1800 # in seconds (1800 seconds = 30 minutes)
   #  redirecturl: inactive.html
   #  #showmessage: 'You were inactive for too long.'
-
-  #- class: org.dynmap.regions.RegionsComponent
-  #  type: regions
-  #  name: WorldGuard
-  #  useworldpath: true
-  #  filename: regions.yml
-  #  basenode: regions
-  #  use3dregions: true
-  #  regionstyle:
-  #    strokeColor: "#FF0000"
-  #    strokeOpacity: 0.8
-  #    strokeWeight: 3
-  #    fillColor: "#FF0000"
-  #    fillOpacity: 0.35
-  #  # Optional setting to limit which regions to show, by name - if commented out, all regions are shown
-  #  visibleregions:
-  #    - homebase
-  #    - miningsite
-  #  # Optional setting to hide specific regions, by name
-  #  hiddenregions:
-  #    - hiddenplace
-  #    - secretsite
-  #  # Optional per-region overrides for regionstyle (any defined replace those in regionstyle)
-  #  customstyle:
-  #    homebase:
-  #      strokeColor: "#00FF00"
-  #  # Optional - make layer hidden by default
-  #  hidebydefault: true
-  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
-  #  layerprio: 1
-  
-  #- class: org.dynmap.regions.RegionsComponent
-  #  type: regions
-  #  name: Residence
-  #  useworldpath: false
-  #  filename: res.yml
-  #  basenode: Residences
-  #  use3dregions: false
-  #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname%</span><br /> Owner <span style="font-weight:bold;">%playerowners%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
-  #  regionstyle:
-  #    strokeColor: "#FF0000"
-  #    strokeOpacity: 0.8
-  #    strokeWeight: 3
-  #    fillColor: "#FF0000"
-  #    fillOpacity: 0.35
-  #  # Optional setting to limit which regions to show, by name - if commented out, all regions are shown
-  #  visibleregions:
-  #    - homebase
-  #    - miningsite
-  #    - area.subzone1
-  #  # Optional setting to hide specific regions, by name
-  #  hiddenregions:
-  #    - hiddenplace
-  #    - secretsite
-  #  # Optional per-region overrides for regionstyle (any defined replace those in regionstyle)
-  #  customstyle:
-  #    homebase:
-  #      strokeColor: "#00FF00"
-  #  # Optional groups (subareas under a residence) overrides for regionstyle (any defined replace those in regionstyle)
-  #  groupstyle:
-  #    homebase:
-  #      strokeColor: "#007F00"
-  #  # Optional - make layer hidden by default
-  #  hidebydefault: true
-  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
-  #  layerprio: 1
-
-  #- class: org.dynmap.regions.RegionsComponent
-  #  type: regions
-  #  name: Towny
-  #  use3dregions: false
-  #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname% (%nation%)</span><br /> Mayor <span style="font-weight:bold;">%playerowners%</span><br /> Associates <span style="font-weight:bold;">%playermanagers%</span><br/>Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
-  #  regionstyle:
-  #    strokeColor: "#FF0000"
-  #    strokeOpacity: 0.8
-  #    strokeWeight: 3
-  #    fillColor: "#FF0000"
-  #    fillOpacity: 0.35
-  #  # Optional setting to limit which regions to show, by name - if commented out, all regions are shown
-  #  visibleregions:
-  #    - homebase
-  #    - miningsite
-  #  # Optional setting to hide specific regions, by name
-  #  hiddenregions:
-  #    - hiddenplace
-  #    - secretsite
-  #  # Optional per-town overrides for regionstyle (any defined replace those in regionstyle)
-  #  customstyle:
-  #    homebase:
-  #      strokeColor: "#00FF00"
-  #  # Optional per-nation overrides for regionstyle (any defined replace those in regionstyle)
-  #  groupstyle:
-  #    MyNation:
-  #      strokeColor: "#007F00"
-  #  # Optional - make layer hidden by default
-  #  hidebydefault: true
-
-  #- class: org.dynmap.regions.RegionsComponent
-  #  type: regions
-  #  name: Factions
-  #  use3dregions: false
-  #  infowindow: '<div class="infowindow"><span style="font-size:120%;">%regionname%</span><br />Flags<br /><span style="font-weight:bold;">%flags%</span></div>'
-  #  regionstyle:
-  #    strokeColor: "#FF0000"
-  #    strokeOpacity: 0.8
-  #    strokeWeight: 3
-  #    fillColor: "#FF0000"
-  #    fillOpacity: 0.35
-  #  # Optional setting to limit which regions to show, by name - if commented out, all regions are shown
-  #  visibleregions:
-  #    - faction1
-  #    - faction2
-  #  # Optional setting to hide specific regions, by name
-  #  hiddenregions:
-  #    - hiddenfaction
-  #  # Optional per-faction overrides for regionstyle (any defined replace those in regionstyle)
-  #  customstyle:
-  #    faction1:
-  #      strokeColor: "#00FF00"
-  #  # Optional - make layer hidden by default
-  #  hidebydefault: true
-  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
-  #  layerprio: 1
   
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"
@@ -281,7 +158,7 @@ enabletilehash: true
 # Control behavior for new (1.9+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
 #   default is 'pre19' for 1.8 server (existing orientation), 'newrose' for 1.9+ (preserve maps, rotate rose)
 #   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
-#compass-mode: newnorth
+compass-mode: newnorth
 
 # Enable Industrial Craft 2 block rendering support
 #ic2-support: true

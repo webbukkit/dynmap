@@ -52,11 +52,11 @@ public class MarkerSignManager {
                         set = v.substring(4);
                         evt.setLine(i, "");
                     }
-                    else if(label.length() == 0) {
-                        label = escapeMarkup(v);
-                    }
-                    else {
-                        label = label + "<br/>" + escapeMarkup(v);
+                    else if(v.length() > 0) {
+                        if(label.length() > 0) {
+                            label = label + "<br/>";
+                        }
+                        label = label + escapeMarkup(v);
                     }
                 }
                 /* Get the set and see if the marker is already defined */

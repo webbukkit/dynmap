@@ -11,10 +11,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.dynmap.utils.BlockLightLevel;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class ClientUpdateComponent extends Component {
+    private BlockLightLevel bll = new BlockLightLevel();
+    
     public ClientUpdateComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
         super(plugin, configuration);
         plugin.events.addListener("buildclientupdate", new Event.Listener<ClientUpdateEvent>() {
@@ -53,9 +56,14 @@ public class ClientUpdateComponent extends Component {
                     hide = true;
             }
             if(hideifunder < 15) {
-                /*TODO: when pull accepted for getSkyLightLevel(), switch to that */
-                if(pl.getWorld().getHighestBlockYAt(pl) > pl.getBlockY())
-                    hide = true;
+                if(bll.isReady()) { /* If we can get real sky level */
+                    if(bll.getSkyLightLevel(pl.getBlock()) <= hideifunder)
+                        hide = true;
+                }
+                else {
+                    if(pl.getWorld().getHighestBlockYAt(pl) > pl.getBlockY())
+                        hide = true;
+                }
             }
             
             /* Don't leak player location for world not visible on maps, or if sendposition disbaled */
