@@ -158,17 +158,24 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     
     private boolean stop = false;
     private Set<String> dirty_worlds = new HashSet<String>();
+    private boolean dirty_markers = false;
     
     private class DoFileWrites implements Runnable {
         public void run() {
             if(stop)
                 return;
-            
-            for(String world : dirty_worlds) {
-                writeMarkersFile(world);
+            /* Write markers first - drives JSON updates too */
+            if(dirty_markers) {
+                doSaveMarkers();
+                dirty_markers = false;
             }
-            dirty_worlds.clear();
-            
+            /* Process any dirty worlds */
+            if(!dirty_worlds.isEmpty()) {
+                for(String world : dirty_worlds) {
+                    writeMarkersFile(world);
+                }
+                dirty_worlds.clear();
+            }
             server.getScheduler().scheduleSyncDelayedTask(dynmap, this, 20);
         }
     }
@@ -237,6 +244,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         plugin.events.removeListener("worldactivated", api);
 
         stop = true;
+        if(dirty_markers) {
+            doSaveMarkers();
+            dirty_markers = false;
+        }
+        
         for(MarkerIconImpl icn : markericons.values())
             icn.cleanup();
         markericons.clear();
@@ -375,6 +387,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
      * Save persistence for markers
      */
     static void saveMarkers() {
+        if(api != null) {
+            api.dirty_markers = true;
+        }
+    }
+    private void doSaveMarkers() {
         if(api != null) {
             Configuration conf = new Configuration(api.markerpersist);  /* Make configuration object */
             /* First, save icon definitions */
