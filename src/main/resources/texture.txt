@@ -457,10 +457,22 @@ block:id=91,data=0,north=118,south=118,east=118,west=120,topbottom=102
 block:id=91,data=1,north=120,south=118,east=118,west=118,topbottom=102
 # Cake Block
 block:id=92,allsides=122,top=121,bottom=124,transparency=TRANSPARENT
-# Repeater (off)
-block:id=93,top=131,allsides=1,bottom=1,transparency=TRANSPARENT
-# Repeater (on)
-block:id=94,top=147,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (off) facing east
+block:id=93,data=0,data=4,data=8,data=12,top=6131,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (off) facing south
+block:id=93,data=1,data=5,data=9,data=13,top=5131,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (off) facing west
+block:id=93,data=2,data=6,data=10,data=14,top=4131,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (off) facing west
+block:id=93,data=3,data=7,data=11,data=15,top=131,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (on) facing east
+block:id=94,data=0,data=4,data=8,data=12,top=6147,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (on) facing south
+block:id=94,data=1,data=5,data=9,data=13,top=5147,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (on) facing west
+block:id=94,data=2,data=6,data=10,data=14,top=4147,allsides=1,bottom=1,transparency=TRANSPARENT
+# Repeater (on) facing west
+block:id=94,data=3,data=7,data=11,data=15,top=147,allsides=1,bottom=1,transparency=TRANSPARENT
 # Locked Chest
 block:id=95,top=25,south=27,north=27,east=26,west=26
 # Trap door
