@@ -146,7 +146,7 @@ block:id=29,data=12,north=110,south=109,top=262,bottom=5262,east=6262,west=4262
 # Sticky piston - extended facing south
 block:id=29,data=13,north=109,south=110,top=5262,bottom=262,east=4262,west=6262
 # Web
-block:id=30,allfaces=11
+block:id=30,allsides=11
 # Dead shrub
 block:id=31,data=0,allsides=55,transparency=TRANSPARENT
 # Tall Grass
