@@ -520,7 +520,7 @@ block:id=100,data=9,top=125,west=125,south=125,north=142,east=142,bottom=142
 # Red Mushroom Block - stem
 block:id=99,id=100,data=10,topbottom=142,allsides=141
 # Iron bars
-block:id=101,allsides=85,topbottom=22,transparency=TRANSPARENT
+block:id=101,allsides=85,transparency=TRANSPARENT
 # Glass pane
 block:id=102,allsides=12049,topbottom=12263,transparency=TRANSPARENT
 # Watermellon

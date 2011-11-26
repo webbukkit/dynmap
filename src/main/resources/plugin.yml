@@ -65,7 +65,6 @@ commands:
 permissions:
   dynmap.*:
     description: Gives access to all dynmap functions
-    default: op
     children:
       dynmap.render: true
       dynmap.show.self: true
