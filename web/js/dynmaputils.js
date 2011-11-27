@@ -184,27 +184,6 @@ var DynmapTileLayer = L.TileLayer.extend({
 	},
 	
 	_removeOtherTiles: function(bounds) {
-		var kArr, x, y, key;
-
-		for (key in this._tiles) {
-			if (this._tiles.hasOwnProperty(key)) {
-				kArr = key.split(':');
-				x = parseInt(kArr[0], 10);
-				y = parseInt(kArr[1], 10);
-
-				// remove tile if it's out of bounds
-				if (x < bounds.min.x || x > bounds.max.x || y < bounds.min.y || y > bounds.max.y) {
-					var tile = this._tiles[key];
-					if (tile.parentNode === this._container) {
-						this._container.removeChild(this._tiles[key]);
-					}
-					delete this._namedTiles[tile.tileName];
-					delete this._tiles[key];
-				}
-			}
-		}		
-	},
-	_removeOtherTiles: function(bounds) {
 		var kArr, x, y, key, tile;
 
 		for (key in this._tiles) {
