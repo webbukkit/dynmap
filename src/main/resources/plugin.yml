@@ -2,7 +2,7 @@ name: dynmap
 main: org.dynmap.DynmapPlugin
 version: "${project.version}"
 authors: [FrozenCow, mikeprimm]
-softdepend: [Permissions,PermissionEx,bPermissions,PermissionsBukkit]
+softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit]
 commands:
   dynmap:
     description: Controls Dynmap.
