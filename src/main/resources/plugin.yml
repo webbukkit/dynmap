@@ -1,6 +1,6 @@
 name: dynmap
 main: org.dynmap.DynmapPlugin
-version: "${project.version}"
+version: "${project.version}-${BUILD_NUMBER}"
 authors: [FrozenCow, mikeprimm]
 softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit]
 commands:
