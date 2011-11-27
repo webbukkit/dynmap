@@ -53,10 +53,9 @@
           			</goals>
 		            <configuration>
         		      <artifactSet>
-                		<excludes>
-                  		  <exclude>org.bukkit:bukkit:jar:*</exclude>
-                  		  <exclude>com.nijikokun.bukkit:Permissions:jar:*</exclude>                  		  
-                		</excludes>
+                		<includes>
+                  		  <include>org.dynmap:dynmap-api:jar:*</include>
+                		</includes>
               		  </artifactSet>
             		</configuration>
           		</execution>
