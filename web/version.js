@@ -1,1 +1,1 @@
-var dynmapversion = "${project.version}_${BUILD_NUMBER}";
+var dynmapversion = "${project.version}-${BUILD_NUMBER}";
