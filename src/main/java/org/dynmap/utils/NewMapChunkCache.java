@@ -51,6 +51,12 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     
+    private int chunks_read;    /* Number of chunks actually loaded */
+    private int chunks_attempted;   /* Number of chunks attempted to load */
+    private long total_loadtime;    /* Total time loading chunks, in nanoseconds */
+    
+    private long exceptions;
+    
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
@@ -78,6 +84,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 snap = snaparray[chunkindex];
             } catch (ArrayIndexOutOfBoundsException aioobx) {
                 snap = EMPTY;
+                exceptions++;
             }
             laststep = BlockStep.Y_MINUS;
             typeid = blkdata = -1;
@@ -125,6 +132,7 @@ public class NewMapChunkCache implements MapChunkCache {
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
+                            exceptions++;
                         }
                     }
                     break;
@@ -141,6 +149,7 @@ public class NewMapChunkCache implements MapChunkCache {
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
+                            exceptions++;
                         }
                     }
                     break;
@@ -154,6 +163,7 @@ public class NewMapChunkCache implements MapChunkCache {
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
+                            exceptions++;
                         }
                     }
                     break;
@@ -170,6 +180,7 @@ public class NewMapChunkCache implements MapChunkCache {
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
                             snap = EMPTY;
+                            exceptions++;
                         }
                     }
                     break;
@@ -387,15 +398,6 @@ public class NewMapChunkCache implements MapChunkCache {
     public void setChunks(World w, List<DynmapChunk> chunks) {
         this.w = w;
         this.chunks = chunks;
-        if(poppreservedchunk == null) {
-            /* Get CraftWorld.popPreservedChunk(x,z) - reduces memory bloat from map traversals (optional) */
-            try {
-                Class c = Class.forName("org.bukkit.craftbukkit.CraftWorld");
-                poppreservedchunk = c.getDeclaredMethod("popPreservedChunk", new Class[] { int.class, int.class });
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchMethodException nsmx) {
-            }
-        }
         /* Compute range */
         if(chunks.size() == 0) {
             this.x_min = 0;
@@ -424,6 +426,7 @@ public class NewMapChunkCache implements MapChunkCache {
     }
 
     public int loadChunks(int max_to_load) {
+        long t0 = System.nanoTime();
         int cnt = 0;
         if(iterator == null)
             iterator = chunks.listIterator();
@@ -465,6 +468,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
                 continue;
             }
+            chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = w.loadChunk(chunk.x, chunk.z, false);
             boolean didgenerate = false;
@@ -498,6 +502,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
             }
             if ((!wasLoaded) && didload) {
+                chunks_read++;
                 /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
                  * when chunks are unloaded but not saved - removing them seems to do the trick */
                 if(!(didgenerate && do_save)) {
@@ -551,6 +556,8 @@ public class NewMapChunkCache implements MapChunkCache {
                     isempty = false;
             }
         }
+        total_loadtime += System.nanoTime() - t0;
+
         return cnt;
     }
     /**
@@ -744,5 +751,20 @@ public class NewMapChunkCache implements MapChunkCache {
     public World getWorld() {
         return w;
     }
-
+    @Override
+    public int getChunksLoaded() {
+        return chunks_read;
+    }
+    @Override
+    public int getChunkLoadsAttempted() {
+        return chunks_attempted;
+    }
+    @Override
+    public long getTotalRuntimeNanos() {
+        return total_loadtime;
+    }
+    @Override
+    public long getExceptionCount() {
+        return exceptions;
+    }
 }

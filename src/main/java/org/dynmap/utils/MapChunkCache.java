@@ -106,4 +106,21 @@ public interface MapChunkCache {
      * Get world
      */
     public World getWorld();
+    /**
+     * Get total chunks loaded
+     * @return
+     */
+    public int getChunksLoaded();
+    /**
+     * Get total chunk loads attempted
+     * @return
+     */
+    public int getChunkLoadsAttempted();
+    /**
+     * Get total run time processing chunks
+     * @return
+     */
+    public long getTotalRuntimeNanos();
+    
+    public long getExceptionCount();
 }

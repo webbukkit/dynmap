@@ -18,9 +18,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,6 @@ import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
 import org.dynmap.hdmap.HDMapManager;
-import org.dynmap.utils.LegacyMapChunkCache;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.NewMapChunkCache;
 import org.dynmap.utils.SnapshotCache;
@@ -58,7 +58,16 @@ public class MapManager {
     private Object loadlock = new Object();
     private int chunks_in_cur_tick = 0;
     private long cur_tick;
-    
+
+    /* Chunk load performance numbers */
+    AtomicInteger chunk_caches_created = new AtomicInteger(0);
+    AtomicInteger chunk_caches_attempted = new AtomicInteger(0);
+    AtomicLong total_chunk_cache_loadtime_ns = new AtomicLong(0);
+    AtomicInteger chunks_read = new AtomicInteger(0);;
+    AtomicInteger chunks_attempted = new AtomicInteger(0);
+    AtomicLong total_loadtime_ns = new AtomicLong(0L);
+    AtomicLong total_exceptions = new AtomicLong(0L);
+
     /* Tile hash manager */
     public TileHashManager hashman;
     /* lock for our data structures */
@@ -182,6 +191,8 @@ public class MapManager {
         String rendertype;
         boolean cancelled;
         String mapname;
+        AtomicLong total_render_ns = new AtomicLong(0L);
+        AtomicInteger rendercalls = new AtomicInteger(0);
 
         /* Full world, all maps render */
         FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname) {
@@ -342,17 +353,23 @@ public class MapManager {
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
                         double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1)/(double)activemapcnt;
+                        double rendtime = total_render_ns.doubleValue() * 0.000001 / rendercalls.get();
                         if(activemapcnt > 1) 
                             sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
-                               world.world.getName() + "' completed - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
+                               world.world.getName() + "' completed - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile, "
+                               + rendtime +" msec per render)");
                         else
                             sendMessage(rendertype + " of map '" + activemaps + "' of '" +
-                                 world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
+                                 world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile. "
+                                 + rendtime +" msec per render)");
+
                     }                	
                     found.clear();
                     rendered.clear();
                     rendercnt = 0;
                     timeaccum = 0;
+                    total_render_ns.set(0);
+                    rendercalls.set(0);
                     /* Advance to next unrendered map */
                     while(map_index < world.maps.size()) {
                         map_index++;    /* Move to next one */
@@ -507,12 +524,21 @@ public class MapManager {
                 if(!good) requiredChunks = Collections.emptyList();
             }
             /* Fetch chunk cache from server thread */
+            long clt0 = System.nanoTime();
             MapChunkCache cache = createMapChunkCache(world, requiredChunks, tile.isBlockTypeDataNeeded(), 
                                                       tile.isHightestBlockYDataNeeded(), tile.isBiomeDataNeeded(), 
                                                       tile.isRawBiomeDataNeeded());
+            total_chunk_cache_loadtime_ns.addAndGet(System.nanoTime() - clt0);
+            chunk_caches_attempted.incrementAndGet();
             if(cache == null) {
                 return false; /* Cancelled/aborted */
             }
+            /* Update stats */
+            chunk_caches_created.incrementAndGet();
+            chunks_read.addAndGet(cache.getChunksLoaded());
+            chunks_attempted.addAndGet(cache.getChunkLoadsAttempted());
+            total_loadtime_ns.addAndGet(cache.getTotalRuntimeNanos());
+            total_exceptions.addAndGet(cache.getExceptionCount());
             if(tile0 != null) {    /* Single tile? */
                 if(cache.isEmpty() == false)
                     tile.render(cache, null);
@@ -522,7 +548,10 @@ public class MapManager {
             	tileQueue.remove(tile);
                 /* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
                 if (cache.isEmpty() == false) {
+                    long rt0 = System.nanoTime();
                     tile.render(cache, mapname);
+                    total_render_ns.addAndGet(System.nanoTime()-rt0);
+                    rendercalls.incrementAndGet();
                     synchronized(lock) {
 //                        found.setFlag(tile.tileOrdinalX(),tile.tileOrdinalY(),false);
                         rendered.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), true);
@@ -541,13 +570,16 @@ public class MapManager {
                         rendercnt++;
                         timeaccum += System.currentTimeMillis() - tstart;
                         if((rendercnt % progressinterval) == 0) {
+                            double rendtime = total_render_ns.doubleValue() * 0.000001 / rendercalls.get();
                             double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemapcnt;
                             if(activemapcnt > 1) 
                                 sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
-                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile).");
+                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile, "
+                                               + rendtime +" msec per render)");
                             else
                                 sendMessage(rendertype + " of map '" + activemaps + "' of '" +
-                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile).");
+                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile. "
+                                               + rendtime +" msec per render)");
                         }
                     }
                 }
@@ -1066,15 +1098,7 @@ public class MapManager {
      */
     public MapChunkCache createMapChunkCache(DynmapWorld w, List<DynmapChunk> chunks,
             boolean blockdata, boolean highesty, boolean biome, boolean rawbiome) {
-        MapChunkCache c = null;
-        try {
-            if(!use_legacy)
-                c = new NewMapChunkCache();
-        } catch (NoClassDefFoundError ncdfe) {
-            use_legacy = true;
-        }
-        if(c == null)
-            c = new LegacyMapChunkCache();
+        MapChunkCache c = new NewMapChunkCache();
         if(w.visibility_limits != null) {
             for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
                 c.setVisibleRange(limit);
@@ -1173,12 +1197,26 @@ public class MapManager {
         }
         sender.sendMessage("  TOTALS: processed=" + tot.loggedcnt + ", rendered=" + tot.renderedcnt + 
                            ", updated=" + tot.updatedcnt + ", transparent=" + tot.transparentcnt);
-        sender.sendMessage("  Cache hit rate: " + sscache.getHitRate() + "%");
         sender.sendMessage("  Triggered update queue size: " + tileQueue.size());
         String act = "";
         for(String wn : active_renders.keySet())
         	act += wn + " ";
         sender.sendMessage("  Active render jobs: " + act);
+        /* Chunk load stats */
+        sender.sendMessage("Chunk Loading Statistics:");
+        sender.sendMessage("  Cache hit rate: " + sscache.getHitRate() + "%");
+        int setcnt = chunk_caches_attempted.get();
+        sender.sendMessage("  Chunk sets: created=" + chunk_caches_created.get() + ", attempted=" + chunk_caches_attempted.get());
+        int readcnt = chunks_read.get();
+        sender.sendMessage("  Chunk: loaded=" + readcnt + ", attempted=" + chunks_attempted.get());
+        double ns = total_loadtime_ns.doubleValue() * 0.000001;    /* Convert to milliseconds */
+        double chunkloadns = total_chunk_cache_loadtime_ns.doubleValue() * 0.000001;
+        if(readcnt == 0) readcnt = 1;
+        if(setcnt == 0) setcnt = 1;
+        sender.sendMessage("  Chunk load times: " + ns + " msec (" + (ns / readcnt) + " msec/chunk)");
+        sender.sendMessage("  Chunk set load times: " + chunkloadns + " msec (" + (chunkloadns / setcnt) + " msec/set)");
+        sender.sendMessage("  Chunk set delay times: " + (chunkloadns-ns) + " msec (" + ((chunkloadns-ns) / setcnt) + " msec/set)");
+        sender.sendMessage("  Chunk set exceptions: " + total_exceptions.get());
     }
     /**
      * Print trigger statistics command
@@ -1213,6 +1251,13 @@ public class MapManager {
                 ts.callswithtiles = 0;
                 ts.tilesqueued = 0;
             }
+            chunk_caches_created.set(0);
+            chunk_caches_attempted.set(0);
+            chunks_read.set(0);
+            chunks_attempted.set(0);
+            total_loadtime_ns.set(0);
+            total_chunk_cache_loadtime_ns.set(0);
+            total_exceptions.set(0);
         }
         sscache.resetStats();
         sender.sendMessage("Tile Render Statistics reset");
