@@ -669,6 +669,14 @@
 	background-image: url(../images/compass_W.png);
 }
 
+.mobilecompass {
+    top: 5px;
+    right: 10px;
+	height: 42px;
+	width: 42px;
+	background-size: cover;
+}
+
 /*******************
  * Chat
  */

@@ -306,10 +306,11 @@ DynMap.prototype = {
 			updateHeight();
 		});
 		// The Compass
-		var compass = $('<div/>')
-			.addClass('compass')
-			.appendTo(container);
-		
+		var compass = $('<div/>').
+			addClass('compass');
+		if(L.Browser.mobile)
+			compass.addClass('mobilecompass');
+		compass.appendTo(container);
 		// TODO: Enable hash-links.
 		/*
 		var link;
