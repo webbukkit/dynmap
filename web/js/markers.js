@@ -104,7 +104,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	}
 
 	function createArea(set, area, ts) {
-		var style = { color: area.color, opacity: area.opacity, weight: area.weight, fillOpacity: area.fillopacity, fillColor: area.fillcolor };
+		var style = { color: area.color, opacity: area.opacity, weight: area.weight, fillOpacity: area.fillopacity, fillColor: area.fillcolor, smoothFactor: 0.0 };
 
 		if(area.x.length == 2) {	/* Only 2 points */
 			if(area.ytop == area.ybottom) {
