@@ -130,7 +130,9 @@ DynMap.prototype = {
 			}),
 			scale: function(zoom) {
 				return (1 << zoom);
-			}
+			},
+			continuousWorld: true,
+			worldCopyJump: false
 		});
 		window.map = map; // Placate Leaflet need for top-level 'map'....
 		
