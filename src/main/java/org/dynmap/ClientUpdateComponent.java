@@ -35,7 +35,9 @@ public class ClientUpdateComponent extends Component {
         String worldName = world.getName();
         int hideifshadow = configuration.getInteger("hideifshadow", 15);
         int hideifunder = configuration.getInteger("hideifundercover", 15);
-        
+
+        s(u, "confighash", plugin.getConfigHashcode());
+
         s(u, "servertime", world.getTime() % 24000);
         s(u, "hasStorm", world.hasStorm());
         s(u, "isThundering", world.isThundering());

@@ -14,6 +14,7 @@ public class ClientConfigurationComponent extends Component {
             @Override
             public void triggered(JSONObject t) {
                 ConfigurationNode c = plugin.configuration;
+                s(t, "confighash", plugin.getConfigHashcode());
                 s(t, "updaterate", c.getFloat("updaterate", 1.0f));
                 s(t, "showplayerfacesinmenu", c.getBoolean("showplayerfacesinmenu", true));
                 s(t, "joinmessage", c.getString("joinmessage", "%playername% joined"));

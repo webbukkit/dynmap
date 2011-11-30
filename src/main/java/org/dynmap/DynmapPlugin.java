@@ -81,6 +81,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
     public CompassMode compassmode = CompassMode.PRE19;
+    private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
 
     public enum CompassMode {
         PRE19,  /* Default for 1.8 and earlier (east is Z+) */
@@ -297,6 +298,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         playerfacemgr = new PlayerFaces(this);
         
+        updateConfigHashcode(); /* Initialize/update config hashcode */
+        
         loadWebserver();
 
         enabledTriggers.clear();
@@ -325,6 +328,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         Log.info("version " + pdfFile.getVersion() + " is enabled" );
 
         events.<Object>trigger("initialized", null);
+    }
+
+    public void updateConfigHashcode() {
+        config_hashcode = (int)System.currentTimeMillis();
+    }
+    
+    public int getConfigHashcode() {
+        return config_hashcode;
     }
 
     public void loadWebserver() {
@@ -633,6 +644,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             @Override
             public void onWorldLoad(WorldLoadEvent event) {
                 mapManager.activateWorld(event.getWorld());
+                updateConfigHashcode();
             }
         };
 

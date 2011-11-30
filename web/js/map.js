@@ -526,6 +526,10 @@ DynMap.prototype = {
 				if (!me.options.jsonfile) {
 					me.lasttimestamp = update.timestamp;
 				}
+				if(me.options.confighash != update.confighash) {
+					window.location.reload(true);
+					return;
+				}
 
 				me.servertime = update.servertime;                
 				var newserverday = (me.servertime > 23100 || me.servertime < 12900);
