@@ -48,7 +48,7 @@ public class TileHashManager {
         public File getHashFile(File tiledir) {
             if(hf == null) {
                 String k;
-                int idx = key.indexOf('.'); /* Find first '.' - world name split */
+                int idx = key.lastIndexOf('.'); /* Find last '.' - world name split (allows dots in world name) */
                 if(idx > 0)
                     k = key.substring(0, idx) + File.separatorChar + key.substring(idx+1);
                 else
