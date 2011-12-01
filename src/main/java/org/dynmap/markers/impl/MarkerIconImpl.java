@@ -15,6 +15,7 @@ class MarkerIconImpl implements MarkerIcon {
     private String iconid;
     private String label;
     private boolean is_builtin;
+    private MarkerSize size = MarkerSize.MARKER_16x16;
     
     MarkerIconImpl(String id) {
         iconid = id;
@@ -93,4 +94,12 @@ class MarkerIconImpl implements MarkerIcon {
         return true;
     }
 
+    @Override
+    public MarkerSize getMarkerIconSize() {
+        return size;
+    }
+    
+    void setMarkerIconSize(MarkerSize sz) {
+        size = sz;
+    }
 }

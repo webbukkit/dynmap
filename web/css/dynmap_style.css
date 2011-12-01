@@ -779,8 +779,6 @@
 .dynmap .mapMarker .markerName-show {
     display: block;
 	position: absolute;
-	top: -8px;
-	left: 10px;
 	z-index: 16;
 	
 	white-space: nowrap;
@@ -791,12 +789,42 @@
 
     -moz-border-radius: 3px;
     border-radius: 3px;
-    
+}
+
+.dynmap .mapMarker .markerName16x16 {
+	top: -6px;
+	left: 10px;
+}
+
+.dynmap .mapMarker .markerName8x8 {
+	top: -4px;
+	left: 6px;
+}
+
+.dynmap .mapMarker .markerName32x32 {
+	top: -8px;
+	left: 18px;
 }
 
 .dynmap .mapMarker .markerIcon16x16 {
 	margin-top: -8px;
 	margin-left: -8px;
+	width: 16px;
+	height: 16px;
+}
+
+.dynmap .mapMarker .markerIcon8x8 {
+	margin-top: -4px;
+	margin-left: -4px;
+	width: 8px;
+	height: 8px;
+}
+
+.dynmap .mapMarker .markerIcon32x32 {
+	margin-top: -16px;
+	margin-left: -16px;
+	width: 32px;
+	height: 32px;
 }
 
 .dynmap .mapMarker .markerName_offline_players {

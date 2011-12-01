@@ -1,5 +1,6 @@
 package org.dynmap.markers.impl;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import javax.imageio.ImageIO;
 
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -38,6 +41,7 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
+import org.dynmap.markers.MarkerIcon.MarkerSize;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.web.Json;
 
@@ -82,6 +86,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public String set;
         public boolean markup;
         public String desc;
+        public String dim;
         
         public MarkerUpdated(Marker m, boolean deleted) {
             this.id = m.getMarkerID();
@@ -93,6 +98,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             this.icon = m.getMarkerIcon().getMarkerIconID();
             this.markup = m.isLabelMarkup();
             this.desc = m.getDescription();
+            this.dim = m.getMarkerIcon().getMarkerIconSize().getSize();
             if(deleted) 
                 msg = "markerdeleted";
             else
@@ -269,7 +275,9 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         InputStream in = null;
         File infile = new File(markerdir, ico.getMarkerIconID() + ".png");  /* Get source file name */
         File outfile = new File(markertiledir, ico.getMarkerIconID() + ".png"); /* Destination */
+        BufferedImage im = null;
         OutputStream out = null;
+                
         try {
             out = new FileOutputStream(outfile);
         } catch (IOException iox) {
@@ -280,6 +288,26 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             in = getClass().getResourceAsStream("/markers/" + ico.getMarkerIconID() + ".png");
         }
         else if(infile.canRead()) {  /* If it exists and is readable */
+            try {
+                im = ImageIO.read(infile);
+            } catch (IOException e) {
+            } catch (IndexOutOfBoundsException e) {
+            }
+            if(im != null) {
+                MarkerIconImpl icon = (MarkerIconImpl)ico;
+                int w = im.getWidth();  /* Get width */
+                if(w <= 8) {    /* Small size? */
+                    icon.setMarkerIconSize(MarkerSize.MARKER_8x8);
+                }
+                else if(w > 16) {
+                    icon.setMarkerIconSize(MarkerSize.MARKER_32x32);
+                }
+                else {
+                    icon.setMarkerIconSize(MarkerSize.MARKER_16x16);
+                }
+                im.flush();
+            }
+
             try {
                 in = new FileInputStream(infile);   
             } catch (IOException iox) {
@@ -1447,7 +1475,9 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 mdata.put("x", m.getX());
                 mdata.put("y", m.getY());
                 mdata.put("z", m.getZ());
-                mdata.put("icon", m.getMarkerIcon().getMarkerIconID());
+                MarkerIcon mi = m.getMarkerIcon();
+                mdata.put("icon", mi.getMarkerIconID());
+                mdata.put("dim", mi.getMarkerIconSize().getSize());
                 mdata.put("label", m.getLabel());
                 mdata.put("markup", m.isLabelMarkup());
                 if(m.getDescription() != null)
