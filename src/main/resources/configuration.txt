@@ -101,6 +101,7 @@ components:
   - class: org.dynmap.ClientComponent
     type: coord
     label: "Location"
+    hidey: false
     
   #- class: org.dynmap.ClientComponent
   #  type: logo

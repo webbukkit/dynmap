@@ -877,6 +877,10 @@
     border-radius: 5px;
 }
 
+.dynmap .coord-control-noy {
+	width: 60px;
+}
+
 .dynmap .coord-control .coord-control-label {
 
 }

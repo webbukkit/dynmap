@@ -4,7 +4,10 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 		valfield: $('<span/>'),
 		
 		onAdd: function(map) {
-			this._container = L.DomUtil.create('div', 'coord-control');
+			if(configuration.hidey)
+				this._container = L.DomUtil.create('div', 'coord-control coord-control-noy');
+			else
+				this._container = L.DomUtil.create('div', 'coord-control');
 			this._map = map;
 			$('<span/>').addClass('coord-control-label').text((configuration.label || 'x,y,z') + ': ').appendTo(this._container);
 			$('<br/>').appendTo(this._container);
@@ -31,10 +34,16 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 	dynmap.map.on('mousemove', function(mevent) {
 		if(!dynmap.map) return;
 		var loc = dynmap.getProjection().fromLatLngToLocation(mevent.latlng, 64);
-		coord.valfield.text(Math.round(loc.x) + ',' + loc.y + ',' + Math.round(loc.z));
+		if(configuration.hidey)
+			coord.valfield.text(Math.round(loc.x) + ',' + Math.round(loc.z));
+		else
+			coord.valfield.text(Math.round(loc.x) + ',' + loc.y + ',' + Math.round(loc.z));
 	});
 	dynmap.map.on('mouseout', function(mevent) {
 		if(!dynmap.map) return;
-		coord.valfield.text('---,---,---');
+		if(configuration.hidey)
+			coord.valfield.text('---,---');
+		else
+			coord.valfield.text('---,---,---');
 	});
 };
