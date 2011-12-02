@@ -50,6 +50,9 @@ public class MapManager {
     private boolean saverestorepending = true;
     private boolean hideores = false;
     
+    private boolean pauseupdaterenders = false;
+    private boolean pausefullrenders = false;
+    
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
     private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
@@ -349,6 +352,10 @@ public class MapManager {
             	return;
             }
             if(tile0 == null) {    /* Not single tile render */
+                if(pausefullrenders) {    /* Update renders are paused? */
+                    scheduleDelayedJob(this, 20*5); /* Delay 5 seconds and retry */
+                    return;
+                }
                 /* If render queue is empty, start next map */
                 if(renderQueue.isEmpty()) {
                     if(map_index >= 0) { /* Finished a map? */
@@ -449,6 +456,10 @@ public class MapManager {
                 }
             }
             else {    /* Else, single tile render */
+                if(pauseupdaterenders) {
+                    scheduleDelayedJob(this, 5*20); /* Retry after 5 seconds */
+                    return;
+                }
                 tile = tile0;
             }
             World w = world.world;
@@ -1295,5 +1306,37 @@ public class MapManager {
                 return 1;   /* Stone */
         }
         return id;
+    }
+    /*
+     * Pause full/radius render processing
+     * @param dopause - true to pause, false to unpause
+     */
+    void setPauseFullRadiusRenders(boolean dopause) {
+        if(dopause != pausefullrenders) {
+            pausefullrenders = dopause;
+            Log.info("Full/radius render pause set to " + dopause);
+        }
+    }
+    /*
+     * Test if full renders are paused
+     */
+    boolean getPauseFullRadiusRenders() {
+        return pausefullrenders;
+    }
+    /*
+     * Pause update render processing
+     * @param dopause - true to pause, false to unpause
+     */
+    void setPauseUpdateRenders(boolean dopause) {
+        if(dopause != pauseupdaterenders) {
+            pauseupdaterenders = dopause;
+            Log.info("Update render pause set to " + dopause);
+        }
+    }
+    /*
+     * Test if update renders are paused
+     */
+    boolean getPauseUpdateRenders() {
+        return pauseupdaterenders;
     }
 }

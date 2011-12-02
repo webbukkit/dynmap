@@ -220,7 +220,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap");
         if (permissions == null)
-            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload", "purgequeue" });
+            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload", "purgequeue", "pause" });
 
         dataDirectory = this.getDataFolder();
         if(dataDirectory.exists() == false)
@@ -742,6 +742,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         "triggerstats",
         "resetstats",
         "sendtoweb",
+        "pause",
         "purgequeue" }));
 
     @Override
@@ -877,6 +878,33 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     mapManager.printStats(sender, args[1]);
             } else if (c.equals("triggerstats") && checkPlayerPermission(sender, "stats")) {
                 mapManager.printTriggerStats(sender);
+            } else if (c.equals("pause") && checkPlayerPermission(sender, "pause")) {
+                if(args.length == 1) {
+                }
+                else if(args[1].equals("full")) {
+                    setPauseFullRadiusRenders(true);
+                    setPauseUpdateRenders(false);
+                }
+                else if(args[1].equals("update")) {
+                    setPauseFullRadiusRenders(false);
+                    setPauseUpdateRenders(true);
+                }
+                else if(args[1].equals("all")) {
+                    setPauseFullRadiusRenders(true);
+                    setPauseUpdateRenders(true);
+                }
+                else {
+                    setPauseFullRadiusRenders(false);
+                    setPauseUpdateRenders(false);
+                }
+                if(getPauseFullRadiusRenders())
+                    sender.sendMessage("Full/Radius renders are PAUSED");
+                else
+                    sender.sendMessage("Full/Radius renders are ACTIVE");
+                if(getPauseUpdateRenders())
+                    sender.sendMessage("Update renders are PAUSED");
+                else
+                    sender.sendMessage("Update renders are ACTIVE");
             } else if (c.equals("resetstats") && checkPlayerPermission(sender, "resetstats")) {
                 if(args.length == 1)
                     mapManager.resetStats(sender, null);
@@ -1351,5 +1379,31 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
      */
     public void registerMarkerAPI(MarkerAPIImpl api) {
         markerapi = api;
+    }
+    /*
+     * Pause full/radius render processing
+     * @param dopause - true to pause, false to unpause
+     */
+    public void setPauseFullRadiusRenders(boolean dopause) {
+        mapManager.setPauseFullRadiusRenders(dopause);
+    }
+    /*
+     * Test if full renders are paused
+     */
+    public boolean getPauseFullRadiusRenders() {
+        return mapManager.getPauseFullRadiusRenders();
+    }
+    /*
+     * Pause update render processing
+     * @param dopause - true to pause, false to unpause
+     */
+    public void setPauseUpdateRenders(boolean dopause) {
+        mapManager.setPauseUpdateRenders(dopause);
+    }
+    /*
+     * Test if update renders are paused
+     */
+    public boolean getPauseUpdateRenders() {
+        return mapManager.getPauseUpdateRenders();
     }
 }

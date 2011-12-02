@@ -26,6 +26,8 @@ commands:
            /<command> resetstats world - Reset render statistics for maps on world 'world'.
            /<command> sendtoweb msg - Send message to web users
            /<command> purgequeue - Set tile update queue to empty
+           /<command> pause - Show render pause state
+           /<command> pause <all|none|full|update> - Set render pause state
             
   dmarker:
     description: Manipulate map markers
@@ -79,6 +81,7 @@ permissions:
       dynmap.resetstats: true
       dynmap.sendtoweb: true
       dynmap.purgequeue: true
+      dynmap.pause: true
       dynmap.marker.add: true
       dynmap.marker.update: true
       dynmap.marker.movehere: true
@@ -135,6 +138,9 @@ permissions:
     default: op
   dynmap.purgequeue:
     description: Allows /dynmap purgequeue
+    default: op
+  dynmap.pause:
+    description: Allows /dynmap pause
     default: op
   dynmap.marker.add:
     description: Allows /dmarker add
