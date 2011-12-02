@@ -18,6 +18,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.bukkit.plugin.Plugin;
 import org.dynmap.Log;
 
 public class HttpServer extends Thread {
@@ -36,13 +37,15 @@ public class HttpServer extends Thread {
     private Object lock = new Object();
     private HashSet<HttpServerConnection> active_connections = new HashSet<HttpServerConnection>();
     private HashSet<HttpServerConnection> keepalive_connections = new HashSet<HttpServerConnection>();
+    private Plugin plugin;
     private static Map<String, String> headers = new HashMap<String,String>();
 
-    public HttpServer(InetAddress bindAddress, int port, boolean check_banned_ips, int max_sessions) {
+    public HttpServer(InetAddress bindAddress, int port, boolean check_banned_ips, int max_sessions, Plugin plg) {
         this.bindAddress = bindAddress;
         this.port = port;
         this.check_banned_ips = check_banned_ips;
         this.max_sessions = max_sessions;
+        this.plugin = plg;
     }
 
     public InetAddress getAddress() {
@@ -142,33 +145,9 @@ public class HttpServer extends Thread {
     private void loadBannedIPs() {
     	banned_ips.clear();
     	banned_ips_notified.clear();
-    	File f = new File("banned-ips.txt");
-    	if(f.exists() == false)
-    		return;
-    	if(f.lastModified() == lastmod) {
-    		return;
-    	}
-    	lastmod = f.lastModified();
-    	BufferedReader rdr = null;
-    	try {
-    		rdr = new BufferedReader(new FileReader(f));
-    		String line;
-    		while((line = rdr.readLine()) != null) {
-    			line = line.trim().toLowerCase();	/* Trim it and case normalize it */
-    			if((line.length() == 0) || (line.charAt(0) == '#')) {	/* Blank or comment? */
-    				continue;
-    			}
-    			banned_ips.add(line);
-    		}
-    	} catch (IOException iox) {
-    		Log.severe("Error reading banned-ips.txt!");
-    	} finally {
-    		if(rdr != null) {
-    			try { rdr.close(); } catch (IOException iox) {}
-    			rdr = null;
-    		}
-    	}
+    	banned_ips.addAll(plugin.getServer().getIPBans());
     }
+    
     /* Return true if address is banned */
     public boolean checkForBannedIp(SocketAddress socketAddress) {
     	if(!check_banned_ips)
@@ -192,6 +171,26 @@ public class HttpServer extends Thread {
     	}
     	return false;
     }
+    /* Return true if address is banned */
+    public boolean checkForBannedIp(String ipaddr) {
+        if(!check_banned_ips)
+            return false;
+        
+        long t = System.currentTimeMillis();
+        if((t < last_loaded) || ((t-last_loaded) > BANNED_RELOAD_INTERVAL)) {
+            loadBannedIPs();
+            last_loaded = t;
+        }
+        if(banned_ips.contains(ipaddr)) {
+            if(banned_ips_notified.contains(ipaddr) == false) {
+                Log.info("Rejected connection by banned IP address - " + ipaddr);
+                banned_ips_notified.add(ipaddr);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static Map<String,String> getCustomHeaders() {
         return headers;
     }

@@ -372,7 +372,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         	Log.verboseinfo("Web server is permitting symbolic links");
         else
         	Log.verboseinfo("Web server is not permitting symbolic links");        	
-        webServer = new HttpServer(bindAddress, port, checkbannedips, maxconnections);
+        webServer = new HttpServer(bindAddress, port, checkbannedips, maxconnections, this);
         webServer.handlers.put("/", new FilesystemHandler(getFile(configuration.getString("webpath", "web")), allow_symlinks));
         webServer.handlers.put("/tiles/", new FilesystemHandler(tilesDirectory, allow_symlinks));
         webServer.handlers.put("/up/configuration", new ClientConfigurationHandler(this));

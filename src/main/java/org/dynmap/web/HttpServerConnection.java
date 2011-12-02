@@ -147,6 +147,14 @@ public class HttpServerConnection extends Thread {
                 if (!readRequestHeader(in, request)) {
                     return;
                 }
+                String fwd_for = request.fields.get("X-Forwarded-For");
+                if(fwd_for != null) {
+                    String[] ff = fwd_for.split(",");
+                    for(int i = 0; i < ff.length; i++) {
+                        if(server.checkForBannedIp(ff[i]))
+                            return;
+                    }
+                }
 
                 long bound = -1;
                 BoundInputStream boundBody = null;
