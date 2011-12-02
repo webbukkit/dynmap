@@ -13,21 +13,22 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			// Only show player faces if canvas supported					
 			if(dynmap.canvassupport == false)
 				configuration.showplayerfaces = false;
-						
+					
+			var nm;	
 			$(div)
 				.addClass('Marker')
 				.addClass('playerMarker')
-				.append(playerImage = $('<img/>')
+				.append(playerImage = $('<img/>').addClass(configuration.smallplayerfaces?'playerIconSm':'playerIcon')
 						.attr({ src: 'images/player.png' }))
-				.append($('<span/>')
+				.append(nm = $('<span/>')
 					.addClass(configuration.smallplayerfaces?'playerNameSm':'playerName')
 					.text(player.name));
-
+			
 			if (configuration.showplayerfaces) {
 				if(configuration.smallplayerfaces) {
 					getMinecraftHead(player.account, 16, function(head) {
 						$(head)
-							.addClass('playericon')
+							.addClass('playerIconSm')
 						.prependTo(div);
 						playerImage.remove();
 					});
@@ -35,18 +36,15 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				else {
 					getMinecraftHead(player.account, 32, function(head) {
 						$(head)
-							.addClass('playericon')
+							.addClass('playerIcon')
 						.prependTo(div);
 						playerImage.remove();
 					});
 				}
 			}
 			if (configuration.showplayerhealth) {
-                if(!configuration.showplayerfaces) /* Need 32 high */
-                    playerImage.css('margin-bottom','16px');
-                    
 				player.healthContainer = $('<div/>')
-					.addClass('healthContainer')
+					.addClass(configuration.smallplayerfaces?'healthContainerSm':'healthContainer')
 					.appendTo(div);
 				if (player.health !== undefined && player.armor !== undefined) {
 					player.healthBar = $('<div/>')
@@ -67,6 +65,9 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				} else {
 					player.healthContainer.css('display','none');
 				}
+			}
+			else {
+				nm.addClass('playerNameNoHealth');
 			}
 			
 			return div;

@@ -541,10 +541,24 @@
  * players on the map
  */
 
+.dynmap .playerIcon {
+	margin-top: -16px;
+	margin-left: -16px;
+	width: 32px;
+	height: 32px;
+}
+
+.dynmap .playerIconSm {
+	margin-top: -8px;
+	margin-left: -8px;
+	width: 16px;
+	height: 16px;
+}
+
 .dynmap .playerName {
 	position: absolute;
-	top: 0px;
-	left: 34px;
+	top: -16px;
+	left: 18px;
     z-index:20;
 
 	white-space: nowrap;
@@ -559,8 +573,8 @@
 
 .dynmap .playerNameSm {
 	position: absolute;
-	top: -1px;
-	left: 18px;
+	top: -16px;
+	left: 10px;
 
 	white-space: nowrap;
 
@@ -572,11 +586,30 @@
     border-radius: 3px;
 }
 
+.dynmap .playerNameNoHealth {
+	top: -7px;
+}
+
 .dynmap .healthContainer {
 	display: block;
 	position: absolute;
-	bottom: 0;
-	left: 34px;
+	top: -2px;
+	left: 18px;
+
+	width: 50px;
+
+	background: rgba(0,0,0,0.6);
+	padding: 2px;
+
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.dynmap .healthContainerSm {
+	display: block;
+	position: absolute;
+	top: -2px;
+	left: 10px;
 
 	width: 50px;
 
