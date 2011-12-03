@@ -82,6 +82,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     boolean fencejoin = false;
     public CompassMode compassmode = CompassMode.PRE19;
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
+    private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
+    private boolean didfullpause;
 
     public enum CompassMode {
         PRE19,  /* Default for 1.8 and earlier (east is Z+) */
@@ -272,6 +274,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             compassmode = CompassMode.NEWROSE;
         else
             compassmode = CompassMode.PRE19;
+        /* Load full render processing player limit */
+        fullrenderplayerlimit = configuration.getInteger("fullrenderplayerlimit", 0);
         
         loadDebuggers();
 
@@ -285,9 +289,27 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         PlayerListener pl = new PlayerListener() {
             public void onPlayerJoin(PlayerJoinEvent evt) {
                 playerList.updateOnlinePlayers(null);
+                if(fullrenderplayerlimit > 0) {
+                    if((getServer().getOnlinePlayers().length+1) >= fullrenderplayerlimit) {
+                        if(getPauseFullRadiusRenders() == false) {  /* If not paused, pause it */
+                            setPauseFullRadiusRenders(true);
+                            Log.info("Pause full/radius renders - player limit reached");
+                            didfullpause = true;
+                        }
+                    }
+                }
             }
             public void onPlayerQuit(PlayerQuitEvent evt) {
                 playerList.updateOnlinePlayers(evt.getPlayer());
+                if(fullrenderplayerlimit > 0) {
+                    if((getServer().getOnlinePlayers().length-1) < fullrenderplayerlimit) {
+                        if(didfullpause) {  /* Only unpause if we did the pause */
+                            setPauseFullRadiusRenders(false);
+                            Log.info("Resume full/radius renders - below player limit");
+                            didfullpause = false;
+                        }
+                    }
+                }
             }
         };
         registerEvent(Type.PLAYER_JOIN, pl);

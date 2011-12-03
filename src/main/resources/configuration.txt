@@ -223,6 +223,9 @@ progressloginterval: 100
 # Interval the browser should poll for updates.
 updaterate: 2000
 
+# If nonzero, server will pause fullrender/radiusrender processing when 'fullrenderplayerlimit' or more user's are logged in
+fullrenderplayerlimit: 0
+
 showplayerfacesinmenu: true
 
 # Set sidebaropened: 'true' to pin menu sidebar opened permanently, 'pinned' to default the sidebar to pinned, but allow it to unpin
