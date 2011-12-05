@@ -1428,4 +1428,41 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public boolean getPauseUpdateRenders() {
         return mapManager.getPauseUpdateRenders();
     }
+    /**
+     * Set player visibility
+     * @param player - player
+     * @param is_visible - true if visible, false if hidden
+     */
+    public void setPlayerVisiblity(Player player, boolean is_visible) {
+        playerList.setVisible(player.getName(), is_visible);
+    }
+    /**
+     * Test if player is visible
+     * @return true if visible, false if not
+     */
+    public boolean getPlayerVisbility(Player player) {
+        return playerList.isVisiblePlayer(player);
+    }
+    /**
+     * Post message from player to web
+     * @param player - player
+     * @param message - message text
+     */
+    public void postPlayerMessageToWeb(Player player, String message) {
+        if(mapManager != null)
+            mapManager.pushUpdate(new Client.ChatMessage("player", "", player.getDisplayName(), message, player.getName()));
+    }
+    /**
+     * Post join/quit message for player to web
+     * @param player - player
+     * @param isjoin - if true, join message; if false, quit message
+     */
+    public void postPlayerJoinQuitToWeb(Player player, boolean isjoin) {
+        if((mapManager != null) && (playerList != null) && (playerList.isVisiblePlayer(player))) {
+            if(isjoin)
+                mapManager.pushUpdate(new Client.PlayerJoinMessage(player.getDisplayName(), player.getName()));
+            else
+                mapManager.pushUpdate(new Client.PlayerQuitMessage(player.getDisplayName(), player.getName()));
+        }
+    }
 }
