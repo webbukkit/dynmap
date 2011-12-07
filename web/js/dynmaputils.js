@@ -118,9 +118,9 @@ var DynmapTileLayer = L.TileLayer.extend({
 		var tilePos = this._getTilePos(tilePoint),
 			zoom = this._map.getZoom(),
 			key = tilePoint.x + ':' + tilePoint.y,
-			name = this.getTileName(tilePoint, zoom),	//Dynmap		
-			tileLimit = (1 << (zoom + this.options.zoomOffset));
-
+			name = this.getTileName(tilePoint, zoom),	//Dynmap
+			tileLimit = (1 << zoom);
+			
 		// wrap tile coordinates
 		if (!this.options.continuousWorld) {
 			if (!this.options.noWrap) {
@@ -129,28 +129,28 @@ var DynmapTileLayer = L.TileLayer.extend({
 				this._tilesToLoad--;
 				return;
 			}
-
+			
 			if (tilePoint.y < 0 || tilePoint.y >= tileLimit) {
 				this._tilesToLoad--;
 				return;
 			}
 		}
-
+		
 		// create tile
 		var tile = this._createTile();
 		tile.tileName = name;	//Dynmap
-		tile.tilePoint = tilePoint;	//Dynmap		
+		tile.tilePoint = tilePoint;	//Dynmap
 		L.DomUtil.setPosition(tile, tilePos);
-
+		
 		this._tiles[key] = tile;
-		this._namedTiles[name] = tile;	//Dynmap		
-
+		this._namedTiles[name] = tile;	//Dynmap
+        
 		if (this.options.scheme == 'tms') {
 			tilePoint.y = tileLimit - tilePoint.y - 1;
 		}
 
 		this._loadTile(tile, tilePoint, zoom);
-
+		
 		container.appendChild(tile);
 	},
 	_loadTile: function(tile, tilePoint, zoom) {
@@ -184,7 +184,7 @@ var DynmapTileLayer = L.TileLayer.extend({
 	},
 	
 	_removeOtherTiles: function(bounds) {
-		var kArr, x, y, key, tile;
+		var kArr, x, y, key;
 
 		for (key in this._tiles) {
 			if (this._tiles.hasOwnProperty(key)) {
@@ -194,23 +194,16 @@ var DynmapTileLayer = L.TileLayer.extend({
 
 				// remove tile if it's out of bounds
 				if (x < bounds.min.x || x > bounds.max.x || y < bounds.min.y || y > bounds.max.y) {
-
-					tile = this._tiles[key];
-					this.fire("tileunload", {tile: tile, url: tile.src});
-
-					// evil, don't do this! crashes Android 3, produces load errors, doesn't solve memory leaks
-					// this._tiles[key].src = '';
-
-					if (tile.parentNode == this._container) {
-						this._container.removeChild(tile);
+					var tile = this._tiles[key];
+					if (tile.parentNode === this._container) {
+						this._container.removeChild(this._tiles[key]);
 					}
-					delete this._namedTiles[tile.tileName];  //Dynmap
+					delete this._namedTiles[tile.tileName];
 					delete this._tiles[key];
 				}
 			}
-		}
+		}		
 	},
-	
 	_updateTileSize: function() {
 		var newzoom = this._map.getZoom();
 		if (this._currentzoom !== newzoom) {
@@ -222,30 +215,21 @@ var DynmapTileLayer = L.TileLayer.extend({
 		}
 	},
 	
-	_reset: function(clearOldContainer) {
-		var key;
-		this._updateTileSize(); //Dynmap
-		for (key in this._tiles) {
-			if (this._tiles.hasOwnProperty(key)) {
-				this.fire("tileunload", { tile: this._tiles[key] });
-			}
-		}
+	_reset: function() {
+		this._updateTileSize();
 		this._tiles = {};
-
-		if (clearOldContainer && this._container)
-			this._container.innerHTML = "";
-		this._namedTiles = {};     //Dynmap
-		this._loadQueue = [];      //Dynmap
-		this._loadingTiles = [];   //Dynmap
-		this._cachedTileUrls = {}; //Dynmap
+		this._namedTiles = {};
+		this._loadQueue = [];
+		this._loadingTiles = [];
+		this._cachedTileUrls = {};
 		this._initContainer();
 		this._container.innerHTML = '';
 	},
 	
 	_update: function() {
-		this._updateTileSize(); //Dynmap	
+		this._updateTileSize();
 		var bounds = this._map.getPixelBounds(),
-			tileSize = this.options.tileSize;
+		tileSize = this.options.tileSize;
 
 		var nwTilePoint = new L.Point(
 				Math.floor(bounds.min.x / tileSize),
@@ -254,14 +238,13 @@ var DynmapTileLayer = L.TileLayer.extend({
 				Math.floor(bounds.max.x / tileSize),
 				Math.floor(bounds.max.y / tileSize)),
 			tileBounds = new L.Bounds(nwTilePoint, seTilePoint);
-
+	
 		this._addTilesFromCenterOut(tileBounds);
-
+	
 		if (this.options.unloadInvisibleTiles) {
 			this._removeOtherTiles(tileBounds);
 		}
 	},
-	
 	/*calculateTileSize: function(zoom) {
 		return this.options.tileSize;
 	},*/
