@@ -6,10 +6,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.TreeSet;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChunkSnapshot;
@@ -28,15 +28,16 @@ public class NewMapChunkCache implements MapChunkCache {
     private static Method poppreservedchunk = null;
     private static Method gethandle = null;
     private static Method removeentities = null;
-    private static Method getworldchunkmgr = null;
-    private static Method getbiomedata = null;
     private static Method getworldhandle = null;    
     private static Field  chunkbiome = null;
-    private static boolean canusebiomefix = false;
-    private static boolean biomefixtested = false;
-    private static boolean biomefixneeded = false;
-    
+    private static Field ticklist = null;
+    private static Method processticklist = null;
+
+    private static final int MAX_PROCESSTICKS = 20;
+    private static final int MAX_TICKLIST = 1000;
+
     private World w;
+    private Object craftworld;
     private List<DynmapChunk> chunks;
     private ListIterator<DynmapChunk> iterator;
     private int x_min, x_max, z_min, z_max;
@@ -45,11 +46,12 @@ public class NewMapChunkCache implements MapChunkCache {
     private HiddenChunkStyle hidestyle = HiddenChunkStyle.FILL_AIR;
     private List<VisibilityLimit> visible_limits = null;
     private List<VisibilityLimit> hidden_limits = null;
-    private DynmapWorld.AutoGenerateOption generateopt;
     private boolean do_generate = false;
     private boolean do_save = false;
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
+    private Biome[][] snapbiomes;   /* Biome cache - getBiome() is expensive */
+    private TreeSet<?> ourticklist;
     
     private int chunks_read;    /* Number of chunks actually loaded */
     private int chunks_attempted;   /* Number of chunks attempted to load */
@@ -109,7 +111,16 @@ public class NewMapChunkCache implements MapChunkCache {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
         public final Biome getBiome() {
-            return snap.getBiome(bx, bz);
+            Biome[] b = snapbiomes[chunkindex];
+            if(b == null) {
+                b = snapbiomes[chunkindex] = new Biome[256];
+            }
+            int off = bx + (bz << 4);
+            Biome bio = b[off];
+            if(bio == null) {
+                bio = b[off] = snap.getBiome(bx, bz);
+            }
+            return bio;
         }
         public double getRawBiomeTemperature() {
             return snap.getRawBiomeTemperature(bx, bz);
@@ -358,23 +369,7 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
-            
-            /* Get WorldChunkManager.b(float[],int,int,int,int) and WorldChunkManager.a(float[],int,int,int,int) */
-            try {
-                Class c = Class.forName("net.minecraft.server.WorldChunkManager");
-                Class biomebasearray = Class.forName("[Lnet.minecraft.server.BiomeBase;");
-                getbiomedata = c.getDeclaredMethod("a", new Class[] { biomebasearray, int.class, int.class, int.class, int.class });
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchMethodException nsmx) {
-            }
-            
-            /* getWorldChunkManager() */
-            try {
-                Class c = Class.forName("net.minecraft.server.World");
-                getworldchunkmgr = c.getDeclaredMethod("getWorldChunkManager", new Class[0]);
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchMethodException nsmx) {
-            }
+                        
             /* Get CraftChunkSnapshot.biome field */
             try {
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftChunkSnapshot");
@@ -383,20 +378,37 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchFieldException nsmx) {
             }
+            /* ticklist for World */
+            try {
+                Class c = Class.forName("net.minecraft.server.World");
+                try {
+                    ticklist = c.getDeclaredField("K"); /* 1.0.0 */
+                } catch (NoSuchFieldException nsfx) {
+                    ticklist = c.getDeclaredField("N"); /* 1.8.1 */
+                }
+                ticklist.setAccessible(true);
+                if(ticklist.getType().isAssignableFrom(TreeSet.class) == false)
+                    ticklist = null;
+                processticklist = c.getDeclaredMethod("a", new Class[] { boolean.class } );
+            } catch (ClassNotFoundException cnfx) {
+            } catch (NoSuchFieldException nsmx) {
+            } catch (NoSuchMethodException nsmx) {
+            }
 
             init = true;
-            if((getworldchunkmgr != null) && (getbiomedata != null) && (getworldhandle != null) && (chunkbiome != null)) {
-                canusebiomefix = true;
-            }
-            else {
-                biomefixtested = true;
-                biomefixneeded = false;
-            }
         }
     }
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "rawtypes" })
     public void setChunks(World w, List<DynmapChunk> chunks) {
         this.w = w;
+        if((getworldhandle != null) && (craftworld == null)) {
+            try {
+                craftworld = getworldhandle.invoke(w);   /* World.getHandle() */
+                if(ticklist != null)
+                    ourticklist = (TreeSet)ticklist.get(craftworld);
+            } catch (Exception x) {
+            }
+        }
         this.chunks = chunks;
         /* Compute range */
         if(chunks.size() == 0) {
@@ -423,6 +435,7 @@ public class NewMapChunkCache implements MapChunkCache {
         }
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
+        snapbiomes = new Biome[x_dim * (z_max-z_min+1)][];
     }
 
     public int loadChunks(int max_to_load) {
@@ -430,6 +443,10 @@ public class NewMapChunkCache implements MapChunkCache {
         int cnt = 0;
         if(iterator == null)
             iterator = chunks.listIterator();
+
+        if(checkTickList() == false) { /* Tick processing is behind? */
+            max_to_load = 1;
+        }
         
         DynmapPlugin.setIgnoreChunkLoads(true);
         //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
@@ -492,10 +509,6 @@ public class NewMapChunkCache implements MapChunkCache {
                     else
                         ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
                     if(ss != null) {
-                        if((!biomefixtested) && biome) /* Test for biome fix */
-                            testIfBiomeFixNeeded(w, ss);
-                        if(biomefixneeded && biome)  /* If needed, apply it */
-                            doBiomeFix(w, ss);
                         MapManager.mapman.sscache.putSnapshot(w.getName(), chunk.x, chunk.z, ss, blockdata, biome, biomeraw, highesty);
                     }
                 }
@@ -559,42 +572,6 @@ public class NewMapChunkCache implements MapChunkCache {
         total_loadtime += System.nanoTime() - t0;
 
         return cnt;
-    }
-    /**
-     * Test if biome fix needed, using loaded snapshot
-     */
-    private boolean testIfBiomeFixNeeded(World w, ChunkSnapshot ss) {
-        if(biomefixtested == false) {
-            biomefixtested = true;
-            for(int i = 0; (!biomefixneeded) && (i < 16); i++) {
-                for(int j = 0; j < 16; j++) {
-                    if(w.getBiome((ss.getX()<<4)+i, (ss.getZ()<<4)+j) != ss.getBiome(i, j)) {   /* Mismatch? */
-                        biomefixneeded = true;
-                        Log.info("Biome Snapshot fix active");
-                        break;
-                    }
-                }
-            }
-        }
-        return biomefixneeded;
-    }
-    /**
-     * Use biome fix to patch snapshot data
-     */
-    private void doBiomeFix(World w, ChunkSnapshot ss) {
-        if(biomefixneeded && canusebiomefix) {
-            try {
-                Object wh = getworldhandle.invoke(w);   /* World.getHandle() */
-                Object wcm = getworldchunkmgr.invoke(wh);   /* CraftWorld.getWorldChunkManager() */
-                Object biomefield = chunkbiome.get(ss); /* Get ss.biome */
-                if(biomefield != null) {
-                    getbiomedata.invoke(wcm, biomefield, (int)(ss.getX()<<4), (int)(ss.getZ()<<4), 16, 16); /* Get biome data */
-                }
-            } catch (InvocationTargetException itx) {
-            } catch (IllegalArgumentException e) {
-            } catch (IllegalAccessException e) {
-            }
-        }
     }
     /**
      * Test if done loading
@@ -689,7 +666,6 @@ public class NewMapChunkCache implements MapChunkCache {
             Log.severe("Cannot setAutoGenerateVisibleRanges() without visible ranges defined");
             return;
         }
-        this.generateopt = generateopt;
         this.do_generate = (generateopt != DynmapWorld.AutoGenerateOption.NONE);
         this.do_save = (generateopt == DynmapWorld.AutoGenerateOption.PERMANENT);
     }
@@ -766,5 +742,24 @@ public class NewMapChunkCache implements MapChunkCache {
     @Override
     public long getExceptionCount() {
         return exceptions;
+    }
+    
+    private boolean checkTickList() {
+        boolean isok = true;
+        if((ourticklist != null) && (processticklist != null)) {
+            int cnt = 0;
+            while((cnt < MAX_PROCESSTICKS) && (ourticklist.size() > MAX_TICKLIST)) {
+                try {
+                    processticklist.invoke(craftworld, true);
+                } catch (Exception x) {
+                }
+                cnt++;
+                MapManager.mapman.incExtraTickList();
+            }
+            if(cnt >= MAX_PROCESSTICKS) {   /* If still behind, delay processing */
+                isok = false;
+            }
+        }
+        return isok;
     }
 }

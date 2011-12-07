@@ -1,6 +1,7 @@
 package org.dynmap;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -70,7 +71,8 @@ public class MapManager {
     AtomicInteger chunks_attempted = new AtomicInteger(0);
     AtomicLong total_loadtime_ns = new AtomicLong(0L);
     AtomicLong total_exceptions = new AtomicLong(0L);
-
+    AtomicInteger ticklistcalls = new AtomicInteger(0);
+    
     /* Tile hash manager */
     public TileHashManager hashman;
     /* lock for our data structures */
@@ -361,14 +363,12 @@ public class MapManager {
                     if(map_index >= 0) { /* Finished a map? */
                         double msecpertile = (double)timeaccum / (double)((rendercnt>0)?rendercnt:1)/(double)activemapcnt;
                         double rendtime = total_render_ns.doubleValue() * 0.000001 / rendercalls.get();
-                        if(activemapcnt > 1) 
-                            sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
-                               world.world.getName() + "' completed - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile, "
-                               + rendtime +" msec per render)");
+                        if(activemapcnt > 1)
+                            sendMessage(String.format("%s of maps [%s] of '%s' completed - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
+                                    rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
                         else
-                            sendMessage(rendertype + " of map '" + activemaps + "' of '" +
-                                 world.world.getName() + "' completed - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile. "
-                                 + rendtime +" msec per render)");
+                            sendMessage(String.format("%s of map '%s' of '%s' completed - %d tiles rendered (%.2f msec/map-tile, %.2f msec per render)",
+                                    rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
 
                     }                	
                     found.clear();
@@ -584,13 +584,11 @@ public class MapManager {
                             double rendtime = total_render_ns.doubleValue() * 0.000001 / rendercalls.get();
                             double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemapcnt;
                             if(activemapcnt > 1) 
-                                sendMessage(rendertype + " of maps [" + activemaps + "] of '" +
-                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered each (" + String.format("%.2f", msecpertile) + " msec/map-tile, "
-                                               + rendtime +" msec per render)");
+                                sendMessage(String.format("%s of maps [%s] of '%s' in progress - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
+                                        rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
                             else
-                                sendMessage(rendertype + " of map '" + activemaps + "' of '" +
-                                               w.getName() + "' in progress - " + rendercnt + " tiles rendered (" + String.format("%.2f", msecpertile) + " msec/tile. "
-                                               + rendtime +" msec per render)");
+                                sendMessage(String.format("%s of map '%s' of '%s' in progress - %d tiles rendered (%.2f msec/tile, %.2f msec per render)",
+                                        rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
                         }
                     }
                 }
@@ -1161,7 +1159,7 @@ public class MapManager {
         		return null;
         	}
             if(delay)
-                try { Thread.sleep(50); } catch (InterruptedException ix) {}
+                try { Thread.sleep(25); } catch (InterruptedException ix) {}
     	}
         return c;
     }
@@ -1198,36 +1196,37 @@ public class MapManager {
                 if((prefix != null) && !k.startsWith(prefix))
                     continue;
                 MapStats ms = mapstats.get(k);
-                sender.sendMessage("  " + k + ": processed=" + ms.loggedcnt + ", rendered=" + ms.renderedcnt + 
-                               ", updated=" + ms.updatedcnt + ", transparent=" + ms.transparentcnt);
+                sender.sendMessage(String.format("  %s: processed=%d, rendered=%d, updated=%d, transparent=%d",
+                        k, ms.loggedcnt, ms.renderedcnt, ms.updatedcnt, ms.transparentcnt));
                 tot.loggedcnt += ms.loggedcnt;
                 tot.renderedcnt += ms.renderedcnt;
                 tot.updatedcnt += ms.updatedcnt;
                 tot.transparentcnt += ms.transparentcnt;
             }
         }
-        sender.sendMessage("  TOTALS: processed=" + tot.loggedcnt + ", rendered=" + tot.renderedcnt + 
-                           ", updated=" + tot.updatedcnt + ", transparent=" + tot.transparentcnt);
-        sender.sendMessage("  Triggered update queue size: " + tileQueue.size());
+        sender.sendMessage(String.format("  TOTALS: processed=%d, rendered=%d, updated=%d, transparent=%d",
+                tot.loggedcnt, tot.renderedcnt, tot.updatedcnt, tot.transparentcnt));
+        sender.sendMessage(String.format("  Triggered update queue size: %d", tileQueue.size()));
         String act = "";
         for(String wn : active_renders.keySet())
         	act += wn + " ";
-        sender.sendMessage("  Active render jobs: " + act);
+        sender.sendMessage(String.format("  Active render jobs: %s", act));
         /* Chunk load stats */
         sender.sendMessage("Chunk Loading Statistics:");
-        sender.sendMessage("  Cache hit rate: " + sscache.getHitRate() + "%");
+        sender.sendMessage(String.format("  Cache hit rate: %.2f%%", sscache.getHitRate()));
         int setcnt = chunk_caches_attempted.get();
-        sender.sendMessage("  Chunk sets: created=" + chunk_caches_created.get() + ", attempted=" + chunk_caches_attempted.get());
+        sender.sendMessage(String.format("  Chunk sets: created=%d, attempted=%d", chunk_caches_created.get(), chunk_caches_attempted.get()));
         int readcnt = chunks_read.get();
-        sender.sendMessage("  Chunk: loaded=" + readcnt + ", attempted=" + chunks_attempted.get());
+        sender.sendMessage(String.format("  Chunk: loaded=%d, attempted=%d", readcnt, chunks_attempted.get()));
         double ns = total_loadtime_ns.doubleValue() * 0.000001;    /* Convert to milliseconds */
         double chunkloadns = total_chunk_cache_loadtime_ns.doubleValue() * 0.000001;
         if(readcnt == 0) readcnt = 1;
         if(setcnt == 0) setcnt = 1;
-        sender.sendMessage("  Chunk load times: " + ns + " msec (" + (ns / readcnt) + " msec/chunk)");
-        sender.sendMessage("  Chunk set load times: " + chunkloadns + " msec (" + (chunkloadns / setcnt) + " msec/set)");
-        sender.sendMessage("  Chunk set delay times: " + (chunkloadns-ns) + " msec (" + ((chunkloadns-ns) / setcnt) + " msec/set)");
-        sender.sendMessage("  Chunk set exceptions: " + total_exceptions.get());
+        sender.sendMessage(String.format("  Chunk load times: %.2f msec (%.2f msec/chunk)", ns, (ns / readcnt)));
+        sender.sendMessage(String.format("  Chunk set load times: %.2f msec (%.2f msec/set)", chunkloadns, (chunkloadns / setcnt)));
+        sender.sendMessage(String.format("  Chunk set delay times: %.2f msec (%.2f msec/set)", chunkloadns-ns, ((chunkloadns-ns) / setcnt)));
+        sender.sendMessage(String.format("  Chunk set exceptions: %d", total_exceptions.get()));
+        sender.sendMessage(String.format("  World tick list processing calls: %d", ticklistcalls.get()));
     }
     /**
      * Print trigger statistics command
@@ -1269,6 +1268,7 @@ public class MapManager {
             total_loadtime_ns.set(0);
             total_chunk_cache_loadtime_ns.set(0);
             total_exceptions.set(0);
+            ticklistcalls.set(0);
         }
         sscache.resetStats();
         sender.sendMessage("Tile Render Statistics reset");
@@ -1339,4 +1339,9 @@ public class MapManager {
     boolean getPauseUpdateRenders() {
         return pauseupdaterenders;
     }
+    
+    public void incExtraTickList() {
+        ticklistcalls.incrementAndGet();
+    }
+
 }
