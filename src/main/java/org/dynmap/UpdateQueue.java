@@ -7,65 +7,65 @@ import java.util.ListIterator;
 
 public class UpdateQueue {
     public Object lock = new Object();
-    private LinkedList<Update> updateQueue = new LinkedList<Update>();
+    private LinkedList<Client.Update> updateQueue = new LinkedList<Client.Update>();
 
-    private static final int maxUpdateAge = 120000;
+    private static final long maxUpdateAge = 120000;
+    private static final long ageOutPeriod = 5000;
+    
+    private long lastageout = 0;
 
-    public void pushUpdate(Object obj) {
+    private void doAgeOut(long now) {
+        /* If we're due */
+        if((now < lastageout) || (now > (lastageout + ageOutPeriod))) {
+            lastageout = now;
+            long deadline = now - maxUpdateAge;
+            ListIterator<Client.Update> i = updateQueue.listIterator(0);
+            while (i.hasNext()) {
+                Client.Update u = i.next();
+                if (u.timestamp < deadline)
+                    i.remove();
+                else
+                    break;
+            }
+        }
+    }
+    
+    public void pushUpdate(Client.Update obj) {
         synchronized (lock) {
             /* Do inside lock - prevent delay between time and actual work */
             long now = System.currentTimeMillis();
-            long deadline = now - maxUpdateAge;
-            ListIterator<Update> i = updateQueue.listIterator(0);
-            while (i.hasNext()) {
-                Update u = i.next();
-                if (u.time < deadline || u.obj == obj)
-                    i.remove();
-            }
-            updateQueue.addLast(new Update(now, obj));
+            doAgeOut(now);  /* Consider age out */
+            updateQueue.addLast(obj);
         }
     }
 
-    private ArrayList<Object> tmpupdates = new ArrayList<Object>();
+    private ArrayList<Client.Update> tmpupdates = new ArrayList<Client.Update>();
 
-    public Object[] getUpdatedObjects(long since) {
-        Object[] updates;
+    public Client.Update[] getUpdatedObjects(long since) {
+        Client.Update[] updates;
         synchronized (lock) {
             long now = System.currentTimeMillis();
-            long deadline = now - maxUpdateAge;
+            doAgeOut(now);  /* Consider age out */
+            
             tmpupdates.clear();
-            Iterator<Update> it = updateQueue.descendingIterator();
+            Iterator<Client.Update> it = updateQueue.descendingIterator();
             while (it.hasNext()) {
-                Update u = it.next();
-                if (u.time >= since) {
+                Client.Update u = it.next();
+                if (u.timestamp >= since) {
                     // Tile is new.
-                    tmpupdates.add(u.obj);
-                } else if (u.time < deadline) {
-                    // Tile is too old, removing this one (will eventually decrease).
-                    it.remove();
-                    break;
-                } else {
-                    // Tile is old, but not old enough for removal.
+                    tmpupdates.add(u);
+                }
+                else {
                     break;
                 }
             }
 
             // Reverse output.
-            updates = new Object[tmpupdates.size()];
+            updates = new Client.Update[tmpupdates.size()];
             for (int i = 0; i < updates.length; i++) {
                 updates[i] = tmpupdates.get(updates.length-1-i);
             }
         }
         return updates;
-    }
-
-    public static class Update {
-        public long time;
-        public Object obj;
-
-        public Update(long time, Object obj) {
-            this.time = time;
-            this.obj = obj;
-        }
     }
 }

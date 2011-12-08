@@ -1078,30 +1078,30 @@ public class MapManager {
         return new File(worldTileDirectory, tile.getFilename());
     }
 
-    public void pushUpdate(Object update) {
-        for(DynmapWorld world : getWorlds()) {
-            world.updates.pushUpdate(update);
+    public void pushUpdate(Client.Update update) {
+        int sz = worlds.size();
+        for(int i = 0; i < sz; i++) {
+            worlds.get(i).updates.pushUpdate(update);
         }
     }
 
-    public void pushUpdate(World world, Object update) {
+    public void pushUpdate(World world, Client.Update update) {
         pushUpdate(world.getName(), update);
     }
 
-    public void pushUpdate(String worldName, Object update) {
+    public void pushUpdate(String worldName, Client.Update update) {
         DynmapWorld world = getWorld(worldName);
         if(world != null)
             world.updates.pushUpdate(update);
     }
 
-    public Object[] getWorldUpdates(String worldName, long since) {
+    public Client.Update[] getWorldUpdates(String worldName, long since) {
         DynmapWorld world = getWorld(worldName);
         if (world == null)
-            return new Object[0];
+            return new Client.Update[0];
         return world.updates.getUpdatedObjects(since);
     }
 
-    private static boolean use_legacy = false;
     /**
      * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
      */
