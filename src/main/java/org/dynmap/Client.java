@@ -39,6 +39,18 @@ public class Client {
             this.account = playeraccount;
             this.channel = channel;
         }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof ChatMessage) {
+                ChatMessage m = (ChatMessage)o;
+                return m.source.equals(source) && m.playerName.equals(playerName) && m.message.equals(message);
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return source.hashCode() ^ playerName.hashCode() ^ message.hashCode();
+        }
     }
 
     public static class PlayerJoinMessage extends Update {
@@ -48,6 +60,18 @@ public class Client {
         public PlayerJoinMessage(String playerName, String playeraccount) {
             this.playerName = ChatColor.stripColor(playerName);
             this.account = playeraccount;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof PlayerJoinMessage) {
+                PlayerJoinMessage m = (PlayerJoinMessage)o;
+                return m.playerName.equals(playerName);
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return playerName.hashCode();
         }
     }
 
@@ -59,6 +83,18 @@ public class Client {
             this.playerName = ChatColor.stripColor(playerName);
             this.account = playeraccount;
         }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof PlayerQuitMessage) {
+                PlayerQuitMessage m = (PlayerQuitMessage)o;
+                return m.playerName.equals(playerName);
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return playerName.hashCode();
+        }
     }
 
     public static class Tile extends Update {
@@ -68,6 +104,18 @@ public class Client {
         public Tile(String name) {
             this.name = name;
         }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof Tile) {
+                Tile m = (Tile)o;
+                return m.name.equals(name);
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return name.hashCode();
+        }
     }
 
     public static class DayNight extends Update {
@@ -76,6 +124,17 @@ public class Client {
 
         public DayNight(boolean isday) {
             this.isday = isday;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof DayNight) {
+                return true;
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return 12345;
         }
     }
 

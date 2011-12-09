@@ -37,6 +37,7 @@ import org.dynmap.Event;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.Client.ComponentMessage;
+import org.dynmap.Client.PlayerJoinMessage;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
@@ -104,6 +105,19 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             else
                 msg = "markerupdated";
         }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof MarkerUpdated) {
+                MarkerUpdated m = (MarkerUpdated)o;
+                return m.id.equals(id) && m.set.equals(set);
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return id.hashCode() ^ set.hashCode();
+        }
+
     }
 
     public static class AreaMarkerUpdated extends MarkerComponentMessage {
@@ -146,6 +160,18 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             else
                 msg = "areaupdated";
         }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof AreaMarkerUpdated) {
+                AreaMarkerUpdated m = (AreaMarkerUpdated)o;
+                return m.id.equals(id) && m.set.equals(set);
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return id.hashCode() ^ set.hashCode();
+        }
     }
 
     public static class MarkerSetUpdated extends MarkerComponentMessage {
@@ -159,6 +185,18 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 msg = "setdeleted";
             else
                 msg = "setupdated";
+        }
+        @Override
+        public boolean equals(Object o) {
+            if(o instanceof MarkerSetUpdated) {
+                MarkerSetUpdated m = (MarkerSetUpdated)o;
+                return m.id.equals(id);
+            }
+            return false;
+        }
+        @Override
+        public int hashCode() {
+            return id.hashCode();
         }
     }
     
