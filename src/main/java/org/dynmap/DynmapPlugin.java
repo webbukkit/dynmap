@@ -665,8 +665,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             @Override
             public void onWorldLoad(WorldLoadEvent event) {
-                mapManager.activateWorld(event.getWorld());
                 updateConfigHashcode();
+                mapManager.activateWorld(event.getWorld());
             }
         };
 

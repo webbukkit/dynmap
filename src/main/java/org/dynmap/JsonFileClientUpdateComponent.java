@@ -30,6 +30,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 
     private HashMap<String,String> useralias = new HashMap<String,String>();
     private int aliasindex = 1;
+    private long last_confighash;
     
     private Charset cs_utf8 = Charset.forName("UTF-8");
     public JsonFileClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
@@ -41,6 +42,8 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             @Override
             public void run() {
                 currentTimestamp = System.currentTimeMillis();
+                if(last_confighash != plugin.getConfigHashcode())
+                    writeConfiguration();
                 writeUpdates();
                 if (allowwebchat) {
                     handleWebChat();
@@ -89,6 +92,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         plugin.events.trigger("buildclientconfiguration", clientConfiguration);
         outputFile = getStandaloneFile("dynmap_config.json");
         outputTempFile = getStandaloneFile("dynmap_config.json.new");
+        last_confighash = plugin.getConfigHashcode();
         
         int retrycnt = 0;
         boolean done = false;
