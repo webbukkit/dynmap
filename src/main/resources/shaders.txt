@@ -58,3 +58,19 @@ shaders:
     name: stdtexture-nobiome
     texturepack: standard
     biomeshaded: false
+    
+  # Topological map shader    
+  - class: org.dynmap.hdmap.TopoHDShader
+    name: topo
+    color127: "#FFFFFF"
+    color111: "#8B4513"
+    color95: "#D2B48C"
+    color79: "#FFFF00"
+    color63: "#008000"
+    color47: "#228B22"
+    color31: "#104010"
+    color15: "#6B8E23"
+    color0: "#696969"
+    linecolor: "#000000"
+    watercolor: "#0000FF"
+    

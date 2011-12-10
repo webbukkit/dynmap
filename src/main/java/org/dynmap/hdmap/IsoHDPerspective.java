@@ -1019,11 +1019,13 @@ public class IsoHDPerspective implements HDPerspective {
         Vector3D corners[] = new Vector3D[8];
         int[] chunk_x = new int[8];
         int[] chunk_z = new int[8];
+        int dx = -1, dy = -1;
         for(int x = t.tx, idx = 0; x <= (t.tx+1); x++) {
+            dy = -1;
             for(int y = t.ty; y <= (t.ty+1); y++) {
                 for(int z = 0; z <= 1; z++) {
                     corners[idx] = new Vector3D();
-                    corners[idx].x = x*tileWidth; corners[idx].y = y*tileHeight; corners[idx].z = z*128;
+                    corners[idx].x = x*tileWidth + dx; corners[idx].y = y*tileHeight + dy; corners[idx].z = z*128;
                     map_to_world.transform(corners[idx]);
                     /* Compute chunk coordinates of corner */
                     chunk_x[idx] = (int)Math.floor(corners[idx].x / 16);
@@ -1035,7 +1037,9 @@ public class IsoHDPerspective implements HDPerspective {
                     if(max_chunk_z < chunk_z[idx]) max_chunk_z = chunk_z[idx];
                     idx++;
                 }
+                dy = 1;
             }
+            dx = 1;
         }
         /* Make rectangles of X-Z projection of each side of the tile volume, 0 = top, 1 = bottom, 2 = left, 3 = right,
          * 4 = upper, 5 = lower */
