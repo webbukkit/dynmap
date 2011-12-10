@@ -23,6 +23,7 @@ public class AsynchronousQueue<T> {
         this.dequeueTime = dequeueTime;
         this.accelDequeueTime = accelDequeueTime;
         this.accelDequeueThresh = accelDequeueThresh;
+        if(pendinglimit < 1) pendinglimit = 1;
         this.pendinglimit = pendinglimit;
     }
 

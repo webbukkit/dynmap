@@ -683,7 +683,8 @@ public class MapManager {
             }, 
             (int) (configuration.getDouble("renderinterval", 0.5) * 1000),
             configuration.getInteger("renderacceleratethreshold", 30),
-            (int)(configuration.getDouble("renderaccelerateinterval", 0.2) * 1000), (Runtime.getRuntime().availableProcessors()+1)/2);
+            (int)(configuration.getDouble("renderaccelerateinterval", 0.2) * 1000), 
+            configuration.getInteger("tiles-rendered-at-once", (Runtime.getRuntime().availableProcessors()+1)/2));
 
         /* On dedicated thread, so default to no delays */
         timeslice_int = (long)(configuration.getDouble("timesliceinterval", 0.0) * 1000);

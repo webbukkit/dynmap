@@ -130,6 +130,9 @@ renderacceleratethreshold: 60
 # How often to render tiles when backlog is above renderacceleratethreshold
 renderaccelerateinterval: 0.2
 
+# How many update tiles to work on at once (if not defined, default is 1/2 the number of cores)
+tiles-rendered-at-once: 2
+
 # Save and restore pending tile renders - prevents their loss on server shutdown or /reload
 saverestorepending: true
 
