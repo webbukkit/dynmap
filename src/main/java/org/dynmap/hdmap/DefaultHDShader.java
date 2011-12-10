@@ -117,8 +117,8 @@ public class DefaultHDShader implements HDShader {
          * Reset renderer state for new ray
          */
         public void reset(HDPerspectiveState ps) {
-            for(Color c: color) 
-                c.setTransparent();
+            for(int i = 0; i < color.length; i++) 
+                color[i].setTransparent();
             pixelodd = (ps.getPixelX() & 0x3) + (ps.getPixelY()<<1);
         }
         
@@ -169,8 +169,8 @@ public class DefaultHDShader implements HDShader {
                     lighting.applyLighting(ps, this, c, tmpcolor);
                     /* If we got alpha from subblock model, use it instead */
                     if(subalpha >= 0) {
-                        for(Color clr : tmpcolor)
-                           clr.setAlpha(Math.max(subalpha,clr.getAlpha()));
+                        for(int j = 0; j < tmpcolor.length; j++)
+                           tmpcolor[j].setAlpha(Math.max(subalpha,tmpcolor[j].getAlpha()));
                     }
                     /* Blend color with accumulated color (weighted by alpha) */
                     if(!transparency) {  /* No transparency support */

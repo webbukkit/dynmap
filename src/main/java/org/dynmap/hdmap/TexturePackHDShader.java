@@ -123,8 +123,8 @@ public class TexturePackHDShader implements HDShader {
          * Reset renderer state for new ray
          */
         public void reset(HDPerspectiveState ps) {
-            for(Color c: color) 
-                c.setTransparent();
+            for(int i = 0; i < color.length; i++)
+                color[i].setTransparent();
             lastblkid = 0;
         }
         

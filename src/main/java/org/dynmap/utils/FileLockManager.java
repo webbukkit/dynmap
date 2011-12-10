@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.awt.image.BufferedImage;
 import java.awt.image.DirectColorModel;
 import java.awt.image.WritableRaster;
@@ -141,7 +142,7 @@ public class FileLockManager {
     }
     private static final int MAX_WRITE_RETRIES = 6;
     
-    private static ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private static LinkedList<ByteArrayOutputStream> baoslist = new LinkedList<ByteArrayOutputStream>();
     private static Object baos_lock = new Object();
     /**
      * Wrapper for IOImage.write - implements retries for busy files
@@ -150,45 +151,55 @@ public class FileLockManager {
         int retrycnt = 0;
         boolean done = false;
         byte[] rslt;
+        ByteArrayOutputStream baos;
         synchronized(baos_lock) {
-            baos.reset();
-            ImageIO.setUseCache(false); /* Don't use file cache - too small to be worth it */
-            if(fmt.getFileExt().equals("jpg")) {
-                WritableRaster raster = img.getRaster();
-                WritableRaster newRaster = raster.createWritableChild(0, 0, img.getWidth(),
-                          img.getHeight(), 0, 0, new int[] {0, 1, 2});
-                DirectColorModel cm = (DirectColorModel)img.getColorModel();
-                DirectColorModel newCM = new DirectColorModel(cm.getPixelSize(),
-                cm.getRedMask(), cm.getGreenMask(), cm.getBlueMask());
-                // now create the new buffer that is used ot write the image:
-                BufferedImage rgbBuffer = new BufferedImage(newCM, newRaster, false, null);
-                
-                // Find a jpeg writer
-                ImageWriter writer = null;
-                Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
-                if (iter.hasNext()) {
-                    writer = (ImageWriter)iter.next();
-                }
-                if(writer == null) {
-                    Log.severe("No JPEG ENCODER - Java VM does not support JPEG encoding");
-                    return;
-                }
-                ImageWriteParam iwp = writer.getDefaultWriteParam();
-                iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                iwp.setCompressionQuality(fmt.getQuality());
-
-                ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
-                writer.setOutput(ios);
-
-                writer.write(null, new IIOImage(rgbBuffer, null, null), iwp);
-                writer.dispose();
-
-                rgbBuffer.flush();
+            if(baoslist.isEmpty()) {
+                baos = new ByteArrayOutputStream();
             }
             else {
-                ImageIO.write(img, fmt.getFileExt(), baos); /* Write to byte array stream - prevent bogus I/O errors */
+                baos = baoslist.removeFirst();
+                baos.reset();
             }
-            rslt = baos.toByteArray();
+        }
+        ImageIO.setUseCache(false); /* Don't use file cache - too small to be worth it */
+        if(fmt.getFileExt().equals("jpg")) {
+            WritableRaster raster = img.getRaster();
+            WritableRaster newRaster = raster.createWritableChild(0, 0, img.getWidth(),
+                      img.getHeight(), 0, 0, new int[] {0, 1, 2});
+            DirectColorModel cm = (DirectColorModel)img.getColorModel();
+            DirectColorModel newCM = new DirectColorModel(cm.getPixelSize(),
+                    cm.getRedMask(), cm.getGreenMask(), cm.getBlueMask());
+            // now create the new buffer that is used ot write the image:
+            BufferedImage rgbBuffer = new BufferedImage(newCM, newRaster, false, null);
+                
+            // Find a jpeg writer
+            ImageWriter writer = null;
+            Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
+            if (iter.hasNext()) {
+                writer = (ImageWriter)iter.next();
+            }
+            if(writer == null) {
+                Log.severe("No JPEG ENCODER - Java VM does not support JPEG encoding");
+                return;
+            }
+            ImageWriteParam iwp = writer.getDefaultWriteParam();
+            iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            iwp.setCompressionQuality(fmt.getQuality());
+
+            ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+            writer.setOutput(ios);
+
+            writer.write(null, new IIOImage(rgbBuffer, null, null), iwp);
+            writer.dispose();
+
+            rgbBuffer.flush();
+        }
+        else {
+            ImageIO.write(img, fmt.getFileExt(), baos); /* Write to byte array stream - prevent bogus I/O errors */
+        }
+        rslt = baos.toByteArray();
+        synchronized(baos_lock) {
+            baoslist.addFirst(baos);
         }
         while(!done) {
             RandomAccessFile f = null;

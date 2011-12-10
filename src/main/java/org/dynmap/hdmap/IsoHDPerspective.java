@@ -145,7 +145,8 @@ public class IsoHDPerspective implements HDPerspective {
     		BlockStep [] steps = { BlockStep.Y_PLUS, BlockStep.X_MINUS, BlockStep.X_PLUS, 
     				BlockStep.Z_MINUS, BlockStep.Z_PLUS };
         	emitlevel = skylevel = 0;
-        	for(BlockStep s : steps) {
+        	for(int i = 0; i < steps.length; i++) {
+        	    BlockStep s = steps[i];
         		mapiter.stepPosition(s);
         		int v = mapiter.getBlockEmittedLight();
         		if(v > emitlevel) emitlevel = v;
@@ -448,7 +449,8 @@ public class IsoHDPerspective implements HDPerspective {
                 mapiter.getBlockTypeIDAt(BlockStep.X_MINUS) };         /* To north */
             int flags = 0;
             for(int i = 0; i < 4; i++)
-                if(ids[i] == REDSTONE_BLKTYPEID) flags |= (1<<i);
+                if(ids[i] == REDSTONE_BLKTYPEID)
+                    flags |= (1<<i);
             switch(flags) {
                 case 0: /* Nothing nearby */
                 case 15: /* NSEW */
@@ -517,8 +519,8 @@ public class IsoHDPerspective implements HDPerspective {
             return blockdata;
         }
         private final boolean containsID(int id, int[] linkids) {
-            for(int lid: linkids)
-                if(id == lid)
+            for(int i = 0; i < linkids.length; i++)
+                if(id == linkids[i])
                     return true;
             return false;
         }
@@ -640,16 +642,8 @@ public class IsoHDPerspective implements HDPerspective {
         		if(visit_block(mapiter, shaderstate, shaderdone)) {
                     return;
                 }
-                /* If X step is next best */
-                if((t_next_x <= t_next_y) && (t_next_x <= t_next_z)) {
-                    x += x_inc;
-                    t = t_next_x;
-                    t_next_x += dt_dx;
-                    laststep = stepx;
-                    mapiter.stepPosition(laststep);
-                }
                 /* If Y step is next best */
-                else if((t_next_y <= t_next_x) && (t_next_y <= t_next_z)) {
+                if((t_next_y <= t_next_x) && (t_next_y <= t_next_z)) {
                     y += y_inc;
                     t = t_next_y;
                     t_next_y += dt_dy;
@@ -657,6 +651,14 @@ public class IsoHDPerspective implements HDPerspective {
                     mapiter.stepPosition(laststep);
                     /* If outside 0-127 range */
                     if((y & (~0x7F)) != 0) return;
+                }
+                /* If X step is next best */
+                else if((t_next_x <= t_next_y) && (t_next_x <= t_next_z)) {
+                    x += x_inc;
+                    t = t_next_x;
+                    t_next_x += dt_dx;
+                    laststep = stepx;
+                    mapiter.stepPosition(laststep);
                 }
                 /* Else, Z step is next best */
                 else {
