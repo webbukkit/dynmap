@@ -78,7 +78,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			playerAccount) {
 			getMinecraftHead(playerAccount, 16, function(head) {
 				messageRow.icon = $(head)
-					.addClass('playerIcon')
+					.addClass('playerMessageIcon')
 					.appendTo(playerIconContainer);
 			});
 		}
