@@ -242,11 +242,11 @@ showplayerfacesinmenu: true
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
-# webprefix and websuffix support using '&color;' as escape code for color code (deprecated: use webmsgformat)
-#webprefix: "&color;2[WEB] "
-#websuffix: "&color;f"
 # format for messages from web: %playername% substitutes sender ID (typically IP), %message% includes text
 webmsgformat: "&color;2[WEB] %playername%: &color;f%message%"
+
+# Control whether layer control is presented on the UI (default is true)
+showlayercontrol: true
 
 # Enable checking for banned IPs via banned-ips.txt (internal web server only)
 check-banned-ips: true
@@ -257,7 +257,7 @@ defaultworld: world
 defaultmap: flat
 
 # Option to enable workaround for incorrectly encoded unicode in Cyrillic MC/Bukkit (not good for other code pages)
-#cyrillic-support: true
+cyrillic-support: false
 
 # NOTE: the 'templates' section is now found in the 'templates' directory
 #  Templates CAN still be defined in configuration.txt, as before 0.20

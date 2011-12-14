@@ -25,6 +25,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "sidebaropened", c.getString("sidebaropened", "false"));
                 s(t, "dynmapversion", plugin.getDescription().getVersion());
                 s(t, "cyrillic", c.getBoolean("cyrillic-support", false));
+                s(t, "showlayercontrol", c.getBoolean("showlayercontrol", true));
                 String sn = plugin.getServer().getServerName();
                 if(sn.equals("Unknown Server"))
                     sn = "Minecraft Dynamic Map";

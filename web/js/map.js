@@ -107,6 +107,10 @@ DynMap.prototype = {
 		var urlzoom = me.getIntParameterByName('zoom');
 		if(urlzoom != null)
 			me.options.defaultzoom = urlzoom;
+
+		var showlayerctl = me.getBoolParameterByName('showlayercontrol');
+		if(showlayerctl != null)
+			me.options.showlayercontrol = showlayerctl;
 			
 		if(typeof me.options.defaultzoom == 'undefined')
 			me.options.defaultzoom = 1;
@@ -756,13 +760,23 @@ DynMap.prototype = {
 		}
 		return null;
 	},
+	getBoolParameterByName: function(name) {
+		var v = this.getParameterByName(name);
+		if(v != "") {
+			if(v == "true")
+				return true;
+			else if(v == "false")
+				return false;
+		}
+		return null;
+	},
 	
 	layersetlist: [],
 	
 	addToLayerSelector: function(layer, name, priority) {
 		var me = this;
 
-		if(!me.layercontrol) {		
+		if(me.options.showlayercontrol && (!me.layercontrol)) {		
 			me.layercontrol = new DynmapLayerControl();
 			map.addControl(me.layercontrol);
 		}
@@ -784,11 +798,13 @@ DynMap.prototype = {
 			else
 				return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
 		});
-		for(i = 0; i < me.layersetlist.length; i++) {
-			me.layercontrol.removeLayer(me.layersetlist[i].layer);
-		}
-		for(i = 0; i < me.layersetlist.length; i++) {
-			me.layercontrol.addOverlay(me.layersetlist[i].layer, me.layersetlist[i].name);
+		if(me.options.showlayercontrol) {
+			for(i = 0; i < me.layersetlist.length; i++) {
+				me.layercontrol.removeLayer(me.layersetlist[i].layer);
+			}
+			for(i = 0; i < me.layersetlist.length; i++) {
+				me.layercontrol.addOverlay(me.layersetlist[i].layer, me.layersetlist[i].name);
+			}
 		}
 	},
 	removeFromLayerSelector: function(layer) {
@@ -797,7 +813,8 @@ DynMap.prototype = {
 		for(i = 0; i < me.layersetlist.length; i++) {
 			if(me.layersetlist[i].layer === layer) {
 				me.layersetlist.splice(i, 1);
-				me.layercontrol.removeLayer(layer);
+				if(me.options.showlayercontrol)
+					me.layercontrol.removeLayer(layer);
 				break;
 			}
 		}
