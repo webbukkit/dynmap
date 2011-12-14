@@ -50,6 +50,7 @@ public class MapManager {
     private int progressinterval = 100;
     private boolean saverestorepending = true;
     private boolean hideores = false;
+    private boolean usenormalpriority = false;
     
     private boolean pauseupdaterenders = false;
     private boolean pausefullrenders = false;
@@ -117,7 +118,8 @@ public class MapManager {
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r);
             t.setDaemon(true);
-            t.setPriority(Thread.MIN_PRIORITY);
+            if(!mapman.usenormalpriority)
+                t.setPriority(Thread.MIN_PRIORITY);
             t.setName("Dynmap Render Thread");
             return t;
         }
@@ -658,6 +660,9 @@ public class MapManager {
         /* Get block hiding data, if any */
         hideores = configuration.getBoolean("hideores", false);
 
+        /* See what priority to use */
+        usenormalpriority = configuration.getBoolean("usenormalthreadpriority", false);
+        
         /* Clear color scheme */
         ColorScheme.reset();
         
@@ -684,7 +689,8 @@ public class MapManager {
             (int) (configuration.getDouble("renderinterval", 0.5) * 1000),
             configuration.getInteger("renderacceleratethreshold", 30),
             (int)(configuration.getDouble("renderaccelerateinterval", 0.2) * 1000), 
-            configuration.getInteger("tiles-rendered-at-once", (Runtime.getRuntime().availableProcessors()+1)/2));
+            configuration.getInteger("tiles-rendered-at-once", (Runtime.getRuntime().availableProcessors()+1)/2),
+            usenormalpriority);
 
         /* On dedicated thread, so default to no delays */
         timeslice_int = (long)(configuration.getDouble("timesliceinterval", 0.0) * 1000);

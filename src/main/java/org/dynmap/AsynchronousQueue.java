@@ -17,14 +17,16 @@ public class AsynchronousQueue<T> {
     private int accelDequeueThresh;
     private int pendingcnt;
     private int pendinglimit;
+    private boolean normalprio;
     
-    public AsynchronousQueue(Handler<T> handler, int dequeueTime, int accelDequeueThresh, int accelDequeueTime, int pendinglimit) {
+    public AsynchronousQueue(Handler<T> handler, int dequeueTime, int accelDequeueThresh, int accelDequeueTime, int pendinglimit, boolean normalprio) {
         this.handler = handler;
         this.dequeueTime = dequeueTime;
         this.accelDequeueTime = accelDequeueTime;
         this.accelDequeueThresh = accelDequeueThresh;
         if(pendinglimit < 1) pendinglimit = 1;
         this.pendinglimit = pendinglimit;
+        this.normalprio = normalprio;
     }
 
     public boolean push(T t) {
@@ -83,7 +85,8 @@ public class AsynchronousQueue<T> {
             });
             thread.start();
             try {
-                thread.setPriority(Thread.MIN_PRIORITY);
+                if(!normalprio)
+                    thread.setPriority(Thread.MIN_PRIORITY);
             } catch (SecurityException e) {
                 Log.info("Failed to set minimum priority for worker thread!");
             }

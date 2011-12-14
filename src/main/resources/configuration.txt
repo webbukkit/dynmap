@@ -133,6 +133,11 @@ renderaccelerateinterval: 0.2
 # How many update tiles to work on at once (if not defined, default is 1/2 the number of cores)
 tiles-rendered-at-once: 2
 
+# If true, use normal priority threads for rendering (versus low priority) - this can keep rendering
+# from starving on busy Windows boxes (Linux JVMs pretty much ignore thread priority), but may result
+# in more competition for CPU resources with other processes
+usenormalthreadpriority: true
+
 # Save and restore pending tile renders - prevents their loss on server shutdown or /reload
 saverestorepending: true
 
