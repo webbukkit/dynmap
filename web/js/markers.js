@@ -125,18 +125,19 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			}
 		}
 		area.timestamp = ts;
-		var popup = document.createElement('div');
-		if(area.desc) {
-			$(popup).addClass('AreaPopup').append(area.desc);
+		if(area.label != "") {
+			var popup = document.createElement('div');
+			if(area.desc) {
+				$(popup).addClass('AreaPopup').append(area.desc);
+			}
+			else if(area.markup) {
+				$(popup).addClass('AreaPopup').append(area.label);
+			}
+			else {
+				$(popup).text(area.label);
+			}
+			area.our_area.bindPopup(popup, {});
 		}
-		else if(area.markup) {
-			$(popup).addClass('AreaPopup').append(area.label);
-		}
-		else {
-			$(popup).text(area.label);
-		}		
-		area.our_area.bindPopup(popup, {});
-		
 		set.layergroup.addLayer(area.our_area);
 	}
 
