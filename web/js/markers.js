@@ -78,7 +78,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 					.addClass('markerName' + marker.dim)
 					.append(marker.label));
 			}
-			else
+			else if(marker.label != "")
 				$(div).append($('<span/>')
 					.addClass(configuration.showlabel?'markerName-show':'markerName')
 					.addClass('markerName_' + set.id)
