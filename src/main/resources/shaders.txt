@@ -73,4 +73,22 @@ shaders:
     color0: "#696969"
     linecolor: "#000000"
     watercolor: "#0000FF"
+ 
+  # Alternate topological map shader (thanks to TerraNetworkOrg!)
+  - class: org.dynmap.hdmap.TopoHDShader
+    name: TerraNetworkOrgTopo
+    color127: "#4F2101"
+    color120: "#8B4513" 
+    color108: "#D2B48C"
+    color96: "#C99653"
+    color84: "#CB9C0B"
+    color72: "#B1B62E"
+    color60: "#0F8D0F"
+    color48: "#14703B"
+    color36: "#106343"
+    color24: "#0E5347"
+    color12: "#939393"
+    color0: "#696969"
+    linecolor: "#000000"
+    watercolor: "#1F1FEA"
     
