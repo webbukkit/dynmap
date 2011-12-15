@@ -695,7 +695,8 @@ DynMap.prototype = {
 		$(me).trigger('playerupdated', [ player ]);
 		
 		// Update menuitem.
-		player.menuitem.toggleClass('otherworld', me.world !== location.world);
+		if(me.options.grayplayerswhenhidden)
+			player.menuitem.toggleClass('otherworld', me.world !== location.world);
 		
 		if (player === me.followingPlayer) {
 			// Follow the updated player.

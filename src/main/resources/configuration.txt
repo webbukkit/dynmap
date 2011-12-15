@@ -236,6 +236,9 @@ fullrenderplayerlimit: 0
 
 showplayerfacesinmenu: true
 
+# Control whether players that are hidden or not on current map are grayed out (true=yes)
+grayplayerswhenhidden: true
+
 # Set sidebaropened: 'true' to pin menu sidebar opened permanently, 'pinned' to default the sidebar to pinned, but allow it to unpin
 #sidebaropened: true
 
