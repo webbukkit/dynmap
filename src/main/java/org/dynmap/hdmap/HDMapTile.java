@@ -73,8 +73,8 @@ public class HDMapTile extends MapTile {
         return o.tx == tx && o.ty == ty && (perspective == o.perspective) && (o.getWorld() == getWorld());
     }
 
-    public String getKey() {
-        return getWorld().getName() + "." + perspective.getName();
+    public String getKey(String prefix) {
+        return getWorld().getName() + "." + prefix;
     }
 
     @Override

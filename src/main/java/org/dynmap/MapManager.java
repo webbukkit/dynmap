@@ -371,7 +371,17 @@ public class MapManager {
                         else
                             sendMessage(String.format("%s of map '%s' of '%s' completed - %d tiles rendered (%.2f msec/map-tile, %.2f msec per render)",
                                     rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
-
+                        /* Now, if fullrender, use the render bitmap to purge obsolete tiles */
+                        if(cxmin == Integer.MIN_VALUE) {
+                            if(activemapcnt == 1) {
+                                map.purgeOldTiles(world, rendered);
+                            }
+                            else {
+                                for(MapType mt : map.getMapsSharingRender(world)) {
+                                    mt.purgeOldTiles(world, rendered);
+                                }
+                            }
+                        }
                     }                	
                     found.clear();
                     rendered.clear();
@@ -566,11 +576,9 @@ public class MapManager {
                     total_render_ns.addAndGet(System.nanoTime()-rt0);
                     rendercalls.incrementAndGet();
                     synchronized(lock) {
-//                        found.setFlag(tile.tileOrdinalX(),tile.tileOrdinalY(),false);
                         rendered.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), true);
                         for (MapTile adjTile : map.getAdjecentTiles(tile)) {
-                            if (!found.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY()) && 
-                                !rendered.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY())) {
+                            if (!found.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY())) {
                                 found.setFlag(adjTile.tileOrdinalX(), adjTile.tileOrdinalY(), true);
                                 renderQueue.add(adjTile);
                             }
@@ -578,7 +586,6 @@ public class MapManager {
                     }
                 }
                 synchronized(lock) {
-//                    found.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), false);
                     if(!cache.isEmpty()) {
                         rendercnt++;
                         timeaccum += System.currentTimeMillis() - tstart;
@@ -1173,11 +1180,9 @@ public class MapManager {
     /**
      *  Update map tile statistics
      */
-    public void updateStatistics(MapTile tile, String subtype, boolean rendered, boolean updated, boolean transparent) {
+    public void updateStatistics(MapTile tile, String prefix, boolean rendered, boolean updated, boolean transparent) {
         synchronized(lock) {
-            String k = tile.getKey();
-            if(subtype != null)
-                k += "." + subtype;
+            String k = tile.getKey(prefix);
             MapStats ms = mapstats.get(k);
             if(ms == null) {
                 ms = new MapStats();

@@ -98,8 +98,8 @@ public class KzedMapTile extends MapTile {
         return o.px == px && o.py == py && (o.map == map) && (o.getWorld() == getWorld());
     }
 
-    public String getKey() {
-        return getWorld().getName() + "." + renderer.getPrefix();
+    public String getKey(String prefix) {
+        return getWorld().getName() + "." + prefix;
     }
 
     public String toString() {

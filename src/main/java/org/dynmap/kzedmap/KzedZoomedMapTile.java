@@ -85,8 +85,8 @@ public class KzedZoomedMapTile extends MapTile {
     }
     
 
-    public String getKey() {
-        return getWorld().getName() + ".z" + originalTile.renderer.getPrefix();
+    public String getKey(String prefix) {
+        return getWorld().getName() + ".z" + prefix;
     }
 
     @Override

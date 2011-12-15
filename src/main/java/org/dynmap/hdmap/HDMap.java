@@ -7,16 +7,22 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
+import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapPlugin;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
+import org.dynmap.debug.Debug;
 import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.TileFlags;
 import org.json.simple.JSONObject;
+
+import com.avaje.ebean.text.StringParser;
 
 public class HDMap extends MapType {
 
@@ -269,5 +275,62 @@ public class HDMap extends MapType {
     
     public int getBackgroundARGBNight() {
         return bgcolornight;
+    }
+    
+    private HDMapTile fileToTile(DynmapWorld world, File f) {
+        String n = f.getName();
+        n = n.substring(0, n.lastIndexOf('.'));
+        if(n == null) return null;
+        String[] nt = n.split("_");
+        if(nt.length != 2) return null;
+        int xx, zz;
+        try {
+            xx = Integer.parseInt(nt[0]);
+            zz = Integer.parseInt(nt[1]);
+        } catch (NumberFormatException nfx) {
+            return null;
+        }
+        return new HDMapTile(world, perspective, xx, zz);
+    }
+    
+    public void purgeOldTiles(final DynmapWorld world, final TileFlags rendered) {
+        File basedir = new File(world.worldtilepath, prefix);   /* Get base directory for map */
+        FileCallback cb = new FileCallback() {
+            public void fileFound(File f, File parent, boolean day) {
+                String n = f.getName();
+                if(n.startsWith("z")) { /* If zoom file */
+                    if(n.startsWith("z_")) {    /* First tier of zoom? */
+                        File ff = new File(parent, n.substring(2)); /* Make file for render tier, and drive update */
+                        HDMapTile tile = fileToTile(world, ff); /* Parse it */
+                        if(tile == null) return;
+                        if(rendered.getFlag(tile.tx, tile.ty) || rendered.getFlag(tile.tx+1, tile.ty) ||
+                                rendered.getFlag(tile.tx, tile.ty-1) || rendered.getFlag(tile.tx+1, tile.ty-1))
+                            return;
+                        world.enqueueZoomOutUpdate(ff);
+                    }
+                    return;
+                }
+                HDMapTile tile = fileToTile(world, f);
+                if(tile == null) return;
+
+                if(rendered.getFlag(tile.tx, tile.ty)) {  /* If we rendered this tile, its good */
+                    return;
+                }
+                Debug.debug("clean up " + f.getPath());
+                /* Otherwise, delete tile */
+                f.delete();
+                /* Push updates, clear hash code, and signal zoom tile update */
+                MapManager.mapman.pushUpdate(world.world, 
+                                             new Client.Tile(day?tile.getDayFilename(prefix, getImageFormat()):tile.getFilename(prefix, getImageFormat())));
+                MapManager.mapman.hashman.updateHashCode(tile.getKey(prefix), day?"day":null, tile.tx, tile.ty, -1);
+                world.enqueueZoomOutUpdate(f);
+            }
+                
+        };
+        walkMapTree(basedir, cb, false);
+        if(lighting.isNightAndDayEnabled()) {
+            basedir = new File(world.worldtilepath, prefix+"_day");
+            walkMapTree(basedir, cb, true);
+        }
     }
 }

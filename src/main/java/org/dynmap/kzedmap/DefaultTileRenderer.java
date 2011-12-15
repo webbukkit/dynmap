@@ -273,7 +273,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         int ty = mtile.py/KzedMap.tileHeight;
         FileLockManager.getWriteLock(fname);
         try {
-            if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), null, tx, ty))) {
+            if((!fname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(prefix), null, tx, ty))) {
                 Debug.debug("saving image " + fname.getPath());
                 if(!fname.getParentFile().exists())
                     fname.getParentFile().mkdirs();
@@ -285,14 +285,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
                 }
                 MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getFilename()));
-                hashman.updateHashCode(mtile.getKey(), null, tx, ty, crc);
+                hashman.updateHashCode(mtile.getKey(prefix), null, tx, ty, crc);
                 updated_fname = true;
             }
         } finally {
             FileLockManager.releaseWriteLock(fname);
             DynmapBufferedImage.freeBufferedImage(img);
         }
-        MapManager.mapman.updateStatistics(mtile, null, true, updated_fname, !rendered);
+        MapManager.mapman.updateStatistics(mtile, prefix, true, updated_fname, !rendered);
 
         mtile.file = fname;
 
@@ -303,7 +303,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             crc = hashman.calculateTileHash(img.argb_buf);
             FileLockManager.getWriteLock(dfname);
             try {
-                if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(), "day", tx, ty))) {
+                if((!dfname.exists()) || (crc != hashman.getImageHashCode(mtile.getKey(prefix), "day", tx, ty))) {
                     Debug.debug("saving image " + dfname.getPath());
                     if(!dfname.getParentFile().exists())
                         dfname.getParentFile().mkdirs();
@@ -315,14 +315,14 @@ public class DefaultTileRenderer implements MapTileRenderer {
                         Debug.error("Failed to save image (NullPointerException): " + dfname.getPath(), e);
                     }
                     MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getDayFilename()));
-                    hashman.updateHashCode(mtile.getKey(), "day", tx, ty, crc);
+                    hashman.updateHashCode(mtile.getKey(prefix), "day", tx, ty, crc);
                     updated_dfname = true;
                 }
             } finally {
                 FileLockManager.releaseWriteLock(dfname);
                 DynmapBufferedImage.freeBufferedImage(img_day);
             }
-            MapManager.mapman.updateStatistics(mtile, "day", true, updated_dfname, !rendered);
+            MapManager.mapman.updateStatistics(mtile, prefix+"_day", true, updated_dfname, !rendered);
         }
         
         // Since we've already got the new tile, and we're on an async thread, just

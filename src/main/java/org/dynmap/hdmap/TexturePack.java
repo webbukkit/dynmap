@@ -1048,7 +1048,7 @@ public class TexturePack {
                 rslt.setTransparent();
                 return;
             }
-            /* If warer block, to watercolor tone op */
+            /* If water block, to watercolor tone op */
             if((blkid == 8) || (blkid == 9)) {
                 textop = COLORMOD_WATERTONED;
             }

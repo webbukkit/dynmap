@@ -303,7 +303,7 @@ public class FlatMap extends MapType {
         boolean tile_update = false;
         FileLockManager.getWriteLock(outputFile);
         try {
-            if((!outputFile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), null, t.x, t.y))) {
+            if((!outputFile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(prefix), null, t.x, t.y))) {
                 /* Wrap buffer as buffered image */
                 Debug.debug("saving image " + outputFile.getPath());
                 if(!outputFile.getParentFile().exists())
@@ -316,7 +316,7 @@ public class FlatMap extends MapType {
                     Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
                 }
                 MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
-                hashman.updateHashCode(tile.getKey(), null, t.x, t.y, crc);
+                hashman.updateHashCode(tile.getKey(prefix), null, t.x, t.y, crc);
                 tile.getDynmapWorld().enqueueZoomOutUpdate(outputFile);
                 tile_update = true;
             }
@@ -327,7 +327,7 @@ public class FlatMap extends MapType {
             FileLockManager.releaseWriteLock(outputFile);
             DynmapBufferedImage.freeBufferedImage(im);
         }
-        MapManager.mapman.updateStatistics(tile, null, true, tile_update, !rendered);
+        MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered);
 
         /* If day too, handle it */
         if(night_and_day) {
@@ -335,7 +335,7 @@ public class FlatMap extends MapType {
             crc = hashman.calculateTileHash(argb_buf_day);
             FileLockManager.getWriteLock(dayfile);
             try {
-                if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(), "day", t.x, t.y))) {
+                if((!dayfile.exists()) || (crc != hashman.getImageHashCode(tile.getKey(prefix), "day", t.x, t.y))) {
                     Debug.debug("saving image " + dayfile.getPath());
                     if(!dayfile.getParentFile().exists())
                         dayfile.getParentFile().mkdirs();
@@ -347,7 +347,7 @@ public class FlatMap extends MapType {
                         Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
                     }
                     MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
-                    hashman.updateHashCode(tile.getKey(), "day", t.x, t.y, crc);
+                    hashman.updateHashCode(tile.getKey(prefix), "day", t.x, t.y, crc);
                     tile.getDynmapWorld().enqueueZoomOutUpdate(dayfile);
                     tile_update = true;
                 }
@@ -359,7 +359,7 @@ public class FlatMap extends MapType {
                 FileLockManager.releaseWriteLock(dayfile);
                 DynmapBufferedImage.freeBufferedImage(im_day);
             }
-            MapManager.mapman.updateStatistics(tile, "day", true, tile_update, !rendered);
+            MapManager.mapman.updateStatistics(tile, prefix+"_day", true, tile_update, !rendered);
         }
         
         return rendered;
@@ -574,7 +574,7 @@ public class FlatMap extends MapType {
         }
         
         @Override
-        public String getKey() {
+        public String getKey(String prefix) {
             return world.world.getName() + "." + map.getPrefix();
         }
         

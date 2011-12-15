@@ -1,8 +1,11 @@
 package org.dynmap;
 
+import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.dynmap.utils.TileFlags;
 import org.json.simple.JSONObject;
 
 public abstract class MapType {
@@ -80,5 +83,31 @@ public abstract class MapType {
      * Values correspond to tile X,Y (0), X+step,Y (1), X,Y+step (2), X+step,Y+step (3) 
      */
     public abstract int[] zoomFileStepSequence();
+ 
+    public void purgeOldTiles(DynmapWorld world, TileFlags rendered) { }
+ 
+    public interface FileCallback {
+        public void fileFound(File f, File parent, boolean day);
+    }
     
+    protected void walkMapTree(File root, FileCallback cb, boolean day) {
+        LinkedList<File> dirs = new LinkedList<File>();
+        String ext = "." + getImageFormat().getFileExt();
+        dirs.add(root);
+        while(dirs.isEmpty() == false) {
+            File dir = dirs.pop();
+            String[] lst = dir.list();
+            for(String fn : lst) {
+                if(fn.equals(".") || fn.equals(".."))
+                    continue;
+                File f = new File(dir, fn);
+                if(f.isDirectory()) {   /* If directory, add to list to process */
+                    dirs.add(f);
+                }
+                else if(fn.endsWith(ext)) {  /* Else, if matches suffix */
+                    cb.fileFound(f, dir, day);
+                }
+            }
+        }
+    }
 }

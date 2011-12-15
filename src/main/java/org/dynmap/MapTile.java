@@ -40,7 +40,7 @@ public abstract class MapTile {
     @Override
     public abstract boolean equals(Object obj);
     
-    public abstract String getKey();
+    public abstract String getKey(String prefix);
     
     public abstract boolean isBiomeDataNeeded();
     public abstract boolean isHightestBlockYDataNeeded();
