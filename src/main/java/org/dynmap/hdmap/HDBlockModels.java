@@ -264,11 +264,19 @@ public class HDBlockModels {
                     row = new short[16][];
                     blockmodels[m.blockid] = row; 
                 }
-                short[] smod = null;
-                for(int i = 0; i < 16; i++) {
-                    if((m.databits & (1 << i)) != 0) {
-                        if(smod == null) smod = m.getScaledMap(scale);
-                        row[i] = smod;
+                short[] smod = m.getScaledMap(scale);
+                /* See if scaled model is full block : much faster to not use it if it is */
+                if(smod != null) {
+                    boolean keep = false;
+                    for(int i = 0; (!keep) && (i < smod.length); i++) {
+                        if(smod[i] == 0) keep = true;
+                    }
+                    if(keep) {
+                        for(int i = 0; i < 16; i++) {
+                            if((m.databits & (1 << i)) != 0) {
+                                row[i] = smod;
+                            }
+                        }
                     }
                 }
             }
