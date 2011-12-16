@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChunkSnapshot;
@@ -444,9 +445,7 @@ public class NewMapChunkCache implements MapChunkCache {
         if(iterator == null)
             iterator = chunks.listIterator();
 
-        if(checkTickList() == false) { /* Tick processing is behind? */
-            max_to_load = 1;
-        }
+        checkTickList();
         
         DynmapPlugin.setIgnoreChunkLoads(true);
         //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
@@ -485,6 +484,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
                 continue;
             }
+            long tt0 = 0;
             chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = w.loadChunk(chunk.x, chunk.z, false);
@@ -748,11 +748,13 @@ public class NewMapChunkCache implements MapChunkCache {
         boolean isok = true;
         if((ourticklist != null) && (processticklist != null)) {
             int cnt = 0;
-            while((cnt < MAX_PROCESSTICKS) && (ourticklist.size() > MAX_TICKLIST)) {
+            int ticksize = ourticklist.size();
+            while((cnt < MAX_PROCESSTICKS) && (ticksize > MAX_TICKLIST) && (ourticklist.size() > MAX_TICKLIST)) {
                 try {
                     processticklist.invoke(craftworld, true);
                 } catch (Exception x) {
                 }
+                ticksize -= 1000;
                 cnt++;
                 MapManager.mapman.incExtraTickList();
             }
