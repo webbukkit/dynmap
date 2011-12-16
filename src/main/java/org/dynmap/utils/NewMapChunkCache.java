@@ -35,7 +35,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private static Method processticklist = null;
 
     private static final int MAX_PROCESSTICKS = 20;
-    private static final int MAX_TICKLIST = 1000;
+    private static final int MAX_TICKLIST = 20000;
 
     private World w;
     private Object craftworld;
