@@ -17,6 +17,8 @@ commands:
            /<command> fullrender world:mapname - Render map 'mapname' of world 'world'.
            /<command> radiusrender ## - Render at least ## block radius from your location on all maps.
            /<command> radiusrender ## mapname - Render at least ## block radius from your location on map 'mapname'
+           /<command> radiusrender worldname x z ## - Render at least ## block radius from location x,z on world 'worldname'
+           /<command> radiusrender worldname x z ## mapname - Render at least ## block radius from location x,z on world 'worldname' on map 'mapname'
            /<command> cancelrender - Cancels any active renders on current world
            /<command> cancelrender world - Cancels any active renders of world 'world'
            /<command> stats - Show render statistics.

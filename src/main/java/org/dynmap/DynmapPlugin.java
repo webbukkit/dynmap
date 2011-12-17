@@ -801,23 +801,37 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
             }
             else if(c.equals("radiusrender") && checkPlayerPermission(sender,"radiusrender")) {
-                if (player != null) {
-                    int radius = 0;
-                    String mapname = null;
-                    if(args.length > 1) {
-                        radius = Integer.parseInt(args[1]); /* Parse radius */
-                        if(radius < 0)
-                            radius = 0;
-                        if(args.length > 2)
-                            mapname = args[2];
+                int radius = 0;
+                String mapname = null;
+                Location loc = null;
+                if(args.length == 2) {  /* Just radius */
+                    radius = Integer.parseInt(args[1]); /* Parse radius */
+                    if(radius < 0)
+                        radius = 0;
+                    if(args.length > 2)
+                        mapname = args[2];
+                    if (player != null)
+                        loc = player.getLocation();
+                    else
+                        sender.sendMessage("Command require <world> <x> <z> <radius> if issued from console.");
+                }
+                else if(args.length > 3) {  /* <world> <x> <z> */
+                    DynmapWorld w = mapManager.worldsLookup.get(args[1]);   /* Look up world */
+                    if(w == null) {
+                        sender.sendMessage("World '" + args[1] + "' not defined/loaded");
                     }
-                    Location loc = player.getLocation();
-                    if(loc != null)
-                        mapManager.renderWorldRadius(loc, sender, mapname, radius);
+                    double x = 0, z = 0;
+                    x = Double.parseDouble(args[2]);
+                    z = Double.parseDouble(args[3]);
+                    if(args.length > 4)
+                        radius = Integer.parseInt(args[4]);
+                    if(args.length > 5)
+                        mapname = args[5];
+                    if(w != null)
+                        loc = new Location(w.world, x, 64.0, z);
                 }
-                else {
-                    sender.sendMessage("Command can only be issued by player.");
-                }
+                if(loc != null)
+                    mapManager.renderWorldRadius(loc, sender, mapname, radius);
             } else if (c.equals("hide")) {
                 if (args.length == 1) {
                     if(player != null && checkPlayerPermission(sender,"hide.self")) {
