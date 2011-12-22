@@ -34,7 +34,7 @@ public class Client {
         public String channel;
         public ChatMessage(String source, String channel, String playerName, String message, String playeraccount) {
             this.source = source;
-            this.playerName = ChatColor.stripColor(playerName);
+            this.playerName = Client.stripColor(playerName);
             this.message = ChatColor.stripColor(message);
             this.account = playeraccount;
             this.channel = channel;
@@ -58,7 +58,7 @@ public class Client {
         public String playerName;
         public String account;
         public PlayerJoinMessage(String playerName, String playeraccount) {
-            this.playerName = ChatColor.stripColor(playerName);
+            this.playerName = Client.stripColor(playerName);
             this.account = playeraccount;
         }
         @Override
@@ -80,7 +80,7 @@ public class Client {
         public String playerName;
         public String account;
         public PlayerQuitMessage(String playerName, String playeraccount) {
-            this.playerName = ChatColor.stripColor(playerName);
+            this.playerName = Client.stripColor(playerName);
             this.account = playeraccount;
         }
         @Override
@@ -141,5 +141,22 @@ public class Client {
     public static class ComponentMessage extends Update {
         public String type = "component";
         /* Each subclass must provide 'ctype' string for component 'type' */
+    }
+
+    public static String stripColor(String s) {
+        s = ChatColor.stripColor(s);    /* Strip standard color encoding */
+        /* Handle Essentials nickname encoding too */
+        int idx = 0;
+        while((idx = s.indexOf('&', idx)) >= 0) {
+            char c = s.charAt(idx+1);   /* Get next character */
+            if(c == '&') {  /* Another ampersand */
+                s = s.substring(0, idx) + s.substring(idx+1);
+            }
+            else {
+                s = s.substring(0, idx) + s.substring(idx+2);
+            }
+            idx++;
+        }
+        return s;
     }
 }

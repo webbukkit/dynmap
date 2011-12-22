@@ -51,7 +51,7 @@ public class ClientUpdateComponent extends Component {
             boolean hide = false;
             
             s(jp, "type", "player");
-            s(jp, "name", ChatColor.stripColor(p.getDisplayName()));
+            s(jp, "name", Client.stripColor(p.getDisplayName()));
             s(jp, "account", p.getName());
             if(hideifshadow < 15) {
                 if(pl.getBlock().getLightLevel() <= hideifshadow)
@@ -100,7 +100,7 @@ public class ClientUpdateComponent extends Component {
             for(Player p : hidden) {
                 JSONObject jp = new JSONObject();
                 s(jp, "type", "player");
-                s(jp, "name", ChatColor.stripColor(p.getDisplayName()));
+                s(jp, "name", Client.stripColor(p.getDisplayName()));
                 s(jp, "account", p.getName());
                 s(jp, "world", "-hidden-player-");
                 s(jp, "x", 0.0);
