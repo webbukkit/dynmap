@@ -21,6 +21,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
@@ -1073,6 +1075,61 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
 
+    /*
+     * Add in any missing sections to existing file, using resource
+     */
+    public boolean updateUsingDefaultResource(String resourcename, File deffile, String basenode) {
+        InputStream in = getClass().getResourceAsStream(resourcename);
+        if(in == null) {
+            Log.severe("Unable to find resource - " + resourcename);
+            return false;
+        }
+        if(deffile.canRead() == false) {    /* Doesn't exist? */
+            return createDefaultFileFromResource(resourcename, deffile);
+        }
+        /* Load default from resource */
+        YamlConfiguration def_fc = YamlConfiguration.loadConfiguration(in);
+        /* Load existing from file */
+        YamlConfiguration fc = YamlConfiguration.loadConfiguration(deffile);
+        /* Now, get the list associated with the base node default */
+        List<Map<String,Object>> existing = fc.getMapList(basenode);
+        Set<String> existing_names = new HashSet<String>();
+        /* Make map, indexed by 'name' in map */
+        if(existing != null) {
+            for(Map<String,Object> m : existing) {
+                Object name = m.get("name");
+                if(name instanceof String)
+                    existing_names.add((String)name);
+            }
+        }
+        boolean did_update = false;
+        /* Now, loop through defaults, and see if any are missing */
+        List<Map<String,Object>> defmaps = def_fc.getMapList(basenode);
+        if(defmaps != null) {
+            for(Map<String,Object> m : defmaps) {
+                Object name = m.get("name");
+                if(name instanceof String) {
+                    /* If not an existing one, need to add it */
+                    if(existing_names.contains((String)name) == false) {
+                        existing.add(m);
+                        did_update = true;
+                    }
+                }
+            }
+        }
+        /* If we did update, save existing */
+        if(did_update) {
+            try {
+                fc.set(basenode, existing);
+                fc.save(deffile);
+            } catch (IOException iox) {
+                Log.severe("Error saving migrated file - " + deffile.getPath());
+                return false;
+            }
+            Log.info("Updated file " + deffile.getPath());
+        }
+        return true;
+    }
     
     private BlockListener ourBlockEventHandler = new BlockListener() {
         

@@ -33,7 +33,7 @@ public class HDMapManager {
         Log.verboseinfo("Loading shaders...");
         
         File f = new File(plugin.getDataFolder(), "shaders.txt");
-        if(!plugin.createDefaultFileFromResource("/shaders.txt", f)) {
+        if(!plugin.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
             return;
         }
         org.bukkit.util.config.Configuration bukkitShaderConfig = new org.bukkit.util.config.Configuration(f);
@@ -64,7 +64,7 @@ public class HDMapManager {
     public void loadHDPerspectives(DynmapPlugin plugin) {
         Log.verboseinfo("Loading perspectives...");
         File f = new File(plugin.getDataFolder(), "perspectives.txt");
-        if(!plugin.createDefaultFileFromResource("/perspectives.txt", f)) {
+        if(!plugin.updateUsingDefaultResource("/perspectives.txt", f, "perspectives")) {
             return;
         }
         org.bukkit.util.config.Configuration bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(f);
@@ -92,7 +92,7 @@ public class HDMapManager {
     public void loadHDLightings(DynmapPlugin plugin) {
         Log.verboseinfo("Loading lightings...");
         File f = new File(plugin.getDataFolder(), "lightings.txt");
-        if(!plugin.createDefaultFileFromResource("/lightings.txt", f)) {
+        if(!plugin.updateUsingDefaultResource("/lightings.txt", f, "lightings")) {
             return;
         }
         org.bukkit.util.config.Configuration bukkitLightingsConfig = new org.bukkit.util.config.Configuration(f);
