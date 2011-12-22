@@ -17,11 +17,16 @@ componentconstructors['chat'] = function(dynmap, configuration) {
 			}
 		});
 	});
+	var pname = null;
+	if(configuration.allowurlname) {
+		pname = dynmap.getParameterByName("playername");
+		if(pname == "") pname = null;
+	}
 	
 	if (dynmap.options.allowwebchat) {
 		// Accepts 'sendchat'-events to send chat messages to the server.
 		$(dynmap).bind('sendchat', function(event, message) {
-			var data = '{"name":'+JSON.stringify(ip?ip:"")+',"message":'+JSON.stringify(message)+'}';
+			var data = '{"name":'+JSON.stringify(pname?pname:(ip?ip:""))+',"message":'+JSON.stringify(message)+'}';
 			$.ajax({
 				type: 'POST',
 				url: config.url.sendmessage,

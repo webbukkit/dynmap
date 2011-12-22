@@ -44,6 +44,8 @@ components:
    
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
+    # If true, web UI users can supply name for chat using 'playername' URL parameter.  'trustclientname' must also be set true.
+    allowurlname: false
   #- class: org.dynmap.herochat.HeroWebChatComponent
   #  # Control which HeroChat channel messages from web are directed to 
   #  herochatwebchannel: Global
