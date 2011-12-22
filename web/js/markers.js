@@ -24,7 +24,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$.each(data.sets, function(name, markerset) {
 				var ms = dynmapmarkersets[name];
 				if(!ms) {
-					ms = { id: name, label: markerset.label, hide: markerset.hide, layerprio: markerset.layerprio, markers: {}, areas: {} } ;
+					ms = { id: name, label: markerset.label, hide: markerset.hide, layerprio: markerset.layerprio, minzoom: markerset.minzoom, markers: {}, areas: {} } ;
 					createMarkerSet(ms, ts);
 				}
 				else {
@@ -92,7 +92,8 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			$(popup).addClass('MarkerPopup').append(marker.desc);
 			marker.our_marker.bindPopup(popup, {});
 		}
-		set.layergroup.addLayer(marker.our_marker);
+		if((set.minzoom < 1) || (dynmap.map.getZoom() >= set.minzoom))
+			set.layergroup.addLayer(marker.our_marker);
 	}
 	
 	function createMarkerSet(set, ts) {
@@ -138,7 +139,8 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			}
 			area.our_area.bindPopup(popup, {});
 		}
-		set.layergroup.addLayer(area.our_area);
+		if((set.minzoom < 1) || (dynmap.map.getZoom() >= set.minzoom))
+			set.layergroup.addLayer(area.our_area);
 	}
 
 	// Helper functions
@@ -242,18 +244,21 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}
 		else if(msg.msg == 'setupdated') {
 			if(!dynmapmarkersets[msg.id]) {
-				dynmapmarkersets[msg.id] = { id: msg.id, label: msg.label, layerprio: msg.layerprio, markers:{} };
+				dynmapmarkersets[msg.id] = { id: msg.id, label: msg.label, layerprio: msg.layerprio, minzoom: msg.minzoom, markers:{} };
 				createMarkerSet(dynmapmarkersets[msg.id]);
 			}
 			else {
-				if(dynmapmarkersets[msg.id].label != msg.label) {
+				if((dynmapmarkersets[msg.id].label != msg.label) || (dynmapmarkersets[msg.id].layerprio != msg.layerprio)) {
 					dynmapmarkersets[msg.id].label = msg.label;
+					dynmapmarkersets[msg.id].layerprio = msg.layerprio;
 					//dynmap.layercontrol.removeLayer(dynmapmarkersets[msg.id].layergroup);
 					//dynmap.layercontrol.addOverlay(dynmapmarkersets[msg.id].layergroup, dynmapmarkersets[msg.id].label);
 					dynmap.addToLayerSelector(dynmapmarkersets[msg.id].layergroup, dynmapmarkersets[msg.id].label, 
 						dynmapmarkersets[msg.id].layerprio || 0);
-					
 				}
+				if(dynmapmarkersets[msg.id].minzoom != msg.minzoom) {
+					dynmapmarkersets[msg.id].minzoom = msg.minzoom;
+				}			
 			}
 		}
 		else if(msg.msg == 'setdeleted') {
@@ -297,19 +302,50 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	});
     // Remove marker on map change - let update place it again
 	$(dynmap).bind('mapchanged', function(event) {
+		var zoom = dynmap.map.getZoom();
 		$.each(dynmapmarkersets, function(setname, set) {
-			$.each(set.markers, function(mname, marker) {
-				var marker = set.markers[mname];
-				var markerPosition = getPosition(marker);
-				marker.our_marker.setLatLng(markerPosition);
-				if(dynmap.map.hasLayer(marker.our_marker) == false)
-					set.layergroup.addLayer(marker.our_marker);
-			});
-			$.each(set.areas, function(aname, area) {
-				createArea(set, area, area.timestamp);
-			});
+			if((set.minzoomout < 1) || (zoom >= set.minzoom)) {
+				$.each(set.markers, function(mname, marker) {
+					var marker = set.markers[mname];
+					var markerPosition = getPosition(marker);
+					marker.our_marker.setLatLng(markerPosition);
+					if(dynmap.map.hasLayer(marker.our_marker) == false)
+						set.layergroup.addLayer(marker.our_marker);
+				});
+				$.each(set.areas, function(aname, area) {
+					createArea(set, area, area.timestamp);
+				});
+			}
 		});
 	});
+	$(dynmap).bind('zoomchanged', function(event) {
+		var zoom = dynmap.map.getZoom();
+		$.each(dynmapmarkersets, function(setname, set) {
+			if(set.minzoom > 0) {
+				if(zoom >= set.minzoom) {
+					$.each(set.markers, function(mname, marker) {
+						var marker = set.markers[mname];
+						var markerPosition = getPosition(marker);
+						marker.our_marker.setLatLng(markerPosition);
+						if(dynmap.map.hasLayer(marker.our_marker) == false)
+							set.layergroup.addLayer(marker.our_marker);
+					});
+					$.each(set.areas, function(aname, area) {
+						createArea(set, area, area.timestamp);
+					});
+				}
+				else {
+					$.each(set.markers, function(mname, marker) {
+						set.layergroup.removeLayer(marker.our_marker);
+					});
+					$.each(set.areas, function(aname, area) {
+						set.layergroup.removeLayer(area.our_area);
+					});
+				}
+			}
+		});
+	});
+
 	// Load markers for new world
 	$(dynmap).bind('worldchanged', function(event) {
 		loadmarkers(this.world.name);

@@ -69,6 +69,7 @@ components:
     #offlinelabel: "Offline"
     #offlineicon: offlineuser
     #offlinehidebydefault: true
+    #offlineminzoom: 0
     
   - class: org.dynmap.ClientComponent
     type: chat

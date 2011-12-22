@@ -140,10 +140,10 @@ DynMap.prototype = {
 		});
 		window.map = map; // Placate Leaflet need for top-level 'map'....
 		
-		map.zoom_changed = function() {
-			me.maptype.updateTileSize(me.map.zoom);
+		map.on('zoomend', function() {
+			me.maptype.updateTileSize(me.map.getZoom());
 			$(me).trigger('zoomchanged');
-		};
+		});
 			
 		/*google.maps.event.addListener(map, 'dragstart', function(mEvent) {
 			me.followPlayer(null);

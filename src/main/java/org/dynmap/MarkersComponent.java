@@ -84,6 +84,7 @@ public class MarkersComponent extends ClientComponent {
                 offlineset = api.createMarkerSet(OFFLINE_PLAYERS_SETID, configuration.getString("offlinelabel", "Offline"), null, true);
             }
             offlineset.setHideByDefault(configuration.getBoolean("offlinehidebydefault", true));
+            offlineset.setMinZoom(configuration.getInteger("offlineminzoom", 0));
             
             offlineicon = api.getMarkerIcon(configuration.getString("offlineicon", "offlineuser"));
             

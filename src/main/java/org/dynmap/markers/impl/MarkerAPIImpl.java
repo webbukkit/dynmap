@@ -178,9 +178,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public String msg;
         public String id;
         public String label;
+        public int layerprio;
+        public int minzoom;
         public MarkerSetUpdated(MarkerSet markerset, boolean deleted) {
             this.id = markerset.getMarkerSetID();
             this.label = markerset.getMarkerSetLabel();
+            this.layerprio = markerset.getLayerPriority();
+            this.minzoom = markerset.getMinZoom();
             if(deleted)
                 msg = "setdeleted";
             else
@@ -642,6 +646,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private static final String ARG_ICON = "icon";
     private static final String ARG_SET = "set";
     private static final String ARG_PRIO = "prio";
+    private static final String ARG_MINZOOM = "minzoom";
     private static final String ARG_STROKEWEIGHT = "weight";
     private static final String ARG_STROKECOLOR = "color";
     private static final String ARG_STROKEOPACITY = "opacity";
@@ -712,7 +717,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
 
     
     public static boolean onCommand(DynmapPlugin plugin, CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        String id, setid, file, label, newlabel, iconid, prio;
+        String id, setid, file, label, newlabel, iconid, prio, minzoom;
         String val;
         
         if(api == null) {
@@ -961,6 +966,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 id = parms.get(ARG_ID);
                 label = parms.get(ARG_LABEL);
                 prio = parms.get(ARG_PRIO);
+                minzoom = parms.get(ARG_MINZOOM);
                 if((id == null) && (label == null)) {
                     sender.sendMessage("<label> or id:<marker-id> required");
                     return true;
@@ -991,6 +997,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                             sender.sendMessage("Invalid priority: " + prio);
                         }
                     }
+                    if(minzoom != null) {
+                        try {
+                            set.setMinZoom(Integer.valueOf(minzoom));
+                        } catch (NumberFormatException nfx) {
+                            sender.sendMessage("Invalid max zoom out: " + minzoom);
+                        }
+                    }
                     sender.sendMessage("Added set id:'" + set.getMarkerSetID() + "' (" + set.getMarkerSetLabel() + ")");
                 }
             }
@@ -1006,6 +1019,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 id = parms.get(ARG_ID);
                 label = parms.get(ARG_LABEL);
                 prio = parms.get(ARG_PRIO);
+                minzoom = parms.get(ARG_MINZOOM);
                 if((id == null) && (label == null)) {
                     sender.sendMessage("<label> or id:<set-id> required");
                     return true;
@@ -1044,6 +1058,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                         set.setLayerPriority(Integer.valueOf(prio));
                     } catch (NumberFormatException nfx) {
                         sender.sendMessage("Invalid priority: " + prio);
+                    }
+                }
+                if(minzoom != null) {
+                    try {
+                        set.setMinZoom(Integer.valueOf(minzoom));
+                    } catch (NumberFormatException nfx) {
+                        sender.sendMessage("Invalid min zoom: " + minzoom);
                     }
                 }
                 sender.sendMessage("Set '" + set.getMarkerSetID() + "' updated");
@@ -1097,7 +1118,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             Set<String> setids = new TreeSet<String>(api.markersets.keySet());
             for(String s : setids) {
                 MarkerSet set = api.markersets.get(s);
-                sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\", hide:" + set.getHideByDefault() + ", prio:" + set.getLayerPriority());
+                sender.sendMessage(set.getMarkerSetID() + ": label:\"" + set.getMarkerSetLabel() + "\", hide:" + set.getHideByDefault() + ", prio:" + set.getLayerPriority() + ", minzoom:" + set.getMinZoom());
             }
         }
         /* Add new icon */
@@ -1505,6 +1526,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             msdata.put("label", ms.getMarkerSetLabel());
             msdata.put("hide", ms.getHideByDefault());
             msdata.put("layerprio", ms.getLayerPriority());
+            msdata.put("minzoom", ms.getMinZoom());
             HashMap<String, Object> markers = new HashMap<String, Object>();
             for(Marker m : ms.getMarkers()) {
                 if(m.getWorld().equals(wname) == false) continue;
