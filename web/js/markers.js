@@ -139,8 +139,9 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			}
 			area.our_area.bindPopup(popup, {});
 		}
-		if((set.minzoom < 1) || (dynmap.map.getZoom() >= set.minzoom))
+		if((set.minzoom < 1) || (dynmap.map.getZoom() >= set.minzoom)) {
 			set.layergroup.addLayer(area.our_area);
+		}
 	}
 
 	// Helper functions
@@ -304,7 +305,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	$(dynmap).bind('mapchanged', function(event) {
 		var zoom = dynmap.map.getZoom();
 		$.each(dynmapmarkersets, function(setname, set) {
-			if((set.minzoomout < 1) || (zoom >= set.minzoom)) {
+			if((set.minzoom < 1) || (zoom >= set.minzoom)) {
 				$.each(set.markers, function(mname, marker) {
 					var marker = set.markers[mname];
 					var markerPosition = getPosition(marker);
@@ -331,6 +332,8 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 							set.layergroup.addLayer(marker.our_marker);
 					});
 					$.each(set.areas, function(aname, area) {
+						if(dynmap.map.hasLayer(area.our_area))
+							set.layergroup.removeLayer(area.our_area);
 						createArea(set, area, area.timestamp);
 					});
 				}
