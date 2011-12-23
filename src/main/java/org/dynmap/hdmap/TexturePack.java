@@ -1162,9 +1162,11 @@ public class TexturePack {
             else {
                 clr = biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
             }
-            if(swamp_shaded && (mapiter.getBiome() == Biome.SWAMPLAND))
-                clr = (clr & 0xFF000000) | (((clr & 0x00FEFEFE) + 0x4E0E4E) / 2);
-            rslt.blendColor(clr);
+            if((clr & 0xFF000000) != 0) {
+                if(swamp_shaded && (mapiter.getBiome() == Biome.SWAMPLAND))
+                    clr = (clr & 0xFF000000) | (((clr & 0x00FEFEFE) + 0x4E0E4E) / 2);
+                rslt.blendColor(clr);
+            }
         }
     }
     
