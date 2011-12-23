@@ -388,6 +388,7 @@ public class DynmapWorld {
         int width = 128, height = 128;
         BufferedImage zIm = null;
         DynmapBufferedImage kzIm = null;
+        boolean blank = true;
         int[] argb = new int[width*height];
         int step = pd.stepsize << pd.zoomlevel;
         int ztx = tx;
@@ -415,6 +416,7 @@ public class DynmapWorld {
                 if(im != null) {
                     im.getRGB(0, 0, width, height, argb, 0, width);    /* Read data */
                     im.flush();
+                    blank = false;
                     /* Do binlinear scale to 64x64 */
                     int off = 0;
                     for(int y = 0; y < height; y += 2) {
@@ -434,17 +436,15 @@ public class DynmapWorld {
                     /* blit scaled rendered tile onto zoom-out tile */
                     zIm.setRGB(((i>>1) != 0)?0:width/2, (i & 1) * height/2, width/2, height/2, argb, 0, width);
                 }
-                else if((pd.background != 0) && (pd.fmt != ImageFormat.FORMAT_PNG)) {
+                else {
                     Arrays.fill(argb, pd.background);
-                    /* blit scaled rendered tile onto zoom-out tile */
-                    zIm.setRGB(((i>>1) != 0)?0:width/2, (i & 1) * height/2, width/2, height/2, argb, 0, width);
                 }
             }
-            else if((pd.background != 0) && (pd.fmt != ImageFormat.FORMAT_PNG)) {
+            else {
                 Arrays.fill(argb, pd.background);
-                /* blit scaled rendered tile onto zoom-out tile */
-                zIm.setRGB(((i>>1) != 0)?0:width/2, (i & 1) * height/2, width/2, height/2, argb, 0, width);
             }
+            /* blit scaled rendered tile onto zoom-out tile */
+            zIm.setRGB(((i>>1) != 0)?0:width/2, (i & 1) * height/2, width/2, height/2, argb, 0, width);
         }
         FileLockManager.getWriteLock(zf);
         try {
@@ -456,7 +456,15 @@ public class DynmapWorld {
             int tilex = ztx/step/2;
             int tiley = zty/step/2;
             String key = world.getName()+".z"+pd.zoomprefix+pd.baseprefix;
-            if((!zf.exists()) || (crc != mm.hashman.getImageHashCode(key, null, tilex, tiley))) {
+            if(blank) {
+                if(zf.exists()) {
+                    zf.delete();
+                    hashman.updateHashCode(key, null, tilex, tiley, -1);
+                    MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
+                    enqueueZoomOutUpdate(zf, pd.zoomlevel+1);
+                }
+            }
+            else if((!zf.exists()) || (crc != mm.hashman.getImageHashCode(key, null, tilex, tiley))) {
                 try {
                     if(!zf.getParentFile().exists())
                         zf.getParentFile().mkdirs();

@@ -122,6 +122,10 @@ public class HDMap extends MapType {
         if(c != null) {
             bgcolornight = parseColor(c);
         }
+        if(imgformat != ImageFormat.FORMAT_PNG) {   /* If JPG, set background color opacity */
+            bgcolorday |= 0xFF000000;
+            bgcolornight |= 0xFF000000;
+        }
     }
 
     public HDShader getShader() { return shader; }
