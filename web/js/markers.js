@@ -109,6 +109,9 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	function createArea(set, area, ts) {
 		var style = { color: area.color, opacity: area.opacity, weight: area.weight, fillOpacity: area.fillopacity, fillColor: area.fillcolor, smoothFactor: 0.0 };
 
+		if(area.our_area && dynmap.map.hasLayer(area.our_area))
+			set.layergroup.removeLayer(area.our_area);
+
 		if(area.x.length == 2) {	/* Only 2 points */
 			if(area.ytop == area.ybottom) {
 				area.our_area = create2DBoxLayer(area.x[0], area.x[1], area.ytop, area.ybottom, area.z[0], area.z[1], style);
