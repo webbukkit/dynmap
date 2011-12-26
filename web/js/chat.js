@@ -19,7 +19,7 @@ componentconstructors['chat'] = function(dynmap, configuration) {
 	});
 	var pname = null;
 	if(configuration.allowurlname) {
-		pname = dynmap.getParameterByName("playername");
+		pname = dynmap.getParameterByName("chatname");
 		if(pname == "") pname = null;
 	}
 	

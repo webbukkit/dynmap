@@ -40,6 +40,7 @@ DynMap.prototype = {
     serverday: false,
     inittime: new Date().getTime(),
 	followingPlayer: '',
+	initfollow: null,
 	missedupdates: 0,
 	layercontrol: undefined,
 	formatUrl: function(name, options) {
@@ -115,6 +116,10 @@ DynMap.prototype = {
 		if(typeof me.options.defaultzoom == 'undefined')
 			me.options.defaultzoom = 1;
 		
+		var initfollowplayer = me.getParameterByName('playername');
+		if(initfollowplayer != "")
+			me.initfollow = initfollowplayer;
+			
 		var map = this.map = new L.Map(mapContainer.get(0), {
 			zoom: me.options.defaultzoom,
 			center: new L.LatLng(0, 0),
@@ -556,6 +561,10 @@ DynMap.prototype = {
 						me.updatePlayer(player, playerUpdate);
 					} else {
 						me.addPlayer(playerUpdate);
+						if(me.initfollow && me.initfollow == name) {
+							me.followPlayer(me.players[name]);
+							me.initfollow = null;
+						}
 					}
 					newplayers[name] = player;
 				});
