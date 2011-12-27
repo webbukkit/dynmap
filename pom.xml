@@ -41,7 +41,8 @@
                   <source>1.6</source>
                   <target>1.6</target>
               </configuration>
-          </plugin>
+						</plugin>
+
           <plugin>
           	<groupId>org.apache.maven.plugins</groupId>
           	<artifactId>maven-shade-plugin</artifactId>
@@ -55,7 +56,9 @@
 		            <configuration>
         		      <artifactSet>
                 		<includes>
-                  		  <include>org.dynmap:dynmap-api:jar:*</include>
+											<include>org.dynmap:dynmap-api:jar:*</include>
+											<include>org.eclipse.jetty:jetty-*:jar:*</include>
+											<include>javax.servlet:javax.servlet-api:jar:*</include>
                 		</includes>
               		  </artifactSet>
             		</configuration>
@@ -107,5 +110,21 @@
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>8.0.1.v20110908</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>8.0.1.v20110908</version>
+		</dependency>
+
   </dependencies>
 </project>
