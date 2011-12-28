@@ -1076,6 +1076,10 @@ public class MapManager {
         
         if(saverestorepending)
             savePending();
+        if(sscache != null) {
+            sscache.cleanup();
+            sscache = null; 
+        }
     }
 
     private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();

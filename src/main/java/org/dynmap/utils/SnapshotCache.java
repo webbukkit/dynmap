@@ -122,8 +122,10 @@ public class SnapshotCache {
     private void processRefQueue() {
         Reference<? extends ChunkSnapshot> ref;
         while((ref = refqueue.poll()) != null) {
-            String k = snapcache.reverselookup.get(ref);
-            if(k != null) snapcache.remove(k);
+            String k = snapcache.reverselookup.remove(ref);
+            if(k != null) {
+                snapcache.remove(k);
+            }
         }
     }
     /**
@@ -140,6 +142,17 @@ public class SnapshotCache {
      */
     public void resetStats() {
         cache_attempts = cache_success = 0;
+    }
+    /**
+     * Cleanup
+     */
+    public void cleanup() {
+        if(snapcache != null) {
+            snapcache.clear();
+            snapcache.reverselookup.clear();
+            snapcache.reverselookup = null;
+            snapcache = null;
+        }
     }
 }
 
