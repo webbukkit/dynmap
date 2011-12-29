@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -810,6 +811,18 @@ public class TexturePack {
         }
     }
 
+    private static Integer getIntValue(Map<String,Integer> vars, String val) throws NumberFormatException {
+        if(Character.isLetter(val.charAt(0))) {
+            Integer v = vars.get(val);
+            if(v == null)
+                throw new NumberFormatException("invalid ID - " + val);
+            return v;
+        }
+        else {
+            return Integer.valueOf(val);
+        }
+    }
+
     /**
      * Load texture pack mappings from texture.txt file
      */
@@ -817,6 +830,7 @@ public class TexturePack {
         LineNumberReader rdr = null;
         int cnt = 0;
         HashMap<String,Integer> filetoidx = new HashMap<String,Integer>();
+        HashMap<String,Integer> varvals = new HashMap<String,Integer>();
 
         try {
             String line;
@@ -835,14 +849,14 @@ public class TexturePack {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
                         if(av[0].equals("id")) {
-                            blkids.add(Integer.parseInt(av[1]));
+                            blkids.add(getIntValue(varvals, av[1]));
                         }
                         else if(av[0].equals("data")) {
                             if(databits < 0) databits = 0;
                             if(av[1].equals("*"))
                                 databits = 0xFFFF;
                             else
-                                databits |= (1 << Integer.parseInt(av[1]));
+                                databits |= (1 << getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("top") || av[0].equals("y-")) {
                             faces[BlockStep.Y_MINUS.ordinal()] = Integer.parseInt(av[1]);
@@ -963,6 +977,25 @@ public class TexturePack {
                     }
                     else {
                         Log.info(line + " textures enabled");
+                    }
+                }
+                else if(line.startsWith("var:")) {  /* Test if variable declaration */
+                    line = line.substring(4).trim();
+                    String args[] = line.split(",");
+                    for(int i = 0; i < args.length; i++) {
+                        String[] v = args[i].split("=");
+                        if(v.length < 2) {
+                            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + txtname);
+                            return;
+                        }
+                        try {
+                            int val = Integer.valueOf(v[1]);    /* Parse default value */
+                            int parmval = config.getInteger(v[0], val); /* Read value, with applied default */
+                            varvals.put(v[0], parmval); /* And save value */
+                        } catch (NumberFormatException nfx) {
+                            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + txtname);
+                            return;
+                        }
                     }
                 }
             }

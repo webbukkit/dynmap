@@ -12,6 +12,7 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.dynmap.ConfigurationNode;
@@ -323,6 +324,17 @@ public class HDBlockModels {
             }
         }
     }
+    private static Integer getIntValue(Map<String,Integer> vars, String val) throws NumberFormatException {
+        if(Character.isLetter(val.charAt(0))) {
+            Integer v = vars.get(val);
+            if(v == null)
+                throw new NumberFormatException("invalid ID - " + val);
+            return v;
+        }
+        else {
+            return Integer.valueOf(val);
+        }
+    }
     /**
      * Load models from file
      */
@@ -332,6 +344,7 @@ public class HDBlockModels {
         try {
             String line;
             ArrayList<HDBlockModels> modlist = new ArrayList<HDBlockModels>();
+            HashMap<String,Integer> varvals = new HashMap<String,Integer>();
             int layerbits = 0;
             int rownum = 0;
             int scale = 0;
@@ -347,13 +360,13 @@ public class HDBlockModels {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
                         if(av[0].equals("id")) {
-                            blkids.add(Integer.parseInt(av[1]));
+                            blkids.add(getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("data")) {
                             if(av[1].equals("*"))
                                 databits = 0xFFFF;
                             else
-                                databits |= (1 << Integer.parseInt(av[1]));
+                                databits |= (1 << getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("scale")) {
                             scale = Integer.parseInt(av[1]);
@@ -390,8 +403,8 @@ public class HDBlockModels {
                     for(String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
-                        if(av[0].equals("id")) { id = Integer.parseInt(av[1]); }
-                        if(av[0].equals("data")) { data = Integer.parseInt(av[1]); }
+                        if(av[0].equals("id")) { id = getIntValue(varvals,av[1]); }
+                        if(av[0].equals("data")) { data = getIntValue(varvals,av[1]); }
                         if(av[0].equals("rot")) { rot = Integer.parseInt(av[1]); }
                     }
                     /* get old model to be rotated */
@@ -434,13 +447,13 @@ public class HDBlockModels {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
                         if(av[0].equals("id")) {
-                            blkids.add(Integer.parseInt(av[1]));
+                            blkids.add(getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("linkalg")) {
                             linktype = Integer.parseInt(av[1]);
                         }
                         else if(av[0].equals("linkid")) {
-                            map.add(Integer.parseInt(av[1]));
+                            map.add(getIntValue(varvals,av[1]));
                         }
                     }
                     if(linktype > 0) {
@@ -469,6 +482,25 @@ public class HDBlockModels {
                     }
                     else {
                         Log.info(line + " models enabled");
+                    }
+                }
+                else if(line.startsWith("var:")) {  /* Test if variable declaration */
+                    line = line.substring(4).trim();
+                    String args[] = line.split(",");
+                    for(int i = 0; i < args.length; i++) {
+                        String[] v = args[i].split("=");
+                        if(v.length < 2) {
+                            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + fname);
+                            return;
+                        }
+                        try {
+                            int val = Integer.valueOf(v[1]);    /* Parse default value */
+                            int parmval = config.getInteger(v[0], val); /* Read value, with applied default */
+                            varvals.put(v[0], parmval); /* And save value */
+                        } catch (NumberFormatException nfx) {
+                            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + fname);
+                            return;
+                        }
                     }
                 }
                 else if(layerbits != 0) {   /* If we're working pattern lines */
