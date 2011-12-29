@@ -32,7 +32,7 @@ public class HeroWebChatComponent extends Component {
                         String msgfmt = plugin.configuration.getString("webmsgformat", null);
                         if(msgfmt != null) {
                             msgfmt = unescapeString(msgfmt);
-                            msg = msgfmt.replaceAll("%playername%", t.name).replaceAll("%message%", t.message);
+                            msg = msgfmt.replace("%playername%", t.name).replace("%message%", t.message);
                         }
                         else {
                             msg = unescapeString(plugin.configuration.getString("webprefix", "\u00A72[WEB] ")) + t.name + ": " + unescapeString(plugin.configuration.getString("websuffix", "\u00A7f")) + t.message;
