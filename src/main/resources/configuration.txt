@@ -27,6 +27,10 @@ components:
     hidewebchatip: false
     trustclientname: false
     includehiddenplayers: false
+    # (optional) if true, player login IDs will be used for web chat when their IPs match
+    use-player-login-ip: true
+    # (optional) if use-player-login-ip is true, setting this to true will cause chat messages not matching a known player IP to be ignored
+    require-player-login-ip: false
   #  # Optional - make players hidden when they are inside/underground/in shadows (#=light level: 0=full shadow,15=sky)
   #  hideifshadow: 4
   #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
@@ -39,8 +43,10 @@ components:
   #  webchat-interval: 5
   #  hidewebchatip: false
   #  includehiddenplayers: false
-  #  hideifshadow: 4
-  #  hideifundercover: 14
+  #  use-player-login-ip: false
+  #  require-player-login-ip: false
+  #  hideifshadow: 0
+  #  hideifundercover: 0
    
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
@@ -269,6 +275,9 @@ defaultmap: flat
 
 # Option to enable workaround for incorrectly encoded unicode in Cyrillic MC/Bukkit (not good for other code pages)
 cyrillic-support: false
+
+# If true, make persistent record of IP addresses used by player logins, to support web IP to player matching
+persist-ids-by-ip: true
 
 # NOTE: the 'templates' section is now found in the 'templates' directory
 #  Templates CAN still be defined in configuration.txt, as before 0.20

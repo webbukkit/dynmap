@@ -11,6 +11,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION['lastchat'] < time())
 	
 	$data = json_decode(trim(file_get_contents('php://input')));
 	$data->timestamp = $timestamp;
+	$data->ip = $_SERVER['REMOTE_ADDR'];
 	$old_messages = json_decode(file_get_contents('dynmap_webchat.json'), true);
 	if(!empty($old_messages))
 	{

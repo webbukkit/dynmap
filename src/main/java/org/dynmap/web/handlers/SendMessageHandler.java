@@ -4,9 +4,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.dynmap.DynmapPlugin;
 import org.dynmap.Event;
+import org.dynmap.Log;
 import org.dynmap.web.HttpField;
 import org.dynmap.web.HttpHandler;
 import org.dynmap.web.HttpMethod;
@@ -25,6 +28,9 @@ public class SendMessageHandler implements HttpHandler {
     public int maximumMessageInterval = 1000;
     public boolean hideip = false;
     public boolean trustclientname = false;
+    public boolean use_player_login_ip = false;
+    public boolean require_player_login_ip = false;
+    public DynmapPlugin plug_in;
     public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
     private LinkedList<WebUser> disallowedUserQueue = new LinkedList<WebUser>();
@@ -45,10 +51,12 @@ public class SendMessageHandler implements HttpHandler {
         JSONObject o = (JSONObject)parser.parse(reader);
         final Message message = new Message();
         
+        message.name = "";
         if(trustclientname) {
             message.name = String.valueOf(o.get("name"));
         }
-        else {
+        boolean isip = true;
+        if((message.name == null) || message.name.equals("")) {
         	/* If proxied client address, get original */
         	if(request.fields.containsKey("X-Forwarded-For"))
         		message.name = request.fields.get("X-Forwarded-For");
@@ -58,7 +66,18 @@ public class SendMessageHandler implements HttpHandler {
         	else
         		message.name = request.rmtaddr.getAddress().getHostAddress();
         }
-        if(hideip) {    /* If hiding IP, find or assign alias */
+        if(use_player_login_ip) {
+            List<String> ids = plug_in.getIDsForIP(message.name);
+            if(ids != null) {
+                message.name = ids.get(0);
+                isip = false;
+            }
+            else if(require_player_login_ip) {
+                Log.info("Ignore message from '" + message.name + "' - no matching player login recorded");
+                return;
+            }
+        }
+        if(hideip && isip) {    /* If hiding IP, find or assign alias */
             synchronized(disallowedUsersLock) {
                 String n = useralias.get(message.name);
                 if(n == null) { /* Make ID */

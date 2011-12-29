@@ -8,11 +8,13 @@ import static org.dynmap.JSONUtils.*;
 
 public class InternalClientUpdateComponent extends ClientUpdateComponent {
 
-    public InternalClientUpdateComponent(DynmapPlugin plugin, final ConfigurationNode configuration) {
+    public InternalClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
-        final Boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
-        final Boolean hidewebchatip = configuration.getBoolean("hidewebchatip", false);
-        final Boolean trust_client_name = configuration.getBoolean("trustclientname", false);
+        final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
+        final boolean hidewebchatip = configuration.getBoolean("hidewebchatip", false);
+        final boolean trust_client_name = configuration.getBoolean("trustclientname", false);
+        final boolean useplayerloginip = configuration.getBoolean("use-player-login-ip", true);
+        final boolean requireplayerloginip = configuration.getBoolean("require-player-login-ip", false);
         final float webchatInterval = configuration.getFloat("webchat-interval", 1);
         final String spammessage = plugin.configuration.getString("spammessage", "You may only chat once every %interval% seconds.");
 
@@ -31,7 +33,10 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
                 maximumMessageInterval = (int)(webchatInterval * 1000);
                 spamMessage = "\""+spammessage+"\"";
                 hideip = hidewebchatip;
+                this.plug_in = plugin;
                 this.trustclientname = trust_client_name;
+                this.use_player_login_ip = useplayerloginip;
+                this.require_player_login_ip = requireplayerloginip;
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
                     public void triggered(Message t) {

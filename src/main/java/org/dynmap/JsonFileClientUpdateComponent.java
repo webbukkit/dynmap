@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,8 +27,11 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected long currentTimestamp = 0;
     protected long lastTimestamp = 0;
     protected JSONParser parser = new JSONParser();
-    private Boolean hidewebchatip;
-
+    private boolean hidewebchatip;
+    private boolean useplayerloginip;
+    private boolean requireplayerloginip;
+    private boolean trust_client_name;
+    
     private HashMap<String,String> useralias = new HashMap<String,String>();
     private int aliasindex = 1;
     private long last_confighash;
@@ -38,6 +42,10 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
         hidewebchatip = configuration.getBoolean("hidewebchatip", false);
+        useplayerloginip = configuration.getBoolean("use-player-login-ip", true);
+        requireplayerloginip = configuration.getBoolean("require-player-login-ip", false);
+        trust_client_name = configuration.getBoolean("trustclientname", false);
+
         MapManager.scheduleDelayedJob(new Runnable() {
             @Override
             public void run() {
@@ -211,7 +219,24 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                     if(ts.equals("null")) ts = "0";
                     if (Long.parseLong(ts) >= (lastTimestamp)) {
                         String name = String.valueOf(o.get("name"));
-                        if(hidewebchatip) {
+                        String ip = String.valueOf(o.get("ip"));
+                        boolean isip = true;
+                        if((!trust_client_name) || (name == null) || (name.equals(""))) {
+                            if(ip != null)
+                                name = ip;
+                        }
+                        if(useplayerloginip) {  /* Try to match using IPs of player logins */
+                            List<String> ids = plugin.getIDsForIP(name);
+                            if(ids != null) {
+                                name = ids.get(0);
+                                isip = false;
+                            }
+                            else if(requireplayerloginip) {
+                                Log.info("Ignore message from '" + name + "' - no matching player login recorded");
+                                return;
+                            }
+                        }
+                        if(hidewebchatip && isip) {
                             String n = useralias.get(name);
                             if(n == null) { /* Make ID */
                                 n = String.format("web-%03d", aliasindex);

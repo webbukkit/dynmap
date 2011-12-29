@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,6 +88,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
     private boolean didfullpause;
+    private Map<String, LinkedList<String>> ids_by_ip = new HashMap<String, LinkedList<String>>();
+    private boolean persist_ids_by_ip = false;
 
     public enum CompassMode {
         PRE19,  /* Default for 1.8 and earlier (east is Z+) */
@@ -278,6 +282,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             compassmode = CompassMode.PRE19;
         /* Load full render processing player limit */
         fullrenderplayerlimit = configuration.getInteger("fullrenderplayerlimit", 0);
+        /* If we're persisting ids-by-ip, load it */
+        persist_ids_by_ip = configuration.getBoolean("persist-ids-by-ip", true);
+        if(persist_ids_by_ip)
+            loadIDsByIP();
         
         loadDebuggers();
 
@@ -290,6 +298,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         playerList.load();
         PlayerListener pl = new PlayerListener() {
             public void onPlayerJoin(PlayerJoinEvent evt) {
+                Player p = evt.getPlayer();
                 playerList.updateOnlinePlayers(null);
                 if(fullrenderplayerlimit > 0) {
                     if((getServer().getOnlinePlayers().length+1) >= fullrenderplayerlimit) {
@@ -299,6 +308,23 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                             didfullpause = true;
                         }
                     }
+                }
+                /* Add player info to IP-to-ID table */
+                InetSocketAddress addr = p.getAddress();
+                if(addr != null) {
+                    String ip = addr.getAddress().getHostAddress();
+                    LinkedList<String> ids = ids_by_ip.get(ip);
+                    if(ids == null) {
+                        ids = new LinkedList<String>();
+                        ids_by_ip.put(ip, ids);
+                    }
+                    String pid = p.getName();
+                    /* See if not first in list */
+                    int idx = ids.indexOf(pid);
+                    if(idx > 0) {
+                        ids.remove(idx);
+                    }
+                    ids.addFirst(pid);  /* Put us first on list */
                 }
             }
             public void onPlayerQuit(PlayerQuitEvent evt) {
@@ -412,6 +438,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
     @Override
     public void onDisable() {
+        if(persist_ids_by_ip)
+            saveIDsByIP();
         if (componentManager != null) {
             int componentCount = componentManager.components.size();
             for(Component component : componentManager.components) {
@@ -767,7 +795,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         "resetstats",
         "sendtoweb",
         "pause",
-        "purgequeue" }));
+        "purgequeue",
+        "ids-for-ip",
+        "ips-for-id" }));
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -954,6 +984,31 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     msg += args[i] + " ";
                 }
                 this.sendBroadcastToWeb("dynmap", msg);
+            } else if(c.equals("ids-for-ip") && checkPlayerPermission(sender, "ids-for-ip")) {
+                if(args.length > 1) {
+                    List<String> ids = getIDsForIP(args[1]);
+                    sender.sendMessage("IDs logged in from address " + args[1] + " (most recent to least):");
+                    if(ids != null) {
+                        for(String id : ids)
+                            sender.sendMessage("  " + id);
+                    }
+                }
+                else {
+                    sender.sendMessage("IP address required as parameter");
+                }
+            } else if(c.equals("ips-for-id") && checkPlayerPermission(sender, "ips-for-id")) {
+                if(args.length > 1) {
+                    sender.sendMessage("IP addresses logged for player " + args[1] + ":");
+                    for(String ip: ids_by_ip.keySet()) {
+                        LinkedList<String> ids = ids_by_ip.get(ip);
+                        if((ids != null) && ids.contains(args[1])) {
+                            sender.sendMessage("  " + ip);
+                        }
+                    }
+                }
+                else {
+                    sender.sendMessage("Player ID required as parameter");
+                }
             }
             return true;
         }
@@ -1534,6 +1589,58 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 mapManager.pushUpdate(new Client.PlayerJoinMessage(player.getDisplayName(), player.getName()));
             else
                 mapManager.pushUpdate(new Client.PlayerQuitMessage(player.getDisplayName(), player.getName()));
+        }
+    }
+    /**
+     * Get list of IDs seen on give IP (most recent to least recent)
+     */
+    public List<String> getIDsForIP(InetAddress addr) {
+        return getIDsForIP(addr.getHostAddress());
+    }
+    /**
+     * Get list of IDs seen on give IP (most recent to least recent)
+     */
+    public List<String> getIDsForIP(String ip) {
+        LinkedList<String> ids = ids_by_ip.get(ip);
+        if(ids != null)
+            return new ArrayList<String>(ids);
+        return null;
+    }
+
+    private void loadIDsByIP() {
+        File f = new File(getDataFolder(), "ids-by-ip.txt");
+        if(f.exists() == false)
+            return;
+        YamlConfiguration fc = new YamlConfiguration();
+        try {
+            fc.load(new File(getDataFolder(), "ids-by-ip.txt"));
+            ids_by_ip.clear();
+            Map<String,Object> v = fc.getValues(false);
+            for(String k : v.keySet()) {
+                List<String> ids = fc.getStringList(k);
+                if(ids != null) {
+                    k = k.replace("_", ".");
+                    ids_by_ip.put(k, new LinkedList<String>(ids));
+                }
+            }
+        } catch (Exception iox) {
+            Log.severe("Error loading " + f.getPath() + " - " + iox.getMessage());
+        }
+    }
+    private void saveIDsByIP() {
+        File f = new File(getDataFolder(), "ids-by-ip.txt");
+        YamlConfiguration fc = new YamlConfiguration();
+        for(String k : ids_by_ip.keySet()) {
+            List<String> v = ids_by_ip.get(k);
+            if(v != null) {
+                k = k.replace(".", "_");
+                fc.set(k, v);
+            }
+        }
+        try {
+            fc.save(f);
+        } catch (Exception x) {
+            Log.severe("Error saving " + f.getPath() + " - " + x.getMessage());
         }
     }
 }
