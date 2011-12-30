@@ -34,7 +34,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -479,6 +481,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private boolean onblockform;
     private boolean onblockfade;
     private boolean onblockspread;
+    private boolean onblockfromto;
+    private boolean onblockphysics;
     private boolean onleaves;
     private boolean onburn;
     private boolean onpiston;
@@ -566,7 +570,32 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     mapManager.touch(loc, "blockspread");
                 }
             }
+
+            @Override
+            public void onBlockFromTo(BlockFromToEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loct = event.getToBlock().getLocation();
+                Location locf = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loct);
+                mapManager.sscache.invalidateSnapshot(locf);
+                if(onblockfromto) {
+                    mapManager.touch(locf, "blockfromto");
+                    mapManager.touch(loct, "blockfromto");
+                }
+            }
             
+            @Override
+            public void onBlockPhysics(BlockPhysicsEvent event) {
+                if(event.isCancelled())
+                    return;
+                Location loc = event.getBlock().getLocation();
+                mapManager.sscache.invalidateSnapshot(loc);
+                if(onblockphysics) {
+                    mapManager.touch(loc, "blockphysics");
+                }
+            }
+
             @Override
             public void onBlockPistonRetract(BlockPistonRetractEvent event) {
                 if(event.isCancelled())
@@ -634,6 +663,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             
         onblockspread = isTrigger("blockspread");
         registerEvent(Event.Type.BLOCK_SPREAD, blockTrigger);
+
+        onblockfromto = isTrigger("blockfromto");
+        registerEvent(Event.Type.BLOCK_FROMTO, blockTrigger);
+
+        onblockphysics = isTrigger("blockphysics");
+        registerEvent(Event.Type.BLOCK_PHYSICS, blockTrigger);
 
         onpiston = isTrigger("pistonmoved");
         registerEvent(Event.Type.BLOCK_PISTON_EXTEND, blockTrigger);
@@ -1277,6 +1312,30 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
         }
         @Override
+        public void onBlockFromTo(BlockFromToEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockFromTo(event);
+                }
+            }
+        }
+        @Override
+        public void onBlockPhysics(BlockPhysicsEvent event) {
+            if(event.isCancelled())
+                return;
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((BlockListener)l).onBlockPhysics(event);
+                }
+            }
+        }
+        @Override
         public void onBlockPistonRetract(BlockPistonRetractEvent event) {
             if(event.isCancelled())
                 return;
@@ -1451,6 +1510,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 case BLOCK_FORM:
                 case BLOCK_FADE:
                 case BLOCK_SPREAD:
+                case BLOCK_FROMTO:
+                case BLOCK_PHYSICS:
                 case BLOCK_PISTON_EXTEND:
                 case BLOCK_PISTON_RETRACT:
                     pm.registerEvent(type, ourBlockEventHandler, Event.Priority.Monitor, this);
