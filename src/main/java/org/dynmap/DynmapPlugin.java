@@ -321,12 +321,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         ids_by_ip.put(ip, ids);
                     }
                     String pid = p.getName();
-                    /* See if not first in list */
-                    int idx = ids.indexOf(pid);
-                    if(idx > 0) {
-                        ids.remove(idx);
+                    if(ids.indexOf(pid) != 0) {
+                        ids.remove(pid);    /* Remove from list */
+                        ids.addFirst(pid);  /* Put us first on list */
                     }
-                    ids.addFirst(pid);  /* Put us first on list */
                 }
                 /* And re-attach to active jobs */
                 if(mapManager != null)
