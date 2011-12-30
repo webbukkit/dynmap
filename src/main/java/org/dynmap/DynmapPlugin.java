@@ -328,6 +328,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     }
                     ids.addFirst(pid);  /* Put us first on list */
                 }
+                /* And re-attach to active jobs */
+                if(mapManager != null)
+                    mapManager.connectTasksToPlayer(p);
             }
             public void onPlayerQuit(PlayerQuitEvent evt) {
                 playerList.updateOnlinePlayers(evt.getPlayer());

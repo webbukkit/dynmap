@@ -26,6 +26,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
 import org.dynmap.debug.Debug;
@@ -193,6 +194,7 @@ public class MapManager {
         MapTile tile0 = null;
         int rendercnt = 0;
         CommandSender sender;
+        String player;
         long timeaccum;
         HashSet<MapType> renderedmaps = new HashSet<MapType>();
         String activemaps;
@@ -225,6 +227,10 @@ public class MapManager {
             rendered = new TileFlags();
             renderQueue = new LinkedList<MapTile>();
             this.sender = sender;
+            if(sender instanceof Player)
+                this.player = ((Player)sender).getName();
+            else
+                this.player = "";
             if(radius < 0) {
                 cxmin = czmin = Integer.MIN_VALUE;
                 cxmax = czmax = Integer.MAX_VALUE;
@@ -301,8 +307,12 @@ public class MapManager {
             czmax = n.getInteger("czmax", 0);
             rendertype = n.getString("rendertype", "");
             mapname = n.getString("mapname", null);
+            player = n.getString("player", "");
             updaterender = rendertype.equals(RENDERTYPE_UPDATERENDER);
             sender = null;
+            if(player.length() > 0) {
+                sender = plug_in.getServer().getPlayerExact(player);
+            }
         }
         
         public HashMap<String,Object> saveState() {
@@ -339,7 +349,7 @@ public class MapManager {
             v.put("rendertype", rendertype);
             if(mapname != null)
                 v.put("mapname", mapname);
-            
+            v.put("player", player);
             return v;
         }
         
@@ -1378,5 +1388,13 @@ public class MapManager {
     public void incExtraTickList() {
         ticklistcalls.incrementAndGet();
     }
-
+    /* Connect any jobs tied to this player back to the player (resumes output to player) */
+    void connectTasksToPlayer(Player p) {
+        String pn = p.getName();
+        for(FullWorldRenderState job : active_renders.values()) {
+            if(pn.equals(job.player)) {
+                job.sender = p;
+            }
+        }
+    }
 }
