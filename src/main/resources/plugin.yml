@@ -35,6 +35,9 @@ commands:
            /<command> pause - Show render pause state
            /<command> pause <all|none|full|update> - Set render pause state
            /<command> ids-for-ip <ipaddress> - Show player IDs that have logged in from given IP address
+           /<command> ips-for-id <playerid> - Show IP addresses that have been used for the given player ID
+           /<command> add-id-for-ip <playerid> <ipaddress> - Add player ID to given IP address
+           /<command> del-id-for-ip <playerid> <ipaddress> - Delete player ID from given IP address
             
   dmarker:
     description: Manipulate map markers

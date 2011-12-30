@@ -230,7 +230,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap");
         if (permissions == null)
-            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload", "purgequeue", "pause" });
+            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload", "purgequeue", "pause", "ips-for-id", "ids-for-ip", "add-id-for-ip", "del-id-for-ip" });
 
         dataDirectory = this.getDataFolder();
         if(dataDirectory.exists() == false)
@@ -836,7 +836,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         "pause",
         "purgequeue",
         "ids-for-ip",
-        "ips-for-id" }));
+        "ips-for-id",
+        "add-id-for-ip",
+        "del-id-for-ip"}));
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -1073,6 +1075,35 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
                 else {
                     sender.sendMessage("Player ID required as parameter");
+                }
+            } else if((c.equals("add-id-for-ip") && checkPlayerPermission(sender, "add-id-for-ip")) ||
+                    (c.equals("del-id-for-ip") && checkPlayerPermission(sender, "del-id-for-ip"))) {
+                if(args.length > 2) {
+                    String ipaddr = "";
+                    try {
+                        InetAddress ip = InetAddress.getByName(args[2]);
+                        ipaddr = ip.getHostAddress();
+                    } catch (UnknownHostException uhx) {
+                        sender.sendMessage("Invalid address : " + args[2]);
+                        return false;
+                    }
+                    LinkedList<String> ids = ids_by_ip.get(ipaddr);
+                    if(ids == null) {
+                        ids = new LinkedList<String>();
+                        ids_by_ip.put(ipaddr, ids);
+                    }
+                    ids.remove(args[1]); /* Remove existing, if any */
+                    if(c.equals("add-id-for-ip")) {
+                        ids.addFirst(args[1]);  /* And add us first */
+                        sender.sendMessage("Added player ID '" + args[1] + "' to address '" + ipaddr + "'");
+                    }
+                    else {
+                        sender.sendMessage("Removed player ID '" + args[1] + "' from address '" + ipaddr + "'");
+                    }
+                    saveIDsByIP();
+                }
+                else {
+                    sender.sendMessage("Needs player ID and IP address");
                 }
             }
             return true;
