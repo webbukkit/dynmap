@@ -19,6 +19,10 @@ commands:
            /<command> radiusrender ## mapname - Render at least ## block radius from your location on map 'mapname'
            /<command> radiusrender worldname x z ## - Render at least ## block radius from location x,z on world 'worldname'
            /<command> radiusrender worldname x z ## mapname - Render at least ## block radius from location x,z on world 'worldname' on map 'mapname'
+           /<command> updaterender - Render updates starting at your location on all maps.
+           /<command> updaterender mapname - Render updates starting at your location on give map
+           /<command> updaterender worldname x z - Render updates starting at location x,z on world 'worldname' for all maps
+           /<command> updaterender worldname x z mapname - Render updates starting at location x,z on world 'worldname' for given map
            /<command> cancelrender - Cancels any active renders on current world
            /<command> cancelrender world - Cancels any active renders of world 'world'
            /<command> stats - Show render statistics.
@@ -78,6 +82,7 @@ permissions:
       dynmap.hide.others: true
       dynmap.fullrender: true
       dynmap.radiusrender: true
+      dynmap.updaterender: true
       dynmap.cancelrender: true
       dynmap.reload: true
       dynmap.stats: true
@@ -125,6 +130,9 @@ permissions:
     default: op
   dynmap.radiusrender:
     description: Allows /dynmap radiusrender
+    default: op
+  dynmap.updaterender:
+    description: Allows /dynmap updaterender
     default: op
   dynmap.cancelrender:
     description: Allows /dynmap cancelrender <world>

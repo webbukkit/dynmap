@@ -155,7 +155,7 @@ public class FlatMap extends MapType {
         World w = t.getWorld();
         boolean isnether = (w.getEnvironment() == Environment.NETHER) && (maximumHeight == 127);
 
-        boolean rendered = false;
+        boolean didwrite = false;
         Color rslt = new Color();
         int[] pixel = new int[4];
         int[] pixel_day = null;
@@ -294,7 +294,6 @@ public class FlatMap extends MapType {
                     rslt.setRGBA(pixel_day[0], pixel_day[1], pixel_day[2], pixel[3]);
                     argb_buf_day[(t.size-y-1) + (x*t.size)] = rslt.getARGB();
                 }
-                rendered = true;
             }
         }
         /* Test to see if we're unchanged from older tile */
@@ -319,6 +318,7 @@ public class FlatMap extends MapType {
                 hashman.updateHashCode(tile.getKey(prefix), null, t.x, t.y, crc);
                 tile.getDynmapWorld().enqueueZoomOutUpdate(outputFile);
                 tile_update = true;
+                didwrite = true;
             }
             else {
                 Debug.debug("skipping image " + outputFile.getPath() + " - hash match");
@@ -327,7 +327,7 @@ public class FlatMap extends MapType {
             FileLockManager.releaseWriteLock(outputFile);
             DynmapBufferedImage.freeBufferedImage(im);
         }
-        MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, !rendered);
+        MapManager.mapman.updateStatistics(tile, prefix, true, tile_update, true);
 
         /* If day too, handle it */
         if(night_and_day) {
@@ -350,6 +350,7 @@ public class FlatMap extends MapType {
                     hashman.updateHashCode(tile.getKey(prefix), "day", t.x, t.y, crc);
                     tile.getDynmapWorld().enqueueZoomOutUpdate(dayfile);
                     tile_update = true;
+                    didwrite = true;
                 }
                 else {
                     Debug.debug("skipping image " + dayfile.getPath() + " - hash match");
@@ -359,10 +360,10 @@ public class FlatMap extends MapType {
                 FileLockManager.releaseWriteLock(dayfile);
                 DynmapBufferedImage.freeBufferedImage(im_day);
             }
-            MapManager.mapman.updateStatistics(tile, prefix+"_day", true, tile_update, !rendered);
+            MapManager.mapman.updateStatistics(tile, prefix+"_day", true, tile_update, true);
         }
         
-        return rendered;
+        return didwrite;
     }
     private void process_transparent(int[] pixel, int[] pixel_day, MapIterator mapiter) {
         int r = pixel[0], g = pixel[1], b = pixel[2], a = pixel[3];

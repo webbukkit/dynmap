@@ -177,6 +177,10 @@ public class MapManager {
             }
         }
     }
+    private static final String RENDERTYPE_FULLRENDER = "Full render";
+    private static final String RENDERTYPE_RADIUSRENDER = "Radius render";
+    private static final String RENDERTYPE_UPDATERENDER = "Update render";
+    
     /* This always runs on render pool threads - no bukkit calls from here */ 
     private class FullWorldRenderState implements Runnable {
         DynmapWorld world;    /* Which world are we rendering */
@@ -197,14 +201,20 @@ public class MapManager {
         int cxmin, cxmax, czmin, czmax;
         String rendertype;
         boolean cancelled;
+        boolean updaterender = false;
         String mapname;
         AtomicLong total_render_ns = new AtomicLong(0L);
         AtomicInteger rendercalls = new AtomicInteger(0);
 
         /* Full world, all maps render */
-        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname) {
+        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname, boolean updaterender) {
             this(dworld, l, sender, mapname, -1);
-            rendertype = "Full render";
+            if(updaterender) {
+                rendertype = RENDERTYPE_UPDATERENDER;
+                this.updaterender = true;
+            }
+            else
+                rendertype = RENDERTYPE_FULLRENDER;
         }
         
         /* Full world, all maps render, with optional render radius */
@@ -218,14 +228,14 @@ public class MapManager {
             if(radius < 0) {
                 cxmin = czmin = Integer.MIN_VALUE;
                 cxmax = czmax = Integer.MAX_VALUE;
-                rendertype = "Full render";
+                rendertype = RENDERTYPE_FULLRENDER;
             }
             else {
                 cxmin = (l.getBlockX() - radius)>>4;
                 czmin = (l.getBlockZ() - radius)>>4;
                 cxmax = (l.getBlockX() + radius+15)>>4;
                 czmax = (l.getBlockZ() + radius+15)>>4;
-                rendertype = "Radius render";
+                rendertype = RENDERTYPE_RADIUSRENDER;
             }
             this.mapname = mapname;
         }
@@ -291,6 +301,7 @@ public class MapManager {
             czmax = n.getInteger("czmax", 0);
             rendertype = n.getString("rendertype", "");
             mapname = n.getString("mapname", null);
+            updaterender = rendertype.equals(RENDERTYPE_UPDATERENDER);
             sender = null;
         }
         
@@ -372,7 +383,7 @@ public class MapManager {
                             sendMessage(String.format("%s of map '%s' of '%s' completed - %d tiles rendered (%.2f msec/map-tile, %.2f msec per render)",
                                     rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
                         /* Now, if fullrender, use the render bitmap to purge obsolete tiles */
-                        if(cxmin == Integer.MIN_VALUE) {
+                        if(rendertype.equals(RENDERTYPE_FULLRENDER)) {
                             if(activemapcnt == 1) {
                                 map.purgeOldTiles(world, rendered);
                             }
@@ -436,20 +447,22 @@ public class MapManager {
                             renderQueue.add(mt);
                         }
                     }
-                    /* Add spawn location too (helps with some worlds where 0,64,0 may not be generated */
-                    Location sloc = world.world.getSpawnLocation();
-                    for (MapTile mt : map.getTiles(sloc)) {
-                        if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
-                            found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
-                            renderQueue.add(mt);
+                    if(!updaterender) { /* Only add other seed points for fullrender */
+                        /* Add spawn location too (helps with some worlds where 0,64,0 may not be generated */
+                        Location sloc = world.world.getSpawnLocation();
+                        for (MapTile mt : map.getTiles(sloc)) {
+                            if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
+                                found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
+                                renderQueue.add(mt);
+                            }
                         }
-                    }
-                    if(world.seedloc != null) {
-                        for(Location seed : world.seedloc) {
-                            for (MapTile mt : map.getTiles(seed)) {
-                                if (!found.getFlag(mt.tileOrdinalX(),mt.tileOrdinalY())) {
-                                    found.setFlag(mt.tileOrdinalX(),mt.tileOrdinalY(), true);
-                                    renderQueue.add(mt);
+                        if(world.seedloc != null) {
+                            for(Location seed : world.seedloc) {
+                                for (MapTile mt : map.getTiles(seed)) {
+                                    if (!found.getFlag(mt.tileOrdinalX(),mt.tileOrdinalY())) {
+                                        found.setFlag(mt.tileOrdinalX(),mt.tileOrdinalY(), true);
+                                        renderQueue.add(mt);
+                                    }
                                 }
                             }
                         }
@@ -572,15 +585,18 @@ public class MapManager {
                 /* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
                 if (cache.isEmpty() == false) {
                     long rt0 = System.nanoTime();
-                    tile.render(cache, mapname);
+                    boolean upd = tile.render(cache, mapname);
                     total_render_ns.addAndGet(System.nanoTime()-rt0);
                     rendercalls.incrementAndGet();
                     synchronized(lock) {
                         rendered.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), true);
-                        for (MapTile adjTile : map.getAdjecentTiles(tile)) {
-                            if (!found.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY())) {
-                                found.setFlag(adjTile.tileOrdinalX(), adjTile.tileOrdinalY(), true);
-                                renderQueue.add(adjTile);
+                        if(upd || (!updaterender)) {    /* If updated or not an update render */
+                            /* Add adjacent unrendered tiles to queue */
+                            for (MapTile adjTile : map.getAdjecentTiles(tile)) {
+                                if (!found.getFlag(adjTile.tileOrdinalX(),adjTile.tileOrdinalY())) {
+                                    found.setFlag(adjTile.tileOrdinalX(), adjTile.tileOrdinalY(), true);
+                                    renderQueue.add(adjTile);
+                                }
                             }
                         }
                     }
@@ -718,7 +734,7 @@ public class MapManager {
         }        
     }
 
-    void renderFullWorld(Location l, CommandSender sender, String mapname) {
+    void renderFullWorld(Location l, CommandSender sender, String mapname, boolean update) {
         DynmapWorld world = getWorld(l.getWorld().getName());
         if (world == null) {
             sender.sendMessage("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
@@ -732,13 +748,16 @@ public class MapManager {
                 sender.sendMessage(rndr.rendertype + " of world '" + wname + "' already active.");
                 return;
             }
-            rndr = new FullWorldRenderState(world,l,sender, mapname);    /* Make new activation record */
+            rndr = new FullWorldRenderState(world,l,sender, mapname, update);    /* Make new activation record */
             active_renders.put(wname, rndr);    /* Add to active table */
         }
         /* Schedule first tile to be worked */
         scheduleDelayedJob(rndr, 0);
 
-        sender.sendMessage("Full render starting on world '" + wname + "'...");
+        if(update)
+            sender.sendMessage("Update render starting on world '" + wname + "'...");
+        else
+            sender.sendMessage("Full render starting on world '" + wname + "'...");
     }
 
     void renderWorldRadius(Location l, CommandSender sender, String mapname, int radius) {

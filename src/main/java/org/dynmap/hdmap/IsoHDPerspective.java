@@ -1184,8 +1184,6 @@ public class IsoHDPerspective implements HDPerspective {
             File f = new File(tile.getDynmapWorld().worldtilepath, fname);
             FileLockManager.getWriteLock(f);
             try {
-                if(rendered[i])
-                    renderone = true;
                 if((!f.exists()) || (crc != hashman.getImageHashCode(tile.getKey(prefix), null, tile.tx, tile.ty))) {
                     /* Wrap buffer as buffered image */
                     Debug.debug("saving image " + f.getPath());
@@ -1202,6 +1200,7 @@ public class IsoHDPerspective implements HDPerspective {
                     hashman.updateHashCode(tile.getKey(prefix), null, tile.tx, tile.ty, crc);
                     tile.getDynmapWorld().enqueueZoomOutUpdate(f);
                     tile_update = true;
+                    renderone = true;
                 }
                 else {
                     Debug.debug("skipping image " + f.getPath() + " - hash match");
@@ -1234,6 +1233,7 @@ public class IsoHDPerspective implements HDPerspective {
                         hashman.updateHashCode(tile.getKey(prefix), "day", tile.tx, tile.ty, crc);
                         tile.getDynmapWorld().enqueueZoomOutUpdate(f);
                         tile_update = true;
+                        renderone = true;
                     }
                     else {
                         Debug.debug("skipping image " + f.getPath() + " - hash match");

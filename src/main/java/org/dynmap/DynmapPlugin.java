@@ -824,6 +824,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         "fullrender",
         "cancelrender",
         "radiusrender",
+        "updaterender",
         "reload",
         "stats",
         "triggerstats",
@@ -899,6 +900,32 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
                 if(loc != null)
                     mapManager.renderWorldRadius(loc, sender, mapname, radius);
+            } else if(c.equals("updaterender") && checkPlayerPermission(sender,"updaterender")) {
+                String mapname = null;
+                Location loc = null;
+                if(args.length <= 3) {  /* Just command, or command plus map */
+                    if(args.length > 2)
+                        mapname = args[2];
+                    if (player != null)
+                        loc = player.getLocation();
+                    else
+                        sender.sendMessage("Command require <world> <x> <z> <radius> if issued from console.");
+                }
+                else {  /* <world> <x> <z> */
+                    DynmapWorld w = mapManager.worldsLookup.get(args[1]);   /* Look up world */
+                    if(w == null) {
+                        sender.sendMessage("World '" + args[1] + "' not defined/loaded");
+                    }
+                    double x = 0, z = 0;
+                    x = Double.parseDouble(args[2]);
+                    z = Double.parseDouble(args[3]);
+                    if(args.length > 4)
+                        mapname = args[4];
+                    if(w != null)
+                        loc = new Location(w.world, x, 64.0, z);
+                }
+                if(loc != null)
+                    mapManager.renderFullWorld(loc, sender, mapname, true);
             } else if (c.equals("hide")) {
                 if (args.length == 1) {
                     if(player != null && checkPlayerPermission(sender,"hide.self")) {
@@ -938,7 +965,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         if(w != null) {
                             Location spawn = w.world.getSpawnLocation();
                             Location loc = new Location(w.world, w.configuration.getDouble("center/x", spawn.getX()), w.configuration.getDouble("center/y", spawn.getY()), w.configuration.getDouble("center/z", spawn.getZ()));
-                            mapManager.renderFullWorld(loc,sender, map);
+                            mapManager.renderFullWorld(loc,sender, map, false);
                         }
                         else
                             sender.sendMessage("World '" + wname + "' not defined/loaded");
@@ -948,7 +975,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     if(args.length > 1)
                         map = args[1];
                     if(loc != null)
-                        mapManager.renderFullWorld(loc, sender, map);
+                        mapManager.renderFullWorld(loc, sender, map, false);
                 } else {
                     sender.sendMessage("World name is required");
                 }
