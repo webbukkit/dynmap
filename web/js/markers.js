@@ -189,10 +189,10 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	
 	function create2DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
 		return new L.Polygon([
-				latlng(minx,64,minz),
-				latlng(maxx,64,minz),
-				latlng(maxx,64,maxz),
-				latlng(minx,64,maxz)
+				latlng(minx,miny,minz),
+				latlng(maxx,miny,minz),
+				latlng(maxx,miny,maxz),
+				latlng(minx,miny,maxz)
 				], style);
 	}
 
@@ -223,7 +223,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		var llist = [];
 		var i;
 		for(i = 0; i < xarray.length; i++) {
-			llist[i] = latlng(xarray[i], 64, zarray[i]);
+			llist[i] = latlng(xarray[i], miny, zarray[i]);
 		}
 		return new L.Polygon(llist, style);
 	}
