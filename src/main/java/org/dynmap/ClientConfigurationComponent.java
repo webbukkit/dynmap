@@ -25,7 +25,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "sidebaropened", c.getString("sidebaropened", "false"));
                 s(t, "dynmapversion", plugin.getDescription().getVersion());
                 s(t, "cyrillic", c.getBoolean("cyrillic-support", false));
-                s(t, "showlayercontrol", c.getBoolean("showlayercontrol", true));
+                s(t, "showlayercontrol", c.getString("showlayercontrol", "true"));
                 s(t, "grayplayerswhenhidden", c.getBoolean("grayplayerswhenhidden", true));
                 String sn = plugin.getServer().getServerName();
                 if(sn.equals("Unknown Server"))

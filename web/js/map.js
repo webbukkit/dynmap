@@ -109,8 +109,8 @@ DynMap.prototype = {
 		if(urlzoom != null)
 			me.options.defaultzoom = urlzoom;
 
-		var showlayerctl = me.getBoolParameterByName('showlayercontrol');
-		if(showlayerctl != null)
+		var showlayerctl = me.getParameterByName('showlayercontrol');
+		if(showlayerctl != "")
 			me.options.showlayercontrol = showlayerctl;
 			
 		if(typeof me.options.defaultzoom == 'undefined')
@@ -786,8 +786,10 @@ DynMap.prototype = {
 	addToLayerSelector: function(layer, name, priority) {
 		var me = this;
 
-		if(me.options.showlayercontrol && (!me.layercontrol)) {		
+		if(me.options.showlayercontrol != "false" && (!me.layercontrol)) {		
 			me.layercontrol = new DynmapLayerControl();
+			if(me.options.showlayercontrol == "pinned")
+				me.layercontrol.options.collapsed = false;
 			map.addControl(me.layercontrol);
 		}
 		
