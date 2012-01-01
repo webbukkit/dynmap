@@ -74,6 +74,9 @@ public class SendMessageHandler implements HttpHandler {
             }
             else if(require_player_login_ip) {
                 Log.info("Ignore message from '" + message.name + "' - no matching player login recorded");
+                response.fields.put("Content-Length", "0");
+                response.status = HttpStatus.Forbidden;
+                response.getBody();
                 return;
             }
         }
