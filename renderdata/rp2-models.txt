@@ -147,3 +147,11 @@ layer:11,12
 ----------------
 ----------------
 ----------------
+# Solar panel (machine.machinePanel.id,0)
+block:id=rp2-machine-machinePanel,data=0,scale=4
+layer:0
+****
+****
+****
+****
+

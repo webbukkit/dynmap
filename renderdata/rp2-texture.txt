@@ -16,15 +16,16 @@ texturefile:id=worlditem,filename=redpower2/worlditems1.png,xcount=16,ycount=16
 texturefile:id=logic,filename=redpower2/logic1.png,xcount=16,ycount=16
 texturefile:id=lighting,filename=redpower2/lighting1.png,xcount=16,ycount=16
 texturefile:id=array,filename=redpower2/array1.png,xcount=16,ycount=16
+texturefile:id=machine,filename=redpower2/machine1.png,xcount=16,ycount=16
 ############
-# Blocks from RedPower2Core
+# Blocks from RedPowerCore-2
 ############
 # Alloy Furnace (base.appliance.id, 0)
 block:id=rp2-base-appliance,data=0,topbottom=19,north=18,south=18,east=16,west=16,txtid=base
 # Microblocks (base.microblock.id, 0) - can't do this right yet, so just do it as cobblestone...
 block:id=rp2-base-microblock,data=0,allfaces=16
 ############
-# Blocks from RedPower2World
+# Blocks from RedPowerWorld-2
 ############
 # Flower (world.plants.id, 0), (world.plants.id,3+)
 block:id=rp2-world-plants,data=0,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=1,txtid=worlditem,transparency=TRANSPARENT
@@ -79,7 +80,7 @@ block:id=rp2-world-storage,data=2,allfaces=82,txtid=world
 # Rubber log (world.log.id,*)
 block:id=rp2-world-log,data=*,allsides=50,topbottom=51,txtid=world
 ############
-# Blocks from RedPower2Logic
+# Blocks from RedPowerLogic-2
 ############
 # Timer (logic.logic.id,0)
 block:id=rp2-logic-logic,data=0,allsides=0,top=8,bottom=0,txtid=logic,transparency=TRANSPARENT
@@ -114,7 +115,7 @@ block:id=rp2-logic-logic,data=14,allsides=0,top=16,bottom=0,txtid=logic,transpar
 # Repeater (logic.logic.id,15)
 block:id=rp2-logic-logic,data=15,allsides=0,top=188,bottom=0,txtid=logic,transparency=TRANSPARENT
 ############
-# Blocks from RedPower2Lighting
+# Blocks from RedPowerLighting-2
 ############
 # White Lamp on
 block:id=rp2-lighting-lampOn,data=0,allfaces=32,txtid=lighting
@@ -181,11 +182,36 @@ block:id=rp2-lighting-lampOff,data=14,allfaces=30,txtid=lighting
 # Black Lamp off
 block:id=rp2-lighting-lampOff,data=15,allfaces=31,txtid=lighting
 ############
-# Blocks from RedPower2Array
+# Blocks from RedPowerArray-2
 ############
-#Array (array.array.id,0)
+# Array (array.array.id,0)
 block:id=rp2-array-array,data=0,allsides=0,top=2,bottom=0,txtid=array,transparency=TRANSPARENT
 # Inv-Array (array.array.id,1)
 block:id=rp2-array-array,data=1,allsides=0,top=3,bottom=0,txtid=array,transparency=TRANSPARENT
 # Non-Inv-Array (array.array.id,2)
 block:id=rp2-array-array,data=2,allsides=0,top=5,bottom=0,txtid=array,transparency=TRANSPARENT
+############
+# Blocks from RedPowerMachine-2
+############
+# Deployer (machine.machine.id,0) - no orientation data yet - just face east
+block:id=rp2-machine-machine,data=0,east=53,west=48,top=6055,bottom=4055,north=4056,south=6056,txtid=machine
+# Breaker (machine.machine.id,1) - no orientation data yet - just face east
+block:id=rp2-machine-machine,data=1,east=49,west=58,top=6051,bottom=4051,north=4051,south=6051,txtid=machine
+# Transposer (machine.machine.id,2) - no orientation data yet - just face east
+block:id=rp2-machine-machine,data=2,east=57,west=58,top=6059,bottom=4059,north=4059,south=6059,txtid=machine
+# Filter (machine.machine.id,3) - no orientation data yet - just face east
+block:id=rp2-machine-machine,data=3,east=57,west=58,top=6061,bottom=4061,north=4061,south=6061,txtid=machine
+# Item Detector (machine.machine.id,4) - no orientation data yet - just face east
+block:id=rp2-machine-machine,data=4,east=103,west=102,top=6100,bottom=4101,north=4096,south=6097,txtid=machine
+# Sorter (machine.machine.id,5) - no orientation data yet - just face east
+block:id=rp2-machine-machine,data=5,east=112,west=113,top=6116,bottom=4116,north=4116,south=6116,txtid=machine
+# BatBox (machine.machine.id,6)
+block:id=rp2-machine-machine,data=6,allsides=134,topbottom=128,txtid=machine
+# Retriever (machine.machine.id,8) - no orientation data yet - just face east
+block:id=rp2-machine-machine,data=8,east=125,west=124,top=6123,bottom=4123,north=4123,south=6123,txtid=machine
+# Solar Panel (machine.machinePanel.id,0)
+block:id=rp2-machine-machinePanel,data=0,top=85,bottom=84,allsides=86,txtid=machine
+# Blue Furnace (base.appliance.id, 1) - no orientation data yet - just face east
+block:id=rp2-base-appliance,data=1,east=82,west=80,top=83,bottom=83,north=80,south=80,txtid=machine
+# Buffer (base.appliance.id, 2) - no orientation data yet - just face east
+block:id=rp2-base-appliance,data=2,east=89,west=88,top=6088,bottom=4088,north=4088,south=6088,txtid=machine
