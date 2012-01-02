@@ -13,6 +13,7 @@ var:rp2-machine-machine=150,rp2-machine-machinePanel=151,rp2-machine-frame=152
 texturefile:id=base,filename=redpower2/base1.png,xcount=16,ycount=16
 texturefile:id=world,filename=redpower2/world1.png,xcount=16,ycount=16
 texturefile:id=worlditem,filename=redpower2/worlditems1.png,xcount=16,ycount=16
+texturefile:id=logic,filename=redpower2/logic1.png,xcount=16,ycount=16
 ############
 # Blocks from RedPower2Core
 ############
@@ -75,3 +76,35 @@ block:id=rp2-world-storage,data=1,allfaces=81,txtid=world
 block:id=rp2-world-storage,data=2,allfaces=82,txtid=world
 # Rubber log (world.log.id,*)
 block:id=rp2-world-log,data=*,allsides=50,topbottom=51,txtid=world
+# Timer (logic.logic.id,0)
+block:id=rp2-logic-logic,data=0,allsides=0,top=8,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Sequencer (logic.logic.id,1)
+block:id=rp2-logic-logic,data=1,allsides=0,top=1,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Latch (logic.logic.id,2)
+block:id=rp2-logic-logic,data=2,allsides=0,top=2,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Nor (logic.logic.id,3)
+block:id=rp2-logic-logic,data=3,allsides=0,top=32,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Or (logic.logic.id,4)
+block:id=rp2-logic-logic,data=4,allsides=0,top=144,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Nand (logic.logic.id,5)
+block:id=rp2-logic-logic,data=5,allsides=0,top=96,bottom=0,txtid=logic,transparency=TRANSPARENT
+# And (logic.logic.id,6)
+block:id=rp2-logic-logic,data=6,allsides=0,top=160,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Xnor (logic.logic.id,7)
+block:id=rp2-logic-logic,data=7,allsides=0,top=20,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Xor (logic.logic.id,8)
+block:id=rp2-logic-logic,data=8,allsides=0,top=24,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Pulse (logic.logic.id,9)
+block:id=rp2-logic-logic,data=9,allsides=0,top=216,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Toggle (logic.logic.id,10)
+block:id=rp2-logic-logic,data=10,allsides=0,top=16,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Not (logic.logic.id,11)
+block:id=rp2-logic-logic,data=11,allsides=0,top=192,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Buffer (logic.logic.id,12)
+block:id=rp2-logic-logic,data=12,allsides=0,top=208,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Mux (logic.logic.id,13)
+block:id=rp2-logic-logic,data=13,allsides=0,top=5,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Counter (logic.logic.id,14)
+block:id=rp2-logic-logic,data=14,allsides=0,top=16,bottom=0,txtid=logic,transparency=TRANSPARENT
+# Repeater (logic.logic.id,15)
+block:id=rp2-logic-logic,data=15,allsides=0,top=188,bottom=0,txtid=logic,transparency=TRANSPARENT
