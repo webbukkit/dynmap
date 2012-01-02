@@ -69,7 +69,7 @@ var DynmapTileLayer = L.TileLayer.extend({
 		var tileName = this.getTileName(tilePoint, zoom);
 		var url = this._cachedTileUrls[tileName];
 		if (!url) {
-			this._cachedTileUrls[tileName] = url = this.options.dynmap.getTileUrl(tileName) + '?' + new Date().getUTCMilliseconds();
+			this._cachedTileUrls[tileName] = url = this.options.dynmap.getTileUrl(tileName);
 		}
 		return url;
 	},

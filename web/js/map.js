@@ -412,7 +412,12 @@ DynMap.prototype = {
 		var prevzoom = me.map.getZoom(); 					
 
 		var prevworld = me.world;
-		
+
+		if(worldChanged) {	// World changed - purge URL cache (tile updates unreported for other worlds)
+			me.registeredTiles = [];
+		    me.inittime = new Date().getTime();
+		}
+				
 		if(worldChanged && me.world) {
 			me.world.lastcenter = me.maptype.getProjection().fromLatLngToLocation(me.map.getCenter(), 64);
 		}
@@ -623,30 +628,16 @@ DynMap.prototype = {
 		var me = this;
 		var tile = me.registeredTiles[tileName];
 		
-		if(tile) {
-			return me.options.tileUrl + me.world.name + '/' + tileName + '?' + tile.lastseen;
-		} else {
-			return me.options.tileUrl + me.world.name + '/' + tileName + '?' + me.inittime; /* Browser cache fix on reload */
+		if(tile == null) {
+			tile = this.registeredTiles[tileName] = me.options.tileUrl + me.world.name + '/' + tileName + '?' + me.inittime;
 		}
-	},
-	registerTile: function(mapType, tileName, tile) {
-		this.registeredTiles[tileName] = {
-				tileElement: tile,
-				mapType: mapType,
-				lastseen: '0'
-		};
-	},
-	unregisterTile: function(mapType, tileName) {
-		delete this.registeredTiles[tileName];
+		return tile;
 	},
 	onTileUpdated: function(tileName,timestamp) {
 		var me = this;
-		var tile = this.registeredTiles[tileName];
+
+		this.registeredTiles[tileName] = me.options.tileUrl + me.world.name + '/' + tileName + '?' + timestamp;
 		
-		if (tile) {
-			tile.lastseen = timestamp;
-			tile.mapType.onTileUpdated(tile.tileElement, tileName);
-		}
 		me.maptype.updateNamedTile(tileName);
 	},
 	addPlayer: function(update) {
