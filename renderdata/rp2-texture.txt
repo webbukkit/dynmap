@@ -14,6 +14,7 @@ texturefile:id=base,filename=redpower2/base1.png,xcount=16,ycount=16
 texturefile:id=world,filename=redpower2/world1.png,xcount=16,ycount=16
 texturefile:id=worlditem,filename=redpower2/worlditems1.png,xcount=16,ycount=16
 texturefile:id=logic,filename=redpower2/logic1.png,xcount=16,ycount=16
+texturefile:id=lighting,filename=redpower2/lighting1.png,xcount=16,ycount=16
 ############
 # Blocks from RedPower2Core
 ############
@@ -76,6 +77,9 @@ block:id=rp2-world-storage,data=1,allfaces=81,txtid=world
 block:id=rp2-world-storage,data=2,allfaces=82,txtid=world
 # Rubber log (world.log.id,*)
 block:id=rp2-world-log,data=*,allsides=50,topbottom=51,txtid=world
+############
+# Blocks from RedPower2Logic
+############
 # Timer (logic.logic.id,0)
 block:id=rp2-logic-logic,data=0,allsides=0,top=8,bottom=0,txtid=logic,transparency=TRANSPARENT
 # Sequencer (logic.logic.id,1)
@@ -108,3 +112,70 @@ block:id=rp2-logic-logic,data=13,allsides=0,top=5,bottom=0,txtid=logic,transpare
 block:id=rp2-logic-logic,data=14,allsides=0,top=16,bottom=0,txtid=logic,transparency=TRANSPARENT
 # Repeater (logic.logic.id,15)
 block:id=rp2-logic-logic,data=15,allsides=0,top=188,bottom=0,txtid=logic,transparency=TRANSPARENT
+############
+# Blocks from RedPower2Lighting
+############
+# White Lamp on
+block:id=rp2-lighting-lampOn,data=0,allfaces=32,txtid=lighting
+# Orange Lamp on
+block:id=rp2-lighting-lampOn,data=1,allfaces=33,txtid=lighting
+# Magenta Lamp on
+block:id=rp2-lighting-lampOn,data=2,allfaces=34,txtid=lighting
+# Light Blue Lamp on
+block:id=rp2-lighting-lampOn,data=3,allfaces=35,txtid=lighting
+# Yellow Lamp on
+block:id=rp2-lighting-lampOn,data=4,allfaces=36,txtid=lighting
+# Lime Lamp on
+block:id=rp2-lighting-lampOn,data=5,allfaces=37,txtid=lighting
+# Pink Lamp on
+block:id=rp2-lighting-lampOn,data=6,allfaces=38,txtid=lighting
+# Gray Lamp on
+block:id=rp2-lighting-lampOn,data=7,allfaces=39,txtid=lighting
+# Light Gray Lamp on
+block:id=rp2-lighting-lampOn,data=8,allfaces=40,txtid=lighting
+# Cyan Lamp on
+block:id=rp2-lighting-lampOn,data=9,allfaces=41,txtid=lighting
+# Purple Lamp on
+block:id=rp2-lighting-lampOn,data=10,allfaces=42,txtid=lighting
+# Blue Lamp on
+block:id=rp2-lighting-lampOn,data=11,allfaces=43,txtid=lighting
+# Brown Lamp on
+block:id=rp2-lighting-lampOn,data=12,allfaces=44,txtid=lighting
+# Green Lamp on
+block:id=rp2-lighting-lampOn,data=13,allfaces=45,txtid=lighting
+# Red Lamp on
+block:id=rp2-lighting-lampOn,data=14,allfaces=46,txtid=lighting
+# Black Lamp on
+block:id=rp2-lighting-lampOn,data=15,allfaces=47,txtid=lighting
+# White Lamp off
+block:id=rp2-lighting-lampOff,data=0,allfaces=16,txtid=lighting
+# Orange Lamp off
+block:id=rp2-lighting-lampOff,data=1,allfaces=17,txtid=lighting
+# Magenta Lamp off
+block:id=rp2-lighting-lampOff,data=2,allfaces=18,txtid=lighting
+# Light Blue Lamp off
+block:id=rp2-lighting-lampOff,data=3,allfaces=19,txtid=lighting
+# Yellow Lamp off
+block:id=rp2-lighting-lampOff,data=4,allfaces=20,txtid=lighting
+# Lime Lamp off
+block:id=rp2-lighting-lampOff,data=5,allfaces=21,txtid=lighting
+# Pink Lamp off
+block:id=rp2-lighting-lampOff,data=6,allfaces=22,txtid=lighting
+# Gray Lamp off
+block:id=rp2-lighting-lampOff,data=7,allfaces=23,txtid=lighting
+# Light Gray Lamp off
+block:id=rp2-lighting-lampOff,data=8,allfaces=24,txtid=lighting
+# Cyan Lamp off
+block:id=rp2-lighting-lampOff,data=9,allfaces=25,txtid=lighting
+# Purple Lamp off
+block:id=rp2-lighting-lampOff,data=10,allfaces=26,txtid=lighting
+# Blue Lamp off
+block:id=rp2-lighting-lampOff,data=11,allfaces=27,txtid=lighting
+# Brown Lamp off
+block:id=rp2-lighting-lampOff,data=12,allfaces=28,txtid=lighting
+# Green Lamp off
+block:id=rp2-lighting-lampOff,data=13,allfaces=29,txtid=lighting
+# Red Lamp off
+block:id=rp2-lighting-lampOff,data=14,allfaces=30,txtid=lighting
+# Black Lamp off
+block:id=rp2-lighting-lampOff,data=15,allfaces=31,txtid=lighting
