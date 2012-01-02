@@ -2,25 +2,18 @@
 # define buildcraft-support: true in configuration.txt to enable
 enabled:buildcraft-support
 # Variables - can be altered in configuration.txt
-var:bc-autoWorkbench=152,bc-builder=157,bc-cobblestonePipe=159,bc-diamondPipe=149,bc-dockingStation=168,bc-drill=151
-var:bc-engine=161,bc-filler=155,bc-frame=160,bc-goldenPipe=148,bc-ironPipe=147,bc-marker=154,bc-miningWell=150
-var:bc-obsidianPipe=156,bc-oilMoving=162,bc-oilStill=163,bc-pipe=166,bc-pump=164,bc-quarry=153,bc-refinery=167
-var:bc-stonePipe=146,bc-tank=165,bc-template=158,bc-woodenPipe=145
+var:bc-autoWorkbench=152,bc-builder=157,bc-dockingStation=168,bc-drill=151
+var:bc-engine=161,bc-filler=155,bc-frame=160,bc-marker=154,bc-miningWell=150
+var:bc-oilMoving=162,bc-oilStill=163,bc-pipe=166,bc-pump=164,bc-quarry=153,bc-refinery=167
+var:bc-tank=165,bc-template=158
 # Pipe - set render alg
-linkmap:id=bc-woodenPipe,linkalg=5,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-goldenPipe,linkid=bc-diamondPipe,linkid=bc-obsidianPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
-linkmap:id=bc-stonePipe,linkalg=5,linkid=bc-woodenPipe,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-goldenPipe,linkid=bc-diamondPipe,linkid=bc-obsidianPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
-linkmap:id=bc-ironPipe,linkalg=5,linkid=bc-woodenPipe,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-goldenPipe,linkid=bc-diamondPipe,linkid=bc-obsidianPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
-linkmap:id=bc-goldenPipe,linkalg=5,linkid=bc-woodenPipe,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-diamondPipe,linkid=bc-obsidianPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
-linkmap:id=bc-diamondPipe,linkalg=5,linkid=bc-woodenPipe,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-goldenPipe,linkid=bc-diamondPipe,linkid=bc-obsidianPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
-linkmap:id=bc-obsidianPipe,linkalg=5,linkid=bc-woodenPipe,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-goldenPipe,linkid=bc-diamondPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
-linkmap:id=bc-cobblestonePipe,linkalg=5,linkid=bc-woodenPipe,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-goldenPipe,linkid=bc-diamondPipe,linkid=bc-obsidianPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
-linkmap:id=bc-pipe,linkalg=5,linkid=bc-woodenPipe,linkid=bc-stonePipe,linkid=bc-ironPipe,linkid=bc-goldenPipe,linkid=bc-diamondPipe,linkid=bc-obsidianPipe,linkid=bc-cobblestonePipe,linkid=bc-pipe
+linkmap:id=bc-pipe,linkalg=5,linkid=bc-pipe
 # Frame
 linkmap:id=bc-frame,linkalg=5,linkid=bc-frame
 # Pipe - (data is faked: 1=north,2=east,4=south,8=west)
 # Pipe - no neighbors
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=0,scale=4
+block:id=bc-pipe,id=bc-frame,data=0,scale=4
 layer:1,2
 ----
 -**-
@@ -28,7 +21,7 @@ layer:1,2
 ----
 # Pipe - just north neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=1,scale=4
+block:id=bc-pipe,id=bc-frame,data=1,scale=4
 layer:1,2
 -**-
 -**-
@@ -36,19 +29,19 @@ layer:1,2
 ----
 # Pipe - just east neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=2,scale=4
-rotate:id=bc-woodenPipe,data=1,rot=90
+block:id=bc-pipe,id=bc-frame,data=2,scale=4
+rotate:id=bc-pipe,data=1,rot=90
 # Pipe - just south neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=4,scale=4
-rotate:id=bc-woodenPipe,data=1,rot=180
+block:id=bc-pipe,id=bc-frame,data=4,scale=4
+rotate:id=bc-pipe,data=1,rot=180
 # Pipe - just south neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=8,scale=4
-rotate:id=bc-woodenPipe,data=1,rot=270
+block:id=bc-pipe,id=bc-frame,data=8,scale=4
+rotate:id=bc-pipe,data=1,rot=270
 # Pipe - north and east neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=3,scale=4
+block:id=bc-pipe,id=bc-frame,data=3,scale=4
 layer:1,2
 -**-
 -***
@@ -56,19 +49,19 @@ layer:1,2
 ----
 # Pipe - east and south neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=6,scale=4
-rotate:id=bc-woodenPipe,data=3,rot=90
+block:id=bc-pipe,id=bc-frame,data=6,scale=4
+rotate:id=bc-pipe,data=3,rot=90
 # Pipe - south and west neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=12,scale=4
-rotate:id=bc-woodenPipe,data=3,rot=180
+block:id=bc-pipe,id=bc-frame,data=12,scale=4
+rotate:id=bc-pipe,data=3,rot=180
 # Pipe - west and north neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=9,scale=4
-rotate:id=bc-woodenPipe,data=3,rot=270
+block:id=bc-pipe,id=bc-frame,data=9,scale=4
+rotate:id=bc-pipe,data=3,rot=270
 # Pipe - north and south neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=5,scale=4
+block:id=bc-pipe,id=bc-frame,data=5,scale=4
 layer:1,2
 -**-
 -**-
@@ -76,11 +69,11 @@ layer:1,2
 -**-
 # Pipe - east and west neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=10,scale=4
-rotate:id=bc-woodenPipe,data=5,rot=90
+block:id=bc-pipe,id=bc-frame,data=10,scale=4
+rotate:id=bc-pipe,data=5,rot=90
 # Pipe - north, east and south neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=7,scale=4
+block:id=bc-pipe,id=bc-frame,data=7,scale=4
 layer:1,2
 -**-
 -***
@@ -88,19 +81,19 @@ layer:1,2
 -**-
 # Pipe - east, south and west neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=14,scale=4
-rotate:id=bc-woodenPipe,data=7,rot=90
+block:id=bc-pipe,id=bc-frame,data=14,scale=4
+rotate:id=bc-pipe,data=7,rot=90
 # Pipe - south, west and north neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=13,scale=4
-rotate:id=bc-woodenPipe,data=7,rot=180
+block:id=bc-pipe,id=bc-frame,data=13,scale=4
+rotate:id=bc-pipe,data=7,rot=180
 # Pipe - west, north and east neighbor
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=11,scale=4
-rotate:id=bc-woodenPipe,data=7,rot=270
+block:id=bc-pipe,id=bc-frame,data=11,scale=4
+rotate:id=bc-pipe,data=7,rot=270
 # Pipe - north, south, east, west neightbors
 # Frame
-block:id=bc-woodenPipe,id=bc-stonePipe,id=bc-ironPipe,id=bc-goldenPipe,id=bc-diamondPipe,id=bc-obsidianPipe,id=bc-cobblestonePipe,id=bc-pipe,id=bc-frame,data=15,scale=4
+block:id=bc-pipe,id=bc-frame,data=15,scale=4
 layer:1,2
 -**-
 ****

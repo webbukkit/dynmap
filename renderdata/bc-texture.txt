@@ -2,25 +2,15 @@
 # define buildcraft-support: true in configuration.txt to enable
 enabled:buildcraft-support
 # Variables - can be altered in configuration.txt
-var:bc-autoWorkbench=152,bc-builder=157,bc-cobblestonePipe=159,bc-diamondPipe=149,bc-dockingStation=168,bc-drill=151
-var:bc-engine=161,bc-filler=155,bc-frame=160,bc-goldenPipe=148,bc-ironPipe=147,bc-marker=154,bc-miningWell=150
-var:bc-obsidianPipe=156,bc-oilMoving=162,bc-oilStill=163,bc-pipe=166,bc-pump=164,bc-quarry=153,bc-refinery=167
-var:bc-stonePipe=146,bc-tank=165,bc-template=158,bc-woodenPipe=145
+var:bc-autoWorkbench=152,bc-builder=157,bc-cobblestonePipe=159,bc-dockingStation=168,bc-drill=151
+var:bc-engine=161,bc-filler=155,bc-frame=160,bc-marker=154,bc-miningWell=150
+var:bc-oilMoving=162,bc-oilStill=163,bc-pipe=166,bc-pump=164,bc-quarry=153,bc-refinery=167
+var:bc-tank=165,bc-template=158
 # Files
 texturefile:id=blk,filename=buildcraft/block_textures.png,xcount=16,ycount=16
 texturefile:id=wood,filename=buildcraft/base_wood.png,xcount=4,ycount=2
 texturefile:id=iron,filename=buildcraft/base_iron.png,xcount=4,ycount=2
 texturefile:id=stone,filename=buildcraft/base_stone.png,xcount=4,ycount=2
-# WOODEN_PIPE_ID      = 145
-block:id=bc-woodenPipe,data=*,allfaces=16,txtid=blk,transparency=TRANSPARENT
-# STONE_PIPE_ID       = 146
-block:id=bc-stonePipe,data=*,allfaces=29,txtid=blk,transparency=TRANSPARENT
-# IRON_PIPE_ID        = 147
-block:id=bc-ironPipe,data=*,allfaces=19,txtid=blk,transparency=TRANSPARENT
-# GOLDEN_PIPE_ID      = 148
-block:id=bc-goldenPipe,data=*,allfaces=20,txtid=blk,transparency=TRANSPARENT
-# DIAMOND_PIPE_ID     = 149
-block:id=bc-diamondPipe,data=*,allfaces=21,txtid=blk,transparency=TRANSPARENT
 # MINING_WELL_ID      = 150
 block:id=bc-miningWell,data=2,east=35,top=4036,north=37,south=37,west=38,bottom=38,txtid=blk
 block:id=bc-miningWell,data=3,west=35,top=4036,north=37,south=37,east=38,bottom=38,txtid=blk
@@ -39,8 +29,6 @@ block:id=bc-quarry,data=5,south=39,top=4040,east=38,west=38,north=38,bottom=38,t
 block:id=bc-marker,data=*,allsides=57,txtid=blk,transparency=TRANSPARENT
 # FILLER_ID           = 155
 block:id=bc-filler,data=*,allsides=66,topbottom=4065,txtid=blk
-# OBSIDIAN_PIPE_ID    = 156
-block:id=bc-obsidianPipe,data=*,allfaces=28,txtid=blk,transparency=TRANSPARENT
 # BUILDER_ID          = 157
 block:id=bc-builder,data=2,east=55,top=4054,north=3,south=3,west=3,bottom=3,txtid=blk
 block:id=bc-builder,data=3,west=55,top=4054,north=3,south=3,east=3,bottom=3,txtid=blk
@@ -51,8 +39,6 @@ block:id=bc-template,data=2,east=52,top=4050,north=48,south=48,west=48,bottom=48
 block:id=bc-template,data=3,west=52,top=4050,north=48,south=48,east=48,bottom=48,txtid=blk
 block:id=bc-template,data=4,north=52,top=4050,east=48,west=48,south=48,bottom=48,txtid=blk
 block:id=bc-template,data=5,south=52,top=4050,east=48,west=48,north=48,bottom=48,txtid=blk
-# COBBLESTONE_PIPE_ID = 159
-block:id=bc-cobblestonePipe,data=*,allfaces=17,txtid=blk,transparency=TRANSPARENT
 # FRAME_ID            = 160
 block:id=bc-frame,data=*,allfaces=34,txtid=blk,transparency=TRANSPARENT
 # ENGINE_ID           = 161

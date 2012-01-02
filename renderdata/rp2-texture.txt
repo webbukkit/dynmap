@@ -15,6 +15,7 @@ texturefile:id=world,filename=redpower2/world1.png,xcount=16,ycount=16
 texturefile:id=worlditem,filename=redpower2/worlditems1.png,xcount=16,ycount=16
 texturefile:id=logic,filename=redpower2/logic1.png,xcount=16,ycount=16
 texturefile:id=lighting,filename=redpower2/lighting1.png,xcount=16,ycount=16
+texturefile:id=array,filename=redpower2/array1.png,xcount=16,ycount=16
 ############
 # Blocks from RedPower2Core
 ############
@@ -179,3 +180,12 @@ block:id=rp2-lighting-lampOff,data=13,allfaces=29,txtid=lighting
 block:id=rp2-lighting-lampOff,data=14,allfaces=30,txtid=lighting
 # Black Lamp off
 block:id=rp2-lighting-lampOff,data=15,allfaces=31,txtid=lighting
+############
+# Blocks from RedPower2Array
+############
+#Array (array.array.id,0)
+block:id=rp2-array-array,data=0,allsides=0,top=2,bottom=0,txtid=array,transparency=TRANSPARENT
+# Inv-Array (array.array.id,1)
+block:id=rp2-array-array,data=1,allsides=0,top=3,bottom=0,txtid=array,transparency=TRANSPARENT
+# Non-Inv-Array (array.array.id,2)
+block:id=rp2-array-array,data=2,allsides=0,top=5,bottom=0,txtid=array,transparency=TRANSPARENT
