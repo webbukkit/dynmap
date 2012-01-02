@@ -1,0 +1,77 @@
+# RedPower2 block mapping
+# define redpower2-support: true in configuration.txt to enable
+enabled:redpower2-support
+# Variables - can be altered in configuration.txt
+var:rp2-base-appliance=137,rp2-base-microblock=136
+var:rp2-world-plants=139,rp2-world-ores=140,rp2-world-leaves=141,rp2-world-stone=142,rp2-world-log=143,rp2-world-crops=144,rp2-world-storage=145
+var:rp2-logic-logic=138
+var:rp2-lighting-lampOn=146,rp2-lighting-lampOff=147
+var:rp2-sensor-sensor=148
+var:rp2-array-array=149
+var:rp2-machine-machine=150,rp2-machine-machinePanel=151,rp2-machine-frame=152
+# Files
+texturefile:id=base,filename=redpower2/base1.png,xcount=16,ycount=16
+texturefile:id=world,filename=redpower2/world1.png,xcount=16,ycount=16
+texturefile:id=worlditem,filename=redpower2/worlditems1.png,xcount=16,ycount=16
+############
+# Blocks from RedPower2Core
+############
+# Alloy Furnace (base.appliance.id, 0)
+block:id=rp2-base-appliance,data=0,topbottom=19,north=18,south=18,east=16,west=16,txtid=base
+# Microblocks (base.microblock.id, 0) - can't do this right yet, so just do it as cobblestone...
+block:id=rp2-base-microblock,data=0,allfaces=16
+############
+# Blocks from RedPower2World
+############
+# Flower (world.plants.id, 0), (world.plants.id,3+)
+block:id=rp2-world-plants,data=0,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=1,txtid=worlditem,transparency=TRANSPARENT
+# Flower (world.plants.id, 1), (world.plants.id, 2)
+block:id=rp2-world-plants,data=1,data=2,allsides=2,txtid=worlditem,transparency=TRANSPARENT
+# Flax (world.crops.id,0)
+block:id=rp2-world-crops,data=0,allsides=64,txtid=world,transparency=TRANSPARENT
+# Flax (world.crops.id,1)
+block:id=rp2-world-crops,data=1,allsides=65,txtid=world,transparency=TRANSPARENT
+# Flax (world.crops.id,2)
+block:id=rp2-world-crops,data=2,allsides=66,txtid=world,transparency=TRANSPARENT
+# Flax (world.crops.id,3)
+block:id=rp2-world-crops,data=3,allsides=67,txtid=world,transparency=TRANSPARENT
+# Flax (world.crops.id,4)
+block:id=rp2-world-crops,data=4,allsides=68,txtid=world,transparency=TRANSPARENT
+# Flax (world.crops.id,5+)
+block:id=rp2-world-crops,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data13,data=14,data=15,allsides=69,txtid=world,transparency=TRANSPARENT
+# Marble (world.stone.id,0)
+block:id=rp2-world-stone,data=0,allfaces=16,txtid=world
+# Basalt (world.stone.id,1)
+block:id=rp2-world-stone,data=1,allfaces=17,txtid=world
+# Marble bricks (world.stone.id,2)
+block:id=rp2-world-stone,data=2,allfaces=18,txtid=world
+# Basalt cobblestone (world.stone.id,3)
+block:id=rp2-world-stone,data=3,allfaces=19,txtid=world
+# Basalt bricks (world.stone.id,4)
+block:id=rp2-world-stone,data=4,allfaces=20,txtid=world
+# Ruby Ore (world.ores.id,0)
+block:id=rp2-world-ores,data=0,allfaces=32,txtid=world
+# Emerald Ore (world.ores.id,1)
+block:id=rp2-world-ores,data=1,allfaces=33,txtid=world
+# Sapphire Ore (world.ores.id,2)
+block:id=rp2-world-ores,data=2,allfaces=34,txtid=world
+# Silver Ore (world.ores.id,3)
+block:id=rp2-world-ores,data=3,allfaces=35,txtid=world
+# Tin Ore (world.ores.id,4)
+block:id=rp2-world-ores,data=4,allfaces=36,txtid=world
+# Copper Ore (world.ores.id,5)
+block:id=rp2-world-ores,data=5,allfaces=37,txtid=world
+# Tungsten Ore (world.ores.id,6)
+block:id=rp2-world-ores,data=6,allfaces=38,txtid=world
+# Nikolite Ore (world.ores.id,7)
+block:id=rp2-world-ores,data=7,allfaces=39,txtid=world
+# Rubber tree leaves (world.leaves.id,*)
+block:id=rp2-world-leaves,data=*,allfaces=2049,txtid=world
+# Ruby Block (world.storage.id,0)
+block:id=rp2-world-storage,data=0,allfaces=80,txtid=world
+# Emerald Block (world.storage.id,1)
+block:id=rp2-world-storage,data=1,allfaces=81,txtid=world
+# Sapphire Block (world.storage.id,2)
+block:id=rp2-world-storage,data=2,allfaces=82,txtid=world
+# Rubber log (world.log.id,*)
+block:id=rp2-world-log,data=*,allsides=50,topbottom=51,txtid=world

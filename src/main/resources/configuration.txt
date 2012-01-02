@@ -181,8 +181,11 @@ compass-mode: newnorth
 # Enable Industrial Craft 2 block rendering support
 #ic2-support: true
 
-# Enabled BuildCraft block rendering support
+# Enable BuildCraft block rendering support
 #buildcraft-support: true
+
+# Enable RedPower2 block rendering support
+#redpower2-support: true
 
 render-triggers:
   #- chunkloaded
