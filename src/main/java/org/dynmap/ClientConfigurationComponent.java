@@ -55,6 +55,10 @@ public class ClientConfigurationComponent extends Component {
                 }
                 s(t, "defaultworld", c.getString("defaultworld", defaultWorld == null ? "world" : defaultWorld.world.getName()));
                 s(t, "defaultmap", c.getString("defaultmap", defmap == null ? "surface" : defmap));
+                if(c.getString("followmap", null) != null)
+                    s(t, "followmap", c.getString("followmap"));
+                if(c.getInteger("followzoom",-1) >= 0)
+                    s(t, "followzoom", c.getInteger("followzoom", 0));
             }
         });
     }

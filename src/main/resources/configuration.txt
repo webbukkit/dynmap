@@ -277,6 +277,9 @@ check-banned-ips: true
 defaultzoom: 0
 defaultworld: world
 defaultmap: flat
+# (optional) Zoom level and map to switch to when following a player, if possible
+#followzoom: 3
+#followmap: surface
 
 # Option to enable workaround for incorrectly encoded unicode in Cyrillic MC/Bukkit (not good for other code pages)
 cyrillic-support: false

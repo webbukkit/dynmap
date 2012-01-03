@@ -719,7 +719,15 @@ DynMap.prototype = {
 		
 		if(player) {
 			$(player.menuitem).addClass('following');
-			me.panToLocation(player.location);
+			me.panToLocation(player.location, function() {
+				if(me.options.followmap && me.world) {
+					var pmap = me.world.maps[me.options.followmap];
+					if(pmap)
+						me.selectMapAndPan(pmap);
+				}
+				if(me.options.followzoom)
+					me.map.setZoom(me.options.followzoom);
+			});
 		}
 		this.followingPlayer = player;
 	},
