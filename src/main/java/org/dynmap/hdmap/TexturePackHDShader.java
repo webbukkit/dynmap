@@ -78,6 +78,7 @@ public class TexturePackHDShader implements HDShader {
         private boolean do_biome_shading;
         private boolean do_swamp_shading;
         private boolean do_water_shading;
+        private boolean has_hit;
         
         private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
@@ -97,6 +98,7 @@ public class TexturePackHDShader implements HDShader {
             do_biome_shading = biome_shaded; // && (cache.getWorld().getEnvironment() == Environment.NORMAL);
             do_swamp_shading = do_biome_shading && swamp_shaded;
             do_water_shading = do_biome_shading && waterbiomeshaded;
+            has_hit = false;
         }
         /**
          * Get our shader
@@ -126,6 +128,7 @@ public class TexturePackHDShader implements HDShader {
             for(int i = 0; i < color.length; i++)
                 color[i].setTransparent();
             lastblkid = 0;
+            has_hit = false;
         }
         
         /**
@@ -145,6 +148,7 @@ public class TexturePackHDShader implements HDShader {
             scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading, do_swamp_shading, do_water_shading);
 
             if (c.getAlpha() > 0) {
+                has_hit = true;
                 int subalpha = ps.getSubmodelAlpha();
                 /* Scale brightness depending upon face */
                 switch(ps.getLastBlockStep()) {
