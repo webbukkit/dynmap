@@ -1179,6 +1179,25 @@ public class TexturePack {
                 break;
             case COLORMOD_CLEARINSIDE:
                 break;
+            case COLORMOD_LILYTONED:
+                /* Rotate texture based on lily orientation function (from renderBlockLilyPad in RenderBlocks.jara in MCP) */
+                long l1 = (long)(mapiter.getX() * 0x2fc20f) ^ (long)mapiter.getZ() * 0x6ebfff5L ^ (long)mapiter.getY();
+                l1 = l1 * l1 * 0x285b825L + l1 * 11L;
+                int orientation = (int)(l1 >> 16 & 3L);
+                switch(orientation) {
+                    case 0:
+                        tmp = u; u = native_scale - v - 1; v = tmp;
+                        break;
+                    case 1:
+                        u = native_scale - u - 1; v = native_scale - v - 1;
+                        break;
+                    case 2:
+                        tmp = u; u = v; v = native_scale - tmp - 1;
+                        break;
+                    case 3:
+                        break;
+                }
+                break;
         }
         /* Read color from texture */
         rslt.setARGB(texture[v*native_scale + u]);
