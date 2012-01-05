@@ -35,6 +35,7 @@ public class ClientUpdateComponent extends Component {
         String worldName = world.getName();
         int hideifshadow = configuration.getInteger("hideifshadow", 15);
         int hideifunder = configuration.getInteger("hideifundercover", 15);
+        boolean hideifsneaking = configuration.getBoolean("hideifsneaking", false);
 
         s(u, "confighash", plugin.getConfigHashcode());
 
@@ -67,6 +68,8 @@ public class ClientUpdateComponent extends Component {
                         hide = true;
                 }
             }
+            if(hideifsneaking && p.isSneaking())
+                hide = true;
             
             /* Don't leak player location for world not visible on maps, or if sendposition disbaled */
             DynmapWorld pworld = MapManager.mapman.worldsLookup.get(p.getWorld().getName());

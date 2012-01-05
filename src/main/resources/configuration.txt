@@ -35,6 +35,8 @@ components:
   #  hideifshadow: 4
   #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
   #  hideifundercover: 14
+  #  # (Optional) if true, players that are crouching/sneaking will be hidden 
+  #  hideifsneaking: false
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
@@ -47,6 +49,7 @@ components:
   #  require-player-login-ip: false
   #  hideifshadow: 0
   #  hideifundercover: 0
+  #  hideifsneaking: false
    
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
