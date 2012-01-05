@@ -63,7 +63,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
 
     /* Built-in icons */
     private static final String[] builtin_icons = {
-        "anchor", "bank", "basket", "beer", "bighouse", "blueflag", "bomb", "bookshelf", "bricks", "bronzemedal", "bronzestar",
+        "anchor", "bank", "basket", "bed", "beer", "bighouse", "blueflag", "bomb", "bookshelf", "bricks", "bronzemedal", "bronzestar",
         "building", "cake", "camera", "cart", "caution", "chest", "church", "coins", "comment", "compass", "construction",
         "cross", "cup", "cutlery", "default", "diamond", "dog", "door", "down", "drink", "exclamation", "factory",
         "fire", "flower", "gear", "goldmedal", "goldstar", "greenflag", "hammer", "heart", "house", "key", "king",

@@ -67,21 +67,29 @@ components:
   # Note: this component is needed for the dmarker commands, and for the Marker API to be available to other plugins
   - class: org.dynmap.MarkersComponent
     type: markers
-    #showlabel: true
-    #enablesigns: true
+    showlabel: false
+    enablesigns: false
     # (optional) add spawn point markers to standard marker layer
     showspawn: true
     spawnicon: world
     spawnlabel: "Spawn"
     # (optional) layer for showing offline player's positions
-    #showofflineplayers: true
-    #offlinelabel: "Offline"
-    #offlineicon: offlineuser
-    #offlinehidebydefault: true
-    #offlineminzoom: 0
+    showofflineplayers: false
+    offlinelabel: "Offline"
+    offlineicon: offlineuser
+    offlinehidebydefault: true
+    offlineminzoom: 0
+    # (optional) layer for showing player's spawn beds
+    showspawnbeds: false
+    spawnbedlabel: "Spawn Beds"
+    spawnbedicon: bed
+    spawnbedhidebydefault: true
+    spawnbedminzoom: 0
+    spawnbedformat: "%name%'s bed"
     
   - class: org.dynmap.ClientComponent
     type: chat
+    allowurlname: false
   - class: org.dynmap.ClientComponent
     type: chatballoon
     focuschatballoons: false
@@ -97,12 +105,13 @@ components:
     showplayerhealth: true
     # Option to make player faces small - don't use with showplayerhealth
     smallplayerfaces: false
-  #  # Optional - make player faces layer hidden by default
-  #  hidebydefault: true
-  #  # Optional - ordering priority in layer menu (low goes before high - default is 0)
-  #  layerprio: 1
-  #  # Optional - label for player marker layer (default is 'Players')
-  #  label: "Players"
+    # Optional - make player faces layer hidden by default
+    hidebydefault: false
+    # Optional - ordering priority in layer menu (low goes before high - default is 0)
+    layerprio: 0
+    # Optional - label for player marker layer (default is 'Players')
+    label: "Players"
+    
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent

@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Type;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -27,8 +28,11 @@ public class MarkersComponent extends ClientComponent {
     private String spawnlbl;
     private MarkerSet offlineset;
     private MarkerIcon offlineicon;
+    private MarkerSet spawnbedset;
+    private MarkerIcon spawnbedicon;
     
     private static final String OFFLINE_PLAYERS_SETID = "offline_players";
+    private static final String PLAYER_SPAWN_BED_SETID = "spawn_beds";
     
     public MarkersComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
         super(plugin, configuration);
@@ -121,6 +125,72 @@ public class MarkersComponent extends ClientComponent {
             offlineset = api.getMarkerSet(OFFLINE_PLAYERS_SETID);
             if(offlineset != null) {
                 offlineset.deleteMarkerSet();
+            }
+        }
+        /* If showing player spawn bed locations as markers */
+        if(configuration.getBoolean("showspawnbeds", false)) {
+            /* Make set, if needed */
+            spawnbedset = api.getMarkerSet(PLAYER_SPAWN_BED_SETID);
+            if(spawnbedset == null) {
+                spawnbedset = api.createMarkerSet(PLAYER_SPAWN_BED_SETID, configuration.getString("spawnbedlabel", "Spawn Beds"), null, true);
+            }
+            spawnbedset.setHideByDefault(configuration.getBoolean("spawnbedhidebydefault", true));
+            spawnbedset.setMinZoom(configuration.getInteger("spawnbedminzoom", 0));
+            
+            spawnbedicon = api.getMarkerIcon(configuration.getString("spawnbedicon", "bed"));
+            final String spawnbedformat = configuration.getString("spawnbedformat", "%name%'s bed");
+            
+            /* Add listener for players coming and going */
+            PlayerListener pl = new PlayerListener() {
+                private void updatePlayer(Player p) {
+                    Location bl = p.getBedSpawnLocation();
+                    Marker m = spawnbedset.findMarker(p.getName()+"_bed");
+                    if(bl == null) {    /* No bed location */
+                        if(m != null) {
+                            m.deleteMarker();
+                        }
+                    }
+                    else {
+                        if(m != null)
+                            m.setLocation(bl.getWorld().getName(), bl.getX(), bl.getY(), bl.getZ());
+                        else
+                            m = spawnbedset.createMarker(p.getName()+"_bed", spawnbedformat.replace("%name%", ChatColor.stripColor(p.getDisplayName())), false,
+                                    bl.getWorld().getName(), bl.getX(), bl.getY(), bl.getZ(),
+                                    spawnbedicon, true);
+                    }
+                }
+                @Override
+                public void onPlayerJoin(PlayerJoinEvent event) {
+                    Player p = event.getPlayer();
+                    updatePlayer(p);
+                }
+                @Override
+                public void onPlayerBedLeave(PlayerBedLeaveEvent event) {
+                    final Player p = event.getPlayer();
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                        public void run() {
+                            updatePlayer(p);
+                        }
+                    });
+                }
+                @Override
+                public void onPlayerQuit(PlayerQuitEvent event) {
+                    Player p = event.getPlayer();
+                    Marker m = spawnbedset.findMarker(p.getName()+"_bed");
+                    if(m != null) {
+                        m.deleteMarker();
+                    }
+                }
+            };
+            plugin.registerEvent(Type.PLAYER_JOIN, pl);
+            plugin.registerEvent(Type.PLAYER_QUIT, pl);
+            plugin.registerEvent(Type.PLAYER_BED_LEAVE, pl);
+        }
+        else {
+            /* Make set, if needed */
+            spawnbedset = api.getMarkerSet(PLAYER_SPAWN_BED_SETID);
+            if(spawnbedset != null) {
+                spawnbedset.deleteMarkerSet();
             }
         }
     }

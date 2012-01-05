@@ -44,6 +44,7 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -1462,7 +1463,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
             }
         }
-        
+
+        @Override
+        public void onPlayerBedLeave(PlayerBedLeaveEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((PlayerListener)l).onPlayerBedLeave(event);
+                }
+            }
+        }
+
         @Override
         public void onPlayerChat(PlayerChatEvent event) {
             /* Call listeners */
@@ -1560,6 +1572,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 case PLAYER_JOIN:
                 case PLAYER_QUIT:
                 case PLAYER_MOVE:
+                case PLAYER_BED_LEAVE:
                     pm.registerEvent(type, ourPlayerEventHandler, Event.Priority.Monitor, this);
                     break;
                 case BLOCK_PLACE:
