@@ -29,6 +29,7 @@ componentconstructors['chat'] = function(dynmap, configuration) {
 			var data = '{"name":'+JSON.stringify(pname?pname:(ip?ip:""))+',"message":'+JSON.stringify(message)+'}';
 			$.ajax({
 				type: 'POST',
+		        contentType: "application/json; charset=utf-8",
 				url: config.url.sendmessage,
 				data: data,
 				dataType: 'json',
