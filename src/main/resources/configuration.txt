@@ -299,6 +299,11 @@ cyrillic-support: false
 # If true, make persistent record of IP addresses used by player logins, to support web IP to player matching
 persist-ids-by-ip: true
 
+# Messages to customize
+msg:
+    maptypes: "Map Types"
+    players: "Players"
+
 # NOTE: the 'templates' section is now found in the 'templates' directory
 #  Templates CAN still be defined in configuration.txt, as before 0.20
 templates:
