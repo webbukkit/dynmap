@@ -31,6 +31,8 @@ public class ClientConfigurationComponent extends Component {
                 if(sn.equals("Unknown Server"))
                     sn = "Minecraft Dynamic Map";
                 s(t, "title", c.getString("webpage-title", sn));
+                s(t, "msg-maptypes", c.getString("msg/maptypes", "Map Types"));
+                s(t, "msg-players", c.getString("msg/players", "Players"));
                 
                 DynmapWorld defaultWorld = null;
                 String defmap = null;

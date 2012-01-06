@@ -214,7 +214,7 @@ DynMap.prototype = {
 		// Worlds
 		var worldlist;
 		$('<fieldset/>')
-			.append($('<legend/>').text('Map Types'))
+			.append($('<legend/>').text(me.options['msg-maptypes']))
 			.append(upbtn_world)
 			.append(me.worldlist = worldlist = $('<ul/>').addClass('worldlist')
 				.bind('mousewheel', function(event, delta){ 
@@ -279,7 +279,7 @@ DynMap.prototype = {
 		// The Player List
 		var playerlist;
 		$('<fieldset/>')
-			.append($('<legend/>').text('Players'))
+			.append($('<legend/>').text(me.options['msg-players']))
 			.append(upbtn)
 			.append(me.playerlist = playerlist = $('<ul/>').addClass('playerlist')
 				.bind('mousewheel', function(event, delta){ 
