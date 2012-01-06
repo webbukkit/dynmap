@@ -888,3 +888,37 @@
 .dynmap .coord-control .coord-control-value {
     font-weight: bold;
 }
+
+.dynmap .dynmap-link {
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	border-radius: 7px;
+	padding: 2px 10px 2px 2px;
+	background: rgba(0, 0, 0, 0.25);
+	}
+.dynmap .dynmap-link a {
+	background-color: rgba(255, 255, 255, 0.75);
+	}
+.dynmap .dynmap-link a {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.dynmap .dynmap-link a {
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	width: 19px;
+	height: 19px;
+	}
+.dynmap .dynmap-link a:hover {
+	background-color: #fff;
+	}
+.leaflet-big-buttons .dynmap-link a {
+	width: 27px;
+	height: 27px;
+	}
+.dynmap .dynmap-link-button {
+	background-image: url(images/link.png);
+	margin-bottom: 5px;
+	}

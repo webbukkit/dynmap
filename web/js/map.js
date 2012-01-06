@@ -829,6 +829,14 @@ DynMap.prototype = {
 				break;
 			}
 		}
+	},
+	getLink: function() {
+		var me = this;
+		var url = window.location.pathname;
+		var center = me.maptype.getProjection().fromLatLngToLocation(me.map.getCenter(), 64);
+		url = url + "?worldname=" + me.world.name + "&mapname=" + me.maptype.options.name + "&zoom=" + me.map.getZoom() + "&x=" + center.x + "&y=" +
+			center.y + "&z=" + center.z;
+		return url;
 	}
 	// TODO: Enable hash-links.
 /*	updateLink: function() {

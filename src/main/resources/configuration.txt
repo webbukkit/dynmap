@@ -115,6 +115,9 @@ components:
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent
+    type: link
+    
+  - class: org.dynmap.ClientComponent
     type: timeofdayclock
     showdigitalclock: true
     #showweather: true
