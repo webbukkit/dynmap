@@ -18,6 +18,7 @@ public class TexturePackHDShader implements HDShader {
     private boolean biome_shaded;
     private boolean swamp_shaded;
     private boolean waterbiomeshaded;
+    private boolean bettergrass;
     
     public TexturePackHDShader(ConfigurationNode configuration) {
         tpname = configuration.getString("texturepack", "minecraft");
@@ -26,6 +27,7 @@ public class TexturePackHDShader implements HDShader {
         biome_shaded = configuration.getBoolean("biomeshaded", true);
         swamp_shaded = configuration.getBoolean("swampshaded", MapManager.mapman.getSwampShading());
         waterbiomeshaded = configuration.getBoolean("waterbiomeshaded", MapManager.mapman.getWaterBiomeShading());
+        bettergrass = configuration.getBoolean("better-grass", MapManager.mapman.getBetterGrass());
         if(tp == null) {
             Log.severe("Error: shader '" + name + "' cannot load texture pack '" + tpname + "'");
         }
@@ -66,7 +68,7 @@ public class TexturePackHDShader implements HDShader {
         return name;
     }
     
-    private class OurShaderState implements HDShaderState {
+    class ShaderState implements HDShaderState {
         private Color color[];
         private Color tmpcolor[];
         private Color c;
@@ -75,12 +77,13 @@ public class TexturePackHDShader implements HDShader {
         private TexturePack scaledtp;
         private HDLighting lighting;
         private int lastblkid;
-        private boolean do_biome_shading;
-        private boolean do_swamp_shading;
-        private boolean do_water_shading;
+        boolean do_biome_shading;
+        boolean do_swamp_shading;
+        boolean do_water_shading;
+        boolean do_better_grass;
         private boolean has_hit;
         
-        private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
+        private ShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
             this.map = map;
             this.lighting = map.getLighting();
@@ -98,6 +101,7 @@ public class TexturePackHDShader implements HDShader {
             do_biome_shading = biome_shaded; // && (cache.getWorld().getEnvironment() == Environment.NORMAL);
             do_swamp_shading = do_biome_shading && swamp_shaded;
             do_water_shading = do_biome_shading && waterbiomeshaded;
+            do_better_grass = bettergrass;
             has_hit = false;
         }
         /**
@@ -145,7 +149,7 @@ public class TexturePackHDShader implements HDShader {
             }
             
             /* Get color from textures */
-            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, do_biome_shading, do_swamp_shading, do_water_shading);
+            scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, ShaderState.this);
 
             if (c.getAlpha() > 0) {
                 has_hit = true;
@@ -231,7 +235,7 @@ public class TexturePackHDShader implements HDShader {
      * @return state object to use for all rays in tile
      */
     public HDShaderState getStateInstance(HDMap map, MapChunkCache cache, MapIterator mapiter) {
-        return new OurShaderState(mapiter, map, cache);
+        return new ShaderState(mapiter, map, cache);
     }
     
     /* Add shader's contributions to JSON for map object */

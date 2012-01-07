@@ -182,6 +182,9 @@ enabletilehash: true
 # Optional - control rendering of fences (joining to blocks, as in 1.9+) - default is true for 1.9+, false for 1.8.x
 #fence-to-block-join: true
 
+# Optional - enabled BetterGrass style rendering of grass and snow block sides
+#better-grass: true
+
 # Control loading of player faces (if set to false, skins are never fetched)
 #fetchskins: false
 

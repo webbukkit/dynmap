@@ -1330,7 +1330,11 @@ public class MapManager {
     public boolean getFenceJoin() {
         return plug_in.fencejoin;
     }
-    
+
+    public boolean getBetterGrass() {
+        return plug_in.bettergrass;
+    }
+
     public CompassMode getCompassMode() {
         return plug_in.compassmode;
     }

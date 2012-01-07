@@ -21,6 +21,7 @@ import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
@@ -81,7 +82,10 @@ public class TexturePack {
     
     /* Special tile index values */
     private static final int BLOCKINDEX_BLANK = -1;
+    private static final int BLOCKINDEX_GRASS = 0;
     private static final int BLOCKINDEX_GRASSMASK = 38;
+    private static final int BLOCKINDEX_SNOW = 66;
+    private static final int BLOCKINDEX_SNOWSIDE = 68;
     private static final int BLOCKINDEX_PISTONSIDE = 108;
     private static final int BLOCKINDEX_GLASSPANETOP = 148;
     private static final int BLOCKINDEX_AIRFRAME = 158;
@@ -1038,11 +1042,13 @@ public class TexturePack {
         }
     }
 
+    private static final int BLOCKID_GRASS = 2;
+    private static final int BLOCKID_SNOW = 78;
     /**
      * Read color for given subblock coordinate, with given block id and data and face
      */
     public final void readColor(final HDPerspectiveState ps, final MapIterator mapiter, final Color rslt, final int blkid, final int lastblocktype,
-            final boolean biome_shaded, final boolean swamp_shaded, final boolean water_shaded) {
+            TexturePackHDShader.ShaderState ss) {
         int blkdata = ps.getBlockData();
         HDTextureMap map = HDTextureMap.getMap(blkid, blkdata, ps.getBlockRenderData());
         BlockStep laststep = ps.getLastBlockStep();
@@ -1164,16 +1170,41 @@ public class TexturePack {
                 if(u > native_scale/2) u = native_scale/2;
                 break;
             case COLORMOD_GRASSSIDE:
+                boolean do_grass_side = false;
+                boolean do_snow_side = false;
+                if(ss.do_better_grass) {
+                    mapiter.unstepPosition(laststep);
+                    if(mapiter.getBlockTypeID() == BLOCKID_SNOW)
+                        do_snow_side = true;
+                    if(mapiter.getBlockTypeIDAt(BlockStep.Y_MINUS) == BLOCKID_GRASS)
+                        do_grass_side = true;
+                    mapiter.stepPosition(laststep);
+                }
+                
                 /* Check if snow above block */
-                if(mapiter.getBlockTypeIDAt(BlockStep.Y_PLUS) == 78) {
-                    texture = terrain_argb[68]; /* Snow block */
-                    textid = 68;
+                if(mapiter.getBlockTypeIDAt(BlockStep.Y_PLUS) == BLOCKID_SNOW) {
+                    if(do_snow_side) {
+                        texture = terrain_argb[BLOCKINDEX_SNOW]; /* Snow full side block */
+                        textid = BLOCKINDEX_SNOW;
+                    }
+                    else {
+                        texture = terrain_argb[BLOCKINDEX_SNOWSIDE]; /* Snow block */
+                        textid = BLOCKINDEX_SNOWSIDE;
+                    }
+                    textop = 0;
                 }
                 else {  /* Else, check the grass color overlay */
-                    int ovclr = terrain_argb[BLOCKINDEX_GRASSMASK][v*native_scale+u];
-                    if((ovclr & 0xFF000000) != 0) { /* Hit? */
-                        texture = terrain_argb[BLOCKINDEX_GRASSMASK]; /* Use it */
+                    if(do_grass_side) {
+                        texture = terrain_argb[BLOCKINDEX_GRASS]; /* Grass block */
+                        textid = BLOCKINDEX_GRASS;
                         textop = COLORMOD_GRASSTONED;   /* Force grass toning */
+                    }
+                    else {
+                        int ovclr = terrain_argb[BLOCKINDEX_GRASSMASK][v*native_scale+u];
+                        if((ovclr & 0xFF000000) != 0) { /* Hit? */
+                            texture = terrain_argb[BLOCKINDEX_GRASSMASK]; /* Use it */
+                            textop = COLORMOD_GRASSTONED;   /* Force grass toning */
+                        }
                     }
                 }
                 break;
@@ -1213,7 +1244,7 @@ public class TexturePack {
                 li = imgs[IMG_FOLIAGECOLOR];
                 break;
             case COLORMOD_WATERTONED:
-                if(swamp_shaded && (mapiter.getBiome() == Biome.SWAMPLAND))
+                if(ss.do_swamp_shading && (mapiter.getBiome() == Biome.SWAMPLAND))
                     clrmult = 0xFFE0FF70;
                 break;
             case COLORMOD_BIRCHTONED:
@@ -1227,13 +1258,13 @@ public class TexturePack {
                 break;
         }
         if(li != null) {
-            if((li.argb == null) || (!biome_shaded)) {
+            if((li.argb == null) || (!ss.do_biome_shading)) {
                 clrmult = li.trivial_color;
             }
             else {
                 clrmult = biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
             }
-            if(swamp_shaded && (mapiter.getBiome() == Biome.SWAMPLAND))
+            if(ss.do_swamp_shading && (mapiter.getBiome() == Biome.SWAMPLAND))
                 clrmult = (clrmult & 0xFF000000) | (((clrmult & 0x00FEFEFE) + 0x4E0E4E) / 2);
         }
         if((clrmult != -1) && (clrmult != 0)) {

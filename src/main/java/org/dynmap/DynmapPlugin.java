@@ -87,6 +87,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     boolean swampshading = false;
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
+    boolean bettergrass = false;
     public CompassMode compassmode = CompassMode.PRE19;
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
@@ -283,6 +284,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             compassmode = CompassMode.NEWROSE;
         else
             compassmode = CompassMode.PRE19;
+        /* Default better-grass */
+        bettergrass = configuration.getBoolean("better-grass", false);
         /* Load full render processing player limit */
         fullrenderplayerlimit = configuration.getInteger("fullrenderplayerlimit", 0);
         /* If we're persisting ids-by-ip, load it */
