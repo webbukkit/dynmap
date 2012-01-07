@@ -60,63 +60,30 @@ worlds:
   #  # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
   #  extrazoomout: 3
   #  maps:
-  #    - class: org.dynmap.flat.FlatMap
+  #    - class: org.dynmap.hdmap.HDMap
   #      name: flat
   #      title: "Flat"
   #      prefix: flat
-  #      colorscheme: default
-  #      # The textured setting makes the flat render toning much more consistent with the other maps: set to 'none' for the original flat texture, 'smooth' for blended tile top colors, 'dither' for dither pattern
-  #      textured: smooth
-  #      # To render a world as a "night view", set shadowstrength and ambientlight
-  #      shadowstrength: 1.0
-  #      ambientlight: 4
-  #      # To render both night and day versions of tiles (when ambientlight is set), set true
-  #      night-and-day: true
-  #      # Option to turn on transparency support (off by default) - slows render
-  #      transparency: true
-  #      # Background color for map during the day
-  #      backgroundday: "#153E7E"
-  #      # Background color for map during the night
-  #      backgroundnight: "#000000"        
-  #      # Backgrounc color for map (independent of night/day)
-  #      background: "#000000"
-  #    - class: org.dynmap.kzedmap.KzedMap
-  #      renderers:
-  #        - class: org.dynmap.kzedmap.DefaultTileRenderer
-  #          name: surface
-  #          title: "Surface"
-  #          prefix: t
-  #          maximumheight: 127
-  #          colorscheme: default
-  #          # Add shadows to world (based on top-down shadows from chunk data)
-  #          shadowstrength: 1.0
-  #          # To render a world as a "night view", set shadowstrength and ambientlight
-  #          ambientlight: 4
-  #          # To render both night and day versions of tiles (when ambientlight is set), set true
-  #          night-and-day: true
-  #          # Option to turn off transparency support (on by default) - speeds render
-  #          transparency: false
-  #          # Background color for map during the day
-  #          backgroundday: "#153E7E"
-  #          # Background color for map during the night
-  #          backgroundnight: "#000000"        
-  #          # Backgrounc color for map (independent of night/day)
-  #          background: "#000000"
-  #          # Sets the icon to 'images/block_custom.png'
-  #          icon: custom
-  #        - class: org.dynmap.kzedmap.HighlightTileRenderer
-  #          prefix: ht
-  #          maximumheight: 127
-  #          colorscheme: default
-  #          highlight: # For highlighting multiple block-types.
-  #            - 56 # Highlight diamond-ore
-  #            - 66 # Highlight minecart track
-  #          highlight: 56 # For highlighting a single block-type.
-  #        - class: org.dynmap.kzedmap.CaveTileRenderer
-  #          name: cave
-  #          title: "Cave"
-  #          prefix: ct
-  #          maximumheight: 127
+  #      perspective: iso_S_90_lowres
+  #      shader: stdtexture
+  #      lighting: shadows
+  #      mapzoomin: 1
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: surface
+  #      title: "Surface"
+  #      prefix: t
+  #      perspective: iso_SE_30_hires
+  #      shader: stdtexture
+  #      lighting: shadows
+  #      mapzoomin: 1
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: cave
+  #      title: "Cave"
+  #      prefix: ct
+  #      perspective: iso_SE_60_lowres
+  #      shader: cave
+  #      lighting: default
+  #      mapzoomin: 3
   #
   # To just label world, and inherit rest from template, just provide name and title
   #- name: world2
@@ -131,18 +98,23 @@ worlds:
   #  # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
   #  extrazoomout: 3
   #  maps:
-  #    - class: org.dynmap.flat.FlatMap
+  #    - class: org.dynmap.hdmap.HDMap
   #      name: flat
   #      title: "Flat"
   #      prefix: flat
-  #      colorscheme: default
-  #      # The textured setting makes the flat render toning much more consistent with the other maps: set to 'none' for the original flat texture, 'smooth' for blended tile top colors, 'dither' for dither pattern
-  #      textured: smooth
-  #    - class: org.dynmap.kzedmap.KzedMap
-  #      renderers:
-  #        - class: org.dynmap.kzedmap.DefaultTileRenderer
-  #          name: nether
-  #          title: "Surface"
-  #          prefix: nt
-  #          maximumheight: 127
-  #          colorscheme: default
+  #      perspective: iso_S_90_lowres
+  #      shader: stdtexture
+  #      lighting: nethershadows
+  #      # Map background color (day or night)
+  #      background: "#300806"
+  #      mapzoomin: 1
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: nether
+  #      title: "Surface"
+  #      prefix: nt
+  #      perspective: iso_SE_30_hires
+  #      shader: stdtexture
+  #      lighting: nethershadows
+  #      # Map background color (day or night)
+  #      background: "#300806"
+  #      mapzoomin: 1
