@@ -328,12 +328,15 @@ DynMap.prototype = {
 			.append(link=$('<input type="text" />'))
 			.data('link', link)
 			.appendTo(container);*/
-        if(me.options.sidebaropened != 'true') {
-            $('<div/>')
-                .addClass('hitbar')
-                .appendTo(panel);
+		if(me.options.sidebaropened != 'true') {
+			var hitbar = $('<div/>')
+			.addClass('hitbar')
+			.click(function() {
+				sidebar.toggleClass('pinned');
+			})
+			.appendTo(panel);
 		}
-        
+
 		var alertbox = me.alertbox = $('<div/>')
 			.addClass('alertbox')
 			.hide()

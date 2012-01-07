@@ -159,12 +159,6 @@
     color: #fff;
 
     border-left: 1px solid rgba(0,0,0,0.5);
-
-    -moz-transition: all 0.6s ease-in-out;
-    -webkit-transition: all 0.6s ease-in-out;
-    -o-transition: all 0.6s ease-in-out;
-
-    transition: all 0.6s ease-in-out;
 }
 
 .dynmap .hitbar {
@@ -186,26 +180,43 @@
     background-position:center;
 
     border: 1px solid rgba(0,0,0,0.5);
-
-    -moz-transition: all 0.6s ease-in-out;
-    -webkit-transition: all 0.6s ease-in-out;
-    -o-transition: all 0.6s ease-in-out;
-
-    transition: all 0.6s ease-in-out;
 }
 
 /* magic and metrics */
 
-.dynmap .sidebar:hover,
+/* The following only applies to desktops, not to mobile devices */
+@media screen and (min-device-width: 640px) {
+    .dynmap .sidebar {
+        -moz-transition: all 0.6s ease-in-out;
+        -webkit-transition: all 0.6s ease-in-out;
+        -o-transition: all 0.6s ease-in-out;
+        transition: all 0.6s ease-in-out;
+    }
+
+    .dynmap .hitbar {
+        -moz-transition: all 0.6s ease-in-out;
+        -webkit-transition: all 0.6s ease-in-out;
+        -o-transition: all 0.6s ease-in-out;
+        transition: all 0.6s ease-in-out;
+    }
+
+    .dynmap .sidebar:hover {
+        margin-right: 0px;
+    }
+
+    .dynmap .sidebar < .hitbar:hover {
+        margin-right: 0px;
+    }
+
+    .dynmap .sidebar:hover .hitbar {
+        right: -120px;
+    }
+}
+
 .dynmap .sidebar.pinned {
     margin-right: 0px;
 }
 
-.dynmap .sidebar < .hitbar:hover {
-    margin-right: 0px;
-}
-
-.dynmap .sidebar:hover .hitbar,
 .dynmap .sidebar.pinned .hitbar {
     right: -120px;
 }
