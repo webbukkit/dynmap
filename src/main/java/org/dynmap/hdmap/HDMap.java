@@ -6,23 +6,18 @@ import static org.dynmap.JSONUtils.s;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Location;
 import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.debug.Debug;
-import org.dynmap.kzedmap.MapTileRenderer;
-import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.TileFlags;
 import org.json.simple.JSONObject;
-
-import com.avaje.ebean.text.StringParser;
 
 public class HDMap extends MapType {
 
@@ -133,13 +128,13 @@ public class HDMap extends MapType {
     public HDLighting getLighting() { return lighting; }
     
     @Override
-    public MapTile[] getTiles(Location loc) {
+    public MapTile[] getTiles(DynmapLocation loc) {
         return perspective.getTiles(loc);
     }
 
     @Override
-    public MapTile[] getTiles(Location loc0, Location loc1) {
-        return perspective.getTiles(loc0, loc1);
+    public MapTile[] getTiles(DynmapLocation loc, int sx, int sy, int sz) {
+        return perspective.getTiles(loc, sx, sy, sz);
     }
 
     @Override
@@ -324,7 +319,7 @@ public class HDMap extends MapType {
                 /* Otherwise, delete tile */
                 f.delete();
                 /* Push updates, clear hash code, and signal zoom tile update */
-                MapManager.mapman.pushUpdate(world.world, 
+                MapManager.mapman.pushUpdate(world, 
                                              new Client.Tile(day?tile.getDayFilename(prefix, getImageFormat()):tile.getFilename(prefix, getImageFormat())));
                 MapManager.mapman.hashman.updateHashCode(tile.getKey(prefix), day?"day":null, tile.tx, tile.ty, -1);
                 world.enqueueZoomOutUpdate(f);

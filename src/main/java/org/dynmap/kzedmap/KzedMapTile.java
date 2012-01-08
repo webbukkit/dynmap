@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.List;
 
 import org.dynmap.MapTile;
-import org.dynmap.flat.FlatMap;
 import org.dynmap.utils.MapChunkCache;
 
 public class KzedMapTile extends MapTile {
@@ -83,7 +82,7 @@ public class KzedMapTile extends MapTile {
 
     @Override
     public int hashCode() {
-        return px ^ py ^ map.getName().hashCode() ^ getWorld().getName().hashCode();
+        return px ^ py ^ map.getName().hashCode() ^ world.hashCode();
     }
 
     @Override
@@ -95,15 +94,15 @@ public class KzedMapTile extends MapTile {
     }
 
     public boolean equals(KzedMapTile o) {
-        return o.px == px && o.py == py && (o.map == map) && (o.getWorld() == getWorld());
+        return o.px == px && o.py == py && (o.map == map) && (o.world == world);
     }
 
     public String getKey(String prefix) {
-        return getWorld().getName() + "." + prefix;
+        return world.getName() + "." + prefix;
     }
 
     public String toString() {
-        return getWorld().getName() + ":" + getFilename();
+        return world.getName() + ":" + getFilename();
     }
     
     public boolean render(MapChunkCache cache, String mapname) {

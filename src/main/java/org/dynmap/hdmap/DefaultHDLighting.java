@@ -1,11 +1,7 @@
 package org.dynmap.hdmap;
 
-import java.util.HashSet;
-
 import org.dynmap.Color;
-import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
-import org.dynmap.hdmap.DefaultHDShader.BiomeColorOption;
 import org.json.simple.JSONObject;
 import static org.dynmap.JSONUtils.s;
 

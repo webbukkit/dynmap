@@ -1,5 +1,5 @@
 package org.dynmap.utils;
-import org.bukkit.Location;
+import org.dynmap.DynmapLocation;
 /**
  * Simple vector class
  */
@@ -8,7 +8,7 @@ public class Vector3D {
     
     public Vector3D() { x = y = z = 0.0; }
     
-    public void setFromLocation(Location l) { x = l.getX(); y = l.getY(); z = l.getZ(); }
+    public void setFromLocation(DynmapLocation l) { x = l.x; y = l.y; z = l.z; }
     
     public String toString() {
         return "{ " + x + ", " + y + ", " + z + " }";

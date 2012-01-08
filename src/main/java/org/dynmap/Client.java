@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.bukkit.ChatColor;
-import org.dynmap.markers.Marker;
-import org.dynmap.markers.MarkerSet;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONStreamAware;
 

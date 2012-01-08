@@ -10,14 +10,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
@@ -29,7 +26,6 @@ import org.dynmap.debug.Debug;
 import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.hdmap.TexturePack.BlockTransparency;
 import org.dynmap.hdmap.TexturePack.HDTextureMap;
-import org.dynmap.kzedmap.KzedMap;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
@@ -74,18 +70,12 @@ public class IsoHDPerspective implements HDPerspective {
     public static final double MAX_SCALE = 64;
     public static final double MIN_SCALE = 1;
     
-    private boolean need_skylightlevel = false;
-    private boolean need_emittedlightlevel = false;
     private boolean need_biomedata = false;
     private boolean need_rawbiomedata = false;
 
     private static final int CHEST_BLKTYPEID = 54;
-    private static final int FENCE_BLKTYPEID = 85;
     private static final int REDSTONE_BLKTYPEID = 55;
-    private static final int IRONFENCE_BLKTYPEID = 101;
-    private static final int GLASSPANE_BLKTYPEID = 102;
     private static final int FENCEGATE_BLKTYPEID = 107;
-    private static final int NETHERFENCE_BLKTYPEID = 113;
     
     private enum ChestData {
         SINGLE_WEST, SINGLE_SOUTH, SINGLE_EAST, SINGLE_NORTH, LEFT_WEST, LEFT_SOUTH, LEFT_EAST, LEFT_NORTH, RIGHT_WEST, RIGHT_SOUTH, RIGHT_EAST, RIGHT_NORTH
@@ -826,8 +816,8 @@ public class IsoHDPerspective implements HDPerspective {
     }   
 
     @Override
-    public MapTile[] getTiles(Location loc) {
-        DynmapWorld world = MapManager.mapman.getWorld(loc.getWorld().getName());
+    public MapTile[] getTiles(DynmapLocation loc) {
+        DynmapWorld world = MapManager.mapman.getWorld(loc.world);
         HashSet<MapTile> tiles = new HashSet<MapTile>();
         Vector3D block = new Vector3D();
         block.setFromLocation(loc); /* Get coordinate for block */
@@ -853,35 +843,17 @@ public class IsoHDPerspective implements HDPerspective {
     }
 
     @Override
-    public MapTile[] getTiles(Location loc0, Location loc1) {
-        DynmapWorld world = MapManager.mapman.getWorld(loc0.getWorld().getName());
+    public MapTile[] getTiles(DynmapLocation loc, int sx, int sy, int sz) {
+        DynmapWorld world = MapManager.mapman.getWorld(loc.world);
         HashSet<MapTile> tiles = new HashSet<MapTile>();
         Vector3D blocks[] = new Vector3D[] { new Vector3D(), new Vector3D() };
-        /* Get ordered point - 0=minX,Y,Z, 1=maxX,Y,Z */
-        if(loc0.getBlockX() < loc1.getBlockX()) {
-            blocks[0].x = loc0.getBlockX() - 1;
-            blocks[1].x = loc1.getBlockX() + 1;
-        }
-        else {
-            blocks[0].x = loc1.getBlockX() - 1;
-            blocks[1].x = loc0.getBlockX() + 1;
-        }
-        if(loc0.getBlockY() < loc1.getBlockY()) {
-            blocks[0].y = loc0.getBlockY() - 1;
-            blocks[1].y = loc1.getBlockY() + 1;
-        }
-        else {
-            blocks[0].y = loc1.getBlockY() - 1;
-            blocks[1].y = loc0.getBlockY() + 1;
-        }
-        if(loc0.getBlockZ() < loc1.getBlockZ()) {
-            blocks[0].z = loc0.getBlockZ() - 1;
-            blocks[1].z = loc1.getBlockZ() + 1;
-        }
-        else {
-            blocks[0].z = loc1.getBlockZ() - 1;
-            blocks[1].z = loc0.getBlockZ() + 1;
-        }        
+        blocks[0].x = loc.x - 1;
+        blocks[0].y = loc.y - 1;
+        blocks[0].z = loc.z - 1;
+        blocks[1].x = loc.x + sx;
+        blocks[1].y = loc.y + sy;
+        blocks[1].z = loc.z + sz;
+        
         Vector3D corner = new Vector3D();
         Vector3D tcorner = new Vector3D();
         int mintilex = Integer.MAX_VALUE;
@@ -1089,7 +1061,7 @@ public class IsoHDPerspective implements HDPerspective {
         if(numshaders == 0)
             return false;
         /* Check if nether world */
-        boolean isnether = tile.getWorld().getEnvironment() == Environment.NETHER;
+        boolean isnether = tile.getDynmapWorld().isNether();
         /* Create buffered image for each */
         DynmapBufferedImage im[] = new DynmapBufferedImage[numshaders];
         DynmapBufferedImage dayim[] = new DynmapBufferedImage[numshaders];
@@ -1100,12 +1072,7 @@ public class IsoHDPerspective implements HDPerspective {
         int bgnight[] = new int[numshaders];
         
         for(int i = 0; i < numshaders; i++) {
-            HDShader shader = shaderstate[i].getShader();
             HDLighting lighting = shaderstate[i].getLighting();
-            if(shader.isEmittedLightLevelNeeded() || lighting.isEmittedLightLevelNeeded())
-                need_emittedlightlevel = true;
-            if(shader.isSkyLightLevelNeeded() || lighting.isSkyLightLevelNeeded())
-                need_skylightlevel = true;
             im[i] = DynmapBufferedImage.allocateBufferedImage(tileWidth, tileHeight);
             argb_buf[i] = im[i].argb_buf;
             if(lighting.isNightAndDayEnabled()) {
@@ -1196,7 +1163,7 @@ public class IsoHDPerspective implements HDPerspective {
                     } catch (java.lang.NullPointerException e) {
                         Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
                     }
-                    MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(fname));
+                    MapManager.mapman.pushUpdate(tile.getDynmapWorld(), new Client.Tile(fname));
                     hashman.updateHashCode(tile.getKey(prefix), null, tile.tx, tile.ty, crc);
                     tile.getDynmapWorld().enqueueZoomOutUpdate(f);
                     tile_update = true;
@@ -1229,7 +1196,7 @@ public class IsoHDPerspective implements HDPerspective {
                         } catch (java.lang.NullPointerException e) {
                             Debug.error("Failed to save image (NullPointerException): " + f.getPath(), e);
                         }
-                        MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(fname));
+                        MapManager.mapman.pushUpdate(tile.getDynmapWorld(), new Client.Tile(fname));
                         hashman.updateHashCode(tile.getKey(prefix), "day", tile.tx, tile.ty, crc);
                         tile.getDynmapWorld().enqueueZoomOutUpdate(f);
                         tile_update = true;

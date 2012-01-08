@@ -1,23 +1,15 @@
 package org.dynmap.hdmap;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
-import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
 import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
-import org.dynmap.MapTile;
 import org.dynmap.MapType;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
@@ -122,7 +114,7 @@ public class HDMapManager {
      * Initialize shader states for all shaders for given tile
      */
     public HDShaderState[] getShaderStateForTile(HDMapTile tile, MapChunkCache cache, MapIterator mapiter, String mapname) {
-        DynmapWorld w = MapManager.mapman.worldsLookup.get(tile.getWorld().getName());
+        DynmapWorld w = MapManager.mapman.worldsLookup.get(tile.getDynmapWorld().getName());
         if(w == null) return new HDShaderState[0];
         ArrayList<HDShaderState> shaders = new ArrayList<HDShaderState>();
         for(MapType map : w.maps) {
@@ -163,7 +155,7 @@ public class HDMapManager {
     private HashMap<String, boolean[]> cached_data_flags_by_world_perspective = new HashMap<String, boolean[]>();
     
     private boolean[] getCachedFlags(HDMapTile t) {
-        String w = t.getWorld().getName();
+        String w = t.getDynmapWorld().getName();
         String k = w + "/" + t.perspective.getName();
         boolean[] flags = cached_data_flags_by_world_perspective.get(k);
         if(flags != null)

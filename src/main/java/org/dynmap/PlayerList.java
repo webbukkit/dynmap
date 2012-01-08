@@ -122,10 +122,14 @@ public class PlayerList {
     }
     
     public boolean isVisiblePlayer(Player p) {
-        boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
-        return (!(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase())));
+        return isVisiblePlayer(p.getName());
     }
-    
+
+    public boolean isVisiblePlayer(String p) {
+        boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
+        return (!(useWhitelist ^ hiddenPlayerNames.contains(p.toLowerCase())));
+    }
+
     /**
      * Call this from server thread to update player list safely
      */

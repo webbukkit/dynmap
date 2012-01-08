@@ -7,8 +7,6 @@ import org.dynmap.MapType;
 
 import java.util.List;
 import org.dynmap.MapTile;
-import org.dynmap.kzedmap.KzedMap;
-import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.utils.MapChunkCache;
 
 public class HDMapTile extends MapTile {
@@ -58,7 +56,7 @@ public class HDMapTile extends MapTile {
     
     @Override
     public int hashCode() {
-        return tx ^ ty ^ perspective.getName().hashCode() ^ getWorld().getName().hashCode();
+        return tx ^ ty ^ perspective.getName().hashCode() ^ world.hashCode();
     }
 
     @Override
@@ -70,16 +68,16 @@ public class HDMapTile extends MapTile {
     }
 
     public boolean equals(HDMapTile o) {
-        return o.tx == tx && o.ty == ty && (perspective == o.perspective) && (o.getWorld() == getWorld());
+        return o.tx == tx && o.ty == ty && (perspective == o.perspective) && (o.world == world);
     }
 
     public String getKey(String prefix) {
-        return getWorld().getName() + "." + prefix;
+        return world.getName() + "." + prefix;
     }
 
     @Override
     public String toString() {
-        return getWorld().getName() + ":" + getFilename();
+        return world.getName() + ":" + getFilename();
     }
     
     @Override

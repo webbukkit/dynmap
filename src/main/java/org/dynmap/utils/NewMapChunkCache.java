@@ -10,7 +10,6 @@ import java.util.TreeSet;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChunkSnapshot;

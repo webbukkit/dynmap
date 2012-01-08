@@ -1,8 +1,8 @@
 package org.dynmap.kzedmap;
 
-import org.bukkit.World;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
 
@@ -16,7 +16,7 @@ public class CaveTileRenderer extends DefaultTileRenderer {
     public boolean isNightAndDayEnabled() { return false; }
 
     @Override
-    protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
+    protected void scan(DynmapWorld world, int seq, boolean isnether, final Color result, final Color result_day,
         MapIterator mapiter) {
         boolean air = true;
         int emitted = 0;

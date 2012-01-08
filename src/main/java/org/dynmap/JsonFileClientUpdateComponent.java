@@ -1,7 +1,6 @@
 package org.dynmap;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
@@ -10,12 +9,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.dynmap.web.HttpStatus;
 import org.dynmap.web.Json;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

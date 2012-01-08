@@ -9,8 +9,6 @@ import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
 import org.dynmap.Client;
 import org.dynmap.Color;
@@ -119,8 +117,8 @@ public class DefaultTileRenderer implements MapTileRenderer {
     }
 
     public boolean render(MapChunkCache cache, KzedMapTile tile, File outputFile) {
-        World world = tile.getWorld();
-        boolean isnether = (world.getEnvironment() == Environment.NETHER);
+        DynmapWorld world = tile.getDynmapWorld();
+        boolean isnether = world.isNether();
         DynmapBufferedImage im = DynmapBufferedImage.allocateBufferedImage(KzedMap.tileWidth, KzedMap.tileHeight);
         DynmapBufferedImage zim = DynmapBufferedImage.allocateBufferedImage(KzedMap.tileWidth/2, KzedMap.tileHeight/2);
         
@@ -278,7 +276,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                 } catch (java.lang.NullPointerException e) {
                     Debug.error("Failed to save image (NullPointerException): " + fname.getPath(), e);
                 }
-                MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getFilename()));
+                MapManager.mapman.pushUpdate(mtile.getDynmapWorld(), new Client.Tile(mtile.getFilename()));
                 hashman.updateHashCode(mtile.getKey(prefix), null, tx, ty, crc);
                 updated_fname = true;
                 didwrite = true;
@@ -309,7 +307,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     } catch (java.lang.NullPointerException e) {
                         Debug.error("Failed to save image (NullPointerException): " + dfname.getPath(), e);
                     }
-                    MapManager.mapman.pushUpdate(mtile.getWorld(), new Client.Tile(mtile.getDayFilename()));
+                    MapManager.mapman.pushUpdate(mtile.getDynmapWorld(), new Client.Tile(mtile.getDayFilename()));
                     hashman.updateHashCode(mtile.getKey(prefix), "day", tx, ty, crc);
                     updated_dfname = true;
                     didwrite = true;
@@ -328,7 +326,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
         try {
             if(updated_fname || (!zoomFile.exists())) {
                 saveZoomedTile(zmtile, zoomFile, zimg, ox, oy, null);
-                MapManager.mapman.pushUpdate(zmtile.getWorld(),
+                MapManager.mapman.pushUpdate(zmtile.getDynmapWorld(),
                                          new Client.Tile(zmtile.getFilename()));
                 zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile);
                 ztile_updated = true;
@@ -346,7 +344,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             try {
                 if(updated_dfname || (!zoomFile_day.exists())) {
                     saveZoomedTile(zmtile, zoomFile_day, zimg_day, ox, oy, "day");
-                    MapManager.mapman.pushUpdate(zmtile.getWorld(),
+                    MapManager.mapman.pushUpdate(zmtile.getDynmapWorld(),
                                              new Client.Tile(zmtile.getDayFilename()));            
                     zmtile.getDynmapWorld().enqueueZoomOutUpdate(zoomFile_day);
                     ztile_updated = true;
@@ -403,7 +401,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             zIm.flush();
 
     }
-    protected void scan(World world, int seq, boolean isnether, final Color result, final Color result_day,
+    protected void scan(DynmapWorld world, int seq, boolean isnether, final Color result, final Color result_day,
             MapIterator mapiter) {
         int lightlevel = 15;
         int lightlevel_day = 15;

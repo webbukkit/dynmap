@@ -1,8 +1,6 @@
 package org.dynmap.hdmap;
 
 import org.dynmap.Color;
-import org.dynmap.utils.MapChunkCache;
-import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
 
 public interface HDLighting {

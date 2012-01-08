@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
 import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapPlugin.CompassMode;
 import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
@@ -87,31 +85,21 @@ public class FlatMap extends MapType {
     }
 
     @Override
-    public MapTile[] getTiles(Location l) {
-        DynmapWorld w = MapManager.mapman.getWorld(l.getWorld().getName());
-        return new MapTile[] { new FlatMapTile(w, this, (int) Math.floor(l.getBlockX() / 128.0), (int) Math.floor(l.getBlockZ() / 128.0), 128) };
+    public MapTile[] getTiles(DynmapLocation l) {
+        DynmapWorld w = MapManager.mapman.getWorld(l.world);
+        return new MapTile[] { new FlatMapTile(w, this, (int) Math.floor(l.x / 128.0), (int) Math.floor(l.z / 128.0), 128) };
     }
 
     @Override
-    public MapTile[] getTiles(Location l0, Location l1) {
-        DynmapWorld w = MapManager.mapman.getWorld(l0.getWorld().getName());
+    public MapTile[] getTiles(DynmapLocation l, int sx, int sy, int sz) {
+        DynmapWorld w = MapManager.mapman.getWorld(l.world);
         int xmin, xmax, zmin, zmax;
-        if(l0.getBlockX() < l1.getBlockX()) {
-            xmin = l0.getBlockX() >> 7;
-            xmax = l1.getBlockX() >> 7;
-        }
-        else {
-            xmin = l1.getBlockX() >> 7;
-            xmax = l0.getBlockX() >> 7;
-        }
-        if(l0.getBlockZ() < l1.getBlockZ()) {
-            zmin = l0.getBlockZ() >> 7;
-            zmax = l1.getBlockZ() >> 7;
-        }
-        else {
-            zmin = l1.getBlockZ() >> 7;
-            zmax = l0.getBlockZ() >> 7;
-        }
+
+        xmin = l.x >> 7;
+        zmin = l.z >> 7;
+        xmax = (l.x + sx) >> 7;
+        zmax = (l.z + sz) >> 7;
+        
         ArrayList<MapTile> rslt = new ArrayList<MapTile>();
         for(int i = xmin; i <= xmax; i++) {
             for(int j = zmin; j < zmax; j++) {
@@ -152,8 +140,7 @@ public class FlatMap extends MapType {
 
     public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         FlatMapTile t = (FlatMapTile) tile;
-        World w = t.getWorld();
-        boolean isnether = (w.getEnvironment() == Environment.NETHER) && (maximumHeight == 127);
+        boolean isnether = t.getDynmapWorld().isNether() && (maximumHeight == 127);
 
         boolean didwrite = false;
         Color rslt = new Color();
@@ -314,7 +301,7 @@ public class FlatMap extends MapType {
                 } catch (java.lang.NullPointerException e) {
                     Debug.error("Failed to save image (NullPointerException): " + outputFile.getPath(), e);
                 }
-                MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getFilename()));
+                MapManager.mapman.pushUpdate(tile.getDynmapWorld(), new Client.Tile(tile.getFilename()));
                 hashman.updateHashCode(tile.getKey(prefix), null, t.x, t.y, crc);
                 tile.getDynmapWorld().enqueueZoomOutUpdate(outputFile);
                 tile_update = true;
@@ -346,7 +333,7 @@ public class FlatMap extends MapType {
                     } catch (java.lang.NullPointerException e) {
                         Debug.error("Failed to save image (NullPointerException): " + dayfile.getPath(), e);
                     }
-                    MapManager.mapman.pushUpdate(tile.getWorld(), new Client.Tile(tile.getDayFilename()));   
+                    MapManager.mapman.pushUpdate(tile.getDynmapWorld(), new Client.Tile(tile.getDayFilename()));   
                     hashman.updateHashCode(tile.getKey(prefix), "day", t.x, t.y, crc);
                     tile.getDynmapWorld().enqueueZoomOutUpdate(dayfile);
                     tile_update = true;
@@ -540,7 +527,7 @@ public class FlatMap extends MapType {
             return fname_day;
         }
         public String toString() {
-            return getWorld().getName() + ":" + getFilename();
+            return world.getName() + ":" + getFilename();
         }
 
         @Override

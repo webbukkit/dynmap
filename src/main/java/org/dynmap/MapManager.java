@@ -1,7 +1,6 @@
 package org.dynmap;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.command.CommandSender;
@@ -185,7 +183,7 @@ public class MapManager {
     /* This always runs on render pool threads - no bukkit calls from here */ 
     private class FullWorldRenderState implements Runnable {
         DynmapWorld world;    /* Which world are we rendering */
-        Location loc;        
+        DynmapLocation loc;        
         int    map_index = -1;    /* Which map are we on */
         MapType map;
         TileFlags found = null;
@@ -209,7 +207,7 @@ public class MapManager {
         AtomicInteger rendercalls = new AtomicInteger(0);
 
         /* Full world, all maps render */
-        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname, boolean updaterender) {
+        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, CommandSender sender, String mapname, boolean updaterender) {
             this(dworld, l, sender, mapname, -1);
             if(updaterender) {
                 rendertype = RENDERTYPE_UPDATERENDER;
@@ -220,7 +218,7 @@ public class MapManager {
         }
         
         /* Full world, all maps render, with optional render radius */
-        FullWorldRenderState(DynmapWorld dworld, Location l, CommandSender sender, String mapname, int radius) {
+        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, CommandSender sender, String mapname, int radius) {
             world = dworld;
             loc = l;
             found = new TileFlags();
@@ -237,10 +235,10 @@ public class MapManager {
                 rendertype = RENDERTYPE_FULLRENDER;
             }
             else {
-                cxmin = (l.getBlockX() - radius)>>4;
-                czmin = (l.getBlockZ() - radius)>>4;
-                cxmax = (l.getBlockX() + radius+15)>>4;
-                czmax = (l.getBlockZ() + radius+15)>>4;
+                cxmin = (l.x - radius)>>4;
+                czmin = (l.z - radius)>>4;
+                cxmax = (l.x + radius+15)>>4;
+                czmax = (l.z + radius+15)>>4;
                 rendertype = RENDERTYPE_RADIUSRENDER;
             }
             this.mapname = mapname;
@@ -248,7 +246,7 @@ public class MapManager {
 
         /* Single tile render - used for incremental renders */
         FullWorldRenderState(MapTile t) {
-            world = getWorld(t.getWorld().getName());
+            world = getWorld(t.getDynmapWorld().getName());
             tile0 = t;
             cxmin = czmin = Integer.MIN_VALUE;
             cxmax = czmax = Integer.MAX_VALUE;
@@ -258,7 +256,11 @@ public class MapManager {
             String w = n.getString("world", "");
             world = getWorld(w);
             if(world == null) throw new Exception();
-            loc = new Location(world.world, n.getDouble("locX", 0.0), n.getDouble("locY", 0.0), n.getDouble("locZ", 0.0));
+            loc = new DynmapLocation();
+            loc.world = world.getName();
+            loc.x = (int)n.getDouble("locX", 0.0);
+            loc.y = (int)n.getDouble("locY", 0.0);
+            loc.z = (int)n.getDouble("locZ", 0.0);
             String m = n.getString("map","");
             map_index = n.getInteger("mapindex", -1);
             map = world.maps.get(map_index);
@@ -319,9 +321,9 @@ public class MapManager {
             HashMap<String,Object> v = new HashMap<String,Object>();
             
             v.put("world", world.world.getName());
-            v.put("locX", loc.getBlockX());
-            v.put("locY", loc.getBlockY());
-            v.put("locZ", loc.getBlockZ());
+            v.put("locX", loc.x);
+            v.put("locY", loc.y);
+            v.put("locZ", loc.z);
             v.put("mapindex", map_index);
             v.put("map", map.getName());
             v.put("found", found.save());
@@ -354,13 +356,13 @@ public class MapManager {
         }
         
         public String toString() {
-            return "world=" + world.world.getName() + ", map=" + map;
+            return "world=" + world.getName() + ", map=" + map;
         }
         
         public void cleanup() {
             if(tile0 == null) {
                 synchronized(lock) {
-                    active_renders.remove(world.world.getName());
+                    active_renders.remove(world.getName());
                 }
             }
             else {
@@ -459,7 +461,7 @@ public class MapManager {
                     }
                     if(!updaterender) { /* Only add other seed points for fullrender */
                         /* Add spawn location too (helps with some worlds where 0,64,0 may not be generated */
-                        Location sloc = world.world.getSpawnLocation();
+                        DynmapLocation sloc = world.getSpawnLocation();
                         for (MapTile mt : map.getTiles(sloc)) {
                             if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
                                 found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
@@ -467,7 +469,7 @@ public class MapManager {
                             }
                         }
                         if(world.seedloc != null) {
-                            for(Location seed : world.seedloc) {
+                            for(DynmapLocation seed : world.seedloc) {
                                 for (MapTile mt : map.getTiles(seed)) {
                                     if (!found.getFlag(mt.tileOrdinalX(),mt.tileOrdinalY())) {
                                         found.setFlag(mt.tileOrdinalX(),mt.tileOrdinalY(), true);
@@ -659,7 +661,7 @@ public class MapManager {
                         boolean isday = new_servertime >= 0 && new_servertime < 13700;
                         w.servertime = new_servertime;
                         if(wasday != isday) {
-                            pushUpdate(w.world, new Client.DayNight(isday));            
+                            pushUpdate(w, new Client.DayNight(isday));            
                         }
                     }
                     return 0;
@@ -744,13 +746,13 @@ public class MapManager {
         }        
     }
 
-    void renderFullWorld(Location l, CommandSender sender, String mapname, boolean update) {
-        DynmapWorld world = getWorld(l.getWorld().getName());
+    void renderFullWorld(DynmapLocation l, CommandSender sender, String mapname, boolean update) {
+        DynmapWorld world = getWorld(l.world);
         if (world == null) {
-            sender.sendMessage("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
+            sender.sendMessage("Could not render: world '" + l.world + "' not defined in configuration.");
             return;
         }
-        String wname = l.getWorld().getName();
+        String wname = l.world;
         FullWorldRenderState rndr;
         synchronized(lock) {
             rndr = active_renders.get(wname);
@@ -770,13 +772,13 @@ public class MapManager {
             sender.sendMessage("Full render starting on world '" + wname + "'...");
     }
 
-    void renderWorldRadius(Location l, CommandSender sender, String mapname, int radius) {
-        DynmapWorld world = getWorld(l.getWorld().getName());
+    void renderWorldRadius(DynmapLocation l, CommandSender sender, String mapname, int radius) {
+        DynmapWorld world = getWorld(l.world);
         if (world == null) {
-            sender.sendMessage("Could not render: world '" + l.getWorld().getName() + "' not defined in configuration.");
+            sender.sendMessage("Could not render: world '" + l.world + "' not defined in configuration.");
             return;
         }
-        String wname = l.getWorld().getName();
+        String wname = l.world;
         FullWorldRenderState rndr;
         synchronized(lock) {
             rndr = active_renders.get(wname);
@@ -847,7 +849,7 @@ public class MapManager {
         Log.info("Loaded " + dynmapWorld.maps.size() + " maps of world '" + worldName + "'.");
         
         List<ConfigurationNode> loclist = worldConfiguration.getNodes("fullrenderlocations");
-        dynmapWorld.seedloc = new ArrayList<Location>();
+        dynmapWorld.seedloc = new ArrayList<DynmapLocation>();
         dynmapWorld.servertime = (int)(w.getTime() % 24000);
         dynmapWorld.sendposition = worldConfiguration.getBoolean("sendposition", true);
         dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
@@ -856,7 +858,7 @@ public class MapManager {
         dynmapWorld.worldtilepath = new File(DynmapPlugin.tilesDirectory, w.getName());
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {
-                Location lx = new Location(w, loc.getDouble("x", 0), loc.getDouble("y", 64), loc.getDouble("z", 0));
+                DynmapLocation lx = new DynmapLocation(w.getName(), loc.getInteger("x", 0), loc.getInteger("y", 64), loc.getInteger("z", 0));
                 dynmapWorld.seedloc.add(lx);
             }
         }
@@ -872,7 +874,7 @@ public class MapManager {
                 lim.z1 = vis.getInteger("z1", 0);
                 dynmapWorld.visibility_limits.add(lim);
                 /* Also, add a seed location for the middle of each visible area */
-                dynmapWorld.seedloc.add(new Location(w, (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
+                dynmapWorld.seedloc.add(new DynmapLocation(w.getName(), (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
             }            
         }
         /* Load hidden limits, if any are defined */
@@ -1008,8 +1010,8 @@ public class MapManager {
         }
     }
 
-    public int touch(Location l, String reason) {
-        DynmapWorld world = getWorld(l.getWorld().getName());
+    public int touch(DynmapLocation l, String reason) {
+        DynmapWorld world = getWorld(l.world);
         if (world == null)
             return 0;
         int invalidates = 0;
@@ -1035,13 +1037,13 @@ public class MapManager {
         return invalidates;
     }
 
-    public int touchVolume(Location l0, Location l1, String reason) {
-        DynmapWorld world = getWorld(l0.getWorld().getName());
+    public int touchVolume(DynmapLocation l, int sx, int sy, int sz, String reason) {
+        DynmapWorld world = getWorld(l.world);
         if (world == null)
             return 0;
         int invalidates = 0;
         for (int i = 0; i < world.maps.size(); i++) {
-            MapTile[] tiles = world.maps.get(i).getTiles(l0, l1);
+            MapTile[] tiles = world.maps.get(i).getTiles(l, sx, sy, sz);
             for (int j = 0; j < tiles.length; j++) {
                 if(invalidateTile(tiles[j]))
                     invalidates++;
@@ -1111,14 +1113,8 @@ public class MapManager {
         }
     }
 
-    private HashMap<World, File> worldTileDirectories = new HashMap<World, File>();
     public File getTileFile(MapTile tile) {
-        World world = tile.getWorld();
-        File worldTileDirectory = worldTileDirectories.get(world);
-        if (worldTileDirectory == null) {
-            worldTileDirectory = new File(DynmapPlugin.tilesDirectory, tile.getWorld().getName());
-            worldTileDirectories.put(world, worldTileDirectory);
-        }
+        File worldTileDirectory = tile.getDynmapWorld().worldtilepath;
         if (!worldTileDirectory.isDirectory() && !worldTileDirectory.mkdirs()) {
             Log.warning("Could not create directory for tiles ('" + worldTileDirectory + "').");
         }
@@ -1132,7 +1128,7 @@ public class MapManager {
         }
     }
 
-    public void pushUpdate(World world, Client.Update update) {
+    public void pushUpdate(DynmapWorld world, Client.Update update) {
         pushUpdate(world.getName(), update);
     }
 

@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.bukkit.Location;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapLocation;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
@@ -50,12 +50,12 @@ public class KzedMap extends MapType {
     }
 
     @Override
-    public MapTile[] getTiles(Location l) {
-        DynmapWorld world = MapManager.mapman.getWorld(l.getWorld().getName());
+    public MapTile[] getTiles(DynmapLocation l) {
+        DynmapWorld world = MapManager.mapman.getWorld(l.world);
 
-        int x = l.getBlockX();
-        int y = l.getBlockY();
-        int z = l.getBlockZ();
+        int x = l.x;
+        int y = l.y;
+        int z = l.z;
 
         int dx = x - anchorx;
         int dy = y - anchory;
@@ -99,18 +99,18 @@ public class KzedMap extends MapType {
     }
 
     @Override
-    public MapTile[] getTiles(Location loc0, Location loc1) {
-        DynmapWorld world = MapManager.mapman.getWorld(loc0.getWorld().getName());
+    public MapTile[] getTiles(DynmapLocation loc, int sx, int sy, int sz) {
+        DynmapWorld world = MapManager.mapman.getWorld(loc.world);
         ArrayList<MapTile> tiles = new ArrayList<MapTile>();
         /* Transform both to tile coordinates */
-        int dx = loc0.getBlockX() - anchorx;
-        int dy = loc0.getBlockY() - anchory;
-        int dz = loc0.getBlockZ() - anchorz;
+        int dx = loc.x - anchorx;
+        int dy = loc.y - anchory;
+        int dz = loc.z - anchorz;
         int px0 = dx + dz;
         int py0 = dx - dz - dy;
-        dx = loc0.getBlockX() - anchorx;
-        dy = loc0.getBlockY() - anchory;
-        dz = loc0.getBlockZ() - anchorz;
+        dx = loc.x + sx - anchorx;
+        dy = loc.y + sy - anchory;
+        dz = loc.z + sz - anchorz;
         int px1 = dx + dz;
         int py1 = dx - dz - dy;
         /* Compute ranges */

@@ -2,7 +2,6 @@ package org.dynmap.hdmap;
 
 import static org.dynmap.JSONUtils.s;
 
-import org.bukkit.World.Environment;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;

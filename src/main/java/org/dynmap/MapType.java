@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.bukkit.Location;
 import org.dynmap.utils.TileFlags;
 import org.json.simple.JSONObject;
 
@@ -38,9 +37,9 @@ public abstract class MapType {
         public ZoomInfo(String pre, int bg) { prefix = pre; background_argb = bg; }
     }
 
-    public abstract MapTile[] getTiles(Location l);
+    public abstract MapTile[] getTiles(DynmapLocation l);
 
-    public abstract MapTile[] getTiles(Location l0, Location l1);
+    public abstract MapTile[] getTiles(DynmapLocation l0, int sx, int sy, int sz);
 
     public abstract MapTile[] getAdjecentTiles(MapTile tile);
 

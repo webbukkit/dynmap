@@ -1,11 +1,8 @@
 package org.dynmap.hdmap;
 
-import static org.dynmap.JSONUtils.s;
-
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
-import org.json.simple.JSONObject;
 
 public class ShadowHDLighting extends DefaultHDLighting {
 

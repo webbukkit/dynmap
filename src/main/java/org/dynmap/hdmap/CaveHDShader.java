@@ -1,9 +1,7 @@
 package org.dynmap.hdmap;
 
 import static org.dynmap.JSONUtils.s;
-import org.bukkit.block.Biome;
 import org.dynmap.Color;
-import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;

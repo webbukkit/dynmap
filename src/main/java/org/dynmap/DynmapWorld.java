@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.Location;
-import org.dynmap.MapType.ImageFormat;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
@@ -31,7 +30,7 @@ public class DynmapWorld {
     public List<MapType> maps = new ArrayList<MapType>();
     public UpdateQueue updates = new UpdateQueue();
     public ConfigurationNode configuration;
-    public List<Location> seedloc;
+    public List<DynmapLocation> seedloc;
     public List<MapChunkCache.VisibilityLimit> visibility_limits;
     public List<MapChunkCache.VisibilityLimit> hidden_limits;
     public AutoGenerateOption do_autogenerate;
@@ -460,7 +459,7 @@ public class DynmapWorld {
                 if(zf.exists()) {
                     zf.delete();
                     hashman.updateHashCode(key, null, tilex, tiley, -1);
-                    MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
+                    MapManager.mapman.pushUpdate(this, new Client.Tile(zfname));
                     enqueueZoomOutUpdate(zf, pd.zoomlevel+1);
                 }
             }
@@ -476,12 +475,32 @@ public class DynmapWorld {
                     Debug.error("Failed to save zoom-out tile (NullPointerException): " + zf.getName(), e);
                 }
                 hashman.updateHashCode(key, null, tilex, tiley, crc);
-                MapManager.mapman.pushUpdate(this.world, new Client.Tile(zfname));
+                MapManager.mapman.pushUpdate(this, new Client.Tile(zfname));
                 enqueueZoomOutUpdate(zf, pd.zoomlevel+1);
             }
         } finally {
             FileLockManager.releaseWriteLock(zf);
             DynmapBufferedImage.freeBufferedImage(kzIm);
         }
+    }
+    /* Test if world is nether */
+    public boolean isNether() {
+        return world.getEnvironment() == World.Environment.NETHER;
+    }
+    /* Get world name */
+    public String getName() {
+        return world.getName();
+    }
+    /* Get world spawn location */
+    public DynmapLocation getSpawnLocation() {
+        DynmapLocation dloc = new DynmapLocation();
+        Location sloc = world.getSpawnLocation();
+        dloc.x = sloc.getBlockX(); dloc.y = sloc.getBlockY();
+        dloc.z = sloc.getBlockZ(); dloc.world = sloc.getWorld().getName();
+        return dloc;
+    }
+    
+    public int hashCode() {
+        return world.hashCode();
     }
 }

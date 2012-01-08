@@ -5,7 +5,6 @@ import static org.dynmap.JSONUtils.s;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.PluginManager;
 import org.dynmap.ChatEvent;
 import org.dynmap.Client;
 import org.dynmap.Component;

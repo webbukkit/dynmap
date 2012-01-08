@@ -1,12 +1,9 @@
 package org.dynmap;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.bukkit.World;
-import org.dynmap.kzedmap.MapTileRenderer;
 import org.dynmap.utils.MapChunkCache;
 
 public abstract class MapTile {
@@ -15,10 +12,6 @@ public abstract class MapTile {
     public abstract boolean render(MapChunkCache cache, String mapname);
     public abstract List<DynmapChunk> getRequiredChunks();
     public abstract MapTile[] getAdjecentTiles();
-
-    public World getWorld() {
-        return world.world;
-    }
 
     public DynmapWorld getDynmapWorld() {
         return world;
@@ -34,7 +27,7 @@ public abstract class MapTile {
 
     @Override
     public int hashCode() {
-        return getFilename().hashCode() ^ getWorld().hashCode();
+        return getFilename().hashCode() ^ world.hashCode();
     }
 
     @Override

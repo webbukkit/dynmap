@@ -3,9 +3,9 @@ package org.dynmap.kzedmap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.bukkit.World;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
 
@@ -21,7 +21,7 @@ public class HighlightTileRenderer extends DefaultTileRenderer {
     }
 
     @Override
-    protected void scan(World world,int seq, boolean isnether, final Color result, final Color result_day,
+    protected void scan(DynmapWorld world,int seq, boolean isnether, final Color result, final Color result_day,
             MapIterator mapiter) {
         result.setTransparent();
         for (;;) {

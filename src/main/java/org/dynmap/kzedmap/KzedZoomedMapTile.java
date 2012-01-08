@@ -73,7 +73,7 @@ public class KzedZoomedMapTile extends MapTile {
 
     @Override
     public int hashCode() {
-        return getFilename().hashCode() ^ getWorld().hashCode();
+        return getFilename().hashCode() ^ world.hashCode();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class KzedZoomedMapTile extends MapTile {
     
 
     public String getKey(String prefix) {
-        return getWorld().getName() + ".z" + prefix;
+        return world.getName() + ".z" + prefix;
     }
 
     @Override

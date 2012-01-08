@@ -8,7 +8,6 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Type;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -21,7 +20,6 @@ import org.dynmap.utils.FileLockManager;
  * Listen for player logins, and process player faces by fetching skins *
  */
 public class PlayerFaces {
-    private DynmapPlugin plugin;
     private File facesdir;
     private File faces8x8dir;
     private File faces16x16dir;
@@ -146,7 +144,6 @@ public class PlayerFaces {
         }
     }
     public PlayerFaces(DynmapPlugin plugin) {
-        this.plugin = plugin;
         fetchskins = plugin.configuration.getBoolean("fetchskins", true);    /* Control whether to fetch skins */ 
         refreshskins = plugin.configuration.getBoolean("refreshskins", true);    /* Control whether to update existing fetched skins or faces */ 
 

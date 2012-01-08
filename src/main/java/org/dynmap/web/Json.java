@@ -6,8 +6,6 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-
 public class Json {
     public static String stringifyJson(Object o) {
         StringBuilder sb = new StringBuilder();

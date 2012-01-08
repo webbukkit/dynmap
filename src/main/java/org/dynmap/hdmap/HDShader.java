@@ -1,7 +1,5 @@
 package org.dynmap.hdmap;
 
-import java.io.File;
-
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 
