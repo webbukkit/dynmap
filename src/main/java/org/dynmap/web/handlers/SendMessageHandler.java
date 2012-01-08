@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.bukkit.OfflinePlayer;
 import org.dynmap.DynmapPlugin;
 import org.dynmap.Event;
 import org.dynmap.Log;
@@ -30,6 +31,7 @@ public class SendMessageHandler implements HttpHandler {
     public boolean trustclientname = false;
     public boolean use_player_login_ip = false;
     public boolean require_player_login_ip = false;
+    public boolean check_user_ban = false;
     public DynmapPlugin plug_in;
     public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
     private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
@@ -69,6 +71,17 @@ public class SendMessageHandler implements HttpHandler {
         if(use_player_login_ip) {
             List<String> ids = plug_in.getIDsForIP(message.name);
             if(ids != null) {
+                String id = ids.get(0);
+                if(check_user_ban) {
+                    OfflinePlayer p = plug_in.getServer().getOfflinePlayer(id);
+                    if((p != null) && p.isBanned()) {
+                        Log.info("Ignore message from '" + message.name + "' - banned player (" + id + ")");
+                        response.fields.put("Content-Length", "0");
+                        response.status = HttpStatus.Forbidden;
+                        response.getBody();
+                        return;
+                    }
+                }
                 message.name = ids.get(0);
                 isip = false;
             }

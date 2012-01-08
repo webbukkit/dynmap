@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.dynmap.web.HttpStatus;
 import org.dynmap.web.Json;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -31,6 +33,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     private boolean useplayerloginip;
     private boolean requireplayerloginip;
     private boolean trust_client_name;
+    private boolean checkuserban;
     
     private HashMap<String,String> useralias = new HashMap<String,String>();
     private int aliasindex = 1;
@@ -45,6 +48,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         useplayerloginip = configuration.getBoolean("use-player-login-ip", true);
         requireplayerloginip = configuration.getBoolean("require-player-login-ip", false);
         trust_client_name = configuration.getBoolean("trustclientname", false);
+        checkuserban = configuration.getBoolean("block-banned-player-chat", true);
 
         MapManager.scheduleDelayedJob(new Runnable() {
             @Override
@@ -230,6 +234,13 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                             if(ids != null) {
                                 name = ids.get(0);
                                 isip = false;
+                                if(checkuserban) {
+                                    OfflinePlayer p = plugin.getServer().getOfflinePlayer(name);
+                                    if((p != null) && p.isBanned()) {
+                                        Log.info("Ignore message from '" + ip + "' - banned player (" + name + ")");
+                                        return;
+                                    }
+                                }
                             }
                             else if(requireplayerloginip) {
                                 Log.info("Ignore message from '" + name + "' - no matching player login recorded");

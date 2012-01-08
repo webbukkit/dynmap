@@ -31,6 +31,8 @@ components:
     use-player-login-ip: true
     # (optional) if use-player-login-ip is true, setting this to true will cause chat messages not matching a known player IP to be ignored
     require-player-login-ip: false
+    # (optional) block player login IDs that are banned from chatting
+    block-banned-player-chat: true
   #  # Optional - make players hidden when they are inside/underground/in shadows (#=light level: 0=full shadow,15=sky)
   #  hideifshadow: 4
   #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
@@ -47,6 +49,7 @@ components:
   #  includehiddenplayers: false
   #  use-player-login-ip: false
   #  require-player-login-ip: false
+  #  block-banned-player-chat: true
   #  hideifshadow: 0
   #  hideifundercover: 0
   #  hideifsneaking: false

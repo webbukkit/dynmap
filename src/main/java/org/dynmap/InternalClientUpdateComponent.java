@@ -14,6 +14,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
         final boolean hidewebchatip = configuration.getBoolean("hidewebchatip", false);
         final boolean trust_client_name = configuration.getBoolean("trustclientname", false);
         final boolean useplayerloginip = configuration.getBoolean("use-player-login-ip", true);
+        final boolean checkuserban = configuration.getBoolean("block-banned-player-chat", true);
         final boolean requireplayerloginip = configuration.getBoolean("require-player-login-ip", false);
         final float webchatInterval = configuration.getFloat("webchat-interval", 1);
         final String spammessage = plugin.configuration.getString("spammessage", "You may only chat once every %interval% seconds.");
@@ -37,6 +38,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
                 this.trustclientname = trust_client_name;
                 this.use_player_login_ip = useplayerloginip;
                 this.require_player_login_ip = requireplayerloginip;
+                this.check_user_ban = checkuserban;
                 onMessageReceived.addListener(new Listener<SendMessageHandler.Message>() {
                     @Override
                     public void triggered(Message t) {
