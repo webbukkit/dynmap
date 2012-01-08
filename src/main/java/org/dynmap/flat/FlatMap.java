@@ -85,21 +85,12 @@ public class FlatMap extends MapType {
     }
 
     @Override
-    public MapTile[] getTiles(DynmapLocation l) {
-        DynmapWorld w = MapManager.mapman.getWorld(l.world);
-        return new MapTile[] { new FlatMapTile(w, this, (int) Math.floor(l.x / 128.0), (int) Math.floor(l.z / 128.0), 128) };
+    public MapTile[] getTiles(DynmapWorld w, int x, int y, int z) {
+        return new MapTile[] { new FlatMapTile(w, this, x>>7, z>>7, 128) };
     }
 
     @Override
-    public MapTile[] getTiles(DynmapLocation l, int sx, int sy, int sz) {
-        DynmapWorld w = MapManager.mapman.getWorld(l.world);
-        int xmin, xmax, zmin, zmax;
-
-        xmin = l.x >> 7;
-        zmin = l.z >> 7;
-        xmax = (l.x + sx) >> 7;
-        zmax = (l.z + sz) >> 7;
-        
+    public MapTile[] getTiles(DynmapWorld w, int xmin, int ymin, int zmin, int xmax, int ymax, int zmax) {
         ArrayList<MapTile> rslt = new ArrayList<MapTile>();
         for(int i = xmin; i <= xmax; i++) {
             for(int j = zmin; j < zmax; j++) {

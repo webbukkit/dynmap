@@ -724,21 +724,31 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         /* Register entity event triggers */
         EntityListener entityTrigger = new EntityListener() {
-            private DynmapLocation dloc = new DynmapLocation();
-            private DynmapLocation toLoc(Location loc) {
-                dloc.x = loc.getBlockX(); dloc.y = loc.getBlockY();
-                dloc.z = loc.getBlockZ(); dloc.world = loc.getWorld().getName();
-                return dloc;
-            }
             @Override
             public void onEntityExplode(EntityExplodeEvent event) {
+                Location loc = event.getLocation();
+                String wname = loc.getWorld().getName();
+                int minx, maxx, miny, maxy, minz, maxz;
+                minx = maxx = loc.getBlockX();
+                miny = maxy = loc.getBlockY();
+                minz = maxz = loc.getBlockZ();
+                /* Calculate volume impacted by explosion */
                 List<Block> blocks = event.blockList();
                 for(Block b: blocks) {
-                    toLoc(b.getLocation());
-                    mapManager.sscache.invalidateSnapshot(dloc);
-                    if(onexplosion) {
-                        mapManager.touch(dloc, "entityexplode");
-                    }
+                    Location l = b.getLocation();
+                    int x = l.getBlockX();
+                    if(x < minx) minx = x;
+                    if(x > maxx) maxx = x;
+                    int y = l.getBlockY();
+                    if(y < miny) miny = y;
+                    if(y > maxy) maxy = y;
+                    int z = l.getBlockZ();
+                    if(z < minz) minz = z;
+                    if(z > maxz) maxz = z;
+                }
+                mapManager.sscache.invalidateSnapshot(wname, minx, miny, minz, maxx, maxy, maxz);
+                if(onexplosion) {
+                    mapManager.touchVolume(wname, minx, miny, minz, maxx, maxy, maxz, "entityexplode");
                 }
             }
         };
@@ -755,21 +765,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     return;
                 Chunk c = event.getChunk();
                 /* Touch extreme corners */
-                dloc.world = event.getWorld().getName();
-                dloc.x = c.getX() << 4;
-                dloc.y = 0;
-                dloc.z = c.getZ() << 4;
-                mapManager.touchVolume(dloc, 16, 128, 16, "chunkload");
+                int x = c.getX() << 4;
+                int z = c.getZ() << 4;
+                mapManager.touchVolume(event.getWorld().getName(), x, 0, z, x+15, 128, z+16, "chunkload");
             }
             @Override
             public void onChunkPopulate(ChunkPopulateEvent event) {
                 Chunk c = event.getChunk();
                 /* Touch extreme corners */
-                dloc.world = event.getWorld().getName();
-                dloc.x = c.getX() << 4;
-                dloc.y = 0;
-                dloc.z = c.getZ() << 4;
-                mapManager.touchVolume(dloc, 16, 128, 16, "chunkpopulate");
+                int x = c.getX() << 4;
+                int z = c.getZ() << 4;
+                mapManager.touchVolume(event.getWorld().getName(), x, 0, z, x+15, 128, z+16, "chunkpopulate");
             }
             @Override
             public void onWorldLoad(WorldLoadEvent event) {
@@ -1689,16 +1695,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public int triggerRenderOfVolume(Location l0, Location l1) {
         if(mapManager != null) {
             if(l1 == null)
-                return mapManager.touch(toLoc(l0), "api");
+                return mapManager.touch(l0.getWorld().getName(), l0.getBlockX(), l0.getBlockY(), l0.getBlockZ(), "api");
             else {
-                DynmapLocation dloc = toLoc(l0);
-                int sx = l1.getBlockX() - dloc.x + 1;
-                int sy = l1.getBlockY() - dloc.y + 1;
-                int sz = l1.getBlockZ() - dloc.z + 1;
-                if(sx < 1) { sx = -sx + 2; dloc.x = l1.getBlockX(); }
-                if(sy < 1) { sy = -sy + 2; dloc.y = l1.getBlockY(); }
-                if(sz < 1) { sz = -sz + 2; dloc.z = l1.getBlockZ(); }
-                return mapManager.touchVolume(dloc, sx, sy, sz, "api");
+                int minx = Math.min(l0.getBlockX(), l1.getBlockX());
+                int maxx = Math.max(l0.getBlockX(), l1.getBlockX());
+                int miny = Math.min(l0.getBlockY(), l1.getBlockY());
+                int maxy = Math.max(l0.getBlockY(), l1.getBlockY());
+                int minz = Math.min(l0.getBlockZ(), l1.getBlockZ());
+                int maxz = Math.max(l0.getBlockZ(), l1.getBlockZ());
+                
+                return mapManager.touchVolume(l0.getWorld().getName(), minx, miny, minz, maxx, maxy, maxz, "api");
             }
         }
         return 0;
@@ -1867,12 +1873,20 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
 
     @Override
-    public int triggerRenderOfVolume(DynmapLocation loc, int sx, int sy, int sz) {
+    public int triggerRenderOfBlock(String wid, int x, int y, int z) {
+        if(mapManager != null)
+            return mapManager.touch(wid, x, y, z, "api");
+        else
+            return 0;
+    }
+    
+    @Override
+    public int triggerRenderOfVolume(String wid, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
         if(mapManager != null) {
-            if((sx == 1) && (sy == 1) && (sz == 1))
-                return mapManager.touch(loc, "api");
+            if((minx == maxx) && (miny == maxy) && (minz == maxz))
+                return mapManager.touch(wid, minx, miny, minz, "api");
             else
-                return mapManager.touchVolume(loc, sx, sy, sz, "api");
+                return mapManager.touchVolume(wid, minx, miny, minz, maxx, maxy, maxz, "api");
         }
         return 0;
     }

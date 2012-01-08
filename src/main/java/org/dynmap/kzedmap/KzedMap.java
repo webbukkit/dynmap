@@ -50,13 +50,7 @@ public class KzedMap extends MapType {
     }
 
     @Override
-    public MapTile[] getTiles(DynmapLocation l) {
-        DynmapWorld world = MapManager.mapman.getWorld(l.world);
-
-        int x = l.x;
-        int y = l.y;
-        int z = l.z;
-
+    public MapTile[] getTiles(DynmapWorld world, int x, int y, int z) {
         int dx = x - anchorx;
         int dy = y - anchory;
         int dz = z - anchorz;
@@ -99,18 +93,17 @@ public class KzedMap extends MapType {
     }
 
     @Override
-    public MapTile[] getTiles(DynmapLocation loc, int sx, int sy, int sz) {
-        DynmapWorld world = MapManager.mapman.getWorld(loc.world);
+    public MapTile[] getTiles(DynmapWorld world, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
         ArrayList<MapTile> tiles = new ArrayList<MapTile>();
         /* Transform both to tile coordinates */
-        int dx = loc.x - anchorx;
-        int dy = loc.y - anchory;
-        int dz = loc.z - anchorz;
+        int dx = minx - anchorx;
+        int dy = miny - anchory;
+        int dz = minz - anchorz;
         int px0 = dx + dz;
         int py0 = dx - dz - dy;
-        dx = loc.x + sx - anchorx;
-        dy = loc.y + sy - anchory;
-        dz = loc.z + sz - anchorz;
+        dx = maxx - anchorx;
+        dy = maxy - anchory;
+        dz = maxz - anchorz;
         int px1 = dx + dz;
         int py1 = dx - dz - dy;
         /* Compute ranges */

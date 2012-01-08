@@ -37,9 +37,9 @@ public abstract class MapType {
         public ZoomInfo(String pre, int bg) { prefix = pre; background_argb = bg; }
     }
 
-    public abstract MapTile[] getTiles(DynmapLocation l);
+    public abstract MapTile[] getTiles(DynmapWorld w, int x, int y, int z);
 
-    public abstract MapTile[] getTiles(DynmapLocation l0, int sx, int sy, int sz);
+    public abstract MapTile[] getTiles(DynmapWorld w, int minx, int miny, int minz, int maxx, int maxy, int maxz);
 
     public abstract MapTile[] getAdjecentTiles(MapTile tile);
 

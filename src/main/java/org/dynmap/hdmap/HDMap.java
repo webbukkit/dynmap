@@ -128,13 +128,13 @@ public class HDMap extends MapType {
     public HDLighting getLighting() { return lighting; }
     
     @Override
-    public MapTile[] getTiles(DynmapLocation loc) {
-        return perspective.getTiles(loc);
+    public MapTile[] getTiles(DynmapWorld w, int x, int y, int z) {
+        return perspective.getTiles(w, x, y, z);
     }
 
     @Override
-    public MapTile[] getTiles(DynmapLocation loc, int sx, int sy, int sz) {
-        return perspective.getTiles(loc, sx, sy, sz);
+    public MapTile[] getTiles(DynmapWorld w, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
+        return perspective.getTiles(w, minx, miny, minz, maxx, maxy, maxz);
     }
 
     @Override

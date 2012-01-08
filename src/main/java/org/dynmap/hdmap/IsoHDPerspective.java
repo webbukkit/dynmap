@@ -816,11 +816,12 @@ public class IsoHDPerspective implements HDPerspective {
     }   
 
     @Override
-    public MapTile[] getTiles(DynmapLocation loc) {
-        DynmapWorld world = MapManager.mapman.getWorld(loc.world);
+    public MapTile[] getTiles(DynmapWorld world, int x, int y, int z) {
         HashSet<MapTile> tiles = new HashSet<MapTile>();
         Vector3D block = new Vector3D();
-        block.setFromLocation(loc); /* Get coordinate for block */
+        block.x = x;
+        block.y = y;
+        block.z = z;
         Vector3D corner = new Vector3D();
         /* Loop through corners of the cube */
         for(int i = 0; i < 2; i++) {
@@ -843,16 +844,15 @@ public class IsoHDPerspective implements HDPerspective {
     }
 
     @Override
-    public MapTile[] getTiles(DynmapLocation loc, int sx, int sy, int sz) {
-        DynmapWorld world = MapManager.mapman.getWorld(loc.world);
+    public MapTile[] getTiles(DynmapWorld world, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
         HashSet<MapTile> tiles = new HashSet<MapTile>();
         Vector3D blocks[] = new Vector3D[] { new Vector3D(), new Vector3D() };
-        blocks[0].x = loc.x - 1;
-        blocks[0].y = loc.y - 1;
-        blocks[0].z = loc.z - 1;
-        blocks[1].x = loc.x + sx;
-        blocks[1].y = loc.y + sy;
-        blocks[1].z = loc.z + sz;
+        blocks[0].x = minx - 1;
+        blocks[0].y = miny - 1;
+        blocks[0].z = minz - 1;
+        blocks[1].x = maxx + 1;
+        blocks[1].y = maxy + 1;
+        blocks[1].z = maxz + 1;
         
         Vector3D corner = new Vector3D();
         Vector3D tcorner = new Vector3D();

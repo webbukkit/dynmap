@@ -68,6 +68,34 @@ public class SnapshotCache {
         processRefQueue();
     }
     /**
+     * Invalidate cached snapshot, if in cache
+     */
+    public void invalidateSnapshot(String w, int x, int y, int z) {
+        String key = getKey(w, x>>4, z>>4);
+        CacheRec rec = snapcache.remove(key);
+        if(rec != null) {
+            snapcache.reverselookup.remove(rec.ref);
+            rec.ref.clear();
+        }
+        processRefQueue();
+    }
+    /**
+     * Invalidate cached snapshot, if in cache
+     */
+    public void invalidateSnapshot(String w, int x0, int y0, int z0, int x1, int y1, int z1) {
+        for(int xx = (x0>>4); xx <= (x1>>4); xx++) {
+            for(int zz = (z0>>4); zz <= (z1>>4); zz++) {
+                String key = getKey(w, xx, zz);
+                CacheRec rec = snapcache.remove(key);
+                if(rec != null) {
+                    snapcache.reverselookup.remove(rec.ref);
+                    rec.ref.clear();
+                }
+            }
+        }
+        processRefQueue();
+    }
+    /**
      * Look for chunk snapshot in cache
      */
     public ChunkSnapshot getSnapshot(String w, int chunkx, int chunkz, 

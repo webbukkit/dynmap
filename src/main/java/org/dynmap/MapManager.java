@@ -453,7 +453,7 @@ public class MapManager {
                     renderedmaps.addAll(map.getMapsSharingRender(world));
 
                     /* Now, prime the render queue */
-                    for (MapTile mt : map.getTiles(loc)) {
+                    for (MapTile mt : map.getTiles(world, loc.x, loc.y, loc.z)) {
                         if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
                             found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
                             renderQueue.add(mt);
@@ -462,7 +462,7 @@ public class MapManager {
                     if(!updaterender) { /* Only add other seed points for fullrender */
                         /* Add spawn location too (helps with some worlds where 0,64,0 may not be generated */
                         DynmapLocation sloc = world.getSpawnLocation();
-                        for (MapTile mt : map.getTiles(sloc)) {
+                        for (MapTile mt : map.getTiles(world, sloc.x, sloc.y, sloc.z)) {
                             if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
                                 found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
                                 renderQueue.add(mt);
@@ -470,7 +470,7 @@ public class MapManager {
                         }
                         if(world.seedloc != null) {
                             for(DynmapLocation seed : world.seedloc) {
-                                for (MapTile mt : map.getTiles(seed)) {
+                                for (MapTile mt : map.getTiles(world, seed.x, seed.y, seed.z)) {
                                     if (!found.getFlag(mt.tileOrdinalX(),mt.tileOrdinalY())) {
                                         found.setFlag(mt.tileOrdinalX(),mt.tileOrdinalY(), true);
                                         renderQueue.add(mt);
@@ -1011,12 +1011,16 @@ public class MapManager {
     }
 
     public int touch(DynmapLocation l, String reason) {
-        DynmapWorld world = getWorld(l.world);
+        return touch(l.world, l.x, l.y, l.z, reason);
+    }
+    
+    public int touch(String wname, int x, int y, int z, String reason) {
+        DynmapWorld world = getWorld(wname);
         if (world == null)
             return 0;
         int invalidates = 0;
         for (int i = 0; i < world.maps.size(); i++) {
-            MapTile[] tiles = world.maps.get(i).getTiles(l);
+            MapTile[] tiles = world.maps.get(i).getTiles(world, x, y, z);
             for (int j = 0; j < tiles.length; j++) {
                 if(invalidateTile(tiles[j]))
                     invalidates++;
@@ -1037,13 +1041,13 @@ public class MapManager {
         return invalidates;
     }
 
-    public int touchVolume(DynmapLocation l, int sx, int sy, int sz, String reason) {
-        DynmapWorld world = getWorld(l.world);
+    public int touchVolume(String wname, int minx, int miny, int minz, int maxx, int maxy, int maxz, String reason) {
+        DynmapWorld world = getWorld(wname);
         if (world == null)
             return 0;
         int invalidates = 0;
         for (int i = 0; i < world.maps.size(); i++) {
-            MapTile[] tiles = world.maps.get(i).getTiles(l, sx, sy, sz);
+            MapTile[] tiles = world.maps.get(i).getTiles(world, minx, miny, minz, maxx, maxy, maxz);
             for (int j = 0; j < tiles.length; j++) {
                 if(invalidateTile(tiles[j]))
                     invalidates++;
