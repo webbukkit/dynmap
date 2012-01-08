@@ -1,7 +1,7 @@
 componentconstructors['link'] = function(dynmap, configuration) {
 
   var dynmapLink = L.Class.extend({
-  	options: { position: L.Control.Position.BOTTOM_RIGHT },
+  	options: { position: L.Control.Position.BOTTOM_LEFT },
   	
 	onAdd: function(map) {
 		this._map = map;
