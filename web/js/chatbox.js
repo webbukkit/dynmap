@@ -1,5 +1,9 @@
 componentconstructors['chatbox'] = function(dynmap, configuration) {
 	var me = this;
+	
+	if(dynmap.getBoolParameterByName("hidechat"))
+		return;
+	
 	var chat = $('<div/>')
 		.addClass('chat')
 		.appendTo(dynmap.options.container);

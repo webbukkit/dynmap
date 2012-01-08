@@ -1,5 +1,9 @@
 componentconstructors['chatballoon'] = function(dynmap, configuration) {
 	var me = this;
+	
+	if(dynmap.getBoolParameterByName("hidechat"))
+		return;
+	
 	me.chatpopups = {};
 	$(dynmap).bind('playerupdated', function(event, player) {
 		var popup = me.chatpopups[player.name];

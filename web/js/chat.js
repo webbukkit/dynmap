@@ -8,6 +8,10 @@ $.ajax({
 
 componentconstructors['chat'] = function(dynmap, configuration) {
 	var me = this;
+	
+	if(dynmap.getBoolParameterByName("hidechat"))
+		return;
+		
 	// Provides 'chat'-events by monitoring the world-updates.
 	$(dynmap).bind('worldupdate', function(event, update) {
 		swtch(update.type, {
