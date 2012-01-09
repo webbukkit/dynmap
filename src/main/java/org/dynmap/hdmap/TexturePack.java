@@ -75,6 +75,7 @@ public class TexturePack {
     private static final int COLORMOD_PINETONED = 13;
     private static final int COLORMOD_BIRCHTONED = 14;
     private static final int COLORMOD_LILYTONED = 15;
+    private static final int COLORMOD_OLD_WATERSHADED = 16;
     
     /* Special tile index values */
     private static final int BLOCKINDEX_BLANK = -1;
@@ -120,6 +121,8 @@ public class TexturePack {
     private int terrain_width, terrain_height;
     private int native_scale;
 
+    private int water_toned_op = COLORMOD_WATERTONED;
+    
     private static final int IMG_GRASSCOLOR = 0;
     private static final int IMG_FOLIAGECOLOR = 1;
     private static final int IMG_WATER = 2;
@@ -173,6 +176,7 @@ public class TexturePack {
             for(int i = 0; i < texmaps.length; i++) {
                 texmaps[i] = this;
             }
+
         }
         
         public HDTextureMap(List<Integer> blockids, int databits, int[] faces, BlockTransparency trans, boolean userender) {
@@ -234,15 +238,20 @@ public class TexturePack {
     private TexturePack(String tpname) throws FileNotFoundException {
         ZipFile zf = null;
         File texturedir = getTexturePackDirectory();
+        boolean use_generate = HDMapManager.usegeneratedtextures;
+        if(HDMapManager.biomeshadingfix == false)
+            water_toned_op = COLORMOD_OLD_WATERSHADED;
 
         /* Set up for enough files */
         imgs = new LoadedImage[IMG_CNT + addonfiles.size()];
 
         /* Generate still and flowing water defaults */
-        generateWater();
-        generateWaterFlowing();
-        generateLava();
-        generateLavaFlow();
+        if(use_generate) {
+            generateWater();
+            generateWaterFlowing();
+            generateLava();
+            generateLavaFlow();
+        }
         generateFire();
         
         File f = new File(texturedir, tpname);
@@ -262,11 +271,27 @@ public class TexturePack {
             }
             loadTerrainPNG(is);
             is.close();
-            /* Patch in generated defaults */
-            patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
-            patchTextureWithImage(IMG_WATERMOVING, BLOCKINDEX_MOVINGWATER);
-            patchTextureWithImage(IMG_LAVA, BLOCKINDEX_STATIONARYLAVA);
-            patchTextureWithImage(IMG_LAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+            /* If not generating water, load it */
+            if(!use_generate) {
+                ze = zf.getEntry(WATER_PNG);
+                if(ze == null) {
+                    File ff = new File(texturedir, STANDARDTP + "/" + WATER_PNG);
+                    is = new FileInputStream(ff);
+                }
+                else {
+                    is = zf.getInputStream(ze);
+                }
+                loadImage(is, IMG_WATER);
+                patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
+                is.close();                
+            }
+            else {
+                patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATERMOVING, BLOCKINDEX_MOVINGWATER);
+                patchTextureWithImage(IMG_LAVA, BLOCKINDEX_STATIONARYLAVA);
+                patchTextureWithImage(IMG_LAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+            }
             patchTextureWithImage(IMG_FIRE, BLOCKINDEX_FIRE);
 
             /* Try to find and load misc/grasscolor.png */
@@ -365,12 +390,26 @@ public class TexturePack {
             fis = new FileInputStream(f);
             loadTerrainPNG(fis);
             fis.close();
-            
-            /* Patch in generated defaults */
-            patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
-            patchTextureWithImage(IMG_WATERMOVING, BLOCKINDEX_MOVINGWATER);
-            patchTextureWithImage(IMG_LAVA, BLOCKINDEX_STATIONARYLAVA);
-            patchTextureWithImage(IMG_LAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+
+            if(use_generate == false) { /* Not using generated - load water */
+                /* Check for misc/water.png */
+                f = new File(texturedir, tpname + "/" + WATER_PNG);
+                if(!f.canRead()) {
+                    f = new File(texturedir, STANDARDTP + "/" + WATER_PNG);              
+                }
+                fis = new FileInputStream(f);
+                loadImage(fis, IMG_WATER);
+                patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
+                fis.close();
+            }
+            else {
+                patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATERMOVING, BLOCKINDEX_MOVINGWATER);
+                patchTextureWithImage(IMG_LAVA, BLOCKINDEX_STATIONARYLAVA);
+                patchTextureWithImage(IMG_LAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+            }
+            /* Patch in generated value */
             patchTextureWithImage(IMG_FIRE, BLOCKINDEX_FIRE);
 
             /* Check for misc/grasscolor.png */
@@ -454,6 +493,7 @@ public class TexturePack {
         this.terrain_width = tp.terrain_width;
         this.terrain_height = tp.terrain_height;
         this.native_scale = tp.native_scale;
+        this.water_toned_op = tp.water_toned_op;
 
         this.imgs = tp.imgs;
     }
@@ -834,6 +874,27 @@ public class TexturePack {
     }
 
     /**
+     * Translate face ID - in case we've got options to fix it
+     */
+    private static int translateFaceID(int id) {
+        int f = (id / 1000);
+        switch(f) {
+            case COLORMOD_PINETONED:
+            case COLORMOD_BIRCHTONED:
+            case COLORMOD_LILYTONED:
+                if(HDMapManager.biomeshadingfix == false) {
+                    id = (COLORMOD_FOLIAGETONED * 1000) + (id % 1000);
+                }
+                break;
+            case COLORMOD_WATERTONED:
+                if(HDMapManager.biomeshadingfix == false) {
+                    id = (COLORMOD_OLD_WATERSHADED * 1000) + (id % 1000);
+                }
+                break;
+        }
+        return id;
+    }
+    /**
      * Load texture pack mappings from texture.txt file
      */
     private static void loadTextureFile(InputStream txtfile, String txtname, ConfigurationNode config) {
@@ -909,6 +970,10 @@ public class TexturePack {
                                 trans = BlockTransparency.OPAQUE;
                                 Log.severe("Texture mapping has invalid transparency setting - " + av[1] + " - line " + rdr.getLineNumber() + " of " + txtname);
                             }
+                            /* If no water lighting fix */
+                            if((blkids.contains(8) || blkids.contains(9)) && (HDMapManager.waterlightingfix == false)) {
+                                trans = BlockTransparency.TRANSPARENT;  /* Treat water as transparent if no fix */
+                            }
                         }
                         else if(av[0].equals("userenderdata")) {
                     		userenderdata = av[1].equals("true");
@@ -934,6 +999,8 @@ public class TexturePack {
                     if(databits < 0) databits = 0xFFFF;
                     /* If we have everything, build block */
                     if(blkids.size() > 0) {
+                        for(int i = 0; i < faces.length; i++)
+                            faces[i] = translateFaceID(faces[i]);
                         HDTextureMap map = new HDTextureMap(blkids, databits, faces, trans, userenderdata);
                         map.addToTable();
                         cnt++;
@@ -1023,6 +1090,7 @@ public class TexturePack {
                 }
             }
         }
+
     }
 
     /* Process any ore hiding mappings */
@@ -1095,7 +1163,7 @@ public class TexturePack {
             }
             /* If water block, to watercolor tone op */
             if((blkid == 8) || (blkid == 9)) {
-                textop = COLORMOD_WATERTONED;
+                textop = water_toned_op;
             }
         }
 
@@ -1225,6 +1293,8 @@ public class TexturePack {
                         break;
                 }
                 break;
+            case COLORMOD_OLD_WATERSHADED:
+                break;
         }
         /* Read color from texture */
         rslt.setARGB(texture[v*native_scale + u]);
@@ -1251,6 +1321,10 @@ public class TexturePack {
                 break;
             case COLORMOD_LILYTONED:
                 clrmult =  0xFF208030; /* from BlockLilyPad.java in MCP */
+                break;
+            case COLORMOD_OLD_WATERSHADED:  /* Legacy water shading (wrong, but folks used it */
+                if(ss.do_water_shading)
+                    li = imgs[IMG_WATERCOLOR];                
                 break;
         }
         if(li != null) {

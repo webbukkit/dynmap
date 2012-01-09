@@ -21,9 +21,17 @@ public class HDMapManager {
     public HashSet<HDMap> maps = new HashSet<HDMap>();
     public HashMap<String, ArrayList<HDMap>> maps_by_world_perspective = new HashMap<String, ArrayList<HDMap>>();
  
+    public static boolean usegeneratedtextures;
+    public static boolean waterlightingfix;
+    public static boolean biomeshadingfix;
+
     public void loadHDShaders(DynmapPlugin plugin) {
         Log.verboseinfo("Loading shaders...");
-        
+
+        usegeneratedtextures = plugin.useGeneratedTextures();
+        waterlightingfix = plugin.waterLightingFix();
+        biomeshadingfix = plugin.biomeShadingFix();
+
         File f = new File(plugin.getDataFolder(), "shaders.txt");
         if(!plugin.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
             return;

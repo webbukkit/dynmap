@@ -188,6 +188,14 @@ enabletilehash: true
 # Optional - enabled BetterGrass style rendering of grass and snow block sides
 #better-grass: true
 
+# Pre 0.29 render options - set all three to false if you want same results as 0.28 (i.e. you have existing maps and don't want to render)
+#  use-generated-textures: if true, use generated textures (same as client); false is static, pre 0.29 textures
+#  correct-water-lighting: if true, use corrected water lighting (same as client); false is legacy, pre 0.29 water (darker)
+#  correct-biome-shading: if true, use fixed color mappings for birch, pine, lily, and proper water shading (same as client); false is pre 0.29
+use-generated-textures: true
+correct-water-lighting: true
+correct-biome-shading: true
+
 # Control loading of player faces (if set to false, skins are never fetched)
 #fetchskins: false
 

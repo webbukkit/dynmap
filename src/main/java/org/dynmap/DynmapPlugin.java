@@ -91,6 +91,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
     boolean bettergrass = false;
+    
+    boolean usegeneratedtextures = false;
+    boolean waterlightingfix = false;
+    boolean biomeshadingfix = false;
+    
     public CompassMode compassmode = CompassMode.PRE19;
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
@@ -255,6 +260,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         bukkitConfiguration.load();
         configuration = new ConfigurationNode(bukkitConfiguration);
 
+        /* Add options to avoid 0.29 re-render (fixes very inconsistent with previous maps) */
+        usegeneratedtextures = configuration.getBoolean("use-generated-textures", false);
+        waterlightingfix = configuration.getBoolean("correct-water-lighting", false);
+        biomeshadingfix = configuration.getBoolean("correct-biome-shading", false);
+
         /* Load block models */
         HDBlockModels.loadModels(dataDirectory, configuration);
         /* Load texture mappings */
@@ -282,6 +292,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         waterbiomeshading = configuration.getBoolean("waterbiomeshaded", !getServer().getVersion().contains("(MC: 1.8"));
         /* Default fence-to-block-join off for 1.8, on after */
         fencejoin = configuration.getBoolean("fence-to-block-join", !getServer().getVersion().contains("(MC: 1.8"));
+
         /* Default compassmode to pre19, to newrose after */
         String cmode = configuration.getString("compass-mode", getServer().getVersion().contains("(MC: 1.8")?"pre19":"newrose");
         if(cmode.equals("newnorth"))
@@ -1894,4 +1905,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapLocation toLoc(Location l) {
         return new DynmapLocation(l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
+    
+    public boolean useGeneratedTextures() {
+        return usegeneratedtextures;
+    }
+    public boolean waterLightingFix() {
+        return waterlightingfix;
+    }
+    public boolean biomeShadingFix() {
+        return biomeshadingfix;
+    }
+
 }
