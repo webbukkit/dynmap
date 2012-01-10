@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
@@ -87,19 +88,21 @@ public class MapManager {
     private static final int POOL_SIZE = 3;    
 
     /* Touch event queues */
-    private static class TouchEvent implements Comparable<TouchEvent> {
+    private static class TouchEvent {
         int x, y, z;
         String world;
         String reason;
         @Override
-        public int compareTo(TouchEvent te) {
-            if(x < te.x) return -1;
-            if(x > te.x) return 1;
-            if(y < te.y) return -1;
-            if(y > te.y) return 1;
-            if(z < te.z) return -1;
-            if(z > te.z) return 1;
-            return world.compareTo(te.world);
+        public int hashCode() {
+            return (x << 16) ^ (y << 24) ^ z;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if(this == o) return true;
+            TouchEvent te = (TouchEvent)o;
+            if((x != te.x) || (y != te.y) || (z != te.z) || (world.equals(te.world) == false))
+                return false;
+            return true;
         }        
     }
     private static class TouchVolumeEvent {
@@ -108,7 +111,7 @@ public class MapManager {
         String world;
         String reason;
     }
-    private TreeSet<TouchEvent> touch_events = new TreeSet<TouchEvent>();
+    private ConcurrentHashMap<TouchEvent, Object> touch_events = new ConcurrentHashMap<TouchEvent, Object>();
     private LinkedList<TouchVolumeEvent> touch_volume_events = new LinkedList<TouchVolumeEvent>();
     private Object touch_lock = new Object();
     
@@ -1051,9 +1054,7 @@ public class MapManager {
         evt.y = y;
         evt.z = z;
         evt.reason = reason;
-        synchronized(touch_lock) {
-            touch_events.add(evt);
-        }
+        touch_events.putIfAbsent(evt, reason);
     }
 
     public void touchVolume(String wname, int minx, int miny, int minz, int maxx, int maxy, int maxz, String reason) {
@@ -1410,16 +1411,20 @@ public class MapManager {
      * Process touch events
      */
     private void processTouchEvents() {
-        TreeSet<TouchEvent> te = null;
-        LinkedList<TouchVolumeEvent> tve = null;
-        synchronized(touch_lock) {
-            if(touch_events.isEmpty() == false) {
-                te = touch_events;
-                touch_events = new TreeSet<TouchEvent>();
+        ArrayList<TouchEvent> te = null;
+        ArrayList<TouchVolumeEvent> tve = null;
+
+        if(touch_events.isEmpty() == false) {
+            te = new ArrayList<TouchEvent>(touch_events.keySet());
+            for(int i = 0; i < te.size(); i++) {
+                touch_events.remove(te.get(i));
             }
+        }
+
+        synchronized(touch_lock) {
             if(touch_volume_events.isEmpty() == false) {
-                tve = touch_volume_events;
-                touch_volume_events = new LinkedList<TouchVolumeEvent>();
+                tve = new ArrayList<TouchVolumeEvent>(touch_volume_events);
+                touch_volume_events.clear();
             }
         }
         DynmapWorld world = null;

@@ -61,7 +61,7 @@ public class SnapshotCache {
             snapcache.reverselookup.remove(rec.ref);
             rec.ref.clear();
         }
-        processRefQueue();
+        //processRefQueue();
     }
     /**
      * Invalidate cached snapshot, if in cache
@@ -77,7 +77,7 @@ public class SnapshotCache {
                 }
             }
         }
-        processRefQueue();
+        //processRefQueue();
     }
     /**
      * Look for chunk snapshot in cache
