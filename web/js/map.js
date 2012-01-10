@@ -812,7 +812,7 @@ DynMap.prototype = {
 			else
 				return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
 		});
-		if(me.options.showlayercontrol) {
+		if(me.options.showlayercontrol != "false") {
 			for(i = 0; i < me.layersetlist.length; i++) {
 				me.layercontrol.removeLayer(me.layersetlist[i].layer);
 			}
@@ -827,7 +827,7 @@ DynMap.prototype = {
 		for(i = 0; i < me.layersetlist.length; i++) {
 			if(me.layersetlist[i].layer === layer) {
 				me.layersetlist.splice(i, 1);
-				if(me.options.showlayercontrol)
+				if(me.options.showlayercontrol != "false")
 					me.layercontrol.removeLayer(layer);
 				break;
 			}
