@@ -25,7 +25,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.CustomEventListener;
@@ -111,7 +110,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
-    private boolean generate_only = false;
     private static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
 
     private HashMap<Event.Type, List<Listener>> event_handlers = new HashMap<Event.Type, List<Listener>>();
@@ -130,7 +128,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
 
     /* Add/Replace branches in configuration tree with contribution from a separate file */
-    @SuppressWarnings("unchecked")
     private void mergeConfigurationBranch(ConfigurationNode cfgnode, String branch, boolean replace_existing, boolean islist) {
         Object srcbranch = cfgnode.getObject(branch);
         if(srcbranch == null)
@@ -521,10 +518,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockPlace(BlockPlaceEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onplace) {
-                    mapManager.touch(dloc, "blockplace");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockplace");
                 }
             }
 
@@ -532,10 +530,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockBreak(BlockBreakEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onbreak) {
-                    mapManager.touch(dloc, "blockbreak");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockbreak");
                 }
             }
 
@@ -543,10 +542,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onLeavesDecay(LeavesDecayEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onleaves) {
-                    mapManager.touch(dloc, "leavesdecay");              
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "leavesdecay");
                 }
             }
             
@@ -554,10 +554,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockBurn(BlockBurnEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onburn) {
-                    mapManager.touch(dloc, "blockburn");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockburn");
                 }
             }
             
@@ -565,10 +566,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockForm(BlockFormEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockform) {
-                    mapManager.touch(dloc, "blockform");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockform");
                 }
             }
 
@@ -576,10 +578,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockFade(BlockFadeEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockfade) {
-                    mapManager.touch(dloc, "blockfade");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfade");
                 }
             }
             
@@ -587,10 +590,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockSpread(BlockSpreadEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockspread) {
-                    mapManager.touch(dloc, "blockspread");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockspread");
                 }
             }
 
@@ -598,24 +602,27 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockFromTo(BlockFromToEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getToBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getToBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockfromto)
-                    mapManager.touch(dloc, "blockfromto");
-                dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfromto");
+                loc = event.getBlock().getLocation();
+                wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockfromto)
-                    mapManager.touch(dloc, "blockfromto");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfromto");
             }
             
             @Override
             public void onBlockPhysics(BlockPhysicsEvent event) {
                 if(event.isCancelled())
                     return;
-                DynmapLocation dloc = toLoc(event.getBlock().getLocation());
-                mapManager.sscache.invalidateSnapshot(dloc);
+                Location loc = event.getBlock().getLocation();
+                String wn = loc.getWorld().getName();
+                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockphysics) {
-                    mapManager.touch(dloc, "blockphysics");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockphysics");
                 }
             }
 
@@ -631,17 +638,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 } catch (ClassCastException ccx) {
                     dir = BlockFace.NORTH;
                 }
-                DynmapLocation dloc = toLoc(loc);
-                mapManager.sscache.invalidateSnapshot(dloc);
+                String wn = loc.getWorld().getName();
+                int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+                mapManager.sscache.invalidateSnapshot(wn, x, y, z);
                 if(onpiston)
-                    mapManager.touch(dloc, "pistonretract");
+                    mapManager.touch(wn, x, y, z, "pistonretract");
                 for(int i = 0; i < 2; i++) {
-                    dloc.x += dir.getModX();
-                    dloc.y += dir.getModY();
-                    dloc.z += dir.getModZ();
-                    mapManager.sscache.invalidateSnapshot(dloc);
+                    x += dir.getModX();
+                    y += dir.getModY();
+                    z += dir.getModZ();
+                    mapManager.sscache.invalidateSnapshot(wn, x, y, z);
                     if(onpiston)
-                        mapManager.touch(dloc, "pistonretract");
+                        mapManager.touch(wn, x, y, z, "pistonretract");
                 }
             }
             @Override
@@ -650,24 +658,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     return;
                 Block b = event.getBlock();
                 Location loc = b.getLocation();
-                DynmapLocation dloc = toLoc(loc);
-                mapManager.sscache.invalidateSnapshot(dloc);
                 BlockFace dir;
                 try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
                     dir = event.getDirection();
                 } catch (ClassCastException ccx) {
                     dir = BlockFace.NORTH;
                 }
-                mapManager.sscache.invalidateSnapshot(dloc);
+                String wn = loc.getWorld().getName();
+                int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+                mapManager.sscache.invalidateSnapshot(wn, x, y, z);
                 if(onpiston)
-                    mapManager.touch(dloc, "pistonretract");
+                    mapManager.touch(wn, x, y, z, "pistonretract");
                 for(int i = 0; i < 1+event.getLength(); i++) {
-                    dloc.x += dir.getModX();
-                    dloc.y += dir.getModY();
-                    dloc.z += dir.getModZ();
-                    mapManager.sscache.invalidateSnapshot(dloc);
+                    x += dir.getModX();
+                    y += dir.getModY();
+                    z += dir.getModZ();
+                    mapManager.sscache.invalidateSnapshot(wn, x, y, z);
                     if(onpiston)
-                        mapManager.touch(dloc, "pistonretract");
+                        mapManager.touch(wn, x, y, z, "pistonretract");
                 }
             }
         };
@@ -707,22 +715,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         registerEvent(Event.Type.BLOCK_PISTON_RETRACT, blockTrigger);
         /* Register player event trigger handlers */
         PlayerListener playerTrigger = new PlayerListener() {
-            private DynmapLocation dloc = new DynmapLocation();
-            private DynmapLocation toLoc(Location loc) {
-                dloc.x = loc.getBlockX(); dloc.y = loc.getBlockY();
-                dloc.z = loc.getBlockZ(); dloc.world = loc.getWorld().getName();
-                return dloc;
-            }
             @Override
             public void onPlayerJoin(PlayerJoinEvent event) {
-                toLoc(event.getPlayer().getLocation());
-                mapManager.touch(dloc, "playerjoin");
+                Location loc = event.getPlayer().getLocation();
+                mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playerjoin");
             }
 
             @Override
             public void onPlayerMove(PlayerMoveEvent event) {
-                toLoc(event.getPlayer().getLocation());
-                mapManager.touch(dloc, "playermove");
+                Location loc = event.getPlayer().getLocation();
+                mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playermove");
             }
         };
 
@@ -769,7 +771,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         /* Register world event triggers */
         WorldListener worldTrigger = new WorldListener() {
-            private DynmapLocation dloc = new DynmapLocation();
             @Override
             public void onChunkLoad(ChunkLoadEvent event) {
                 if(ignore_chunk_loads)
@@ -921,10 +922,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
             if (c.equals("render") && checkPlayerPermission(sender,"render")) {
                 if (player != null) {
-                    int invalidates = mapManager.touch(toLoc(player.getLocation()), "render");
-                    sender.sendMessage("Queued " + invalidates + " tiles" + (invalidates == 0
-                        ? " (world is not loaded?)"
-                        : "..."));
+                    Location loc = player.getLocation();
+                    
+                    mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "render");
+                    
+                    sender.sendMessage("Tile render queued.");
                 }
                 else {
                     sender.sendMessage("Command can only be issued by player.");
@@ -1026,7 +1028,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         w = mapManager.getWorld(wname);
                         if(w != null) {
                             DynmapLocation spawn = w.getSpawnLocation();
-                            DynmapLocation loc = new DynmapLocation(wname, w.configuration.getInteger("center/x", spawn.x), w.configuration.getInteger("center/y", spawn.y), w.configuration.getInteger("center/z", spawn.z));
+                            DynmapLocation loc = new DynmapLocation(wname, w.configuration.getDouble("center/x", spawn.x), w.configuration.getDouble("center/y", spawn.y), w.configuration.getDouble("center/z", spawn.z));
                             mapManager.renderFullWorld(loc,sender, map, false);
                         }
                         else
@@ -1701,12 +1703,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
      * 
      * @param l0 - first location (required)
      * @param l1 - second location (if null, only single point invalidated (l0))
-     * @return number of tiles queued to be rerendered
+     * @return zero or higher if request queued, -1 if error
      */
     public int triggerRenderOfVolume(Location l0, Location l1) {
         if(mapManager != null) {
             if(l1 == null)
-                return mapManager.touch(l0.getWorld().getName(), l0.getBlockX(), l0.getBlockY(), l0.getBlockZ(), "api");
+                mapManager.touch(l0.getWorld().getName(), l0.getBlockX(), l0.getBlockY(), l0.getBlockZ(), "api");
             else {
                 int minx = Math.min(l0.getBlockX(), l1.getBlockX());
                 int maxx = Math.max(l0.getBlockX(), l1.getBlockX());
@@ -1715,7 +1717,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 int minz = Math.min(l0.getBlockZ(), l1.getBlockZ());
                 int maxz = Math.max(l0.getBlockZ(), l1.getBlockZ());
                 
-                return mapManager.touchVolume(l0.getWorld().getName(), minx, miny, minz, maxx, maxy, maxz, "api");
+                mapManager.touchVolume(l0.getWorld().getName(), minx, miny, minz, maxx, maxy, maxz, "api");
             }
         }
         return 0;
@@ -1886,18 +1888,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     @Override
     public int triggerRenderOfBlock(String wid, int x, int y, int z) {
         if(mapManager != null)
-            return mapManager.touch(wid, x, y, z, "api");
-        else
-            return 0;
+            mapManager.touch(wid, x, y, z, "api");
+        return 0;
     }
     
     @Override
     public int triggerRenderOfVolume(String wid, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
         if(mapManager != null) {
             if((minx == maxx) && (miny == maxy) && (minz == maxz))
-                return mapManager.touch(wid, minx, miny, minz, "api");
+                mapManager.touch(wid, minx, miny, minz, "api");
             else
-                return mapManager.touchVolume(wid, minx, miny, minz, maxx, maxy, maxz, "api");
+                mapManager.touchVolume(wid, minx, miny, minz, maxx, maxy, maxz, "api");
         }
         return 0;
     }

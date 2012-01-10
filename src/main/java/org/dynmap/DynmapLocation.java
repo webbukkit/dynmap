@@ -4,12 +4,12 @@ package org.dynmap;
  * Generic block location
  */
 public class DynmapLocation {
-    public int x, y, z;
+    public double x, y, z;
     public String world;
     
     public DynmapLocation() {}
     
-    public DynmapLocation(String w, int x, int y, int z) {
+    public DynmapLocation(String w, double x, double y, double z) {
         world = w;
         this.x = x; this.y = y; this.z = z;
     }
