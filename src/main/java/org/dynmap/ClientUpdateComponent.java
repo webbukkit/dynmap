@@ -26,7 +26,7 @@ public class ClientUpdateComponent extends Component {
     }
     
     protected void buildClientUpdate(ClientUpdateEvent e) {
-        World world = e.world.world;
+        DynmapWorld world = e.world;
         JSONObject u = e.update;
         long since = e.timestamp;
         String worldName = world.getName();

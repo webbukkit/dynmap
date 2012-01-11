@@ -350,7 +350,7 @@ public class MapManager {
         public HashMap<String,Object> saveState() {
             HashMap<String,Object> v = new HashMap<String,Object>();
             
-            v.put("world", world.world.getName());
+            v.put("world", world.getName());
             v.put("locX", loc.x);
             v.put("locY", loc.y);
             v.put("locZ", loc.z);
@@ -420,10 +420,10 @@ public class MapManager {
                         double rendtime = total_render_ns.doubleValue() * 0.000001 / rendercalls.get();
                         if(activemapcnt > 1)
                             sendMessage(String.format("%s of maps [%s] of '%s' completed - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
-                                    rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
+                                    rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
                         else
                             sendMessage(String.format("%s of map '%s' of '%s' completed - %d tiles rendered (%.2f msec/map-tile, %.2f msec per render)",
-                                    rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
+                                    rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
                         /* Now, if fullrender, use the render bitmap to purge obsolete tiles */
                         if(rendertype.equals(RENDERTYPE_FULLRENDER)) {
                             if(activemapcnt == 1) {
@@ -458,7 +458,7 @@ public class MapManager {
                         }
                     }
                     if(map_index >= world.maps.size()) {    /* Last one done? */
-                        sendMessage(rendertype + " of '" + world.world.getName() + "' finished.");
+                        sendMessage(rendertype + " of '" + world.getName() + "' finished.");
                         cleanup();
                         return;
                     }
@@ -529,8 +529,7 @@ public class MapManager {
                 }
                 tile = tile0;
             }
-            World w = world.world;
- 
+
             boolean notdone = true;
             
             if(tileset != null) {
@@ -543,14 +542,14 @@ public class MapManager {
                         final long ts = tstart;
                         Future<Boolean> future = mapman.render_pool.submit(new Callable<Boolean>() {
                             public Boolean call() {
-                                return processTile(mt, mt.world.world, ts, cnt);
+                                return processTile(mt, ts, cnt);
                             }
                         });
                         rslt.add(future);
                     }
                 }
                 /* Now, do our render (first one) */
-                notdone = processTile(tileset.get(0), w, tstart, cnt);
+                notdone = processTile(tileset.get(0), tstart, cnt);
                 /* Now, join with others */
                 for(int i = 0; i < rslt.size(); i++) {
                     try {
@@ -565,7 +564,7 @@ public class MapManager {
                 timeaccum = save_timeaccum + System.currentTimeMillis() - tstart;
             }
             else {
-                notdone = processTile(tile, w, tstart, 1);
+                notdone = processTile(tile, tstart, 1);
             }
             
             if(notdone) {
@@ -587,7 +586,7 @@ public class MapManager {
             }
         }
 
-        private boolean processTile(MapTile tile, World w, long tstart, int parallelcnt) {
+        private boolean processTile(MapTile tile, long tstart, int parallelcnt) {
             /* Get list of chunks required for tile */
             List<DynmapChunk> requiredChunks = tile.getRequiredChunks();
             /* If we are doing radius limit render, see if any are inside limits */
@@ -652,10 +651,10 @@ public class MapManager {
                             double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemapcnt;
                             if(activemapcnt > 1) 
                                 sendMessage(String.format("%s of maps [%s] of '%s' in progress - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
-                                        rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
+                                        rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
                             else
                                 sendMessage(String.format("%s of map '%s' of '%s' in progress - %d tiles rendered (%.2f msec/tile, %.2f msec per render)",
-                                        rendertype, activemaps, world.world.getName(), rendercnt, msecpertile, rendtime));
+                                        rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
                         }
                     }
                 }
@@ -685,7 +684,7 @@ public class MapManager {
             Future<Integer> f = scheduler.callSyncMethod(plug_in, new Callable<Integer>() {
                 public Integer call() throws Exception {
                     for(DynmapWorld w : worlds) {
-                        int new_servertime = (int)(w.world.getTime() % 24000);
+                        int new_servertime = (int)(w.getTime() % 24000);
                         /* Check if we went from night to day */
                         boolean wasday = w.servertime >= 0 && w.servertime < 13700;
                         boolean isday = new_servertime >= 0 && new_servertime < 13700;
@@ -875,8 +874,7 @@ public class MapManager {
         }
         String worldName = w.getName();
 
-        DynmapWorld dynmapWorld = new DynmapWorld();
-        dynmapWorld.world = w;
+        DynmapWorld dynmapWorld = new DynmapWorld(w);
         dynmapWorld.configuration = worldConfiguration;
         Log.verboseinfo("Loading maps of world '" + worldName + "'...");
         for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
@@ -965,7 +963,7 @@ public class MapManager {
         else {
         	int insertIndex;
         	for(insertIndex = 0; insertIndex < worlds.size(); insertIndex++) {
-        		Integer nextWorldIndex = indexLookup.get(worlds.get(insertIndex).world.getName());
+        		Integer nextWorldIndex = indexLookup.get(worlds.get(insertIndex).getName());
         		if (nextWorldIndex == null || worldIndex < nextWorldIndex.intValue()) {
         			break;
        			}
@@ -978,9 +976,13 @@ public class MapManager {
         if(saverestorepending)
             loadPending(dynmapWorld);
     }
-    
+
+    public void deactivateWorld(String wname) {
+        Log.warning("World unloading not properly supported");
+    }
+
     private void loadPending(DynmapWorld w) {
-        String wname = w.world.getName();
+        String wname = w.getName();
         File f = new File(plug_in.getDataFolder(), wname + ".pending");
         if(f.exists()) {
             org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
@@ -1019,7 +1021,7 @@ public class MapManager {
         List<MapTile> mt = tileQueue.popAll();
         for(DynmapWorld w : worlds) {
             boolean dosave = false;
-            File f = new File(plug_in.getDataFolder(), w.world.getName() + ".pending");
+            File f = new File(plug_in.getDataFolder(), w.getName() + ".pending");
             org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
             ArrayList<ConfigurationNode> savedtiles = new ArrayList<ConfigurationNode>();
             for(MapTile tile : mt) {
@@ -1032,17 +1034,17 @@ public class MapManager {
             if(savedtiles.size() > 0) { /* Something to save? */
                 saved.setProperty("tiles", savedtiles);
                 dosave = true;
-                Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.world.getName());
+                Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.getName());
             }
-            FullWorldRenderState job = active_renders.get(w.world.getName());
+            FullWorldRenderState job = active_renders.get(w.getName());
             if(job != null) {
                 saved.setProperty("job", job.saveState());
                 dosave = true;
-                Log.info("Saved active render job in world '" + w.world.getName());
+                Log.info("Saved active render job in world '" + w.getName());
             }
             if(dosave) {
                 saved.save();
-                Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.world.getName());
+                Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.getName());
             }
         }
     }
@@ -1097,7 +1099,7 @@ public class MapManager {
         /* Resume pending jobs */
         for(FullWorldRenderState job : active_renders.values()) {
             scheduleDelayedJob(job, 5000);
-            Log.info("Resumed render starting on world '" + job.world.world.getName() + "'...");
+            Log.info("Resumed render starting on world '" + job.world.getName() + "'...");
         }
     }
 
@@ -1174,7 +1176,7 @@ public class MapManager {
             c.setHiddenFillStyle(w.hiddenchunkstyle);
         }
 
-        c.setChunks(w.world, chunks);
+        c.setChunks(w.getWorld(), chunks);
         if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
             Log.severe("CraftBukkit build does not support biome APIs");
         if(chunks.size() == 0) {    /* No chunks to get? */

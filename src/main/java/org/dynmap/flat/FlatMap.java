@@ -554,7 +554,7 @@ public class FlatMap extends MapType {
         
         @Override
         public String getKey(String prefix) {
-            return world.world.getName() + "." + map.getPrefix();
+            return world.getName() + "." + map.getPrefix();
         }
         
         public boolean isHightestBlockYDataNeeded() { return true; }

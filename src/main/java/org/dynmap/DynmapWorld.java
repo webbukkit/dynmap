@@ -1,5 +1,7 @@
 package org.dynmap;
 
+import static org.dynmap.JSONUtils.s;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +28,7 @@ public class DynmapWorld {
         FORMAPONLY,
         PERMANENT
     }
-    public World world;
+    private World world;
     public List<MapType> maps = new ArrayList<MapType>();
     public UpdateQueue updates = new UpdateQueue();
     public ConfigurationNode configuration;
@@ -46,7 +48,12 @@ public class DynmapWorld {
     private HashSet<String> zoomoutupdates[] = new HashSet[0];
     private boolean checkts = true;	/* Check timestamps on first run with new configuration */
     private boolean cancelled;
+    private String wname;
     
+    public DynmapWorld(World w) {
+        world = w;
+        wname = w.getName();
+    }
     @SuppressWarnings("unchecked")
     public void setExtraZoomOutLevels(int lvl) {
         extrazoomoutlevels = lvl;
@@ -489,7 +496,7 @@ public class DynmapWorld {
     }
     /* Get world name */
     public String getName() {
-        return world.getName();
+        return wname;
     }
     /* Get world spawn location */
     public DynmapLocation getSpawnLocation() {
@@ -501,6 +508,22 @@ public class DynmapWorld {
     }
     
     public int hashCode() {
-        return world.hashCode();
+        return wname.hashCode();
+    }
+    
+    public long getTime() {
+        return world.getTime();
+    }
+
+    public boolean hasStorm() {
+        return world.hasStorm();
+    }
+    
+    public boolean isThundering() {
+        return world.isThundering();
+    }
+
+    public World getWorld() {
+        return world;
     }
 }

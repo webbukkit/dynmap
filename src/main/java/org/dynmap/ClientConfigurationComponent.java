@@ -42,10 +42,10 @@ public class ClientConfigurationComponent extends Component {
                     JSONObject wo = new JSONObject();
                     s(wo, "name", wn.getString("name"));
                     s(wo, "title", wn.getString("title"));
-                    Location spawn = world.world.getSpawnLocation();
-                    s(wo, "center/x", wn.getDouble("center/x", spawn.getX()));
-                    s(wo, "center/y", wn.getDouble("center/y", spawn.getY()));
-                    s(wo, "center/z", wn.getDouble("center/z", spawn.getZ()));
+                    DynmapLocation spawn = world.getSpawnLocation();
+                    s(wo, "center/x", wn.getDouble("center/x", spawn.x));
+                    s(wo, "center/y", wn.getDouble("center/y", spawn.y));
+                    s(wo, "center/z", wn.getDouble("center/z", spawn.z));
                     s(wo, "bigworld", world.bigworld);
                     s(wo, "extrazoomout", world.getExtraZoomOutLevels());
                     a(t, "worlds", wo);
@@ -55,7 +55,7 @@ public class ClientConfigurationComponent extends Component {
                         if(defmap == null) defmap = mt.getName();
                     }
                 }
-                s(t, "defaultworld", c.getString("defaultworld", defaultWorld == null ? "world" : defaultWorld.world.getName()));
+                s(t, "defaultworld", c.getString("defaultworld", defaultWorld == null ? "world" : defaultWorld.getName()));
                 s(t, "defaultmap", c.getString("defaultmap", defmap == null ? "surface" : defmap));
                 if(c.getString("followmap", null) != null)
                     s(t, "followmap", c.getString("followmap"));

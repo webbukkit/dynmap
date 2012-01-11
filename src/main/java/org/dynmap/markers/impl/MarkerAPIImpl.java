@@ -500,7 +500,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private void freshenMarkerFiles() {
         if(MapManager.mapman != null) {
             for(DynmapWorld w : MapManager.mapman.worlds) {
-                dirty_worlds.add(w.world.getName());
+                dirty_worlds.add(w.getName());
             }
         }
     }
@@ -1599,7 +1599,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     @Override
     public void triggered(DynmapWorld t) {
         /* Update markers for now-active world */
-        dirty_worlds.add(t.world.getName());
+        dirty_worlds.add(t.getName());
     }
 
     /* Remove icon */

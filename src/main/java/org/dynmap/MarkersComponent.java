@@ -61,23 +61,22 @@ public class MarkersComponent extends ClientComponent {
                     World w = event.getWorld(); /* Get the world */
                     Location loc = w.getSpawnLocation();    /* Get location of spawn */
                     if(loc != null)
-                        addUpdateWorld(w, loc);
+                        addUpdateWorld(w, new DynmapLocation(w.getName(), loc.getX(), loc.getY(), loc.getZ()));
                 }
                 public void onSpawnChange(SpawnChangeEvent event) {
                     World w = event.getWorld(); /* Get the world */
                     Location loc = w.getSpawnLocation();    /* Get location of spawn */
                     if(loc != null)
-                        addUpdateWorld(w, loc);
+                        addUpdateWorld(w, new DynmapLocation(w.getName(), loc.getX(), loc.getY(), loc.getZ()));
                 }
             };
             plugin.registerEvent(org.bukkit.event.Event.Type.WORLD_LOAD, wl);
             plugin.registerEvent(org.bukkit.event.Event.Type.SPAWN_CHANGE, wl);
             /* Initialize already loaded worlds */
             for(DynmapWorld w : plugin.getMapManager().getWorlds()) {
-                World world = w.world;
-                Location loc = world.getSpawnLocation();
+                DynmapLocation loc = w.getSpawnLocation();
                 if(loc != null)
-                    addUpdateWorld(world, loc);
+                    addUpdateWorld(w.getWorld(), loc);
             }
         }
         /* If showing offline players as markers */
@@ -195,17 +194,17 @@ public class MarkersComponent extends ClientComponent {
         }
     }
     
-    private void addUpdateWorld(World w, Location loc) {
+    private void addUpdateWorld(World w, DynmapLocation loc) {
         MarkerSet ms = api.getMarkerSet(MarkerSet.DEFAULT);
         if(ms != null) {
             String spawnid = "_spawn_" + w.getName();
             Marker m = ms.findMarker(spawnid);    /* See if defined */
             if(m == null) { /* Not defined yet, add it */
-                ms.createMarker(spawnid, spawnlbl, w.getName(), loc.getX(), loc.getY(), loc.getZ(),
+                ms.createMarker(spawnid, spawnlbl, w.getName(), loc.x, loc.y, loc.z,
                                 spawnicon, false);
             }
             else {
-                m.setLocation(w.getName(), loc.getX(), loc.getY(), loc.getZ());
+                m.setLocation(w.getName(), loc.z, loc.y, loc.z);
             }
         }
     }

@@ -42,7 +42,7 @@ public class ClientUpdateHandler implements HttpHandler {
         if(plugin.mapManager != null) {
             dynmapWorld = plugin.mapManager.getWorld(worldName);
         }
-        if (dynmapWorld == null || dynmapWorld.world == null) {
+        if (dynmapWorld == null) {
             response.status = WorldNotFound;
             return;
         }
