@@ -14,6 +14,8 @@ import org.json.simple.JSONObject;
 public class ClientConfigurationHandler implements HttpHandler {
     private DynmapPlugin plugin;
     private byte[] cachedConfiguration = null;
+    private int cached_config_hashcode = 0;
+    
     public ClientConfigurationHandler(DynmapPlugin plugin) {
         this.plugin = plugin;
         plugin.events.addListener("worldactivated", new Event.Listener<DynmapWorld>() {
@@ -25,13 +27,14 @@ public class ClientConfigurationHandler implements HttpHandler {
     }
     @Override
     public void handle(String path, HttpRequest request, HttpResponse response) throws Exception {
-        if (cachedConfiguration == null) {
+        if ((cachedConfiguration == null) || (plugin.getConfigHashcode() != cached_config_hashcode)) {
             JSONObject configurationObject = new JSONObject();
             plugin.events.<JSONObject>trigger("buildclientconfiguration", configurationObject);
             
             String s = configurationObject.toJSONString();
 
             cachedConfiguration = s.getBytes("UTF-8");
+            cached_config_hashcode = plugin.getConfigHashcode();
         }
         String dateStr = new Date().toString();
 

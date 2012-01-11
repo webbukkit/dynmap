@@ -1,7 +1,7 @@
 var config = {
 	// For internal server or proxying webserver.
 	url : {
-		configuration : 'up/configuration?_={timestamp}',
+		configuration : 'up/configuration',
 		update : 'up/world/{world}/{timestamp}',
 		sendmessage : 'up/sendmessage'
 	},
