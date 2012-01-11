@@ -57,12 +57,14 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.hdmap.HDBlockModels;
+import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.impl.MarkerAPIImpl;
@@ -90,11 +92,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
     boolean bettergrass = false;
-    
-    boolean usegeneratedtextures = false;
-    boolean waterlightingfix = false;
-    boolean biomeshadingfix = false;
-    
+        
     public CompassMode compassmode = CompassMode.PRE19;
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
@@ -258,9 +256,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         configuration = new ConfigurationNode(bukkitConfiguration);
 
         /* Add options to avoid 0.29 re-render (fixes very inconsistent with previous maps) */
-        usegeneratedtextures = configuration.getBoolean("use-generated-textures", false);
-        waterlightingfix = configuration.getBoolean("correct-water-lighting", false);
-        biomeshadingfix = configuration.getBoolean("correct-biome-shading", false);
+        HDMapManager.usegeneratedtextures = configuration.getBoolean("use-generated-textures", false);
+        HDMapManager.waterlightingfix = configuration.getBoolean("correct-water-lighting", false);
+        HDMapManager.biomeshadingfix = configuration.getBoolean("correct-biome-shading", false);
 
         /* Load block models */
         HDBlockModels.loadModels(dataDirectory, configuration);
@@ -794,6 +792,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 updateConfigHashcode();
                 mapManager.activateWorld(event.getWorld());
             }
+            @Override
+            public void onWorldUnload(WorldUnloadEvent event) {
+                updateConfigHashcode();
+                mapManager.deactivateWorld(event.getWorld().getName());
+            }
         };
 
         ongeneratechunk = isTrigger("chunkgenerated");
@@ -807,6 +810,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         // To link configuration to real loaded worlds.
         registerEvent(Event.Type.WORLD_LOAD, worldTrigger);
+        registerEvent(Event.Type.WORLD_UNLOAD, worldTrigger);
     }
 
     private static File combinePaths(File parent, String path) {
@@ -1559,6 +1563,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
         }
         @Override
+        public void onWorldUnload(WorldUnloadEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((WorldListener)l).onWorldUnload(event);
+                }
+            }
+        }
+        @Override
         public void onChunkLoad(ChunkLoadEvent event) {
             /* Call listeners */
             List<Listener> ll = event_handlers.get(event.getType());
@@ -1649,6 +1663,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     pm.registerEvent(type, ourBlockEventHandler, Event.Priority.Monitor, this);
                     break;
                 case WORLD_LOAD:
+                case WORLD_UNLOAD:
                 case CHUNK_LOAD:
                 case CHUNK_POPULATED:
                 case SPAWN_CHANGE:
@@ -1905,16 +1920,5 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     
     private DynmapLocation toLoc(Location l) {
         return new DynmapLocation(l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
-    }
-    
-    public boolean useGeneratedTextures() {
-        return usegeneratedtextures;
-    }
-    public boolean waterLightingFix() {
-        return waterlightingfix;
-    }
-    public boolean biomeShadingFix() {
-        return biomeshadingfix;
-    }
-
+    }    
 }

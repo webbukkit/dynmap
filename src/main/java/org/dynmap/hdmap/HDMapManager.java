@@ -28,10 +28,6 @@ public class HDMapManager {
     public void loadHDShaders(DynmapPlugin plugin) {
         Log.verboseinfo("Loading shaders...");
 
-        usegeneratedtextures = plugin.useGeneratedTextures();
-        waterlightingfix = plugin.waterLightingFix();
-        biomeshadingfix = plugin.biomeShadingFix();
-
         File f = new File(plugin.getDataFolder(), "shaders.txt");
         if(!plugin.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
             return;
