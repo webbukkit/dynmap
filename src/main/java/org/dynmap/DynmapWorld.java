@@ -526,4 +526,7 @@ public class DynmapWorld {
     public World getWorld() {
         return world;
     }
+    public boolean isLoaded() {
+        return (world != null);
+    }
 }
