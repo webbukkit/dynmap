@@ -424,21 +424,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         final boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
         int maxconnections = configuration.getInteger("max-sessions", 30);
         if(maxconnections < 2) maxconnections = 2;
-        final ContextHandler context = new ContextHandler() {{
-            this.setContextPath("/");
-            this.setClassLoader(Thread.currentThread().getContextClassLoader());
-            this.setHandler(router = new HandlerRouter() {{
-                this.addHandler("/", new ResourceHandler() {{
-                    this.setAliases(allow_symlinks);
-                    this.setWelcomeFiles(new String[] { "index.html" });
-                    this.setDirectoriesListed(true);
-                    this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
-                }});
-                this.addHandler("/tiles/", new ResourceHandler() {{
-                    this.setAliases(allow_symlinks);
-                    this.setDirectoriesListed(true);
-                    this.setBaseResource(createFileResource(tilesDirectory.toString()));
-                }});
+        router = new HandlerRouter() {{
+            this.addHandler("/", new ResourceHandler() {{
+                this.setAliases(allow_symlinks);
+                this.setWelcomeFiles(new String[] { "index.html" });
+                this.setDirectoriesListed(true);
+                this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
+            }});
+            this.addHandler("/tiles/", new ResourceHandler() {{
+                this.setAliases(allow_symlinks);
+                this.setWelcomeFiles(new String[] { });
+                this.setDirectoriesListed(true);
+                this.setBaseResource(createFileResource(tilesDirectory.toString()));
             }});
         }};
 
@@ -458,7 +455,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         /* Load customized response headers, if any */
         filters.add(new CustomHeaderFilter(configuration.getNode("http-response-headers")));
 
-        webServer.setHandler(/*new FilterHandler(*/context/*, filters)*/);
+        webServer.setHandler(new FilterHandler(router, filters));
 
         addServlet("/up/configuration", new org.dynmap.servlet.ClientConfigurationServlet(this));
 

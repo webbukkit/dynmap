@@ -49,7 +49,6 @@ public class FilterHandler extends AbstractHandler {
     public void handle(final String target, final Request baseRequest, final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         final Handler handler = this.getHandler();
         final Iterator<FilterHolder> iterator = getFilters().iterator();
-        Log.info("Filtering..." + request.getPathInfo());
         final FilterChain chain = new FilterChain() {
             @Override
             public void doFilter(ServletRequest re, ServletResponse rs) throws IOException, ServletException {
@@ -57,7 +56,6 @@ public class FilterHandler extends AbstractHandler {
                     Filter f = iterator.next().getFilter();
                     f.doFilter(request, response, this);
                 } else {
-                    Log.info("Handling...");
                     handler.handle(target, baseRequest, request, response);
                 }
             }
