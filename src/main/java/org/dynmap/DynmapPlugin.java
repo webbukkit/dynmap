@@ -431,11 +431,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 this.setDirectoriesListed(true);
                 this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
             }});
-            this.addHandler("/tiles/", new ResourceHandler() {{
+            this.addHandler("/tiles/*", new ResourceHandler() {{
                 this.setAliases(allow_symlinks);
                 this.setWelcomeFiles(new String[] { });
                 this.setDirectoriesListed(true);
-                this.setBaseResource(createFileResource(tilesDirectory.toString()));
+                this.setBaseResource(createFileResource(tilesDirectory.getAbsolutePath()));
             }});
         }};
 
