@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,11 +31,17 @@ import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.impl.MarkerAPIImpl;
+import org.dynmap.web.BanIPFilter;
+import org.dynmap.web.CustomHeaderFilter;
+import org.dynmap.web.FilterHandler;
+import org.dynmap.web.HandlerRouter;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.resource.FileResource;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.*;
@@ -45,7 +52,7 @@ public class DynmapCore {
     private DynmapServerInterface server;
     private String version;
     private Server webServer = null;
-    private ServletContextHandler webServerContextHandler = null;
+    private HandlerRouter router = null;
     public MapManager mapManager = null;
     public PlayerList playerList;
     public ConfigurationNode configuration;
@@ -401,112 +408,65 @@ public class DynmapCore {
         return config_hashcode;
     }
 
+    private FileResource createFileResource(String path) {
+        try {
+            return new FileResource(new URL("file://" + path));
+        } catch(Exception e) {
+            Log.info("Could not create file resource");
+            return null;
+        }
+    }
+    
     public void loadWebserver() {
         webServer = new Server(new InetSocketAddress(configuration.getString("webserver-bindaddress", "0.0.0.0"), configuration.getInteger("webserver-port", 8123)));
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
-        webServer.setHandler(context);
-        webServerContextHandler = context;
 
-        boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
+        final boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
         int maxconnections = configuration.getInteger("max-sessions", 30);
         if(maxconnections < 2) maxconnections = 2;
+        router = new HandlerRouter() {{
+            this.addHandler("/", new ResourceHandler() {{
+                this.setAliases(allow_symlinks);
+                this.setWelcomeFiles(new String[] { "index.html" });
+                this.setDirectoriesListed(true);
+                this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
+            }});
+            this.addHandler("/tiles/*", new ResourceHandler() {{
+                this.setAliases(allow_symlinks);
+                this.setWelcomeFiles(new String[] { });
+                this.setDirectoriesListed(true);
+                this.setBaseResource(createFileResource(tilesDirectory.getAbsolutePath()));
+            }});
+        }};
 
         if(allow_symlinks)
-        	Log.verboseinfo("Web server is permitting symbolic links");
+            Log.verboseinfo("Web server is permitting symbolic links");
         else
-        	Log.verboseinfo("Web server is not permitting symbolic links");
+            Log.verboseinfo("Web server is not permitting symbolic links");
 
-        org.eclipse.jetty.server.Server s = new org.eclipse.jetty.server.Server();
-        ServletHandler handler = new org.eclipse.jetty.servlet.ServletHandler();
-        s.setHandler(handler);
-
+        List<Filter> filters = new LinkedList<Filter>();
+        
         /* Check for banned IPs */
         boolean checkbannedips = configuration.getBoolean("check-banned-ips", true);
         if (checkbannedips) {
-            context.addFilter(new FilterHolder(new Filter() {
-                private HashSet<String> banned_ips = new HashSet<String>();
-                private HashSet<String> banned_ips_notified = new HashSet<String>();
-                private long last_loaded = 0;
-                private static final long BANNED_RELOAD_INTERVAL = 15000;	/* Every 15 seconds */
-
-                @Override
-                public void init(FilterConfig filterConfig) throws ServletException { }
-
-                @Override
-                public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-                    HttpServletResponse resp = (HttpServletResponse)response;
-                    String ipaddr = request.getRemoteAddr();
-                    if (isIpBanned(ipaddr)) {
-                        Log.info("Rejected connection by banned IP address - " + ipaddr);
-                        resp.sendError(403);
-                    } else {
-                        chain.doFilter(request, response);
-                    }
-                }
-
-                private void loadBannedIPs() {
-                    banned_ips.clear();
-                    banned_ips_notified.clear();
-                    banned_ips.addAll(getServer().getIPBans());
-                }
-
-                /* Return true if address is banned */
-                public boolean isIpBanned(String ipaddr) {
-                    long t = System.currentTimeMillis();
-                    if((t < last_loaded) || ((t-last_loaded) > BANNED_RELOAD_INTERVAL)) {
-                        loadBannedIPs();
-                        last_loaded = t;
-                    }
-                    if(banned_ips.contains(ipaddr)) {
-                        if(!banned_ips_notified.contains(ipaddr)) {
-                            banned_ips_notified.add(ipaddr);
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-
-                @Override
-                public void destroy() { }
-            }), "/*", null);
+            filters.add(new BanIPFilter(this));
         }
 
         /* Load customized response headers, if any */
-        final ConfigurationNode custhttp = configuration.getNode("http-response-headers");
-        context.addFilter(new FilterHolder(new Filter() {
-            @Override
-            public void init(FilterConfig filterConfig) throws ServletException { }
+        filters.add(new CustomHeaderFilter(configuration.getNode("http-response-headers")));
 
-            @Override
-            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-                HttpServletResponse resp = (HttpServletResponse)response;
+        webServer.setHandler(new FilterHandler(router, filters));
 
-                if(custhttp != null) {
-                    for(String k : custhttp.keySet()) {
-                        String v = custhttp.getString(k);
-                        if(v != null) {
-                            resp.setHeader(k, v);
-                        }
-                    }
-                }
-
-                chain.doFilter(request, response);
-            }
-
-            @Override
-            public void destroy() { }
-        }), "/*", null);
-
-        addServlet("/*", new org.dynmap.servlet.FileServlet(getFile(getWebPath()).getAbsolutePath(), allow_symlinks));
-        addServlet("/tiles/*", new org.dynmap.servlet.FileServlet(tilesDirectory.getAbsolutePath(), allow_symlinks));
         addServlet("/up/configuration", new org.dynmap.servlet.ClientConfigurationServlet(this));
 
     }
-
+    
+    public Set<String> getIPBans() {
+        return getServer().getIPBans();
+    }
+    
     public void addServlet(String path, HttpServlet servlet) {
         ServletHolder holder = new ServletHolder(servlet);
-        webServerContextHandler.getServletHandler().addServletWithMapping(holder, path);
+        router.addServlet(path, servlet);
      }
 
     
