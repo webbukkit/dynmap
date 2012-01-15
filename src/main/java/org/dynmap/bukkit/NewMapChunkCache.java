@@ -1,4 +1,4 @@
-package org.dynmap.utils;
+package org.dynmap.bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -14,10 +14,14 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChunkSnapshot;
 import org.dynmap.DynmapChunk;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.MapChunkCache.HiddenChunkStyle;
+import org.dynmap.utils.MapChunkCache.VisibilityLimit;
 import org.dynmap.utils.MapIterator.BlockStep;
 
 /**
@@ -446,7 +450,7 @@ public class NewMapChunkCache implements MapChunkCache {
 
         checkTickList();
         
-        DynmapPlugin.setIgnoreChunkLoads(true);
+        DynmapCore.setIgnoreChunkLoads(true);
         //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
         // Load the required chunks.
         while((cnt < max_to_load) && iterator.hasNext()) {
@@ -556,7 +560,7 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             cnt++;
         }
-        DynmapPlugin.setIgnoreChunkLoads(false);
+        DynmapCore.setIgnoreChunkLoads(false);
 
         if(iterator.hasNext() == false) {   /* If we're done */
             isempty = true;

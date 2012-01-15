@@ -6,9 +6,9 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class DynmapPlayerChatListener extends PlayerListener {
-    DynmapPlugin plugin;
+    DynmapCore plugin;
 
-    public DynmapPlayerChatListener(DynmapPlugin plugin) {
+    public DynmapPlayerChatListener(DynmapCore plugin) {
         this.plugin = plugin;
     }
 

@@ -14,8 +14,9 @@ import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
-import org.dynmap.DynmapPlugin.CompassMode;
+import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.MapTile;
@@ -762,7 +763,7 @@ public class IsoHDPerspective implements HDPerspective {
         }
     }
     
-    public IsoHDPerspective(ConfigurationNode configuration) {
+    public IsoHDPerspective(DynmapCore core, ConfigurationNode configuration) {
         name = configuration.getString("name", null);
         if(name == null) {
             Log.severe("Perspective definition missing name - must be defined and unique");

@@ -13,16 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dynmap.ClientUpdateEvent;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.web.HttpField;
 import org.json.simple.JSONObject;
 
 public class ClientUpdateServlet extends HttpServlet {
-    private DynmapPlugin plugin;
+    private DynmapCore plugin;
     
-    public ClientUpdateServlet(DynmapPlugin plugin) {
+    public ClientUpdateServlet(DynmapCore plugin) {
         this.plugin = plugin;
     }
 

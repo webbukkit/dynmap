@@ -3,6 +3,7 @@ package org.dynmap.hdmap;
 import static org.dynmap.JSONUtils.s;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
@@ -12,7 +13,7 @@ public class CaveHDShader implements HDShader {
     private boolean iflit;
 
     
-    public CaveHDShader(ConfigurationNode configuration) {
+    public CaveHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         iflit = configuration.getBoolean("onlyiflit", false);
     }

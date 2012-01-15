@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.Location;
+import org.dynmap.bukkit.NewMapChunkCache;
 import org.dynmap.debug.Debug;
+import org.dynmap.utils.BlockLightLevel;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;
@@ -22,13 +24,13 @@ import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 
-public class DynmapWorld {
+public abstract class DynmapWorld {
+
     public enum AutoGenerateOption {
         NONE,
         FORMAPONLY,
         PERMANENT
     }
-    private World world;
     public List<MapType> maps = new ArrayList<MapType>();
     public UpdateQueue updates = new UpdateQueue();
     public ConfigurationNode configuration;
@@ -50,9 +52,8 @@ public class DynmapWorld {
     private boolean cancelled;
     private String wname;
     
-    public DynmapWorld(World w) {
-        world = w;
-        wname = w.getName();
+    protected DynmapWorld(String wname) {
+        this.wname = wname;
     }
     @SuppressWarnings("unchecked")
     public void setExtraZoomOutLevels(int lvl) {
@@ -170,7 +171,7 @@ public class DynmapWorld {
     
     public boolean freshenZoomOutFilesByLevel(int zoomlevel) {
         int cnt = 0;
-        Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ")");
+        Debug.debug("freshenZoomOutFiles(" + wname + "," + zoomlevel + ")");
         if(worldtilepath.exists() == false) /* Quit if not found */
             return true;
         HashMap<String, PrefixData> maptab = buildPrefixData(zoomlevel);
@@ -195,7 +196,7 @@ public class DynmapWorld {
         			cnt += processZoomDirectory(worldtilepath, maptab.get(pfx));
         		}
         	}
-        	Debug.debug("freshenZoomOutFiles(" + world.getName() + "," + zoomlevel + ") - done (" + cnt + " updated files)");
+        	Debug.debug("freshenZoomOutFiles(" + wname + "," + zoomlevel + ") - done (" + cnt + " updated files)");
         }
         else {	/* Else, only process updates */
             String[] paths = peekQueuedUpdates(zoomlevel);	/* Get pending updates */
@@ -461,7 +462,7 @@ public class DynmapWorld {
             long crc = hashman.calculateTileHash(kzIm.argb_buf); /* Get hash of tile */
             int tilex = ztx/step/2;
             int tiley = zty/step/2;
-            String key = world.getName()+".z"+pd.zoomprefix+pd.baseprefix;
+            String key = wname+".z"+pd.zoomprefix+pd.baseprefix;
             if(blank) {
                 if(zf.exists()) {
                     zf.delete();
@@ -490,43 +491,41 @@ public class DynmapWorld {
             DynmapBufferedImage.freeBufferedImage(kzIm);
         }
     }
-    /* Test if world is nether */
-    public boolean isNether() {
-        return world.getEnvironment() == World.Environment.NETHER;
-    }
     /* Get world name */
     public String getName() {
         return wname;
     }
+    /* Test if world is nether */
+    public abstract boolean isNether();
     /* Get world spawn location */
-    public DynmapLocation getSpawnLocation() {
-        DynmapLocation dloc = new DynmapLocation();
-        Location sloc = world.getSpawnLocation();
-        dloc.x = sloc.getBlockX(); dloc.y = sloc.getBlockY();
-        dloc.z = sloc.getBlockZ(); dloc.world = sloc.getWorld().getName();
-        return dloc;
-    }
+    public abstract DynmapLocation getSpawnLocation();
     
     public int hashCode() {
         return wname.hashCode();
     }
-    
-    public long getTime() {
-        return world.getTime();
-    }
+    /* Get world time */
+    public abstract long getTime();
+    /* World is storming */
+    public abstract boolean hasStorm();
+    /* World is thundering */
+    public abstract boolean isThundering();
+    /* World is loaded */
+    public abstract boolean isLoaded();
+    /* Get light level of block */
+    public abstract int getLightLevel(int x, int y, int z);
+    /* Get highest Y coord of given location */
+    public abstract int getHighestBlockYAt(int x, int z);
+    /* Test if sky light level is requestable */
+    public abstract boolean canGetSkyLightLevel();
+    /* Return sky light level */
+    public abstract int getSkyLightLevel(int x, int y, int z);
+    /**
+     * Get world environment ID (lower case - normal, the_end, nether)
+     */
+    public abstract String getEnvironment();
+    /**
+     * Get map chunk cache for world
+     */
+    public abstract MapChunkCache getChunkCache(List<DynmapChunk> chunks);
 
-    public boolean hasStorm() {
-        return world.hasStorm();
-    }
-    
-    public boolean isThundering() {
-        return world.isThundering();
-    }
-
-    public World getWorld() {
-        return world;
-    }
-    public boolean isLoaded() {
-        return (world != null);
-    }
 }

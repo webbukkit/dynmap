@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
@@ -40,9 +41,9 @@ public class KzedMap extends MapType {
     MapTileRenderer[] renderers;
     private boolean isbigmap;
 
-    public KzedMap(ConfigurationNode configuration) {
+    public KzedMap(DynmapCore core, ConfigurationNode configuration) {
         Log.verboseinfo("Loading renderers for map '" + getClass().toString() + "'...");
-        List<MapTileRenderer> renderers = configuration.<MapTileRenderer>createInstances("renderers", new Class<?>[0], new Object[0]);
+        List<MapTileRenderer> renderers = configuration.<MapTileRenderer>createInstances("renderers", new Class<?>[] { DynmapCore.class }, new Object[] { core } );
         this.renderers = new MapTileRenderer[renderers.size()];
         renderers.toArray(this.renderers);
         Log.verboseinfo("Loaded " + renderers.size() + " renderers for map '" + getClass().toString() + "'.");

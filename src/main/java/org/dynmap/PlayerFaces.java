@@ -8,10 +8,10 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.event.Event.Type;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.dynmap.MapType.ImageFormat;
+import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.DynmapListenerManager.PlayerEventListener;
+import org.dynmap.common.DynmapPlayer;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
@@ -133,22 +133,22 @@ public class PlayerFaces {
             /* TODO: signal update for player icon to client */
         }
     }
-    private class LoginListener extends PlayerListener {
-        @Override
-        public void onPlayerLogin(PlayerLoginEvent event) {
-            Runnable job = new LoadPlayerImages(event.getPlayer().getName());
-            if(fetchskins)
-                MapManager.scheduleDelayedJob(job, 0);
-            else
-                job.run();
-        }
-    }
-    public PlayerFaces(DynmapPlugin plugin) {
-        fetchskins = plugin.configuration.getBoolean("fetchskins", true);    /* Control whether to fetch skins */ 
-        refreshskins = plugin.configuration.getBoolean("refreshskins", true);    /* Control whether to update existing fetched skins or faces */ 
+    public PlayerFaces(DynmapCore core) {
+        fetchskins = core.configuration.getBoolean("fetchskins", true);    /* Control whether to fetch skins */ 
+        refreshskins = core.configuration.getBoolean("refreshskins", true);    /* Control whether to update existing fetched skins or faces */ 
 
-        plugin.registerEvent(Type.PLAYER_LOGIN, new LoginListener());
-        facesdir = new File(DynmapPlugin.tilesDirectory, "faces");
+        core.listenerManager.addListener(EventType.PLAYER_JOIN, new PlayerEventListener() {
+            @Override
+            public void playerEvent(DynmapPlayer p) {
+                Runnable job = new LoadPlayerImages(p.getName());
+                if(fetchskins)
+                    MapManager.scheduleDelayedJob(job, 0);
+                else
+                    job.run();
+            }
+        });
+        facesdir = new File(core.getTilesFolder(), "faces");
+        
         facesdir.mkdirs();  /* Make sure directory exists */
         faces8x8dir = new File(facesdir, "8x8");
         faces8x8dir.mkdirs();

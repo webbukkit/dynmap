@@ -39,23 +39,23 @@ public class ColorScheme {
         }
     }
 
-    private static File getColorSchemeDirectory() {
-        return new File(DynmapPlugin.dataDirectory, "colorschemes");
+    private static File getColorSchemeDirectory(DynmapCore core) {
+        return new File(core.getDataFolder(), "colorschemes");
     }
 
-    public static ColorScheme getScheme(String name) {
+    public static ColorScheme getScheme(DynmapCore core, String name) {
         if (name == null)
             name = "default";
         ColorScheme scheme = cache.get(name);
         if (scheme == null) {
-            scheme = loadScheme(name);
+            scheme = loadScheme(core, name);
             cache.put(name, scheme);
         }
         return scheme;
     }
 
-    public static ColorScheme loadScheme(String name) {
-        File colorSchemeFile = new File(getColorSchemeDirectory(), name + ".txt");
+    public static ColorScheme loadScheme(DynmapCore core, String name) {
+        File colorSchemeFile = new File(getColorSchemeDirectory(core), name + ".txt");
         Color[][] colors = new Color[256][];
         Color[][][] datacolors = new Color[256][][];
         Color[][] biomecolors = new Color[Biome.values().length][];

@@ -2,6 +2,7 @@ package org.dynmap.hdmap;
 
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 
 public class ShadowHDLighting extends DefaultHDLighting {
@@ -10,8 +11,8 @@ public class ShadowHDLighting extends DefaultHDLighting {
     protected int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
     protected boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
 
-    public ShadowHDLighting(ConfigurationNode configuration) {
-        super(configuration);
+    public ShadowHDLighting(DynmapCore core, ConfigurationNode configuration) {
+        super(core, configuration);
         double shadowweight = configuration.getDouble("shadowstrength", 0.0);
         if(shadowweight > 0.0) {
             shadowscale = new int[16];

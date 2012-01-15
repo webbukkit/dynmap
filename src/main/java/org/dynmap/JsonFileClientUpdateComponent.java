@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.dynmap.web.Json;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,7 +34,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     private long last_confighash;
     
     private Charset cs_utf8 = Charset.forName("UTF-8");
-    public JsonFileClientUpdateComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
+    public JsonFileClientUpdateComponent(final DynmapCore plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
         final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
@@ -85,11 +83,11 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     }
     
     protected File getStandaloneFile(String filename) {
-        File webpath = new File(plugin.configuration.getString("webpath", "web"), "standalone/" + filename);
+        File webpath = new File(core.configuration.getString("webpath", "web"), "standalone/" + filename);
         if (webpath.isAbsolute())
             return webpath;
         else
-            return new File(plugin.getDataFolder(), webpath.toString());
+            return new File(core.getDataFolder(), webpath.toString());
     }
     
     private static final int RETRY_LIMIT = 5;
@@ -97,10 +95,10 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         File outputFile;
         File outputTempFile;
         JSONObject clientConfiguration = new JSONObject();
-        plugin.events.trigger("buildclientconfiguration", clientConfiguration);
+        core.events.trigger("buildclientconfiguration", clientConfiguration);
         outputFile = getStandaloneFile("dynmap_config.json");
         outputTempFile = getStandaloneFile("dynmap_config.json.new");
-        last_confighash = plugin.getConfigHashcode();
+        last_confighash = core.getConfigHashcode();
         
         int retrycnt = 0;
         boolean done = false;
@@ -139,13 +137,13 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected void writeUpdates() {
         File outputFile;
         File outputTempFile;
-        if(plugin.mapManager == null) return;
+        if(core.mapManager == null) return;
         //Handles Updates
-        for (DynmapWorld dynmapWorld : plugin.mapManager.getWorlds()) {
+        for (DynmapWorld dynmapWorld : core.mapManager.getWorlds()) {
             JSONObject update = new JSONObject();
             update.put("timestamp", currentTimestamp);
             ClientUpdateEvent clientUpdate = new ClientUpdateEvent(currentTimestamp - 30000, dynmapWorld, update);
-            plugin.events.trigger("buildclientupdate", clientUpdate);
+            core.events.trigger("buildclientupdate", clientUpdate);
 
             outputFile = getStandaloneFile("dynmap_" + dynmapWorld.getName() + ".json");
             outputTempFile = getStandaloneFile("dynmap_" + dynmapWorld.getName() + ".json.new");
@@ -180,10 +178,10 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                     }
                 }
             }
-            plugin.events.<ClientUpdateEvent>trigger("clientupdatewritten", clientUpdate);
+            core.events.<ClientUpdateEvent>trigger("clientupdatewritten", clientUpdate);
         }
         
-        plugin.events.<Object>trigger("clientupdateswritten", null);
+        core.events.<Object>trigger("clientupdateswritten", null);
     }
     
     protected void handleWebChat() {
@@ -224,13 +222,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                                 name = ip;
                         }
                         if(useplayerloginip) {  /* Try to match using IPs of player logins */
-                            List<String> ids = plugin.getIDsForIP(name);
+                            List<String> ids = core.getIDsForIP(name);
                             if(ids != null) {
                                 name = ids.get(0);
                                 isip = false;
                                 if(checkuserban) {
-                                    OfflinePlayer p = plugin.getServer().getOfflinePlayer(name);
-                                    if((p != null) && p.isBanned()) {
+                                    if(core.getServer().isPlayerBanned(name)) {
                                         Log.info("Ignore message from '" + ip + "' - banned player (" + name + ")");
                                         return;
                                     }
@@ -259,12 +256,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     }
     
     protected void webChat(String name, String message) {
-        if(plugin.mapManager == null) return;
+        if(core.mapManager == null) return;
         // TODO: Change null to something meaningful.
-        plugin.mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
-        Log.info(unescapeString(plugin.configuration.getString("webprefix", "\u00A2[WEB] ")) + name + ": " + unescapeString(plugin.configuration.getString("websuffix", "\u00A7f")) + message);
+        core.mapManager.pushUpdate(new Client.ChatMessage("web", null, name, message, null));
+        Log.info(unescapeString(core.configuration.getString("webprefix", "\u00A2[WEB] ")) + name + ": " + unescapeString(core.configuration.getString("websuffix", "\u00A7f")) + message);
         ChatEvent event = new ChatEvent("web", name, message);
-        plugin.events.trigger("webchat", event);
+        core.events.trigger("webchat", event);
     }
     
     @Override

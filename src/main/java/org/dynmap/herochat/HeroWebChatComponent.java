@@ -2,29 +2,26 @@ package org.dynmap.herochat;
 
 import static org.dynmap.JSONUtils.s;
 
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.dynmap.ChatEvent;
 import org.dynmap.Client;
 import org.dynmap.Component;
 import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapPlugin;
-import org.dynmap.DynmapWebChatEvent;
+import org.dynmap.DynmapCore;
 import org.dynmap.Event;
+import org.dynmap.common.DynmapListenerManager;
+import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.DynmapPlayer;
 import org.json.simple.JSONObject;
 
 public class HeroWebChatComponent extends Component {
     HeroChatHandler handler;
-    public HeroWebChatComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
+    public HeroWebChatComponent(final DynmapCore plugin, ConfigurationNode configuration) {
         super(plugin, configuration);
-        handler = new HeroChatHandler(configuration, plugin, plugin.getServer());
+        handler = new HeroChatHandler(configuration, plugin);
         plugin.events.addListener("webchat", new Event.Listener<ChatEvent>() {
             @Override
             public void triggered(ChatEvent t) {
-                DynmapWebChatEvent evt = new DynmapWebChatEvent(t.source, t.name, t.message);
-                plugin.getServer().getPluginManager().callEvent(evt);
-                if(evt.isCancelled() == false) {
+                if(plugin.getServer().sendWebChatEvent(t.source, t.name, t.message)) {
                     /* Let HeroChat take a look - only broadcast to players if it doesn't handle it */
                     if (!handler.sendWebMessageToHeroChat(t.name, t.message)) {
                         String msg;
@@ -50,25 +47,22 @@ public class HeroWebChatComponent extends Component {
         });
         
         // Also make HeroChat announce joins and quits.
-        PlayerChatListener playerListener = new PlayerChatListener();
-        plugin.registerEvent(org.bukkit.event.Event.Type.PLAYER_LOGIN, playerListener);
-        plugin.registerEvent(org.bukkit.event.Event.Type.PLAYER_JOIN, playerListener);
-        plugin.registerEvent(org.bukkit.event.Event.Type.PLAYER_QUIT, playerListener);
-    }
-    
-    protected class PlayerChatListener extends PlayerListener {
-        @Override
-        public void onPlayerJoin(PlayerJoinEvent event) {
-            if((plugin.mapManager != null) && (plugin.playerList != null) && (plugin.playerList.isVisiblePlayer(event.getPlayer()))) {
-                plugin.mapManager.pushUpdate(new Client.PlayerJoinMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+        core.listenerManager.addListener(EventType.PLAYER_JOIN, new DynmapListenerManager.PlayerEventListener() {
+            @Override
+            public void playerEvent(DynmapPlayer p) { 
+                if((core.mapManager != null) && (core.playerList != null) && (core.playerList.isVisiblePlayer(p.getName()))) {
+                    core.mapManager.pushUpdate(new Client.PlayerJoinMessage(p.getDisplayName(), p.getName()));
+                }
             }
-        }
-
-        @Override
-        public void onPlayerQuit(PlayerQuitEvent event) {
-            if((plugin.mapManager != null) && (plugin.playerList != null) && (plugin.playerList.isVisiblePlayer(event.getPlayer()))) {
-                plugin.mapManager.pushUpdate(new Client.PlayerQuitMessage(event.getPlayer().getDisplayName(), event.getPlayer().getName()));
+        });
+        core.listenerManager.addListener(EventType.PLAYER_QUIT, new DynmapListenerManager.PlayerEventListener() {
+            @Override
+            public void playerEvent(DynmapPlayer p) { 
+                if((core.mapManager != null) && (core.playerList != null) && (core.playerList.isVisiblePlayer(p.getName()))) {
+                    core.mapManager.pushUpdate(new Client.PlayerQuitMessage(p.getDisplayName(), p.getName()));
+                }
             }
-        }
+        });
+        
     }
 }

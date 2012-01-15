@@ -14,9 +14,10 @@ import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapManager;
-import org.dynmap.DynmapPlugin.CompassMode;
+import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.MapType.ImageFormat;
 import org.dynmap.TileHashManager;
 import org.dynmap.debug.Debug;
@@ -58,7 +59,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
 
     public boolean isNightAndDayEnabled() { return night_and_day; }
 
-    public DefaultTileRenderer(ConfigurationNode configuration) {
+    public DefaultTileRenderer(DynmapCore core, ConfigurationNode configuration) {
         this.configuration = configuration;
         name = configuration.getString("name", null);
         prefix = configuration.getString("prefix", name);
@@ -94,7 +95,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
                     lightscale[i] = i - (15-v);
             }
         }
-        colorScheme = ColorScheme.getScheme((String)configuration.get("colorscheme"));
+        colorScheme = ColorScheme.getScheme(core, (String)configuration.get("colorscheme"));
         night_and_day = configuration.getBoolean("night-and-day", false);
         transparency = configuration.getBoolean("transparency", true);  /* Default on */
         String biomeopt = configuration.getString("biomecolored", "none");

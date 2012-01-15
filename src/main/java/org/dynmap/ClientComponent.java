@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 public class ClientComponent extends Component {
     private boolean disabled;
     
-    public ClientComponent(final DynmapPlugin plugin, final ConfigurationNode configuration) {
+    public ClientComponent(final DynmapCore plugin, final ConfigurationNode configuration) {
         super(plugin, configuration);
         plugin.events.addListener("buildclientconfiguration", new Event.Listener<JSONObject>() {
             @Override

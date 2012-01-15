@@ -2,13 +2,14 @@ package org.dynmap.hdmap;
 
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.json.simple.JSONObject;
 import static org.dynmap.JSONUtils.s;
 
 public class DefaultHDLighting implements HDLighting {
     private String name;
 
-    public DefaultHDLighting(ConfigurationNode configuration) {
+    public DefaultHDLighting(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
     }
     

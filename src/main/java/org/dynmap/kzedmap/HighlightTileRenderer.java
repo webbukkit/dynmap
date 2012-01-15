@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
@@ -12,8 +13,8 @@ import org.dynmap.utils.MapIterator.BlockStep;
 public class HighlightTileRenderer extends DefaultTileRenderer {
     protected HashSet<Integer> highlightBlocks = new HashSet<Integer>();
 
-    public HighlightTileRenderer(ConfigurationNode configuration) {
-        super(configuration);
+    public HighlightTileRenderer(DynmapCore core, ConfigurationNode configuration) {
+        super(core, configuration);
         List<Integer> highlight = configuration.<Integer>getList("highlight");
         for(Integer i : highlight) {
             highlightBlocks.add(i);

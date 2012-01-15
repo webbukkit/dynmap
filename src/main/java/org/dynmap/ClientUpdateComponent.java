@@ -3,19 +3,14 @@ package org.dynmap;
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 
-import java.util.Set;
-
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.dynmap.utils.BlockLightLevel;
+import java.util.List;
+import org.dynmap.common.DynmapPlayer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class ClientUpdateComponent extends Component {
-    private BlockLightLevel bll = new BlockLightLevel();
     
-    public ClientUpdateComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
+    public ClientUpdateComponent(final DynmapCore plugin, ConfigurationNode configuration) {
         super(plugin, configuration);
         plugin.events.addListener("buildclientupdate", new Event.Listener<ClientUpdateEvent>() {
             @Override
@@ -34,17 +29,19 @@ public class ClientUpdateComponent extends Component {
         int hideifunder = configuration.getInteger("hideifundercover", 15);
         boolean hideifsneaking = configuration.getBoolean("hideifsneaking", false);
 
-        s(u, "confighash", plugin.getConfigHashcode());
+        s(u, "confighash", core.getConfigHashcode());
 
         s(u, "servertime", world.getTime() % 24000);
         s(u, "hasStorm", world.hasStorm());
         s(u, "isThundering", world.isThundering());
 
         s(u, "players", new JSONArray());
-        Player[] players = plugin.playerList.getVisiblePlayers();
-        for(int i=0;i<players.length;i++) {
-            Player p = players[i];
-            Location pl = p.getLocation();
+        List<DynmapPlayer> players = core.playerList.getVisiblePlayers();
+        for(DynmapPlayer p : players) {
+            DynmapLocation pl = p.getLocation();
+            DynmapWorld pw = core.getWorld(pl.world);
+            if(pw == null)
+                continue;
             JSONObject jp = new JSONObject();
             boolean hide = false;
             
@@ -52,16 +49,16 @@ public class ClientUpdateComponent extends Component {
             s(jp, "name", Client.stripColor(p.getDisplayName()));
             s(jp, "account", p.getName());
             if(hideifshadow < 15) {
-                if(pl.getBlock().getLightLevel() <= hideifshadow)
+                if(pw.getLightLevel((int)pl.x, (int)pl.y, (int)pl.z) <= hideifshadow)
                     hide = true;
             }
             if(hideifunder < 15) {
-                if(bll.isReady()) { /* If we can get real sky level */
-                    if(bll.getSkyLightLevel(pl.getBlock()) <= hideifunder)
+                if(pw.canGetSkyLightLevel()) { /* If we can get real sky level */
+                    if(pw.getSkyLightLevel((int)pl.x, (int)pl.y, (int)pl.z) <= hideifunder)
                         hide = true;
                 }
                 else {
-                    if(pl.getWorld().getHighestBlockYAt(pl) > pl.getBlockY())
+                    if(pw.getHighestBlockYAt((int)pl.x, (int)pl.z) > pl.y)
                         hide = true;
                 }
             }
@@ -69,14 +66,14 @@ public class ClientUpdateComponent extends Component {
                 hide = true;
             
             /* Don't leak player location for world not visible on maps, or if sendposition disbaled */
-            DynmapWorld pworld = MapManager.mapman.worldsLookup.get(p.getWorld().getName());
+            DynmapWorld pworld = MapManager.mapman.worldsLookup.get(pl.world);
             /* Fix typo on 'sendpositon' to 'sendposition', keep bad one in case someone used it */
             if(configuration.getBoolean("sendposition", true) && configuration.getBoolean("sendpositon", true) &&
                     (pworld != null) && pworld.sendposition && (!hide)) {
-                s(jp, "world", p.getWorld().getName());
-                s(jp, "x", pl.getX());
-                s(jp, "y", pl.getY());
-                s(jp, "z", pl.getZ());
+                s(jp, "world", pl.world);
+                s(jp, "x", pl.x);
+                s(jp, "y", pl.y);
+                s(jp, "z", pl.z);
             }
             else {
                 s(jp, "world", "-some-other-bogus-world-");
@@ -87,7 +84,7 @@ public class ClientUpdateComponent extends Component {
             /* Only send health if enabled AND we're on visible world */
             if (configuration.getBoolean("sendhealth", false) && (pworld != null) && pworld.sendhealth && (!hide)) {
                 s(jp, "health", p.getHealth());
-                s(jp, "armor", Armor.getArmorPoints(p));
+                s(jp, "armor", p.getArmorPoints());
             }
             else {
                 s(jp, "health", 0);
@@ -96,8 +93,8 @@ public class ClientUpdateComponent extends Component {
             a(u, "players", jp);
         }
         if(configuration.getBoolean("includehiddenplayers", false)) {
-            Set<Player> hidden = plugin.playerList.getHiddenPlayers();
-            for(Player p : hidden) {
+            List<DynmapPlayer> hidden = core.playerList.getHiddenPlayers();
+            for(DynmapPlayer p : hidden) {
                 JSONObject jp = new JSONObject();
                 s(jp, "type", "player");
                 s(jp, "name", Client.stripColor(p.getDisplayName()));
@@ -113,7 +110,7 @@ public class ClientUpdateComponent extends Component {
         }
 
         s(u, "updates", new JSONArray());
-        for(Object update : plugin.mapManager.getWorldUpdates(worldName, since)) {
+        for(Object update : core.mapManager.getWorldUpdates(worldName, since)) {
             a(u, "updates", (Client.Update)update);
         }
     }

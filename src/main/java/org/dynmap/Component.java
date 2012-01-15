@@ -1,10 +1,10 @@
 package org.dynmap;
 
 public abstract class Component {
-    protected DynmapPlugin plugin;
+    protected DynmapCore core;
     protected ConfigurationNode configuration;
-    public Component(DynmapPlugin plugin, ConfigurationNode configuration) {
-        this.plugin = plugin;
+    public Component(DynmapCore core, ConfigurationNode configuration) {
+        this.core = core;
         this.configuration = configuration;
     }
     

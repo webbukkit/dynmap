@@ -4,6 +4,7 @@ import static org.dynmap.JSONUtils.s;
 
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.utils.MapChunkCache;
@@ -19,10 +20,10 @@ public class TexturePackHDShader implements HDShader {
     private boolean waterbiomeshaded;
     private boolean bettergrass;
     
-    public TexturePackHDShader(ConfigurationNode configuration) {
+    public TexturePackHDShader(DynmapCore core, ConfigurationNode configuration) {
         tpname = configuration.getString("texturepack", "minecraft");
         name = configuration.getString("name", tpname);
-        tp = TexturePack.getTexturePack(tpname);
+        tp = TexturePack.getTexturePack(core, tpname);
         biome_shaded = configuration.getBoolean("biomeshaded", true);
         swamp_shaded = configuration.getBoolean("swampshaded", MapManager.mapman.getSwampShading());
         waterbiomeshaded = configuration.getBoolean("waterbiomeshaded", MapManager.mapman.getWaterBiomeShading());

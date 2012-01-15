@@ -20,24 +20,17 @@ import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
-import org.dynmap.Client;
-import org.dynmap.ClientUpdateEvent;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
+import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Event;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.Client.ComponentMessage;
-import org.dynmap.Client.PlayerJoinMessage;
+import org.dynmap.common.DynmapCommandSender;
+import org.dynmap.common.DynmapPlayer;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
@@ -56,9 +49,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private File markertiledir; /* Marker directory for web server (under tiles) */
     private HashMap<String, MarkerIconImpl> markericons = new HashMap<String, MarkerIconImpl>();
     private HashMap<String, MarkerSetImpl> markersets = new HashMap<String, MarkerSetImpl>();
-    private HashMap<String, List<Location>> pointaccum = new HashMap<String, List<Location>>();
-    private Server server;
-    private Plugin dynmap;
+    private HashMap<String, List<DynmapLocation>> pointaccum = new HashMap<String, List<DynmapLocation>>();
+    private DynmapCore core;
     static MarkerAPIImpl api;
 
     /* Built-in icons */
@@ -224,23 +216,22 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 }
                 dirty_worlds.clear();
             }
-            server.getScheduler().scheduleSyncDelayedTask(dynmap, this, 20);
+            core.getServer().scheduleServerTask(this, 20);
         }
     }
 
     /**
      * Singleton initializer
      */
-    public static MarkerAPIImpl initializeMarkerAPI(DynmapPlugin plugin) {
+    public static MarkerAPIImpl initializeMarkerAPI(DynmapCore core) {
         if(api != null) {
-            api.cleanup(plugin);
+            api.cleanup(core);
         }
         api = new MarkerAPIImpl();
-        api.dynmap = plugin;
-        api.server = plugin.getServer();
+        api.core = core;
         /* Initialize persistence file name */
-        api.markerpersist = new File(plugin.getDataFolder(), "markers.yml");
-        api.markerpersist_old = new File(plugin.getDataFolder(), "markers.yml.old");
+        api.markerpersist = new File(core.getDataFolder(), "markers.yml");
+        api.markerpersist_old = new File(core.getDataFolder(), "markers.yml.old");
         /* Fill in default icons and sets, if needed */
         for(int i = 0; i < builtin_icons.length; i++) {
             String id = builtin_icons[i];
@@ -255,13 +246,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
         
         /* Build paths for markers */
-        api.markerdir = new File(plugin.getDataFolder(), "markers");
+        api.markerdir = new File(core.getDataFolder(), "markers");
         if(api.markerdir.isDirectory() == false) {
             if(api.markerdir.mkdirs() == false) {   /* Create directory if needed */
                 Log.severe("Error creating markers directory - " + api.markerdir.getPath());
             }
         }
-        api.markertiledir = new File(DynmapPlugin.tilesDirectory, "_markers_");
+        api.markertiledir = new File(core.getTilesFolder(), "_markers_");
         if(api.markertiledir.isDirectory() == false) {
             if(api.markertiledir.mkdirs() == false) {   /* Create directory if needed */
                 Log.severe("Error creating markers directory - " + api.markertiledir.getPath());
@@ -274,7 +265,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         /* Freshen files */
         api.freshenMarkerFiles();
         /* Add listener so we update marker files for other worlds as they become active */
-        plugin.events.addListener("worldactivated", api);
+        core.events.addListener("worldactivated", api);
 
         api.scheduleWriteJob(); /* Start write job */
         
@@ -282,13 +273,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
     
     private void scheduleWriteJob() {
-        server.getScheduler().scheduleSyncDelayedTask(dynmap, new DoFileWrites(), 20);
+        core.getServer().scheduleServerTask(new DoFileWrites(), 20);
     }
     
     /**
      * Cleanup
      */
-    public void cleanup(DynmapPlugin plugin) {
+    public void cleanup(DynmapCore plugin) {
         plugin.events.removeListener("worldactivated", api);
 
         stop = true;
@@ -589,7 +580,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
     }
     
-    private static boolean processAreaArgs(CommandSender sender, AreaMarker marker, Map<String,String> parms) {
+    private static boolean processAreaArgs(DynmapCommandSender sender, AreaMarker marker, Map<String,String> parms) {
         String val = null;
         try {
         double ytop = marker.getTopY();
@@ -656,7 +647,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private static final String ARG_YBOTTOM = "ybottom";
     
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
-    private static Map<String,String> parseArgs(String[] args, CommandSender snd) {
+    private static Map<String,String> parseArgs(String[] args, DynmapCommandSender snd) {
         HashMap<String,String> rslt = new HashMap<String,String>();
         /* Build command line, so we can parse our way - make sure there is trailing space */
         String cmdline = "";
@@ -716,9 +707,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     
 
     
-    public static boolean onCommand(DynmapPlugin plugin, CommandSender sender, Command cmd, String commandLabel, String[] args) {
+    public static boolean onCommand(DynmapCore plugin, DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
         String id, setid, file, label, newlabel, iconid, prio, minzoom;
-        String val;
         
         if(api == null) {
             sender.sendMessage("Markers component is not enabled.");
@@ -726,16 +716,16 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
         if(args.length == 0)
             return false;
-        Player player = null;
-        if (sender instanceof Player)
-            player = (Player) sender;
+        DynmapPlayer player = null;
+        if (sender instanceof DynmapPlayer)
+            player = (DynmapPlayer) sender;
         /* Check if valid command */
         String c = args[0];
         if (!commands.contains(c)) {
             return false;
         }
         /* Process commands */
-        if(c.equals("add") && plugin.checkPlayerPermission(sender, "marker.add")) {
+        if(c.equals("add") && api.core.checkPlayerPermission(sender, "marker.add")) {
             if(player == null) {
                 sender.sendMessage("Command can only be used by player");
             }
@@ -748,7 +738,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 id = parms.get(ARG_ID);
                 label = parms.get(ARG_LABEL);
                 
-                Location loc = player.getLocation();
+                DynmapLocation loc = player.getLocation();
                 /* Fill in defaults for missing parameters */
                 if(iconid == null) {
                     iconid = MarkerIcon.DEFAULT;
@@ -768,7 +758,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     return true;
                 }
                 Marker m = set.createMarker(id, label, 
-                        loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), ico, true);
+                        loc.world, loc.x, loc.y, loc.z, ico, true);
                 if(m == null) {
                     sender.sendMessage("Error creating marker");
                 }
@@ -819,8 +809,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                         return true;
                     }
                 }
-                Location loc = player.getLocation();
-                marker.setLocation(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ());
+                DynmapLocation loc = player.getLocation();
+                marker.setLocation(loc.world, loc.x, loc.y, loc.z);
                 sender.sendMessage("Updated location of marker id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
             }
             else {
@@ -1268,7 +1258,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
         /* Add point to accumulator */
         else if(c.equals("addcorner") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
-            Location loc = null;
+            DynmapLocation loc = null;
             if(player == null) {
                 id = "-console-";
             }
@@ -1276,28 +1266,28 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 id = player.getName();
                 loc = player.getLocation();
             }
-            List<Location> ll = api.pointaccum.get(id); /* Find list */
+            List<DynmapLocation> ll = api.pointaccum.get(id); /* Find list */
             
             if(args.length > 2) {   /* Enough for coord */
-                World w = null;
+                String w = null;
                 if(args.length == 3) {  /* No world */
                     if(ll == null) {    /* No points?  Error */
                         sender.sendMessage("First added corner needs world ID after coordinates");
                         return true;
                     }
                     else {
-                        w = ll.get(0).getWorld();   /* Use same world */
+                        w = ll.get(0).world;   /* Use same world */
                     }
                 }
                 else {  /* Get world ID */
-                    w = api.server.getWorld(args[3]);
-                    if(w == null) {
+                    w = args[3];
+                    if(api.core.getWorld(w) == null) {
                         sender.sendMessage("Invalid world ID: " + args[3]);
                         return true;
                     }
                 }
                 try {
-                    loc = new Location(w, Double.parseDouble(args[1]), 64.0, Double.parseDouble(args[2]));
+                    loc = new DynmapLocation(w, Double.parseDouble(args[1]), 64.0, Double.parseDouble(args[2]));
                 } catch (NumberFormatException nfx) {
                     sender.sendMessage("Bad format: /dmarker addcorner <x> <z> <world>");
                     return true;
@@ -1308,16 +1298,16 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 return true;
             }
             if(ll == null) {
-                ll = new ArrayList<Location>();
+                ll = new ArrayList<DynmapLocation>();
                 api.pointaccum.put(id, ll);
             }
             else {  /* Else, if list exists, see if world matches */
-                if(ll.get(0).getWorld().equals(loc.getWorld()) == false) {
+                if(ll.get(0).world.equals(loc.world) == false) {
                     ll.clear(); /* Reset list - point on new world */
                 }
             }
             ll.add(loc);
-            sender.sendMessage("Added corner #" + ll.size() + " at {" + loc.getX() + "," + loc.getY() + "," + loc.getZ() + "} to list");
+            sender.sendMessage("Added corner #" + ll.size() + " at {" + loc.x + "," + loc.y + "," + loc.z + "} to list");
         }
         else if(c.equals("clearcorners") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
             if(player == null) {
@@ -1337,7 +1327,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             else {
                 pid = player.getName();
             }
-            List<Location> ll = api.pointaccum.get(pid); /* Find list */
+            List<DynmapLocation> ll = api.pointaccum.get(pid); /* Find list */
             if((ll == null) || (ll.size() < 2)) {   /* Not enough points? */
                 sender.sendMessage("At least two corners must be added with /dmarker addcorner before an area can be added");
                 return true;
@@ -1362,12 +1352,12 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             double[] xx = new double[ll.size()];
             double[] zz = new double[ll.size()];
             for(int i = 0; i < ll.size(); i++) {
-                Location loc = ll.get(i);
-                xx[i] = loc.getX();
-                zz[i] = loc.getZ();
+                DynmapLocation loc = ll.get(i);
+                xx[i] = loc.x;
+                zz[i] = loc.z;
             }
             /* Make area marker */
-            AreaMarker m = set.createAreaMarker(id, label, false, ll.get(0).getWorld().getName(), xx, zz, true);
+            AreaMarker m = set.createAreaMarker(id, label, false, ll.get(0).world, xx, zz, true);
             if(m == null) {
                 sender.sendMessage("Error creating area");
             }

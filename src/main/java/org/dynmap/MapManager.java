@@ -22,16 +22,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.bukkit.World;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.dynmap.DynmapPlugin.CompassMode;
+import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
+import org.dynmap.common.DynmapCommandSender;
+import org.dynmap.common.DynmapPlayer;
 import org.dynmap.debug.Debug;
 import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.utils.MapChunkCache;
-import org.dynmap.utils.NewMapChunkCache;
 import org.dynmap.utils.SnapshotCache;
 import org.dynmap.utils.TileFlags;
 
@@ -42,8 +39,7 @@ public class MapManager {
     private static final int DEFAULT_ZOOMOUT_PERIOD = 60;
     public List<DynmapWorld> worlds = new ArrayList<DynmapWorld>();
     public Map<String, DynmapWorld> worldsLookup = new HashMap<String, DynmapWorld>();
-    private BukkitScheduler scheduler;
-    private DynmapPlugin plug_in;
+    private DynmapCore core;
     private long timeslice_int = 0; /* In milliseconds */
     private int max_chunk_loads_per_tick = DEFAULT_CHUNKS_PER_TICK;
     private int parallelrendercnt = 0;
@@ -221,7 +217,7 @@ public class MapManager {
         LinkedList<MapTile> renderQueue = null;
         MapTile tile0 = null;
         int rendercnt = 0;
-        CommandSender sender;
+        DynmapCommandSender sender;
         String player;
         long timeaccum;
         HashSet<MapType> renderedmaps = new HashSet<MapType>();
@@ -237,7 +233,7 @@ public class MapManager {
         AtomicInteger rendercalls = new AtomicInteger(0);
 
         /* Full world, all maps render */
-        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, CommandSender sender, String mapname, boolean updaterender) {
+        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, DynmapCommandSender sender, String mapname, boolean updaterender) {
             this(dworld, l, sender, mapname, -1);
             if(updaterender) {
                 rendertype = RENDERTYPE_UPDATERENDER;
@@ -248,15 +244,15 @@ public class MapManager {
         }
         
         /* Full world, all maps render, with optional render radius */
-        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, CommandSender sender, String mapname, int radius) {
+        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, DynmapCommandSender sender, String mapname, int radius) {
             world = dworld;
             loc = l;
             found = new TileFlags();
             rendered = new TileFlags();
             renderQueue = new LinkedList<MapTile>();
             this.sender = sender;
-            if(sender instanceof Player)
-                this.player = ((Player)sender).getName();
+            if(sender instanceof DynmapPlayer)
+                this.player = ((DynmapPlayer)sender).getName();
             else
                 this.player = "";
             if(radius < 0) {
@@ -343,7 +339,7 @@ public class MapManager {
             updaterender = rendertype.equals(RENDERTYPE_UPDATERENDER);
             sender = null;
             if(player.length() > 0) {
-                sender = plug_in.getServer().getPlayerExact(player);
+                sender = core.getServer().getPlayer(player);
             }
         }
         
@@ -681,7 +677,7 @@ public class MapManager {
 
     private class CheckWorldTimes implements Runnable {
         public void run() {
-            Future<Integer> f = scheduler.callSyncMethod(plug_in, new Callable<Integer>() {
+            Future<Integer> f = core.getServer().callSyncMethod(new Callable<Integer>() {
                 public Integer call() throws Exception {
                     for(DynmapWorld w : worlds) {
                         int new_servertime = (int)(w.getTime() % 24000);
@@ -724,8 +720,8 @@ public class MapManager {
         }
     }
     
-    public MapManager(DynmapPlugin plugin, ConfigurationNode configuration) {
-        plug_in = plugin;
+    public MapManager(DynmapCore core, ConfigurationNode configuration) {
+        this.core = core;
         mapman = this;
 
         /* Get block hiding data, if any */
@@ -739,9 +735,9 @@ public class MapManager {
         
         /* Initialize HD map manager */
         hdmapman = new HDMapManager();  
-        hdmapman.loadHDShaders(plugin);
-        hdmapman.loadHDPerspectives(plugin);
-        hdmapman.loadHDLightings(plugin);
+        hdmapman.loadHDShaders(core);
+        hdmapman.loadHDPerspectives(core);
+        hdmapman.loadHDLightings(core);
         sscache = new SnapshotCache(configuration.getInteger("snapshotcachesize", 500));
         parallelrendercnt = configuration.getInteger("parallelrendercnt", 0);
         progressinterval = configuration.getInteger("progressloginterval", 100);
@@ -771,18 +767,12 @@ public class MapManager {
         zoomout_period = configuration.getInteger("zoomoutperiod", DEFAULT_ZOOMOUT_PERIOD);
         if(zoomout_period < 5) zoomout_period = 5;
         
-        scheduler = plugin.getServer().getScheduler();
-
-        hashman = new TileHashManager(DynmapPlugin.tilesDirectory, configuration.getBoolean("enabletilehash", true));
+        hashman = new TileHashManager(core.getTilesFolder(), configuration.getBoolean("enabletilehash", true));
         
         tileQueue.start();
-        
-        for (World world : plug_in.getServer().getWorlds()) {
-            activateWorld(world);
-        }        
     }
 
-    void renderFullWorld(DynmapLocation l, CommandSender sender, String mapname, boolean update) {
+    void renderFullWorld(DynmapLocation l, DynmapCommandSender sender, String mapname, boolean update) {
         DynmapWorld world = getWorld(l.world);
         if (world == null) {
             sender.sendMessage("Could not render: world '" + l.world + "' not defined in configuration.");
@@ -808,7 +798,7 @@ public class MapManager {
             sender.sendMessage("Full render starting on world '" + wname + "'...");
     }
 
-    void renderWorldRadius(DynmapLocation l, CommandSender sender, String mapname, int radius) {
+    void renderWorldRadius(DynmapLocation l, DynmapCommandSender sender, String mapname, int radius) {
         DynmapWorld world = getWorld(l.world);
         if (world == null) {
             sender.sendMessage("Could not render: world '" + l.world + "' not defined in configuration.");
@@ -830,15 +820,15 @@ public class MapManager {
         sender.sendMessage("Render of " + radius + " block radius starting on world '" + wname + "'...");
     }
 
-    void cancelRender(World w, CommandSender sender) {
+    void cancelRender(String w, DynmapCommandSender sender) {
     	synchronized(lock) {
     		if(w != null) {
     			FullWorldRenderState rndr;
-    			rndr = active_renders.get(w.getName());
+    			rndr = active_renders.get(w);
     			if(rndr != null) {
     				rndr.cancelRender();	/* Cancel render */
     				if(sender != null) {
-    					sender.sendMessage("Cancelled render for '" + w.getName() + "'");
+    					sender.sendMessage("Cancelled render for '" + w + "'");
     				}
     			}
     		}
@@ -854,7 +844,7 @@ public class MapManager {
     	}
     }
     
-    void purgeQueue(CommandSender sender) {
+    void purgeQueue(DynmapCommandSender sender) {
         if(tileQueue != null) {
             int cnt = 0;
             List<MapTile> popped = tileQueue.popAll();
@@ -866,18 +856,17 @@ public class MapManager {
         }
     }
     
-    public void activateWorld(World w) {
-        ConfigurationNode worldConfiguration = plug_in.getWorldConfiguration(w);
+    public boolean activateWorld(DynmapWorld dynmapWorld) {
+        ConfigurationNode worldConfiguration = core.getWorldConfiguration(dynmapWorld);
         if (!worldConfiguration.getBoolean("enabled", false)) {
-            Log.info("World '" + w.getName() + "' disabled");
-            return;
+            Log.info("World '" + dynmapWorld.getName() + "' disabled");
+            return false;
         }
-        String worldName = w.getName();
+        String worldName = dynmapWorld.getName();
 
-        DynmapWorld dynmapWorld = new DynmapWorld(w);
         dynmapWorld.configuration = worldConfiguration;
         Log.verboseinfo("Loading maps of world '" + worldName + "'...");
-        for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[0], new Object[0])) {
+        for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
             if(map.getName() != null)
                 dynmapWorld.maps.add(map);
         }
@@ -885,15 +874,15 @@ public class MapManager {
         
         List<ConfigurationNode> loclist = worldConfiguration.getNodes("fullrenderlocations");
         dynmapWorld.seedloc = new ArrayList<DynmapLocation>();
-        dynmapWorld.servertime = (int)(w.getTime() % 24000);
+        dynmapWorld.servertime = (int)(dynmapWorld.getTime() % 24000);
         dynmapWorld.sendposition = worldConfiguration.getBoolean("sendposition", true);
         dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
         dynmapWorld.bigworld = worldConfiguration.getBoolean("bigworld", false);
         dynmapWorld.setExtraZoomOutLevels(worldConfiguration.getInteger("extrazoomout", 0));
-        dynmapWorld.worldtilepath = new File(DynmapPlugin.tilesDirectory, w.getName());
+        dynmapWorld.worldtilepath = new File(core.getTilesFolder(), worldName);
         if(loclist != null) {
             for(ConfigurationNode loc : loclist) {
-                DynmapLocation lx = new DynmapLocation(w.getName(), loc.getInteger("x", 0), loc.getInteger("y", 64), loc.getInteger("z", 0));
+                DynmapLocation lx = new DynmapLocation(worldName, loc.getInteger("x", 0), loc.getInteger("y", 64), loc.getInteger("z", 0));
                 dynmapWorld.seedloc.add(lx);
             }
         }
@@ -909,7 +898,7 @@ public class MapManager {
                 lim.z1 = vis.getInteger("z1", 0);
                 dynmapWorld.visibility_limits.add(lim);
                 /* Also, add a seed location for the middle of each visible area */
-                dynmapWorld.seedloc.add(new DynmapLocation(w.getName(), (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
+                dynmapWorld.seedloc.add(new DynmapLocation(worldName, (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
             }            
         }
         /* Load hidden limits, if any are defined */
@@ -951,7 +940,7 @@ public class MapManager {
         // TODO: Make this less... weird...
         // Insert the world on the same spot as in the configuration.
         HashMap<String, Integer> indexLookup = new HashMap<String, Integer>();
-        List<ConfigurationNode> nodes = plug_in.configuration.getNodes("worlds");
+        List<ConfigurationNode> nodes = core.configuration.getNodes("worlds");
         for (int i = 0; i < nodes.size(); i++) {
             ConfigurationNode node = nodes.get(i);
             indexLookup.put(node.getString("name"), i);
@@ -970,11 +959,12 @@ public class MapManager {
         	}
         	worlds.add(insertIndex, dynmapWorld);
         }
-        worldsLookup.put(w.getName(), dynmapWorld);
-        plug_in.events.trigger("worldactivated", dynmapWorld);
+        worldsLookup.put(worldName, dynmapWorld);
+        core.events.trigger("worldactivated", dynmapWorld);
         /* Now, restore any pending renders for this world */
         if(saverestorepending)
             loadPending(dynmapWorld);
+        return true;
     }
 
     public void deactivateWorld(String wname) {
@@ -983,7 +973,7 @@ public class MapManager {
 
     private void loadPending(DynmapWorld w) {
         String wname = w.getName();
-        File f = new File(plug_in.getDataFolder(), wname + ".pending");
+        File f = new File(core.getDataFolder(), wname + ".pending");
         if(f.exists()) {
             org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
             saved.load();
@@ -1021,7 +1011,7 @@ public class MapManager {
         List<MapTile> mt = tileQueue.popAll();
         for(DynmapWorld w : worlds) {
             boolean dosave = false;
-            File f = new File(plug_in.getDataFolder(), w.getName() + ".pending");
+            File f = new File(core.getDataFolder(), w.getName() + ".pending");
             org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
             ArrayList<ConfigurationNode> savedtiles = new ArrayList<ConfigurationNode>();
             for(MapTile tile : mt) {
@@ -1159,9 +1149,9 @@ public class MapManager {
     /**
      * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
      */
-    public MapChunkCache createMapChunkCache(DynmapWorld w, List<DynmapChunk> chunks,
+    public MapChunkCache createMapChunkCache(DynmapWorld w, List<DynmapChunk> chunks, 
             boolean blockdata, boolean highesty, boolean biome, boolean rawbiome) {
-        MapChunkCache c = new NewMapChunkCache();
+        MapChunkCache c = w.getChunkCache(chunks);
         if(w.visibility_limits != null) {
             for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
                 c.setVisibleRange(limit);
@@ -1175,8 +1165,6 @@ public class MapManager {
             }
             c.setHiddenFillStyle(w.hiddenchunkstyle);
         }
-
-        c.setChunks(w.getWorld(), chunks);
         if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
             Log.severe("CraftBukkit build does not support biome APIs");
         if(chunks.size() == 0) {    /* No chunks to get? */
@@ -1194,7 +1182,7 @@ public class MapManager {
                     cur_tick = now/50;
                 }
             }
-        	Future<Boolean> f = scheduler.callSyncMethod(plug_in, new Callable<Boolean>() {
+        	Future<Boolean> f = core.getServer().callSyncMethod(new Callable<Boolean>() {
         		public Boolean call() throws Exception {
         		    boolean exhausted;
         		    synchronized(loadlock) {
@@ -1240,7 +1228,7 @@ public class MapManager {
     /**
      * Print statistics command
      */
-    public void printStats(CommandSender sender, String prefix) {
+    public void printStats(DynmapCommandSender sender, String prefix) {
         sender.sendMessage("Tile Render Statistics:");
         MapStats tot = new MapStats();
         synchronized(lock) {
@@ -1283,7 +1271,7 @@ public class MapManager {
     /**
      * Print trigger statistics command
      */
-    public void printTriggerStats(CommandSender sender) {
+    public void printTriggerStats(DynmapCommandSender sender) {
         sender.sendMessage("Render Trigger Statistics:");
         synchronized(lock) {
             for(String k: new TreeSet<String>(trigstats.keySet())) {
@@ -1296,7 +1284,7 @@ public class MapManager {
     /**
      * Reset statistics
      */
-    public void resetStats(CommandSender sender, String prefix) {
+    public void resetStats(DynmapCommandSender sender, String prefix) {
         synchronized(lock) {
             for(String k : mapstats.keySet()) {
                 if((prefix != null) && !k.startsWith(prefix))
@@ -1327,23 +1315,23 @@ public class MapManager {
     }    
     
     public boolean getSwampShading() {
-        return plug_in.swampshading;
+        return core.swampshading;
     }
 
     public boolean getWaterBiomeShading() {
-        return plug_in.waterbiomeshading;
+        return core.waterbiomeshading;
     }
 
     public boolean getFenceJoin() {
-        return plug_in.fencejoin;
+        return core.fencejoin;
     }
 
     public boolean getBetterGrass() {
-        return plug_in.bettergrass;
+        return core.bettergrass;
     }
 
     public CompassMode getCompassMode() {
-        return plug_in.compassmode;
+        return core.compassmode;
     }
 
     public boolean getHideOres() {
@@ -1400,7 +1388,7 @@ public class MapManager {
         ticklistcalls.incrementAndGet();
     }
     /* Connect any jobs tied to this player back to the player (resumes output to player) */
-    void connectTasksToPlayer(Player p) {
+    void connectTasksToPlayer(DynmapPlayer p) {
         String pn = p.getName();
         for(FullWorldRenderState job : active_renders.values()) {
             if(pn.equals(job.player)) {

@@ -1,4 +1,4 @@
-package org.dynmap;
+package org.dynmap.bukkit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

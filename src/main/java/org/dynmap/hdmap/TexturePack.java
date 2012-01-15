@@ -22,7 +22,7 @@ import javax.imageio.ImageIO;
 import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.utils.DynmapBufferedImage;
@@ -219,12 +219,12 @@ public class TexturePack {
 
     }
     /** Get or load texture pack */
-    public static TexturePack getTexturePack(String tpname) {
+    public static TexturePack getTexturePack(DynmapCore core, String tpname) {
         TexturePack tp = packs.get(tpname);
         if(tp != null)
             return tp;
         try {
-            tp = new TexturePack(tpname);   /* Attempt to load pack */
+            tp = new TexturePack(core, tpname);   /* Attempt to load pack */
             packs.put(tpname, tp);
             return tp;
         } catch (FileNotFoundException fnfx) {
@@ -235,9 +235,9 @@ public class TexturePack {
     /**
      * Constructor for texture pack, by name
      */
-    private TexturePack(String tpname) throws FileNotFoundException {
+    private TexturePack(DynmapCore core, String tpname) throws FileNotFoundException {
         ZipFile zf = null;
-        File texturedir = getTexturePackDirectory();
+        File texturedir = getTexturePackDirectory(core);
         boolean use_generate = HDMapManager.usegeneratedtextures;
         if(HDMapManager.biomeshadingfix == false)
             water_toned_op = COLORMOD_OLD_WATERSHADED;
@@ -650,8 +650,8 @@ public class TexturePack {
     }
 
     /* Get texture pack directory */
-    private static File getTexturePackDirectory() {
-        return new File(DynmapPlugin.dataDirectory, "texturepacks");
+    private static File getTexturePackDirectory(DynmapCore core) {
+        return new File(core.getDataFolder(), "texturepacks");
     }
 
     /**

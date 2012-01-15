@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
-import org.bukkit.Server;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -12,9 +11,13 @@ import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
+import org.dynmap.bukkit.DynmapPlugin;
 
+/**
+ * Bukkit specific module - alternate chat handler for interfacing with HeroChat
+ */
 public class HeroChatHandler {
     private static final String DEF_CHANNEL = "Global";
     private static final List<String> DEF_CHANNELS = Collections
@@ -22,7 +25,7 @@ public class HeroChatHandler {
 
     private List<String> hcchannels;
     private String hcwebinputchannel;
-    private DynmapPlugin plugin;
+    private DynmapCore core;
     private HeroChatChannel hcwebinputchan;
 
     private class OurPluginListener extends ServerListener {
@@ -229,9 +232,9 @@ public class HeroChatHandler {
                     if (hcchannels.contains(c.getName()) ||
                             hcchannels.contains(c.getNick())) {
                         if(cce.isSentByPlayer()) {  /* Player message? */
-                            org.bukkit.entity.Player p = plugin.getServer().getPlayer(cce.getSource());
-                            if((p != null) && (plugin.mapManager != null)) {
-                                plugin.mapManager.pushUpdate(new Client.ChatMessage("player", 
+                            org.bukkit.entity.Player p = DynmapPlugin.plugin.getServer().getPlayer(cce.getSource());
+                            if((p != null) && (core.mapManager != null)) {
+                                core.mapManager.pushUpdate(new Client.ChatMessage("player", 
                                                                                     c.getNick(),
                                                                                     p.getDisplayName(),
                                                                                     cce.getMessage(),
@@ -244,21 +247,21 @@ public class HeroChatHandler {
         }
     }
 
-    public HeroChatHandler(ConfigurationNode cfg, DynmapPlugin plugin, Server server) {
+    public HeroChatHandler(ConfigurationNode cfg, DynmapCore core) {
         /* If we're enabling hero chat support */
         Log.verboseinfo("HeroChat support configured");
-        this.plugin = plugin;
+        this.core = core;
         /* Now, get the monitored channel list */
         hcchannels = cfg.getStrings("herochatchannels", DEF_CHANNELS);
         /* And get channel to send web messages */
         hcwebinputchannel = cfg.getString("herochatwebchannel", DEF_CHANNEL);
-        Plugin hc = server.getPluginManager().getPlugin("HeroChat");
+        Plugin hc = DynmapPlugin.plugin.getServer().getPluginManager().getPlugin("HeroChat");
         if(hc != null) {
             activateHeroChat(hc);
         }
         else {
             /* Set up to hear when HeroChat is enabled */
-            plugin.registerEvent(Event.Type.PLUGIN_ENABLE, new OurPluginListener());
+            DynmapPlugin.plugin.bep.registerEvent(Event.Type.PLUGIN_ENABLE, new OurPluginListener());
         }
     }
 
@@ -276,7 +279,7 @@ public class HeroChatHandler {
             return;
         }
         /* Register event handler */
-        plugin.registerEvent(Event.Type.CUSTOM_EVENT, new OurEventListener());
+        DynmapPlugin.plugin.bep.registerEvent(Event.Type.CUSTOM_EVENT, new OurEventListener());
         Log.verboseinfo("HeroChat integration active");
     }
     /**

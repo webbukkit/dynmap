@@ -1,7 +1,6 @@
 package org.dynmap.servlet;
 
-import org.bukkit.OfflinePlayer;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.Event;
 import org.dynmap.Log;
 import org.dynmap.web.HttpStatus;
@@ -40,7 +39,7 @@ public class SendMessageServlet extends HttpServlet {
     public boolean use_player_login_ip = false;
     public boolean require_player_login_ip = false;
     public boolean check_user_ban = false;
-    public DynmapPlugin plug_in;
+    public DynmapCore plug_in;
 
 
     @Override
@@ -77,8 +76,7 @@ public class SendMessageServlet extends HttpServlet {
             if (ids != null) {
                 String id = ids.get(0);
                 if (check_user_ban) {
-                    OfflinePlayer p = plug_in.getServer().getOfflinePlayer(id);
-                    if ((p != null) && p.isBanned()) {
+                    if (plug_in.getServer().isPlayerBanned(id)) {
                         Log.info("Ignore message from '" + message.name + "' - banned player (" + id + ")");
                         response.sendError(HttpStatus.Forbidden.getCode());
                         return;

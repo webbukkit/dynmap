@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
@@ -25,29 +25,29 @@ public class HDMapManager {
     public static boolean waterlightingfix;
     public static boolean biomeshadingfix;
 
-    public void loadHDShaders(DynmapPlugin plugin) {
+    public void loadHDShaders(DynmapCore core) {
         Log.verboseinfo("Loading shaders...");
 
-        File f = new File(plugin.getDataFolder(), "shaders.txt");
-        if(!plugin.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
+        File f = new File(core.getDataFolder(), "shaders.txt");
+        if(!core.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
             return;
         }
         org.bukkit.util.config.Configuration bukkitShaderConfig = new org.bukkit.util.config.Configuration(f);
         bukkitShaderConfig.load();
         ConfigurationNode shadercfg = new ConfigurationNode(bukkitShaderConfig);
 
-        for(HDShader shader : shadercfg.<HDShader>createInstances("shaders", new Class<?>[0], new Object[0])) {
+        for(HDShader shader : shadercfg.<HDShader>createInstances("shaders", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
             if(shader.getName() == null) continue;
             shaders.put(shader.getName(), shader);
         }
         /* Load custom shaders, if file is defined - or create empty one if not */
-        f = new File(plugin.getDataFolder(), "custom-shaders.txt");
-        plugin.createDefaultFileFromResource("/custom-shaders.txt", f);
+        f = new File(core.getDataFolder(), "custom-shaders.txt");
+        core.createDefaultFileFromResource("/custom-shaders.txt", f);
         if(f.exists()) {
             bukkitShaderConfig = new org.bukkit.util.config.Configuration(f);
             bukkitShaderConfig.load();
             ConfigurationNode customshadercfg = new ConfigurationNode(bukkitShaderConfig);
-            for(HDShader shader : customshadercfg.<HDShader>createInstances("shaders", new Class<?>[0], new Object[0])) {
+            for(HDShader shader : customshadercfg.<HDShader>createInstances("shaders", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
                 if(shader.getName() == null) continue;
                 shaders.put(shader.getName(), shader);
             }
@@ -57,27 +57,27 @@ public class HDMapManager {
         TexturePack.handleHideOres();
     }
 
-    public void loadHDPerspectives(DynmapPlugin plugin) {
+    public void loadHDPerspectives(DynmapCore core) {
         Log.verboseinfo("Loading perspectives...");
-        File f = new File(plugin.getDataFolder(), "perspectives.txt");
-        if(!plugin.updateUsingDefaultResource("/perspectives.txt", f, "perspectives")) {
+        File f = new File(core.getDataFolder(), "perspectives.txt");
+        if(!core.updateUsingDefaultResource("/perspectives.txt", f, "perspectives")) {
             return;
         }
         org.bukkit.util.config.Configuration bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(f);
         bukkitPerspectiveConfig.load();
         ConfigurationNode perspectivecfg = new ConfigurationNode(bukkitPerspectiveConfig);
-        for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[0], new Object[0])) {
+        for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
             if(perspective.getName() == null) continue;
             perspectives.put(perspective.getName(), perspective);
         }
         /* Load custom perspectives, if file is defined - or create empty one if not */
-        f = new File(plugin.getDataFolder(), "custom-perspectives.txt");
-        plugin.createDefaultFileFromResource("/custom-perspectives.txt", f);
+        f = new File(core.getDataFolder(), "custom-perspectives.txt");
+        core.createDefaultFileFromResource("/custom-perspectives.txt", f);
         if(f.exists()) {
             bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(f);
             bukkitPerspectiveConfig.load();
             perspectivecfg = new ConfigurationNode(bukkitPerspectiveConfig);
-            for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[0], new Object[0])) {
+            for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
                 if(perspective.getName() == null) continue;
                 perspectives.put(perspective.getName(), perspective);
             }
@@ -85,28 +85,28 @@ public class HDMapManager {
         Log.info("Loaded " + perspectives.size() + " perspectives.");
     }
     
-    public void loadHDLightings(DynmapPlugin plugin) {
+    public void loadHDLightings(DynmapCore core) {
         Log.verboseinfo("Loading lightings...");
-        File f = new File(plugin.getDataFolder(), "lightings.txt");
-        if(!plugin.updateUsingDefaultResource("/lightings.txt", f, "lightings")) {
+        File f = new File(core.getDataFolder(), "lightings.txt");
+        if(!core.updateUsingDefaultResource("/lightings.txt", f, "lightings")) {
             return;
         }
         org.bukkit.util.config.Configuration bukkitLightingsConfig = new org.bukkit.util.config.Configuration(f);
         bukkitLightingsConfig.load();
         ConfigurationNode lightingcfg = new ConfigurationNode(bukkitLightingsConfig);
 
-        for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[0], new Object[0])) {
+        for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
             if(lighting.getName() == null) continue;
             lightings.put(lighting.getName(), lighting);
         }
         /* Load custom lightings, if file is defined - or create empty one if not */
-        f = new File(plugin.getDataFolder(), "custom-lightings.txt");
-        plugin.createDefaultFileFromResource("/custom-lightings.txt", f);
+        f = new File(core.getDataFolder(), "custom-lightings.txt");
+        core.createDefaultFileFromResource("/custom-lightings.txt", f);
         if(f.exists()) {
             bukkitLightingsConfig = new org.bukkit.util.config.Configuration(f);
             bukkitLightingsConfig.load();
             lightingcfg = new ConfigurationNode(bukkitLightingsConfig);
-            for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[0], new Object[0])) {
+            for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
                 if(lighting.getName() == null) continue;
                 lightings.put(lighting.getName(), lighting);
             }

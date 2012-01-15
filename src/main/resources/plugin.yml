@@ -1,5 +1,5 @@
 name: dynmap
-main: org.dynmap.DynmapPlugin
+main: org.dynmap.bukkit.DynmapPlugin
 version: "${project.version}-${BUILD_NUMBER}"
 authors: [FrozenCow, mikeprimm]
 softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit]

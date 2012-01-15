@@ -8,20 +8,20 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
+import org.dynmap.common.DynmapPlayer;
+import org.dynmap.common.DynmapServerInterface;
 
 public class PlayerList {
-    private Server server;
+    private DynmapServerInterface server;
     private HashSet<String> hiddenPlayerNames = new HashSet<String>();
     private File hiddenPlayersFile;
     private ConfigurationNode configuration;
-    private Player[] online;
+    private DynmapPlayer[] online;
 
-    public PlayerList(Server server, File hiddenPlayersFile, ConfigurationNode configuration) {
+    public PlayerList(DynmapServerInterface server, File hiddenPlayersFile, ConfigurationNode configuration) {
         this.server = server;
         this.hiddenPlayersFile = hiddenPlayersFile;
         this.configuration = configuration;
@@ -74,55 +74,38 @@ public class PlayerList {
             hide(playerName);
     }
 
-    // TODO: Clean this up... one day
-    public Player[] getVisiblePlayers(String worldName) {
-        ArrayList<Player> visiblePlayers = new ArrayList<Player>();
-        Player[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
+    public List<DynmapPlayer> getVisiblePlayers(String worldName) {
+        ArrayList<DynmapPlayer> visiblePlayers = new ArrayList<DynmapPlayer>();
+        DynmapPlayer[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         for (int i = 0; i < onlinePlayers.length; i++) {
-            Player p = onlinePlayers[i];
+            DynmapPlayer p = onlinePlayers[i];
             if(p == null) continue;
-            if (p.getWorld().getName().equals(worldName) && !(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
-                visiblePlayers.add(p);
-            }
-        }
-        Player[] result = new Player[visiblePlayers.size()];
-        visiblePlayers.toArray(result);
-        return result;
-    }
-
-    public Player[] getVisiblePlayers() {
-        ArrayList<Player> visiblePlayers = new ArrayList<Player>();
-        Player[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
-        boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
-        for (int i = 0; i < onlinePlayers.length; i++) {
-            Player p = onlinePlayers[i];
-            if(p == null) continue;
+            if((worldName != null) && (p.getWorld().equals(worldName) == false)) continue;
+            
             if (!(useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase()))) {
                 visiblePlayers.add(p);
             }
         }
-        Player[] result = new Player[visiblePlayers.size()];
-        visiblePlayers.toArray(result);
-        return result;
+        return visiblePlayers;
+    }
+
+    public List<DynmapPlayer> getVisiblePlayers() {
+        return getVisiblePlayers(null);
     }
     
-    public Set<Player> getHiddenPlayers() {
-        HashSet<Player> hidden = new HashSet<Player>();
-        Player[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
+    public List<DynmapPlayer> getHiddenPlayers() {
+        ArrayList<DynmapPlayer> hidden = new ArrayList<DynmapPlayer>();
+        DynmapPlayer[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
         for (int i = 0; i < onlinePlayers.length; i++) {
-            Player p = onlinePlayers[i];
+            DynmapPlayer p = onlinePlayers[i];
             if(p == null) continue;
             if (useWhitelist ^ hiddenPlayerNames.contains(p.getName().toLowerCase())) {
                 hidden.add(p);
             }
         }
         return hidden;
-    }
-    
-    public boolean isVisiblePlayer(Player p) {
-        return isVisiblePlayer(p.getName());
     }
 
     public boolean isVisiblePlayer(String p) {
@@ -133,13 +116,13 @@ public class PlayerList {
     /**
      * Call this from server thread to update player list safely
      */
-    void updateOnlinePlayers(Player skipone) {    
-        Player[] players = server.getOnlinePlayers();
-        Player[] pl = new Player[players.length];
+    void updateOnlinePlayers(String skipone) {    
+        DynmapPlayer[] players = server.getOnlinePlayers();
+        DynmapPlayer[] pl = new DynmapPlayer[players.length];
         System.arraycopy(players, 0, pl, 0, pl.length);
         if(skipone != null) {
             for(int i = 0; i < pl.length; i++)
-                if(pl[i] == skipone)
+                if(pl[i].getName().equals(skipone))
                     pl[i] = null;
         }
         online = pl;

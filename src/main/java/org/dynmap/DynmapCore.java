@@ -17,50 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.CustomEventListener;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Type;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockListener;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.BlockSpreadEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityListener;
-import org.bukkit.event.player.PlayerBedLeaveEvent;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
-import org.bukkit.event.world.SpawnChangeEvent;
-import org.bukkit.event.world.WorldListener;
-import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.dynmap.common.DynmapCommandSender;
+import org.dynmap.common.DynmapListenerManager;
+import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.DynmapPlayer;
+import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.hdmap.HDBlockModels;
@@ -68,10 +30,6 @@ import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.impl.MarkerAPIImpl;
-import org.dynmap.permissions.BukkitPermissions;
-import org.dynmap.permissions.NijikokunPermissions;
-import org.dynmap.permissions.OpPermissions;
-import org.dynmap.permissions.PermissionProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -82,16 +40,16 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
-public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
-    private String version;
+public class DynmapCore {
+    private DynmapServerInterface server;
+    private String version = "0.30-dev";
     private Server webServer = null;
     private ServletContextHandler webServerContextHandler = null;
     public MapManager mapManager = null;
     public PlayerList playerList;
     public ConfigurationNode configuration;
-    public HashSet<String> enabledTriggers = new HashSet<String>();
-    public PermissionProvider permissions;
     public ComponentManager componentManager = new ComponentManager();
+    public DynmapListenerManager listenerManager = new DynmapListenerManager(this);
     public PlayerFaces playerfacemgr;
     public Events events = new Events();
     public String deftemplatesuffix = "";
@@ -99,6 +57,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
     boolean bettergrass = false;
+    private HashSet<String> enabledTriggers = new HashSet<String>();
         
     public CompassMode compassmode = CompassMode.PRE19;
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
@@ -115,16 +74,47 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
-    private static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
-
-    private HashMap<Event.Type, List<Listener>> event_handlers = new HashMap<Event.Type, List<Listener>>();
+    public static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
 
     private MarkerAPIImpl   markerapi;
     
-    public static File dataDirectory;
-    public static File tilesDirectory;
+    private File dataDirectory;
+    private File tilesDirectory;
+    private String plugin_ver;
+    private String mc_ver;
+
+    /* Constructor for core */
+    public DynmapCore() {
+    }
     
-    public MapManager getMapManager() {
+    /* Cleanup method */
+    public void cleanup() {
+        server = null;
+        markerapi = null;
+    }
+    
+    /* Dependencies - need to be supplied by plugin wrapper */
+    public void setPluginVersion(String pluginver) {
+        plugin_ver = pluginver;
+    }
+    public void setDataFolder(File dir) {
+        dataDirectory = dir;
+    }
+    public final File getDataFolder() {
+        return dataDirectory;
+    }
+    public final File getTilesFolder() {
+        return tilesDirectory;
+    }
+    public void setMinecraftVersion(String mcver) {
+        mc_ver = mcver;
+    }
+    public void setServer(DynmapServerInterface srv) {
+        server = srv;
+    }
+    public final DynmapServerInterface getServer() { return server; }
+    
+    public final MapManager getMapManager() {
         return mapManager;
     }
 
@@ -228,31 +218,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
         }
     }
-    
-    @Override
-    public void onEnable() {
-        PluginDescriptionFile pdfFile = this.getDescription();
-        version = pdfFile.getVersion();
-
+        
+    public boolean enableCore() {
         /* Start with clean events */
         events = new Events();
         
-        permissions = NijikokunPermissions.create(getServer(), "dynmap");
-        if (permissions == null)
-            permissions = BukkitPermissions.create("dynmap");
-        if (permissions == null)
-            permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload", "purgequeue", "pause", "ips-for-id", "ids-for-ip", "add-id-for-ip", "del-id-for-ip" });
-
-        dataDirectory = this.getDataFolder();
-        if(dataDirectory.exists() == false)
-            dataDirectory.mkdirs();
-        
         /* Initialize confguration.txt if needed */
-        File f = new File(this.getDataFolder(), "configuration.txt");
+        File f = new File(dataDirectory, "configuration.txt");
         if(!createDefaultFileFromResource("/configuration.txt", f)) {
-            this.setEnabled(false);
-            return;
+            return false;
         }
+        
         /* Load configuration.txt */
         org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(f);
         bukkitConfiguration.load();
@@ -269,10 +245,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         TexturePack.loadTextureMapping(dataDirectory, configuration);
         
         /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
-        f = new File(this.getDataFolder(), "worlds.txt");
+        f = new File(dataDirectory, "worlds.txt");
         if(!createDefaultFileFromResource("/worlds.txt", f)) {
-            this.setEnabled(false);
-            return;
+            return false;
         }
         org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
         cfg.load();
@@ -285,14 +260,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         Log.verbose = configuration.getBoolean("verbose", true);
         deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
         /* Default swamp shading off for 1.8, on after */
-        swampshading = configuration.getBoolean("swampshaded", !getServer().getVersion().contains("(MC: 1.8"));
+        boolean post_1_8 = mc_ver.contains("1.8.");
+        swampshading = configuration.getBoolean("swampshaded", post_1_8);
         /* Default water biome shading off for 1.8, on after */
-        waterbiomeshading = configuration.getBoolean("waterbiomeshaded", !getServer().getVersion().contains("(MC: 1.8"));
+        waterbiomeshading = configuration.getBoolean("waterbiomeshaded", post_1_8);
         /* Default fence-to-block-join off for 1.8, on after */
-        fencejoin = configuration.getBoolean("fence-to-block-join", !getServer().getVersion().contains("(MC: 1.8"));
+        fencejoin = configuration.getBoolean("fence-to-block-join", post_1_8);
 
         /* Default compassmode to pre19, to newrose after */
-        String cmode = configuration.getString("compass-mode", getServer().getVersion().contains("(MC: 1.8")?"pre19":"newrose");
+        String cmode = configuration.getString("compass-mode", post_1_8?"newrose":"pre19");
         if(cmode.equals("newnorth"))
             compassmode = CompassMode.NEWNORTH;
         else if(cmode.equals("newrose"))
@@ -317,53 +293,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
         playerList.load();
-        PlayerListener pl = new PlayerListener() {
-            public void onPlayerJoin(PlayerJoinEvent evt) {
-                Player p = evt.getPlayer();
-                playerList.updateOnlinePlayers(null);
-                if(fullrenderplayerlimit > 0) {
-                    if((getServer().getOnlinePlayers().length+1) >= fullrenderplayerlimit) {
-                        if(getPauseFullRadiusRenders() == false) {  /* If not paused, pause it */
-                            setPauseFullRadiusRenders(true);
-                            Log.info("Pause full/radius renders - player limit reached");
-                            didfullpause = true;
-                        }
-                    }
-                }
-                /* Add player info to IP-to-ID table */
-                InetSocketAddress addr = p.getAddress();
-                if(addr != null) {
-                    String ip = addr.getAddress().getHostAddress();
-                    LinkedList<String> ids = ids_by_ip.get(ip);
-                    if(ids == null) {
-                        ids = new LinkedList<String>();
-                        ids_by_ip.put(ip, ids);
-                    }
-                    String pid = p.getName();
-                    if(ids.indexOf(pid) != 0) {
-                        ids.remove(pid);    /* Remove from list */
-                        ids.addFirst(pid);  /* Put us first on list */
-                    }
-                }
-                /* And re-attach to active jobs */
-                if(mapManager != null)
-                    mapManager.connectTasksToPlayer(p);
-            }
-            public void onPlayerQuit(PlayerQuitEvent evt) {
-                playerList.updateOnlinePlayers(evt.getPlayer());
-                if(fullrenderplayerlimit > 0) {
-                    if((getServer().getOnlinePlayers().length-1) < fullrenderplayerlimit) {
-                        if(didfullpause) {  /* Only unpause if we did the pause */
-                            setPauseFullRadiusRenders(false);
-                            Log.info("Resume full/radius renders - below player limit");
-                            didfullpause = false;
-                        }
-                    }
-                }
-            }
-        };
-        registerEvent(Type.PLAYER_JOIN, pl);
-        registerEvent(Type.PLAYER_QUIT, pl);
 
         mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
@@ -384,23 +313,82 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         
         // Load components.
-        for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapPlugin.class }, new Object[] { this })) {
+        for(Component component : configuration.<Component>createInstances("components", new Class<?>[] { DynmapCore.class }, new Object[] { this })) {
             componentManager.add(component);
         }
         Log.verboseinfo("Loaded " + componentManager.components.size() + " components.");
-
-        registerEvents();
 
         if (!configuration.getBoolean("disable-webserver", false)) {
             startWebserver();
         }
         
+        /* Add login/logoff listeners */
+        listenerManager.addListener(EventType.PLAYER_JOIN, new DynmapListenerManager.PlayerEventListener() {
+            @Override
+            public void playerEvent(DynmapPlayer p) {
+                playerJoined(p);
+            }
+        });
+        listenerManager.addListener(EventType.PLAYER_QUIT, new DynmapListenerManager.PlayerEventListener() {
+            @Override
+            public void playerEvent(DynmapPlayer p) {
+                playerQuit(p);
+            }
+        });
+        
         /* Print version info */
         Log.info("version " + version + " is enabled" );
 
         events.<Object>trigger("initialized", null);
+        
+        return true;
     }
 
+    private void playerJoined(DynmapPlayer p) {
+        playerList.updateOnlinePlayers(null);
+        if(fullrenderplayerlimit > 0) {
+            if((getServer().getOnlinePlayers().length+1) >= fullrenderplayerlimit) {
+                if(getPauseFullRadiusRenders() == false) {  /* If not paused, pause it */
+                    setPauseFullRadiusRenders(true);
+                    Log.info("Pause full/radius renders - player limit reached");
+                    didfullpause = true;
+                }
+            }
+        }
+        /* Add player info to IP-to-ID table */
+        InetSocketAddress addr = p.getAddress();
+        if(addr != null) {
+            String ip = addr.getAddress().getHostAddress();
+            LinkedList<String> ids = ids_by_ip.get(ip);
+            if(ids == null) {
+                ids = new LinkedList<String>();
+                ids_by_ip.put(ip, ids);
+            }
+            String pid = p.getName();
+            if(ids.indexOf(pid) != 0) {
+                ids.remove(pid);    /* Remove from list */
+                ids.addFirst(pid);  /* Put us first on list */
+            }
+        }
+        /* And re-attach to active jobs */
+        if(mapManager != null)
+            mapManager.connectTasksToPlayer(p);
+    }
+
+    /* Called by plugin each time a player quits the server */
+    private void playerQuit(DynmapPlayer p) {
+        playerList.updateOnlinePlayers(p.getName());
+        if(fullrenderplayerlimit > 0) {
+            if((getServer().getOnlinePlayers().length-1) < fullrenderplayerlimit) {
+                if(didfullpause) {  /* Only unpause if we did the pause */
+                    setPauseFullRadiusRenders(false);
+                    Log.info("Resume full/radius renders - below player limit");
+                    didfullpause = false;
+                }
+            }
+        }
+    }
+    
     public void updateConfigHashcode() {
         config_hashcode = (int)System.currentTimeMillis();
     }
@@ -436,7 +424,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 private HashSet<String> banned_ips = new HashSet<String>();
                 private HashSet<String> banned_ips_notified = new HashSet<String>();
                 private long last_loaded = 0;
-                private long lastmod = 0;
                 private static final long BANNED_RELOAD_INTERVAL = 15000;	/* Every 15 seconds */
 
                 @Override
@@ -527,8 +514,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
 
-    @Override
-    public void onDisable() {
+    public void disableCore() {
         if(persist_ids_by_ip)
             saveIDsByIP();
         if (componentManager != null) {
@@ -553,341 +539,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             webServer = null;
         }
-        /* Clean up all registered handlers */
-        for(Event.Type t : event_handlers.keySet()) {
-            List<Listener> ll = event_handlers.get(t);
-            ll.clear(); /* Empty list - we use presence of list to remember that we've registered with Bukkit */
-        }
         playerfacemgr = null;
+        /* Clean up registered listeners */
+        listenerManager.cleanup();
         
         /* Don't clean up markerAPI - other plugins may still be accessing it */
         
         Debug.clearDebuggers();
-    }
-    
-    public boolean isTrigger(String s) {
-        return enabledTriggers.contains(s);
-    }
-
-    private boolean onplace;
-    private boolean onbreak;
-    private boolean onblockform;
-    private boolean onblockfade;
-    private boolean onblockspread;
-    private boolean onblockfromto;
-    private boolean onblockphysics;
-    private boolean onleaves;
-    private boolean onburn;
-    private boolean onpiston;
-    private boolean onplayerjoin;
-    private boolean onplayermove;
-    private boolean ongeneratechunk;
-    private boolean onloadchunk;
-    private boolean onexplosion;
-
-    public void registerEvents() {
-
-        
-        BlockListener blockTrigger = new BlockListener() {
-            @Override
-            public void onBlockPlace(BlockPlaceEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onplace) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockplace");
-                }
-            }
-
-            @Override
-            public void onBlockBreak(BlockBreakEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onbreak) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockbreak");
-                }
-            }
-
-            @Override
-            public void onLeavesDecay(LeavesDecayEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onleaves) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "leavesdecay");
-                }
-            }
-            
-            @Override
-            public void onBlockBurn(BlockBurnEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onburn) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockburn");
-                }
-            }
-            
-            @Override
-            public void onBlockForm(BlockFormEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockform) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockform");
-                }
-            }
-
-            @Override
-            public void onBlockFade(BlockFadeEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockfade) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfade");
-                }
-            }
-            
-            @Override
-            public void onBlockSpread(BlockSpreadEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockspread) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockspread");
-                }
-            }
-
-            @Override
-            public void onBlockFromTo(BlockFromToEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getToBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockfromto)
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfromto");
-                loc = event.getBlock().getLocation();
-                wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockfromto)
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfromto");
-            }
-            
-            @Override
-            public void onBlockPhysics(BlockPhysicsEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                mapManager.sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockphysics) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockphysics");
-                }
-            }
-
-            @Override
-            public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-                if(event.isCancelled())
-                    return;
-                Block b = event.getBlock();
-                Location loc = b.getLocation();
-                BlockFace dir;
-                try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
-                    dir = event.getDirection();
-                } catch (ClassCastException ccx) {
-                    dir = BlockFace.NORTH;
-                }
-                String wn = loc.getWorld().getName();
-                int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
-                mapManager.sscache.invalidateSnapshot(wn, x, y, z);
-                if(onpiston)
-                    mapManager.touch(wn, x, y, z, "pistonretract");
-                for(int i = 0; i < 2; i++) {
-                    x += dir.getModX();
-                    y += dir.getModY();
-                    z += dir.getModZ();
-                    mapManager.sscache.invalidateSnapshot(wn, x, y, z);
-                    if(onpiston)
-                        mapManager.touch(wn, x, y, z, "pistonretract");
-                }
-            }
-            @Override
-            public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-                if(event.isCancelled())
-                    return;
-                Block b = event.getBlock();
-                Location loc = b.getLocation();
-                BlockFace dir;
-                try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
-                    dir = event.getDirection();
-                } catch (ClassCastException ccx) {
-                    dir = BlockFace.NORTH;
-                }
-                String wn = loc.getWorld().getName();
-                int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
-                mapManager.sscache.invalidateSnapshot(wn, x, y, z);
-                if(onpiston)
-                    mapManager.touch(wn, x, y, z, "pistonretract");
-                for(int i = 0; i < 1+event.getLength(); i++) {
-                    x += dir.getModX();
-                    y += dir.getModY();
-                    z += dir.getModZ();
-                    mapManager.sscache.invalidateSnapshot(wn, x, y, z);
-                    if(onpiston)
-                        mapManager.touch(wn, x, y, z, "pistonretract");
-                }
-            }
-        };
-        
-        // To trigger rendering.
-        onplace = isTrigger("blockplaced");
-        registerEvent(Event.Type.BLOCK_PLACE, blockTrigger);
-            
-        onbreak = isTrigger("blockbreak");
-        registerEvent(Event.Type.BLOCK_BREAK, blockTrigger);
-            
-        if(isTrigger("snowform")) Log.info("The 'snowform' trigger has been deprecated due to Bukkit changes - use 'blockformed'");
-            
-        onleaves = isTrigger("leavesdecay");
-        registerEvent(Event.Type.LEAVES_DECAY, blockTrigger);
-            
-        onburn = isTrigger("blockburn");
-        registerEvent(Event.Type.BLOCK_BURN, blockTrigger);
-
-        onblockform = isTrigger("blockformed");
-        registerEvent(Event.Type.BLOCK_FORM, blockTrigger);
-            
-        onblockfade = isTrigger("blockfaded");
-        registerEvent(Event.Type.BLOCK_FADE, blockTrigger);
-            
-        onblockspread = isTrigger("blockspread");
-        registerEvent(Event.Type.BLOCK_SPREAD, blockTrigger);
-
-        onblockfromto = isTrigger("blockfromto");
-        registerEvent(Event.Type.BLOCK_FROMTO, blockTrigger);
-
-        onblockphysics = isTrigger("blockphysics");
-        registerEvent(Event.Type.BLOCK_PHYSICS, blockTrigger);
-
-        onpiston = isTrigger("pistonmoved");
-        registerEvent(Event.Type.BLOCK_PISTON_EXTEND, blockTrigger);
-        registerEvent(Event.Type.BLOCK_PISTON_RETRACT, blockTrigger);
-        /* Register player event trigger handlers */
-        PlayerListener playerTrigger = new PlayerListener() {
-            @Override
-            public void onPlayerJoin(PlayerJoinEvent event) {
-                Location loc = event.getPlayer().getLocation();
-                mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playerjoin");
-            }
-
-            @Override
-            public void onPlayerMove(PlayerMoveEvent event) {
-                Location loc = event.getPlayer().getLocation();
-                mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playermove");
-            }
-        };
-
-        onplayerjoin = isTrigger("playerjoin");
-        onplayermove = isTrigger("playermove");
-        if(onplayerjoin)
-            registerEvent(Event.Type.PLAYER_JOIN, playerTrigger);
-        if(onplayermove)
-            registerEvent(Event.Type.PLAYER_MOVE, playerTrigger);
-
-        /* Register entity event triggers */
-        EntityListener entityTrigger = new EntityListener() {
-            @Override
-            public void onEntityExplode(EntityExplodeEvent event) {
-                Location loc = event.getLocation();
-                String wname = loc.getWorld().getName();
-                int minx, maxx, miny, maxy, minz, maxz;
-                minx = maxx = loc.getBlockX();
-                miny = maxy = loc.getBlockY();
-                minz = maxz = loc.getBlockZ();
-                /* Calculate volume impacted by explosion */
-                List<Block> blocks = event.blockList();
-                for(Block b: blocks) {
-                    Location l = b.getLocation();
-                    int x = l.getBlockX();
-                    if(x < minx) minx = x;
-                    if(x > maxx) maxx = x;
-                    int y = l.getBlockY();
-                    if(y < miny) miny = y;
-                    if(y > maxy) maxy = y;
-                    int z = l.getBlockZ();
-                    if(z < minz) minz = z;
-                    if(z > maxz) maxz = z;
-                }
-                mapManager.sscache.invalidateSnapshot(wname, minx, miny, minz, maxx, maxy, maxz);
-                if(onexplosion) {
-                    mapManager.touchVolume(wname, minx, miny, minz, maxx, maxy, maxz, "entityexplode");
-                }
-            }
-        };
-        onexplosion = isTrigger("explosion");
-        registerEvent(Event.Type.ENTITY_EXPLODE, entityTrigger);
-        
-        
-        /* Register world event triggers */
-        WorldListener worldTrigger = new WorldListener() {
-            @Override
-            public void onChunkLoad(ChunkLoadEvent event) {
-                if(ignore_chunk_loads)
-                    return;
-                Chunk c = event.getChunk();
-                /* Touch extreme corners */
-                int x = c.getX() << 4;
-                int z = c.getZ() << 4;
-                mapManager.touchVolume(event.getWorld().getName(), x, 0, z, x+15, 128, z+16, "chunkload");
-            }
-            @Override
-            public void onChunkPopulate(ChunkPopulateEvent event) {
-                Chunk c = event.getChunk();
-                /* Touch extreme corners */
-                int x = c.getX() << 4;
-                int z = c.getZ() << 4;
-                mapManager.touchVolume(event.getWorld().getName(), x, 0, z, x+15, 128, z+16, "chunkpopulate");
-            }
-            @Override
-            public void onWorldLoad(WorldLoadEvent event) {
-                updateConfigHashcode();
-                mapManager.activateWorld(event.getWorld());
-            }
-            @Override
-            public void onWorldUnload(WorldUnloadEvent event) {
-                updateConfigHashcode();
-                mapManager.deactivateWorld(event.getWorld().getName());
-            }
-        };
-
-        ongeneratechunk = isTrigger("chunkgenerated");
-        if(ongeneratechunk) {
-            registerEvent(Event.Type.CHUNK_POPULATED, worldTrigger);
-        }
-        onloadchunk = isTrigger("chunkloaded");
-        if(onloadchunk) { 
-            registerEvent(Event.Type.CHUNK_LOAD, worldTrigger);
-        }
-
-        // To link configuration to real loaded worlds.
-        registerEvent(Event.Type.WORLD_LOAD, worldTrigger);
-        registerEvent(Event.Type.WORLD_UNLOAD, worldTrigger);
     }
 
     private static File combinePaths(File parent, String path) {
@@ -910,7 +568,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         for (ConfigurationNode debuggerConfiguration : debuggersConfiguration) {
             try {
                 Class<?> debuggerClass = Class.forName((String) debuggerConfiguration.getString("class"));
-                Constructor<?> constructor = debuggerClass.getConstructor(JavaPlugin.class, ConfigurationNode.class);
+                Constructor<?> constructor = debuggerClass.getConstructor(DynmapCore.class, ConfigurationNode.class);
                 Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfiguration);
                 Debug.addDebugger(debugger);
             } catch (Exception e) {
@@ -922,7 +580,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
 
     /* Parse argument strings : handle quoted strings */
-    public static String[] parseArgs(String[] args, CommandSender snd) {
+    public static String[] parseArgs(String[] args, DynmapCommandSender snd) {
         ArrayList<String> rslt = new ArrayList<String>();
         /* Build command line, so we can parse our way - make sure there is trailing space */
         String cmdline = "";
@@ -979,16 +637,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         "add-id-for-ip",
         "del-id-for-ip"}));
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if(cmd.getName().equalsIgnoreCase("dmarker")) {
+    public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
+        if(cmd.equalsIgnoreCase("dmarker")) {
             return MarkerAPIImpl.onCommand(this, sender, cmd, commandLabel, args);
         }
-        if (!cmd.getName().equalsIgnoreCase("dynmap"))
+        if (!cmd.equalsIgnoreCase("dynmap"))
             return false;
-        Player player = null;
-        if (sender instanceof Player)
-            player = (Player) sender;
+        DynmapPlayer player = null;
+        if (sender instanceof DynmapPlayer)
+            player = (DynmapPlayer) sender;
         /* Re-parse args - handle doublequotes */
         args = parseArgs(args, sender);
         
@@ -1003,9 +660,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
             if (c.equals("render") && checkPlayerPermission(sender,"render")) {
                 if (player != null) {
-                    Location loc = player.getLocation();
+                    DynmapLocation loc = player.getLocation();
                     
-                    mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "render");
+                    mapManager.touch(loc.world, (int)loc.x, (int)loc.y, (int)loc.z, "render");
                     
                     sender.sendMessage("Tile render queued.");
                 }
@@ -1024,7 +681,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     if(args.length > 2)
                         mapname = args[2];
                     if (player != null)
-                        loc = toLoc(player.getLocation());
+                        loc = player.getLocation();
                     else
                         sender.sendMessage("Command require <world> <x> <z> <radius> if issued from console.");
                 }
@@ -1052,7 +709,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     if(args.length > 2)
                         mapname = args[2];
                     if (player != null)
-                        loc = toLoc(player.getLocation());
+                        loc = player.getLocation();
                     else
                         sender.sendMessage("Command require <world> <x> <z> <radius> if issued from console.");
                 }
@@ -1116,7 +773,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                             sender.sendMessage("World '" + wname + "' not defined/loaded");
                     }
                 } else if (player != null) {
-                    DynmapLocation loc = toLoc(player.getLocation());
+                    DynmapLocation loc = player.getLocation();
                     if(args.length > 1)
                         map = args[1];
                     if(loc != null)
@@ -1127,16 +784,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             } else if (c.equals("cancelrender") && checkPlayerPermission(sender,"cancelrender")) {
                 if (args.length > 1) {
                     for (int i = 1; i < args.length; i++) {
-                        World w = getServer().getWorld(args[i]);
+                        DynmapWorld w = mapManager.getWorld(args[i]);
                         if(w != null)
-                            mapManager.cancelRender(w,sender);
+                            mapManager.cancelRender(w.getName(), sender);
                         else
                             sender.sendMessage("World '" + args[i] + "' not defined/loaded");
                     }
                 } else if (player != null) {
-                    Location loc = player.getLocation();
+                    DynmapLocation loc = player.getLocation();
                     if(loc != null)
-                        mapManager.cancelRender(loc.getWorld(), sender);
+                        mapManager.cancelRender(loc.world, sender);
                 } else {
                     sender.sendMessage("World name is required");
                 }
@@ -1144,7 +801,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 mapManager.purgeQueue(sender);
             } else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
                 sender.sendMessage("Reloading Dynmap...");
-                reload();
+                getServer().reload();
                 sender.sendMessage("Dynmap reloaded");
             } else if (c.equals("stats") && checkPlayerPermission(sender, "stats")) {
                 if(args.length == 1)
@@ -1251,17 +908,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         return false;
     }
 
-    public boolean checkPlayerPermission(CommandSender sender, String permission) {
-        if (!(sender instanceof Player) || sender.isOp()) {
+    public boolean checkPlayerPermission(DynmapCommandSender sender, String permission) {
+        if (!(sender instanceof DynmapPlayer) || sender.isOp()) {
             return true;
-        } else if (!permissions.has(sender, permission.toLowerCase())) {
+        } else if (!sender.hasPrivilege(permission.toLowerCase())) {
             sender.sendMessage("You don't have permission to use this command!");
             return false;
         }
         return true;
     }
 
-    public ConfigurationNode getWorldConfiguration(World world) {
+    public ConfigurationNode getWorldConfiguration(DynmapWorld world) {
         ConfigurationNode finalConfiguration = new ConfigurationNode();
         finalConfiguration.put("name", world.getName());
         finalConfiguration.put("title", world.getName());
@@ -1294,9 +951,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         return finalConfiguration;
     }
     
-    private ConfigurationNode getDefaultTemplateConfigurationNode(World world) {
-        Environment environment = world.getEnvironment();
-        String environmentName = environment.name().toLowerCase();
+    private ConfigurationNode getDefaultTemplateConfigurationNode(DynmapWorld world) {
+        String environmentName = world.getEnvironment();
         if(deftemplatesuffix.length() > 0) {
             environmentName += "-" + deftemplatesuffix;
         }
@@ -1321,11 +977,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         return null;
     }
     
-    public void reload() {
-        PluginManager pluginManager = getServer().getPluginManager();
-        pluginManager.disablePlugin(this);
-        pluginManager.enablePlugin(this);
-    }
     
     public String getWebPath() {
         return configuration.getString("webpath", "web");
@@ -1422,345 +1073,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         return true;
     }
     
-    private BlockListener ourBlockEventHandler = new BlockListener() {
-        
-        @Override
-        public void onBlockPlace(BlockPlaceEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockPlace(event);
-                }
-            }
-        }
 
-        @Override
-        public void onBlockBreak(BlockBreakEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockBreak(event);
-                }
-            }
-        }
-
-        @Override
-        public void onLeavesDecay(LeavesDecayEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onLeavesDecay(event);
-                }
-            }
-        }
-        
-        @Override
-        public void onBlockBurn(BlockBurnEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockBurn(event);
-                }
-            }
-        }
-        
-        @Override
-        public void onBlockForm(BlockFormEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockForm(event);
-                }
-            }
-        }
-        @Override
-        public void onBlockFade(BlockFadeEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockFade(event);
-                }
-            }
-        }
-        @Override
-        public void onBlockSpread(BlockSpreadEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockSpread(event);
-                }
-            }
-        }
-        @Override
-        public void onBlockFromTo(BlockFromToEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockFromTo(event);
-                }
-            }
-        }
-        @Override
-        public void onBlockPhysics(BlockPhysicsEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockPhysics(event);
-                }
-            }
-        }
-        @Override
-        public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockPistonRetract(event);
-                }
-            }
-        }
-        @Override
-        public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((BlockListener)l).onBlockPistonExtend(event);
-                }
-            }
-        }
-    };
-    private PlayerListener ourPlayerEventHandler = new PlayerListener() {
-        @Override
-        public void onPlayerJoin(PlayerJoinEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((PlayerListener)l).onPlayerJoin(event);
-                }
-            }
-        }
-        @Override
-        public void onPlayerLogin(PlayerLoginEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((PlayerListener)l).onPlayerLogin(event);
-                }
-            }
-        }
-
-        @Override
-        public void onPlayerMove(PlayerMoveEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((PlayerListener)l).onPlayerMove(event);
-                }
-            }
-        }
-        
-        @Override
-        public void onPlayerQuit(PlayerQuitEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((PlayerListener)l).onPlayerQuit(event);
-                }
-            }
-        }
-
-        @Override
-        public void onPlayerBedLeave(PlayerBedLeaveEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((PlayerListener)l).onPlayerBedLeave(event);
-                }
-            }
-        }
-
-        @Override
-        public void onPlayerChat(PlayerChatEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((PlayerListener)l).onPlayerChat(event);
-                }
-            }
-        }
-    };
-
-    private WorldListener ourWorldEventHandler = new WorldListener() {
-        @Override
-        public void onWorldLoad(WorldLoadEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((WorldListener)l).onWorldLoad(event);
-                }
-            }
-        }
-        @Override
-        public void onWorldUnload(WorldUnloadEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((WorldListener)l).onWorldUnload(event);
-                }
-            }
-        }
-        @Override
-        public void onChunkLoad(ChunkLoadEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((WorldListener)l).onChunkLoad(event);
-                }
-            }
-        }
-        @Override
-        public void onChunkPopulate(ChunkPopulateEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((WorldListener)l).onChunkPopulate(event);
-                }
-            }
-        }
-        @Override
-        public void onSpawnChange(SpawnChangeEvent event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((WorldListener)l).onSpawnChange(event);
-                }
-            }
-        }
-    };
-    
-    private CustomEventListener ourCustomEventHandler = new CustomEventListener() {
-        @Override
-        public void onCustomEvent(Event event) {
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((CustomEventListener)l).onCustomEvent(event);
-                }
-            }
-        }
-    };
-    
-    private EntityListener ourEntityEventHandler = new EntityListener() {
-        @Override
-        public void onEntityExplode(EntityExplodeEvent event) {
-            if(event.isCancelled())
-                return;
-            /* Call listeners */
-            List<Listener> ll = event_handlers.get(event.getType());
-            if(ll != null) {
-                for(Listener l : ll) {
-                    ((EntityListener)l).onEntityExplode(event);
-                }
-            }
-        }
-    };
-    
-    /**
-     * Register event listener - this will be cleaned up properly on a /dynmap reload, unlike
-     * registering with Bukkit directly
-     */
-    public void registerEvent(Event.Type type, Listener listener) {
-        List<Listener> ll = event_handlers.get(type);
-        PluginManager pm = getServer().getPluginManager();
-        if(ll == null) {
-            switch(type) {  /* See if it is a type we're brokering */
-                case PLAYER_LOGIN:
-                case PLAYER_CHAT:
-                case PLAYER_JOIN:
-                case PLAYER_QUIT:
-                case PLAYER_MOVE:
-                case PLAYER_BED_LEAVE:
-                    pm.registerEvent(type, ourPlayerEventHandler, Event.Priority.Monitor, this);
-                    break;
-                case BLOCK_PLACE:
-                case BLOCK_BREAK:
-                case LEAVES_DECAY:
-                case BLOCK_BURN:
-                case BLOCK_FORM:
-                case BLOCK_FADE:
-                case BLOCK_SPREAD:
-                case BLOCK_FROMTO:
-                case BLOCK_PHYSICS:
-                case BLOCK_PISTON_EXTEND:
-                case BLOCK_PISTON_RETRACT:
-                    pm.registerEvent(type, ourBlockEventHandler, Event.Priority.Monitor, this);
-                    break;
-                case WORLD_LOAD:
-                case WORLD_UNLOAD:
-                case CHUNK_LOAD:
-                case CHUNK_POPULATED:
-                case SPAWN_CHANGE:
-                    pm.registerEvent(type, ourWorldEventHandler, Event.Priority.Monitor, this);
-                    break;
-                case CUSTOM_EVENT:
-                    pm.registerEvent(type, ourCustomEventHandler, Event.Priority.Monitor, this);
-                    break;
-                case ENTITY_EXPLODE:
-                    pm.registerEvent(type, ourEntityEventHandler, Event.Priority.Monitor, this);
-                    break;
-                default:
-                    Log.severe("registerEvent() in DynmapPlugin does not handle " + type);
-                    return;
-            }
-            ll = new ArrayList<Listener>();
-            event_handlers.put(type, ll);   /* Add list for this event */
-        }
-        ll.add(listener);
-    }
     /**
      * ** This is the public API for other plugins to use for accessing the Marker API **
      * This method can return null if the 'markers' component has not been configured - 
@@ -1789,32 +1102,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         return false;
     }
-    /**
-     * Trigger update on tiles associated with given locations.  If two locations provided,
-     * the volume is the rectangular prism ("cuboid") with the two locations on opposite corners.
-     * 
-     * @param l0 - first location (required)
-     * @param l1 - second location (if null, only single point invalidated (l0))
-     * @return zero or higher if request queued, -1 if error
-     */
-    public int triggerRenderOfVolume(Location l0, Location l1) {
-        if(mapManager != null) {
-            if(l1 == null)
-                mapManager.touch(l0.getWorld().getName(), l0.getBlockX(), l0.getBlockY(), l0.getBlockZ(), "api");
-            else {
-                int minx = Math.min(l0.getBlockX(), l1.getBlockX());
-                int maxx = Math.max(l0.getBlockX(), l1.getBlockX());
-                int miny = Math.min(l0.getBlockY(), l1.getBlockY());
-                int maxy = Math.max(l0.getBlockY(), l1.getBlockY());
-                int minz = Math.min(l0.getBlockZ(), l1.getBlockZ());
-                int maxz = Math.max(l0.getBlockZ(), l1.getBlockZ());
-                
-                mapManager.touchVolume(l0.getWorld().getName(), minx, miny, minz, maxx, maxy, maxz, "api");
-            }
-        }
-        return 0;
-    }
-
     /**
      * Register markers API - used by component to supply marker API to plugin
      */
@@ -1846,43 +1133,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
      */
     public boolean getPauseUpdateRenders() {
         return mapManager.getPauseUpdateRenders();
-    }
-    /**
-     * Set player visibility
-     * @param player - player
-     * @param is_visible - true if visible, false if hidden
-     */
-    public void setPlayerVisiblity(Player player, boolean is_visible) {
-        playerList.setVisible(player.getName(), is_visible);
-    }
-    /**
-     * Test if player is visible
-     * @return true if visible, false if not
-     */
-    public boolean getPlayerVisbility(Player player) {
-        return playerList.isVisiblePlayer(player);
-    }
-    /**
-     * Post message from player to web
-     * @param player - player
-     * @param message - message text
-     */
-    public void postPlayerMessageToWeb(Player player, String message) {
-        if(mapManager != null)
-            mapManager.pushUpdate(new Client.ChatMessage("player", "", player.getDisplayName(), message, player.getName()));
-    }
-    /**
-     * Post join/quit message for player to web
-     * @param player - player
-     * @param isjoin - if true, join message; if false, quit message
-     */
-    public void postPlayerJoinQuitToWeb(Player player, boolean isjoin) {
-        if((mapManager != null) && (playerList != null) && (playerList.isVisiblePlayer(player))) {
-            if(isjoin)
-                mapManager.pushUpdate(new Client.PlayerJoinMessage(player.getDisplayName(), player.getName()));
-            else
-                mapManager.pushUpdate(new Client.PlayerQuitMessage(player.getDisplayName(), player.getName()));
-        }
     }
     /**
      * Get list of IDs seen on give IP (most recent to least recent)
@@ -1937,26 +1187,20 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
 
-    @Override
     public void setPlayerVisiblity(String player, boolean is_visible) {
-        // TODO Auto-generated method stub
-        
+        playerList.setVisible(player, is_visible);
     }
 
-    @Override
     public boolean getPlayerVisbility(String player) {
-        // TODO Auto-generated method stub
-        return false;
+        return playerList.isVisiblePlayer(player);
     }
 
-    @Override
     public void postPlayerMessageToWeb(String playerid, String playerdisplay, String message) {
         if(playerdisplay == null) playerdisplay = playerid;
         if(mapManager != null)
             mapManager.pushUpdate(new Client.ChatMessage("player", "", playerid, message, playerdisplay));
     }
 
-    @Override
     public void postPlayerJoinQuitToWeb(String playerid, String playerdisplay, boolean isjoin) {
         if(playerdisplay == null) playerdisplay = playerid;
         if((mapManager != null) && (playerList != null) && (playerList.isVisiblePlayer(playerid))) {
@@ -1967,24 +1211,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
 
-    @Override
     public String getDynmapCoreVersion() {
         return version;
     }
 
-    @Override
-    public String getDynmapVersion() {
-        return version;
-    }
-
-    @Override
     public int triggerRenderOfBlock(String wid, int x, int y, int z) {
         if(mapManager != null)
             mapManager.touch(wid, x, y, z, "api");
         return 0;
     }
     
-    @Override
     public int triggerRenderOfVolume(String wid, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
         if(mapManager != null) {
             if((minx == maxx) && (miny == maxy) && (minz == maxz))
@@ -1993,9 +1229,19 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 mapManager.touchVolume(wid, minx, miny, minz, maxx, maxy, maxz, "api");
         }
         return 0;
+    }    
+
+    public boolean isTrigger(String s) {
+        return enabledTriggers.contains(s);
     }
     
-    private DynmapLocation toLoc(Location l) {
-        return new DynmapLocation(l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
-    }    
+    public DynmapWorld getWorld(String wid) {
+        if(mapManager != null)
+            return mapManager.getWorld(wid);
+        return null;
+    }
+    /* Called by plugin when world loaded */
+    public boolean processWorldLoad(DynmapWorld w) {
+        return mapManager.activateWorld(w);
+    }
 }

@@ -5,6 +5,7 @@ import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
@@ -19,9 +20,9 @@ public class DefaultHDShader implements HDShader {
     }
     protected BiomeColorOption biomecolored = BiomeColorOption.NONE; /* Use biome for coloring */
     
-    public DefaultHDShader(ConfigurationNode configuration) {
+    public DefaultHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
-        colorScheme = ColorScheme.getScheme(configuration.getString("colorscheme", "default"));
+        colorScheme = ColorScheme.getScheme(core, configuration.getString("colorscheme", "default"));
         transparency = configuration.getBoolean("transparency", true);  /* Default on */
         String biomeopt = configuration.getString("biomecolored", "none");
         if(biomeopt.equals("biome")) {

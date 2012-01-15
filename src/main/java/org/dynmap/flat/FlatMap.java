@@ -14,8 +14,9 @@ import org.dynmap.Color;
 import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
-import org.dynmap.DynmapPlugin.CompassMode;
+import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;
 import org.dynmap.MapTile;
@@ -42,11 +43,11 @@ public class FlatMap extends MapType {
     private Texture textured = Texture.NONE;
     private boolean isbigmap;
     
-    public FlatMap(ConfigurationNode configuration) {
+    public FlatMap(DynmapCore core, ConfigurationNode configuration) {
         this.configuration = configuration;
         name = configuration.getString("name", null);
         prefix = configuration.getString("prefix", name);
-        colorScheme = ColorScheme.getScheme((String) configuration.get("colorscheme"));
+        colorScheme = ColorScheme.getScheme(core, (String) configuration.get("colorscheme"));
         Object o = configuration.get("maximumheight");
         if (o != null) {
             maximumHeight = Integer.parseInt(String.valueOf(o));

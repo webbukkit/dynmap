@@ -8,18 +8,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Event;
 import org.json.simple.JSONObject;
 
 public class ClientConfigurationServlet extends HttpServlet {
     private static final long serialVersionUID = 9106801553080522469L;
-    private DynmapPlugin plugin;
+    private DynmapCore plugin;
     private byte[] cachedConfiguration = null;
     private int cached_config_hashcode = 0;
 
-    public ClientConfigurationServlet(DynmapPlugin plugin) {
+    public ClientConfigurationServlet(DynmapCore plugin) {
         this.plugin = plugin;
         plugin.events.addListener("worldactivated", new Event.Listener<DynmapWorld>() {
             @Override

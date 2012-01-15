@@ -1,17 +1,10 @@
 package org.dynmap;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Type;
-import org.bukkit.event.player.PlayerBedLeaveEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.SpawnChangeEvent;
-import org.bukkit.event.world.WorldListener;
-import org.bukkit.event.world.WorldLoadEvent;
+import org.dynmap.common.DynmapListenerManager;
+import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.DynmapListenerManager.WorldEventListener;
+import org.dynmap.common.DynmapListenerManager.PlayerEventListener;
+import org.dynmap.common.DynmapPlayer;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
@@ -30,23 +23,23 @@ public class MarkersComponent extends ClientComponent {
     private MarkerIcon offlineicon;
     private MarkerSet spawnbedset;
     private MarkerIcon spawnbedicon;
-    
+    private String spawnbedformat;
     private static final String OFFLINE_PLAYERS_SETID = "offline_players";
     private static final String PLAYER_SPAWN_BED_SETID = "spawn_beds";
     
-    public MarkersComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
-        super(plugin, configuration);
+    public MarkersComponent(final DynmapCore core, ConfigurationNode configuration) {
+        super(core, configuration);
         /* Register API with plugin, if needed */
-        if(plugin.markerAPIInitialized()) {
-            api = (MarkerAPIImpl)plugin.getMarkerAPI();
+        if(core.markerAPIInitialized()) {
+            api = (MarkerAPIImpl)core.getMarkerAPI();
         }
         else {
-            api = MarkerAPIImpl.initializeMarkerAPI(plugin);
-            plugin.registerMarkerAPI(api);
+            api = MarkerAPIImpl.initializeMarkerAPI(core);
+            core.registerMarkerAPI(api);
         }
         /* If configuration has enabled sign support, prime it too */
         if(configuration.getBoolean("enablesigns", false)) {
-            signmgr = MarkerSignManager.initializeSignManager(plugin);
+            signmgr = MarkerSignManager.initializeSignManager(core);
         }
         /* If we're posting spawn point markers, initialize and add world listener */
         if(configuration.getBoolean("showspawn", false)) {
@@ -56,27 +49,24 @@ public class MarkersComponent extends ClientComponent {
             if(spawnicon == null) {
                 spawnicon = api.getMarkerIcon(MarkerIcon.WORLD);
             }
-            WorldListener wl = new WorldListener() {
-                public void onWorldLoad(WorldLoadEvent event) {
-                    World w = event.getWorld(); /* Get the world */
-                    Location loc = w.getSpawnLocation();    /* Get location of spawn */
+            /* Add listener for world loads */
+            WorldEventListener wel = new WorldEventListener() {
+                @Override
+                public void worldEvent(DynmapWorld w) {
+                    DynmapLocation loc = w.getSpawnLocation();    /* Get location of spawn */
                     if(loc != null)
-                        addUpdateWorld(w, new DynmapLocation(w.getName(), loc.getX(), loc.getY(), loc.getZ()));
-                }
-                public void onSpawnChange(SpawnChangeEvent event) {
-                    World w = event.getWorld(); /* Get the world */
-                    Location loc = w.getSpawnLocation();    /* Get location of spawn */
-                    if(loc != null)
-                        addUpdateWorld(w, new DynmapLocation(w.getName(), loc.getX(), loc.getY(), loc.getZ()));
+                        addUpdateWorld(w, loc);
                 }
             };
-            plugin.registerEvent(org.bukkit.event.Event.Type.WORLD_LOAD, wl);
-            plugin.registerEvent(org.bukkit.event.Event.Type.SPAWN_CHANGE, wl);
+            core.listenerManager.addListener(EventType.WORLD_LOAD, wel);
+            /* Add listener for spawn changes */
+            core.listenerManager.addListener(EventType.WORLD_SPAWN_CHANGE, wel);
+            
             /* Initialize already loaded worlds */
-            for(DynmapWorld w : plugin.getMapManager().getWorlds()) {
+            for(DynmapWorld w : core.getMapManager().getWorlds()) {
                 DynmapLocation loc = w.getSpawnLocation();
                 if(loc != null)
-                    addUpdateWorld(w.getWorld(), loc);
+                    addUpdateWorld(w, loc);
             }
         }
         /* If showing offline players as markers */
@@ -92,32 +82,30 @@ public class MarkersComponent extends ClientComponent {
             offlineicon = api.getMarkerIcon(configuration.getString("offlineicon", "offlineuser"));
             
             /* Add listener for players coming and going */
-            PlayerListener pl = new PlayerListener() {
+            core.listenerManager.addListener(EventType.PLAYER_JOIN, new PlayerEventListener() {
                 @Override
-                public void onPlayerJoin(PlayerJoinEvent event) {
-                    Player p = event.getPlayer();
+                public void playerEvent(DynmapPlayer p) {
                     Marker m = offlineset.findMarker(p.getName());
                     if(m != null) {
                         m.deleteMarker();
                     }
                 }
+            });
+            core.listenerManager.addListener(EventType.PLAYER_QUIT, new PlayerEventListener() {
                 @Override
-                public void onPlayerQuit(PlayerQuitEvent event) {
-                    Player p = event.getPlayer();
-                    Marker m = offlineset.findMarker(p.getName());
+                public void playerEvent(DynmapPlayer p) {
+                    String pname = p.getName();
+                    Marker m = offlineset.findMarker(pname);
                     if(m != null) {
                         m.deleteMarker();
                     }
-                    if(plugin.playerList.isVisiblePlayer(p)) {
-                        Location loc = p.getLocation();
-                        m = offlineset.createMarker(p.getName(), ChatColor.stripColor(p.getDisplayName()), false,
-                                                loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(),
-                                                offlineicon, true);
+                    if(core.playerList.isVisiblePlayer(pname)) {
+                        DynmapLocation loc = p.getLocation();
+                        m = offlineset.createMarker(p.getName(), core.getServer().stripChatColor(p.getDisplayName()), false,
+                                                loc.world, loc.x, loc.y, loc.z, offlineicon, true);
                     }
                 }
-            };
-            plugin.registerEvent(Type.PLAYER_JOIN, pl);
-            plugin.registerEvent(Type.PLAYER_QUIT, pl);
+            });
         }
         else {
             /* Make set, if needed */
@@ -137,53 +125,34 @@ public class MarkersComponent extends ClientComponent {
             spawnbedset.setMinZoom(configuration.getInteger("spawnbedminzoom", 0));
             
             spawnbedicon = api.getMarkerIcon(configuration.getString("spawnbedicon", "bed"));
-            final String spawnbedformat = configuration.getString("spawnbedformat", "%name%'s bed");
+            spawnbedformat = configuration.getString("spawnbedformat", "%name%'s bed");
             
             /* Add listener for players coming and going */
-            PlayerListener pl = new PlayerListener() {
-                private void updatePlayer(Player p) {
-                    Location bl = p.getBedSpawnLocation();
-                    Marker m = spawnbedset.findMarker(p.getName()+"_bed");
-                    if(bl == null) {    /* No bed location */
-                        if(m != null) {
-                            m.deleteMarker();
-                        }
-                    }
-                    else {
-                        if(m != null)
-                            m.setLocation(bl.getWorld().getName(), bl.getX(), bl.getY(), bl.getZ());
-                        else
-                            m = spawnbedset.createMarker(p.getName()+"_bed", spawnbedformat.replace("%name%", ChatColor.stripColor(p.getDisplayName())), false,
-                                    bl.getWorld().getName(), bl.getX(), bl.getY(), bl.getZ(),
-                                    spawnbedicon, true);
-                    }
-                }
+            core.listenerManager.addListener(EventType.PLAYER_JOIN, new PlayerEventListener() {
                 @Override
-                public void onPlayerJoin(PlayerJoinEvent event) {
-                    Player p = event.getPlayer();
+                public void playerEvent(DynmapPlayer p) {                    
                     updatePlayer(p);
                 }
+            });
+            core.listenerManager.addListener(EventType.PLAYER_QUIT, new PlayerEventListener() {
                 @Override
-                public void onPlayerBedLeave(PlayerBedLeaveEvent event) {
-                    final Player p = event.getPlayer();
-                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                        public void run() {
-                            updatePlayer(p);
-                        }
-                    });
-                }
-                @Override
-                public void onPlayerQuit(PlayerQuitEvent event) {
-                    Player p = event.getPlayer();
+                public void playerEvent(DynmapPlayer p) {                    
                     Marker m = spawnbedset.findMarker(p.getName()+"_bed");
                     if(m != null) {
                         m.deleteMarker();
                     }
                 }
-            };
-            plugin.registerEvent(Type.PLAYER_JOIN, pl);
-            plugin.registerEvent(Type.PLAYER_QUIT, pl);
-            plugin.registerEvent(Type.PLAYER_BED_LEAVE, pl);
+            });
+            core.listenerManager.addListener(EventType.PLAYER_BED_LEAVE, new PlayerEventListener() {
+                @Override
+                public void playerEvent(final DynmapPlayer p) {                    
+                    core.getServer().scheduleServerTask(new Runnable() {
+                        public void run() {
+                            updatePlayer(p);
+                        }
+                    }, 0);
+                }
+            });
         }
         else {
             /* Make set, if needed */
@@ -194,7 +163,26 @@ public class MarkersComponent extends ClientComponent {
         }
     }
     
-    private void addUpdateWorld(World w, DynmapLocation loc) {
+    private void updatePlayer(DynmapPlayer p) {
+        DynmapLocation bl = p.getBedSpawnLocation();
+        Marker m = spawnbedset.findMarker(p.getName()+"_bed");
+        if(bl == null) {    /* No bed location */
+            if(m != null) {
+                m.deleteMarker();
+            }
+        }
+        else {
+            if(m != null)
+                m.setLocation(bl.world, bl.x, bl.y, bl.z);
+            else
+                m = spawnbedset.createMarker(p.getName()+"_bed", spawnbedformat.replace("%name%", core.getServer().stripChatColor(p.getDisplayName())), false,
+                        bl.world, bl.x, bl.y, bl.z,
+                        spawnbedicon, true);
+        }
+    }
+
+    
+    private void addUpdateWorld(DynmapWorld w, DynmapLocation loc) {
         MarkerSet ms = api.getMarkerSet(MarkerSet.DEFAULT);
         if(ms != null) {
             String spawnid = "_spawn_" + w.getName();
@@ -212,7 +200,7 @@ public class MarkersComponent extends ClientComponent {
     @Override
     public void dispose() {
         if(signmgr != null) {
-            MarkerSignManager.terminateSignManager(this.plugin);
+            MarkerSignManager.terminateSignManager(this.core);
             signmgr = null;
         }
         /* Don't unregister API - other plugins might be using it, and we want to keep non-persistent markers */

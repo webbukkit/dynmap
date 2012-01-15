@@ -9,6 +9,7 @@ import java.util.List;
 import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
@@ -36,7 +37,7 @@ public class HDMap extends MapType {
     public static final String IMGFORMAT_JPG = "jpg";
     
     
-    public HDMap(ConfigurationNode configuration) {
+    public HDMap(DynmapCore core, ConfigurationNode configuration) {
         name = configuration.getString("name", null);
         if(name == null) {
             Log.severe("HDMap missing required attribute 'name' - disabled");

@@ -2,14 +2,15 @@ package org.dynmap.kzedmap;
 
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
 
 public class CaveTileRenderer extends DefaultTileRenderer {
 	private boolean iflit;
-    public CaveTileRenderer(ConfigurationNode configuration) {
-        super(configuration);
+    public CaveTileRenderer(DynmapCore core, ConfigurationNode configuration) {
+        super(core, configuration);
         iflit = configuration.getBoolean("onlyiflit", false);
     }
 

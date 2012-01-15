@@ -3,18 +3,17 @@ package org.dynmap;
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
 
-import org.bukkit.Location;
 import org.dynmap.Event.Listener;
 import org.json.simple.JSONObject;
 
 public class ClientConfigurationComponent extends Component {
-    public ClientConfigurationComponent(final DynmapPlugin plugin, ConfigurationNode configuration) {
-        super(plugin, configuration);
-        plugin.events.<JSONObject>addListener("buildclientconfiguration", new Listener<JSONObject>() {
+    public ClientConfigurationComponent(final DynmapCore core, ConfigurationNode configuration) {
+        super(core, configuration);
+        core.events.<JSONObject>addListener("buildclientconfiguration", new Listener<JSONObject>() {
             @Override
             public void triggered(JSONObject t) {
-                ConfigurationNode c = plugin.configuration;
-                s(t, "confighash", plugin.getConfigHashcode());
+                ConfigurationNode c = core.configuration;
+                s(t, "confighash", core.getConfigHashcode());
                 s(t, "updaterate", c.getFloat("updaterate", 1.0f));
                 s(t, "showplayerfacesinmenu", c.getBoolean("showplayerfacesinmenu", true));
                 s(t, "joinmessage", c.getString("joinmessage", "%playername% joined"));
@@ -23,11 +22,11 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "webprefix", unescapeString(c.getString("webprefix", "[WEB] ")));
                 s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
                 s(t, "sidebaropened", c.getString("sidebaropened", "false"));
-                s(t, "dynmapversion", plugin.getDescription().getVersion());
+                s(t, "dynmapversion", core.getDynmapCoreVersion());
                 s(t, "cyrillic", c.getBoolean("cyrillic-support", false));
                 s(t, "showlayercontrol", c.getString("showlayercontrol", "true"));
                 s(t, "grayplayerswhenhidden", c.getBoolean("grayplayerswhenhidden", true));
-                String sn = plugin.getServer().getServerName();
+                String sn = core.getServer().getServerName();
                 if(sn.equals("Unknown Server"))
                     sn = "Minecraft Dynamic Map";
                 s(t, "title", c.getString("webpage-title", sn));
@@ -36,7 +35,7 @@ public class ClientConfigurationComponent extends Component {
                 
                 DynmapWorld defaultWorld = null;
                 String defmap = null;
-                for(DynmapWorld world : plugin.mapManager.getWorlds()) {
+                for(DynmapWorld world : core.mapManager.getWorlds()) {
                     if (defaultWorld == null) defaultWorld = world;
                     ConfigurationNode wn = world.configuration;
                     JSONObject wo = new JSONObject();
