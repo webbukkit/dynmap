@@ -1,0 +1,3 @@
+version: "${project.version}-${BUILD_NUMBER}"
+authors: [FrozenCow, mikeprimm]
+

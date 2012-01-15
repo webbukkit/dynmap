@@ -35,6 +35,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
@@ -42,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class DynmapCore {
     private DynmapServerInterface server;
-    private String version = "0.30-dev";
+    private String version;
     private Server webServer = null;
     private ServletContextHandler webServerContextHandler = null;
     public MapManager mapManager = null;
@@ -222,6 +223,9 @@ public class DynmapCore {
     public boolean enableCore() {
         /* Start with clean events */
         events = new Events();
+
+        /* Load plugin version info */
+        loadVersion();
         
         /* Initialize confguration.txt if needed */
         File f = new File(dataDirectory, "configuration.txt");
@@ -337,7 +341,7 @@ public class DynmapCore {
         });
         
         /* Print version info */
-        Log.info("version " + version + " is enabled" );
+        Log.info("version " + plugin_ver + " is enabled - core version " + version );
 
         events.<Object>trigger("initialized", null);
         
@@ -1243,5 +1247,17 @@ public class DynmapCore {
     /* Called by plugin when world loaded */
     public boolean processWorldLoad(DynmapWorld w) {
         return mapManager.activateWorld(w);
+    }
+    
+    /* Load core version */
+    private void loadVersion() {
+        InputStream in = getClass().getResourceAsStream("/core.yml");
+        if(in == null)
+            return;
+        Yaml yaml = new Yaml();
+        @SuppressWarnings("unchecked")
+        Map<String,Object> val = (Map<String,Object>)yaml.load(in);
+        if(val != null)
+            version = (String)val.get("version");
     }
 }
