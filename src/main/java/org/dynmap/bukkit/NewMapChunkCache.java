@@ -406,10 +406,9 @@ public class NewMapChunkCache implements MapChunkCache {
             init = true;
         }
     }
-    @SuppressWarnings({ "rawtypes" })
-    public void setChunks(DynmapWorld dw, List<DynmapChunk> chunks) {
+    public void setChunks(BukkitWorld dw, List<DynmapChunk> chunks) {
         this.dw = dw;
-        this.w = ((BukkitWorld)dw).getWorld();
+        this.w = dw.getWorld();
         if((getworldhandle != null) && (craftworld == null)) {
             try {
                 craftworld = getworldhandle.invoke(w);   /* World.getHandle() */

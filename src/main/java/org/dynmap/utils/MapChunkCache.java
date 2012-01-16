@@ -1,7 +1,5 @@
 package org.dynmap.utils;
 
-import java.util.List;
-import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
 import org.dynmap.common.BiomeMap;
 
@@ -14,10 +12,6 @@ public interface MapChunkCache {
     public static class VisibilityLimit {
         public int x0, x1, z0, z1;
     }
-    /**
-     * Set chunks to load, and world to load from
-     */
-    void setChunks(DynmapWorld w, List<DynmapChunk> chunks);
     /**
      * Set chunk data type needed
      * @param blockdata - need block type and data for chunk
