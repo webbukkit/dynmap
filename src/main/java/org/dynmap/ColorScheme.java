@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.dynmap.common.BiomeMap;
 import org.dynmap.debug.Debug;
-import org.bukkit.block.Biome;
 
 public class ColorScheme {
     private static final HashMap<String, ColorScheme> cache = new HashMap<String, ColorScheme>();
@@ -58,7 +58,7 @@ public class ColorScheme {
         File colorSchemeFile = new File(getColorSchemeDirectory(core), name + ".txt");
         Color[][] colors = new Color[256][];
         Color[][][] datacolors = new Color[256][][];
-        Color[][] biomecolors = new Color[Biome.values().length][];
+        Color[][] biomecolors = new Color[BiomeMap.values().length][];
         Color[][] raincolors = new Color[64][];
         Color[][] tempcolors = new Color[64][];
         
@@ -101,7 +101,7 @@ public class ColorScheme {
                     if(idx >= 0) bio = bio.substring(0, idx);
                     isbiome = true;
                     id = -1;
-                    for(Biome b : Biome.values()) {
+                    for(BiomeMap b : BiomeMap.values()) {
                         if(b.toString().equalsIgnoreCase(bio)) {
                             id = b.ordinal();
                             break;

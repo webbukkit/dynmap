@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
 import org.dynmap.markers.MarkerIcon;
 

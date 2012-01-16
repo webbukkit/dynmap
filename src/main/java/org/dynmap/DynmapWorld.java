@@ -1,16 +1,10 @@
 package org.dynmap;
 
-import static org.dynmap.JSONUtils.s;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.World;
-import org.bukkit.Location;
-import org.dynmap.bukkit.NewMapChunkCache;
 import org.dynmap.debug.Debug;
-import org.dynmap.utils.BlockLightLevel;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
 import org.dynmap.utils.MapChunkCache;

@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Location;
-import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
@@ -263,7 +262,7 @@ class MarkerSetImpl implements MarkerSet {
         label = node.getString("label", setid); /* Get label */
         ConfigurationNode markernode = node.getNode("markers");
         if(markernode != null) {
-            for(String id : markernode.getKeys()) {
+            for(String id : markernode.keySet()) {
                 MarkerImpl marker = new MarkerImpl(id, this);   /* Make and load marker */
                 if(marker.loadPersistentData(markernode.getNode(id))) {
                     markers.put(id, marker);
@@ -276,7 +275,7 @@ class MarkerSetImpl implements MarkerSet {
         }
         ConfigurationNode areamarkernode = node.getNode("areas");
         if(areamarkernode != null) {
-            for(String id : areamarkernode.getKeys()) {
+            for(String id : areamarkernode.keySet()) {
                 AreaMarkerImpl marker = new AreaMarkerImpl(id, this);   /* Make and load marker */
                 if(marker.loadPersistentData(areamarkernode.getNode(id))) {
                     areamarkers.put(id, marker);
@@ -287,7 +286,7 @@ class MarkerSetImpl implements MarkerSet {
                 }
             }
         }
-        List<String> allowed = node.getStringList("allowedicons", null);
+        List<String> allowed = node.getList("allowedicons");
         if(allowed != null) {
             for(String id : allowed) {
                 MarkerIconImpl icon = MarkerAPIImpl.getMarkerIconImpl(id);
@@ -298,8 +297,8 @@ class MarkerSetImpl implements MarkerSet {
             }
         }
         hide_by_def = node.getBoolean("hide", false);
-        prio = node.getInt("layerprio", 0);
-        minzoom = node.getInt("minzoom", 0);
+        prio = node.getInteger("layerprio", 0);
+        minzoom = node.getInteger("minzoom", 0);
         ispersistent = true;
         
         return true;

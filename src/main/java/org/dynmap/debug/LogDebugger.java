@@ -1,11 +1,11 @@
 package org.dynmap.debug;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 
 public class LogDebugger implements Debugger {
-    public LogDebugger(JavaPlugin plugin, ConfigurationNode configuration) {
+    public LogDebugger(DynmapCore core, ConfigurationNode configuration) {
     }
 
     @Override

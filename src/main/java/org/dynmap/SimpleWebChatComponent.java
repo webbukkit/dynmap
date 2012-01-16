@@ -2,10 +2,6 @@ package org.dynmap;
 
 import static org.dynmap.JSONUtils.s;
 
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapListenerManager.ChatEventListener;
 import org.dynmap.common.DynmapListenerManager.EventType;

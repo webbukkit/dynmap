@@ -19,12 +19,12 @@ import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.block.Biome;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.MapIterator.BlockStep;
 import org.dynmap.utils.MapIterator;
@@ -1310,7 +1310,7 @@ public class TexturePack {
                 li = imgs[IMG_FOLIAGECOLOR];
                 break;
             case COLORMOD_WATERTONED:
-                if(ss.do_swamp_shading && (mapiter.getBiome() == Biome.SWAMPLAND))
+                if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND))
                     clrmult = 0xFFE0FF70;
                 break;
             case COLORMOD_BIRCHTONED:
@@ -1334,7 +1334,7 @@ public class TexturePack {
             else {
                 clrmult = biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
             }
-            if(ss.do_swamp_shading && (mapiter.getBiome() == Biome.SWAMPLAND))
+            if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND))
                 clrmult = (clrmult & 0xFF000000) | (((clrmult & 0x00FEFEFE) + 0x4E0E4E) / 2);
         }
         if((clrmult != -1) && (clrmult != 0)) {

@@ -72,4 +72,8 @@ public interface DynmapServerInterface {
      * @param msg
      */
     public void broadcastMessage(String msg);
+    /**
+     * Get Biome ID list
+     */
+    public String[] getBiomeIDs();
 }

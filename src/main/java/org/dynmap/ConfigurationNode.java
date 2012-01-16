@@ -1,5 +1,11 @@
 package org.dynmap;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,18 +14,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.nodes.CollectionNode;
+import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.SequenceNode;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.reader.UnicodeReader;
+import org.yaml.snakeyaml.representer.Represent;
+import org.yaml.snakeyaml.representer.Representer;
+
 public class ConfigurationNode implements Map<String, Object> {
     public Map<String, Object> entries;
+    private File f;
+    private Yaml yaml;
     
     public ConfigurationNode() {
         entries = new HashMap<String, Object>();
     }
-    
-    public ConfigurationNode(org.bukkit.util.config.ConfigurationNode node) {
-        entries = new HashMap<String, Object>();
-        for(String key : node.getKeys(null)) {
-            entries.put(key, node.getProperty(key));
+
+    private void initparse() {
+        if(yaml == null) {
+            DumperOptions options = new DumperOptions();
+
+            options.setIndent(4);
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+            yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
         }
+    }
+    @SuppressWarnings("unchecked")
+    public ConfigurationNode(File f) {
+        this.f = f;
+        entries = new HashMap<String, Object>();
     }
     
     public ConfigurationNode(Map<String, Object> map) {
@@ -29,6 +60,71 @@ public class ConfigurationNode implements Map<String, Object> {
         entries = map;
     }
     
+    public ConfigurationNode(InputStream in) {
+        load(in);
+    }
+
+    public boolean load(InputStream in) {
+        initparse();
+        
+        Object o = yaml.load(new UnicodeReader(in));
+        if((o != null) && (o instanceof Map))
+            entries = (Map<String, Object>)o;
+        return (entries != null);
+    }
+    
+    public boolean load() {
+        initparse();
+
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(f);
+            Object o = yaml.load(new UnicodeReader(fis));
+            if((o != null) && (o instanceof Map))
+                entries = (Map<String, Object>)o;
+            fis.close();
+        } catch(IOException iox) {
+            Log.severe("Error reading " + f.getPath());
+            return false;
+        } finally {
+            if(fis != null) {
+                try { fis.close(); } catch (IOException x) {}
+            }
+        }
+        return (entries != null);
+    }
+
+    public boolean save() {
+        return save(f);
+    }
+    
+    public boolean save(File file) {
+        initparse();
+
+        FileOutputStream stream = null;
+
+        File parent = file.getParentFile();
+
+        if (parent != null) {
+            parent.mkdirs();
+        }
+
+        try {
+            stream = new FileOutputStream(file);
+            OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+            yaml.dump(entries, writer);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            try {
+                if (stream != null) {
+                    stream.close();
+                }
+            } catch (IOException e) {}
+        }
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     public Object getObject(String path) {
         if (path.isEmpty())
@@ -132,6 +228,10 @@ public class ConfigurationNode implements Map<String, Object> {
                 return new ArrayList<T>();
             }
         }
+    }
+
+    public List<Map<String,Object>> getMapList(String path) {
+        return getList(path);
     }
     
     public ConfigurationNode getNode(String path) {
@@ -282,4 +382,43 @@ public class ConfigurationNode implements Map<String, Object> {
     public Set<java.util.Map.Entry<String, Object>> entrySet() {
         return entries.entrySet();
     }
+    
+    private class EmptyNullRepresenter extends Representer {
+
+        public EmptyNullRepresenter() {
+            super();
+            this.nullRepresenter = new EmptyRepresentNull();
+        }
+
+        protected class EmptyRepresentNull implements Represent {
+            public Node representData(Object data) {
+                return representScalar(Tag.NULL, ""); // Changed "null" to "" so as to avoid writing nulls
+            }
+        }
+
+        // Code borrowed from snakeyaml (http://code.google.com/p/snakeyaml/source/browse/src/test/java/org/yaml/snakeyaml/issues/issue60/SkipBeanTest.java)
+        @Override
+        protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue, Tag customTag) {
+            NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+            Node valueNode = tuple.getValueNode();
+            if (valueNode instanceof CollectionNode) {
+                // Removed null check
+                if (Tag.SEQ.equals(valueNode.getTag())) {
+                    SequenceNode seq = (SequenceNode) valueNode;
+                    if (seq.getValue().isEmpty()) {
+                        return null; // skip empty lists
+                    }
+                }
+                if (Tag.MAP.equals(valueNode.getTag())) {
+                    MappingNode seq = (MappingNode) valueNode;
+                    if (seq.getValue().isEmpty()) {
+                        return null; // skip empty maps
+                    }
+                }
+            }
+            return tuple;
+        }
+        // End of borrowed code
+    }
+
 }

@@ -1,4 +1,4 @@
-package org.dynmap.permissions;
+package org.dynmap.bukkit.permissions;
 
 import java.util.HashSet;
 

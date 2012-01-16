@@ -32,10 +32,9 @@ public class HDMapManager {
         if(!core.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
             return;
         }
-        org.bukkit.util.config.Configuration bukkitShaderConfig = new org.bukkit.util.config.Configuration(f);
-        bukkitShaderConfig.load();
-        ConfigurationNode shadercfg = new ConfigurationNode(bukkitShaderConfig);
-
+        ConfigurationNode shadercfg = new ConfigurationNode(f);
+        shadercfg.load();
+        
         for(HDShader shader : shadercfg.<HDShader>createInstances("shaders", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
             if(shader.getName() == null) continue;
             shaders.put(shader.getName(), shader);
@@ -44,9 +43,8 @@ public class HDMapManager {
         f = new File(core.getDataFolder(), "custom-shaders.txt");
         core.createDefaultFileFromResource("/custom-shaders.txt", f);
         if(f.exists()) {
-            bukkitShaderConfig = new org.bukkit.util.config.Configuration(f);
-            bukkitShaderConfig.load();
-            ConfigurationNode customshadercfg = new ConfigurationNode(bukkitShaderConfig);
+            ConfigurationNode customshadercfg = new ConfigurationNode(f);
+            customshadercfg.load();
             for(HDShader shader : customshadercfg.<HDShader>createInstances("shaders", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
                 if(shader.getName() == null) continue;
                 shaders.put(shader.getName(), shader);
@@ -63,9 +61,8 @@ public class HDMapManager {
         if(!core.updateUsingDefaultResource("/perspectives.txt", f, "perspectives")) {
             return;
         }
-        org.bukkit.util.config.Configuration bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(f);
-        bukkitPerspectiveConfig.load();
-        ConfigurationNode perspectivecfg = new ConfigurationNode(bukkitPerspectiveConfig);
+        ConfigurationNode perspectivecfg = new ConfigurationNode(f);
+        perspectivecfg.load();
         for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
             if(perspective.getName() == null) continue;
             perspectives.put(perspective.getName(), perspective);
@@ -74,9 +71,8 @@ public class HDMapManager {
         f = new File(core.getDataFolder(), "custom-perspectives.txt");
         core.createDefaultFileFromResource("/custom-perspectives.txt", f);
         if(f.exists()) {
-            bukkitPerspectiveConfig = new org.bukkit.util.config.Configuration(f);
-            bukkitPerspectiveConfig.load();
-            perspectivecfg = new ConfigurationNode(bukkitPerspectiveConfig);
+            perspectivecfg = new ConfigurationNode(f);
+            perspectivecfg.load();
             for(HDPerspective perspective : perspectivecfg.<HDPerspective>createInstances("perspectives", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
                 if(perspective.getName() == null) continue;
                 perspectives.put(perspective.getName(), perspective);
@@ -91,9 +87,8 @@ public class HDMapManager {
         if(!core.updateUsingDefaultResource("/lightings.txt", f, "lightings")) {
             return;
         }
-        org.bukkit.util.config.Configuration bukkitLightingsConfig = new org.bukkit.util.config.Configuration(f);
-        bukkitLightingsConfig.load();
-        ConfigurationNode lightingcfg = new ConfigurationNode(bukkitLightingsConfig);
+        ConfigurationNode lightingcfg = new ConfigurationNode(f);
+        lightingcfg.load();
 
         for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
             if(lighting.getName() == null) continue;
@@ -103,9 +98,8 @@ public class HDMapManager {
         f = new File(core.getDataFolder(), "custom-lightings.txt");
         core.createDefaultFileFromResource("/custom-lightings.txt", f);
         if(f.exists()) {
-            bukkitLightingsConfig = new org.bukkit.util.config.Configuration(f);
-            bukkitLightingsConfig.load();
-            lightingcfg = new ConfigurationNode(bukkitLightingsConfig);
+            lightingcfg = new ConfigurationNode(f);
+            lightingcfg.load();
             for(HDLighting lighting : lightingcfg.<HDLighting>createInstances("lightings", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
                 if(lighting.getName() == null) continue;
                 lightings.put(lighting.getName(), lighting);

@@ -3,9 +3,9 @@ package org.dynmap;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.bukkit.ChatColor;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONStreamAware;
+import org.dynmap.common.DynmapChatColor;
 
 public class Client {
     public static class Update implements JSONAware, JSONStreamAware {
@@ -33,7 +33,7 @@ public class Client {
         public ChatMessage(String source, String channel, String playerName, String message, String playeraccount) {
             this.source = source;
             this.playerName = Client.stripColor(playerName);
-            this.message = ChatColor.stripColor(message);
+            this.message = DynmapChatColor.stripColor(message);
             this.account = playeraccount;
             this.channel = channel;
         }
@@ -142,7 +142,7 @@ public class Client {
     }
 
     public static String stripColor(String s) {
-        s = ChatColor.stripColor(s);    /* Strip standard color encoding */
+        s = DynmapChatColor.stripColor(s);    /* Strip standard color encoding */
         /* Handle Essentials nickname encoding too */
         int idx = 0;
         while((idx = s.indexOf('&', idx)) >= 0) {

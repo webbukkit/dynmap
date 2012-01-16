@@ -18,10 +18,9 @@ import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
-import org.dynmap.utils.MapChunkCache.HiddenChunkStyle;
-import org.dynmap.utils.MapChunkCache.VisibilityLimit;
 import org.dynmap.utils.MapIterator.BlockStep;
 
 /**
@@ -41,6 +40,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private static final int MAX_TICKLIST = 20000;
 
     private World w;
+    private DynmapWorld dw;
     private Object craftworld;
     private List<DynmapChunk> chunks;
     private ListIterator<DynmapChunk> iterator;
@@ -54,7 +54,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean do_save = false;
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    private Biome[][] snapbiomes;   /* Biome cache - getBiome() is expensive */
+    private BiomeMap[][] snapbiomes;   /* Biome cache - getBiome() is expensive */
     private TreeSet<?> ourticklist;
     
     private int chunks_read;    /* Number of chunks actually loaded */
@@ -66,6 +66,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
+    private static BiomeMap[] biome_to_bmap;
+    
     /**
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
@@ -114,15 +116,17 @@ public class NewMapChunkCache implements MapChunkCache {
         public final int getBlockEmittedLight() {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
-        public final Biome getBiome() {
-            Biome[] b = snapbiomes[chunkindex];
+        public final BiomeMap getBiome() {
+            BiomeMap[] b = snapbiomes[chunkindex];
             if(b == null) {
-                b = snapbiomes[chunkindex] = new Biome[256];
+                b = snapbiomes[chunkindex] = new BiomeMap[256];
             }
             int off = bx + (bz << 4);
-            Biome bio = b[off];
+            BiomeMap bio = b[off];
             if(bio == null) {
-                bio = b[off] = snap.getBiome(bx, bz);
+                Biome bb = snap.getBiome(bx, bz);
+                if(bb != null)
+                    bio = b[off] = biome_to_bmap[bb.ordinal()];
             }
             return bio;
         }
@@ -403,8 +407,9 @@ public class NewMapChunkCache implements MapChunkCache {
         }
     }
     @SuppressWarnings({ "rawtypes" })
-    public void setChunks(World w, List<DynmapChunk> chunks) {
-        this.w = w;
+    public void setChunks(DynmapWorld dw, List<DynmapChunk> chunks) {
+        this.dw = dw;
+        this.w = ((BukkitWorld)dw).getWorld();
         if((getworldhandle != null) && (craftworld == null)) {
             try {
                 craftworld = getworldhandle.invoke(w);   /* World.getHandle() */
@@ -439,7 +444,7 @@ public class NewMapChunkCache implements MapChunkCache {
         }
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
-        snapbiomes = new Biome[x_dim * (z_max-z_min+1)][];
+        snapbiomes = new BiomeMap[x_dim * (z_max-z_min+1)][];
     }
 
     public int loadChunks(int max_to_load) {
@@ -634,9 +639,10 @@ public class NewMapChunkCache implements MapChunkCache {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
     }
-    public Biome getBiome(int x, int z) {
+    public BiomeMap getBiome(int x, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getBiome(x & 0xF, z & 0xF);
+        Biome b = ss.getBiome(x & 0xF, z & 0xF);
+        return (b != null)?biome_to_bmap[b.ordinal()]:null;
     }
     public double getRawBiomeTemperature(int x, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
@@ -727,8 +733,8 @@ public class NewMapChunkCache implements MapChunkCache {
         return true;
     }
     @Override
-    public World getWorld() {
-        return w;
+    public DynmapWorld getWorld() {
+        return dw;
     }
     @Override
     public int getChunksLoaded() {
@@ -766,5 +772,32 @@ public class NewMapChunkCache implements MapChunkCache {
             }
         }
         return isok;
+    }
+
+    static {
+        Biome[] b = Biome.values();
+        biome_to_bmap = new BiomeMap[b.length];
+        biome_to_bmap[Biome.RAINFOREST.ordinal()] = BiomeMap.RAINFOREST;
+        biome_to_bmap[Biome.SWAMPLAND.ordinal()] = BiomeMap.SWAMPLAND;
+        biome_to_bmap[Biome.SEASONAL_FOREST.ordinal()] = BiomeMap.SEASONAL_FOREST;
+        biome_to_bmap[Biome.FOREST.ordinal()] = BiomeMap.FOREST;
+        biome_to_bmap[Biome.SAVANNA.ordinal()] = BiomeMap.SAVANNA;
+        biome_to_bmap[Biome.SHRUBLAND.ordinal()] = BiomeMap.SHRUBLAND;
+        biome_to_bmap[Biome.TAIGA.ordinal()] = BiomeMap.TAIGA;
+        biome_to_bmap[Biome.DESERT.ordinal()] = BiomeMap.DESERT;
+        biome_to_bmap[Biome.PLAINS.ordinal()] = BiomeMap.PLAINS;
+        biome_to_bmap[Biome.ICE_DESERT.ordinal()] = BiomeMap.ICE_DESERT;
+        biome_to_bmap[Biome.TUNDRA.ordinal()] = BiomeMap.TUNDRA;
+        biome_to_bmap[Biome.HELL.ordinal()] = BiomeMap.HELL;
+        biome_to_bmap[Biome.SKY.ordinal()] = BiomeMap.SKY;
+        biome_to_bmap[Biome.OCEAN.ordinal()] = BiomeMap.OCEAN;
+        biome_to_bmap[Biome.RIVER.ordinal()] = BiomeMap.RIVER;
+        biome_to_bmap[Biome.EXTREME_HILLS.ordinal()] = BiomeMap.EXTREME_HILLS;
+        biome_to_bmap[Biome.FROZEN_OCEAN.ordinal()] = BiomeMap.FROZEN_OCEAN;
+        biome_to_bmap[Biome.FROZEN_RIVER.ordinal()] = BiomeMap.FROZEN_RIVER;
+        biome_to_bmap[Biome.ICE_PLAINS.ordinal()] = BiomeMap.ICE_PLAINS;
+        biome_to_bmap[Biome.ICE_MOUNTAINS.ordinal()] = BiomeMap.ICE_MOUNTAINS;
+        biome_to_bmap[Biome.MUSHROOM_ISLAND.ordinal()] = BiomeMap.MUSHROOM_ISLAND;
+        biome_to_bmap[Biome.MUSHROOM_SHORE.ordinal()] = BiomeMap.MUSHROOM_SHORE;
     }
 }

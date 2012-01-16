@@ -24,12 +24,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
+import org.dynmap.bukkit.SnapshotCache;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.debug.Debug;
 import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.utils.MapChunkCache;
-import org.dynmap.utils.SnapshotCache;
 import org.dynmap.utils.TileFlags;
 
 public class MapManager {
@@ -50,6 +50,8 @@ public class MapManager {
     
     private boolean pauseupdaterenders = false;
     private boolean pausefullrenders = false;
+    
+    private boolean did_start = false;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
@@ -975,9 +977,8 @@ public class MapManager {
         String wname = w.getName();
         File f = new File(core.getDataFolder(), wname + ".pending");
         if(f.exists()) {
-            org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
-            saved.load();
-            ConfigurationNode cn = new ConfigurationNode(saved);
+            ConfigurationNode cn = new ConfigurationNode(f);
+            cn.load();
             /* Get the saved tile definitions */
             List<ConfigurationNode> tiles = cn.getNodes("tiles");
             if(tiles != null) {
@@ -998,6 +999,9 @@ public class MapManager {
                 try {
                     FullWorldRenderState j = new FullWorldRenderState(job);
                     active_renders.put(wname, j);
+                    if(did_start)   /* Past initial start */
+                        scheduleDelayedJob(j, 5000);
+
                 } catch (Exception x) {
                     Log.info("Unable to restore render job for world '" + wname + "' - map configuration changed");
                 }
@@ -1012,7 +1016,7 @@ public class MapManager {
         for(DynmapWorld w : worlds) {
             boolean dosave = false;
             File f = new File(core.getDataFolder(), w.getName() + ".pending");
-            org.bukkit.util.config.Configuration saved = new org.bukkit.util.config.Configuration(f);
+            ConfigurationNode saved = new ConfigurationNode();
             ArrayList<ConfigurationNode> savedtiles = new ArrayList<ConfigurationNode>();
             for(MapTile tile : mt) {
                 if(tile.getDynmapWorld() != w) continue;
@@ -1022,18 +1026,18 @@ public class MapManager {
                 }
             }
             if(savedtiles.size() > 0) { /* Something to save? */
-                saved.setProperty("tiles", savedtiles);
+                saved.put("tiles", savedtiles);
                 dosave = true;
                 Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.getName());
             }
             FullWorldRenderState job = active_renders.get(w.getName());
             if(job != null) {
-                saved.setProperty("job", job.saveState());
+                saved.put("job", job.saveState());
                 dosave = true;
                 Log.info("Saved active render job in world '" + w.getName());
             }
             if(dosave) {
-                saved.save();
+                saved.save(f);
                 Log.info("Saved " + savedtiles.size() + " pending tile renders in world '" + w.getName());
             }
         }
@@ -1091,6 +1095,7 @@ public class MapManager {
             scheduleDelayedJob(job, 5000);
             Log.info("Resumed render starting on world '" + job.world.getName() + "'...");
         }
+        did_start = true;
     }
 
     public void stopRendering() {
@@ -1112,6 +1117,7 @@ public class MapManager {
             sscache.cleanup();
             sscache = null; 
         }
+        did_start = false;
     }
 
     public File getTileFile(MapTile tile) {

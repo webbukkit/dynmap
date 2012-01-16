@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapListenerManager.EventType;
@@ -37,16 +36,12 @@ import org.dynmap.web.FilterHandler;
 import org.dynmap.web.HandlerRouter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
 
 public class DynmapCore {
     private DynmapServerInterface server;
@@ -206,9 +201,8 @@ public class DynmapCore {
             /* If matches naming convention */
             if(tname.endsWith(".txt") && (!tname.startsWith(CUSTOM_PREFIX))) {
                 File tf = new File(templatedir, tname);
-                org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(tf);
-                cfg.load();
-                ConfigurationNode cn = new ConfigurationNode(cfg);
+                ConfigurationNode cn = new ConfigurationNode(tf);
+                cn.load();
                 /* Supplement existing values (don't replace), since configuration.txt is more custom than these */
                 mergeConfigurationBranch(cn, "templates", false, false);
             }
@@ -218,9 +212,8 @@ public class DynmapCore {
             /* If matches naming convention */
             if(tname.endsWith(".txt") && tname.startsWith(CUSTOM_PREFIX)) {
                 File tf = new File(templatedir, tname);
-                org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(tf);
-                cfg.load();
-                ConfigurationNode cn = new ConfigurationNode(cfg);
+                ConfigurationNode cn = new ConfigurationNode(tf);
+                cn.load();
                 /* This are overrides - replace even configuration.txt content */
                 mergeConfigurationBranch(cn, "templates", true, false);
             }
@@ -241,9 +234,8 @@ public class DynmapCore {
         }
         
         /* Load configuration.txt */
-        org.bukkit.util.config.Configuration bukkitConfiguration = new org.bukkit.util.config.Configuration(f);
-        bukkitConfiguration.load();
-        configuration = new ConfigurationNode(bukkitConfiguration);
+        configuration = new ConfigurationNode(f);
+        configuration.load();
 
         /* Add options to avoid 0.29 re-render (fixes very inconsistent with previous maps) */
         HDMapManager.usegeneratedtextures = configuration.getBoolean("use-generated-textures", false);
@@ -260,9 +252,8 @@ public class DynmapCore {
         if(!createDefaultFileFromResource("/worlds.txt", f)) {
             return false;
         }
-        org.bukkit.util.config.Configuration cfg = new org.bukkit.util.config.Configuration(f);
-        cfg.load();
-        ConfigurationNode cn = new ConfigurationNode(cfg);
+        ConfigurationNode cn = new ConfigurationNode(f);
+        cn.load();
         mergeConfigurationBranch(cn, "worlds", true, true);
 
         /* Now, process templates */
@@ -419,7 +410,9 @@ public class DynmapCore {
     
     public void loadWebserver() {
         webServer = new Server(new InetSocketAddress(configuration.getString("webserver-bindaddress", "0.0.0.0"), configuration.getInteger("webserver-port", 8123)));
-
+        webServer.setStopAtShutdown(true);
+        webServer.setGracefulShutdown(1000);
+        
         final boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
         int maxconnections = configuration.getInteger("max-sessions", 30);
         if(maxconnections < 2) maxconnections = 2;
@@ -498,6 +491,8 @@ public class DynmapCore {
         if (webServer != null) {
             try {
                 webServer.stop();
+                while(webServer.isStopping())
+                    Thread.sleep(100);
             } catch (Exception e) {
                 Log.severe("Failed to stop WebServer!", e);
             }
@@ -994,9 +989,10 @@ public class DynmapCore {
             return createDefaultFileFromResource(resourcename, deffile);
         }
         /* Load default from resource */
-        YamlConfiguration def_fc = YamlConfiguration.loadConfiguration(in);
+        ConfigurationNode def_fc = new ConfigurationNode(in);
         /* Load existing from file */
-        YamlConfiguration fc = YamlConfiguration.loadConfiguration(deffile);
+        ConfigurationNode fc = new ConfigurationNode(deffile);
+        fc.load();
         /* Now, get the list associated with the base node default */
         List<Map<String,Object>> existing = fc.getMapList(basenode);
         Set<String> existing_names = new HashSet<String>();
@@ -1025,13 +1021,8 @@ public class DynmapCore {
         }
         /* If we did update, save existing */
         if(did_update) {
-            try {
-                fc.set(basenode, existing);
-                fc.save(deffile);
-            } catch (IOException iox) {
-                Log.severe("Error saving migrated file - " + deffile.getPath());
-                return false;
-            }
+            fc.put(basenode, existing);
+            fc.save(deffile);
             Log.info("Updated file " + deffile.getPath());
         }
         return true;
@@ -1118,13 +1109,12 @@ public class DynmapCore {
         File f = new File(getDataFolder(), "ids-by-ip.txt");
         if(f.exists() == false)
             return;
-        YamlConfiguration fc = new YamlConfiguration();
+        ConfigurationNode fc = new ConfigurationNode(new File(getDataFolder(), "ids-by-ip.txt"));
         try {
-            fc.load(new File(getDataFolder(), "ids-by-ip.txt"));
+            fc.load();
             ids_by_ip.clear();
-            Map<String,Object> v = fc.getValues(false);
-            for(String k : v.keySet()) {
-                List<String> ids = fc.getStringList(k);
+            for(String k : fc.keySet()) {
+                List<String> ids = fc.getList(k);
                 if(ids != null) {
                     k = k.replace("_", ".");
                     ids_by_ip.put(k, new LinkedList<String>(ids));
@@ -1136,12 +1126,12 @@ public class DynmapCore {
     }
     private void saveIDsByIP() {
         File f = new File(getDataFolder(), "ids-by-ip.txt");
-        YamlConfiguration fc = new YamlConfiguration();
+        ConfigurationNode fc = new ConfigurationNode();
         for(String k : ids_by_ip.keySet()) {
             List<String> v = ids_by_ip.get(k);
             if(v != null) {
                 k = k.replace(".", "_");
-                fc.set(k, v);
+                fc.put(k, v);
             }
         }
         try {

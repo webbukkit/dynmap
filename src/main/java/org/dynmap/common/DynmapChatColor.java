@@ -1,9 +1,5 @@
 package org.dynmap.common;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 
 public enum DynmapChatColor {
     BLACK(0x0),
@@ -33,5 +29,11 @@ public enum DynmapChatColor {
     @Override
     public String toString() {
         return str;
+    }
+    public static String stripColor(final String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replaceAll("(?i)\u00A7[0-9A-F]", "");
     }
 }

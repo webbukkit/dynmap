@@ -9,7 +9,6 @@ import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.block.Biome;
 import org.dynmap.Client;
 import org.dynmap.Color;
 import org.dynmap.ColorScheme;
@@ -20,6 +19,7 @@ import org.dynmap.MapManager;
 import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.MapType.ImageFormat;
 import org.dynmap.TileHashManager;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.FileLockManager;
@@ -406,7 +406,7 @@ public class DefaultTileRenderer implements MapTileRenderer {
             MapIterator mapiter) {
         int lightlevel = 15;
         int lightlevel_day = 15;
-        Biome bio = null;
+        BiomeMap bio = null;
         double rain = 0.0;
         double temp = 0.0;
         result.setTransparent();

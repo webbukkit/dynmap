@@ -1,6 +1,6 @@
 package org.dynmap.utils;
 
-import org.bukkit.block.Biome;
+import org.dynmap.common.BiomeMap;
 
 /**
  * Iterator for traversing map chunk cache (base is for non-snapshot)
@@ -52,7 +52,7 @@ public interface MapIterator {
     /**
      * Get biome at coordinates
      */
-    public Biome getBiome();
+    public BiomeMap getBiome();
     /**
      * Get raw temperature data (0.0-1.0)
      */

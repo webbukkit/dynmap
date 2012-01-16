@@ -9,7 +9,6 @@ import org.bukkit.World;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
-import org.dynmap.utils.BlockLightLevel;
 import org.dynmap.utils.MapChunkCache;
 
 public class BukkitWorld extends DynmapWorld {
@@ -88,7 +87,11 @@ public class BukkitWorld extends DynmapWorld {
     @Override
     public MapChunkCache getChunkCache(List<DynmapChunk> chunks) {
         MapChunkCache c = new NewMapChunkCache();
-        c.setChunks(world, chunks);
+        c.setChunks(this, chunks);
         return c;
+    }
+    
+    public World getWorld() {
+        return world;
     }
 }

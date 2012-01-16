@@ -20,8 +20,7 @@ import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
-import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -454,7 +453,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
     private void doSaveMarkers() {
         if(api != null) {
-            Configuration conf = new Configuration(api.markerpersist);  /* Make configuration object */
+            ConfigurationNode conf = new ConfigurationNode(api.markerpersist);  /* Make configuration object */
             /* First, save icon definitions */
             HashMap<String, Object> icons = new HashMap<String,Object>();
             for(String id : api.markericons.keySet()) {
@@ -464,7 +463,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     icons.put(id, dat);
                 }
             }
-            conf.setProperty("icons", icons);
+            conf.put("icons", icons);
             /* Then, save persistent sets */
             HashMap<String, Object> sets = new HashMap<String, Object>();
             for(String id : api.markersets.keySet()) {
@@ -476,7 +475,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     }
                 }
             }
-            conf.setProperty("sets", sets);
+            conf.put("sets", sets);
             /* And shift old file file out */
             if(api.markerpersist_old.exists()) api.markerpersist_old.delete();
             if(api.markerpersist.exists()) api.markerpersist.renameTo(api.markerpersist_old);
@@ -500,23 +499,24 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
      * Load persistence
      */
     private boolean loadMarkers() {        
-        Configuration conf = new Configuration(api.markerpersist);  /* Make configuration object */
+        ConfigurationNode conf = new ConfigurationNode(api.markerpersist);  /* Make configuration object */
         conf.load();    /* Load persistence */
         /* Get icons */
-        Map<String,ConfigurationNode> icons = conf.getNodes("icons");
+        
+        ConfigurationNode icons = conf.getNode("icons");
         if(icons == null) return false;
         for(String id : icons.keySet()) {
             MarkerIconImpl ico = new MarkerIconImpl(id);
-            if(ico.loadPersistentData(icons.get(id))) {
+            if(ico.loadPersistentData(icons.getNode(id))) {
                 markericons.put(id, ico);
             }
         }
         /* Get marker sets */
-        Map<String,ConfigurationNode> sets = conf.getNodes("sets");
+        ConfigurationNode sets = conf.getNode("sets");
         if(sets != null) {
             for(String id: sets.keySet()) {
                 MarkerSetImpl set = new MarkerSetImpl(id);
-                if(set.loadPersistentData(sets.get(id))) {
+                if(set.loadPersistentData(sets.getNode(id))) {
                     markersets.put(id, set);
                 }
             }

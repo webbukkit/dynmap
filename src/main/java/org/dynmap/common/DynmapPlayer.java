@@ -2,7 +2,6 @@ package org.dynmap.common;
 
 import java.net.InetSocketAddress;
 
-import org.bukkit.Location;
 import org.dynmap.DynmapLocation;
 
 /**

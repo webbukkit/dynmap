@@ -57,15 +57,16 @@ import org.dynmap.DynmapWebChatEvent;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.bukkit.permissions.BukkitPermissions;
+import org.dynmap.bukkit.permissions.NijikokunPermissions;
+import org.dynmap.bukkit.permissions.OpPermissions;
+import org.dynmap.bukkit.permissions.PermissionProvider;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.markers.MarkerAPI;
-import org.dynmap.permissions.BukkitPermissions;
-import org.dynmap.permissions.NijikokunPermissions;
-import org.dynmap.permissions.OpPermissions;
-import org.dynmap.permissions.PermissionProvider;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapCore core;
@@ -217,6 +218,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public void broadcastMessage(String msg) {
             getServer().broadcastMessage(msg);
         }
+        @Override
+        public String[] getBiomeIDs() {
+            BiomeMap[] b = BiomeMap.values();
+            String[] bname = new String[b.length];
+            for(int i = 0; i < bname.length; i++)
+                bname[i] = b[i].toString();
+            return bname;
+        }
+
     }
     /**
      * Player access abstraction class

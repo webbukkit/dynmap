@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Location;
-import org.bukkit.util.config.ConfigurationNode;
+import org.dynmap.ConfigurationNode;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
@@ -89,8 +88,8 @@ class AreaMarkerImpl implements AreaMarker {
         markup = node.getBoolean("markup", false);
         ytop = node.getDouble("ytop", 64.0);
         ybottom = node.getDouble("ybottom", 64.0);
-        List<Double> xx = node.getDoubleList("x", null);
-        List<Double> zz = node.getDoubleList("z", null);
+        List<Double> xx = node.getList("x");
+        List<Double> zz = node.getList("z");
         corners.clear();
         if((xx != null) && (zz != null)) {
             for(int i = 0; (i < xx.size()) && (i < zz.size()); i++)
@@ -98,11 +97,11 @@ class AreaMarkerImpl implements AreaMarker {
         }
         world = node.getString("world", "world");
         desc = node.getString("desc", null);
-        lineweight = node.getInt("strokeWeight", 3);
+        lineweight = node.getInteger("strokeWeight", 3);
         lineopacity = node.getDouble("strokeOpacity", 0.8);
-        linecolor = node.getInt("strokeColor", 0xFF0000);
+        linecolor = node.getInteger("strokeColor", 0xFF0000);
         fillopacity = node.getDouble("fillOpacity", 0.35);
-        fillcolor = node.getInt("fillColor", 0xFF0000);
+        fillcolor = node.getInteger("fillColor", 0xFF0000);
         ispersistent = true;    /* Loaded from config, so must be */
         
         return true;

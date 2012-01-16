@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Material;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
 
@@ -43,26 +42,6 @@ public class HDBlockModels {
     
     private static HashMap<Integer, HDScaledBlockModels> scaled_models_by_scale = new HashMap<Integer, HDScaledBlockModels>();
     
-    /**
-     * Block definition - copy from other
-     */
-    public HDBlockModels(Material blocktype, int databits, HDBlockModels m) {
-        this.blockid = blocktype.getId();
-        this.databits = databits;
-        this.nativeres = m.nativeres;
-        this.blockflags = m.blockflags;
-    }
-    /**
-     * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
-     * @param blockid - block ID
-     * @param databits - bitmap of block data bits matching this model (bit N is set if data=N would match)
-     * @param nativeres - native subblocks per edge of cube (up to 64)
-     * @param blockflags - array of native^2 long integers representing volume of block (bit X of element (nativeres*Y+Z) is set if that subblock is filled)
-     *    if array is short, other elements area are assumed to be zero (fills from bottom of block up)
-     */
-    public HDBlockModels(Material blocktype, int databits, int nativeres, long[] blockflags) {
-        this(blocktype.getId(), databits, nativeres, blockflags);
-    }
     /**
      * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
      * @param blockid - block ID
