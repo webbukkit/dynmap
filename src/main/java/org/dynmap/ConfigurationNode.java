@@ -47,7 +47,7 @@ public class ConfigurationNode implements Map<String, Object> {
             yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
         }
     }
-    @SuppressWarnings("unchecked")
+
     public ConfigurationNode(File f) {
         this.f = f;
         entries = new HashMap<String, Object>();
@@ -64,6 +64,7 @@ public class ConfigurationNode implements Map<String, Object> {
         load(in);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean load(InputStream in) {
         initparse();
         
@@ -73,6 +74,7 @@ public class ConfigurationNode implements Map<String, Object> {
         return (entries != null);
     }
     
+    @SuppressWarnings("unchecked")
     public boolean load() {
         initparse();
 

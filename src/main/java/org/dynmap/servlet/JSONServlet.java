@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.simple.JSONAware;
 import org.json.simple.JSONStreamAware;
 
 public class JSONServlet {

@@ -1,6 +1,5 @@
 package org.dynmap.web;
 
-import org.dynmap.Log;
 import org.eclipse.jetty.http.PathMap;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;

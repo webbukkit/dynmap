@@ -29,6 +29,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
         });
 
         if (allowwebchat) {
+            @SuppressWarnings("serial")
             SendMessageServlet messageHandler = new SendMessageServlet() {{
                 maximumMessageInterval = (int)(webchatInterval * 1000);
                 spamMessage = "\""+spammessage+"\"";

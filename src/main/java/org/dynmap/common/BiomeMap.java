@@ -2,6 +2,7 @@ package org.dynmap.common;
 
 /* Generic biome mapping */
 public enum BiomeMap {
+    NULL,
     RAINFOREST,
     SWAMPLAND,
     SEASONAL_FOREST,

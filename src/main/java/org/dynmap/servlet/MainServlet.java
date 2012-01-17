@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dynmap.Log;
-
+@SuppressWarnings("serial")
 public class MainServlet extends HttpServlet {
     public static class Header {
         public String name;

@@ -13,7 +13,6 @@ public class BanIPFilter implements Filter {
     private HashSet<String> banned_ips = new HashSet<String>();
     private HashSet<String> banned_ips_notified = new HashSet<String>();
     private long last_loaded = 0;
-    private long lastmod = 0;
     private static final long BANNED_RELOAD_INTERVAL = 15000;	/* Every 15 seconds */
 
     public BanIPFilter(DynmapCore core) {

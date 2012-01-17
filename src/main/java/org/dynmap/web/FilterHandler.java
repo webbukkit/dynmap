@@ -1,11 +1,9 @@
 package org.dynmap.web;
 
-import org.dynmap.Log;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 public class FilterHandler extends AbstractHandler {
     private Handler handler;

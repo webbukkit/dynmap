@@ -57,8 +57,8 @@ public abstract class MapTile {
         String dat = node.getString("data");
         if((cn == null) || (dat == null)) return null;
         try {
-            Class cls = Class.forName(cn);
-            Constructor con = cls.getConstructor(DynmapWorld.class, String.class);
+            Class<?> cls = Class.forName(cn);
+            Constructor<?> con = cls.getConstructor(DynmapWorld.class, String.class);
             return (MapTile)con.newInstance(w, dat);
         } catch (ClassNotFoundException cnfx) {
         } catch (NoSuchMethodException nsmx) {

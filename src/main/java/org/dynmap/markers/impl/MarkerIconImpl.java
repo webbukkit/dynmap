@@ -1,14 +1,10 @@
 package org.dynmap.markers.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.dynmap.ConfigurationNode;
-import org.dynmap.Log;
 import org.dynmap.markers.MarkerIcon;
 
 class MarkerIconImpl implements MarkerIcon {

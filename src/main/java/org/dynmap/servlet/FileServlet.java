@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author BalusC
  * @link http://balusc.blogspot.com/2009/02/fileservlet-supporting-resume-and.html
  */
+@SuppressWarnings("serial")
 public class FileServlet extends HttpServlet {
 
     // Constants ----------------------------------------------------------------------------------

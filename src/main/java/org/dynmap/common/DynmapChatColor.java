@@ -19,11 +19,9 @@ public enum DynmapChatColor {
     YELLOW(0xE),
     WHITE(0xF);
 
-    private final int code;
     private final String str;
 
     private DynmapChatColor(final int code) {
-        this.code = code;
         this.str = String.format("\u00A7%x", code);
     }
     @Override

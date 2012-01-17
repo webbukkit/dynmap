@@ -23,6 +23,7 @@ public class SnapshotCache {
         boolean hashighesty;
     }
     
+    @SuppressWarnings("serial")
     public class CacheHashMap extends LinkedHashMap<String, CacheRec> {
         private int limit;
         private IdentityHashMap<WeakReference<ChunkSnapshot>, String> reverselookup;

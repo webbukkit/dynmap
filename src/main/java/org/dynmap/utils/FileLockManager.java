@@ -174,9 +174,9 @@ public class FileLockManager {
                 
             // Find a jpeg writer
             ImageWriter writer = null;
-            Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
+            Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpg");
             if (iter.hasNext()) {
-                writer = (ImageWriter)iter.next();
+                writer = iter.next();
             }
             if(writer == null) {
                 Log.severe("No JPEG ENCODER - Java VM does not support JPEG encoding");

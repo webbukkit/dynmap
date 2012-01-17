@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.dynmap.ConfigurationNode;
 import org.dynmap.markers.AreaMarker;
-import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 
@@ -58,8 +56,6 @@ class AreaMarkerImpl implements AreaMarker {
         for(int i = 0; i < x.length; i++) {
             this.corners.add(new Coord(x[i], z[i]));
         }
-        this.ytop = ytop;
-        this.ybottom = ybottom;
         this.world = world;
         this.desc = null;
         ispersistent = persistent;

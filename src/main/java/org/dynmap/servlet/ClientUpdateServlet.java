@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.dynmap.ClientUpdateEvent;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
 import org.dynmap.web.HttpField;
 import org.json.simple.JSONObject;
 
+@SuppressWarnings("serial")
 public class ClientUpdateServlet extends HttpServlet {
     private DynmapCore plugin;
     

@@ -15,7 +15,6 @@ import org.dynmap.ColorScheme;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
-import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.MapManager;
 import org.dynmap.TileHashManager;

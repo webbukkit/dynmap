@@ -1,6 +1,5 @@
 package org.dynmap;
 
-import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.common.DynmapListenerManager.WorldEventListener;
 import org.dynmap.common.DynmapListenerManager.PlayerEventListener;

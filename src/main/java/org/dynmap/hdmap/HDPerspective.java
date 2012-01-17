@@ -3,7 +3,6 @@ package org.dynmap.hdmap;
 import java.util.List;
 
 import org.dynmap.DynmapChunk;
-import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapTile;
 import org.dynmap.utils.MapChunkCache;

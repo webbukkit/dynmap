@@ -10,7 +10,6 @@ import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
-import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;

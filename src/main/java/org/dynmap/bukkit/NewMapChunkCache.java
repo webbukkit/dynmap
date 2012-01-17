@@ -126,7 +126,10 @@ public class NewMapChunkCache implements MapChunkCache {
             if(bio == null) {
                 Biome bb = snap.getBiome(bx, bz);
                 if(bb != null)
-                    bio = b[off] = biome_to_bmap[bb.ordinal()];
+                    bio = biome_to_bmap[bb.ordinal()];
+                else
+                    bio = BiomeMap.NULL;
+                b[off] = bio;
             }
             return bio;
         }
@@ -413,7 +416,7 @@ public class NewMapChunkCache implements MapChunkCache {
             try {
                 craftworld = getworldhandle.invoke(w);   /* World.getHandle() */
                 if(ticklist != null)
-                    ourticklist = (TreeSet)ticklist.get(craftworld);
+                    ourticklist = (TreeSet<?>)ticklist.get(craftworld);
             } catch (Exception x) {
             }
         }
@@ -491,7 +494,6 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
                 continue;
             }
-            long tt0 = 0;
             chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = w.loadChunk(chunk.x, chunk.z, false);

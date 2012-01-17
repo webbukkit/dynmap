@@ -262,7 +262,7 @@ public class DynmapCore {
         Log.verbose = configuration.getBoolean("verbose", true);
         deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
         /* Default swamp shading off for 1.8, on after */
-        boolean post_1_8 = mc_ver.contains("1.8.");
+        boolean post_1_8 = !mc_ver.contains("1.8.");
         swampshading = configuration.getBoolean("swampshaded", post_1_8);
         /* Default water biome shading off for 1.8, on after */
         waterbiomeshading = configuration.getBoolean("waterbiomeshaded", post_1_8);
@@ -458,7 +458,7 @@ public class DynmapCore {
     }
     
     public void addServlet(String path, HttpServlet servlet) {
-        ServletHolder holder = new ServletHolder(servlet);
+        new ServletHolder(servlet);
         router.addServlet(path, servlet);
      }
 

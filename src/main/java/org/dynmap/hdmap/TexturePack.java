@@ -1301,8 +1301,11 @@ public class TexturePack {
 
         LoadedImage li = null;
         int clrmult = -1;
-        /* Switch based on texture modifier */
-        switch(textop) {
+        /* See if multiplier is cached */
+        int c_mult = ss.getCachedMult(mapiter.getX(), mapiter.getY(), mapiter.getZ());
+        if(c_mult == Integer.MIN_VALUE) {
+            /* Switch based on texture modifier */
+            switch(textop) {
             case COLORMOD_GRASSTONED:
                 li = imgs[IMG_GRASSCOLOR];
                 break;
@@ -1326,17 +1329,21 @@ public class TexturePack {
                 if(ss.do_water_shading)
                     li = imgs[IMG_WATERCOLOR];                
                 break;
-        }
-        if(li != null) {
-            if((li.argb == null) || (!ss.do_biome_shading)) {
-                clrmult = li.trivial_color;
             }
-            else {
-                clrmult = biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+            if(li != null) {
+                if((li.argb == null) || (!ss.do_biome_shading)) {
+                    clrmult = li.trivial_color;
+                }
+                else {
+                    clrmult = biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
+                }
+                if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND))
+                    clrmult = (clrmult & 0xFF000000) | (((clrmult & 0x00FEFEFE) + 0x4E0E4E) / 2);
             }
-            if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND))
-                clrmult = (clrmult & 0xFF000000) | (((clrmult & 0x00FEFEFE) + 0x4E0E4E) / 2);
+            ss.setCachedMult(mapiter.getX(), mapiter.getY(), mapiter.getZ(), clrmult);
         }
+        else 
+            clrmult = c_mult;
         if((clrmult != -1) && (clrmult != 0)) {
             rslt.blendColor(clrmult);
         }

@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+@SuppressWarnings("serial")
 public class SendMessageServlet extends HttpServlet {
     protected static final Logger log = Logger.getLogger("Minecraft");
 

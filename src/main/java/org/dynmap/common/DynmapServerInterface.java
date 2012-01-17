@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import org.dynmap.DynmapWorld;
 import org.dynmap.common.DynmapListenerManager.EventType;
 
 /**

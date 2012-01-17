@@ -146,7 +146,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     break;
                 case WORLD_SPAWN_CHANGE:
                     bep.registerEvent(Type.SPAWN_CHANGE, new WorldListener() {
-                        public void onWorldSpawnChange(SpawnChangeEvent evt) {
+                        @Override
+                        public void onSpawnChange(SpawnChangeEvent evt) {
                             DynmapWorld w = new BukkitWorld(evt.getWorld());
                             core.listenerManager.processWorldEvent(EventType.WORLD_SPAWN_CHANGE, w);
                         }
@@ -807,7 +808,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         WorldListener worldTrigger = new WorldListener() {
             @Override
             public void onChunkLoad(ChunkLoadEvent event) {
-                if(core.ignore_chunk_loads)
+                if(DynmapCore.ignore_chunk_loads)
                     return;
                 Chunk c = event.getChunk();
                 /* Touch extreme corners */

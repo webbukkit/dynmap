@@ -15,7 +15,6 @@ import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
-import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
@@ -661,9 +660,7 @@ public class IsoHDPerspective implements HDPerspective {
                 }
             }
         }
-        
-        private boolean logit = false;
-        
+               
         private boolean raytraceSubblock(short[] model, boolean firsttime) {
             if(firsttime) {
             	mt = t + 0.00000001;
