@@ -81,8 +81,6 @@ public class TexturePackHDShader implements HDShader {
         boolean do_swamp_shading;
         boolean do_water_shading;
         boolean do_better_grass;
-        /* Cached color multiplier */
-        int mult_x, mult_y, mult_z, mult;
         
         private ShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
@@ -103,7 +101,6 @@ public class TexturePackHDShader implements HDShader {
             do_swamp_shading = do_biome_shading && swamp_shaded;
             do_water_shading = do_biome_shading && waterbiomeshaded;
             do_better_grass = bettergrass;
-            mult = Integer.MIN_VALUE;
         }
         /**
          * Get our shader
@@ -222,18 +219,6 @@ public class TexturePackHDShader implements HDShader {
          * Clean up state object - called after last ray completed
          */
         public void cleanup() {
-        }
-        /*
-         * Get cached multiplier, if available
-         */
-        public int getCachedMult(int x, int y, int z) {
-            if((x == mult_x) && (y == mult_y) && (z == mult_z))
-                return mult;
-            else
-                return Integer.MIN_VALUE;
-        }
-        public void setCachedMult(int x, int y, int z, int m) {
-            mult_x = x; mult_y = y; mult_z = z; mult = m;
         }
     }
 
