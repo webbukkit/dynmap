@@ -777,33 +777,16 @@ public class NewMapChunkCache implements MapChunkCache {
 
     static {
         Biome[] b = Biome.values();
+        BiomeMap[] bm = BiomeMap.values();
         biome_to_bmap = new BiomeMap[b.length];
-        biome_to_bmap[Biome.RAINFOREST.ordinal()] = BiomeMap.RAINFOREST;
-        biome_to_bmap[Biome.SWAMPLAND.ordinal()] = BiomeMap.SWAMPLAND;
-        biome_to_bmap[Biome.SEASONAL_FOREST.ordinal()] = BiomeMap.SEASONAL_FOREST;
-        biome_to_bmap[Biome.FOREST.ordinal()] = BiomeMap.FOREST;
-        biome_to_bmap[Biome.SAVANNA.ordinal()] = BiomeMap.SAVANNA;
-        biome_to_bmap[Biome.SHRUBLAND.ordinal()] = BiomeMap.SHRUBLAND;
-        biome_to_bmap[Biome.TAIGA.ordinal()] = BiomeMap.TAIGA;
-        biome_to_bmap[Biome.DESERT.ordinal()] = BiomeMap.DESERT;
-        biome_to_bmap[Biome.PLAINS.ordinal()] = BiomeMap.PLAINS;
-        biome_to_bmap[Biome.ICE_DESERT.ordinal()] = BiomeMap.ICE_DESERT;
-        biome_to_bmap[Biome.TUNDRA.ordinal()] = BiomeMap.TUNDRA;
-        biome_to_bmap[Biome.HELL.ordinal()] = BiomeMap.HELL;
-        biome_to_bmap[Biome.SKY.ordinal()] = BiomeMap.SKY;
-        biome_to_bmap[Biome.OCEAN.ordinal()] = BiomeMap.OCEAN;
-        biome_to_bmap[Biome.RIVER.ordinal()] = BiomeMap.RIVER;
-        biome_to_bmap[Biome.EXTREME_HILLS.ordinal()] = BiomeMap.EXTREME_HILLS;
-        biome_to_bmap[Biome.FROZEN_OCEAN.ordinal()] = BiomeMap.FROZEN_OCEAN;
-        biome_to_bmap[Biome.FROZEN_RIVER.ordinal()] = BiomeMap.FROZEN_RIVER;
-        biome_to_bmap[Biome.ICE_PLAINS.ordinal()] = BiomeMap.ICE_PLAINS;
-        biome_to_bmap[Biome.ICE_MOUNTAINS.ordinal()] = BiomeMap.ICE_MOUNTAINS;
-        biome_to_bmap[Biome.MUSHROOM_ISLAND.ordinal()] = BiomeMap.MUSHROOM_ISLAND;
-        biome_to_bmap[Biome.MUSHROOM_SHORE.ordinal()] = BiomeMap.MUSHROOM_SHORE;
-        biome_to_bmap[Biome.BEACH.ordinal()] = BiomeMap.BEACH;
-        biome_to_bmap[Biome.DESERT_HILLS.ordinal()] = BiomeMap.DESERT_HILLS;
-        biome_to_bmap[Biome.FOREST_HILLS.ordinal()] = BiomeMap.FOREST_HILLS;
-        biome_to_bmap[Biome.TAIGA_HILLS.ordinal()] = BiomeMap.TAIGA_HILLS;
-        biome_to_bmap[Biome.SMALL_MOUNTAINS.ordinal()] = BiomeMap.SMALL_MOUNTAINS;
+        for(int i = 0; i < b.length; i++) {
+            String bs = b[i].toString();
+            for(int j = 0; j < bm.length; j++) {
+                if(bm[j].toString().equals(bs)) {
+                    biome_to_bmap[b[i].ordinal()] = bm[j];
+                    break;
+                }
+            }
+        }
     }
 }
