@@ -39,7 +39,7 @@ public class SendMessageServlet extends HttpServlet {
     public boolean use_player_login_ip = false;
     public boolean require_player_login_ip = false;
     public boolean check_user_ban = false;
-    public DynmapCore plug_in;
+    public DynmapCore core;
 
 
     @Override
@@ -72,11 +72,11 @@ public class SendMessageServlet extends HttpServlet {
                 message.name = request.getRemoteAddr();
         }
         if (use_player_login_ip) {
-            List<String> ids = plug_in.getIDsForIP(message.name);
+            List<String> ids = core.getIDsForIP(message.name);
             if (ids != null) {
                 String id = ids.get(0);
                 if (check_user_ban) {
-                    if (plug_in.getServer().isPlayerBanned(id)) {
+                    if (core.getServer().isPlayerBanned(id)) {
                         Log.info("Ignore message from '" + message.name + "' - banned player (" + id + ")");
                         response.sendError(HttpStatus.Forbidden.getCode());
                         return;
