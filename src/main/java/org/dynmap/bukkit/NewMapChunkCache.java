@@ -798,5 +798,10 @@ public class NewMapChunkCache implements MapChunkCache {
         biome_to_bmap[Biome.ICE_MOUNTAINS.ordinal()] = BiomeMap.ICE_MOUNTAINS;
         biome_to_bmap[Biome.MUSHROOM_ISLAND.ordinal()] = BiomeMap.MUSHROOM_ISLAND;
         biome_to_bmap[Biome.MUSHROOM_SHORE.ordinal()] = BiomeMap.MUSHROOM_SHORE;
+        biome_to_bmap[Biome.BEACH.ordinal()] = BiomeMap.BEACH;
+        biome_to_bmap[Biome.DESERT_HILLS.ordinal()] = BiomeMap.DESERT_HILLS;
+        biome_to_bmap[Biome.FOREST_HILLS.ordinal()] = BiomeMap.FOREST_HILLS;
+        biome_to_bmap[Biome.TAIGA_HILLS.ordinal()] = BiomeMap.TAIGA_HILLS;
+        biome_to_bmap[Biome.SMALL_MOUNTAINS.ordinal()] = BiomeMap.SMALL_MOUNTAINS;
     }
 }
