@@ -123,14 +123,14 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.1-R1-SNAPSHOT</version>
+			<version>[1.1-R1-SNAPSHOT,)</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.dynmap</groupId>
 			<artifactId>dynmap-api</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -153,7 +153,7 @@
 		<dependency>
 			<groupId>org.dynmap</groupId>
 			<artifactId>DynmapCore</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
