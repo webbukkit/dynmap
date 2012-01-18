@@ -6,40 +6,16 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>README*</include>
-        <include>LICENSE*</include>
-        <include>NOTICE*</include>
-        <include>CHANGELOG*</include>
-      </includes>
-    </fileSet>
+    	<directory>${project.build.directory}/core</directory>
+    	<outputDirectory>/dynmap</outputDirectory>
+    	<excludes>
+    		<exclude>web/version.js</exclude></excludes></fileSet>
     <fileSet>
-      <directory>${project.basedir}/web/</directory>
-      <outputDirectory>/dynmap/web/</outputDirectory>
-	  <includes>
-		<include>version.js</include>
-	  </includes>
-      <filtered>true</filtered>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/web</directory>
-      <outputDirectory>/dynmap/web</outputDirectory>
-	  <excludes>
-		<exclude>version.js</exclude>
-	  </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/colorschemes</directory>
-      <outputDirectory>/dynmap/colorschemes</outputDirectory>
-    </fileSet>
-    <fileSet>
-    	<directory>${project.basedir}/texturepacks</directory>
-    	<outputDirectory>/dynmap/texturepacks</outputDirectory></fileSet>
-    <fileSet>
-    	<directory>${project.basedir}/renderdata</directory>
-    	<outputDirectory>/dynmap/renderdata</outputDirectory></fileSet>
+    	<directory>${project.build.directory}/core/web</directory>
+    	<outputDirectory>/dynmap/web</outputDirectory>
+    	<includes>
+    		<include>version.js</include></includes>
+    	<filtered>true</filtered></fileSet>
   </fileSets>
   <files>
   	<file>

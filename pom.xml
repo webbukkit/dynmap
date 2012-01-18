@@ -45,6 +45,31 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>package</phase>
+						<goals><goal>unpack</goal></goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.dynmap</groupId>
+									<artifactId>DynmapCore</artifactId>
+									<version>${project.version}</version>
+									<classifier>bin</classifier>
+									<type>zip</type>
+									<outputDirectory>${project.build.directory}/core</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>1.5</version>
 				<executions>
@@ -57,8 +82,7 @@
 							<artifactSet>
 								<includes>
 									<include>org.dynmap:dynmap-api:jar:*</include>
-									<include>org.eclipse.jetty:jetty-*:jar:*</include>
-									<include>javax.servlet:javax.servlet-api:jar:*</include>
+									<include>org.dynmap:DynmapCore:jar:*</include>
 								</includes>
 							</artifactSet>
 						</configuration>
@@ -106,7 +130,7 @@
 		<dependency>
 			<groupId>org.dynmap</groupId>
 			<artifactId>dynmap-api</artifactId>
-			<version>[0.25,)</version>
+			<version>${version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -126,5 +150,12 @@
 			<version>8.0.1.v20110908</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.dynmap</groupId>
+			<artifactId>DynmapCore</artifactId>
+			<version>${version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>

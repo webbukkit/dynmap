@@ -481,7 +481,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
             }
             /* Check if cached chunk snapshot found */
-            ChunkSnapshot ss = MapManager.mapman.sscache.getSnapshot(w.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
+            ChunkSnapshot ss = DynmapPlugin.plugin.sscache.getSnapshot(w.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
             if(ss != null) {
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
@@ -518,7 +518,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     else
                         ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
                     if(ss != null) {
-                        MapManager.mapman.sscache.putSnapshot(w.getName(), chunk.x, chunk.z, ss, blockdata, biome, biomeraw, highesty);
+                        DynmapPlugin.plugin.sscache.putSnapshot(w.getName(), chunk.x, chunk.z, ss, blockdata, biome, biomeraw, highesty);
                     }
                 }
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;

@@ -1,6 +1,0 @@
-<project name="dynmap_parameters" basedir=".">
-	<property name="bukkit.jar" location="../../bukkit.jar"/>
-	<property name="minecraft" location="../../"/>
-	<property name="plugins" location="${minecraft}/plugins/"/>
-	<property name="http_root" location="/srv/http/dynmap/"/>
-</project>
