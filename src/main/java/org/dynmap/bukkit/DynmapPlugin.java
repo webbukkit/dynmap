@@ -58,6 +58,7 @@ import org.dynmap.DynmapWebChatEvent;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.PlayerList;
 import org.dynmap.bukkit.permissions.BukkitPermissions;
 import org.dynmap.bukkit.permissions.NijikokunPermissions;
 import org.dynmap.bukkit.permissions.OpPermissions;
@@ -76,7 +77,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public BukkitEventProcessor bep;
     public SnapshotCache sscache;
     private boolean has_spout = false;
-    
+    public PlayerList playerList;
     private MapManager mapManager;
     public static DynmapPlugin plugin;
 
@@ -381,6 +382,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             this.setEnabled(false);
             return;
         }
+        playerList = core.playerList;
         sscache = new SnapshotCache(core.getSnapShotCacheSize());
 
         /* Get map manager from core */
