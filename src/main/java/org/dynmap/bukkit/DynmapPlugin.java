@@ -47,6 +47,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -74,7 +75,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private String version;
     public BukkitEventProcessor bep;
     public SnapshotCache sscache;
-
+    private boolean has_spout = false;
+    
     private MapManager mapManager;
     public static DynmapPlugin plugin;
 
@@ -337,6 +339,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         if(bep == null)
             bep = new BukkitEventProcessor(this);
  
+        /* Check for Spout */
+        if(detectSpout()) {
+            has_spout = true;
+            Log.info("Detected Spout");
+        }
+            
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
 
@@ -870,4 +878,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         bep.registerEvent(Event.Type.WORLD_UNLOAD, worldTrigger);
     }
 
+    private boolean detectSpout() {
+        Plugin p = this.getServer().getPluginManager().getPlugin("Spout");
+        return (p != null);
+    }
+    
+    public boolean hasSpout() {
+        return has_spout;
+    }
 }

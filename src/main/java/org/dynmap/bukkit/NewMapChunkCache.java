@@ -13,6 +13,7 @@ import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChunkSnapshot;
+import org.dynmap.DynmapAPI;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
@@ -22,6 +23,7 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
+import org.getspout.spoutapi.block.SpoutChunk;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -35,6 +37,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private static Field  chunkbiome = null;
     private static Field ticklist = null;
     private static Method processticklist = null;
+    private static boolean use_spout = false;
 
     private static final int MAX_PROCESSTICKS = 20;
     private static final int MAX_TICKLIST = 20000;
@@ -346,6 +349,42 @@ public class NewMapChunkCache implements MapChunkCache {
             return 64;
         }
     }
+    
+    private static class SpoutChunkSnapshot implements ChunkSnapshot {
+        private ChunkSnapshot chunk;
+        private short[] customids; /* (X << 11) | (Z << 7) | Y */ 
+        
+        SpoutChunkSnapshot(ChunkSnapshot chunk, short[] customids) {
+            this.chunk = chunk;
+            this.customids = customids.clone();
+        }
+        /* Need these for interface, but not used */
+        public final int getX() { return chunk.getX(); }
+        public final int getZ() { return chunk.getZ(); }
+        public final String getWorldName() { return chunk.getWorldName(); }
+        public final Biome getBiome(int x, int z) { return chunk.getBiome(x, z); }
+        public final double getRawBiomeTemperature(int x, int z) { return chunk.getRawBiomeTemperature(x, z); }
+        public final double getRawBiomeRainfall(int x, int z) { return chunk.getRawBiomeRainfall(x, z); }
+        public final long getCaptureFullTime() { return chunk.getCaptureFullTime(); }
+        
+        public final int getBlockTypeId(int x, int y, int z) {
+            int id = customids[(x << 11) | (z << 7) | y];
+            if(id != 0) return id;
+            return chunk.getBlockTypeId(x, y, z);
+        }
+        public final int getBlockData(int x, int y, int z) {
+            return chunk.getBlockData(x, y, z);
+        }
+        public final int getBlockSkyLight(int x, int y, int z) {
+            return chunk.getBlockSkyLight(x, y, z);
+        }
+        public final int getBlockEmittedLight(int x, int y, int z) {
+            return chunk.getBlockEmittedLight(x, y, z);
+        }
+        public final int getHighestBlockYAt(int x, int z) {
+            return chunk.getHighestBlockYAt(x, z);
+        }
+    }
 
     private static final EmptyChunk EMPTY = new EmptyChunk();
     private static final PlainChunk STONE = new PlainChunk(1);
@@ -405,7 +444,8 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (NoSuchFieldException nsmx) {
             } catch (NoSuchMethodException nsmx) {
             }
-
+            use_spout = DynmapPlugin.plugin.hasSpout();
+            
             init = true;
         }
     }
@@ -447,6 +487,17 @@ public class NewMapChunkCache implements MapChunkCache {
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
         snapbiomes = new BiomeMap[x_dim * (z_max-z_min+1)][];
+    }
+    
+    private ChunkSnapshot checkSpoutData(Chunk c, ChunkSnapshot ss) {
+        if(c instanceof SpoutChunk) {
+            SpoutChunk sc = (SpoutChunk)c;
+            short[] custids = sc.getCustomBlockIds();
+            if(custids != null) {
+                return new SpoutChunkSnapshot(ss, custids);
+            }
+        }
+        return ss;
     }
 
     public int loadChunks(int max_to_load) {
@@ -513,8 +564,12 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
                 else {
                     Chunk c = w.getChunkAt(chunk.x, chunk.z);
-                    if(blockdata || highesty)
+                    if(blockdata || highesty) {
                         ss = c.getChunkSnapshot(highesty, biome, biomeraw);
+                        if(use_spout) {
+                            ss = checkSpoutData(c, ss);
+                        }
+                    }
                     else
                         ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
                     if(ss != null) {
