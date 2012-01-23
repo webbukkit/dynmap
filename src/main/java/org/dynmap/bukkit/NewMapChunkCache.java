@@ -57,7 +57,6 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean do_save = false;
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    private BiomeMap[][] snapbiomes;   /* Biome cache - getBiome() is expensive */
     private TreeSet<?> ourticklist;
     
     private int chunks_read;    /* Number of chunks actually loaded */
@@ -75,11 +74,14 @@ public class NewMapChunkCache implements MapChunkCache {
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
     public class OurMapIterator implements MapIterator {
-        private int x, y, z, chunkindex, bx, bz;  
+        private int x, y, z, chunkindex, bx, bz, off;  
         private ChunkSnapshot snap;
         private BlockStep laststep;
         private int typeid = -1;
         private int blkdata = -1;
+        private int lastbiome_x = Integer.MIN_VALUE, lastbiome_z = Integer.MIN_VALUE;
+        private BiomeMap lastbiome;
+        private int lastcountswamp_x = Integer.MIN_VALUE, lastcountswamp_z = Integer.MIN_VALUE, lastcountswamp;
 
         OurMapIterator(int x0, int y0, int z0) {
             initialize(x0, y0, z0);
@@ -91,6 +93,7 @@ public class NewMapChunkCache implements MapChunkCache {
             this.chunkindex = ((x >> 4) - x_min) + (((z >> 4) - z_min) * x_dim);
             this.bx = x & 0xF;
             this.bz = z & 0xF;
+            this.off = bx + (bz << 4);
             try {
                 snap = snaparray[chunkindex];
             } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -120,26 +123,56 @@ public class NewMapChunkCache implements MapChunkCache {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
         public final BiomeMap getBiome() {
-            BiomeMap[] b = snapbiomes[chunkindex];
-            if(b == null) {
-                b = snapbiomes[chunkindex] = new BiomeMap[256];
+            if((x == lastbiome_x) && (z == lastbiome_z)) {
+                return lastbiome;
             }
-            int off = bx + (bz << 4);
-            BiomeMap bio = b[off];
-            if(bio == null) {
-                Biome bb = snap.getBiome(bx, bz);
-                if(bb != null)
-                    bio = biome_to_bmap[bb.ordinal()];
-                else
-                    bio = BiomeMap.NULL;
-                b[off] = bio;
-            }
+            BiomeMap bio;
+            Biome bb = snap.getBiome(bx, bz);
+            if(bb != null)
+                bio = biome_to_bmap[bb.ordinal()];
+            else
+                bio = BiomeMap.NULL;
+            lastbiome_x = x;
+            lastbiome_z = z;
+            lastbiome = bio;
             return bio;
         }
-        public double getRawBiomeTemperature() {
+        public final int  countSmoothedSwampBiomes() {
+            if((lastcountswamp_x == x) && (lastcountswamp_z == z))
+                return lastcountswamp;
+            int cnt = 0; 
+            BlockStep s_bak = laststep;
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.X_MINUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.Z_MINUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.X_PLUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.X_PLUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.Z_PLUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.Z_PLUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.X_MINUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.X_MINUS);
+            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
+            stepPosition(BlockStep.X_PLUS);
+            stepPosition(BlockStep.Z_MINUS);
+            laststep = s_bak;
+            
+            lastcountswamp_x = x;
+            lastcountswamp_z = z;
+            lastcountswamp = cnt;
+            
+            return cnt;
+        }
+        public final double getRawBiomeTemperature() {
             return snap.getRawBiomeTemperature(bx, bz);
         }
-        public double getRawBiomeRainfall() {
+        public final double getRawBiomeRainfall() {
             return snap.getRawBiomeRainfall(bx, bz);
         }
         /**
@@ -150,9 +183,11 @@ public class NewMapChunkCache implements MapChunkCache {
                 case 0:
                     x++;
                     bx++;
+                    off++;
                     if(bx == 16) {  /* Next chunk? */
                         try {
                             bx = 0;
+                            off -= 16;
                             chunkindex++;
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -167,9 +202,11 @@ public class NewMapChunkCache implements MapChunkCache {
                 case 2:
                     z++;
                     bz++;
+                    off+=16;
                     if(bz == 16) {  /* Next chunk? */
                         try {
                             bz = 0;
+                            off -= 256;
                             chunkindex += x_dim;
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -181,9 +218,11 @@ public class NewMapChunkCache implements MapChunkCache {
                 case 3:
                     x--;
                     bx--;
+                    off--;
                     if(bx == -1) {  /* Next chunk? */
                         try {
                             bx = 15;
+                            off += 16;
                             chunkindex--;
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -198,9 +237,11 @@ public class NewMapChunkCache implements MapChunkCache {
                 case 5:
                     z--;
                     bz--;
+                    off-=16;
                     if(bz == -1) {  /* Next chunk? */
                         try {
                             bz = 15;
+                            off += 256;
                             chunkindex -= x_dim;
                             snap = snaparray[chunkindex];
                         } catch (ArrayIndexOutOfBoundsException aioobx) {
@@ -486,7 +527,6 @@ public class NewMapChunkCache implements MapChunkCache {
         }
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
-        snapbiomes = new BiomeMap[x_dim * (z_max-z_min+1)][];
     }
     
     private ChunkSnapshot checkSpoutData(Chunk c, ChunkSnapshot ss) {

@@ -195,6 +195,8 @@ enabletilehash: true
 use-generated-textures: true
 correct-water-lighting: true
 correct-biome-shading: true
+# To enable smooth biome shading (as done in MC 1.1.0+), set this to true (this does increase render processing about 10%)
+smooth-biome-shading: true
 
 # Control loading of player faces (if set to false, skins are never fetched)
 #fetchskins: false
@@ -320,14 +322,6 @@ persist-ids-by-ip: true
 msg:
     maptypes: "Map Types"
     players: "Players"
-
-# NOTE: the 'templates' section is now found in the 'templates' directory
-#  Templates CAN still be defined in configuration.txt, as before 0.20
-templates:
-
-# NOTE: the 'worlds' section is now found in the worlds.txt (example custom settings can be found in worlds.txt.sample)
-#  Worlds CAN still be defined in configuration.txt, as before 0.20
-worlds:
 
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
