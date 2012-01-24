@@ -80,6 +80,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public PlayerList playerList;
     private MapManager mapManager;
     public static DynmapPlugin plugin;
+    public SpoutPluginBlocks spb;
 
     public DynmapPlugin() {
         plugin = this;
@@ -339,13 +340,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         /* Initialize event processor */
         if(bep == null)
             bep = new BukkitEventProcessor(this);
- 
-        /* Check for Spout */
-        if(detectSpout()) {
-            has_spout = true;
-            Log.info("Detected Spout");
-        }
-            
+             
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
 
@@ -358,6 +353,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         File dataDirectory = this.getDataFolder();
         if(dataDirectory.exists() == false)
             dataDirectory.mkdirs();
+ 
+        /* Check for Spout */
+        if(detectSpout()) {
+            has_spout = true;
+            Log.info("Detected Spout");
+            spb = new SpoutPluginBlocks();
+            spb.processSpoutBlocks(dataDirectory);
+        }
+
         /* Get MC version */
         String bukkitver = getServer().getVersion();
         String mcver = "1.0.0";

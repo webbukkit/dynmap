@@ -2,7 +2,7 @@ name: dynmap
 main: org.dynmap.bukkit.DynmapPlugin
 version: "${project.version}-${BUILD_NUMBER}"
 authors: [FrozenCow, mikeprimm]
-softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit]
+softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit, SpoutMaterials ]
 commands:
   dynmap:
     description: Controls Dynmap.
