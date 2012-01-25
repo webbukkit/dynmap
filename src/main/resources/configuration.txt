@@ -211,10 +211,11 @@ smooth-biome-shading: true
 #   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
 compass-mode: newnorth
 
-# Enable Industrial Craft 2 block rendering support (core, Advanced Machines, Charging Bench)
+# Enable Industrial Craft 2 block rendering support (core, Advanced Machines, Charging Bench, Power Converters)
 #ic2-support: true
 #ic2-advancesmachines-support: true
 #ic2-chargingbench-support: true
+#ic2-powerconverters-support: true
 
 # Enable BuildCraft block rendering support
 #buildcraft-support: true
