@@ -41,18 +41,41 @@ public class SpoutPluginBlocks {
             File imgfile = new File(f, blkid + ".png");
             BufferedImage img = null;
             boolean urlloaded = false;
+            String txname = bd.getTexureURL();
             try {
-                URL url = new URL(bd.getTexureURL());
+                URL url = new URL(txname);
                 img = ImageIO.read(url);    /* Load skin for player */
                 urlloaded = true;
             } catch (IOException iox) {
-                Log.severe("Error loading texture for custom block '" + blkid + "' (" + b.getCustomId() + ") from " + bd.getTexureURL() + "(" + iox.getMessage() + ")");
-                if(imgfile.exists()) {
-                    try {
-                        img = ImageIO.read(imgfile);    /* Load existing */
-                        Log.info("Loaded cached texture file for " + blkid);
-                    } catch (IOException iox2) {
-                        Log.severe("Error loading cached texture file for " + blkid + " - " + iox2.getMessage());
+                if(txname.startsWith("http") == false) {   /* Not URL - try file */
+                    File tf = new File(txname);
+                    if(tf.exists() == false) {
+                        /* Horrible hack - try to find temp file (some SpoutMaterials versions) */
+                        try {
+                            File tmpf = File.createTempFile("dynmap", "test");
+                        
+                            tf = new File(tmpf.getParent(), txname);
+                            tmpf.delete();
+                        } catch (IOException iox2) {}
+                    }
+                    if(tf.exists()) {
+                        try {
+                            img = ImageIO.read(tf);
+                            urlloaded = true;
+                        } catch (IOException iox3) {
+                            
+                        }
+                    }
+                }
+                if(img == null) {
+                    Log.severe("Error loading texture for custom block '" + blkid + "' (" + b.getCustomId() + ") from " + bd.getTexureURL() + "(" + iox.getMessage() + ")");
+                    if(imgfile.exists()) {
+                        try {
+                            img = ImageIO.read(imgfile);    /* Load existing */
+                            Log.info("Loaded cached texture file for " + blkid);
+                        } catch (IOException iox2) {
+                            Log.severe("Error loading cached texture file for " + blkid + " - " + iox2.getMessage());
+                        }
                     }
                 }
             }
