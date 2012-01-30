@@ -224,6 +224,9 @@ compass-mode: newnorth
 # Enable RailCraft block rendering support
 #railcraft-support: true
 
+# Enable Kaevator's Superslopes block rendering support
+#superslopes-support: true
+
 render-triggers:
   #- chunkloaded
   #- playermove
