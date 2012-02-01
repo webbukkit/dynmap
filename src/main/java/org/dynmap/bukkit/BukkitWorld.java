@@ -16,7 +16,7 @@ public class BukkitWorld extends DynmapWorld {
     private static BlockLightLevel bll = new BlockLightLevel();
     
     public BukkitWorld(World w) {
-        super(w.getName());
+        super(w.getName(), w.getMaxHeight());
         
         world = w;
     }
