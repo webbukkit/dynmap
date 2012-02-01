@@ -82,9 +82,11 @@ public class NewMapChunkCache implements MapChunkCache {
         private int lastbiome_x = Integer.MIN_VALUE, lastbiome_z = Integer.MIN_VALUE;
         private BiomeMap lastbiome;
         private int lastcountswamp_x = Integer.MIN_VALUE, lastcountswamp_z = Integer.MIN_VALUE, lastcountswamp;
-
+        private final int worldheight;
+        
         OurMapIterator(int x0, int y0, int z0) {
             initialize(x0, y0, z0);
+            worldheight = w.getMaxHeight();
         }
         public final void initialize(int x0, int y0, int z0) {
             this.x = x0;
@@ -112,9 +114,6 @@ public class NewMapChunkCache implements MapChunkCache {
             if(blkdata < 0)
                 blkdata = snap.getBlockData(bx, y, bz);
             return blkdata;
-        }
-        public final int getHighestBlockYAt() {
-            return snap.getHighestBlockYAt(bx, bz);
         }
         public int getBlockSkyLight() {
             return snap.getBlockSkyLight(bx, y, bz);
@@ -293,7 +292,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     return snap.getBlockTypeId(bx, y-1, bz);
             }
             else if(s == BlockStep.Y_PLUS) {
-                if(y < 127)
+                if(y < (worldheight-1))
                     return snap.getBlockTypeId(bx, y+1, bz);
             }
             else {
@@ -308,6 +307,10 @@ public class NewMapChunkCache implements MapChunkCache {
         }
         public BlockStep getLastStep() {
             return laststep;
+        }
+        @Override
+        public int getWorldHeight() {
+            return worldheight;
         }
      }
 
@@ -715,13 +718,6 @@ public class NewMapChunkCache implements MapChunkCache {
     public byte getBlockData(int x, int y, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return (byte)ss.getBlockData(x & 0xF, y, z & 0xF);
-    }
-    /* Get highest block Y
-     * 
-     */
-    public int getHighestBlockYAt(int x, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getHighestBlockYAt(x & 0xF, z & 0xF);
     }
     /* Get sky light level
      */
