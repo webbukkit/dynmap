@@ -400,6 +400,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     
         /* Register our update trigger events */
         registerEvents();
+
+        Log.info("Enabled");
     }
     
     @Override
@@ -413,6 +415,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             sscache.cleanup();
             sscache = null; 
         }
+        Log.info("Disabled");
     }
 
     @Override
