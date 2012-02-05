@@ -157,7 +157,7 @@ public class SpoutPluginBlocks {
                         img.flush();
                     }
                     String tfid = "txtid" + texturelist.size();
-                    sb.append("texturefile:id=" + tfid + ",filename=spout/" + blkid + ".png,xcount=" + w/h + ",ycount=1\n");                                   
+                    sb.append("texturefile:id=" + tfid + ",filename=spout/" + blkid + ".png,xcount=" + w/sz + ",ycount=" + h/sz + "\n");                                   
                     texturelist.put(txname, tfid);
                 }
             }
