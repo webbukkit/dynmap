@@ -240,6 +240,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public void resetCacheStats() {
             sscache.resetStats();
         }
+        @Override
+        public DynmapWorld getWorldByName(String wname) {
+            World w = getServer().getWorld(wname);  /* FInd world */
+            if(w != null) {
+                return new BukkitWorld(w);
+            }
+            return null;
+        }
     }
     /**
      * Player access abstraction class

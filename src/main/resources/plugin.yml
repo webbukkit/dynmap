@@ -73,6 +73,13 @@ commands:
            /<command> listareas - list details of all areas
            /<command> updatearea <label> <arg>:<value> ... - update attributes of area with given label
            /<command> updatearea id:<id> <arg>:<value> ... - update attributes of area with given ID
+  dmap:
+    description: List and modify dynmap configuration
+    usage: |
+           /<command> worldlist - list all worlds configured (enabled or disabled)
+           /<command> worldset worldname enabled:<true|false> - enable or disable a world
+           /<command> worldset worldname center:<x/y/z|here|default> - set map center for given world
+           /<command> worldset worldname extrazoomout:<N> - set extra zoom out levels for given world
            
 permissions:
   dynmap.*:
@@ -113,6 +120,8 @@ permissions:
       dynmap.marker.updatearea: true
       dynmap.marker.listareas: true
       dynmap.marker.deletearea: true
+      dynmap.dmap.worldlist: true
+      dynmap.dmap.worldset: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -217,5 +226,11 @@ permissions:
     default: op            
   dynmap.marker.deletearea:
     description: Allows /dmarker deletearea
+    default: op
+  dynmap.dmap.worldlist:
+    description: Allows /dmap worldlist
+    default: op
+  dynmap.dmap.worldset:
+    description: Allows /dmap worldset
     default: op
     
