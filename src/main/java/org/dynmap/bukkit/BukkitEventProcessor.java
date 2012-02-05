@@ -56,8 +56,9 @@ public class BukkitEventProcessor {
             List<Listener> ll = event_handlers.get(t);
             ll.clear(); /* Empty list - we use presence of list to remember that we've registered with Bukkit */
         }
-        pm = null;
-        plugin = null;
+        if(plugin.getServer().getVersion().contains("(MC: 1.0") == false) {
+            event_handlers.clear();
+        }
     }
     
     private BlockListener ourBlockEventHandler = new BlockListener() {
