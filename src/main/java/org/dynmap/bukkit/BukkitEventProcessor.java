@@ -29,6 +29,9 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.event.server.ServerListener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
@@ -360,6 +363,29 @@ public class BukkitEventProcessor {
         }
     };
     
+    private ServerListener ourServerEventHandler = new ServerListener() {
+    	@Override
+        public void onPluginEnable(PluginEnableEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((ServerListener)l).onPluginEnable(event);
+                }
+            }
+    	}
+    	@Override
+        public void onPluginDisable(PluginDisableEvent event) {
+            /* Call listeners */
+            List<Listener> ll = event_handlers.get(event.getType());
+            if(ll != null) {
+                for(Listener l : ll) {
+                    ((ServerListener)l).onPluginDisable(event);
+                }
+            }
+    	}
+    };
+    
     /**
      * Register event listener - this will be cleaned up properly on a /dynmap reload, unlike
      * registering with Bukkit directly
@@ -405,6 +431,10 @@ public class BukkitEventProcessor {
                 case ENTITY_EXPLODE:
                     pm.registerEvent(type, ourEntityEventHandler, Event.Priority.Monitor, plugin);
                     break;
+                case PLUGIN_ENABLE:
+                case PLUGIN_DISABLE:
+                	pm.registerEvent(type, ourServerEventHandler, Event.Priority.Monitor, plugin);
+                	break;
                 default:
                     Log.severe("registerEvent() in DynmapPlugin does not handle " + type);
                     return;
