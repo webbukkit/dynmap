@@ -272,6 +272,8 @@ public class BukkitEventProcessor {
 
         @Override
         public void onPlayerChat(PlayerChatEvent event) {
+            if(event.isCancelled())
+                return;
             /* Call listeners */
             List<Listener> ll = event_handlers.get(event.getType());
             if(ll != null) {
