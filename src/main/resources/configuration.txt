@@ -126,6 +126,7 @@ components:
     type: coord
     label: "Location"
     hidey: false
+    show-mcr: false
     
   #- class: org.dynmap.ClientComponent
   #  type: logo
