@@ -41,7 +41,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.WorldListener;
@@ -578,7 +577,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private boolean onplayerjoin;
     private boolean onplayermove;
     private boolean ongeneratechunk;
-    private boolean onloadchunk;
     private boolean onexplosion;
 
     private void registerEvents() {
@@ -808,9 +806,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         onplayermove = core.isTrigger("playermove");
         bep.registerEvent(Event.Type.PLAYER_JOIN, playerTrigger);
         bep.registerEvent(Event.Type.PLAYER_QUIT, playerTrigger);
-        if(onplayermove)
+        if(onplayermove) {
             bep.registerEvent(Event.Type.PLAYER_MOVE, playerTrigger);
-
+            Log.warning("playermove trigger enabled - this trigger can cause excessive tile updating: use with caution");
+        }
         /* Register entity event triggers */
         EntityListener entityTrigger = new EntityListener() {
             @Override
@@ -848,16 +847,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         /* Register world event triggers */
         WorldListener worldTrigger = new WorldListener() {
             @Override
-            public void onChunkLoad(ChunkLoadEvent event) {
-                if(DynmapCore.ignore_chunk_loads)
-                    return;
-                Chunk c = event.getChunk();
-                /* Touch extreme corners */
-                int x = c.getX() << 4;
-                int z = c.getZ() << 4;
-                mapManager.touchVolume(event.getWorld().getName(), x, 0, z, x+15, 128, z+16, "chunkload");
-            }
-            @Override
             public void onChunkPopulate(ChunkPopulateEvent event) {
                 Chunk c = event.getChunk();
                 /* Touch extreme corners */
@@ -884,10 +873,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         ongeneratechunk = core.isTrigger("chunkgenerated");
         if(ongeneratechunk) {
             bep.registerEvent(Event.Type.CHUNK_POPULATED, worldTrigger);
-        }
-        onloadchunk = core.isTrigger("chunkloaded");
-        if(onloadchunk) { 
-            bep.registerEvent(Event.Type.CHUNK_LOAD, worldTrigger);
         }
 
         // To link configuration to real loaded worlds.

@@ -228,7 +228,6 @@ compass-mode: newnorth
 #superslopes-support: true
 
 render-triggers:
-  #- chunkloaded
   #- playermove
   #- playerjoin
   - blockplaced
