@@ -80,6 +80,12 @@ commands:
            /<command> worldset worldname enabled:<true|false> - enable or disable a world
            /<command> worldset worldname center:<x/y/z|here|default> - set map center for given world
            /<command> worldset worldname extrazoomout:<N> - set extra zoom out levels for given world
+           /<command> maplist worldname - list all maps for given world
+           /<command> mapdelete worldname:mapname - delete given map of given world
+           /<command> mapadd worldname:mapname attrib:value attrib:value - create map on given world with given attributes
+           /<command> mapset worldname:mapname attrib:value attrib:value - update given map on given world with given attributes
+           /<command> worldreset worldname - reset given world to default template for world type
+           /<command> worldreset worldname templatename - reset given world to given template
            
 permissions:
   dynmap.*:
@@ -122,6 +128,13 @@ permissions:
       dynmap.marker.deletearea: true
       dynmap.dmap.worldlist: true
       dynmap.dmap.worldset: true
+      dynmap.dmap.worldreset: true
+      dynmap.dmap.mapdelete: true
+      dynmap.dmap.mapset: true
+      dynmap.dmap.mapadd: true
+      dynmap.dmap.perspectivelist: true
+      dynmap.dmap.shaderlist: true
+      dynmap.dmap.lightinglist: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -232,5 +245,26 @@ permissions:
     default: op
   dynmap.dmap.worldset:
     description: Allows /dmap worldset
+    default: op
+  dynmap.dmap.worldreset:
+    description: Allows /dmap worldreset
+    default: op
+  dynmap.dmap.mapdelete:
+    description: Allows /dmap mapdelete
+    default: op
+  dynmap.dmap.mapset:
+    description: Allows /dmap mapset
+    default: op
+  dynmap.dmap.mapadd:
+    description: Allows /dmap mapadd
+    default: op
+  dynmap.dmap.perspectivelist:
+    description: Allows /dmap perspectivelist
+    default: op
+  dynmap.dmap.shaderlist:
+    description: Allows /dmap shaderlist
+    default: op
+  dynmap.dmap.lightinglist:
+    description: Allows /dmap lightinglist
     default: op
     
