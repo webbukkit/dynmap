@@ -888,4 +888,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public boolean hasSpout() {
         return has_spout;
     }
+
+    @Override
+    public void assertPlayerInvisibility(String player, boolean is_invisible,
+            String plugin_id) {
+        core.assertPlayerInvisibility(player, is_invisible, plugin_id);
+    }
+
+    @Override
+    public void assertPlayerInvisibility(Player player, boolean is_invisible,
+            Plugin plugin) {
+        core.assertPlayerInvisibility(player.getName(), is_invisible, plugin.getDescription().getName());
+    }
 }
