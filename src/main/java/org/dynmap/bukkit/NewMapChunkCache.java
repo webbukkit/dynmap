@@ -312,6 +312,10 @@ public class NewMapChunkCache implements MapChunkCache {
         public int getWorldHeight() {
             return worldheight;
         }
+        @Override
+        public long getBlockKey() {
+            return (((chunkindex * worldheight) + y) << 8) | (bx << 4) | bz;
+        }
      }
 
     private class OurEndMapIterator extends OurMapIterator {

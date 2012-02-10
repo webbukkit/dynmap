@@ -186,6 +186,9 @@ enabletilehash: true
 # Optional - enabled BetterGrass style rendering of grass and snow block sides
 #better-grass: true
 
+# Optional - enable smooth lighting by default on all maps supporting it (can be set per map as lighting option)
+smooth-lighting: false
+
 # Pre 0.29 render options - set all three to false if you want same results as 0.28 (i.e. you have existing maps and don't want to render)
 #  use-generated-textures: if true, use generated textures (same as client); false is static, pre 0.29 textures
 #  correct-water-lighting: if true, use corrected water lighting (same as client); false is legacy, pre 0.29 water (darker)
