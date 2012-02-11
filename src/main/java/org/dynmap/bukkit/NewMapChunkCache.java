@@ -58,6 +58,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     private TreeSet<?> ourticklist;
+    private byte[][] swampcnt;
+    private BiomeMap[][] biomemap;
     
     private int chunks_read;    /* Number of chunks actually loaded */
     private int chunks_attempted;   /* Number of chunks attempted to load */
@@ -79,12 +81,15 @@ public class NewMapChunkCache implements MapChunkCache {
         private BlockStep laststep;
         private int typeid = -1;
         private int blkdata = -1;
-        private int lastbiome_x = Integer.MIN_VALUE, lastbiome_z = Integer.MIN_VALUE;
-        private BiomeMap lastbiome;
-        private int lastcountswamp_x = Integer.MIN_VALUE, lastcountswamp_z = Integer.MIN_VALUE, lastcountswamp;
         private final int worldheight;
+        private final int x_base;
+        private final int z_base;
         
         OurMapIterator(int x0, int y0, int z0) {
+            x_base = x_min << 4;
+            z_base = z_min << 4;
+            if(biome)
+                biomePrep();
             initialize(x0, y0, z0);
             worldheight = w.getMaxHeight();
         }
@@ -121,53 +126,80 @@ public class NewMapChunkCache implements MapChunkCache {
         public final int getBlockEmittedLight() {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
-        public final BiomeMap getBiome() {
-            if((x == lastbiome_x) && (z == lastbiome_z)) {
-                return lastbiome;
+        private void biomePrep() {
+            int x_size = x_dim << 4;
+            int z_size = (z_max - z_min + 1) << 4;
+            swampcnt = new byte[x_size][];
+            biomemap = new BiomeMap[x_size][];
+            for(int i = 0; i < x_size; i++) {
+                swampcnt[i] = new byte[z_size];
+                biomemap[i] = new BiomeMap[z_size];
             }
-            BiomeMap bio;
-            Biome bb = snap.getBiome(bx, bz);
-            if(bb != null)
-                bio = biome_to_bmap[bb.ordinal()];
-            else
-                bio = BiomeMap.NULL;
-            lastbiome_x = x;
-            lastbiome_z = z;
-            lastbiome = bio;
-            return bio;
+            for(int i = 0; i < x_size; i++) {
+                initialize(i + x_base, 64, z_base);
+                for(int j = 0; j < z_size; j++) {
+                    Biome bb = snap.getBiome(bx, bz);
+                    if(bb == null)
+                        biomemap[i][j] = BiomeMap.NULL;
+                    else
+                        biomemap[i][j] = biome_to_bmap[bb.ordinal()];
+                    if(biomemap[i][j] == BiomeMap.SWAMPLAND) {
+                        for(int ii = i-1; ii < i+2; ii++) {
+                            for(int jj = j-1; jj < j+2; jj++) {
+                                if(ii < 0) continue;
+                                if(jj < 0) continue;
+                                if(ii >= x_size) continue;
+                                if(jj >= z_size) continue;
+                                swampcnt[ii][jj]++;
+                            }
+                        }
+                    }
+                    stepPosition(BlockStep.Z_PLUS);
+                }
+            }
         }
+        
+        public final BiomeMap getBiome() {
+            return biomemap[x - x_base][z - z_base];
+        }
+        
         public final int  countSmoothedSwampBiomes() {
-            if((lastcountswamp_x == x) && (lastcountswamp_z == z))
-                return lastcountswamp;
-            int cnt = 0; 
-            BlockStep s_bak = laststep;
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.X_MINUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.Z_MINUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.X_PLUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.X_PLUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.Z_PLUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.Z_PLUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.X_MINUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.X_MINUS);
-            if(getBiome() == BiomeMap.SWAMPLAND) cnt++;
-            stepPosition(BlockStep.X_PLUS);
-            stepPosition(BlockStep.Z_MINUS);
-            laststep = s_bak;
-            
-            lastcountswamp_x = x;
-            lastcountswamp_z = z;
-            lastcountswamp = cnt;
-            
-            return cnt;
+            return swampcnt[x - x_base][z - z_base];
         }
+        
+        public final int  countSmoothedSwampBiomes(int sx, int sz, int scale) {
+            int xx = x - x_base;
+            int zz = z - z_base;
+            sx <<= 1;
+            sz <<= 1;
+            int s0 = swampcnt[xx][zz];
+            int w;
+            int tot;
+            if(sx < scale) {
+                w = scale - sx;
+                tot = (w * swampcnt[xx-1][zz]) + ((scale - w) * s0);
+            }
+            else if(sx > scale) {
+                w = sx - scale;
+                tot = (w * swampcnt[xx+1][zz]) + ((scale - w) * s0);
+            }
+            else {
+                tot = scale * s0;
+            }
+            if(sz < scale) {
+                w = scale - sz;
+                tot += (w * swampcnt[xx][zz-1]) + ((scale - w) * s0);
+            }
+            else if(sz > scale) {
+                w = sz - scale;
+                tot += (w * swampcnt[xx][zz+1]) + ((scale - w) * s0);
+            }
+            else {
+                tot += scale * s0;
+            }
+            return tot;
+        }
+        
         public final double getRawBiomeTemperature() {
             return snap.getRawBiomeTemperature(bx, bz);
         }
