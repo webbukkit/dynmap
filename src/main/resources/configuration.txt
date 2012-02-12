@@ -71,12 +71,13 @@ components:
     showspawn: true
     spawnicon: world
     spawnlabel: "Spawn"
-    # (optional) layer for showing offline player's positions
+    # (optional) layer for showing offline player's positions (for 'maxofflinetime' minutes after logoff)
     showofflineplayers: false
     offlinelabel: "Offline"
     offlineicon: offlineuser
     offlinehidebydefault: true
     offlineminzoom: 0
+    maxofflinetime: 30
     # (optional) layer for showing player's spawn beds
     showspawnbeds: false
     spawnbedlabel: "Spawn Beds"
