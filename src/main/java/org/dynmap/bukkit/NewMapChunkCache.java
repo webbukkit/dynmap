@@ -160,44 +160,56 @@ public class NewMapChunkCache implements MapChunkCache {
         }
         
         public final BiomeMap getBiome() {
-            return biomemap[x - x_base][z - z_base];
+            try {
+                return biomemap[x - x_base][z - z_base];
+            } catch (Exception ex) {
+                return BiomeMap.NULL;
+            }
         }
         
         public final int  countSmoothedSwampBiomes() {
-            return swampcnt[x - x_base][z - z_base];
+            try {
+                return swampcnt[x - x_base][z - z_base];
+            } catch (Exception ex) {
+                return 0;
+            }
         }
         
         public final int  countSmoothedSwampBiomes(int sx, int sz, int scale) {
-            int xx = x - x_base;
-            int zz = z - z_base;
-            sx <<= 1;
-            sz <<= 1;
-            int s0 = swampcnt[xx][zz];
-            int w;
-            int tot;
-            if(sx < scale) {
-                w = scale - sx;
-                tot = (w * swampcnt[xx-1][zz]) + ((scale - w) * s0);
+            try {
+                int xx = x - x_base;
+                int zz = z - z_base;
+                sx <<= 1;
+                sz <<= 1;
+                int s0 = swampcnt[xx][zz];
+                int w;
+                int tot;
+                if(sx < scale) {
+                    w = scale - sx;
+                    tot = (w * swampcnt[xx-1][zz]) + ((scale - w) * s0);
+                }
+                else if(sx > scale) {
+                    w = sx - scale;
+                    tot = (w * swampcnt[xx+1][zz]) + ((scale - w) * s0);
+                }
+                else {
+                    tot = scale * s0;
+                }
+                if(sz < scale) {
+                    w = scale - sz;
+                    tot += (w * swampcnt[xx][zz-1]) + ((scale - w) * s0);
+                }
+                else if(sz > scale) {
+                    w = sz - scale;
+                    tot += (w * swampcnt[xx][zz+1]) + ((scale - w) * s0);
+                }
+                else {
+                    tot += scale * s0;
+                }
+                return tot;
+            } catch (Exception ex) {
+                return 0;
             }
-            else if(sx > scale) {
-                w = sx - scale;
-                tot = (w * swampcnt[xx+1][zz]) + ((scale - w) * s0);
-            }
-            else {
-                tot = scale * s0;
-            }
-            if(sz < scale) {
-                w = scale - sz;
-                tot += (w * swampcnt[xx][zz-1]) + ((scale - w) * s0);
-            }
-            else if(sz > scale) {
-                w = sz - scale;
-                tot += (w * swampcnt[xx][zz+1]) + ((scale - w) * s0);
-            }
-            else {
-                tot += scale * s0;
-            }
-            return tot;
         }
         
         public final double getRawBiomeTemperature() {
