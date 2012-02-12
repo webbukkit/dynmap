@@ -64,7 +64,7 @@ commands:
            /<command> deleteicon id:<id> - remove icon 
            /<command> deleteicon <label> - remove icon 
            /<command> addcorner - add corner to corner list using current location
-           /<command> addcorner <x> <z> <world> - add corner with given x and z coordinate on given world to corner list
+           /<command> addcorner <x> <y> <z> <world> - add corner with given x, y and z coordinate on given world to corner list
            /<command> clearcorners - clear corner list
            /<command> addarea <label> - add new area with given label using corner list
            /<command> addarea id:<id> <label> - add new area with given ID using corner list
@@ -73,6 +73,13 @@ commands:
            /<command> listareas - list details of all areas
            /<command> updatearea <label> <arg>:<value> ... - update attributes of area with given label
            /<command> updatearea id:<id> <arg>:<value> ... - update attributes of area with given ID
+           /<command> addline <label> - add new poly-line with given label using corner list
+           /<command> addline id:<id> <label> - add new poly-line with given ID using corner list
+           /<command> deleteline <label> - delete poly-line with given label
+           /<command> deleteline id:<id> <label> - delete poly-line with given ID
+           /<command> listlines - list details of all poly-lines
+           /<command> updateline <label> <arg>:<value> ... - update attributes of poly-line with given label
+           /<command> updateline id:<id> <arg>:<value> ... - update attributes of poly-line with given ID
   dmap:
     description: List and modify dynmap configuration
     usage: |
@@ -239,6 +246,18 @@ permissions:
     default: op            
   dynmap.marker.deletearea:
     description: Allows /dmarker deletearea
+    default: op
+  dynmap.marker.addline:
+    description: Allows /dmarker addline
+    default: op            
+  dynmap.marker.updateline:
+    description: Allows /dmarker updateline
+    default: op            
+  dynmap.marker.listlines:
+    description: Allows /dmarker listlines
+    default: op            
+  dynmap.marker.deleteline:
+    description: Allows /dmarker deleteline
     default: op
   dynmap.dmap.worldlist:
     description: Allows /dmap worldlist
