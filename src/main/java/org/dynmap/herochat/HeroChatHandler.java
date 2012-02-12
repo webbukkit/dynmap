@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
@@ -28,8 +30,8 @@ public class HeroChatHandler {
     private DynmapCore core;
     private HeroChatChannel hcwebinputchan;
 
-    private class OurPluginListener extends ServerListener {
-        @Override
+    private class OurPluginListener implements Listener {
+        @EventHandler
         public void onPluginEnable(PluginEnableEvent event) {
             Plugin plugin = event.getPlugin();
             String name = plugin.getDescription().getName();
@@ -209,7 +211,7 @@ public class HeroChatHandler {
         /**
          * Handle custom events
          */
-        @Override
+        @EventHandler
         public void onCustomEvent(Event event) {
             if (HeroChatChannelEvent.isInstance(event)) {
                 HeroChatChannelEvent ce = new HeroChatChannelEvent(event);
@@ -261,7 +263,7 @@ public class HeroChatHandler {
         }
         else {
             /* Set up to hear when HeroChat is enabled */
-            DynmapPlugin.plugin.bep.registerEvent(Event.Type.PLUGIN_ENABLE, new OurPluginListener());
+            DynmapPlugin.plugin.pm.registerEvents(new OurPluginListener(), DynmapPlugin.plugin);
         }
     }
 
@@ -279,7 +281,8 @@ public class HeroChatHandler {
             return;
         }
         /* Register event handler */
-        DynmapPlugin.plugin.bep.registerEvent(Event.Type.CUSTOM_EVENT, new OurEventListener());
+        DynmapPlugin.plugin.pm.registerEvent(Event.Type.CUSTOM_EVENT, new OurEventListener(), Event.Priority.Monitor, DynmapPlugin.plugin);
+
         Log.verboseinfo("HeroChat integration active");
     }
     /**
