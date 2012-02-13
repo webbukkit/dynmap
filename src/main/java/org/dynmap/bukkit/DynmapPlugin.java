@@ -928,4 +928,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             Plugin plugin) {
         core.assertPlayerInvisibility(player.getName(), is_invisible, plugin.getDescription().getName());
     }
+
+    @Override
+    public void assertPlayerVisibility(String player, boolean is_visible,
+            String plugin_id) {
+        core.assertPlayerVisibility(player, is_visible, plugin_id);
+    }
+
+    @Override
+    public void assertPlayerVisibility(Player player, boolean is_visible,
+            Plugin plugin) {
+        core.assertPlayerVisibility(player.getName(), is_visible, plugin.getDescription().getName());
+    }
 }
