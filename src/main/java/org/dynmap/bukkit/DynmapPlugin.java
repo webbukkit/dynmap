@@ -245,40 +245,63 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             return null;
         }
+        @Override
+        public DynmapPlayer getOfflinePlayer(String name) {
+            OfflinePlayer op = getServer().getOfflinePlayer(name);
+            if(op != null) {
+                return new BukkitPlayer(op);
+            }
+            return null;
+        }
     }
     /**
      * Player access abstraction class
      */
     public class BukkitPlayer extends BukkitCommandSender implements DynmapPlayer {
         private Player player;
+        private OfflinePlayer offplayer;
         
         public BukkitPlayer(Player p) {
             super(p);
             player = p;
+            offplayer = p.getPlayer();
+        }
+        public BukkitPlayer(OfflinePlayer p) {
+            super(null);
+            offplayer = p;
         }
         @Override
         public boolean isConnected() {
-            return player.isOnline();
+            return offplayer.isOnline();
         }
         @Override
         public String getName() {
-            return player.getName();
+            return offplayer.getName();
         }
         @Override
         public String getDisplayName() {
-            return player.getDisplayName();
+            if(player != null)
+                return player.getDisplayName();
+            else
+                return offplayer.getName();
         }
         @Override
         public boolean isOnline() {
-            return player.isOnline();
+            return offplayer.isOnline();
         }
         @Override
         public DynmapLocation getLocation() {
+            if(player == null) {
+                return null;
+            }
             Location loc = player.getLocation();
             return toLoc(loc);
         }
         @Override
         public String getWorld() {
+            if(player == null) {
+                return null;
+            }
             World w = player.getWorld();
             if(w != null)
                 return w.getName();
@@ -286,27 +309,45 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         @Override
         public InetSocketAddress getAddress() {
-            return player.getAddress();
+            if(player != null)
+                return player.getAddress();
+            return null;
         }
         @Override
         public boolean isSneaking() {
-            return player.isSneaking();
+            if(player != null)
+                return player.isSneaking();
+            return false;
         }
         @Override
         public int getHealth() {
-            return player.getHealth();
+            if(player != null)
+                return player.getHealth();
+            else
+                return 0;
         }
         @Override
         public int getArmorPoints() {
-            return Armor.getArmorPoints(player);
+            if(player != null)
+                return Armor.getArmorPoints(player);
+            else
+                return 0;
         }
         @Override
         public DynmapLocation getBedSpawnLocation() {
-            Location loc = player.getBedSpawnLocation();
+            Location loc = offplayer.getBedSpawnLocation();
             if(loc != null) {
                 return toLoc(loc);
             }
             return null;
+        }
+        @Override
+        public long getLastLoginTime() {
+            return offplayer.getLastPlayed();
+        }
+        @Override
+        public long getFirstLoginTime() {
+            return offplayer.getFirstPlayed();
         }
     }
     /* Handler for generic console command sender */
@@ -319,21 +360,29 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         @Override
         public boolean hasPrivilege(String privid) {
-            return permissions.has(sender, privid);
+            if(sender != null)
+                return permissions.has(sender, privid);
+            return false;
         }
 
         @Override
         public void sendMessage(String msg) {
-            sender.sendMessage(msg);
+            if(sender != null)
+                sender.sendMessage(msg);
         }
 
         @Override
         public boolean isConnected() {
-            return true;
+            if(sender != null)
+                return true;
+            return false;
         }
         @Override
         public boolean isOp() {
-            return sender.isOp();
+            if(sender != null)
+                return sender.isOp();
+            else
+                return false;
         }
     }
     
