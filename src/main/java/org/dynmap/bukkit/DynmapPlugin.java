@@ -15,6 +15,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,6 +42,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
@@ -623,6 +625,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private boolean onplayermove;
     private boolean ongeneratechunk;
     private boolean onexplosion;
+    private boolean onstructuregrow;
 
     private void registerEvents() {
         Listener blockTrigger = new Listener() {
@@ -888,7 +891,34 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(w != null)
                     core.listenerManager.processWorldEvent(EventType.WORLD_UNLOAD, w);
             }
+            @EventHandler(priority=EventPriority.MONITOR)
+            public void onStructureGrow(StructureGrowEvent event) {
+                Location loc = event.getLocation();
+                String wname = loc.getWorld().getName();
+                int minx, maxx, miny, maxy, minz, maxz;
+                minx = maxx = loc.getBlockX();
+                miny = maxy = loc.getBlockY();
+                minz = maxz = loc.getBlockZ();
+                /* Calculate volume impacted by explosion */
+                List<BlockState> blocks = event.getBlocks();
+                for(BlockState b: blocks) {
+                    int x = b.getX();
+                    if(x < minx) minx = x;
+                    if(x > maxx) maxx = x;
+                    int y = b.getY();
+                    if(y < miny) miny = y;
+                    if(y > maxy) maxy = y;
+                    int z = b.getZ();
+                    if(z < minz) minz = z;
+                    if(z > maxz) maxz = z;
+                }
+                sscache.invalidateSnapshot(wname, minx, miny, minz, maxx, maxy, maxz);
+                if(onstructuregrow) {
+                    mapManager.touchVolume(wname, minx, miny, minz, maxx, maxy, maxz, "structuregrow");
+                }
+            }
         };
+        onstructuregrow = core.isTrigger("structuregrow");
         // To link configuration to real loaded worlds.
         pm.registerEvents(worldTrigger, this);
 
