@@ -6,19 +6,16 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.TreeSet;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChunkSnapshot;
-import org.dynmap.DynmapAPI;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
-import org.dynmap.MapManager;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
@@ -35,12 +32,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private static Method removeentities = null;
     private static Method getworldhandle = null;    
     private static Field  chunkbiome = null;
-    private static Field ticklist = null;
-    private static Method processticklist = null;
     private static boolean use_spout = false;
-
-    private static final int MAX_PROCESSTICKS = 20;
-    private static final int MAX_TICKLIST = 20000;
 
     private World w;
     private DynmapWorld dw;
@@ -57,7 +49,6 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean do_save = false;
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    private TreeSet<?> ourticklist;
     private byte[][] swampcnt;
     private BiomeMap[][] biomemap;
     
@@ -520,22 +511,6 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchFieldException nsmx) {
             }
-            /* ticklist for World */
-            try {
-                Class c = Class.forName("net.minecraft.server.World");
-                try {
-                    ticklist = c.getDeclaredField("K"); /* 1.0.0 */
-                } catch (NoSuchFieldException nsfx) {
-                    ticklist = c.getDeclaredField("N"); /* 1.8.1 */
-                }
-                ticklist.setAccessible(true);
-                if(ticklist.getType().isAssignableFrom(TreeSet.class) == false)
-                    ticklist = null;
-                processticklist = c.getDeclaredMethod("a", new Class[] { boolean.class } );
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchFieldException nsmx) {
-            } catch (NoSuchMethodException nsmx) {
-            }
             use_spout = DynmapPlugin.plugin.hasSpout();
             
             init = true;
@@ -547,8 +522,6 @@ public class NewMapChunkCache implements MapChunkCache {
         if((getworldhandle != null) && (craftworld == null)) {
             try {
                 craftworld = getworldhandle.invoke(w);   /* World.getHandle() */
-                if(ticklist != null)
-                    ourticklist = (TreeSet<?>)ticklist.get(craftworld);
             } catch (Exception x) {
             }
         }
@@ -597,8 +570,6 @@ public class NewMapChunkCache implements MapChunkCache {
         if(iterator == null)
             iterator = chunks.listIterator();
 
-        checkTickList();
-        
         DynmapCore.setIgnoreChunkLoads(true);
         //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
         // Load the required chunks.
@@ -893,27 +864,6 @@ public class NewMapChunkCache implements MapChunkCache {
         return exceptions;
     }
     
-    private boolean checkTickList() {
-        boolean isok = true;
-        if((ourticklist != null) && (processticklist != null)) {
-            int cnt = 0;
-            int ticksize = ourticklist.size();
-            while((cnt < MAX_PROCESSTICKS) && (ticksize > MAX_TICKLIST) && (ourticklist.size() > MAX_TICKLIST)) {
-                try {
-                    processticklist.invoke(craftworld, true);
-                } catch (Exception x) {
-                }
-                ticksize -= 1000;
-                cnt++;
-                MapManager.mapman.incExtraTickList();
-            }
-            if(cnt >= MAX_PROCESSTICKS) {   /* If still behind, delay processing */
-                isok = false;
-            }
-        }
-        return isok;
-    }
-
     static {
         Biome[] b = Biome.values();
         BiomeMap[] bm = BiomeMap.values();

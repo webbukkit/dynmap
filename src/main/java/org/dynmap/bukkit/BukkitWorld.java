@@ -13,7 +13,6 @@ import org.dynmap.utils.MapChunkCache;
 
 public class BukkitWorld extends DynmapWorld {
     private World world;
-    private static BlockLightLevel bll = new BlockLightLevel();
     
     public BukkitWorld(World w) {
         super(w.getName(), w.getMaxHeight());
@@ -67,12 +66,12 @@ public class BukkitWorld extends DynmapWorld {
     /* Test if sky light level is requestable */
     @Override
     public boolean canGetSkyLightLevel() {
-        return bll.isReady();
+        return true;
     }
     /* Return sky light level */
     @Override
     public int getSkyLightLevel(int x, int y, int z) {
-        return bll.getSkyLightLevel(world.getBlockAt(x, y, z));
+        return world.getBlockAt(x, y, z).getLightFromSky();
     }
     /**
      * Get world environment ID (lower case - normal, the_end, nether)
