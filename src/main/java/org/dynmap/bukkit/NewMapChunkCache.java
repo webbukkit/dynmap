@@ -480,10 +480,12 @@ public class NewMapChunkCache implements MapChunkCache {
             return chunk.getHighestBlockYAt(x, z);
         }
         public boolean isSectionEmpty(int sy) {
-            return chunk.isSectionEmpty(sy);
+            //TODO return chunk.isSectionEmpty(sy);
+            return false;
         }
         public int getTopNonEmptySection() {
-            return chunk.getTopNonEmptySection();
+            return 0;
+            //TODO return chunk.getTopNonEmptySection();
         }
     }
 
