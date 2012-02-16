@@ -396,6 +396,12 @@ public class NewMapChunkCache implements MapChunkCache {
         public double getRawBiomeRainfall(int x, int z) {
             return 0.0;
         }
+        public boolean isSectionEmpty(int sy) {
+            return true;
+        }
+        public int getTopNonEmptySection() {
+            return -1;
+        }
     }
 
     /**
@@ -430,6 +436,12 @@ public class NewMapChunkCache implements MapChunkCache {
         }
         public final int getHighestBlockYAt(int x, int z) {
             return 64;
+        }
+        public boolean isSectionEmpty(int sy) {
+            return (sy < 4);
+        }
+        public int getTopNonEmptySection() {
+            return 3;
         }
     }
     
@@ -466,6 +478,12 @@ public class NewMapChunkCache implements MapChunkCache {
         }
         public final int getHighestBlockYAt(int x, int z) {
             return chunk.getHighestBlockYAt(x, z);
+        }
+        public boolean isSectionEmpty(int sy) {
+            return chunk.isSectionEmpty(sy);
+        }
+        public int getTopNonEmptySection() {
+            return chunk.getTopNonEmptySection();
         }
     }
 
