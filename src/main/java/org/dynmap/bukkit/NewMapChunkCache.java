@@ -794,7 +794,7 @@ public class NewMapChunkCache implements MapChunkCache {
         return ss.getRawBiomeRainfall(x & 0xF, z & 0xF);
     }
     private void initSectionData(int idx) {
-        isSectionNotEmpty[idx] = new boolean[w.getMaxHeight() >> 16];
+        isSectionNotEmpty[idx] = new boolean[w.getMaxHeight() >> 4];
         int maxy = 0;
         if(snaparray[idx] != EMPTY) {
             /* Get max height */
