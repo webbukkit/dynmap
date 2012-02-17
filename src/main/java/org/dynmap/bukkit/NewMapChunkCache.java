@@ -51,6 +51,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     private byte[][] swampcnt;
     private BiomeMap[][] biomemap;
+    private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
     
     private int chunks_read;    /* Number of chunks actually loaded */
     private int chunks_attempted;   /* Number of chunks attempted to load */
@@ -118,6 +119,8 @@ public class NewMapChunkCache implements MapChunkCache {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
         private void biomePrep() {
+            if(swampcnt != null)
+                return;
             int x_size = x_dim << 4;
             int z_size = (z_max - z_min + 1) << 4;
             swampcnt = new byte[x_size][];
@@ -351,6 +354,12 @@ public class NewMapChunkCache implements MapChunkCache {
         public long getBlockKey() {
             return (((chunkindex * worldheight) + y) << 8) | (bx << 4) | bz;
         }
+        @Override
+        public final boolean isEmptySection() {
+            if(isSectionNotEmpty[chunkindex] == null)
+                initSectionData(chunkindex);
+             return !isSectionNotEmpty[chunkindex][y >> 4];
+        }
      }
 
     private class OurEndMapIterator extends OurMapIterator {
@@ -571,6 +580,7 @@ public class NewMapChunkCache implements MapChunkCache {
         }
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
+        isSectionNotEmpty = new boolean[x_dim * (z_max-z_min+1)][];
     }
     
     private ChunkSnapshot checkSpoutData(Chunk c, ChunkSnapshot ss) {
@@ -782,6 +792,30 @@ public class NewMapChunkCache implements MapChunkCache {
     public double getRawBiomeRainfall(int x, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getRawBiomeRainfall(x & 0xF, z & 0xF);
+    }
+    private void initSectionData(int idx) {
+        isSectionNotEmpty[idx] = new boolean[w.getMaxHeight() >> 16];
+        int maxy = 0;
+        if(snaparray[idx] != EMPTY) {
+            /* Get max height */
+            for(int i = 0; i < 16; i++) {
+                for(int j = 0; j < 16; j++) {
+                    maxy = Math.max(maxy, snaparray[idx].getHighestBlockYAt(i, j));
+                }
+            }
+            for(int i = 0; i < isSectionNotEmpty[idx].length; i++) {
+                if((i << 4) < maxy) { /* Below top? */
+                    isSectionNotEmpty[idx][i] = true;
+                }
+            }
+        }
+    }
+    public boolean isEmptySection(int x, int y, int z) {
+        int idx = ((x>>4) - x_min) + ((z>>4) - z_min) * x_dim;
+        if(isSectionNotEmpty[idx] == null) {
+            initSectionData(idx);
+        }
+        return isSectionNotEmpty[idx][y >> 4];
     }
 
     /**
