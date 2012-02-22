@@ -606,13 +606,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private void registerPlayerLoginListener() {
         Listener pl = new Listener() {
             @SuppressWarnings("unused")
-            @EventHandler
+            @EventHandler(priority=EventPriority.MONITOR)
             public void onPlayerJoin(PlayerJoinEvent evt) {
                 DynmapPlayer dp = new BukkitPlayer(evt.getPlayer());                
                 core.listenerManager.processPlayerEvent(EventType.PLAYER_JOIN, dp);
             }
             @SuppressWarnings("unused")
-            @EventHandler
+            @EventHandler(priority=EventPriority.MONITOR)
             public void onPlayerQuit(PlayerQuitEvent evt) {
                 DynmapPlayer dp = new BukkitPlayer(evt.getPlayer());
                 core.listenerManager.processPlayerEvent(EventType.PLAYER_QUIT, dp);
@@ -841,12 +841,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     Location loc = event.getPlayer().getLocation();
                     mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playerjoin");
                 }
-                core.listenerManager.processPlayerEvent(EventType.PLAYER_JOIN, new BukkitPlayer(event.getPlayer()));
-            }
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onPlayerQuit(PlayerQuitEvent event) {
-                core.listenerManager.processPlayerEvent(EventType.PLAYER_QUIT, new BukkitPlayer(event.getPlayer()));
             }
         };
 
