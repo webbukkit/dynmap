@@ -3,6 +3,7 @@ package org.dynmap.bukkit;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -11,6 +12,7 @@ import java.util.concurrent.Future;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -80,6 +82,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public SpoutPluginBlocks spb;
     public PluginManager pm;
 
+    private static class BlockToCheck {
+        Location loc;
+        int typeid;
+        String trigger;
+    };
+    private LinkedList<BlockToCheck> blocks_to_check = new LinkedList<BlockToCheck>();
+    
     public DynmapPlugin() {
         plugin = this;
     }
@@ -621,6 +630,42 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         pm.registerEvents(pl, this);
     }
 
+
+    private void checkBlock(Block b, String trigger) {
+        BlockToCheck btt = new BlockToCheck();
+        btt.loc = b.getLocation();
+        btt.typeid = b.getTypeId();
+        btt.trigger = trigger;
+        if(blocks_to_check.isEmpty()) {
+            blocks_to_check.add(btt);
+            getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                public void run() {
+                    BlockToCheck btt;
+                    while(blocks_to_check.isEmpty() != true) {
+                        btt = blocks_to_check.pop();
+                        Location loc = btt.loc;
+                        World w = loc.getWorld();
+                        int bt = w.getBlockTypeIdAt(loc);
+                        /* Avoid stationary and moving water churn */
+                        if(bt == 9) bt = 8;
+                        if(btt.typeid == 9) btt.typeid = 8;
+                        if(bt != btt.typeid) {
+                            sscache.invalidateSnapshot(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                            if((onblockfromto && btt.trigger.equals("blockfromto")) ||
+                               (onblockphysics && btt.trigger.equals("blockphysics"))) {
+                                mapManager.touch(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), btt.trigger);
+                                //Log.info("trigger=" + btt.trigger + " before=" + btt.typeid + ", after=" + bt);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            blocks_to_check.add(btt);
+        }
+    }
+    
     private boolean onplace;
     private boolean onbreak;
     private boolean onblockform;
@@ -735,16 +780,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockFromTo(BlockFromToEvent event) {
                 if(event.isCancelled())
                     return;
-                Location loc = event.getToBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockfromto)
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfromto");
-                loc = event.getBlock().getLocation();
-                wn = loc.getWorld().getName();
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockfromto)
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfromto");
+                checkBlock(event.getBlock(), "blockfromto");
+                checkBlock(event.getToBlock(), "blockfromto");
             }
             
             @SuppressWarnings("unused")
@@ -752,12 +789,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockPhysics(BlockPhysicsEvent event) {
                 if(event.isCancelled())
                     return;
-                Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockphysics) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockphysics");
-                }
+                Block b = event.getBlock();
+                checkBlock(event.getBlock(), "blockphysics");
             }
 
             @SuppressWarnings("unused")
