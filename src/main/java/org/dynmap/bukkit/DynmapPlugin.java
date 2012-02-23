@@ -85,9 +85,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private static class BlockToCheck {
         Location loc;
         int typeid;
+        byte data;
         String trigger;
     };
-    private LinkedList<BlockToCheck> blocks_to_check = new LinkedList<BlockToCheck>();
+    private LinkedList<BlockToCheck> blocks_to_check = null;
+    private LinkedList<BlockToCheck> blocks_to_check_accum = new LinkedList<BlockToCheck>();
     
     public DynmapPlugin() {
         plugin = this;
@@ -630,40 +632,50 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         pm.registerEvents(pl, this);
     }
 
+    private class BlockCheckHandler implements Runnable {
+        public void run() {
+            BlockToCheck btt;
+            while(blocks_to_check.isEmpty() != true) {
+                btt = blocks_to_check.pop();
+                Location loc = btt.loc;
+                World w = loc.getWorld();
+                if(!w.isChunkLoaded(loc.getBlockX()>>4, loc.getBlockZ()>>4))
+                    continue;
+                int bt = w.getBlockTypeIdAt(loc);
+                /* Avoid stationary and moving water churn */
+                if(bt == 9) bt = 8;
+                if(btt.typeid == 9) btt.typeid = 8;
+                if((bt != btt.typeid) || (btt.data != w.getBlockAt(loc).getData())) {
+                    sscache.invalidateSnapshot(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    if((onblockfromto && btt.trigger.equals("blockfromto")) ||
+                       (onblockphysics && btt.trigger.equals("blockphysics"))) {
+                        mapManager.touch(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), btt.trigger);
+                        //Log.info("trigger=" + btt.trigger + " before=" + btt.typeid + ", after=" + bt);
+                    }
+                }
+            }
+            blocks_to_check = null;
+            /* Kick next run, if one is needed */
+            startIfNeeded();
+        }
+        public void startIfNeeded() {
+            if((blocks_to_check == null) && (blocks_to_check_accum.isEmpty() == false)) { /* More pending? */
+                blocks_to_check = blocks_to_check_accum;
+                blocks_to_check_accum = new LinkedList<BlockToCheck>();
+                getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, this, 10);
+            }
+        }
+    }
+    private BlockCheckHandler btth = new BlockCheckHandler();
 
     private void checkBlock(Block b, String trigger) {
         BlockToCheck btt = new BlockToCheck();
         btt.loc = b.getLocation();
         btt.typeid = b.getTypeId();
+        btt.data = b.getData();
         btt.trigger = trigger;
-        if(blocks_to_check.isEmpty()) {
-            blocks_to_check.add(btt);
-            getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                public void run() {
-                    BlockToCheck btt;
-                    while(blocks_to_check.isEmpty() != true) {
-                        btt = blocks_to_check.pop();
-                        Location loc = btt.loc;
-                        World w = loc.getWorld();
-                        int bt = w.getBlockTypeIdAt(loc);
-                        /* Avoid stationary and moving water churn */
-                        if(bt == 9) bt = 8;
-                        if(btt.typeid == 9) btt.typeid = 8;
-                        if(bt != btt.typeid) {
-                            sscache.invalidateSnapshot(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                            if((onblockfromto && btt.trigger.equals("blockfromto")) ||
-                               (onblockphysics && btt.trigger.equals("blockphysics"))) {
-                                mapManager.touch(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), btt.trigger);
-                                //Log.info("trigger=" + btt.trigger + " before=" + btt.typeid + ", after=" + bt);
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        else {
-            blocks_to_check.add(btt);
-        }
+        blocks_to_check_accum.add(btt); /* Add to accumulator */
+        btth.startIfNeeded();
     }
     
     private boolean onplace;
@@ -780,8 +792,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onBlockFromTo(BlockFromToEvent event) {
                 if(event.isCancelled())
                     return;
-                checkBlock(event.getBlock(), "blockfromto");
-                checkBlock(event.getToBlock(), "blockfromto");
+                Material m = event.getBlock().getType();
+                if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
+                    checkBlock(event.getBlock(), "blockfromto");
+                m = event.getToBlock().getType();
+                if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
+                    checkBlock(event.getToBlock(), "blockfromto");
             }
             
             @SuppressWarnings("unused")
@@ -790,7 +806,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Block b = event.getBlock();
-                checkBlock(event.getBlock(), "blockphysics");
+                Material m = b.getType();
+                switch(m) {
+                case STATIONARY_WATER:
+                case WATER:
+                case STATIONARY_LAVA:
+                case LAVA:
+                case GRAVEL:
+                case SAND:
+                    checkBlock(event.getBlock(), "blockphysics");
+                    break;
+                }
             }
 
             @SuppressWarnings("unused")
