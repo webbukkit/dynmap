@@ -233,13 +233,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public boolean sendWebChatEvent(String source, String name, String msg) {
             DynmapWebChatEvent evt = new DynmapWebChatEvent(source, name, msg);
-            Log.info("sendWebChatEvent(" + msg + ")");
             getServer().getPluginManager().callEvent(evt);
-            return (evt.isCancelled() == false);
+            return ((evt.isCancelled() == false) && (evt.isProcessed() == false));
         }
         @Override
         public void broadcastMessage(String msg) {
-            Log.info("broadcastMessage(" + msg + ")");
             getServer().broadcastMessage(msg);
         }
         @Override
@@ -1052,4 +1050,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             Plugin plugin) {
         core.assertPlayerVisibility(player.getName(), is_visible, plugin.getDescription().getName());
     }
+    @Override
+    public boolean setDisableChatToWebProcessing(boolean disable) {
+        return core.setDisableChatToWebProcessing(disable);
+    }
+
 }
