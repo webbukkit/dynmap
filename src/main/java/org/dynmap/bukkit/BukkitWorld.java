@@ -15,7 +15,7 @@ public class BukkitWorld extends DynmapWorld {
     private World world;
     
     public BukkitWorld(World w) {
-        super(w.getName(), w.getMaxHeight());
+        super(w.getName(), w.getMaxHeight(), w.getSeaLevel());
         
         world = w;
     }
