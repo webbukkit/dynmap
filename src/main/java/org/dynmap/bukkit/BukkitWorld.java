@@ -15,7 +15,7 @@ public class BukkitWorld extends DynmapWorld {
     private World world;
     
     public BukkitWorld(World w) {
-        super(w.getName(), w.getMaxHeight(), w.getSeaLevel());
+        super(normalizeWorldName(w.getName()), w.getMaxHeight(), w.getSeaLevel());
         
         world = w;
     }
@@ -30,7 +30,7 @@ public class BukkitWorld extends DynmapWorld {
         DynmapLocation dloc = new DynmapLocation();
         Location sloc = world.getSpawnLocation();
         dloc.x = sloc.getBlockX(); dloc.y = sloc.getBlockY();
-        dloc.z = sloc.getBlockZ(); dloc.world = sloc.getWorld().getName();
+        dloc.z = sloc.getBlockZ(); dloc.world = normalizeWorldName(sloc.getWorld().getName());
         return dloc;
     }
     /* Get world time */
@@ -92,5 +92,9 @@ public class BukkitWorld extends DynmapWorld {
     
     public World getWorld() {
         return world;
+    }
+    
+    public static String normalizeWorldName(String n) {
+        return n.replace('/', '-');
     }
 }

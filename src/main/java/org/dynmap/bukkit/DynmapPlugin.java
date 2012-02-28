@@ -203,7 +203,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                             Block b = evt.getBlock();
                             Location l = b.getLocation();
                             core.listenerManager.processBlockEvent(EventType.BLOCK_BREAK, b.getType().getId(),
-                                    l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+                                    BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
                         }
                     }, DynmapPlugin.this);
                     break;
@@ -219,7 +219,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                             Player p = evt.getPlayer();
                             if(p != null) dp = new BukkitPlayer(p);
                             core.listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, b.getType().getId(),
-                                    l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), lines, dp);
+                                    BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ(), lines, dp);
                         }
                     }, DynmapPlugin.this);
                     break;
@@ -323,7 +323,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             World w = player.getWorld();
             if(w != null)
-                return w.getName();
+                return BukkitWorld.normalizeWorldName(w.getName());
             return null;
         }
         @Override
@@ -579,7 +579,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         int x0 = l0.getBlockX(), y0 = l0.getBlockY(), z0 = l0.getBlockZ();
         int x1 = l1.getBlockX(), y1 = l1.getBlockY(), z1 = l1.getBlockZ();
         
-        return core.triggerRenderOfVolume(l0.getWorld().getName(), Math.min(x0, x1), Math.min(y0, y1),
+        return core.triggerRenderOfVolume(BukkitWorld.normalizeWorldName(l0.getWorld().getName()), Math.min(x0, x1), Math.min(y0, y1),
                 Math.min(z0, z1), Math.max(x0, x1), Math.max(y0, y1), Math.max(z0, z1));
     }
 
@@ -609,7 +609,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
     
     private static DynmapLocation toLoc(Location l) {
-        return new DynmapLocation(l.getWorld().getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        return new DynmapLocation(BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
     
     private void registerPlayerLoginListener() {
@@ -644,10 +644,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(bt == 9) bt = 8;
                 if(btt.typeid == 9) btt.typeid = 8;
                 if((bt != btt.typeid) || (btt.data != w.getBlockAt(loc).getData())) {
-                    sscache.invalidateSnapshot(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    String wn = BukkitWorld.normalizeWorldName(w.getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                     if((onblockfromto && btt.trigger.equals("blockfromto")) ||
                        (onblockphysics && btt.trigger.equals("blockphysics"))) {
-                        mapManager.touch(w.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), btt.trigger);
+                        mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), btt.trigger);
                         //Log.info("trigger=" + btt.trigger + " before=" + btt.typeid + ", after=" + bt);
                     }
                 }
@@ -700,7 +701,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onplace) {
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockplace");
@@ -713,7 +714,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onbreak) {
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockbreak");
@@ -726,7 +727,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onleaves) {
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "leavesdecay");
@@ -739,7 +740,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onburn) {
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockburn");
@@ -752,7 +753,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockform) {
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockform");
@@ -765,7 +766,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockfade) {
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfade");
@@ -778,7 +779,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(event.isCancelled())
                     return;
                 Location loc = event.getBlock().getLocation();
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 if(onblockspread) {
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockspread");
@@ -830,7 +831,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 } catch (ClassCastException ccx) {
                     dir = BlockFace.NORTH;
                 }
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
                 sscache.invalidateSnapshot(wn, x, y, z);
                 if(onpiston)
@@ -858,7 +859,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 } catch (ClassCastException ccx) {
                     dir = BlockFace.NORTH;
                 }
-                String wn = loc.getWorld().getName();
+                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
                 sscache.invalidateSnapshot(wn, x, y, z);
                 if(onpiston)
@@ -896,7 +897,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onPlayerJoin(PlayerJoinEvent event) {
                 if(onplayerjoin) {
                     Location loc = event.getPlayer().getLocation();
-                    mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playerjoin");
+                    mapManager.touch(BukkitWorld.normalizeWorldName(loc.getWorld().getName()), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playerjoin");
                 }
             }
         };
@@ -911,7 +912,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onPlayerMove(PlayerMoveEvent event) {
                     Location loc = event.getPlayer().getLocation();
-                    mapManager.touch(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playermove");
+                    mapManager.touch(BukkitWorld.normalizeWorldName(loc.getWorld().getName()), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "playermove");
                 }
             };
             pm.registerEvents(playermove, this);
@@ -923,7 +924,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             @EventHandler(priority=EventPriority.MONITOR)
             public void onEntityExplode(EntityExplodeEvent event) {
                 Location loc = event.getLocation();
-                String wname = loc.getWorld().getName();
+                String wname = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 int minx, maxx, miny, maxy, minz, maxz;
                 minx = maxx = loc.getBlockX();
                 miny = maxy = loc.getBlockY();
@@ -965,7 +966,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             @EventHandler(priority=EventPriority.MONITOR)
             public void onWorldUnload(WorldUnloadEvent event) {
                 core.updateConfigHashcode();
-                DynmapWorld w = core.getWorld(event.getWorld().getName());
+                DynmapWorld w = core.getWorld(BukkitWorld.normalizeWorldName(event.getWorld().getName()));
                 if(w != null)
                     core.listenerManager.processWorldEvent(EventType.WORLD_UNLOAD, w);
             }
@@ -973,7 +974,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             @EventHandler(priority=EventPriority.MONITOR)
             public void onStructureGrow(StructureGrowEvent event) {
                 Location loc = event.getLocation();
-                String wname = loc.getWorld().getName();
+                String wname = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                 int minx, maxx, miny, maxy, minz, maxz;
                 minx = maxx = loc.getBlockX();
                 miny = maxy = loc.getBlockY();
@@ -1011,7 +1012,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     /* Touch extreme corners */
                     int x = c.getX() << 4;
                     int z = c.getZ() << 4;
-                    mapManager.touchVolume(event.getWorld().getName(), x, 0, z, x+15, 128, z+16, "chunkpopulate");
+                    mapManager.touchVolume(BukkitWorld.normalizeWorldName(event.getWorld().getName()), x, 0, z, x+15, 128, z+16, "chunkpopulate");
                 }
             };
             pm.registerEvents(chunkTrigger, this);
