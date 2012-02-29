@@ -230,6 +230,9 @@ compass-mode: newnorth
 # Enable Kaevator's Superslopes block rendering support
 #superslopes-support: true
 
+# Enabled ComputerCraft block rendering support
+#computercraft-support: true
+
 render-triggers:
   #- playermove
   #- playerjoin
