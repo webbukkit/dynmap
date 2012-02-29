@@ -29,6 +29,7 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -692,6 +693,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private boolean ongeneratechunk;
     private boolean onexplosion;
     private boolean onstructuregrow;
+    private boolean onblockgrow;
 
     private void registerEvents() {
         Listener blockTrigger = new Listener() {
@@ -887,8 +889,30 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         onblockfromto = core.isTrigger("blockfromto");
         onblockphysics = core.isTrigger("blockphysics");
         onpiston = core.isTrigger("pistonmoved");
-        
+        onblockfade = core.isTrigger("blockfaded");
         pm.registerEvents(blockTrigger, this);
+        
+        try {
+            Class.forName("org.bukkit.event.block.BlockGrowEvent");
+            Listener growTrigger = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockGrow(BlockGrowEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    if(onblockgrow) {
+                        mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockgrow");
+                    }
+                }
+            };
+            onblockgrow = core.isTrigger("blockgrow");
+            pm.registerEvents(growTrigger, this);
+        } catch (ClassNotFoundException cnfx) {
+            /* Pre-R5 - no grow event yet */
+        }
         
         /* Register player event trigger handlers */
         Listener playerTrigger = new Listener() {
