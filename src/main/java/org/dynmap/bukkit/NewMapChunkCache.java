@@ -37,6 +37,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private World w;
     private DynmapWorld dw;
     private Object craftworld;
+    private int nsect;
     private List<DynmapChunk> chunks;
     private ListIterator<DynmapChunk> iterator;
     private int x_min, x_max, z_min, z_max;
@@ -548,6 +549,7 @@ public class NewMapChunkCache implements MapChunkCache {
     public void setChunks(BukkitWorld dw, List<DynmapChunk> chunks) {
         this.dw = dw;
         this.w = dw.getWorld();
+        nsect = dw.worldheight >> 4;
         if((getworldhandle != null) && (craftworld == null)) {
             try {
                 craftworld = getworldhandle.invoke(w);   /* World.getHandle() */
@@ -794,7 +796,7 @@ public class NewMapChunkCache implements MapChunkCache {
         return ss.getRawBiomeRainfall(x & 0xF, z & 0xF);
     }
     private void initSectionData(int idx) {
-        isSectionNotEmpty[idx] = new boolean[w.getMaxHeight() >> 4];
+        isSectionNotEmpty[idx] = new boolean[nsect + 1];
         int maxy = 0;
         if(snaparray[idx] != EMPTY) {
             /* Get max height */
@@ -803,19 +805,20 @@ public class NewMapChunkCache implements MapChunkCache {
                     maxy = Math.max(maxy, snaparray[idx].getHighestBlockYAt(i, j));
                 }
             }
-            for(int i = 0; i < isSectionNotEmpty[idx].length; i++) {
-                if((i << 4) < maxy) { /* Below top? */
+            maxy = (maxy-1) >> 4;
+            for(int i = 0; i <= nsect; i++) {
+                if(i <= maxy) { /* Below top? */
                     isSectionNotEmpty[idx][i] = true;
                 }
             }
         }
     }
-    public boolean isEmptySection(int x, int y, int z) {
-        int idx = ((x>>4) - x_min) + ((z>>4) - z_min) * x_dim;
+    public boolean isEmptySection(int sx, int sy, int sz) {
+        int idx = (sx - x_min) + (sz - z_min) * x_dim;
         if(isSectionNotEmpty[idx] == null) {
             initSectionData(idx);
         }
-        return isSectionNotEmpty[idx][y >> 4];
+        return !isSectionNotEmpty[idx][sy];
     }
 
     /**
@@ -893,7 +896,8 @@ public class NewMapChunkCache implements MapChunkCache {
     public boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome) {
         this.biome = biome;
         this.biomeraw = rawbiome;
-        this.highesty = highestblocky;
+        //this.highesty = highestblocky;
+        this.highesty = true;
         this.blockdata = blockdata;
         return true;
     }
