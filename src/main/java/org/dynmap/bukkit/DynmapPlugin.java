@@ -647,11 +647,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if((bt != btt.typeid) || (btt.data != w.getBlockAt(loc).getData())) {
                     String wn = BukkitWorld.normalizeWorldName(w.getName());
                     sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                    if((onblockfromto && btt.trigger.equals("blockfromto")) ||
-                       (onblockphysics && btt.trigger.equals("blockphysics"))) {
-                        mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), btt.trigger);
-                        //Log.info("trigger=" + btt.trigger + " before=" + btt.typeid + ", after=" + bt);
-                    }
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), btt.trigger);
                 }
             }
             blocks_to_check = null;
@@ -696,191 +692,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private boolean onblockgrow;
 
     private void registerEvents() {
-        Listener blockTrigger = new Listener() {
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockPlace(BlockPlaceEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onplace) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockplace");
-                }
-            }
-
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockBreak(BlockBreakEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onbreak) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockbreak");
-                }
-            }
-
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onLeavesDecay(LeavesDecayEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onleaves) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "leavesdecay");
-                }
-            }
-            
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockBurn(BlockBurnEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onburn) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockburn");
-                }
-            }
-            
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockForm(BlockFormEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockform) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockform");
-                }
-            }
-
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockFade(BlockFadeEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockfade) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfade");
-                }
-            }
-            
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockSpread(BlockSpreadEvent event) {
-                if(event.isCancelled())
-                    return;
-                Location loc = event.getBlock().getLocation();
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                if(onblockspread) {
-                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockspread");
-                }
-            }
-
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockFromTo(BlockFromToEvent event) {
-                if(event.isCancelled())
-                    return;
-                Material m = event.getBlock().getType();
-                if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
-                    checkBlock(event.getBlock(), "blockfromto");
-                m = event.getToBlock().getType();
-                if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
-                    checkBlock(event.getToBlock(), "blockfromto");
-            }
-            
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockPhysics(BlockPhysicsEvent event) {
-                if(event.isCancelled())
-                    return;
-                Block b = event.getBlock();
-                Material m = b.getType();
-                switch(m) {
-                case STATIONARY_WATER:
-                case WATER:
-                case STATIONARY_LAVA:
-                case LAVA:
-                case GRAVEL:
-                case SAND:
-                    checkBlock(event.getBlock(), "blockphysics");
-                    break;
-                }
-            }
-
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-                if(event.isCancelled())
-                    return;
-                Block b = event.getBlock();
-                Location loc = b.getLocation();
-                BlockFace dir;
-                try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
-                    dir = event.getDirection();
-                } catch (ClassCastException ccx) {
-                    dir = BlockFace.NORTH;
-                }
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
-                sscache.invalidateSnapshot(wn, x, y, z);
-                if(onpiston)
-                    mapManager.touch(wn, x, y, z, "pistonretract");
-                for(int i = 0; i < 2; i++) {
-                    x += dir.getModX();
-                    y += dir.getModY();
-                    z += dir.getModZ();
-                    sscache.invalidateSnapshot(wn, x, y, z);
-                    if(onpiston)
-                        mapManager.touch(wn, x, y, z, "pistonretract");
-                }
-            }
-
-            @SuppressWarnings("unused")
-            @EventHandler(priority=EventPriority.MONITOR)
-            public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-                if(event.isCancelled())
-                    return;
-                Block b = event.getBlock();
-                Location loc = b.getLocation();
-                BlockFace dir;
-                try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
-                    dir = event.getDirection();
-                } catch (ClassCastException ccx) {
-                    dir = BlockFace.NORTH;
-                }
-                String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
-                int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
-                sscache.invalidateSnapshot(wn, x, y, z);
-                if(onpiston)
-                    mapManager.touch(wn, x, y, z, "pistonretract");
-                for(int i = 0; i < 1+event.getLength(); i++) {
-                    x += dir.getModX();
-                    y += dir.getModY();
-                    z += dir.getModZ();
-                    sscache.invalidateSnapshot(wn, x, y, z);
-                    if(onpiston)
-                        mapManager.touch(wn, x, y, z, "pistonretract");
-                }
-            }
-        };
         
         // To trigger rendering.
         onplace = core.isTrigger("blockplaced");
         onbreak = core.isTrigger("blockbreak");
-        if(core.isTrigger("snowform")) Log.info("The 'snowform' trigger has been deprecated due to Bukkit changes - use 'blockformed'");
         onleaves = core.isTrigger("leavesdecay");
         onburn = core.isTrigger("blockburn");
         onblockform = core.isTrigger("blockformed");
@@ -890,28 +705,245 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         onblockphysics = core.isTrigger("blockphysics");
         onpiston = core.isTrigger("pistonmoved");
         onblockfade = core.isTrigger("blockfaded");
-        pm.registerEvents(blockTrigger, this);
         
-        try {
-            Class.forName("org.bukkit.event.block.BlockGrowEvent");
-            Listener growTrigger = new Listener() {
+        if(onplace) {
+            Listener placelistener = new Listener() {
                 @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
-                public void onBlockGrow(BlockGrowEvent event) {
+                public void onBlockPlace(BlockPlaceEvent event) {
                     if(event.isCancelled())
                         return;
                     Location loc = event.getBlock().getLocation();
                     String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                     sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                    if(onblockgrow) {
-                        mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockgrow");
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockplace");
+                }
+            };
+            pm.registerEvents(placelistener, this);
+        }
+        
+        if(onbreak) {
+            Listener breaklistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockBreak(BlockBreakEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockbreak");
+                }
+            };
+            pm.registerEvents(breaklistener, this);
+        }
+        
+        if(onleaves) {
+            Listener leaveslistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onLeavesDecay(LeavesDecayEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    if(onleaves) {
+                        mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "leavesdecay");
                     }
                 }
             };
-            onblockgrow = core.isTrigger("blockgrow");
-            pm.registerEvents(growTrigger, this);
-        } catch (ClassNotFoundException cnfx) {
-            /* Pre-R5 - no grow event yet */
+            pm.registerEvents(leaveslistener, this);
+        }
+
+        if(onburn) {
+            Listener burnlistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockBurn(BlockBurnEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    if(onburn) {
+                        mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockburn");
+                    }
+                }
+            };
+            pm.registerEvents(burnlistener, this);
+        }
+        
+        if(onblockphysics) {
+            Listener physlistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockPhysics(BlockPhysicsEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Block b = event.getBlock();
+                    Material m = b.getType();
+                    switch(m) {
+                        case STATIONARY_WATER:
+                        case WATER:
+                        case STATIONARY_LAVA:
+                        case LAVA:
+                        case GRAVEL:
+                        case SAND:
+                            checkBlock(event.getBlock(), "blockphysics");
+                            break;
+                    }
+                }
+            };
+            pm.registerEvents(physlistener, this);
+        }
+        
+        if(onblockfromto) {
+            Listener fromtolistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockFromTo(BlockFromToEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Material m = event.getBlock().getType();
+                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
+                        checkBlock(event.getBlock(), "blockfromto");
+                    m = event.getToBlock().getType();
+                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
+                        checkBlock(event.getToBlock(), "blockfromto");
+                }
+            };
+            pm.registerEvents(fromtolistener, this);
+        }
+        
+        if(onpiston) {
+            Listener pistonlistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Block b = event.getBlock();
+                    Location loc = b.getLocation();
+                    BlockFace dir;
+                    try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
+                        dir = event.getDirection();
+                    } catch (ClassCastException ccx) {
+                        dir = BlockFace.NORTH;
+                    }
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+                    sscache.invalidateSnapshot(wn, x, y, z);
+                    if(onpiston)
+                        mapManager.touch(wn, x, y, z, "pistonretract");
+                    for(int i = 0; i < 2; i++) {
+                        x += dir.getModX();
+                        y += dir.getModY();
+                        z += dir.getModZ();
+                        sscache.invalidateSnapshot(wn, x, y, z);
+                        mapManager.touch(wn, x, y, z, "pistonretract");
+                    }
+                }
+
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Block b = event.getBlock();
+                    Location loc = b.getLocation();
+                    BlockFace dir;
+                    try {   /* Workaround Bukkit bug = http://leaky.bukkit.org/issues/1227 */
+                        dir = event.getDirection();
+                    } catch (ClassCastException ccx) {
+                        dir = BlockFace.NORTH;
+                    }
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+                    sscache.invalidateSnapshot(wn, x, y, z);
+                    if(onpiston)
+                        mapManager.touch(wn, x, y, z, "pistonretract");
+                    for(int i = 0; i < 1+event.getLength(); i++) {
+                        x += dir.getModX();
+                        y += dir.getModY();
+                        z += dir.getModZ();
+                        sscache.invalidateSnapshot(wn, x, y, z);
+                        mapManager.touch(wn, x, y, z, "pistonretract");
+                    }
+                }
+            };
+            pm.registerEvents(pistonlistener, this);
+        }
+        
+        if(onblockspread) {
+            Listener spreadlistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockSpread(BlockSpreadEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockspread");
+                }
+            };
+            pm.registerEvents(spreadlistener, this);
+        }
+        
+        if(onblockform) {
+            Listener formlistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockForm(BlockFormEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockform");
+                }
+            };
+            pm.registerEvents(formlistener, this);
+        }
+        
+        if(onblockfade) {
+            Listener fadelistener = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockFade(BlockFadeEvent event) {
+                    if(event.isCancelled())
+                        return;
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockfade");
+                }
+            };
+            pm.registerEvents(fadelistener, this);
+        }
+        
+        onblockgrow = core.isTrigger("blockgrow");
+        
+        if(onblockgrow) {
+            try {
+                Class.forName("org.bukkit.event.block.BlockGrowEvent");
+                Listener growTrigger = new Listener() {
+                    @SuppressWarnings("unused")
+                    @EventHandler(priority=EventPriority.MONITOR)
+                    public void onBlockGrow(BlockGrowEvent event) {
+                        if(event.isCancelled())
+                            return;
+                        Location loc = event.getBlock().getLocation();
+                        String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                        sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                        mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockgrow");
+                    }
+                };
+                pm.registerEvents(growTrigger, this);
+            } catch (ClassNotFoundException cnfx) {
+                /* Pre-R5 - no grow event yet */
+            }
         }
         
         /* Register player event trigger handlers */
