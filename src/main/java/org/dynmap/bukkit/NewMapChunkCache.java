@@ -800,9 +800,14 @@ public class NewMapChunkCache implements MapChunkCache {
         int maxy = 0;
         if(snaparray[idx] != EMPTY) {
             /* Get max height */
-            for(int i = 0; i < 16; i++) {
-                for(int j = 0; j < 16; j++) {
-                    maxy = Math.max(maxy, snaparray[idx].getHighestBlockYAt(i, j));
+            if(dw.isNether()) {
+                maxy = 128;
+            }
+            else {
+                for(int i = 0; i < 16; i++) {
+                    for(int j = 0; j < 16; j++) {
+                        maxy = Math.max(maxy, snaparray[idx].getHighestBlockYAt(i, j));
+                    }
                 }
             }
             maxy = (maxy-1) >> 4;
