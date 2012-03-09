@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -31,8 +32,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private static Method gethandle = null;
     private static Method removeentities = null;
     private static Method getworldhandle = null;    
-    private static Field  chunkbiome = null;
     private static boolean use_spout = false;
+    private static boolean use_sections = false;
 
     private World w;
     private DynmapWorld dw;
@@ -532,15 +533,13 @@ public class NewMapChunkCache implements MapChunkCache {
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
             }
-                        
-            /* Get CraftChunkSnapshot.biome field */
+            /* Check for ChunkSnapshot.isSectionEmpty(int) method */
             try {
-                Class c = Class.forName("org.bukkit.craftbukkit.CraftChunkSnapshot");
-                chunkbiome = c.getDeclaredField("biome");
-                chunkbiome.setAccessible(true);
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchFieldException nsmx) {
+                ChunkSnapshot.class.getDeclaredMethod("isSectionEmpty", new Class[] { int.class });
+                use_sections = true;
+            } catch (NoSuchMethodException nsmx) {
             }
+                       
             use_spout = DynmapPlugin.plugin.hasSpout();
             
             init = true;
@@ -799,21 +798,14 @@ public class NewMapChunkCache implements MapChunkCache {
         isSectionNotEmpty[idx] = new boolean[nsect + 1];
         int maxy = 0;
         if(snaparray[idx] != EMPTY) {
-            /* Get max height */
-            if(dw.isNether()) {
-                maxy = 128;
+            if(!use_sections) {
+                Arrays.fill(isSectionNotEmpty[idx], true);
             }
             else {
-                for(int i = 0; i < 16; i++) {
-                    for(int j = 0; j < 16; j++) {
-                        maxy = Math.max(maxy, snaparray[idx].getHighestBlockYAt(i, j));
+                for(int i = 0; i < nsect; i++) {
+                    if(snaparray[idx].isSectionEmpty(i) == false) {
+                        isSectionNotEmpty[idx][i] = true;
                     }
-                }
-            }
-            maxy = (maxy-1) >> 4;
-            for(int i = 0; i <= nsect; i++) {
-                if(i <= maxy) { /* Below top? */
-                    isSectionNotEmpty[idx][i] = true;
                 }
             }
         }
@@ -901,8 +893,7 @@ public class NewMapChunkCache implements MapChunkCache {
     public boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome) {
         this.biome = biome;
         this.biomeraw = rawbiome;
-        //this.highesty = highestblocky;
-        this.highesty = true;
+        this.highesty = highestblocky;
         this.blockdata = blockdata;
         return true;
     }
