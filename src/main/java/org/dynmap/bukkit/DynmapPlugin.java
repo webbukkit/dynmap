@@ -610,7 +610,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
     
     private static DynmapLocation toLoc(Location l) {
-        return new DynmapLocation(BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        return new DynmapLocation(DynmapWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
     
     private void registerPlayerLoginListener() {

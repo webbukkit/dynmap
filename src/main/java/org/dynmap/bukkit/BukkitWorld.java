@@ -15,7 +15,7 @@ public class BukkitWorld extends DynmapWorld {
     private World world;
     
     public BukkitWorld(World w) {
-        super(normalizeWorldName(w.getName()), w.getMaxHeight(), w.getSeaLevel());
+        super(w.getName(), w.getMaxHeight(), w.getSeaLevel());
         
         world = w;
     }
@@ -92,9 +92,5 @@ public class BukkitWorld extends DynmapWorld {
     
     public World getWorld() {
         return world;
-    }
-    
-    public static String normalizeWorldName(String n) {
-        return n.replace('/', '-');
     }
 }
