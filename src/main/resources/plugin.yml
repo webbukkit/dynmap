@@ -80,6 +80,15 @@ commands:
            /<command> listlines - list details of all poly-lines
            /<command> updateline <label> <arg>:<value> ... - update attributes of poly-line with given label
            /<command> updateline id:<id> <arg>:<value> ... - update attributes of poly-line with given ID
+           /<command> addcircle <label> radius:<rad> - add new circle centered at current location with given radius and label
+           /<command> addcircle id:<id> <label> radius:<rad> - add new circle centered at current location with given radius and ID
+           /<command> addcircle <label> radius:<rad> x:<x> y:<y> z:<z> world:<world> - add new circle centered at given coordinates with given radius and label
+           /<command> deletecircle <label> - delete circle with given label
+           /<command> deletecircle id:<id> <label> - delete circle with given ID
+           /<command> listcircles - list details of all circles
+           /<command> updatecircle <label> <arg>:<value> ... - update attributes of circle with given label
+           /<command> updatecircle id:<id> <arg>:<value> ... - update attributes of circle with given ID
+           
   dmap:
     description: List and modify dynmap configuration
     usage: |
@@ -133,6 +142,10 @@ permissions:
       dynmap.marker.updatearea: true
       dynmap.marker.listareas: true
       dynmap.marker.deletearea: true
+      dynmap.marker.addcircle: true
+      dynmap.marker.updatecircle: true
+      dynmap.marker.listcircles: true
+      dynmap.marker.deletecircle: true
       dynmap.dmap.worldlist: true
       dynmap.dmap.worldset: true
       dynmap.dmap.worldreset: true
@@ -258,6 +271,18 @@ permissions:
     default: op            
   dynmap.marker.deleteline:
     description: Allows /dmarker deleteline
+    default: op
+  dynmap.marker.addcircle:
+    description: Allows /dmarker addcircle
+    default: op            
+  dynmap.marker.updatecircle:
+    description: Allows /dmarker updatecircle
+    default: op            
+  dynmap.marker.listcircles:
+    description: Allows /dmarker listcircles
+    default: op            
+  dynmap.marker.deletecircle:
+    description: Allows /dmarker deletecircle
     default: op
   dynmap.dmap.worldlist:
     description: Allows /dmap worldlist
