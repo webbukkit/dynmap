@@ -180,9 +180,8 @@ smooth-lighting: false
 # Has no effect on maps with explicit format settings
 image-format: png
 
-# Pre 0.29 render options - set all three to false if you want same results as 0.28 (i.e. you have existing maps and don't want to render)
-#  use-generated-textures: if true, use generated textures (same as client); false is static, pre 0.29 textures
-#  correct-water-lighting: if true, use corrected water lighting (same as client); false is legacy, pre 0.29 water (darker)
+#  use-generated-textures: if true, use generated textures (same as client); false is static water/lava textures
+#  correct-water-lighting: if true, use corrected water lighting (same as client); false is legacy water (darker)
 use-generated-textures: true
 correct-water-lighting: true
 
@@ -192,8 +191,8 @@ correct-water-lighting: true
 # Control updating of player faces, once loaded (if faces are being managed by other apps or manually)
 #refreshskins: false
 
-# Control behavior for new (1.9+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
-#   default is 'pre19' for 1.8 server (existing orientation), 'newrose' for 1.9+ (preserve maps, rotate rose)
+# Control behavior for new (1.0+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
+#   default is 'newrose' (preserve pre-1.0 maps, rotate rose)
 #   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
 compass-mode: newnorth
 
