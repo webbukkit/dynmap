@@ -51,7 +51,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean do_save = false;
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    private byte[][] swampcnt;
+    private byte[][] sameneighborbiomecnt;
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
     
@@ -121,35 +121,47 @@ public class NewMapChunkCache implements MapChunkCache {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
         private void biomePrep() {
-            if(swampcnt != null)
+            if(sameneighborbiomecnt != null)
                 return;
             int x_size = x_dim << 4;
             int z_size = (z_max - z_min + 1) << 4;
-            swampcnt = new byte[x_size][];
+            sameneighborbiomecnt = new byte[x_size][];
             biomemap = new BiomeMap[x_size][];
             for(int i = 0; i < x_size; i++) {
-                swampcnt[i] = new byte[z_size];
+                sameneighborbiomecnt[i] = new byte[z_size];
                 biomemap[i] = new BiomeMap[z_size];
             }
             for(int i = 0; i < x_size; i++) {
                 initialize(i + x_base, 64, z_base);
                 for(int j = 0; j < z_size; j++) {
                     Biome bb = snap.getBiome(bx, bz);
+                    BiomeMap bm;
                     if(bb == null)
-                        biomemap[i][j] = BiomeMap.NULL;
+                        bm = BiomeMap.NULL;
                     else
-                        biomemap[i][j] = biome_to_bmap[bb.ordinal()];
-                    if(biomemap[i][j] == BiomeMap.SWAMPLAND) {
-                        for(int ii = i-1; ii < i+2; ii++) {
-                            for(int jj = j-1; jj < j+2; jj++) {
-                                if(ii < 0) continue;
-                                if(jj < 0) continue;
-                                if(ii >= x_size) continue;
-                                if(jj >= z_size) continue;
-                                swampcnt[ii][jj]++;
-                            }
+                        bm = biome_to_bmap[bb.ordinal()];
+                    biomemap[i][j] = bm;
+                    int cnt = 0;
+                    if(i > 0) {
+                        if(bm == biomemap[i-1][j]) {   /* Same as one to left */
+                            cnt++;
+                            sameneighborbiomecnt[i-1][j]++;
+                        }
+                        if((j > 0) && (bm == biomemap[i-1][j-1])) {
+                            cnt++;
+                            sameneighborbiomecnt[i-1][j-1]++;
+                        }
+                        if((j < (z_size-1)) && (bm == biomemap[i-1][j+1])) {
+                            cnt++;
+                            sameneighborbiomecnt[i-1][j+1]++;
                         }
                     }
+                    if((j > 0) && (biomemap[i][j] == biomemap[i][j-1])) {   /* Same as one to above */
+                        cnt++;
+                        sameneighborbiomecnt[i][j-1]++;
+                    }
+                    sameneighborbiomecnt[i][j] = (byte)cnt;
+
                     stepPosition(BlockStep.Z_PLUS);
                 }
             }
@@ -163,48 +175,123 @@ public class NewMapChunkCache implements MapChunkCache {
             }
         }
         
-        public final int  countSmoothedSwampBiomes() {
+        private final int getSmoothColorMultiplier(int[] colormap, int width, boolean is_grass) {
+            int mult = 0xFFFFFF;
             try {
-                return swampcnt[x - x_base][z - z_base];
-            } catch (Exception ex) {
-                return 0;
+                int rx = x - x_base;
+                int rz = z - z_base;
+                BiomeMap bm = biomemap[rx][rz];
+                if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
+                    mult = colormap[bm.biomeLookup(width)];
+                }
+                else {
+                    int raccum = 0;
+                    int gaccum = 0;
+                    int baccum = 0;
+                    for(int xoff = -1; xoff < 2; xoff++) {
+                        for(int zoff = -1; zoff < 2; zoff++) {
+                            bm = biomemap[rx+xoff][rz+zoff];
+                            int rmult = colormap[bm.biomeLookup(width)];
+                            raccum += (rmult >> 16) & 0xFF;
+                            gaccum += (rmult >> 8) & 0xFF;
+                            baccum += rmult & 0xFF;
+                        }
+                    }
+                    mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
+                }
+                if(is_grass)
+                    return bm.getModifiedGrassMultiplier(mult);
+                else
+                    return bm.getModifiedFoliageMultiplier(mult);
+            } catch (Exception x) {
+                Log.info("exception");
+                return 0xFFFFFF;
             }
         }
-        
-        public final int  countSmoothedSwampBiomes(int sx, int sz, int scale) {
+        public final int getSmoothGrassColorMultiplier(int[] colormap, int width) {
+            int mult = 0xFFFFFF;
             try {
-                int xx = x - x_base;
-                int zz = z - z_base;
-                sx <<= 1;
-                sz <<= 1;
-                int s0 = swampcnt[xx][zz];
-                int w;
-                int tot;
-                if(sx < scale) {
-                    w = scale - sx;
-                    tot = (w * swampcnt[xx-1][zz]) + ((scale - w) * s0);
-                }
-                else if(sx > scale) {
-                    w = sx - scale;
-                    tot = (w * swampcnt[xx+1][zz]) + ((scale - w) * s0);
+                int rx = x - x_base;
+                int rz = z - z_base;
+                BiomeMap bm = biomemap[rx][rz];
+                if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
+                    mult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup(width)]);
                 }
                 else {
-                    tot = scale * s0;
+                    int raccum = 0;
+                    int gaccum = 0;
+                    int baccum = 0;
+                    for(int xoff = -1; xoff < 2; xoff++) {
+                        for(int zoff = -1; zoff < 2; zoff++) {
+                            bm = biomemap[rx+xoff][rz+zoff];
+                            int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup(width)]);
+                            raccum += (rmult >> 16) & 0xFF;
+                            gaccum += (rmult >> 8) & 0xFF;
+                            baccum += rmult & 0xFF;
+                        }
+                    }
+                    mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
-                if(sz < scale) {
-                    w = scale - sz;
-                    tot += (w * swampcnt[xx][zz-1]) + ((scale - w) * s0);
-                }
-                else if(sz > scale) {
-                    w = sz - scale;
-                    tot += (w * swampcnt[xx][zz+1]) + ((scale - w) * s0);
+            } catch (Exception x) {
+                Log.info("exception");
+                mult = 0xFFFFFF;
+            }
+            return mult;
+        }
+        public final int getSmoothFoliageColorMultiplier(int[] colormap, int width) {
+            int mult = 0xFFFFFF;
+            try {
+                int rx = x - x_base;
+                int rz = z - z_base;
+                BiomeMap bm = biomemap[rx][rz];
+                if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
+                    mult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup(width)]);
                 }
                 else {
-                    tot += scale * s0;
+                    int raccum = 0;
+                    int gaccum = 0;
+                    int baccum = 0;
+                    for(int xoff = -1; xoff < 2; xoff++) {
+                        for(int zoff = -1; zoff < 2; zoff++) {
+                            bm = biomemap[rx+xoff][rz+zoff];
+                            int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup(width)]);
+                            raccum += (rmult >> 16) & 0xFF;
+                            gaccum += (rmult >> 8) & 0xFF;
+                            baccum += rmult & 0xFF;
+                        }
+                    }
+                    mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
-                return tot;
-            } catch (Exception ex) {
-                return 0;
+            } catch (Exception x) {
+                Log.info("exception");
+                mult = 0xFFFFFF;
+            }
+            return mult;
+        }
+        
+        public final int getSmoothWaterColorMultiplier() {
+            try {
+                int rx = x - x_base;
+                int rz = z - z_base;
+                BiomeMap bm = biomemap[rx][rz];
+                if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
+                    return bm.getWaterColorMult();
+                }
+                int raccum = 0;
+                int gaccum = 0;
+                int baccum = 0;
+                for(int xoff = -1; xoff < 2; xoff++) {
+                    for(int zoff = -1; zoff < 2; zoff++) {
+                        bm = biomemap[rx+xoff][rz+zoff];
+                        int mult = bm.getWaterColorMult();
+                        raccum += (mult >> 16) & 0xFF;
+                        gaccum += (mult >> 8) & 0xFF;
+                        baccum += mult & 0xFF;
+                    }
+                }
+                return ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
+            } catch (Exception x) {
+                return 0xFFFFFF;
             }
         }
         
