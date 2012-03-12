@@ -1,6 +1,5 @@
 package org.dynmap.bukkit;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -171,43 +170,11 @@ public class NewMapChunkCache implements MapChunkCache {
             try {
                 return biomemap[x - x_base][z - z_base];
             } catch (Exception ex) {
+                exceptions++;
                 return BiomeMap.NULL;
             }
         }
         
-        private final int getSmoothColorMultiplier(int[] colormap, int width, boolean is_grass) {
-            int mult = 0xFFFFFF;
-            try {
-                int rx = x - x_base;
-                int rz = z - z_base;
-                BiomeMap bm = biomemap[rx][rz];
-                if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
-                    mult = colormap[bm.biomeLookup(width)];
-                }
-                else {
-                    int raccum = 0;
-                    int gaccum = 0;
-                    int baccum = 0;
-                    for(int xoff = -1; xoff < 2; xoff++) {
-                        for(int zoff = -1; zoff < 2; zoff++) {
-                            bm = biomemap[rx+xoff][rz+zoff];
-                            int rmult = colormap[bm.biomeLookup(width)];
-                            raccum += (rmult >> 16) & 0xFF;
-                            gaccum += (rmult >> 8) & 0xFF;
-                            baccum += rmult & 0xFF;
-                        }
-                    }
-                    mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
-                }
-                if(is_grass)
-                    return bm.getModifiedGrassMultiplier(mult);
-                else
-                    return bm.getModifiedFoliageMultiplier(mult);
-            } catch (Exception x) {
-                Log.info("exception");
-                return 0xFFFFFF;
-            }
-        }
         public final int getSmoothGrassColorMultiplier(int[] colormap, int width) {
             int mult = 0xFFFFFF;
             try {
@@ -233,7 +200,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
             } catch (Exception x) {
-                Log.info("exception");
+                exceptions++;
                 mult = 0xFFFFFF;
             }
             return mult;
@@ -263,7 +230,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
             } catch (Exception x) {
-                Log.info("exception");
+                exceptions++;
                 mult = 0xFFFFFF;
             }
             return mult;
@@ -291,6 +258,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
                 return ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
             } catch (Exception x) {
+                exceptions++;
                 return 0xFFFFFF;
             }
         }
@@ -497,9 +465,6 @@ public class NewMapChunkCache implements MapChunkCache {
         public boolean isSectionEmpty(int sy) {
             return true;
         }
-        public int getTopNonEmptySection() {
-            return -1;
-        }
     }
 
     /**
@@ -578,12 +543,7 @@ public class NewMapChunkCache implements MapChunkCache {
             return chunk.getHighestBlockYAt(x, z);
         }
         public boolean isSectionEmpty(int sy) {
-            //TODO return chunk.isSectionEmpty(sy);
-            return false;
-        }
-        public int getTopNonEmptySection() {
-            return 0;
-            //TODO return chunk.getTopNonEmptySection();
+            return chunk.isSectionEmpty(sy);
         }
     }
 
