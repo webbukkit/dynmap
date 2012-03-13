@@ -114,10 +114,18 @@ public class NewMapChunkCache implements MapChunkCache {
             return blkdata;
         }
         public int getBlockSkyLight() {
-            return snap.getBlockSkyLight(bx, y, bz);
+            try {
+                return snap.getBlockSkyLight(bx, y, bz);
+            } catch (ArrayIndexOutOfBoundsException aioobx) {
+                return 15;
+            }
         }
         public final int getBlockEmittedLight() {
-            return snap.getBlockEmittedLight(bx, y, bz);
+            try {
+                return snap.getBlockEmittedLight(bx, y, bz);
+            } catch (ArrayIndexOutOfBoundsException aioobx) {
+                return 0;
+            }
         }
         private void biomePrep() {
             if(sameneighborbiomecnt != null)
