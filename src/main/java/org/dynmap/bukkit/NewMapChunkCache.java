@@ -270,6 +270,37 @@ public class NewMapChunkCache implements MapChunkCache {
                 return 0xFFFFFF;
             }
         }
+
+        public final int getSmoothWaterColorMultiplier(int[] colormap, int width) {
+            int mult = 0xFFFFFF;
+            try {
+                int rx = x - x_base;
+                int rz = z - z_base;
+                BiomeMap bm = biomemap[rx][rz];
+                if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
+                    mult = colormap[bm.biomeLookup(width)];
+                }
+                else {
+                    int raccum = 0;
+                    int gaccum = 0;
+                    int baccum = 0;
+                    for(int xoff = -1; xoff < 2; xoff++) {
+                        for(int zoff = -1; zoff < 2; zoff++) {
+                            bm = biomemap[rx+xoff][rz+zoff];
+                            int rmult = colormap[bm.biomeLookup(width)];
+                            raccum += (rmult >> 16) & 0xFF;
+                            gaccum += (rmult >> 8) & 0xFF;
+                            baccum += rmult & 0xFF;
+                        }
+                    }
+                    mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
+                }
+            } catch (Exception x) {
+                exceptions++;
+                mult = 0xFFFFFF;
+            }
+            return mult;
+        }
         
         public final double getRawBiomeTemperature() {
             return snap.getRawBiomeTemperature(bx, bz);
