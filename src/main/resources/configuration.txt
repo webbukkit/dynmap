@@ -28,6 +28,9 @@ components:
     require-player-login-ip: false
     # (optional) block player login IDs that are banned from chatting
     block-banned-player-chat: true
+    # Require login for web-to-server chat (requires login-enabled: true)
+    webchat-requires-login: false
+
   #  # Optional - make players hidden when they are inside/underground/in shadows (#=light level: 0=full shadow,15=sky)
   #  hideifshadow: 4
   #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
@@ -264,6 +267,11 @@ disable-webserver: false
 # Enable/disable having the web server allow symbolic links (true=compatible with existing code, false=more secure (default))
 allow-symlinks: true
 
+# Enable login support (only on internal server, presently)
+login-enabled: false
+# Require login to access website (requires login-enabled: true)
+login-required: false
+
 # Period between tile renders for fullrender, in seconds (non-zero to pace fullrenders, lessen CPU load)
 timesliceinterval: 0.0
 
@@ -327,6 +335,7 @@ persist-ids-by-ip: true
 msg:
     maptypes: "Map Types"
     players: "Players"
+    chatrequireslogin: "Chat Requires Login"
 
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
