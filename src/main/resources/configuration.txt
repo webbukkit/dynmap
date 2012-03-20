@@ -51,6 +51,8 @@ components:
   #  hideifshadow: 0
   #  hideifundercover: 0
   #  hideifsneaking: false
+  #  # Require login for web-to-server chat (requires login-enabled: true)
+  #  webchat-requires-login: false
    
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
@@ -267,7 +269,7 @@ disable-webserver: false
 # Enable/disable having the web server allow symbolic links (true=compatible with existing code, false=more secure (default))
 allow-symlinks: true
 
-# Enable login support (only on internal server, presently)
+# Enable login support
 login-enabled: false
 # Require login to access website (requires login-enabled: true)
 login-required: false
