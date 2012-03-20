@@ -21,15 +21,12 @@ commands:
            /<command> radiusrender worldname x z ## mapname - Render at least ## block radius from location x,z on world 'worldname' on map 'mapname'
            /<command> updaterender - Render updates starting at your location on all maps.
            /<command> updaterender mapname - Render updates starting at your location on give map
-           /<command> updaterender worldname x z - Render updates starting at location x,z on world 'worldname' for all maps
            /<command> updaterender worldname x z mapname - Render updates starting at location x,z on world 'worldname' for given map
            /<command> cancelrender - Cancels any active renders on current world
            /<command> cancelrender world - Cancels any active renders of world 'world'
            /<command> stats - Show render statistics.
-           /<command> stats world - Show render statistics for maps on world 'world'.
            /<command> triggerstats - Show render trigger statistics
            /<command> resetstats - Reset render statistics.
-           /<command> resetstats world - Reset render statistics for maps on world 'world'.
            /<command> sendtoweb msg - Send message to web users
            /<command> purgequeue - Set tile update queue to empty
            /<command> pause - Show render pause state
@@ -38,7 +35,8 @@ commands:
            /<command> ips-for-id <playerid> - Show IP addresses that have been used for the given player ID
            /<command> add-id-for-ip <playerid> <ipaddress> - Add player ID to given IP address
            /<command> del-id-for-ip <playerid> <ipaddress> - Delete player ID from given IP address
-            
+           /<command> webregister - Start registration process for creating web login account
+                       
   dmarker:
     description: Manipulate map markers
     usage: |
@@ -123,6 +121,8 @@ permissions:
       dynmap.purgequeue: true
       dynmap.ids-for-ip: true
       dynmap.ips-for-id: true
+      dynmap.webregister: true
+      dynmap.webregister.other: true
       dynmap.pause: true
       dynmap.marker.add: true
       dynmap.marker.update: true
@@ -205,6 +205,12 @@ permissions:
     default: op
   dynmap.ips-for-id:
     description: Allows /dynmap ips-for-id
+    default: op
+  dynmap.webregister:
+    description: Allows /dynmap webregister
+    default: true
+  dynmao,webregister.other:
+    description: Allows /dynmap webregister userid
     default: op
   dynmap.marker.add:
     description: Allows /dmarker add
