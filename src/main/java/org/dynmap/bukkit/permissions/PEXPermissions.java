@@ -1,0 +1,37 @@
+package org.dynmap.bukkit.permissions;
+
+import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.dynmap.Log;
+
+import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
+
+public class PEXPermissions implements PermissionProvider {
+    String name;
+    PermissionManager pm;
+
+    public static PEXPermissions create(Server server, String name) {
+        Plugin permissionsPlugin = server.getPluginManager().getPlugin("PermissionsEx");
+        if (permissionsPlugin == null)
+            return null;
+        server.getPluginManager().enablePlugin(permissionsPlugin);
+        if(PermissionsEx.isAvailable() == false)
+            return null;
+        Log.info("Using PermissionsEx " + permissionsPlugin.getDescription().getVersion() + " for access control");
+        return new PEXPermissions(name);
+    }
+
+    public PEXPermissions(String name) {
+        this.name = name;
+        pm = PermissionsEx.getPermissionManager();
+    }
+
+    @Override
+    public boolean has(CommandSender sender, String permission) {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        return (player != null) ? pm.has(player, name + "." + permission) : true;
+    }
+}

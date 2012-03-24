@@ -63,7 +63,10 @@ import org.dynmap.PlayerList;
 import org.dynmap.bukkit.permissions.BukkitPermissions;
 import org.dynmap.bukkit.permissions.NijikokunPermissions;
 import org.dynmap.bukkit.permissions.OpPermissions;
+import org.dynmap.bukkit.permissions.PEXPermissions;
+import org.dynmap.bukkit.permissions.PermBukkitPermissions;
 import org.dynmap.bukkit.permissions.PermissionProvider;
+import org.dynmap.bukkit.permissions.bPermPermissions;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
@@ -417,7 +420,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
 
-        permissions = NijikokunPermissions.create(getServer(), "dynmap");
+        permissions = PEXPermissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = bPermPermissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = PermBukkitPermissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap");
         if (permissions == null)

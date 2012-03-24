@@ -158,5 +158,26 @@
 			<version>dev-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>ru.tehkode</groupId>
+			<artifactId>PermissionsEx</artifactId>
+			<version>1.19.1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/PermissionsEx.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>de.bananaco</groupId>
+			<artifactId>bPermissions</artifactId>
+			<version>2.9.1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/bpermissions.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.platymuus.bukkit.permissions</groupId>
+			<artifactId>PermissionsBukkit</artifactId>
+			<version>1.6</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/PermissionsBukkit.jar</systemPath>
+		</dependency>
 	</dependencies>
 </project>
