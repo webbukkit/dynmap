@@ -8,4 +8,7 @@ public interface PermissionProvider {
     boolean has(CommandSender sender, String permission);
     
     Set<String> hasOfflinePermissions(String player, Set<String> perms);
+
+    boolean hasOfflinePermission(String player, String perm);
+
 }

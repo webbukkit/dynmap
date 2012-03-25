@@ -29,4 +29,8 @@ public class OpPermissions implements PermissionProvider {
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
         return null;
     }
+    @Override
+    public boolean hasOfflinePermission(String player, String perm) {
+        return false;
+    }
 }

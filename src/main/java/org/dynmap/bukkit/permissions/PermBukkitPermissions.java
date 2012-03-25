@@ -47,11 +47,19 @@ public class PermBukkitPermissions implements PermissionProvider {
         Map<String, Boolean> prm = plugin.getPlayerInfo(player).getPermissions();
         HashSet<String> hasperms = new HashSet<String>();
         for (String pp : perms) {
-            Boolean pb = prm.get(pp);
+            Boolean pb = prm.get(name + "." + pp);
             if ((pb != null) && pb.booleanValue()) {
                 hasperms.add(pp);
             }
         }
         return hasperms;
+    }
+    @Override
+    public boolean hasOfflinePermission(String player, String perm) {
+        Boolean b = plugin.getPlayerInfo(player).getPermissions().get(name + "." + perm);
+        if (b != null)
+            return b;
+        else
+            return false;
     }
 }

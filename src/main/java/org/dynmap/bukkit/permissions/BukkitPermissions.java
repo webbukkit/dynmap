@@ -40,7 +40,7 @@ public class BukkitPermissions implements PermissionProvider {
         if (p != null) {
             hasperms = new HashSet<String>();
             for(String perm : perms) {
-                if (p.hasPermission(perm)) {
+                if (p.hasPermission(name + "." + perm)) {
                     hasperms.add(perm);
                 }
             }
@@ -48,4 +48,12 @@ public class BukkitPermissions implements PermissionProvider {
         return hasperms;
     }
 
+    @Override
+    public boolean hasOfflinePermission(String player, String perm) {
+        Player p = Bukkit.getPlayerExact(name);
+        if (p != null)
+            return p.hasPermission(name + "." + perm);
+        else
+            return false;
+    }
 }

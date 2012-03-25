@@ -17,6 +17,7 @@ public class NijikokunPermissions implements PermissionProvider {
     String name;
     PermissionHandler permissions;
     Plugin plugin;
+    String defworld;
     
     public static NijikokunPermissions create(Server server, String name) {
         Plugin permissionsPlugin = server.getPluginManager().getPlugin("Permissions");
@@ -31,6 +32,7 @@ public class NijikokunPermissions implements PermissionProvider {
     public NijikokunPermissions(Plugin permissionsPlugin, String name) {
         this.name = name;
         plugin = permissionsPlugin;
+        defworld = Bukkit.getServer().getWorlds().get(0).getName();
     }
 
     @Override
@@ -45,16 +47,18 @@ public class NijikokunPermissions implements PermissionProvider {
     
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
-        HashSet<String> hasperms = null;
-        Player plyr = Bukkit.getPlayerExact(player);
-        if(plyr != null) {
-            hasperms = new HashSet<String>();
-            for (String pp : perms) {
-                if (permissions.has(plyr, pp)) {
-                    hasperms.add(pp);
-                }
+        HashSet<String> hasperms = new HashSet<String>();
+        for (String pp : perms) {
+            if (permissions.has(defworld, player, name + "." + pp)) {
+                hasperms.add(pp);
             }
         }
         return hasperms;
     }
+    
+    @Override
+    public boolean hasOfflinePermission(String player, String perm) {
+        return permissions.has(defworld, player, name + "." + perm);
+    }
+
 }

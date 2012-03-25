@@ -45,11 +45,19 @@ public class PEXPermissions implements PermissionProvider {
         PermissionUser pu = pm.getUser(player);
         if(pu != null) {
             for (String pp : perms) {
-                if (pu.has(pp)) {
+                if (pu.has(name + "." + pp)) {
                     hasperms.add(pp);
                 }
             }
         }
         return hasperms;
+    }
+    @Override
+    public boolean hasOfflinePermission(String player, String perm) {
+        PermissionUser pu = pm.getUser(player);
+        if(pu != null) {
+            return pu.has(name + "." + perm);
+        }
+        return false;
     }
 }

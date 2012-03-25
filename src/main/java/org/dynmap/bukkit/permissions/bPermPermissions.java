@@ -42,14 +42,18 @@ public class bPermPermissions implements PermissionProvider {
     
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
-        Permission[] p = ApiLayer.getPermissions(defworld, CalculableType.USER, player);
         HashSet<String> hasperms = new HashSet<String>();
-        for (int i = 0; i < p.length; i++) {
-            if (p[i].isTrue() && perms.contains(p[i].name())) {
-                hasperms.add(p[i].name());
+        for (String pp : perms) {
+            if(ApiLayer.hasPermission(defworld, CalculableType.USER, player, name + "." + pp)) {
+                hasperms.add(pp);
             }
         }
         return hasperms;
+    }
+
+    @Override
+    public boolean hasOfflinePermission(String player, String perm) {
+        return ApiLayer.hasPermission(defworld, CalculableType.USER, player, name + "." + perm);
     }
 
 }
