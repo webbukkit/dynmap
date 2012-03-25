@@ -276,6 +276,20 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             return null;
         }
+        @Override
+        public Set<String> checkPlayerPermissions(String player, Set<String> perms) {
+            OfflinePlayer p = getServer().getOfflinePlayer(player);
+            if(p.isBanned())
+                return new HashSet<String>();
+            Set<String> rslt = permissions.hasOfflinePermissions(player, perms);
+            if (rslt == null) {
+                rslt = new HashSet<String>();
+                if(p.isOp()) {
+                    rslt.addAll(perms);
+                }
+            }
+            return rslt;
+        }
     }
     /**
      * Player access abstraction class

@@ -1,5 +1,8 @@
 package org.dynmap.bukkit.permissions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -7,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.dynmap.Log;
 
 import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PEXPermissions implements PermissionProvider {
@@ -33,5 +37,19 @@ public class PEXPermissions implements PermissionProvider {
     public boolean has(CommandSender sender, String permission) {
         Player player = sender instanceof Player ? (Player) sender : null;
         return (player != null) ? pm.has(player, name + "." + permission) : true;
+    }
+    
+    @Override
+    public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
+        HashSet<String> hasperms = new HashSet<String>();
+        PermissionUser pu = pm.getUser(player);
+        if(pu != null) {
+            for (String pp : perms) {
+                if (pu.has(pp)) {
+                    hasperms.add(pp);
+                }
+            }
+        }
+        return hasperms;
     }
 }

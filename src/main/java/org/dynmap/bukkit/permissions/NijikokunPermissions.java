@@ -1,5 +1,9 @@
 package org.dynmap.bukkit.permissions;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,5 +41,20 @@ public class NijikokunPermissions implements PermissionProvider {
         return player != null
                 ? permissions.has(player, name + "." + permission) || permissions.has(player, name + ".*")
                 : true;
+    }
+    
+    @Override
+    public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
+        HashSet<String> hasperms = null;
+        Player plyr = Bukkit.getPlayerExact(player);
+        if(plyr != null) {
+            hasperms = new HashSet<String>();
+            for (String pp : perms) {
+                if (permissions.has(plyr, pp)) {
+                    hasperms.add(pp);
+                }
+            }
+        }
+        return hasperms;
     }
 }

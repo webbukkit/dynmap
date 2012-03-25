@@ -1,6 +1,7 @@
 package org.dynmap.bukkit.permissions;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,5 +24,9 @@ public class OpPermissions implements PermissionProvider {
                 ? ((Player) sender).isOp()
                 : true
             : true;
+    }
+    @Override
+    public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
+        return null;
     }
 }
