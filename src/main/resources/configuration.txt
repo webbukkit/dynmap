@@ -338,6 +338,7 @@ msg:
     maptypes: "Map Types"
     players: "Players"
     chatrequireslogin: "Chat Requires Login"
+    chatnotallowed: "You are not permitted to send chat messages"
 
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
