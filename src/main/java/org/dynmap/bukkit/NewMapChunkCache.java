@@ -590,11 +590,22 @@ public class NewMapChunkCache implements MapChunkCache {
     
     private static class SpoutChunkSnapshot implements ChunkSnapshot {
         private ChunkSnapshot chunk;
-        private short[] customids; /* (X << 11) | (Z << 7) | Y */ 
+        private short[] customids; 
+        private final int shiftx;
+        private final int shiftz;
         
-        SpoutChunkSnapshot(ChunkSnapshot chunk, short[] customids) {
+        SpoutChunkSnapshot(ChunkSnapshot chunk, short[] customids, int height) {
             this.chunk = chunk;
             this.customids = customids.clone();
+            int sx = 11;
+            int sz = 7; /* 128 high values */
+            while(height > 128) {
+                sx++;
+                sz++;
+                height = (height >> 1);
+            }
+            shiftx = sx;
+            shiftz = sz;
         }
         /* Need these for interface, but not used */
         public final int getX() { return chunk.getX(); }
@@ -606,7 +617,7 @@ public class NewMapChunkCache implements MapChunkCache {
         public final long getCaptureFullTime() { return chunk.getCaptureFullTime(); }
         
         public final int getBlockTypeId(int x, int y, int z) {
-            int id = customids[(x << 11) | (z << 7) | y];
+            int id = customids[(x << shiftx) | (z << shiftz) | y];
             if(id != 0) return id;
             return chunk.getBlockTypeId(x, y, z);
         }
@@ -716,7 +727,7 @@ public class NewMapChunkCache implements MapChunkCache {
             SpoutChunk sc = (SpoutChunk)c;
             short[] custids = sc.getCustomBlockIds();
             if(custids != null) {
-                return new SpoutChunkSnapshot(ss, custids);
+                return new SpoutChunkSnapshot(ss, custids, c.getWorld().getMaxHeight());
             }
         }
         return ss;
