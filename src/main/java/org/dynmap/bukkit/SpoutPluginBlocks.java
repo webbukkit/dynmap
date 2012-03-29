@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.Material;
 import org.dynmap.Log;
 import org.getspout.spoutapi.block.design.BlockDesign;
 import org.getspout.spoutapi.block.design.GenericBlockDesign;
@@ -73,6 +74,7 @@ public class SpoutPluginBlocks {
         for(CustomBlock b : cb) {
             BlockDesign bd = b.getBlockDesign();
             String blkid = bd.getTexturePlugin() + "." + b.getName();
+            blkid = blkid.replace(' ', '_');
             /* If not GenericCubiodBlockDesign, we don't handle it */
             if((bd instanceof GenericCuboidBlockDesign) == false) {
                 Log.info("Block " + blkid + " not suppored - only cubiod blocks");
@@ -166,7 +168,7 @@ public class SpoutPluginBlocks {
                 blks.add(b);
                     
                 sb.append("block:id=" + b.getCustomId() + ",data=*,bottom=" + txtidx[0] + ",west=" +txtidx[1] + ",south=" + txtidx[2] + ",east=" + txtidx[3] + ",north="+txtidx[4]+",top="+txtidx[5]);
-                if(b.isOpaque() == false)
+                if(b.getBlockId() == Material.GLASS.getId())
                     sb.append(",transparency=TRANSPARENT");
                 sb.append(",txtid=" + txfileid + "\n");
                 cnt++;
