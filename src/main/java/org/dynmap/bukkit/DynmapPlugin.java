@@ -73,6 +73,7 @@ import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.markers.MarkerAPI;
+import org.getspout.spoutapi.plugin.SpoutPlugin;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapCore core;
@@ -1107,7 +1108,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
     private boolean detectSpout() {
         Plugin p = this.getServer().getPluginManager().getPlugin("Spout");
-        return (p != null);
+        if(p != null) {
+            return p.isEnabled();
+        }
+        return false;
     }
     
     public boolean hasSpout() {
