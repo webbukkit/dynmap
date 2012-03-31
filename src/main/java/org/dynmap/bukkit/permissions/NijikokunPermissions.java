@@ -47,6 +47,8 @@ public class NijikokunPermissions implements PermissionProvider {
     
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
+        if(permissions == null)
+            permissions = ((Permissions)plugin).getHandler();
         HashSet<String> hasperms = new HashSet<String>();
         for (String pp : perms) {
             if (permissions.has(defworld, player, name + "." + pp)) {
@@ -58,6 +60,8 @@ public class NijikokunPermissions implements PermissionProvider {
     
     @Override
     public boolean hasOfflinePermission(String player, String perm) {
+        if(permissions == null)
+            permissions = ((Permissions)plugin).getHandler();
         return permissions.has(defworld, player, name + "." + perm);
     }
 

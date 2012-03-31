@@ -1,6 +1,7 @@
 package org.dynmap.bukkit.permissions;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -10,20 +11,23 @@ import org.bukkit.entity.Player;
 import org.dynmap.Log;
 
 public class BukkitPermissions implements PermissionProvider {
-    String name;
+    protected String name;
+    protected Map<String, Boolean> pd;
 
-    public static BukkitPermissions create(String name) {
+    public static BukkitPermissions create(String name, Map<String,Boolean> pd) {
         try {
             Class.forName("org.bukkit.permissions.PermissibleBase");    /* See if class exists */
         } catch (ClassNotFoundException cnfx) {
             return null;
         }
         Log.info("Using Bukkit Permissions (superperms) for access control");
-        return new BukkitPermissions(name);
+        Log.info("Web interface perms only available for online users");
+        return new BukkitPermissions(name, pd);
     }
 
-    public BukkitPermissions(String name) {
+    public BukkitPermissions(String name, Map<String, Boolean> pd) {
         this.name = name;
+        this.pd = pd;
     }
 
     @Override
@@ -50,10 +54,16 @@ public class BukkitPermissions implements PermissionProvider {
 
     @Override
     public boolean hasOfflinePermission(String player, String perm) {
-        Player p = Bukkit.getPlayerExact(name);
-        if (p != null)
+        Player p = Bukkit.getPlayerExact(player);
+        if (p != null) {
             return p.hasPermission(name + "." + perm);
-        else
+        }
+        else {
+            OfflinePlayer op = Bukkit.getOfflinePlayer(player);
+            if((op != null) && op.isOp()) {
+                return true;
+            }
             return false;
+        }
     }
 }

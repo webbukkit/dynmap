@@ -20,11 +20,8 @@ import de.bananaco.bpermissions.api.WorldManager;
 import de.bananaco.bpermissions.api.util.CalculableType;
 import de.bananaco.bpermissions.api.util.Permission;
 
-public class bPermPermissions implements PermissionProvider {
-    String name;
-    String defworld;
+public class bPermPermissions extends BukkitPermissions {
     WorldManager wm;
-    Map<String,Boolean> pd;
 
     public static bPermPermissions create(Server server, String name, Map<String,Boolean> pd) {
         Plugin permissionsPlugin = server.getPluginManager().getPlugin("bPermissions");
@@ -36,23 +33,10 @@ public class bPermPermissions implements PermissionProvider {
     }
 
     public bPermPermissions(String name, Map<String,Boolean> pd) {
-        this.name = name;
-        defworld = Bukkit.getServer().getWorlds().get(0).getName();
+        super(name, pd);
         wm = WorldManager.getInstance();
-        this.pd = pd;
     }
 
-    @Override
-    public boolean has(CommandSender sender, String permission) {
-        Player player = sender instanceof Player ? (Player) sender : null;
-        boolean rslt = true;
-        if(player != null) {
-            rslt = hasOfflinePermission(player.getName(), permission);
-        }
-        return rslt;
-    }
-    
-    
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
         HashSet<String> hasperms = new HashSet<String>();
