@@ -2,9 +2,11 @@ package org.dynmap.bukkit;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -48,6 +50,8 @@ import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -442,9 +446,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
 
+        /* Build default permissions from our plugin */
+        Map<String, Boolean> perdefs = new HashMap<String, Boolean>();
+        List<Permission> pd = plugin.getDescription().getPermissions();
+        for(Permission p : pd) {
+            perdefs.put(p.getName(), p.getDefault() == PermissionDefault.TRUE);
+        }
+        
         permissions = PEXPermissions.create(getServer(), "dynmap");
         if (permissions == null)
-            permissions = bPermPermissions.create(getServer(), "dynmap");
+            permissions = bPermPermissions.create(getServer(), "dynmap", perdefs);
         if (permissions == null)
             permissions = PermBukkitPermissions.create(getServer(), "dynmap");
         if (permissions == null)
