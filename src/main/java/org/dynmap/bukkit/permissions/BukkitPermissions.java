@@ -21,7 +21,7 @@ public class BukkitPermissions implements PermissionProvider {
             return null;
         }
         Log.info("Using Bukkit Permissions (superperms) for access control");
-        Log.info("Web interface perms only available for online users");
+        Log.info("Web interface permissions only available for online users");
         return new BukkitPermissions(name, pd);
     }
 
