@@ -32,6 +32,8 @@ components:
     webchat-requires-login: false
     # If set to true, users must have dynmap.webchat permission in order to chat
     webchat-permissions: false
+    # Limit length of single chat messages
+    chatlengthlimit: 256
   #  # Optional - make players hidden when they are inside/underground/in shadows (#=light level: 0=full shadow,15=sky)
   #  hideifshadow: 4
   #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
@@ -56,6 +58,8 @@ components:
   #  webchat-requires-login: false
   #  # If set to true, users must have dynmap.webchat permission in order to chat
   #  webchat-permissions: false
+  #  # Limit length of single chat messages
+  #  chatlengthlimit: 256
    
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true

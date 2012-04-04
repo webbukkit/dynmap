@@ -28,6 +28,9 @@ public class bPermPermissions extends BukkitPermissions {
         if (permissionsPlugin == null)
             return null;
         server.getPluginManager().enablePlugin(permissionsPlugin);
+        if(permissionsPlugin.isEnabled() == false)
+            return null;
+        
         Log.info("Using bPermissions " + permissionsPlugin.getDescription().getVersion() + " for access control");
         return new bPermPermissions(name, pd);
     }

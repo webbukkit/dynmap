@@ -28,6 +28,9 @@ public class PermBukkitPermissions extends BukkitPermissions {
             return null;
         
         server.getPluginManager().enablePlugin(permissionsPlugin);
+        if(permissionsPlugin.isEnabled() == false)
+            return null;
+        
         Log.info("Using PermissionsBukkit " + permissionsPlugin.getDescription().getVersion() + " for access control");
         Log.info("Web interface permissions only available for online users");
         return new PermBukkitPermissions(permissionsPlugin, name, pd);
