@@ -234,6 +234,9 @@ compass-mode: newnorth
 # Enabled ComputerCraft block rendering support
 #computercraft-support: true
 
+# Enabled LC Trees++ block rendering support
+#lctrees-support: true
+
 render-triggers:
   #- playermove
   #- playerjoin
