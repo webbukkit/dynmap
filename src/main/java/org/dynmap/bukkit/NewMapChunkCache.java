@@ -1061,6 +1061,9 @@ public class NewMapChunkCache implements MapChunkCache {
         BiomeMap[] bm = BiomeMap.values();
         biome_to_bmap = new BiomeMap[b.length];
         for(int i = 0; i < b.length; i++) {
+            biome_to_bmap[i] = BiomeMap.NULL;
+        }
+        for(int i = 0; i < b.length; i++) {
             String bs = b[i].toString();
             for(int j = 0; j < bm.length; j++) {
                 if(bm[j].toString().equals(bs)) {

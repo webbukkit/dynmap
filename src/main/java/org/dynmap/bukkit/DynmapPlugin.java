@@ -825,6 +825,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         return;
                     Block b = event.getBlock();
                     Material m = b.getType();
+                    if(m == null) return;
                     switch(m) {
                         case STATIONARY_WATER:
                         case WATER:
@@ -832,7 +833,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         case LAVA:
                         case GRAVEL:
                         case SAND:
-                            checkBlock(event.getBlock(), "blockphysics");
+                            checkBlock(b, "blockphysics");
                             break;
                     }
                 }
@@ -847,12 +848,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 public void onBlockFromTo(BlockFromToEvent event) {
                     if(event.isCancelled())
                         return;
-                    Material m = event.getBlock().getType();
-                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
-                        checkBlock(event.getBlock(), "blockfromto");
-                    m = event.getToBlock().getType();
-                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE)) 
-                        checkBlock(event.getToBlock(), "blockfromto");
+                    Block b = event.getBlock();
+                    Material m = b.getType();
+                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE) && (m != null)) 
+                        checkBlock(b, "blockfromto");
+                    b = event.getToBlock();
+                    m = b.getType();
+                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE) && (m != null)) 
+                        checkBlock(b, "blockfromto");
                 }
             };
             pm.registerEvents(fromtolistener, this);
