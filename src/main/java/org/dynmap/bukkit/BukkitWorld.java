@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -13,11 +15,12 @@ import org.dynmap.utils.MapChunkCache;
 
 public class BukkitWorld extends DynmapWorld {
     private World world;
+    private Permission perm;
     
     public BukkitWorld(World w) {
         super(w.getName(), w.getMaxHeight(), w.getSeaLevel());
-        
         world = w;
+        perm = new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
     }
     /* Test if world is nether */
     @Override
