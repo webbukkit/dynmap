@@ -250,8 +250,8 @@ render-triggers:
   - blockspread
   - pistonmoved
   - explosion
-  - blockfromto
-  - blockphysics
+  #- blockfromto
+  #- blockphysics
   - structuregrow
   - blockgrow
 
