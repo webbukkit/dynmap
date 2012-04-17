@@ -155,6 +155,7 @@ permissions:
       dynmap.dmap.perspectivelist: true
       dynmap.dmap.shaderlist: true
       dynmap.dmap.lightinglist: true
+      dynmap.playermarkers.seeall: true
   dynmap.render:
     description: Allows /dynmap render command
     default: true
@@ -320,3 +321,6 @@ permissions:
   dynmap.webchat:
     description: Allows web chat (if login required for webchat)
     default: true
+  dynmap.playermarkers.seeall:
+    description: Allow all players to be seen by user on web UI
+    default: op
