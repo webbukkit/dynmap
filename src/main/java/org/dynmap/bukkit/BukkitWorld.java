@@ -16,16 +16,20 @@ import org.dynmap.utils.MapChunkCache;
 public class BukkitWorld extends DynmapWorld {
     private World world;
     private Permission perm;
+    private World.Environment env;
+    private boolean skylight;
     
     public BukkitWorld(World w) {
         super(w.getName(), w.getMaxHeight(), w.getSeaLevel());
         world = w;
+        env = world.getEnvironment();
+        skylight = (env == World.Environment.NORMAL);
         perm = new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
     }
     /* Test if world is nether */
     @Override
     public boolean isNether() {
-        return world.getEnvironment() == World.Environment.NETHER;
+        return env == World.Environment.NETHER;
     }
     /* Get world spawn location */
     @Override
@@ -69,7 +73,7 @@ public class BukkitWorld extends DynmapWorld {
     /* Test if sky light level is requestable */
     @Override
     public boolean canGetSkyLightLevel() {
-        return true;
+        return skylight;
     }
     /* Return sky light level */
     @Override
@@ -81,7 +85,7 @@ public class BukkitWorld extends DynmapWorld {
      */
     @Override
     public String getEnvironment() {
-        return world.getEnvironment().name().toLowerCase();
+        return env.name().toLowerCase();
     }
     /**
      * Get map chunk cache for world
