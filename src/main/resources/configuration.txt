@@ -239,6 +239,9 @@ compass-mode: newnorth
 # Enabled LC Trees++ block rendering support
 #lctrees-support: true
 
+# Enable Forestry block rending support
+#forestry-support: true
+
 render-triggers:
   #- playermove
   #- playerjoin
