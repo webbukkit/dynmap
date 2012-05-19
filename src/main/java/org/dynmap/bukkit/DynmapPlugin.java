@@ -57,6 +57,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
+import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWebChatEvent;
@@ -77,6 +78,7 @@ import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.markers.MarkerAPI;
+import org.dynmap.utils.MapChunkCache;
 import org.getspout.spoutapi.plugin.SpoutPlugin;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
@@ -108,6 +110,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
      * Server access abstraction class
      */
     public class BukkitServer implements DynmapServerInterface {
+        /* Chunk load handling */
+        private Object loadlock = new Object();
+        private int chunks_in_cur_tick = 0;
+        private long cur_tick;
+
         @Override
         public void scheduleServerTask(Runnable run, long delay) {
             getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, run, delay);
@@ -302,6 +309,70 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 return false;
             return permissions.hasOfflinePermission(player, perm);
         }
+        /**
+         * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
+         */
+        @Override
+        public MapChunkCache createMapChunkCache(DynmapWorld w, List<DynmapChunk> chunks, 
+                boolean blockdata, boolean highesty, boolean biome, boolean rawbiome) {
+            MapChunkCache c = w.getChunkCache(chunks);
+            if(w.visibility_limits != null) {
+                for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
+                    c.setVisibleRange(limit);
+                }
+                c.setHiddenFillStyle(w.hiddenchunkstyle);
+                c.setAutoGenerateVisbileRanges(w.do_autogenerate);
+            }
+            if(w.hidden_limits != null) {
+                for(MapChunkCache.VisibilityLimit limit: w.hidden_limits) {
+                    c.setHiddenRange(limit);
+                }
+                c.setHiddenFillStyle(w.hiddenchunkstyle);
+            }
+            if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false) {
+                Log.severe("CraftBukkit build does not support biome APIs");
+            }
+            if(chunks.size() == 0) {    /* No chunks to get? */
+                c.loadChunks(0);
+                return c;
+            }
+
+            final MapChunkCache cc = c;
+
+            while(!cc.isDoneLoading()) {
+                synchronized(loadlock) {
+                    long now = System.currentTimeMillis();
+                    
+                    if(cur_tick != (now/50)) {  /* New tick? */
+                        chunks_in_cur_tick = mapManager.getMaxChunkLoadsPerTick();
+                        cur_tick = now/50;
+                    }
+                }
+                Future<Boolean> f = core.getServer().callSyncMethod(new Callable<Boolean>() {
+                    public Boolean call() throws Exception {
+                        boolean exhausted;
+                        synchronized(loadlock) {
+                            if(chunks_in_cur_tick > 0)
+                                chunks_in_cur_tick -= cc.loadChunks(chunks_in_cur_tick);
+                            exhausted = (chunks_in_cur_tick == 0);
+                        }
+                        return exhausted;
+                    }
+                });
+                Boolean delay;
+                try {
+                    delay = f.get();
+                } catch (Exception ix) {
+                    Log.severe(ix);
+                    return null;
+                }
+                if((delay != null) && delay.booleanValue()) {
+                    try { Thread.sleep(25); } catch (InterruptedException ix) {}
+                }
+            }
+            return c;
+        }
+
     }
     /**
      * Player access abstraction class
