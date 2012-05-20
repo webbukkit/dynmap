@@ -139,11 +139,14 @@ components:
     hidey: false
     show-mcr: false
     
+  # Note: more than one logo component can be defined
   #- class: org.dynmap.ClientComponent
   #  type: logo
   #  text: "Dynmap"
   #  #logourl: "images/block_surface.png"
   #  linkurl: "http://forums.bukkit.org/threads/dynmap.489/"
+  #  # Valid positions: top-left, top-right, bottom-left, bottom-right
+  #  position: bottom-right
 
   #- class: org.dynmap.ClientComponent
   #  type: inactive
