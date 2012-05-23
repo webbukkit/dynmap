@@ -216,7 +216,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         @SuppressWarnings("unused")
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onBlockBreak(BlockBreakEvent evt) {
+                            if(evt.isCancelled()) return;
                             Block b = evt.getBlock();
+                            if(b == null) return;   /* Work around for stupid mods.... */
                             Location l = b.getLocation();
                             core.listenerManager.processBlockEvent(EventType.BLOCK_BREAK, b.getType().getId(),
                                     BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
@@ -228,6 +230,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         @SuppressWarnings("unused")
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onSignChange(SignChangeEvent evt) {
+                            if(evt.isCancelled()) return;
                             Block b = evt.getBlock();
                             Location l = b.getLocation();
                             String[] lines = evt.getLines();    /* Note: changes to this change event - intentional */
@@ -842,7 +845,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 public void onBlockBreak(BlockBreakEvent event) {
                     if(event.isCancelled())
                         return;
-                    Location loc = event.getBlock().getLocation();
+                    Block b = event.getBlock();
+                    if(b == null) return;   /* Stupid mod workaround */
+                    Location loc = b.getLocation();
                     String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
                     sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                     mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockbreak");
