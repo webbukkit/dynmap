@@ -101,16 +101,21 @@ public class NewMapChunkCache implements MapChunkCache {
                 exceptions++;
             }
             laststep = BlockStep.Y_MINUS;
-            typeid = blkdata = -1;
+            if((y >= 0) && (y < worldheight))
+                typeid = blkdata = -1;
+            else
+                typeid = blkdata = 0;
         }
         public final int getBlockTypeID() {
-            if(typeid < 0)
+            if(typeid < 0) {
                 typeid = snap.getBlockTypeId(bx, y, bz);
+            }
             return typeid;
         }
         public final int getBlockData() {
-            if(blkdata < 0)
+            if(blkdata < 0) {
                 blkdata = snap.getBlockData(bx, y, bz);
+            }
             return blkdata;
         }
         public int getBlockSkyLight() {
@@ -353,6 +358,8 @@ public class NewMapChunkCache implements MapChunkCache {
          * Step current position in given direction
          */
         public final void stepPosition(BlockStep step) {
+            typeid = -1;
+            blkdata = -1;
             switch(step.ordinal()) {
                 case 0:
                     x++;
@@ -372,6 +379,9 @@ public class NewMapChunkCache implements MapChunkCache {
                     break;
                 case 1:
                     y++;
+                    if(y >= worldheight) {
+                        typeid = blkdata = 0;
+                    }
                     break;
                 case 2:
                     z++;
@@ -407,6 +417,9 @@ public class NewMapChunkCache implements MapChunkCache {
                     break;
                 case 4:
                     y--;
+                    if(y < 0) {
+                        typeid = blkdata = 0;
+                    }
                     break;
                 case 5:
                     z--;
@@ -426,8 +439,6 @@ public class NewMapChunkCache implements MapChunkCache {
                     break;
             }
             laststep = step;
-            typeid = -1;
-            blkdata = -1;
         }
         /**
          * Unstep current position to previous position
@@ -449,8 +460,12 @@ public class NewMapChunkCache implements MapChunkCache {
             else
                 laststep = BlockStep.Y_MINUS;
             this.y = y;
-            typeid = -1;
-            blkdata = -1;
+            if((y < 0) || (y >= worldheight)) {
+                typeid = blkdata = 0;
+            }
+            else {
+                typeid = blkdata = -1;
+            }
         }
         public final int getX() {
             return x;
@@ -493,9 +508,12 @@ public class NewMapChunkCache implements MapChunkCache {
         }
         @Override
         public final boolean isEmptySection() {
-            if(isSectionNotEmpty[chunkindex] == null)
+            try {
+                return !isSectionNotEmpty[chunkindex][y >> 4];
+            } catch (Exception x) {
                 initSectionData(chunkindex);
-             return !isSectionNotEmpty[chunkindex][y >> 4];
+                return !isSectionNotEmpty[chunkindex][y >> 4];
+            }
         }
      }
 
