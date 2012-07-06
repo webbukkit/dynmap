@@ -16,6 +16,11 @@
     	<includes>
     		<include>version.js</include></includes>
     	<filtered>true</filtered></fileSet>
+    <fileSet>
+    	<directory>${project.basedir}</directory>
+    	<outputDirectory>/dynmap</outputDirectory>
+    	<includes>
+    		<include>LICENSE</include></includes></fileSet>
   </fileSets>
   <files>
   	<file>
