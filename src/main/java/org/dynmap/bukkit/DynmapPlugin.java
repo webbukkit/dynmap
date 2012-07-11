@@ -36,6 +36,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -806,6 +807,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private boolean onexplosion;
     private boolean onstructuregrow;
     private boolean onblockgrow;
+    private boolean onblockredstone;
 
     private void registerEvents() {
         
@@ -821,6 +823,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         onblockphysics = core.isTrigger("blockphysics");
         onpiston = core.isTrigger("pistonmoved");
         onblockfade = core.isTrigger("blockfaded");
+        onblockredstone = core.isTrigger("blockredstone");
         
         if(onplace) {
             Listener placelistener = new Listener() {
@@ -1065,6 +1068,20 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             } catch (ClassNotFoundException cnfx) {
                 /* Pre-R5 - no grow event yet */
             }
+        }
+        
+        if(onblockredstone) {
+            Listener redstoneTrigger = new Listener() {
+                @SuppressWarnings("unused")
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onBlockRedstone(BlockRedstoneEvent event) {
+                    Location loc = event.getBlock().getLocation();
+                    String wn = BukkitWorld.normalizeWorldName(loc.getWorld().getName());
+                    sscache.invalidateSnapshot(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    mapManager.touch(wn, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), "blockredstone");
+                }
+            };
+            pm.registerEvents(redstoneTrigger,  this);
         }
         
         /* Register player event trigger handlers */
