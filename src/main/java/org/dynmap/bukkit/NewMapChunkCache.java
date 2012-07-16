@@ -796,7 +796,15 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
-            boolean didload = w.loadChunk(chunk.x, chunk.z, false);
+            boolean didload = false;
+            try {
+                didload = w.loadChunk(chunk.x, chunk.z, false);
+            } catch (Throwable t) { /* Catch chunk error from Bukkit */
+                Log.warning("Bukkit error loading chunk " + chunk.x + "," + chunk.z + " on " + w.getName());
+                if(!wasLoaded) {    /* If wasn't loaded, we loaded it if it now is */
+                    didload = w.isChunkLoaded(chunk.x, chunk.z);
+                }
+            }
             boolean didgenerate = false;
             /* If we didn't load, and we're supposed to generate, do it */
             if((!didload) && do_generate && vis)
