@@ -210,6 +210,9 @@ correct-water-lighting: true
 # Control updating of player faces, once loaded (if faces are being managed by other apps or manually)
 #refreshskins: false
 
+# Customize URL used for fetching player skins (%player% is macro for name)
+skin-url: "http://s3.amazonaws.com/MinecraftSkins/%player%.png"
+
 # Control behavior for new (1.0+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
 #   default is 'newrose' (preserve pre-1.0 maps, rotate rose)
 #   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
@@ -349,9 +352,6 @@ defaultmap: flat
 # (optional) Zoom level and map to switch to when following a player, if possible
 #followzoom: 3
 #followmap: surface
-
-# Option to enable workaround for incorrectly encoded unicode in Cyrillic MC/Bukkit (not good for other code pages)
-cyrillic-support: false
 
 # If true, make persistent record of IP addresses used by player logins, to support web IP to player matching
 persist-ids-by-ip: true
