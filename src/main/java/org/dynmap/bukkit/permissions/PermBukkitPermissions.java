@@ -1,22 +1,12 @@
 package org.dynmap.bukkit.permissions;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.Log;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.platymuus.bukkit.permissions.PermissionInfo;
 import com.platymuus.bukkit.permissions.PermissionsPlugin;
-
-import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.util.CalculableType;
-import de.bananaco.bpermissions.api.util.Permission;
 
 public class PermBukkitPermissions extends BukkitPermissions {
     PermissionsPlugin plugin;

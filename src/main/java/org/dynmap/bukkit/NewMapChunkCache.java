@@ -69,6 +69,7 @@ public class NewMapChunkCache implements MapChunkCache {
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
     public class OurMapIterator implements MapIterator {
+        @SuppressWarnings("unused")
         private int x, y, z, chunkindex, bx, bz, off;  
         private ChunkSnapshot snap;
         private BlockStep laststep;
@@ -601,9 +602,6 @@ public class NewMapChunkCache implements MapChunkCache {
         public boolean isSectionEmpty(int sy) {
             return (sy < 4);
         }
-        public int getTopNonEmptySection() {
-            return 3;
-        }
     }
     
     private static class SpoutChunkSnapshot implements ChunkSnapshot {
@@ -960,7 +958,6 @@ public class NewMapChunkCache implements MapChunkCache {
     }
     private void initSectionData(int idx) {
         isSectionNotEmpty[idx] = new boolean[nsect + 1];
-        int maxy = 0;
         if(snaparray[idx] != EMPTY) {
             if(!use_sections) {
                 Arrays.fill(isSectionNotEmpty[idx], true);

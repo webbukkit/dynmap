@@ -15,7 +15,6 @@ import org.dynmap.utils.MapChunkCache;
 
 public class BukkitWorld extends DynmapWorld {
     private World world;
-    private Permission perm;
     private World.Environment env;
     private boolean skylight;
     
@@ -24,7 +23,7 @@ public class BukkitWorld extends DynmapWorld {
         world = w;
         env = world.getEnvironment();
         skylight = (env == World.Environment.NORMAL);
-        perm = new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
+        new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
     }
     /* Test if world is nether */
     @Override

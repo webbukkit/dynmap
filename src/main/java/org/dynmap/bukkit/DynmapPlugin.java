@@ -80,7 +80,6 @@ import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.utils.MapChunkCache;
-import org.getspout.spoutapi.plugin.SpoutPlugin;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapCore core;
@@ -177,7 +176,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     break;
                 case WORLD_SPAWN_CHANGE:
                     pm.registerEvents(new Listener() {
-                        @SuppressWarnings("unused")
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onSpawnChange(SpawnChangeEvent evt) {
                             DynmapWorld w = new BukkitWorld(evt.getWorld());
@@ -191,7 +189,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     break;
                 case PLAYER_BED_LEAVE:
                     pm.registerEvents(new Listener() {
-                        @SuppressWarnings("unused")
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onPlayerBedLeave(PlayerBedLeaveEvent evt) {
                             DynmapPlayer p = new BukkitPlayer(evt.getPlayer());
@@ -201,7 +198,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     break;
                 case PLAYER_CHAT:
                     pm.registerEvents(new Listener() {
-                        @SuppressWarnings("unused")
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onPlayerChat(PlayerChatEvent evt) {
                             if(evt.isCancelled()) return;
@@ -214,7 +210,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     break;
                 case BLOCK_BREAK:
                     pm.registerEvents(new Listener() {
-                        @SuppressWarnings("unused")
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onBlockBreak(BlockBreakEvent evt) {
                             if(evt.isCancelled()) return;
@@ -228,7 +223,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     break;
                 case SIGN_CHANGE:
                     pm.registerEvents(new Listener() {
-                        @SuppressWarnings("unused")
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onSignChange(SignChangeEvent evt) {
                             if(evt.isCancelled()) return;
@@ -732,13 +726,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     
     private void registerPlayerLoginListener() {
         Listener pl = new Listener() {
-            @SuppressWarnings("unused")
             @EventHandler(priority=EventPriority.MONITOR)
             public void onPlayerJoin(PlayerJoinEvent evt) {
                 DynmapPlayer dp = new BukkitPlayer(evt.getPlayer());                
                 core.listenerManager.processPlayerEvent(EventType.PLAYER_JOIN, dp);
             }
-            @SuppressWarnings("unused")
             @EventHandler(priority=EventPriority.MONITOR)
             public void onPlayerQuit(PlayerQuitEvent evt) {
                 DynmapPlayer dp = new BukkitPlayer(evt.getPlayer());
@@ -827,7 +819,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onplace) {
             Listener placelistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockPlace(BlockPlaceEvent event) {
                     if(event.isCancelled())
@@ -843,7 +834,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onbreak) {
             Listener breaklistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockBreak(BlockBreakEvent event) {
                     if(event.isCancelled())
@@ -861,7 +851,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onleaves) {
             Listener leaveslistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onLeavesDecay(LeavesDecayEvent event) {
                     if(event.isCancelled())
@@ -879,7 +868,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         if(onburn) {
             Listener burnlistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockBurn(BlockBurnEvent event) {
                     if(event.isCancelled())
@@ -897,7 +885,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onblockphysics) {
             Listener physlistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockPhysics(BlockPhysicsEvent event) {
                     if(event.isCancelled())
@@ -914,6 +901,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         case SAND:
                             checkBlock(b, "blockphysics");
                             break;
+                        default:
+                            break;
                     }
                 }
             };
@@ -922,7 +911,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onblockfromto) {
             Listener fromtolistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockFromTo(BlockFromToEvent event) {
                     if(event.isCancelled())
@@ -942,7 +930,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onpiston) {
             Listener pistonlistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockPistonRetract(BlockPistonRetractEvent event) {
                     if(event.isCancelled())
@@ -969,7 +956,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     }
                 }
 
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockPistonExtend(BlockPistonExtendEvent event) {
                     if(event.isCancelled())
@@ -1001,7 +987,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onblockspread) {
             Listener spreadlistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockSpread(BlockSpreadEvent event) {
                     if(event.isCancelled())
@@ -1017,7 +1002,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onblockform) {
             Listener formlistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockForm(BlockFormEvent event) {
                     if(event.isCancelled())
@@ -1033,7 +1017,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onblockfade) {
             Listener fadelistener = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockFade(BlockFadeEvent event) {
                     if(event.isCancelled())
@@ -1053,7 +1036,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             try {
                 Class.forName("org.bukkit.event.block.BlockGrowEvent");
                 Listener growTrigger = new Listener() {
-                    @SuppressWarnings("unused")
                     @EventHandler(priority=EventPriority.MONITOR)
                     public void onBlockGrow(BlockGrowEvent event) {
                         if(event.isCancelled())
@@ -1072,7 +1054,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onblockredstone) {
             Listener redstoneTrigger = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onBlockRedstone(BlockRedstoneEvent event) {
                     Location loc = event.getBlock().getLocation();
@@ -1086,7 +1067,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         /* Register player event trigger handlers */
         Listener playerTrigger = new Listener() {
-            @SuppressWarnings("unused")
             @EventHandler(priority=EventPriority.MONITOR)
             public void onPlayerJoin(PlayerJoinEvent event) {
                 if(onplayerjoin) {
@@ -1102,7 +1082,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         if(onplayermove) {
             Listener playermove = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onPlayerMove(PlayerMoveEvent event) {
                     Location loc = event.getPlayer().getLocation();
@@ -1114,7 +1093,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         /* Register entity event triggers */
         Listener entityTrigger = new Listener() {
-            @SuppressWarnings("unused")
             @EventHandler(priority=EventPriority.MONITOR)
             public void onEntityExplode(EntityExplodeEvent event) {
                 Location loc = event.getLocation();
@@ -1148,7 +1126,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         
         /* Register world event triggers */
         Listener worldTrigger = new Listener() {
-            @SuppressWarnings("unused")
             @EventHandler(priority=EventPriority.MONITOR)
             public void onWorldLoad(WorldLoadEvent event) {
                 core.updateConfigHashcode();
@@ -1156,7 +1133,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(core.processWorldLoad(w))    /* Have core process load first - fire event listeners if good load after */
                     core.listenerManager.processWorldEvent(EventType.WORLD_LOAD, w);
             }
-            @SuppressWarnings("unused")
             @EventHandler(priority=EventPriority.MONITOR)
             public void onWorldUnload(WorldUnloadEvent event) {
                 core.updateConfigHashcode();
@@ -1164,7 +1140,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(w != null)
                     core.listenerManager.processWorldEvent(EventType.WORLD_UNLOAD, w);
             }
-            @SuppressWarnings("unused")
             @EventHandler(priority=EventPriority.MONITOR)
             public void onStructureGrow(StructureGrowEvent event) {
                 Location loc = event.getLocation();
@@ -1199,7 +1174,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         ongeneratechunk = core.isTrigger("chunkgenerated");
         if(ongeneratechunk) {
             Listener chunkTrigger = new Listener() {
-                @SuppressWarnings("unused")
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onChunkPopulate(ChunkPopulateEvent event) {
                     Chunk c = event.getChunk();

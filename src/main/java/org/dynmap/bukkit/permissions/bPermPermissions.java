@@ -4,21 +4,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.Log;
 
-import ru.tehkode.permissions.bukkit.PermissionsEx;
-
-import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.User;
 import de.bananaco.bpermissions.api.WorldManager;
-import de.bananaco.bpermissions.api.util.CalculableType;
-import de.bananaco.bpermissions.api.util.Permission;
 
 public class bPermPermissions extends BukkitPermissions {
     WorldManager wm;
