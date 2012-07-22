@@ -219,12 +219,13 @@ skin-url: "http://s3.amazonaws.com/MinecraftSkins/%player%.png"
 compass-mode: newnorth
 
 ### Mod block support ###
-# Enable Industrial Craft 2 block rendering support (core, Advanced Machines, Charging Bench, Power Converters, Compact Solars)
+# Enable Industrial Craft 2 block rendering support (core, Advanced Machines, Charging Bench, Power Converters, Compact Solars, Nuclear Control)
 #ic2-support: true
 #ic2-advancesmachines-support: true
 #ic2-chargingbench-support: true
 #ic2-powerconverters-support: true
 #ic2-compactsolars-support: true
+#ic2-nuclearcontrol-support: true
 # Enable BuildCraft block rendering support
 #buildcraft-support: true
 # Enable RedPower2 block rendering support
