@@ -245,6 +245,8 @@ compass-mode: newnorth
 #ironchest-support: true
 # Enable TubeCraft block rendering support
 #tubecraft-support: true
+# Enable Ender Storage block rendering support
+#enderstorage-support: true
 
 render-triggers:
   #- playermove
