@@ -218,39 +218,33 @@ skin-url: "http://s3.amazonaws.com/MinecraftSkins/%player%.png"
 #   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
 compass-mode: newnorth
 
+### Mod block support ###
 # Enable Industrial Craft 2 block rendering support (core, Advanced Machines, Charging Bench, Power Converters, Compact Solars)
 #ic2-support: true
 #ic2-advancesmachines-support: true
 #ic2-chargingbench-support: true
 #ic2-powerconverters-support: true
 #ic2-compactsolars-support: true
-
 # Enable BuildCraft block rendering support
 #buildcraft-support: true
-
 # Enable RedPower2 block rendering support
 #redpower2-support: true
-
 # Enable NetherOres block rendering support
 #netherores-support: true
-
 # Enable RailCraft block rendering support
 #railcraft-support: true
-
 # Enable Kaevator's Superslopes block rendering support
 #superslopes-support: true
-
 # Enabled ComputerCraft block rendering support
 #computercraft-support: true
-
 # Enabled LC Trees++ block rendering support
 #lctrees-support: true
-
 # Enable Forestry block rending support
 #forestry-support: true
-
 # Enable IronCheck block rendering support
 #ironchest-support: true
+# Enable TubeCraft block rendering support
+#tubecraft-support: true
 
 render-triggers:
   #- playermove
