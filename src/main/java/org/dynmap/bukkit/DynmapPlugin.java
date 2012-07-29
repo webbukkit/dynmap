@@ -1226,5 +1226,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public boolean setDisableChatToWebProcessing(boolean disable) {
         return core.setDisableChatToWebProcessing(disable);
     }
+    @Override
+    public boolean testIfPlayerVisibleToPlayer(String player, String player_to_see) {
+        return core.testIfPlayerVisibleToPlayer(player, player_to_see);
+    }
 
 }
