@@ -1230,5 +1230,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public boolean testIfPlayerVisibleToPlayer(String player, String player_to_see) {
         return core.testIfPlayerVisibleToPlayer(player, player_to_see);
     }
-
+    @Override
+    public boolean testIfPlayerInfoProtected() {
+        return core.testIfPlayerInfoProtected();
+    }
 }
