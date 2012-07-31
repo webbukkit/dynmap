@@ -370,7 +370,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             return c;
         }
-
+        @Override
+        public int getMaxPlayers() {
+            return getServer().getMaxPlayers();
+        }
+        @Override
+        public int getCurrentPlayers() {
+            return getServer().getOnlinePlayers().length;
+        }
     }
     /**
      * Player access abstraction class
