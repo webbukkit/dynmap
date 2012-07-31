@@ -412,7 +412,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             if(player == null) {
                 return null;
             }
-            Location loc = player.getLocation();
+            Location loc = player.getEyeLocation(); // Use eye location, since we show head 
             return toLoc(loc);
         }
         @Override
