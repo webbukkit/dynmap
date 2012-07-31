@@ -360,6 +360,23 @@ msg:
     chatrequireslogin: "Chat Requires Login"
     chatnotallowed: "You are not permitted to send chat messages"
 
+# URL for client configuration (only need to be tailored for proxies or other non-standard configurations)
+url:
+    # configuration URL
+    #configuration: "up/configuration"
+    # update URL
+    #update: "up/world/{world}/{timestamp}"
+    # sendmessage URL
+    #sendmessage: "up/sendmessage"
+    # login URL
+    #login: "up/login"
+    # register URL
+    #register: "up/register"
+    # tiles base URL
+    #tiles: "tiles/"
+    # markers base URL
+    #markers: "tiles/"
+    
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
 verbose: false
