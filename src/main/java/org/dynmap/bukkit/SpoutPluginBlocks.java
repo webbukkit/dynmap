@@ -53,6 +53,22 @@ public class SpoutPluginBlocks {
             sb.append("block:id=" + blk.getCustomId() + ",allfaces=12049,transparency=TRANSPARENT\n");
     }
     
+    private static String fixIDString(String id) {
+        StringBuilder sb = new StringBuilder();
+        int len = id.length();
+        sb.setLength(len);
+        for(int i = 0; i < len; i++) {
+            char c = id.charAt(i);
+            if(Character.isJavaIdentifierStart(c)) {
+                sb.setCharAt(i, c);
+            }
+            else {
+                sb.setCharAt(i, '_');
+            }
+        }
+        return sb.toString();
+    }
+    
     /* Process spout blocks - return true if something changed */
     public boolean processSpoutBlocks(File datadir) {
         if(textYPosField == null) {
@@ -72,8 +88,7 @@ public class SpoutPluginBlocks {
         /* Loop through blocks - try to freshen files, if needed */
         for(CustomBlock b : cb) {
             BlockDesign bd = b.getBlockDesign();
-            String blkid = bd.getTexturePlugin() + "." + b.getName();
-            blkid = blkid.replace(' ', '_');
+            String blkid = bd.getTexturePlugin() + "." + fixIDString(b.getName());
             /* If not GenericCubiodBlockDesign, we don't handle it */
             if((bd instanceof GenericCuboidBlockDesign) == false) {
                 Log.info("Block " + blkid + " not suppored - only cubiod blocks");

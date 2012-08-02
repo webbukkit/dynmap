@@ -1,5 +1,6 @@
 package org.dynmap.bukkit;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,16 +28,14 @@ import org.getspout.spoutapi.block.SpoutChunk;
  */
 public class NewMapChunkCache implements MapChunkCache {
     private static boolean init = false;
-    private static Method poppreservedchunk = null;
     private static Method gethandle = null;
     private static Method removeentities = null;
-    private static Method getworldhandle = null;    
+    private static Field doneflag = null;
     private static boolean use_spout = false;
     private static boolean use_sections = false;
 
     private World w;
     private DynmapWorld dw;
-    private Object craftworld;
     private int nsect;
     private List<DynmapChunk> chunks;
     private ListIterator<DynmapChunk> iterator;
@@ -664,15 +663,6 @@ public class NewMapChunkCache implements MapChunkCache {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public NewMapChunkCache() {
         if(!init) {
-            /* Get CraftWorld.popPreservedChunk(x,z) - reduces memory bloat from map traversals (optional) */
-            try {
-                Class c = Class.forName("org.bukkit.craftbukkit.CraftWorld");
-                poppreservedchunk = c.getDeclaredMethod("popPreservedChunk", new Class[] { int.class, int.class });
-                /* getHandle() */
-                getworldhandle = c.getDeclaredMethod("getHandle", new Class[0]);
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchMethodException nsmx) {
-            }
             /* Get CraftChunk.getChunkSnapshot(boolean,boolean,boolean) and CraftChunk.getHandle() */
             try {
                 Class c = Class.forName("org.bukkit.craftbukkit.CraftChunk");
@@ -684,8 +674,10 @@ public class NewMapChunkCache implements MapChunkCache {
             try {
                 Class c = Class.forName("net.minecraft.server.Chunk");
                 removeentities = c.getDeclaredMethod("removeEntities", new Class[0]);
+                doneflag = c.getField("done");
             } catch (ClassNotFoundException cnfx) {
             } catch (NoSuchMethodException nsmx) {
+            } catch (NoSuchFieldException nsfx) {
             }
             /* Check for ChunkSnapshot.isSectionEmpty(int) method */
             try {
@@ -703,12 +695,6 @@ public class NewMapChunkCache implements MapChunkCache {
         this.dw = dw;
         this.w = dw.getWorld();
         nsect = dw.worldheight >> 4;
-        if((getworldhandle != null) && (craftworld == null)) {
-            try {
-                craftworld = getworldhandle.invoke(w);   /* World.getHandle() */
-            } catch (Exception x) {
-            }
-        }
         this.chunks = chunks;
         /* Compute range */
         if(chunks.size() == 0) {
@@ -809,6 +795,26 @@ public class NewMapChunkCache implements MapChunkCache {
                 didgenerate = didload = w.loadChunk(chunk.x, chunk.z, true);
             /* If it did load, make cache of it */
             if(didload) {
+                Chunk c = w.getChunkAt(chunk.x, chunk.z);   /* Get the chunk */
+                /* Try to get n.m.s.Chunk handle */
+                Object nmschunk = null;
+                if(gethandle != null) {
+                    try {
+                        nmschunk = gethandle.invoke(c);
+                    } catch (InvocationTargetException itx) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    }
+                }
+                /* Test if chunk isn't populated */
+                boolean populated = true;
+                if((nmschunk != null) && (doneflag != null)) {
+                    try {
+                        populated = doneflag.getBoolean(nmschunk);
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    }
+                }
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
@@ -817,8 +823,10 @@ public class NewMapChunkCache implements MapChunkCache {
                     else
                         ss = EMPTY;
                 }
+                else if(!populated) {   /* If not populated, treat as empty */
+                    ss = EMPTY;
+                }
                 else {
-                    Chunk c = w.getChunkAt(chunk.x, chunk.z);
                     if(blockdata || highesty) {
                         ss = c.getChunkSnapshot(highesty, biome, biomeraw);
                         if(use_spout) {
@@ -832,46 +840,38 @@ public class NewMapChunkCache implements MapChunkCache {
                     }
                 }
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
-            }
-            if ((!wasLoaded) && didload) {
-                chunks_read++;
-                /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
-                 * when chunks are unloaded but not saved - removing them seems to do the trick */
-                if(!(didgenerate && do_save)) {
-                    boolean did_remove = false;
-                    Chunk cc = w.getChunkAt(chunk.x, chunk.z);
-                    if((gethandle != null) && (removeentities != null)) {
-                        try {
-                            Object chk = gethandle.invoke(cc);
-                            if(chk != null) {
-                                removeentities.invoke(chk);
-                                did_remove = true;
+                /* If wasn't loaded before, we need to do unload */
+                if (!wasLoaded) {
+                    chunks_read++;
+                    /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
+                     * when chunks are unloaded but not saved - removing them seems to do the trick */
+                    if(!(didgenerate && do_save)) {
+                        boolean did_remove = false;
+                        if(removeentities != null) {
+                            try {
+                                if(nmschunk != null) {
+                                    removeentities.invoke(nmschunk);
+                                    did_remove = true;
+                                }
+                            } catch (InvocationTargetException itx) {
+                            } catch (IllegalArgumentException e) {
+                            } catch (IllegalAccessException e) {
                             }
-                        } catch (InvocationTargetException itx) {
-                        } catch (IllegalArgumentException e) {
-                        } catch (IllegalAccessException e) {
+                        }
+                        if(!did_remove) {
+                            if(c != null) {
+                                for(Entity e: c.getEntities())
+                                    e.remove();
+                            }
                         }
                     }
-                    if(!did_remove) {
-                        if(cc != null) {
-                            for(Entity e: cc.getEntities())
-                                e.remove();
-                        }
-                    }
-                }
-                /* Since we only remember ones we loaded, and we're synchronous, no player has
-                 * moved, so it must be safe (also prevent chunk leak, which appears to happen
-                 * because isChunkInUse defined "in use" as being within 256 blocks of a player,
-                 * while the actual in-use chunk area for a player where the chunks are managed
-                 * by the MC base server is 21x21 (or about a 160 block radius).
-                 * Also, if we did generate it, need to save it */
-                w.unloadChunk(chunk.x, chunk.z, didgenerate && do_save, false);
-                /* And pop preserved chunk - this is a bad leak in Bukkit for map traversals like us */
-                try {
-                    if(poppreservedchunk != null)
-                        poppreservedchunk.invoke(w, chunk.x, chunk.z);
-                } catch (Exception x) {
-                    Log.severe("Cannot pop preserved chunk - " + x.toString());
+                    /* Since we only remember ones we loaded, and we're synchronous, no player has
+                     * moved, so it must be safe (also prevent chunk leak, which appears to happen
+                     * because isChunkInUse defined "in use" as being within 256 blocks of a player,
+                     * while the actual in-use chunk area for a player where the chunks are managed
+                     * by the MC base server is 21x21 (or about a 160 block radius).
+                     * Also, if we did generate it, need to save it */
+                    w.unloadChunk(chunk.x, chunk.z, didgenerate && do_save, false);
                 }
             }
             cnt++;
