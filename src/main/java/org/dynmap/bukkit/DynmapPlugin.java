@@ -41,6 +41,7 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -51,6 +52,8 @@ import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Tree;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
@@ -197,16 +200,36 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     }, DynmapPlugin.this);
                     break;
                 case PLAYER_CHAT:
-                    pm.registerEvents(new Listener() {
-                        @EventHandler(priority=EventPriority.MONITOR)
-                        public void onPlayerChat(PlayerChatEvent evt) {
-                            if(evt.isCancelled()) return;
-                            DynmapPlayer p = null;
-                            if(evt.getPlayer() != null)
-                                p = new BukkitPlayer(evt.getPlayer());
-                            core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, p, evt.getMessage());
-                        }
-                    }, DynmapPlugin.this);
+                    try {
+                        Class.forName("org.bukkit.event.player.AsyncPlayerChatEvent");
+                        pm.registerEvents(new Listener() {
+                            @EventHandler(priority=EventPriority.MONITOR)
+                            public void onPlayerChat(AsyncPlayerChatEvent evt) {
+                                if(evt.isCancelled()) return;
+                                final Player p = evt.getPlayer();
+                                final String msg = evt.getMessage();
+                                getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, new Runnable() {
+                                    public void run() {
+                                        DynmapPlayer dp = null;
+                                        if(p != null)
+                                            dp = new BukkitPlayer(p);
+                                        core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, dp, msg);
+                                    }
+                                });
+                            }
+                        }, DynmapPlugin.this);
+                    } catch (ClassNotFoundException cnfx) {
+                        pm.registerEvents(new Listener() {
+                            @EventHandler(priority=EventPriority.MONITOR)
+                            public void onPlayerChat(PlayerChatEvent evt) {
+                                if(evt.isCancelled()) return;
+                                DynmapPlayer p = null;
+                                if(evt.getPlayer() != null)
+                                    p = new BukkitPlayer(evt.getPlayer());
+                                core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, p, evt.getMessage());
+                            }
+                        }, DynmapPlugin.this);
+                    }
                     break;
                 case BLOCK_BREAK:
                     pm.registerEvents(new Listener() {
