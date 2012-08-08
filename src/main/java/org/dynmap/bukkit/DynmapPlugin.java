@@ -111,6 +111,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     Log.info("Detected Spout - Support Disabled");
                 }
             }
+            if(!has_spout) {    /* If not, clean up old spout texture, if needed */
+                File st = new File(core.getDataFolder(), "renderdata/spout-texture.txt");
+                if(st.exists())
+                    st.delete();
+            }
             
         }
     }
