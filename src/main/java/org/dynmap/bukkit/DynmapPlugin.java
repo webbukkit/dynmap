@@ -96,6 +96,25 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public SpoutPluginBlocks spb;
     public PluginManager pm;
 
+    private class BukkitEnableCoreCallback extends DynmapCore.EnableCoreCallbacks {
+        @Override
+        public void configurationLoaded() {
+            /* Check for Spout */
+            if(detectSpout()) {
+                if(core.configuration.getBoolean("spout/enabled", true)) {
+                    has_spout = true;
+                    Log.info("Detected Spout");
+                    spb = new SpoutPluginBlocks();
+                    spb.processSpoutBlocks(DynmapPlugin.this, core);
+                }
+                else {
+                    Log.info("Detected Spout - Support Disabled");
+                }
+            }
+            
+        }
+    }
+    
     private static class BlockToCheck {
         Location loc;
         int typeid;
@@ -568,14 +587,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         if(dataDirectory.exists() == false)
             dataDirectory.mkdirs();
  
-        /* Check for Spout */
-        if(detectSpout()) {
-            has_spout = true;
-            Log.info("Detected Spout");
-            spb = new SpoutPluginBlocks();
-            spb.processSpoutBlocks(dataDirectory);
-        }
-
         /* Get MC version */
         String bukkitver = getServer().getVersion();
         String mcver = "1.0.0";
@@ -596,7 +607,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         core.setServer(new BukkitServer());
         
         /* Enable core */
-        if(!core.enableCore()) {
+        if(!core.enableCore(new BukkitEnableCoreCallback())) {
             this.setEnabled(false);
             return;
         }

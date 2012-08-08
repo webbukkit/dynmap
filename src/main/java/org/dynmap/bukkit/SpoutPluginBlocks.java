@@ -14,6 +14,8 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.bukkit.Material;
+import org.bukkit.plugin.Plugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 import org.getspout.spoutapi.block.design.BlockDesign;
 import org.getspout.spoutapi.block.design.GenericBlockDesign;
@@ -70,12 +72,25 @@ public class SpoutPluginBlocks {
     }
     
     /* Process spout blocks - return true if something changed */
-    public boolean processSpoutBlocks(File datadir) {
+    public boolean processSpoutBlocks(DynmapPlugin plugin, DynmapCore core) {
+        /* First, see if any spout plugins that need to be enabled */
+        for(Plugin p : plugin.getServer().getPluginManager().getPlugins()) {
+            List<String> dep = p.getDescription().getDepend();
+            if((dep != null) && (dep.contains("Spout"))) {
+                Log.info("Found Spout plugin: " + p.getName());
+                if(p.isEnabled() == false) {
+                    plugin.getPluginLoader().enablePlugin(p);
+                }
+            }
+        }
+        
+        File datadir = core.getDataFolder();
         if(textYPosField == null) {
             if(initSpoutAccess() == false)
                 return false;
         }
         HashMap<String, String> texturelist = new HashMap<String, String>();
+        boolean use_existing_texture = core.configuration.getBoolean("spout/use-existing-textures", true);
         
         int cnt = 0;
         File f = new File(datadir, "texturepacks/standard/spout");
@@ -125,53 +140,59 @@ public class SpoutPluginBlocks {
             String txtid = texturelist.get(txname);    /* Get texture */
             if(txtid == null) { /* Not found yet */
                 File imgfile = new File(f, blkid + ".png");
-                BufferedImage img = null;
-                boolean urlloaded = false;
-                try {
-                    URL url = new URL(txname);
-                    img = ImageIO.read(url);    /* Load skin for player */
-                    urlloaded = true;
-                } catch (IOException iox) {
-                    if(txname.startsWith("http") == false) {   /* Not URL - try file */
-                        File tf = new File(txname);
-                        if(tf.exists() == false) {
-                            /* Horrible hack - try to find temp file (some SpoutMaterials versions) */
-                            try {
-                                File tmpf = File.createTempFile("dynmap", "test");
-                        
-                                tf = new File(tmpf.getParent(), txname);
-                                tmpf.delete();
-                            } catch (IOException iox2) {}
+                
+                /* If not reusing loaded textures OR not previously loaded */
+                if((!use_existing_texture) || (!imgfile.exists())) {
+                    BufferedImage img = null;
+                    boolean urlloaded = false;
+                    try {
+                        URL url = new URL(txname);
+                        img = ImageIO.read(url);    /* Load skin for player */
+                        urlloaded = true;
+                    } catch (IOException iox) {
+                        if(txname.startsWith("http") == false) {   /* Not URL - try file */
+                            File tf = new File(txname);
+                            if(tf.exists() == false) {
+                                /* Horrible hack - try to find temp file (some SpoutMaterials versions) */
+                                try {
+                                    File tmpf = File.createTempFile("dynmap", "test");
+
+                                    tf = new File(tmpf.getParent(), txname);
+                                    tmpf.delete();
+                                } catch (IOException iox2) {}
+                            }
+                            if(tf.exists()) {
+                                try {
+                                    img = ImageIO.read(tf);
+                                    urlloaded = true;
+                                } catch (IOException iox3) {
+                                }
+                            }
                         }
-                        if(tf.exists()) {
-                            try {
-                                img = ImageIO.read(tf);
-                                urlloaded = true;
-                            } catch (IOException iox3) {
+                        if(img == null) {
+                            Log.severe("Error loading texture for custom block '" + blkid + "' (" + b.getCustomId() + ") from " + txname + "(" + iox.getMessage() + ")");
+                            if(imgfile.exists()) {
+                                try {
+                                    img = ImageIO.read(imgfile);    /* Load existing */
+                                    Log.info("Loaded cached texture file for " + blkid);
+                                } catch (IOException iox2) {
+                                    Log.severe("Error loading cached texture file for " + blkid + " - " + iox2.getMessage());
+                                }
                             }
                         }
                     }
-                    if(img == null) {
-                        Log.severe("Error loading texture for custom block '" + blkid + "' (" + b.getCustomId() + ") from " + txname + "(" + iox.getMessage() + ")");
-                        if(imgfile.exists()) {
-                            try {
-                                img = ImageIO.read(imgfile);    /* Load existing */
-                                Log.info("Loaded cached texture file for " + blkid);
-                            } catch (IOException iox2) {
-                                Log.severe("Error loading cached texture file for " + blkid + " - " + iox2.getMessage());
-                            }
+                    if(img != null) {
+                        try {
+                            if(urlloaded)
+                                ImageIO.write(img, "png", imgfile);
+                        } catch (IOException iox) {
+                            Log.severe("Error writing " + blkid + ".png");
+                        } finally {
+                            img.flush();
                         }
                     }
                 }
-                if(img != null) {
-                    try {
-                        if(urlloaded)
-                            ImageIO.write(img, "png", imgfile);
-                    } catch (IOException iox) {
-                        Log.severe("Error writing " + blkid + ".png");
-                    } finally {
-                        img.flush();
-                    }
+                if(imgfile.exists()) {  /* If exists now, log it */
                     String tfid = "txtid" + texturelist.size();
                     sb.append("texturefile:id=" + tfid + ",filename=spout/" + blkid + ".png,xcount=" + w/sz + ",ycount=" + h/sz + "\n");                                   
                     texturelist.put(txname, tfid);

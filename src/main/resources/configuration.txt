@@ -377,6 +377,15 @@ url:
     # markers base URL
     #markers: "tiles/"
     
+# Spout support controls
+spout:
+    # If false, ignore spout even if detected
+    enabled: true
+    # If true, previously loaded textures will be assumed to still be valid (faster startup, but
+    # can result in stale textures if originals are updated - delete files in texturepacks/standard/spoout
+    # to clean cached textures and force reload on next startup)
+    use-existing-textures: true
+    
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
 verbose: false
