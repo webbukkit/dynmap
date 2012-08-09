@@ -20,7 +20,7 @@ import org.dynmap.Log;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
-import org.dynmap.utils.MapIterator.BlockStep;
+import org.dynmap.utils.BlockStep;
 import org.getspout.spoutapi.block.SpoutChunk;
 
 /**
