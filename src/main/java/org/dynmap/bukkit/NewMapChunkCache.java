@@ -808,13 +808,14 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
                 /* Test if chunk isn't populated */
                 boolean populated = true;
-                if((nmschunk != null) && (doneflag != null)) {
-                    try {
-                        populated = doneflag.getBoolean(nmschunk);
-                    } catch (IllegalArgumentException e) {
-                    } catch (IllegalAccessException e) {
-                    }
-                }
+                //TODO: figure out why this doesn't appear to be reliable in Bukkit
+                //if((nmschunk != null) && (doneflag != null)) {
+                //    try {
+                //        populated = doneflag.getBoolean(nmschunk);
+                //    } catch (IllegalArgumentException e) {
+                //    } catch (IllegalAccessException e) {
+                //    }
+                //}
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
