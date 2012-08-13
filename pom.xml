@@ -179,5 +179,10 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/PermissionsBukkit.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.2.5-R5.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

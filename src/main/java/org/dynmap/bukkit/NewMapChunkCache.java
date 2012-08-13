@@ -1,8 +1,5 @@
 package org.dynmap.bukkit;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +8,9 @@ import java.util.ListIterator;
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
-import org.bukkit.entity.Entity;
+import org.bukkit.craftbukkit.CraftChunk;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.util.LongHashset;
 import org.bukkit.ChunkSnapshot;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
@@ -28,11 +27,7 @@ import org.getspout.spoutapi.block.SpoutChunk;
  */
 public class NewMapChunkCache implements MapChunkCache {
     private static boolean init = false;
-    private static Method gethandle = null;
-    private static Method removeentities = null;
-    private static Field doneflag = null;
     private static boolean use_spout = false;
-    private static boolean use_sections = false;
 
     private World w;
     private DynmapWorld dw;
@@ -660,32 +655,8 @@ public class NewMapChunkCache implements MapChunkCache {
     /**
      * Construct empty cache
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public NewMapChunkCache() {
         if(!init) {
-            /* Get CraftChunk.getChunkSnapshot(boolean,boolean,boolean) and CraftChunk.getHandle() */
-            try {
-                Class c = Class.forName("org.bukkit.craftbukkit.CraftChunk");
-                gethandle = c.getDeclaredMethod("getHandle", new Class[0]);
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchMethodException nsmx) {
-            }
-            /* Get Chunk.removeEntities() */
-            try {
-                Class c = Class.forName("net.minecraft.server.Chunk");
-                removeentities = c.getDeclaredMethod("removeEntities", new Class[0]);
-                doneflag = c.getField("done");
-            } catch (ClassNotFoundException cnfx) {
-            } catch (NoSuchMethodException nsmx) {
-            } catch (NoSuchFieldException nsfx) {
-            }
-            /* Check for ChunkSnapshot.isSectionEmpty(int) method */
-            try {
-                ChunkSnapshot.class.getDeclaredMethod("isSectionEmpty", new Class[] { int.class });
-                use_sections = true;
-            } catch (NoSuchMethodException nsmx) {
-            }
-                       
             use_spout = DynmapPlugin.plugin.hasSpout();
             
             init = true;
@@ -737,6 +708,8 @@ public class NewMapChunkCache implements MapChunkCache {
 
     public int loadChunks(int max_to_load) {
         long t0 = System.nanoTime();
+        CraftWorld cw = (CraftWorld)w;
+        LongHashset unloadqueue = cw.getHandle().chunkProviderServer.unloadQueue;
         int cnt = 0;
         if(iterator == null)
             iterator = chunks.listIterator();
@@ -781,8 +754,17 @@ public class NewMapChunkCache implements MapChunkCache {
             chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = false;
+            boolean isunloadpending = unloadqueue.containsKey(chunk.x, chunk.z);
+            if (isunloadpending) {  /* Workaround: can't be pending if not loaded */
+                wasLoaded = true;
+            }
             try {
-                didload = w.loadChunk(chunk.x, chunk.z, false);
+                if (!wasLoaded) {
+                    didload = w.loadChunk(chunk.x, chunk.z, false);
+                }
+                else {  /* If already was loaded, no need to load */
+                    didload = true;
+                }
             } catch (Throwable t) { /* Catch chunk error from Bukkit */
                 Log.warning("Bukkit error loading chunk " + chunk.x + "," + chunk.z + " on " + w.getName());
                 if(!wasLoaded) {    /* If wasn't loaded, we loaded it if it now is */
@@ -796,16 +778,6 @@ public class NewMapChunkCache implements MapChunkCache {
             /* If it did load, make cache of it */
             if(didload) {
                 Chunk c = w.getChunkAt(chunk.x, chunk.z);   /* Get the chunk */
-                /* Try to get n.m.s.Chunk handle */
-                Object nmschunk = null;
-                if(gethandle != null) {
-                    try {
-                        nmschunk = gethandle.invoke(c);
-                    } catch (InvocationTargetException itx) {
-                    } catch (IllegalArgumentException e) {
-                    } catch (IllegalAccessException e) {
-                    }
-                }
                 /* Test if chunk isn't populated */
                 boolean populated = true;
                 //TODO: figure out why this doesn't appear to be reliable in Bukkit
@@ -847,24 +819,8 @@ public class NewMapChunkCache implements MapChunkCache {
                     /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
                      * when chunks are unloaded but not saved - removing them seems to do the trick */
                     if(!(didgenerate && do_save)) {
-                        boolean did_remove = false;
-                        if(removeentities != null) {
-                            try {
-                                if(nmschunk != null) {
-                                    removeentities.invoke(nmschunk);
-                                    did_remove = true;
-                                }
-                            } catch (InvocationTargetException itx) {
-                            } catch (IllegalArgumentException e) {
-                            } catch (IllegalAccessException e) {
-                            }
-                        }
-                        if(!did_remove) {
-                            if(c != null) {
-                                for(Entity e: c.getEntities())
-                                    e.remove();
-                            }
-                        }
+                        CraftChunk cc = (CraftChunk)c;
+                        cc.getHandle().removeEntities();
                     }
                     /* Since we only remember ones we loaded, and we're synchronous, no player has
                      * moved, so it must be safe (also prevent chunk leak, which appears to happen
@@ -873,6 +829,9 @@ public class NewMapChunkCache implements MapChunkCache {
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
                     w.unloadChunk(chunk.x, chunk.z, didgenerate && do_save, false);
+                }
+                else if (isunloadpending) { /* Else, if loaded and unload is pending */
+                    w.unloadChunkRequest(chunk.x, chunk.z); /* Request new unload */
                 }
             }
             cnt++;
@@ -960,14 +919,9 @@ public class NewMapChunkCache implements MapChunkCache {
     private void initSectionData(int idx) {
         isSectionNotEmpty[idx] = new boolean[nsect + 1];
         if(snaparray[idx] != EMPTY) {
-            if(!use_sections) {
-                Arrays.fill(isSectionNotEmpty[idx], true);
-            }
-            else {
-                for(int i = 0; i < nsect; i++) {
-                    if(snaparray[idx].isSectionEmpty(i) == false) {
-                        isSectionNotEmpty[idx][i] = true;
-                    }
+            for(int i = 0; i < nsect; i++) {
+                if(snaparray[idx].isSectionEmpty(i) == false) {
+                    isSectionNotEmpty[idx][i] = true;
                 }
             }
         }
@@ -1083,8 +1037,8 @@ public class NewMapChunkCache implements MapChunkCache {
     static {
         Biome[] b = Biome.values();
         BiomeMap[] bm = BiomeMap.values();
-        biome_to_bmap = new BiomeMap[b.length];
-        for(int i = 0; i < b.length; i++) {
+        biome_to_bmap = new BiomeMap[256];
+        for(int i = 0; i < biome_to_bmap.length; i++) {
             biome_to_bmap[i] = BiomeMap.NULL;
         }
         for(int i = 0; i < b.length; i++) {
