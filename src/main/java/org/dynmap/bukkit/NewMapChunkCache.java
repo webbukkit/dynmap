@@ -1,9 +1,14 @@
 package org.dynmap.bukkit;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+
+import net.minecraft.server.ChunkProviderServer;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
@@ -28,6 +33,8 @@ import org.getspout.spoutapi.block.SpoutChunk;
 public class NewMapChunkCache implements MapChunkCache {
     private static boolean init = false;
     private static boolean use_spout = false;
+    private static Field unloadqueue = null;
+    private static Method queuecontainskey = null;
 
     private World w;
     private DynmapWorld dw;
@@ -659,6 +666,21 @@ public class NewMapChunkCache implements MapChunkCache {
         if(!init) {
             use_spout = DynmapPlugin.plugin.hasSpout();
             
+            try {
+                unloadqueue = ChunkProviderServer.class.getField("unloadQueue");
+                Class cls = unloadqueue.getType();
+                String nm = cls.getName();
+                if (nm.equals("org.bukkit.craftbukkit.util.LongHashset")) {
+                    queuecontainskey = unloadqueue.getType().getMethod("containsKey", new Class[] { int.class, int.class });
+                }
+                else {
+                    unloadqueue = null;
+                }
+            } catch (NoSuchFieldException nsfx) {
+                unloadqueue = null;
+            } catch (NoSuchMethodException nsmx) {
+                unloadqueue = null;
+            }
             init = true;
         }
     }
@@ -709,7 +731,14 @@ public class NewMapChunkCache implements MapChunkCache {
     public int loadChunks(int max_to_load) {
         long t0 = System.nanoTime();
         CraftWorld cw = (CraftWorld)w;
-        LongHashset unloadqueue = cw.getHandle().chunkProviderServer.unloadQueue;
+        Object queue = null;
+        try {
+            if (unloadqueue != null) {
+                queue = unloadqueue.get(cw.getHandle().chunkProviderServer);
+            }
+        } catch (IllegalArgumentException iax) {
+        } catch (IllegalAccessException e) {
+        }
         int cnt = 0;
         if(iterator == null)
             iterator = chunks.listIterator();
@@ -754,7 +783,15 @@ public class NewMapChunkCache implements MapChunkCache {
             chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = false;
-            boolean isunloadpending = unloadqueue.containsKey(chunk.x, chunk.z);
+            boolean isunloadpending = false;
+            if (queue != null) {
+                try {
+                    isunloadpending = (Boolean)queuecontainskey.invoke(queue, chunk.x, chunk.z);
+                } catch (IllegalAccessException iax) {
+                } catch (IllegalArgumentException e) {
+                } catch (InvocationTargetException e) {
+                }
+            }
             if (isunloadpending) {  /* Workaround: can't be pending if not loaded */
                 wasLoaded = true;
             }
