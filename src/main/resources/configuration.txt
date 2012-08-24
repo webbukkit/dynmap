@@ -250,6 +250,8 @@ compass-mode: newnorth
 #enderstorage-support: true
 # Enable ExtraBiomesXL block rendering support
 #extrabiomesxl-support: true
+# Enable ExtraBiomesXL Bunyan block rendering support
+#extrabiomesxl-bunyan-support: true
 
 render-triggers:
   #- playermove
