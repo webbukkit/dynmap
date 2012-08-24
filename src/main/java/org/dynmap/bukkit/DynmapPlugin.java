@@ -1,6 +1,7 @@
 package org.dynmap.bukkit;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,6 +96,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public static DynmapPlugin plugin;
     public SpoutPluginBlocks spb;
     public PluginManager pm;
+    private Metrics metrics;
 
     private class BukkitEnableCoreCallback extends DynmapCore.EnableCoreCallbacks {
         @Override
@@ -631,11 +633,23 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         /* Register our update trigger events */
         registerEvents();
 
+        /* Submit metrics to mcstats.org */
+        try {
+            metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
+        
         Log.info("Enabled");
     }
     
     @Override
     public void onDisable() {
+        if (metrics != null) {
+            metrics = null;
+        }
+        
         /* Disable core */
         core.disableCore();
 
