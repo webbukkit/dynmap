@@ -69,6 +69,7 @@ import org.dynmap.DynmapWebChatEvent;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.MapType;
 import org.dynmap.PlayerList;
 import org.dynmap.bukkit.permissions.BukkitPermissions;
 import org.dynmap.bukkit.permissions.NijikokunPermissions;
@@ -82,6 +83,7 @@ import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.utils.MapChunkCache;
 
@@ -634,12 +636,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         registerEvents();
 
         /* Submit metrics to mcstats.org */
-        try {
-            metrics = new Metrics(this);
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
-        }
+        initMetrics();
         
         Log.info("Enabled");
     }
@@ -1293,5 +1290,87 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     @Override
     public boolean testIfPlayerInfoProtected() {
         return core.testIfPlayerInfoProtected();
+    }
+    
+    private void initMetrics() {
+        try {
+            metrics = new Metrics(this);
+            
+            Metrics.Graph features = metrics.createGraph("Features Used");
+            
+            features.addPlotter(new Metrics.Plotter("Internal Web Server") {
+                @Override
+                public int getValue() {
+                    if (!core.configuration.getBoolean("disable-webserver", false))
+                        return 1;
+                    return 0;
+                }
+            });
+            features.addPlotter(new Metrics.Plotter("Spout") {
+                @Override
+                public int getValue() {
+                    if(plugin.has_spout)
+                        return 1;
+                    return 0;
+                }
+            });
+            features.addPlotter(new Metrics.Plotter("Login Security") {
+                @Override
+                public int getValue() {
+                    if(core.configuration.getBoolean("login-enabled", false))
+                        return 1;
+                    return 0;
+                }
+            });
+            features.addPlotter(new Metrics.Plotter("Player Info Protected") {
+                @Override
+                public int getValue() {
+                    if(core.player_info_protected)
+                        return 1;
+                    return 0;
+                }
+            });
+            
+            Metrics.Graph maps = metrics.createGraph("Map Data");
+            maps.addPlotter(new Metrics.Plotter("Worlds") {
+                @Override
+                public int getValue() {
+                    if(core.mapManager != null)
+                        return core.mapManager.getWorlds().size();
+                    return 0;
+                }
+            });
+            maps.addPlotter(new Metrics.Plotter("Maps") {
+                @Override
+                public int getValue() {
+                    int cnt = 0;
+                    if(core.mapManager != null) {
+                        for(DynmapWorld w :core.mapManager.getWorlds()) {
+                            cnt += w.maps.size();
+                        }
+                    }
+                    return cnt;
+                }
+            });
+            maps.addPlotter(new Metrics.Plotter("HD Maps") {
+                @Override
+                public int getValue() {
+                    int cnt = 0;
+                    if(core.mapManager != null) {
+                        for(DynmapWorld w :core.mapManager.getWorlds()) {
+                            for(MapType mt : w.maps) {
+                                if(mt instanceof HDMap) {
+                                    cnt++;
+                                }
+                            }
+                        }
+                    }
+                    return cnt;
+                }
+            });
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
     }
 }
