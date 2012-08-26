@@ -252,6 +252,8 @@ compass-mode: newnorth
 #extrabiomesxl-support: true
 # Enable ExtraBiomesXL Bunyan block rendering support
 #extrabiomesxl-bunyan-support: true
+# Equivalent Exchange 2 block rendering support
+#ee2-support: true
 
 render-triggers:
   #- playermove
