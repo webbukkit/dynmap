@@ -258,7 +258,7 @@ public class Metrics {
                         // Each post thereafter will be a ping
                         firstPost = false;
                     } catch (IOException e) {
-                        Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
+                        //Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
                     }
                 }
             }, 0, PING_INTERVAL * 1200);
