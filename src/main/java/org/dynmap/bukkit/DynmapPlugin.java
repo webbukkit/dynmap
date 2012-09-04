@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 
 import org.bukkit.ChatColor;
@@ -411,6 +412,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 Boolean delay;
                 try {
                     delay = f.get();
+                } catch (CancellationException cx) {
+                    return null;
                 } catch (Exception ix) {
                     Log.severe(ix);
                     return null;
