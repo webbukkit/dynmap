@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -33,7 +34,29 @@ import org.getspout.spoutapi.material.MaterialData;
 public class SpoutPluginBlocks {
     private Field textXPosField;    /* float[][] textXPos */
     private Field textYPosField;    /* float[][] textYPos */
-
+    private HashSet<String> plugins_pending = new HashSet<String>();
+    
+    public SpoutPluginBlocks(Plugin plugin) {
+        /* First, see if any spout plugins that need to be enabled */
+        for(Plugin p : plugin.getServer().getPluginManager().getPlugins()) {
+            List<String> dep = p.getDescription().getDepend();
+            if((dep != null) && (dep.contains("Spout"))) {
+                Log.info("Found Spout plugin: " + p.getName());
+                if(p.isEnabled() == false) {
+                    plugins_pending.add(p.getName());
+                }
+            }
+        }
+    }
+    
+    public boolean isReady() {
+        return plugins_pending.isEmpty();
+    }
+    
+    public void markPluginEnabled(Plugin p) {
+        plugins_pending.remove(p.getName());
+    }
+    
     private boolean initSpoutAccess() {
         boolean success = false;
         try {
@@ -73,17 +96,6 @@ public class SpoutPluginBlocks {
     
     /* Process spout blocks - return true if something changed */
     public boolean processSpoutBlocks(DynmapPlugin plugin, DynmapCore core) {
-        /* First, see if any spout plugins that need to be enabled */
-        for(Plugin p : plugin.getServer().getPluginManager().getPlugins()) {
-            List<String> dep = p.getDescription().getDepend();
-            if((dep != null) && (dep.contains("Spout"))) {
-                Log.info("Found Spout plugin: " + p.getName());
-                if(p.isEnabled() == false) {
-                    plugin.getPluginLoader().enablePlugin(p);
-                }
-            }
-        }
-        
         File datadir = core.getDataFolder();
         if(textYPosField == null) {
             if(initSpoutAccess() == false)

@@ -49,6 +49,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.SpawnChangeEvent;
 import org.bukkit.event.world.StructureGrowEvent;
@@ -100,6 +101,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public SpoutPluginBlocks spb;
     public PluginManager pm;
     private Metrics metrics;
+    private BukkitEnableCoreCallback enabCoreCB = new BukkitEnableCoreCallback();
 
     private class BukkitEnableCoreCallback extends DynmapCore.EnableCoreCallbacks {
         @Override
@@ -109,8 +111,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if(core.configuration.getBoolean("spout/enabled", true)) {
                     has_spout = true;
                     Log.info("Detected Spout");
-                    spb = new SpoutPluginBlocks();
-                    spb.processSpoutBlocks(DynmapPlugin.this, core);
+                    if(spb == null) {
+                        spb = new SpoutPluginBlocks(DynmapPlugin.this);
+                    }
                 }
                 else {
                     Log.info("Detected Spout - Support Disabled");
@@ -618,8 +621,46 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         core.setDataFolder(dataDirectory);
         core.setServer(new BukkitServer());
         
+        /* Load configuration */
+        if(!core.initConfiguration(enabCoreCB)) {
+            this.setEnabled(false);
+            return;
+        }
+        /* See if we need to wait before enabling core */
+        if(!readyToEnable()) {
+            Listener pl = new Listener() {
+                @EventHandler(priority=EventPriority.MONITOR)
+                public void onPluginEnabled(PluginEnableEvent evt) {
+                    if (!readyToEnable()) {
+                        spb.markPluginEnabled(evt.getPlugin());
+                        if (readyToEnable()) { /* If we;re ready now, finish enable */
+                            doEnable();   /* Finish enable */
+                        }
+                    }
+                }
+            };
+            pm.registerEvents(pl, this);
+        }
+        else {
+            doEnable();
+        }
+    }
+    
+    private boolean readyToEnable() {
+        if (spb != null) {
+            return spb.isReady();
+        }
+        return true;
+    }
+    
+    private void doEnable() {
+        /* Prep spout support, if needed */
+        if(spb != null) {
+            spb.processSpoutBlocks(this, core);
+        }
+        
         /* Enable core */
-        if(!core.enableCore(new BukkitEnableCoreCallback())) {
+        if(!core.enableCore(enabCoreCB)) {
             this.setEnabled(false);
             return;
         }
