@@ -244,8 +244,8 @@ compass-mode: newnorth
 #forestry-support: true
 # Enable IronCheck block rendering support
 #ironchest-support: true
-# Enable TubeCraft block rendering support
-#tubecraft-support: true
+# Enable TubeStuff block rendering support
+#tubestuff-support: true
 # Enable Ender Storage block rendering support
 #enderstorage-support: true
 # Enable ExtraBiomesXL block rendering support
