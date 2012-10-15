@@ -2,6 +2,8 @@ package org.dynmap.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,6 +104,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public PluginManager pm;
     private Metrics metrics;
     private BukkitEnableCoreCallback enabCoreCB = new BukkitEnableCoreCallback();
+    private Method ismodloaded;
 
     private class BukkitEnableCoreCallback extends DynmapCore.EnableCoreCallbacks {
         @Override
@@ -139,6 +142,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     
     public DynmapPlugin() {
         plugin = this;
+        try {
+            Class<?> c = Class.forName("cpw.mods.fml.common.Loader");
+            ismodloaded = c.getMethod("isModLoaded", String.class);
+        } catch (NoSuchMethodException nsmx) {
+        } catch (ClassNotFoundException e) {
+        }
     }
     
     /**
@@ -434,6 +443,22 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public int getCurrentPlayers() {
             return getServer().getOnlinePlayers().length;
+        }
+        @Override
+        public boolean isModLoaded(String name) {
+            boolean loaded = false;
+            if(ismodloaded != null) {
+                try {
+                    Object rslt =ismodloaded.invoke(null,  name);
+                    if(rslt instanceof Boolean) {
+                        loaded = ((Boolean)rslt).booleanValue();
+                    }
+                } catch (IllegalArgumentException iax) {
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                }
+            }
+            return loaded;
         }
     }
     /**
