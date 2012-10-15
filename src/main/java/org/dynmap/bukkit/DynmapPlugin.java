@@ -446,19 +446,20 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         @Override
         public boolean isModLoaded(String name) {
-            boolean loaded = false;
             if(ismodloaded != null) {
                 try {
                     Object rslt =ismodloaded.invoke(null,  name);
                     if(rslt instanceof Boolean) {
-                        loaded = ((Boolean)rslt).booleanValue();
+                        if(((Boolean)rslt).booleanValue()) {
+                            return true;
+                        }
                     }
                 } catch (IllegalArgumentException iax) {
                 } catch (IllegalAccessException e) {
                 } catch (InvocationTargetException e) {
                 }
             }
-            return loaded;
+            return false;
         }
     }
     /**
