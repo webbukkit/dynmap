@@ -914,45 +914,6 @@ public class NewMapChunkCache implements MapChunkCache {
             snaparray = null;
         }
     }
-    /**
-     * Get block ID at coordinates
-     */
-    public int getBlockTypeID(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getBlockTypeId(x & 0xF, y, z & 0xF);
-    }
-    /**
-     * Get block data at coordiates
-     */
-    public byte getBlockData(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return (byte)ss.getBlockData(x & 0xF, y, z & 0xF);
-    }
-    /* Get sky light level
-     */
-    public int getBlockSkyLight(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getBlockSkyLight(x & 0xF, y, z & 0xF);
-    }
-    /* Get emitted light level
-     */
-    public int getBlockEmittedLight(int x, int y, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
-    }
-    public BiomeMap getBiome(int x, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        Biome b = ss.getBiome(x & 0xF, z & 0xF);
-        return (b != null)?biome_to_bmap[b.ordinal()]:null;
-    }
-    public double getRawBiomeTemperature(int x, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getRawBiomeTemperature(x & 0xF, z & 0xF);
-    }
-    public double getRawBiomeRainfall(int x, int z) {
-        ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getRawBiomeRainfall(x & 0xF, z & 0xF);
-    }
     private void initSectionData(int idx) {
         isSectionNotEmpty[idx] = new boolean[nsect + 1];
         if(snaparray[idx] != EMPTY) {
