@@ -2,7 +2,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dynmap</groupId>
 	<artifactId>dynmap</artifactId>
-	<version>0.90</version>
 	<name>dynmap</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -185,4 +184,5 @@
 			<version>1.2.5-R5.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+	<version>1.0</version>
 </project>
