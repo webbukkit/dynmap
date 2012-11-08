@@ -127,7 +127,9 @@
 		<dependency>
 			<groupId>com.nijikokun.bukkit</groupId>
 			<artifactId>Permissions</artifactId>
-			<version>[2.5.4,)</version>
+			<version>3.1.6</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/Permissions.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
