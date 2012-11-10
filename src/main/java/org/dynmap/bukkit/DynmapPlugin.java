@@ -2,6 +2,7 @@ package org.dynmap.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
@@ -14,6 +15,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
+
+import net.minecraft.server.BiomeBase;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -622,6 +625,60 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
     
+    public void loadExtraBiomes() {
+        Field tmpfld;
+        Field humfld;
+        int cnt = 0;
+        try {
+            tmpfld = BiomeBase.class.getField("temperature");
+        } catch (NoSuchFieldException nsfx) {
+            try {
+                tmpfld = BiomeBase.class.getField("F");
+            } catch (NoSuchFieldException nsfx2) {
+                Log.warning("BiomeBase.temperature field not found");
+                tmpfld = null;
+            }
+        }
+        if((tmpfld != null)  && (tmpfld.getType().getClass().isAssignableFrom(float.class) == false)) {
+            tmpfld = null;
+        }
+        try {
+            humfld = BiomeBase.class.getField("humidity");
+        } catch (NoSuchFieldException nsfx) {
+            try {
+                humfld = BiomeBase.class.getField("G");
+            } catch (NoSuchFieldException nsfx2) {
+                Log.warning("BiomeBase.humidity field not found");
+                humfld = null;
+            }
+        }
+        if((humfld != null)  && (humfld.getType().getClass().isAssignableFrom(float.class) == false)) {
+            humfld = null;
+        }
+        
+        for(int i = BiomeMap.LAST_WELL_KNOWN+1; i < BiomeBase.biomes.length; i++) {
+            BiomeBase bb = BiomeBase.biomes[i];
+            if(bb != null) {
+                String id = "BIOME_" + i;
+                float tmp = 0.5F, hum = 0.5F;
+                try {
+                    id = bb.y;
+                } catch (Exception x) {}
+                try {
+                    if(tmpfld != null)
+                        tmp = tmpfld.getFloat(bb);
+                    if(humfld != null)
+                        hum = humfld.getFloat(bb);
+                } catch (Exception x) {
+                }
+                BiomeMap m = new BiomeMap(i, id, tmp, hum);
+                Log.verboseinfo("Add custom biome [" + m.toString() + "] (" + i + ")");
+                cnt++;
+            }
+        }
+        Log.info("Added " + cnt + " custom biome mappings");
+    }
+    
     @Override
     public void onEnable() {
         pm = this.getServer().getPluginManager();
@@ -629,6 +686,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         PluginDescriptionFile pdfFile = this.getDescription();
         version = pdfFile.getVersion();
 
+        /* Load extra biomes, if any */
+        loadExtraBiomes();
              
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();

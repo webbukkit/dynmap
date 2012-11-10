@@ -8,12 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
+import net.minecraft.server.BiomeBase;
 import net.minecraft.server.ChunkProviderServer;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.CraftChunk;
+import org.bukkit.craftbukkit.CraftChunkSnapshot;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.util.LongHashset;
 import org.bukkit.ChunkSnapshot;
@@ -35,6 +37,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private static boolean use_spout = false;
     private static Field unloadqueue = null;
     private static Method queuecontainskey = null;
+    private static Field biomesnapshot = null;
+    
 
     private World w;
     private DynmapWorld dw;
@@ -145,15 +149,37 @@ public class NewMapChunkCache implements MapChunkCache {
                 sameneighborbiomecnt[i] = new byte[z_size];
                 biomemap[i] = new BiomeMap[z_size];
             }
+            BiomeBase[] biomebase = null;
+            ChunkSnapshot biome_css = null;
             for(int i = 0; i < x_size; i++) {
                 initialize(i + x_base, 64, z_base);
                 for(int j = 0; j < z_size; j++) {
-                    Biome bb = snap.getBiome(bx, bz);
                     BiomeMap bm;
-                    if(bb == null)
-                        bm = BiomeMap.NULL;
-                    else
-                        bm = biome_to_bmap[bb.ordinal()];
+                    
+                    if((biomesnapshot != null) && (snap != biome_css)) {
+                        biomebase = null;
+                        biome_css = snap;
+                        try {
+                            if (biome_css instanceof SpoutChunkSnapshot) {
+                                biome_css = ((SpoutChunkSnapshot)biome_css).chunk;
+                            }
+                            if(biome_css instanceof CraftChunkSnapshot) {
+                                biomebase = (BiomeBase[]) biomesnapshot.get(biome_css);
+                            }
+                        } catch (IllegalArgumentException iax) {
+                        } catch (IllegalAccessException e) {
+                        }
+                    }
+                    if(biomebase != null) {
+                        bm = BiomeMap.byBiomeID(biomebase[bz << 4 | bx].id);
+                    }
+                    else {
+                        Biome bb = snap.getBiome(bx, bz);
+                        if(bb == null)
+                            bm = BiomeMap.NULL;
+                        else
+                            bm = biome_to_bmap[bb.ordinal()];
+                    }
                     biomemap[i][j] = bm;
                     int cnt = 0;
                     if(i > 0) {
@@ -680,6 +706,13 @@ public class NewMapChunkCache implements MapChunkCache {
                 unloadqueue = null;
             } catch (NoSuchMethodException nsmx) {
                 unloadqueue = null;
+            }
+            try {
+                biomesnapshot = CraftChunkSnapshot.class.getDeclaredField("biome");
+                biomesnapshot.setAccessible(true);
+            } catch (NoSuchFieldException nsfx) {
+                biomesnapshot = null;
+                Log.warning("Unable to find biome field in ChunkSnapshot");
             }
             init = true;
         }
