@@ -128,6 +128,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             bw = new BukkitWorld(w);
             world_by_name.put(w.getName(), bw);
         }
+        else if(bw.isLoaded() == false) {
+            bw.setWorldLoaded(w);
+        }
         last_world = w;
         last_bworld = bw;
 
@@ -257,7 +260,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     pm.registerEvents(new Listener() {
                         @EventHandler(priority=EventPriority.MONITOR)
                         public void onSpawnChange(SpawnChangeEvent evt) {
-                            DynmapWorld w = getWorld(evt.getWorld());
+                            BukkitWorld w = getWorld(evt.getWorld());
                             core.listenerManager.processWorldEvent(EventType.WORLD_SPAWN_CHANGE, w);
                         }
                     }, DynmapPlugin.this);
@@ -409,6 +412,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public MapChunkCache createMapChunkCache(DynmapWorld w, List<DynmapChunk> chunks, 
                 boolean blockdata, boolean highesty, boolean biome, boolean rawbiome) {
             MapChunkCache c = w.getChunkCache(chunks);
+            if(c == null) { /* Can fail if not currently loaded */
+                return null;
+            }
             if(w.visibility_limits != null) {
                 for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
                     c.setVisibleRange(limit);
@@ -445,8 +451,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     public Boolean call() throws Exception {
                         boolean exhausted;
                         synchronized(loadlock) {
-                            if(chunks_in_cur_tick > 0)
+                            if(chunks_in_cur_tick > 0) {
                                 chunks_in_cur_tick -= cc.loadChunks(chunks_in_cur_tick);
+                            }
                             exhausted = (chunks_in_cur_tick == 0);
                         }
                         return exhausted;
@@ -465,6 +472,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     try { Thread.sleep(25); } catch (InterruptedException ix) {}
                 }
             }
+            /* If cancelled due to world unload return nothing */
+            if(w.isLoaded() == false)
+                return null;
             return c;
         }
         @Override
@@ -1342,17 +1352,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         Listener worldTrigger = new Listener() {
             @EventHandler(priority=EventPriority.MONITOR)
             public void onWorldLoad(WorldLoadEvent event) {
-                core.updateConfigHashcode();
                 BukkitWorld w = getWorld(event.getWorld());
                 if(core.processWorldLoad(w))    /* Have core process load first - fire event listeners if good load after */
                     core.listenerManager.processWorldEvent(EventType.WORLD_LOAD, w);
             }
             @EventHandler(priority=EventPriority.MONITOR)
             public void onWorldUnload(WorldUnloadEvent event) {
-                core.updateConfigHashcode();
-                DynmapWorld w = getWorld(event.getWorld());
-                core.listenerManager.processWorldEvent(EventType.WORLD_UNLOAD, w);
-                removeWorld(event.getWorld());
+                BukkitWorld w = getWorld(event.getWorld());
+                if(w != null) {
+                    core.listenerManager.processWorldEvent(EventType.WORLD_UNLOAD, w);
+                    w.setWorldUnloaded();
+                    core.processWorldUnload(w);
+                }
             }
             @EventHandler(priority=EventPriority.MONITOR)
             public void onStructureGrow(StructureGrowEvent event) {

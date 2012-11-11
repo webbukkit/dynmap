@@ -17,13 +17,36 @@ public class BukkitWorld extends DynmapWorld {
     private World world;
     private World.Environment env;
     private boolean skylight;
+    private DynmapLocation spawnloc = new DynmapLocation();
     
     public BukkitWorld(World w) {
-        super(w.getName(), w.getMaxHeight(), w.getSeaLevel());
+        this(w.getName(), w.getMaxHeight(), w.getSeaLevel(), w.getEnvironment());
+        setWorldLoaded(w);
+        new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
+    }
+    public BukkitWorld(String name, int height, int sealevel, World.Environment env) {
+        super(name, height, sealevel);
+        world = null;
+        this.env = env;
+        skylight = (env == World.Environment.NORMAL);
+        new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
+    }
+    /**
+     * Set world online
+     * @param w - loaded world
+     */
+    public void setWorldLoaded(World w) {
         world = w;
         env = world.getEnvironment();
         skylight = (env == World.Environment.NORMAL);
-        new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
+    }
+    /**
+     * Set world unloaded
+     */
+    @Override
+    public void setWorldUnloaded() {
+        getSpawnLocation(); /* Remember spawn location before unload */
+        world = null;
     }
     /* Test if world is nether */
     @Override
@@ -33,26 +56,44 @@ public class BukkitWorld extends DynmapWorld {
     /* Get world spawn location */
     @Override
     public DynmapLocation getSpawnLocation() {
-        DynmapLocation dloc = new DynmapLocation();
-        Location sloc = world.getSpawnLocation();
-        dloc.x = sloc.getBlockX(); dloc.y = sloc.getBlockY();
-        dloc.z = sloc.getBlockZ(); dloc.world = normalizeWorldName(sloc.getWorld().getName());
-        return dloc;
+        if(world != null) {
+            Location sloc = world.getSpawnLocation();
+            spawnloc.x = sloc.getBlockX();
+            spawnloc.y = sloc.getBlockY();
+            spawnloc.z = sloc.getBlockZ(); 
+            spawnloc.world = normalizeWorldName(sloc.getWorld().getName());
+        }
+        return spawnloc;
     }
     /* Get world time */
     @Override
     public long getTime() {
-        return world.getTime();
+        if(world != null) {
+            return world.getTime();
+        }
+        else {
+            return -1;
+        }
     }
     /* World is storming */
     @Override
     public boolean hasStorm() {
-        return world.hasStorm();
+        if(world != null) {
+            return world.hasStorm();
+        }
+        else {
+            return false;
+        }
     }
     /* World is thundering */
     @Override
     public boolean isThundering() {
-        return world.isThundering();
+        if(world != null) {
+            return world.isThundering();
+        }
+        else {
+            return false;
+        }
     }
     /* World is loaded */
     @Override
@@ -62,22 +103,37 @@ public class BukkitWorld extends DynmapWorld {
     /* Get light level of block */
     @Override
     public int getLightLevel(int x, int y, int z) {
-        return world.getBlockAt(x, y, z).getLightLevel();
+        if(world != null) {
+            return world.getBlockAt(x, y, z).getLightLevel();
+        }
+        else {
+            return -1;
+        }
     }
     /* Get highest Y coord of given location */
     @Override
     public int getHighestBlockYAt(int x, int z) {
-        return world.getHighestBlockYAt(x, z);
+        if(world != null) {
+            return world.getHighestBlockYAt(x, z);
+        }
+        else {
+            return -1;
+        }
     }
     /* Test if sky light level is requestable */
     @Override
     public boolean canGetSkyLightLevel() {
-        return skylight;
+        return skylight && (world != null);
     }
     /* Return sky light level */
     @Override
     public int getSkyLightLevel(int x, int y, int z) {
-        return world.getBlockAt(x, y, z).getLightFromSky();
+        if(world != null) {
+            return world.getBlockAt(x, y, z).getLightFromSky();
+        }
+        else {
+            return -1;
+        }
     }
     /**
      * Get world environment ID (lower case - normal, the_end, nether)
@@ -91,9 +147,14 @@ public class BukkitWorld extends DynmapWorld {
      */
     @Override
     public MapChunkCache getChunkCache(List<DynmapChunk> chunks) {
-        NewMapChunkCache c = new NewMapChunkCache();
-        c.setChunks(this, chunks);
-        return c;
+        if(isLoaded()) {
+            NewMapChunkCache c = new NewMapChunkCache();
+            c.setChunks(this, chunks);
+            return c;
+        }
+        else {
+            return null;
+        }
     }
     
     public World getWorld() {

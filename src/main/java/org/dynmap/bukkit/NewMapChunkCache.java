@@ -720,6 +720,9 @@ public class NewMapChunkCache implements MapChunkCache {
     public void setChunks(BukkitWorld dw, List<DynmapChunk> chunks) {
         this.dw = dw;
         this.w = dw.getWorld();
+        if(this.w == null) {
+            this.chunks = new ArrayList<DynmapChunk>();
+        }
         nsect = dw.worldheight >> 4;
         this.chunks = chunks;
         /* Compute range */
@@ -762,6 +765,8 @@ public class NewMapChunkCache implements MapChunkCache {
     }
 
     public int loadChunks(int max_to_load) {
+        if(dw.isLoaded() == false)
+            return 0;
         long t0 = System.nanoTime();
         CraftWorld cw = (CraftWorld)w;
         Object queue = null;
@@ -926,6 +931,11 @@ public class NewMapChunkCache implements MapChunkCache {
      * Test if done loading
      */
     public boolean isDoneLoading() {
+        if(dw.isLoaded() == false) {
+            isempty = true;
+            unloadChunks();
+            return true;
+        }
         if(iterator != null)
             return !iterator.hasNext();
         return false;
