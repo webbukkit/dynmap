@@ -4,12 +4,23 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
 import net.minecraft.server.BiomeBase;
 import net.minecraft.server.ChunkProviderServer;
+import net.minecraft.server.NBTBase;
+import net.minecraft.server.NBTTagByte;
+import net.minecraft.server.NBTTagByteArray;
+import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.NBTTagDouble;
+import net.minecraft.server.NBTTagFloat;
+import net.minecraft.server.NBTTagInt;
+import net.minecraft.server.NBTTagIntArray;
+import net.minecraft.server.NBTTagLong;
+import net.minecraft.server.NBTTagShort;
+import net.minecraft.server.NBTTagString;
+import net.minecraft.server.TileEntity;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
@@ -17,16 +28,16 @@ import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.CraftChunk;
 import org.bukkit.craftbukkit.CraftChunkSnapshot;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.util.LongHashset;
 import org.bukkit.ChunkSnapshot;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
+import org.dynmap.bukkit.SnapshotCache.SnapshotRec;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.hdmap.HDBlockModels;
-import org.dynmap.hdmap.HDBlockModels.HDBlockModel;
 import org.dynmap.renderer.RenderPatchFactory;
+import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.BlockStep;
@@ -58,6 +69,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean do_save = false;
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
+    private DynIntHashMap[] snaptile;
     private byte[][] sameneighborbiomecnt;
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
@@ -72,7 +84,11 @@ public class NewMapChunkCache implements MapChunkCache {
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
     private static BiomeMap[] biome_to_bmap;
-    
+
+    private static final int getIndexInChunk(int cx, int cy, int cz) {
+        return (cy << 8) | (cz << 4) | cx;
+    }
+
     /**
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
@@ -552,6 +568,16 @@ public class NewMapChunkCache implements MapChunkCache {
         }
         @Override
         public Object getBlockTileEntityField(String fieldId) {
+            try {
+                int idx = getIndexInChunk(bx,y,bz);
+                Object[] vals = (Object[])snaptile[chunkindex].get(idx);
+                for (int i = 0; i < vals.length; i += 2) {
+                    if (vals[i].equals(fieldId)) {
+                        return vals[i+1];
+                    }
+                }
+            } catch (Exception x) {
+            }
             return null;
         }
         @Override
@@ -789,8 +815,10 @@ public class NewMapChunkCache implements MapChunkCache {
             x_dim = x_max - x_min + 1;            
         }
     
-        snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
-        isSectionNotEmpty = new boolean[x_dim * (z_max-z_min+1)][];
+        int snapcnt = x_dim * (z_max-z_min+1);
+        snaparray = new ChunkSnapshot[snapcnt];
+        snaptile = new DynIntHashMap[snapcnt];
+        isSectionNotEmpty = new boolean[snapcnt][];
     }
     
     private ChunkSnapshot checkSpoutData(Chunk c, ChunkSnapshot ss) {
@@ -845,8 +873,11 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
             }
             /* Check if cached chunk snapshot found */
-            ChunkSnapshot ss = DynmapPlugin.plugin.sscache.getSnapshot(dw.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
-            if(ss != null) {
+            ChunkSnapshot ss = null;
+            DynIntHashMap tileData = null;
+            SnapshotRec ssr = DynmapPlugin.plugin.sscache.getSnapshot(dw.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
+            if(ssr != null) {
+                ss = ssr.ss;
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
@@ -855,7 +886,10 @@ public class NewMapChunkCache implements MapChunkCache {
                     else
                         ss = EMPTY;
                 }
-                snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
+                int idx = (chunk.x-x_min) + (chunk.z - z_min)*x_dim;
+                snaparray[idx] = ss;
+                snaptile[idx] = ssr.tileData;
+                
                 continue;
             }
             chunks_attempted++;
@@ -892,6 +926,8 @@ public class NewMapChunkCache implements MapChunkCache {
                 didgenerate = didload = w.loadChunk(chunk.x, chunk.z, true);
             /* If it did load, make cache of it */
             if(didload) {
+                tileData = new DynIntHashMap();
+
                 Chunk c = w.getChunkAt(chunk.x, chunk.z);   /* Get the chunk */
                 /* Test if chunk isn't populated */
                 boolean populated = true;
@@ -920,14 +956,80 @@ public class NewMapChunkCache implements MapChunkCache {
                         if(use_spout) {
                             ss = checkSpoutData(c, ss);
                         }
+                        /* Get tile entity data */
+                        List<Object> vals = new ArrayList<Object>();
+                        for(Object t : ((CraftChunk)c).getHandle().tileEntities.values()) {
+                            TileEntity te = (TileEntity)t;
+                            int cx = te.x & 0xF;
+                            int cz = te.z & 0xF;
+                            int blkid = ss.getBlockTypeId(cx, te.y, cz);
+                            int blkdat = ss.getBlockData(cx, te.y, cz);
+                            String[] te_fields = HDBlockModels.getTileEntityFieldsNeeded(blkid,  blkdat);
+                            if(te_fields != null) {
+                                NBTTagCompound tc = new NBTTagCompound();
+                                try {
+                                    te.b(tc);
+                                } catch (Exception x) {
+                                }
+                                vals.clear();
+                                for(String id: te_fields) {
+                                    NBTBase v = tc.get(id);  /* Get field */
+                                    if(v != null) {
+                                        Object val = null;
+                                        switch(v.getTypeId()) {
+                                            case 1: // Byte
+                                                val = Byte.valueOf(((NBTTagByte)v).data);
+                                                break;
+                                            case 2: // Short
+                                                val = Short.valueOf(((NBTTagShort)v).data);
+                                                break;
+                                            case 3: // Int
+                                                val = Integer.valueOf(((NBTTagInt)v).data);
+                                                break;
+                                            case 4: // Long
+                                                val = Long.valueOf(((NBTTagLong)v).data);
+                                                break;
+                                            case 5: // Float
+                                                val = Float.valueOf(((NBTTagFloat)v).data);
+                                                break;
+                                            case 6: // Double
+                                                val = Double.valueOf(((NBTTagDouble)v).data);
+                                                break;
+                                            case 7: // Byte[]
+                                                val = ((NBTTagByteArray)v).data;
+                                                break;
+                                            case 8: // String
+                                                val = ((NBTTagString)v).data;
+                                                break;
+                                            case 11: // Int[]
+                                                val = ((NBTTagIntArray)v).data;
+                                                break;
+                                        }
+                                        if(val != null) {
+                                            vals.add(id);
+                                            vals.add(val);
+                                        }
+                                    }
+                                }
+                                if(vals.size() > 0) {
+                                    Object[] vlist = vals.toArray(new Object[vals.size()]);
+                                    tileData.put(getIndexInChunk(cx,te.y,cz), vlist);
+                                }
+                            }
+                        }
                     }
                     else
                         ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
                     if(ss != null) {
-                        DynmapPlugin.plugin.sscache.putSnapshot(dw.getName(), chunk.x, chunk.z, ss, blockdata, biome, biomeraw, highesty);
+                        ssr = new SnapshotRec();
+                        ssr.ss = ss;
+                        ssr.tileData = tileData;
+                        DynmapPlugin.plugin.sscache.putSnapshot(dw.getName(), chunk.x, chunk.z, ssr, blockdata, biome, biomeraw, highesty);
                     }
                 }
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
+                snaptile[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = tileData;
+                
                 /* If wasn't loaded before, we need to do unload */
                 if (!wasLoaded) {
                     chunks_read++;

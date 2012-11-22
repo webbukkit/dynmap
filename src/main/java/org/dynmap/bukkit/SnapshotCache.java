@@ -8,15 +8,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.ChunkSnapshot;
+import org.dynmap.utils.DynIntHashMap;
 
 public class SnapshotCache {
+    public static class SnapshotRec {
+        public ChunkSnapshot ss;
+        public DynIntHashMap tileData;
+    };
+
     private CacheHashMap snapcache;
-    private ReferenceQueue<ChunkSnapshot> refqueue;
+    private ReferenceQueue<SnapshotRec> refqueue;
     private long cache_attempts;
     private long cache_success;
 
     private static class CacheRec {
-        WeakReference<ChunkSnapshot> ref;
+        WeakReference<SnapshotRec> ref;
         boolean hasbiome;
         boolean hasrawbiome;
         boolean hasblockdata;
@@ -26,12 +32,12 @@ public class SnapshotCache {
     @SuppressWarnings("serial")
     public class CacheHashMap extends LinkedHashMap<String, CacheRec> {
         private int limit;
-        private IdentityHashMap<WeakReference<ChunkSnapshot>, String> reverselookup;
+        private IdentityHashMap<WeakReference<SnapshotRec>, String> reverselookup;
 
         public CacheHashMap(int lim) {
             super(16, (float)0.75, true);
             limit = lim;
-            reverselookup = new IdentityHashMap<WeakReference<ChunkSnapshot>, String>();
+            reverselookup = new IdentityHashMap<WeakReference<SnapshotRec>, String>();
         }
         protected boolean removeEldestEntry(Map.Entry<String, CacheRec> last) {
             boolean remove = (size() >= limit);
@@ -47,7 +53,7 @@ public class SnapshotCache {
      */
     public SnapshotCache(int max_size) {
         snapcache = new CacheHashMap(max_size);
-        refqueue = new ReferenceQueue<ChunkSnapshot>();
+        refqueue = new ReferenceQueue<SnapshotRec>();
     }
     private String getKey(String w, int cx, int cz) {
         return w + ":" + cx + ":" + cz;
@@ -83,11 +89,11 @@ public class SnapshotCache {
     /**
      * Look for chunk snapshot in cache
      */
-    public ChunkSnapshot getSnapshot(String w, int chunkx, int chunkz, 
+    public SnapshotRec getSnapshot(String w, int chunkx, int chunkz, 
             boolean blockdata, boolean biome, boolean biomeraw, boolean highesty) {
         String key = getKey(w, chunkx, chunkz);
         processRefQueue();
-        ChunkSnapshot ss = null;
+        SnapshotRec ss = null;
         CacheRec rec = snapcache.get(key);
         if(rec != null) {
             ss = rec.ref.get();
@@ -112,7 +118,7 @@ public class SnapshotCache {
     /**
      * Add chunk snapshot to cache
      */
-    public void putSnapshot(String w, int chunkx, int chunkz, ChunkSnapshot ss, 
+    public void putSnapshot(String w, int chunkx, int chunkz, SnapshotRec ss, 
             boolean blockdata, boolean biome, boolean biomeraw, boolean highesty) {
         String key = getKey(w, chunkx, chunkz);
         processRefQueue();
@@ -121,7 +127,7 @@ public class SnapshotCache {
         rec.hasbiome = biome;
         rec.hasrawbiome = biomeraw;
         rec.hashighesty = highesty;
-        rec.ref = new WeakReference<ChunkSnapshot>(ss, refqueue);
+        rec.ref = new WeakReference<SnapshotRec>(ss, refqueue);
         CacheRec prevrec = snapcache.put(key, rec);
         if(prevrec != null) {
             snapcache.reverselookup.remove(prevrec.ref);
@@ -132,7 +138,7 @@ public class SnapshotCache {
      * Process reference queue
      */
     private void processRefQueue() {
-        Reference<? extends ChunkSnapshot> ref;
+        Reference<? extends SnapshotRec> ref;
         while((ref = refqueue.poll()) != null) {
             String k = snapcache.reverselookup.remove(ref);
             if(k != null) {
