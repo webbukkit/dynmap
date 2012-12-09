@@ -201,8 +201,10 @@ image-format: png
 
 #  use-generated-textures: if true, use generated textures (same as client); false is static water/lava textures
 #  correct-water-lighting: if true, use corrected water lighting (same as client); false is legacy water (darker)
+#  transparent-leaves: if true, leaves are transparent (lighting-wise): false is needed for some Spout versions that break lighting on leaf blocks
 use-generated-textures: true
 correct-water-lighting: true
+transparent-leaves: true
 
 # Control loading of player faces (if set to false, skins are never fetched)
 #fetchskins: false
