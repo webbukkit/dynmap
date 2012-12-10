@@ -1,33 +1,13 @@
 package org.dynmap.bukkit;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-
-import net.minecraft.server.BiomeBase;
-import net.minecraft.server.ChunkProviderServer;
-import net.minecraft.server.NBTBase;
-import net.minecraft.server.NBTTagByte;
-import net.minecraft.server.NBTTagByteArray;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagDouble;
-import net.minecraft.server.NBTTagFloat;
-import net.minecraft.server.NBTTagInt;
-import net.minecraft.server.NBTTagIntArray;
-import net.minecraft.server.NBTTagLong;
-import net.minecraft.server.NBTTagShort;
-import net.minecraft.server.NBTTagString;
-import net.minecraft.server.TileEntity;
+import java.util.Map;
 
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
-import org.bukkit.craftbukkit.CraftChunk;
-import org.bukkit.craftbukkit.CraftChunkSnapshot;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.ChunkSnapshot;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
@@ -48,11 +28,7 @@ import org.getspout.spoutapi.block.SpoutChunk;
  */
 public class NewMapChunkCache implements MapChunkCache {
     private static boolean init = false;
-    private static boolean use_spout = false;
-    private static Field unloadqueue = null;
-    private static Method queuecontainskey = null;
-    private static Field biomesnapshot = null;
-    
+    private static boolean use_spout = false;    
 
     private World w;
     private DynmapWorld dw;
@@ -79,6 +55,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private long total_loadtime;    /* Total time loading chunks, in nanoseconds */
     
     private long exceptions;
+    
+    private static BukkitVersionHelper helper = BukkitVersionHelper.getHelper();
     
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
@@ -168,29 +146,23 @@ public class NewMapChunkCache implements MapChunkCache {
                 sameneighborbiomecnt[i] = new byte[z_size];
                 biomemap[i] = new BiomeMap[z_size];
             }
-            BiomeBase[] biomebase = null;
+            Object[] biomebase = null;
             ChunkSnapshot biome_css = null;
             for(int i = 0; i < x_size; i++) {
                 initialize(i + x_base, 64, z_base);
                 for(int j = 0; j < z_size; j++) {
                     BiomeMap bm;
                     
-                    if((biomesnapshot != null) && (snap != biome_css)) {
+                    if(snap != biome_css) {
                         biomebase = null;
                         biome_css = snap;
-                        try {
-                            if (biome_css instanceof SpoutChunkSnapshot) {
-                                biome_css = ((SpoutChunkSnapshot)biome_css).chunk;
-                            }
-                            if(biome_css instanceof CraftChunkSnapshot) {
-                                biomebase = (BiomeBase[]) biomesnapshot.get(biome_css);
-                            }
-                        } catch (IllegalArgumentException iax) {
-                        } catch (IllegalAccessException e) {
+                        if (biome_css instanceof SpoutChunkSnapshot) {
+                            biome_css = ((SpoutChunkSnapshot)biome_css).chunk;
                         }
+                        biomebase = helper.getBiomeBaseFromSnapshot(biome_css);
                     }
                     if(biomebase != null) {
-                        bm = BiomeMap.byBiomeID(biomebase[bz << 4 | bx].id);
+                        bm = BiomeMap.byBiomeID(helper.getBiomeBaseID(biomebase[bz << 4 | bx]));
                     }
                     else {
                         Biome bb = snap.getBiome(bx, bz);
@@ -758,28 +730,6 @@ public class NewMapChunkCache implements MapChunkCache {
         if(!init) {
             use_spout = DynmapPlugin.plugin.hasSpout();
             
-            try {
-                unloadqueue = ChunkProviderServer.class.getField("unloadQueue");
-                Class cls = unloadqueue.getType();
-                String nm = cls.getName();
-                if (nm.equals("org.bukkit.craftbukkit.util.LongHashset")) {
-                    queuecontainskey = unloadqueue.getType().getMethod("containsKey", new Class[] { int.class, int.class });
-                }
-                else {
-                    unloadqueue = null;
-                }
-            } catch (NoSuchFieldException nsfx) {
-                unloadqueue = null;
-            } catch (NoSuchMethodException nsmx) {
-                unloadqueue = null;
-            }
-            try {
-                biomesnapshot = CraftChunkSnapshot.class.getDeclaredField("biome");
-                biomesnapshot.setAccessible(true);
-            } catch (NoSuchFieldException nsfx) {
-                biomesnapshot = null;
-                Log.warning("Unable to find biome field in ChunkSnapshot");
-            }
             init = true;
         }
     }
@@ -836,15 +786,8 @@ public class NewMapChunkCache implements MapChunkCache {
         if(dw.isLoaded() == false)
             return 0;
         long t0 = System.nanoTime();
-        CraftWorld cw = (CraftWorld)w;
-        Object queue = null;
-        try {
-            if (unloadqueue != null) {
-                queue = unloadqueue.get(cw.getHandle().chunkProviderServer);
-            }
-        } catch (IllegalArgumentException iax) {
-        } catch (IllegalAccessException e) {
-        }
+        Object queue = helper.getUnloadQueue(helper.getNMSWorld(w));
+        
         int cnt = 0;
         if(iterator == null)
             iterator = chunks.listIterator();
@@ -897,12 +840,7 @@ public class NewMapChunkCache implements MapChunkCache {
             boolean didload = false;
             boolean isunloadpending = false;
             if (queue != null) {
-                try {
-                    isunloadpending = (Boolean)queuecontainskey.invoke(queue, chunk.x, chunk.z);
-                } catch (IllegalAccessException iax) {
-                } catch (IllegalArgumentException e) {
-                } catch (InvocationTargetException e) {
-                }
+                isunloadpending = helper.isInUnloadQueue(queue, chunk.x, chunk.z);
             }
             if (isunloadpending) {  /* Workaround: can't be pending if not loaded */
                 wasLoaded = true;
@@ -958,62 +896,30 @@ public class NewMapChunkCache implements MapChunkCache {
                         }
                         /* Get tile entity data */
                         List<Object> vals = new ArrayList<Object>();
-                        for(Object t : ((CraftChunk)c).getHandle().tileEntities.values()) {
-                            TileEntity te = (TileEntity)t;
-                            int cx = te.x & 0xF;
-                            int cz = te.z & 0xF;
-                            int blkid = ss.getBlockTypeId(cx, te.y, cz);
-                            int blkdat = ss.getBlockData(cx, te.y, cz);
+                        Map tileents = helper.getTileEntitiesForChunk(c);
+                        for(Object t : tileents.values()) {
+                            int te_x = helper.getTileEntityX(t);
+                            int te_y = helper.getTileEntityY(t);
+                            int te_z = helper.getTileEntityZ(t);
+                            int cx = te_x & 0xF;
+                            int cz = te_z & 0xF;
+                            int blkid = ss.getBlockTypeId(cx, te_y, cz);
+                            int blkdat = ss.getBlockData(cx, te_y, cz);
                             String[] te_fields = HDBlockModels.getTileEntityFieldsNeeded(blkid,  blkdat);
                             if(te_fields != null) {
-                                NBTTagCompound tc = new NBTTagCompound();
-                                try {
-                                    te.b(tc);
-                                } catch (Exception x) {
-                                }
+                                Object nbtcompound = helper.readTileEntityNBT(t);
+                                
                                 vals.clear();
                                 for(String id: te_fields) {
-                                    NBTBase v = tc.get(id);  /* Get field */
-                                    if(v != null) {
-                                        Object val = null;
-                                        switch(v.getTypeId()) {
-                                            case 1: // Byte
-                                                val = Byte.valueOf(((NBTTagByte)v).data);
-                                                break;
-                                            case 2: // Short
-                                                val = Short.valueOf(((NBTTagShort)v).data);
-                                                break;
-                                            case 3: // Int
-                                                val = Integer.valueOf(((NBTTagInt)v).data);
-                                                break;
-                                            case 4: // Long
-                                                val = Long.valueOf(((NBTTagLong)v).data);
-                                                break;
-                                            case 5: // Float
-                                                val = Float.valueOf(((NBTTagFloat)v).data);
-                                                break;
-                                            case 6: // Double
-                                                val = Double.valueOf(((NBTTagDouble)v).data);
-                                                break;
-                                            case 7: // Byte[]
-                                                val = ((NBTTagByteArray)v).data;
-                                                break;
-                                            case 8: // String
-                                                val = ((NBTTagString)v).data;
-                                                break;
-                                            case 11: // Int[]
-                                                val = ((NBTTagIntArray)v).data;
-                                                break;
-                                        }
-                                        if(val != null) {
-                                            vals.add(id);
-                                            vals.add(val);
-                                        }
+                                    Object val = helper.getFieldValue(nbtcompound, id);
+                                    if(val != null) {
+                                        vals.add(id);
+                                        vals.add(val);
                                     }
                                 }
                                 if(vals.size() > 0) {
                                     Object[] vlist = vals.toArray(new Object[vals.size()]);
-                                    tileData.put(getIndexInChunk(cx,te.y,cz), vlist);
+                                    tileData.put(getIndexInChunk(cx,te_y,cz), vlist);
                                 }
                             }
                         }
@@ -1036,8 +942,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
                      * when chunks are unloaded but not saved - removing them seems to do the trick */
                     if(!(didgenerate && do_save)) {
-                        CraftChunk cc = (CraftChunk)c;
-                        cc.getHandle().removeEntities();
+                        helper.removeEntitiesFromChunk(c);
                     }
                     /* Since we only remember ones we loaded, and we're synchronous, no player has
                      * moved, so it must be safe (also prevent chunk leak, which appears to happen
