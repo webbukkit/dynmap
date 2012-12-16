@@ -134,7 +134,9 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.2.5-R5.1-SNAPSHOT</version>
+			<version>[1.2.5-R4.0,1.7)</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.dynmap</groupId>
