@@ -1508,10 +1508,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     return cnt;
                 }
             });
-            Metrics.Graph mods = metrics.createGraph("Mods Used");
-
             for (String mod : modsused) {
-                mods.addPlotter(new Metrics.Plotter(mod) {
+                features.addPlotter(new Metrics.Plotter(mod + " Blocks") {
                     @Override
                     public int getValue() {
                         return 1;
