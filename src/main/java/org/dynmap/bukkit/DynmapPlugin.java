@@ -104,6 +104,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private BukkitEnableCoreCallback enabCoreCB = new BukkitEnableCoreCallback();
     private Method ismodloaded;
     private HashMap<String, BukkitWorld> world_by_name = new HashMap<String, BukkitWorld>();
+    private HashSet<String> modsused = new HashSet<String>();
     /* Lookup cache */
     private World last_world;
     private BukkitWorld last_bworld;
@@ -152,6 +153,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     if(spb == null) {
                         spb = new SpoutPluginBlocks(DynmapPlugin.this);
                     }
+                    modsused.add("SpoutPlugin");
                 }
                 else {
                     Log.info("Detected Spout - Support Disabled");
@@ -489,6 +491,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     Object rslt =ismodloaded.invoke(null,  name);
                     if(rslt instanceof Boolean) {
                         if(((Boolean)rslt).booleanValue()) {
+                            modsused.add(name);
                             return true;
                         }
                     }
@@ -1505,6 +1508,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     return cnt;
                 }
             });
+            Metrics.Graph mods = metrics.createGraph("Mods Used");
+
+            for (String mod : modsused) {
+                mods.addPlotter(new Metrics.Plotter(mod) {
+                    @Override
+                    public int getValue() {
+                        return 1;
+                    }
+                });
+            }
+            
             metrics.start();
         } catch (IOException e) {
             // Failed to submit the stats :-(
