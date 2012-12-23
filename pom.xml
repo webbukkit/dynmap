@@ -120,7 +120,7 @@
 			<snapshots>
 			</snapshots>
 			<id>spout-repo</id>
-			<url>http://repo.spout.org</url>
+			<url>http://nexus.spout.org</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -154,8 +154,14 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.spout</groupId>
+			<artifactId>spoutapi</artifactId>
+			<version>dev-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.getspout</groupId>
-			<artifactId>spoutpluginapi</artifactId>
+			<artifactId>spoutplugin</artifactId>
 			<version>dev-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
