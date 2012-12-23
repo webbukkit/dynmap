@@ -6,6 +6,10 @@
 # netbeans
 /nbproject
 
+# IntelliJ IDE settings
+/.idea
+*.iml
+
 # we use maven!
 /build.xml
 
