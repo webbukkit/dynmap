@@ -46,7 +46,7 @@ components:
   #  writeinterval: 1
   #  sendhealth: true
   #  sendposition: true
-  #  allowwebchat: false
+  #  allowwebchat: true
   #  webchat-interval: 5
   #  hidewebchatip: false
   #  includehiddenplayers: false
@@ -301,6 +301,11 @@ grayplayerswhenhidden: true
 #    Access-Control-Allow-Origin: "my-domain.com"
 #    X-Custom-Header-Of-Mine: "MyHeaderValue"
 
+# Trusted proxies for web server - which proxy addresses are trusted to supply valid X-Forwarded-For fields
+trusted-proxies:
+  - "127.0.0.1"
+  - "0:0:0:0:0:0:0:1"
+  
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
