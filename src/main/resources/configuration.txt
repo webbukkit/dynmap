@@ -131,7 +131,7 @@ components:
   - class: org.dynmap.ClientComponent
     type: timeofdayclock
     showdigitalclock: true
-    #showweather: true
+    showweather: true
   # Mouse pointer world coordinate display
   - class: org.dynmap.ClientComponent
     type: coord
