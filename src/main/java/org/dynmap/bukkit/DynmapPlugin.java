@@ -403,7 +403,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             if(p.isBanned())
                 return false;
             boolean rslt = permissions.hasOfflinePermission(player, perm);
-            Log.info(player + ".checkPlayerPermission(" + perm + ")=" + rslt);
             return rslt;
         }
         /**
