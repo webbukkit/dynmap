@@ -402,7 +402,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             OfflinePlayer p = getServer().getOfflinePlayer(player);
             if(p.isBanned())
                 return false;
-            return permissions.hasOfflinePermission(player, perm);
+            boolean rslt = permissions.hasOfflinePermission(player, perm);
+            Log.info(player + ".checkPlayerPermission(" + perm + ")=" + rslt);
+            return rslt;
         }
         /**
          * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
