@@ -197,6 +197,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         private long cur_tick;
 
         @Override
+        public int getBlockIDAt(String wname, int x, int y, int z) {
+            World w = getServer().getWorld(wname);
+            if((w != null) && w.isChunkLoaded(x >> 4, z >> 4)) {
+                return w.getBlockTypeIdAt(x,  y,  z);
+            }
+            return -1;
+        }
+
+        @Override
         public void scheduleServerTask(Runnable run, long delay) {
             getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, run, delay);
         }
