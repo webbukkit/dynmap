@@ -5,7 +5,7 @@
 	<name>dynmap</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<BUILD_NUMBER>dev</BUILD_NUMBER>
+		<BUILD_NUMBER>Dev</BUILD_NUMBER>
 	</properties>
 	<url>http://github.com/webbukkit/dynmap/</url>
 	<issueManagement>
@@ -179,5 +179,5 @@
 			<version>1.6</version>
 		</dependency>
 	</dependencies>
-	<version>1.3</version>
+	<version>1.4</version>
 </project>
