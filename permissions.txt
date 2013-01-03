@@ -1,6 +1,0 @@
-dynmap.render		# Render current chunk
-dynmap.fullrender	# Issue a full render
-dynmap.hide.self	# Hide self from map
-dynmap.hide.others	# Hide others from map
-dynmap.show.self	# Reveal self on map
-dynmap.show.others	# Reveal others on map
