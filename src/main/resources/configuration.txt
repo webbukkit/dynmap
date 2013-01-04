@@ -42,6 +42,8 @@ components:
     hideifsneaking: false
     # If true, player positions/status is protected (login with ID with dynmap.playermarkers.seeall permission required for info other than self)
     protected-player-info: false
+    @ If true, hide players with invisibility potion effects active
+    hide-if-invisiblity-potion: true
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
@@ -62,6 +64,7 @@ components:
   #  webchat-permissions: false
   #  # Limit length of single chat messages
   #  chatlengthlimit: 256
+  #  hide-if-invisiblity-potion: true
    
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
