@@ -42,7 +42,7 @@ components:
     hideifsneaking: false
     # If true, player positions/status is protected (login with ID with dynmap.playermarkers.seeall permission required for info other than self)
     protected-player-info: false
-    @ If true, hide players with invisibility potion effects active
+    # If true, hide players with invisibility potion effects active
     hide-if-invisiblity-potion: true
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
@@ -185,6 +185,11 @@ saverestorepending: true
 
 # Zoom-out tile update period - how often to scan for and process tile updates into zoom-out tiles (in seconds)
 zoomoutperiod: 30
+
+# Default delay on processing of updated tiles, in seconds.  This can reduce potentially expensive re-rendering
+# of frequently updated tiles (such as due to machines, pistons, quarries or other automation).  Values can
+# also be set on individual worlds and individual maps.
+tileupdatedelay: 30
 
 # Tile hashing is used to minimize tile file updates when no changes have occurred - set to false to disable
 enabletilehash: true

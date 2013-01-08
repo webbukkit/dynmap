@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -1392,10 +1393,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 @EventHandler(priority=EventPriority.MONITOR)
                 public void onChunkPopulate(ChunkPopulateEvent event) {
                     Chunk c = event.getChunk();
+                    ChunkSnapshot cs = c.getChunkSnapshot();
+                    int ymax = 0;
+                    for(int i = 0; i < c.getWorld().getMaxHeight() / 16; i++) {
+                        if(!cs.isSectionEmpty(i)) {
+                            ymax = (i+1)*16;
+                        }
+                    }
                     /* Touch extreme corners */
                     int x = c.getX() << 4;
                     int z = c.getZ() << 4;
-                    mapManager.touchVolume(getWorld(event.getWorld()).getName(), x, 0, z, x+15, 128, z+16, "chunkpopulate");
+                    mapManager.touchVolume(getWorld(event.getWorld()).getName(), x, 0, z, x+15, ymax, z+16, "chunkpopulate");
                 }
             };
             pm.registerEvents(chunkTrigger, this);
