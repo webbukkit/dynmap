@@ -20,7 +20,6 @@
 				<includes>
 					<include>*.yml</include>
 					<include>*.txt</include>
-					<include>*.js</include>
 				</includes>
 			</resource>
 			<resource>
@@ -29,7 +28,6 @@
 				<excludes>
 					<exclude>*.yml</exclude>
 					<exclude>*.txt</exclude>
-					<exclude>*.js</exclude>
 				</excludes>
 			</resource>
 		</resources>
