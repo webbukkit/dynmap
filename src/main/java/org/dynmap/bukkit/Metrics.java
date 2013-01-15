@@ -220,7 +220,8 @@ public class Metrics {
             }
 
             // Begin hitting the server with glorious data
-            task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
+            try {
+                task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
 
                 private boolean firstPost = true;
 
@@ -253,7 +254,11 @@ public class Metrics {
                         }
                     }
                 }
-            }, 0, PING_INTERVAL * 1200);
+                }, 0, PING_INTERVAL * 1200);
+            } catch (NoSuchMethodError nsme) {
+                // Handle deprecated scheduler API stupidity
+                return false;
+            }
 
             return true;
         }
