@@ -11,11 +11,10 @@
     	<excludes>
     		<exclude>web/version.js</exclude></excludes></fileSet>
     <fileSet>
-    	<directory>${project.build.directory}/core/web</directory>
+    	<directory>${project.basedir}/src/main/resouces</directory>
     	<outputDirectory>/dynmap/web</outputDirectory>
     	<includes>
-    		<include>version.js</include></includes>
-    	<filtered>true</filtered></fileSet>
+    		<include>version.js</include></includes></fileSet>
     <fileSet>
     	<directory>${project.basedir}</directory>
     	<outputDirectory>/dynmap</outputDirectory>
