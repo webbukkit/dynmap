@@ -95,27 +95,101 @@ public class BukkitVersionHelper {
         try {
             Method m = srv.getClass().getMethod("getHandle");
             Object scm = m.invoke(srv); /* And use it to get SCM (nms object) */
-            nms_package = scm.getClass().getPackage().getName();
+            if (srv.getVersion().contains("MCPC"))
+                nms_package = "";
+            else nms_package = scm.getClass().getPackage().getName();
         } catch (Exception x) {
             Log.severe("Error finding net.minecraft.server packages");
             nms_package = "net.minecraft.server" + obc_package.substring("org.bukkit.craftbukkit".length());
-            failed = true;
+            //failed = true;
         }
         
-        /* Set up biomebase fields */
-        biomebase = getNMSClass("net.minecraft.server.BiomeBase");
-        biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
-        biomebaselist = getField(biomebase, new String[] { "biomes" }, biomebasearray);
+        /** Set up NMS classes **/
+        if (srv.getVersion().contains("MCPC")) // use MCPC+ classes
+        {
+            /* biomebase */
+            biomebase = getNMSClass("yy");
+            biomebasearray =  getNMSClass("[Lyy;");
+            /* world */
+            nmsworld = getNMSClass("in");
+            /* chunk */
+            chunkprovserver = getNMSClass("im");
+            nmschunk = getNMSClass("zz");
+            /* nbt */
+            nbttagcompound = getNMSClass("bq");
+            nbttagbyte = getNMSClass("bp");
+            nbttagshort = getNMSClass("cb");
+            nbttagint = getNMSClass("bx");
+            nbttaglong = getNMSClass("bz");
+            nbttagfloat = getNMSClass("bv");
+            nbttagdouble = getNMSClass("bt");
+            nbttagbytearray = getNMSClass("bo");
+            nbttagstring = getNMSClass("cc");
+            nbttagintarray = getNMSClass("bw");
+            /* tileentity */
+            nms_tileentity = getNMSClass("any");
+        } else { // use CB classes
+            /* biomebase */
+            biomebase = getNMSClass("net.minecraft.server.BiomeBase");
+            biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
+            /* world */
+            nmsworld = getNMSClass("net.minecraft.server.WorldServer");
+            /* chunk */
+            chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
+            nmschunk = getNMSClass("net.minecraft.server.Chunk");
+            /* nbt */
+            nbttagcompound = getNMSClass("net.minecraft.server.NBTTagCompound");
+            nbttagbyte = getNMSClass("net.minecraft.server.NBTTagByte");
+            nbttagshort = getNMSClass("net.minecraft.server.NBTTagShort");
+            nbttagint = getNMSClass("net.minecraft.server.NBTTagInt");
+            nbttaglong = getNMSClass("net.minecraft.server.NBTTagLong");
+            nbttagfloat = getNMSClass("net.minecraft.server.NBTTagFloat");
+            nbttagdouble = getNMSClass("net.minecraft.server.NBTTagDouble");
+            nbttagbytearray = getNMSClass("net.minecraft.server.NBTTagByteArray");
+            nbttagstring = getNMSClass("net.minecraft.server.NBTTagString");
+            nbttagintarray = getNMSClass("net.minecraft.server.NBTTagIntArray");
+            /* tileentity */
+            nms_tileentity = getNMSClass("net.minecraft.server.TileEntity");
+        }
+        // Check to see if we found a valid NMS class
+        if (biomebase == null)
+            failed =true; // server version is incompatible
+
+        /** Set up NMS fields **/
+        /* biomebase */
+        biomebaselist = getField(biomebase, new String[] { "biomes", "a" }, biomebasearray);
         biomebasetemp = getField(biomebase, new String[] { "temperature", "F" }, float.class);
         biomebasehumi = getField(biomebase, new String[] { "humidity", "G" }, float.class);
         biomebaseidstring = getField(biomebase, new String[] { "y" }, String.class);
-        biomebaseid = getField(biomebase, new String[] { "id" }, int.class);
-        /* Craftworld fields */
+        biomebaseid = getField(biomebase, new String[] { "id", "N" }, int.class);
+        /* chunk */
+        nmsw_chunkproviderserver = getField(nmsworld, new String[] { "chunkProviderServer", "b" }, chunkprovserver);
+        cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue", "b" }, longhashset); 
+        if(cps_unloadqueue == null) {
+            Log.info("Unload queue not found - default to unload all chunks");
+        }
+        nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities", "d" }, new Class[0]);
+        nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities", "i" }, Map.class); 
+        /* nbt */
+        compound_get = getMethod(nbttagcompound, new String[] { "get", "a" }, new Class[] { String.class });
+        nbttagbyte_val = getField(nbttagbyte, new String[] { "data", "a" }, byte.class);
+        nbttagshort_val = getField(nbttagshort, new String[] { "data", "a" }, short.class);
+        nbttagint_val = getField(nbttagint, new String[] { "data", "a" }, int.class);
+        nbttaglong_val = getField(nbttaglong, new String[] { "data", "a" }, long.class);
+        nbttagfloat_val = getField(nbttagfloat, new String[] { "data", "a" }, float.class);
+        nbttagdouble_val = getField(nbttagdouble, new String[] { "data", "a" }, double.class);
+        nbttagbytearray_val = getField(nbttagbytearray, new String[] { "data", "a" }, byte[].class);
+        nbttagstring_val = getField(nbttagstring, new String[] { "data", "a" }, String.class);
+        nbttagintarray_val = getField(nbttagintarray, new String[] { "data", "a" }, int[].class);
+        /* tileentity */
+        nmst_readnbt = getMethod(nms_tileentity, new String[] { "b" }, new Class[] { nbttagcompound });
+        nmst_x = getField(nms_tileentity, new String[] { "x", "l" }, int.class); 
+        nmst_y = getField(nms_tileentity, new String[] { "y", "m" }, int.class); 
+        nmst_z = getField(nms_tileentity, new String[] { "z", "n" }, int.class); 
+
+        /** Craftworld fields **/
         craftworld = getOBCClass("org.bukkit.craftbukkit.CraftWorld");
         cw_gethandle = getMethod(craftworld, new String[] { "getHandle" }, new Class[0]);
-        /* n.m.s.World */
-        nmsworld = getNMSClass("net.minecraft.server.WorldServer");
-        chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
         longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
         if(longhashset != null) {
             lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { int.class, int.class });
@@ -124,50 +198,13 @@ public class BukkitVersionHelper {
             longhashset = getOBCClass("org.bukkit.craftbukkit.util.LongHashset");
             lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
         }
-        nmsw_chunkproviderserver = getField(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
-        cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longhashset); 
-        if(cps_unloadqueue == null) {
-            Log.info("Unload queue not found - default to unload all chunks");
-        }
         /* CraftChunkSnapshot */
         craftchunksnapshot = getOBCClass("org.bukkit.craftbukkit.CraftChunkSnapshot");
         ccss_biome = getPrivateField(craftchunksnapshot, new String[] { "biome" }, biomebasearray);
-        /** CraftChunk */
+        /* CraftChunk */
         craftchunk = getOBCClass("org.bukkit.craftbukkit.CraftChunk");
         cc_gethandle = getMethod(craftchunk, new String[] { "getHandle" }, new Class[0]);
-        /** n.m.s.Chunk */
-        nmschunk = getNMSClass("net.minecraft.server.Chunk");
-        nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities" }, new Class[0]);
-        nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class); 
-        /** nbt classes */
-        nbttagcompound = getNMSClass("net.minecraft.server.NBTTagCompound");
-        nbttagbyte = getNMSClass("net.minecraft.server.NBTTagByte");
-        nbttagshort = getNMSClass("net.minecraft.server.NBTTagShort");
-        nbttagint = getNMSClass("net.minecraft.server.NBTTagInt");
-        nbttaglong = getNMSClass("net.minecraft.server.NBTTagLong");
-        nbttagfloat = getNMSClass("net.minecraft.server.NBTTagFloat");
-        nbttagdouble = getNMSClass("net.minecraft.server.NBTTagDouble");
-        nbttagbytearray = getNMSClass("net.minecraft.server.NBTTagByteArray");
-        nbttagstring = getNMSClass("net.minecraft.server.NBTTagString");
-        nbttagintarray = getNMSClass("net.minecraft.server.NBTTagIntArray");
-        compound_get = getMethod(nbttagcompound, new String[] { "get" }, new Class[] { String.class });
-        nbttagbyte_val = getField(nbttagbyte, new String[] { "data" }, byte.class);
-        nbttagshort_val = getField(nbttagshort, new String[] { "data" }, short.class);
-        nbttagint_val = getField(nbttagint, new String[] { "data" }, int.class);
-        nbttaglong_val = getField(nbttaglong, new String[] { "data" }, long.class);
-        nbttagfloat_val = getField(nbttagfloat, new String[] { "data" }, float.class);
-        nbttagdouble_val = getField(nbttagdouble, new String[] { "data" }, double.class);
-        nbttagbytearray_val = getField(nbttagbytearray, new String[] { "data" }, byte[].class);
-        nbttagstring_val = getField(nbttagstring, new String[] { "data" }, String.class);
-        nbttagintarray_val = getField(nbttagintarray, new String[] { "data" }, int[].class);
 
-        /** Tile entity */
-        nms_tileentity = getNMSClass("net.minecraft.server.TileEntity");
-        nmst_readnbt = getMethod(nms_tileentity, new String[] { "b" }, new Class[] { nbttagcompound });
-        nmst_x = getField(nms_tileentity, new String[] { "x" }, int.class); 
-        nmst_y = getField(nms_tileentity, new String[] { "y" }, int.class); 
-        nmst_z = getField(nms_tileentity, new String[] { "z" }, int.class); 
-        
         if(failed)
             throw new IllegalArgumentException("Error initializing dynmap - bukkit version incompatible!");
     }
