@@ -373,6 +373,14 @@ spout:
     # to clean cached textures and force reload on next startup)
     use-existing-textures: true
     
+# Customization commands - allows scripts to be run before/after certain events
+custom-commands:
+    image-updates:
+        # Command run just before any image file is written or updated: run with single parameter with fully qualified file name
+        preupdatecommand: ""
+        # Command run just after any image file is written or updated: run with single parameter with fully qualified file name
+        postupdatecommand: ""
+        
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
 verbose: false
