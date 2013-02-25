@@ -91,6 +91,7 @@ import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.VisibilityLimit;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapCore core;
@@ -428,14 +429,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 return null;
             }
             if(w.visibility_limits != null) {
-                for(MapChunkCache.VisibilityLimit limit: w.visibility_limits) {
+                for(VisibilityLimit limit: w.visibility_limits) {
                     c.setVisibleRange(limit);
                 }
                 c.setHiddenFillStyle(w.hiddenchunkstyle);
                 c.setAutoGenerateVisbileRanges(w.do_autogenerate);
             }
             if(w.hidden_limits != null) {
-                for(MapChunkCache.VisibilityLimit limit: w.hidden_limits) {
+                for(VisibilityLimit limit: w.hidden_limits) {
                     c.setHiddenRange(limit);
                 }
                 c.setHiddenFillStyle(w.hiddenchunkstyle);
