@@ -433,7 +433,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     c.setVisibleRange(limit);
                 }
                 c.setHiddenFillStyle(w.hiddenchunkstyle);
-                c.setAutoGenerateVisbileRanges(w.do_autogenerate);
             }
             if(w.hidden_limits != null) {
                 for(VisibilityLimit limit: w.hidden_limits) {
