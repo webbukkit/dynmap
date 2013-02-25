@@ -115,7 +115,12 @@ public class SpoutPluginBlocks {
         /* Loop through blocks - try to freshen files, if needed */
         for(CustomBlock b : cb) {
             BlockDesign bd = b.getBlockDesign();
-            String blkid = bd.getTexturePlugin() + "." + fixIDString(b.getName());
+            if(bd == null) continue;
+            String txtplug = bd.getTexturePlugin();
+            if(txtplug == null) continue;
+            String blkname = b.getName();
+            if(blkname == null) continue;
+            String blkid = txtplug + "." + fixIDString(blkname);
             /* If not GenericCubiodBlockDesign, we don't handle it */
             if((bd instanceof GenericCuboidBlockDesign) == false) {
                 Log.info("Block " + blkid + " not suppored - only cubiod blocks");
