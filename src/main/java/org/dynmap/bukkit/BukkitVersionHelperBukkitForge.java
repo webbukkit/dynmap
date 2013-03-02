@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -15,8 +17,8 @@ import org.dynmap.Log;
 /**
  * Helper for isolation of bukkit version specific issues
  */
-public class BukkitVersionHelperMCPC extends BukkitVersionHelperGeneric {
-    BukkitVersionHelperMCPC() {
+public class BukkitVersionHelperBukkitForge extends BukkitVersionHelperGeneric {
+    BukkitVersionHelperBukkitForge() {
     }
     @Override
     protected String getNMSPackage() {
@@ -45,17 +47,7 @@ public class BukkitVersionHelperMCPC extends BukkitVersionHelperGeneric {
         nbttagintarray = getNMSClass("bw");
         /* tileentity */
         nms_tileentity = getNMSClass("any");
-
-        /* Get unload queue classes */
-        longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
-        if(longhashset != null) {
-            lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { int.class, int.class });
-        }
-        else {
-            longhashset = getOBCClass("org.bukkit.craftbukkit.util.LongHashset");
-            lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
-        }
-
+        
         /** Set up NMS fields **/
         /* biomebase */
         biomebaselist = getField(biomebase, new String[] { "a" }, biomebasearray);
@@ -88,4 +80,20 @@ public class BukkitVersionHelperMCPC extends BukkitVersionHelperGeneric {
         nmst_y = getField(nms_tileentity, new String[] { "m" }, int.class);
         nmst_z = getField(nms_tileentity, new String[] { "n" }, int.class);
     }
+    
+    private static long chunkXZ2Int(int par0, int par1)
+    {
+        return (long)par0 & 4294967295L | ((long)par1 & 4294967295L) << 32;
+    }
+
+    /* For testing unload queue for presence of givne chunk */
+    @Override
+    public boolean isInUnloadQueue(Object unloadqueue, int x, int z) {
+        if(unloadqueue != null) {
+            Set uq = (Set)unloadqueue;
+            return uq.contains(Long.valueOf(chunkXZ2Int(x, z)));
+        }
+        return true;
+    }
+
 }

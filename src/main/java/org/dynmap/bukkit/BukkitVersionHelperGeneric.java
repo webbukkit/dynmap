@@ -92,14 +92,6 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         /* Craftworld fields */
         craftworld = getOBCClass("org.bukkit.craftbukkit.CraftWorld");
         cw_gethandle = getMethod(craftworld, new String[] { "getHandle" }, new Class[0]);
-        longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
-        if(longhashset != null) {
-            lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { int.class, int.class });
-        }
-        else {
-            longhashset = getOBCClass("org.bukkit.craftbukkit.util.LongHashset");
-            lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
-        }
         /* CraftChunkSnapshot */
         craftchunksnapshot = getOBCClass("org.bukkit.craftbukkit.CraftChunkSnapshot");
         ccss_biome = getPrivateField(craftchunksnapshot, new String[] { "biome" }, biomebasearray);

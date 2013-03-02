@@ -25,6 +25,10 @@ public abstract class BukkitVersionHelper {
                 Log.info("Loader version helper for MCPC");
                 helper = new BukkitVersionHelperMCPC();
             }
+            else if(Bukkit.getServer().getVersion().contains("BukkitForge")) {
+                Log.info("Loader version helper for BukkitForge");
+                helper = new BukkitVersionHelperBukkitForge();
+            }
             else {
                 helper = new BukkitVersionHelperCB();
             }

@@ -46,6 +46,16 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmsworld = getNMSClass("net.minecraft.server.WorldServer");
         chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
         nmsw_chunkproviderserver = getField(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
+        
+        longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
+        if(longhashset != null) {
+            lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { int.class, int.class });
+        }
+        else {
+            longhashset = getOBCClass("org.bukkit.craftbukkit.util.LongHashset");
+            lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
+        }
+
         cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longhashset); 
         if(cps_unloadqueue == null) {
             Log.info("Unload queue not found - default to unload all chunks");
