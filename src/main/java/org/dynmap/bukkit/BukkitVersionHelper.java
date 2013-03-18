@@ -106,4 +106,8 @@ public abstract class BukkitVersionHelper {
      * Get field value from NBT compound
      */
     public abstract Object getFieldValue(Object nbt, String field);
+    /**
+     * Unload chunk no save needed
+     */
+    public abstract void unloadChunkNoSave(World w, int cx, int cz);
 }

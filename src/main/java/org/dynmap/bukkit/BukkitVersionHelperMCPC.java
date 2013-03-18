@@ -88,4 +88,8 @@ public class BukkitVersionHelperMCPC extends BukkitVersionHelperGeneric {
         nmst_y = getField(nms_tileentity, new String[] { "m" }, int.class);
         nmst_z = getField(nms_tileentity, new String[] { "n" }, int.class);
     }
+    @Override
+    public void unloadChunkNoSave(World w, int cx, int cz) {
+        w.unloadChunkRequest(cx, cz);
+    }
 }

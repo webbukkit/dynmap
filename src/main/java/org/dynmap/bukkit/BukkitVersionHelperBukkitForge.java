@@ -95,5 +95,8 @@ public class BukkitVersionHelperBukkitForge extends BukkitVersionHelperGeneric {
         }
         return true;
     }
-
+    @Override
+    public void unloadChunkNoSave(World w, int cx, int cz) {
+        w.unloadChunkRequest(cx, cz);
+    }
 }

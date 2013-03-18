@@ -93,4 +93,9 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmst_y = getField(nms_tileentity, new String[] { "y" }, int.class); 
         nmst_z = getField(nms_tileentity, new String[] { "z" }, int.class); 
     }
+    @Override
+    public void unloadChunkNoSave(World w, int cx, int cz) {
+        w.unloadChunk(cx, cz, false, false);
+    }
+
 }
