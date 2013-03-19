@@ -16,6 +16,9 @@ import org.dynmap.Log;
  * Helper for isolation of bukkit version specific issues
  */
 public class BukkitVersionHelperMCPC extends BukkitVersionHelperGeneric {
+    private Method cps_unload100;
+    private int cnt;
+    
     BukkitVersionHelperMCPC() {
     }
     @Override
@@ -69,6 +72,8 @@ public class BukkitVersionHelperMCPC extends BukkitVersionHelperGeneric {
         if(cps_unloadqueue == null) {
             Log.info("Unload queue not found - default to unload all chunks");
         }
+        cps_unload100 = getMethod(chunkprovserver, new String[] { "b" }, new Class[0]);
+        
         nmsc_removeentities = getMethod(nmschunk, new String[] { "d" }, new Class[0]);
         nmsc_tileentities = getField(nmschunk, new String[] { "i" }, Map.class);
         /* nbt */
@@ -89,7 +94,23 @@ public class BukkitVersionHelperMCPC extends BukkitVersionHelperGeneric {
         nmst_z = getField(nms_tileentity, new String[] { "n" }, int.class);
     }
     @Override
-    public void unloadChunkNoSave(World w, int cx, int cz) {
+    public void unloadChunkNoSave(World w, Chunk c, int cx, int cz) {
         w.unloadChunkRequest(cx, cz);
+        cnt++;
+        if(cnt > 20) {
+            cnt = 0;
+            Object nmsw = this.getNMSWorld(w);
+            if((nmsw != null) && (cps_unload100 != null)) {
+                Object cps = getFieldValue(nmsw, nmsw_chunkproviderserver, null); // Get chunkproviderserver
+                if(cps != null) {
+                    try {
+                        this.cps_unload100.invoke(cps, new Object[0]);
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    } catch (InvocationTargetException e) {
+                    }
+                }
+            }
+        }
     }
 }

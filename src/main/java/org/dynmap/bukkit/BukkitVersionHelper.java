@@ -109,5 +109,5 @@ public abstract class BukkitVersionHelper {
     /**
      * Unload chunk no save needed
      */
-    public abstract void unloadChunkNoSave(World w, int cx, int cz);
+    public abstract void unloadChunkNoSave(World w, Chunk c, int cx, int cz);
 }

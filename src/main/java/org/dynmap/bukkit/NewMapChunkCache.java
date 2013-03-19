@@ -935,16 +935,13 @@ public class NewMapChunkCache implements MapChunkCache {
                 /* If wasn't loaded before, we need to do unload */
                 if (!wasLoaded) {
                     chunks_read++;
-                    /* It looks like bukkit "leaks" entities - they don't get removed from the world-level table
-                     * when chunks are unloaded but not saved - removing them seems to do the trick */
-                    helper.removeEntitiesFromChunk(c);
                     /* Since we only remember ones we loaded, and we're synchronous, no player has
                      * moved, so it must be safe (also prevent chunk leak, which appears to happen
                      * because isChunkInUse defined "in use" as being within 256 blocks of a player,
                      * while the actual in-use chunk area for a player where the chunks are managed
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
-                    helper.unloadChunkNoSave(w, chunk.x, chunk.z);
+                    helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
                 }
                 else if (isunloadpending) { /* Else, if loaded and unload is pending */
                     w.unloadChunkRequest(chunk.x, chunk.z); /* Request new unload */

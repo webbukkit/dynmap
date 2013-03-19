@@ -1,13 +1,9 @@
 package org.dynmap.bukkit;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
@@ -94,7 +90,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmst_z = getField(nms_tileentity, new String[] { "z" }, int.class); 
     }
     @Override
-    public void unloadChunkNoSave(World w, int cx, int cz) {
+    public void unloadChunkNoSave(World w, Chunk c, int cx, int cz) {
+        this.removeEntitiesFromChunk(c);
         w.unloadChunk(cx, cz, false, false);
     }
 

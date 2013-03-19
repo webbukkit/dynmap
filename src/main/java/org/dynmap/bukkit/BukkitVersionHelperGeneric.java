@@ -190,7 +190,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         failed = true;
         return null;
     }
-    private Object getFieldValue(Object obj, Field field, Object def) {
+    protected Object getFieldValue(Object obj, Field field, Object def) {
         if((obj != null) && (field != null)) {
             try {
                 return field.get(obj);
