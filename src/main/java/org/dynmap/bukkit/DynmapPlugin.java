@@ -68,6 +68,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 import org.dynmap.DynmapAPI;
 import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWebChatEvent;
@@ -792,19 +793,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             BukkitWorld w = getWorld(world);
             if(core.processWorldLoad(w))    /* Have core process load first - fire event listeners if good load after */
                 core.listenerManager.processWorldEvent(EventType.WORLD_LOAD, w);
-        }
-    
+        }    
         /* Register our update trigger events */
         registerEvents();
 
         /* Submit metrics to mcstats.org */
         initMetrics();
         
+        /* Core is ready - notify API availability */
+        DynmapCommonAPIListener.apiInitialized(this);
+
         Log.info("Enabled");
     }
     
     @Override
     public void onDisable() {
+        /* Core is being disabled - notify API disable */
+        DynmapCommonAPIListener.apiTerminated();
+
         if (metrics != null) {
             metrics = null;
         }
