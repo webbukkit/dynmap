@@ -114,7 +114,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private World last_world;
     private BukkitWorld last_bworld;
     
-    private BukkitVersionHelper helper = BukkitVersionHelper.getHelper();
+    private BukkitVersionHelper helper;
     
     private final BukkitWorld getWorldByName(String name) {
         if((last_world != null) && (last_world.getName().equals(name))) {
@@ -686,9 +686,19 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
     
     @Override
-    public void onEnable() {
-        pm = this.getServer().getPluginManager();
+    public void onLoad() {
+        Log.setLogger(this.getLogger(), "");
         
+        helper = BukkitVersionHelper.getHelper();
+        pm = this.getServer().getPluginManager();
+    }
+    
+    @Override
+    public void onEnable() {
+        if (helper == null) {
+            Log.info("Dynmap is disabled (unsupported platform)");
+            return;
+        }
         PluginDescriptionFile pdfFile = this.getDescription();
         version = pdfFile.getVersion();
 
