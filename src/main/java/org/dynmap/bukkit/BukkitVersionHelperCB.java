@@ -1,5 +1,6 @@
 package org.dynmap.bukkit;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -7,12 +8,17 @@ import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
+import org.dynmap.common.BiomeMap;
 
 /**
  * Helper for isolation of bukkit version specific issues
  */
 public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
-
+    private Class<?> nmsblock;
+    private Class<?> nmsblockarray;
+    private Field blockbyid;
+    private Field blockname;
+    
     BukkitVersionHelperCB() {
     }
     @Override
@@ -30,6 +36,12 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     }
     @Override
     protected void loadNMS() {
+        // Get block fields
+        nmsblock = getNMSClass("net.minecraft.server.Block");
+        nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
+        blockbyid = getField(nmsblock, new String[] { "byId" }, nmsblockarray);
+        blockname = getPrivateField(nmsblock, new String[] { "name" }, String.class);
+
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
         biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
@@ -94,5 +106,41 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         this.removeEntitiesFromChunk(c);
         w.unloadChunk(cx, cz, false, false);
     }
-
+    /**
+     * Get block short name list
+     */
+    @Override
+    public String[] getBlockShortNames() {
+        try {
+            Object[] byid = (Object[])blockbyid.get(nmsblock);
+            String[] names = new String[byid.length];
+            for (int i = 0; i < names.length; i++) {
+                if (byid[i] != null) {
+                    names[i] = (String)blockname.get(byid[i]);
+                }
+            }
+            return names;
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        }
+        return new String[0];
+    }
+    /**
+     * Get biome name list
+     */
+    @Override
+    public String[] getBiomeNames() {
+        String[] names;
+        /* Find array of biomes in biomebase */
+        Object[] biomelist = getBiomeBaseList();
+        names = new String[biomelist.length];
+        /* Loop through list, starting afer well known biomes */
+        for(int i = 0; i < biomelist.length; i++) {
+            Object bb = biomelist[i];
+            if(bb != null) {
+                names[i] = getBiomeBaseIDString(bb);
+            }
+        }
+        return names;
+    }
 }

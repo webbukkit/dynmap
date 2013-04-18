@@ -749,6 +749,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         core.setMinecraftVersion(mcver);
         core.setDataFolder(dataDirectory);
         core.setServer(new BukkitServer());
+        core.setBlockNames(helper.getBlockShortNames());
+        core.setBiomeNames(helper.getBiomeNames());
         
         /* Load configuration */
         if(!core.initConfiguration(enabCoreCB)) {

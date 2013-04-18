@@ -174,7 +174,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get private field
      */
-    private Field getPrivateField(Class<?> cls, String[] ids, Class<?> type) {
+    protected Field getPrivateField(Class<?> cls, String[] ids, Class<?> type) {
         if((cls == null) || (type == null)) return null;
         for(String id : ids) {
             try {
