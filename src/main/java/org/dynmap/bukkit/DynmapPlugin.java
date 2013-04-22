@@ -242,7 +242,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         @Override
         public <T> Future<T> callSyncMethod(Callable<T> task) {
-            return getServer().getScheduler().callSyncMethod(DynmapPlugin.this, task);
+            if(DynmapPlugin.this.isEnabled())
+                return getServer().getScheduler().callSyncMethod(DynmapPlugin.this, task);
+            else
+                return null;
         }
         @Override
         public String getServerName() {
@@ -472,6 +475,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         return exhausted;
                     }
                 });
+                if (f == null) {
+                    return null;
+                }
                 Boolean delay;
                 try {
                     delay = f.get();
