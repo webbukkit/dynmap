@@ -217,6 +217,11 @@ use-generated-textures: true
 correct-water-lighting: true
 transparent-leaves: true
 
+# ctm-support: if true, Connected Texture Mod (CTM) in texture packs is enabled (default)
+ctm-support: true
+# custom-colors-support: if true, Custom Colors in texture packs is enabled (default)
+custom-colors-support: true
+
 # Control loading of player faces (if set to false, skins are never fetched)
 #fetchskins: false
 

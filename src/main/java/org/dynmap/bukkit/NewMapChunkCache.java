@@ -88,6 +88,7 @@ public class NewMapChunkCache implements MapChunkCache {
             initialize(x0, y0, z0);
             worldheight = w.getMaxHeight();
         }
+        @Override
         public final void initialize(int x0, int y0, int z0) {
             this.x = x0;
             this.y = y0;
@@ -108,18 +109,21 @@ public class NewMapChunkCache implements MapChunkCache {
             else
                 typeid = blkdata = 0;
         }
+        @Override
         public final int getBlockTypeID() {
             if(typeid < 0) {
                 typeid = snap.getBlockTypeId(bx, y, bz);
             }
             return typeid;
         }
+        @Override
         public final int getBlockData() {
             if(blkdata < 0) {
                 blkdata = snap.getBlockData(bx, y, bz);
             }
             return blkdata;
         }
+        @Override
         public int getBlockSkyLight() {
             try {
                 return snap.getBlockSkyLight(bx, y, bz);
@@ -127,6 +131,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 return 15;
             }
         }
+        @Override
         public final int getBlockEmittedLight() {
             try {
                 return snap.getBlockEmittedLight(bx, y, bz);
@@ -196,7 +201,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
             }
         }
-        
+        @Override
         public final BiomeMap getBiome() {
             try {
                 return biomemap[x - x_base][z - z_base];
@@ -205,15 +210,15 @@ public class NewMapChunkCache implements MapChunkCache {
                 return BiomeMap.NULL;
             }
         }
-        
-        public final int getSmoothGrassColorMultiplier(int[] colormap, int width) {
+        @Override
+        public final int getSmoothGrassColorMultiplier(int[] colormap) {
             int mult = 0xFFFFFF;
             try {
                 int rx = x - x_base;
                 int rz = z - z_base;
                 BiomeMap bm = biomemap[rx][rz];
                 if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
-                    mult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup(width)]);
+                    mult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
                 }
                 else {
                     int raccum = 0;
@@ -222,7 +227,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     for(int xoff = -1; xoff < 2; xoff++) {
                         for(int zoff = -1; zoff < 2; zoff++) {
                             bm = biomemap[rx+xoff][rz+zoff];
-                            int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup(width)]);
+                            int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
                             raccum += (rmult >> 16) & 0xFF;
                             gaccum += (rmult >> 8) & 0xFF;
                             baccum += rmult & 0xFF;
@@ -236,14 +241,15 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             return mult;
         }
-        public final int getSmoothFoliageColorMultiplier(int[] colormap, int width) {
+        @Override
+        public final int getSmoothFoliageColorMultiplier(int[] colormap) {
             int mult = 0xFFFFFF;
             try {
                 int rx = x - x_base;
                 int rz = z - z_base;
                 BiomeMap bm = biomemap[rx][rz];
                 if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
-                    mult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup(width)]);
+                    mult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
                 }
                 else {
                     int raccum = 0;
@@ -252,7 +258,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     for(int xoff = -1; xoff < 2; xoff++) {
                         for(int zoff = -1; zoff < 2; zoff++) {
                             bm = biomemap[rx+xoff][rz+zoff];
-                            int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup(width)]);
+                            int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
                             raccum += (rmult >> 16) & 0xFF;
                             gaccum += (rmult >> 8) & 0xFF;
                             baccum += rmult & 0xFF;
@@ -266,7 +272,8 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             return mult;
         }
-        public final int getSmoothColorMultiplier(int[] colormap, int width, int[] swampmap, int swampwidth) {
+        @Override
+        public final int getSmoothColorMultiplier(int[] colormap, int[] swampmap) {
             int mult = 0xFFFFFF;
             try {
                 int rx = x - x_base;
@@ -274,10 +281,10 @@ public class NewMapChunkCache implements MapChunkCache {
                 BiomeMap bm = biomemap[rx][rz];
                 if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
                     if(bm == BiomeMap.SWAMPLAND) {
-                        mult = swampmap[bm.biomeLookup(swampwidth)];
+                        mult = swampmap[bm.biomeLookup()];
                     }
                     else {
-                        mult = colormap[bm.biomeLookup(width)];
+                        mult = colormap[bm.biomeLookup()];
                     }
                 }
                 else {
@@ -289,10 +296,10 @@ public class NewMapChunkCache implements MapChunkCache {
                             bm = biomemap[rx+xoff][rz+zoff];
                             int rmult;
                             if(bm == BiomeMap.SWAMPLAND) {
-                                rmult = swampmap[bm.biomeLookup(swampwidth)];
+                                rmult = swampmap[bm.biomeLookup()];
                             }
                             else {
-                                rmult = colormap[bm.biomeLookup(width)];
+                                rmult = colormap[bm.biomeLookup()];
                             }
                             raccum += (rmult >> 16) & 0xFF;
                             gaccum += (rmult >> 8) & 0xFF;
@@ -307,7 +314,7 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             return mult;
         }
-        
+        @Override
         public final int getSmoothWaterColorMultiplier() {
             try {
                 int rx = x - x_base;
@@ -334,15 +341,15 @@ public class NewMapChunkCache implements MapChunkCache {
                 return 0xFFFFFF;
             }
         }
-
-        public final int getSmoothWaterColorMultiplier(int[] colormap, int width) {
+        @Override
+        public final int getSmoothWaterColorMultiplier(int[] colormap) {
             int mult = 0xFFFFFF;
             try {
                 int rx = x - x_base;
                 int rz = z - z_base;
                 BiomeMap bm = biomemap[rx][rz];
                 if(sameneighborbiomecnt[rx][rz] >= (byte)8) {   /* All neighbors same? */
-                    mult = colormap[bm.biomeLookup(width)];
+                    mult = colormap[bm.biomeLookup()];
                 }
                 else {
                     int raccum = 0;
@@ -351,7 +358,7 @@ public class NewMapChunkCache implements MapChunkCache {
                     for(int xoff = -1; xoff < 2; xoff++) {
                         for(int zoff = -1; zoff < 2; zoff++) {
                             bm = biomemap[rx+xoff][rz+zoff];
-                            int rmult = colormap[bm.biomeLookup(width)];
+                            int rmult = colormap[bm.biomeLookup()];
                             raccum += (rmult >> 16) & 0xFF;
                             gaccum += (rmult >> 8) & 0xFF;
                             baccum += rmult & 0xFF;
@@ -365,16 +372,10 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             return mult;
         }
-        
-        public final double getRawBiomeTemperature() {
-            return snap.getRawBiomeTemperature(bx, bz);
-        }
-        public final double getRawBiomeRainfall() {
-            return snap.getRawBiomeRainfall(bx, bz);
-        }
         /**
          * Step current position in given direction
          */
+        @Override
         public final void stepPosition(BlockStep step) {
             typeid = -1;
             blkdata = -1;
@@ -461,6 +462,7 @@ public class NewMapChunkCache implements MapChunkCache {
         /**
          * Unstep current position to previous position
          */
+        @Override
         public BlockStep unstepPosition() {
             BlockStep ls = laststep;
             stepPosition(unstep[ls.ordinal()]);
@@ -469,9 +471,11 @@ public class NewMapChunkCache implements MapChunkCache {
         /**
          * Unstep current position in oppisite director of given step
          */
+        @Override
         public void unstepPosition(BlockStep s) {
             stepPosition(unstep[s.ordinal()]);
         }
+        @Override
         public final void setY(int y) {
             if(y > this.y)
                 laststep = BlockStep.Y_PLUS;
@@ -485,15 +489,19 @@ public class NewMapChunkCache implements MapChunkCache {
                 typeid = blkdata = -1;
             }
         }
+        @Override
         public final int getX() {
             return x;
         }
+        @Override
         public final int getY() {
             return y;
         }
+        @Override
         public final int getZ() {
             return z;
         }
+        @Override
         public final int getBlockTypeIDAt(BlockStep s) {
             if(s == BlockStep.Y_MINUS) {
                 if(y > 0)
@@ -513,6 +521,7 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             return 0;
         }
+        @Override
         public BlockStep getLastStep() {
             return laststep;
         }
