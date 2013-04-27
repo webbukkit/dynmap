@@ -43,6 +43,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private List<VisibilityLimit> visible_limits = null;
     private List<VisibilityLimit> hidden_limits = null;
     private boolean isempty = true;
+    private int snapcnt;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     private DynIntHashMap[] snaptile;
     private byte[][] sameneighborbiomecnt;
@@ -88,6 +89,7 @@ public class NewMapChunkCache implements MapChunkCache {
             initialize(x0, y0, z0);
             worldheight = w.getMaxHeight();
         }
+        
         @Override
         public final void initialize(int x0, int y0, int z0) {
             this.x = x0;
@@ -97,11 +99,11 @@ public class NewMapChunkCache implements MapChunkCache {
             this.bx = x & 0xF;
             this.bz = z & 0xF;
             this.off = bx + (bz << 4);
-            try {
-                snap = snaparray[chunkindex];
-            } catch (ArrayIndexOutOfBoundsException aioobx) {
+            if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
                 snap = EMPTY;
-                exceptions++;
+            }
+            else {
+                snap = snaparray[chunkindex];
             }
             laststep = BlockStep.Y_MINUS;
             if((y >= 0) && (y < worldheight))
@@ -153,10 +155,14 @@ public class NewMapChunkCache implements MapChunkCache {
             Object[] biomebase = null;
             ChunkSnapshot biome_css = null;
             for(int i = 0; i < x_size; i++) {
-                initialize(i + x_base, 64, z_base);
                 for(int j = 0; j < z_size; j++) {
                     BiomeMap bm;
-                    
+                    if (j == 0) {
+                        initialize(i + x_base, 64, z_base);
+                    }
+                    else {
+                        stepPosition(BlockStep.Z_PLUS);
+                    }
                     if(snap != biome_css) {
                         biomebase = null;
                         biome_css = snap;
@@ -196,8 +202,6 @@ public class NewMapChunkCache implements MapChunkCache {
                         sameneighborbiomecnt[i][j-1]++;
                     }
                     sameneighborbiomecnt[i][j] = (byte)cnt;
-
-                    stepPosition(BlockStep.Z_PLUS);
                 }
             }
         }
@@ -385,14 +389,14 @@ public class NewMapChunkCache implements MapChunkCache {
                     bx++;
                     off++;
                     if(bx == 16) {  /* Next chunk? */
-                        try {
-                            bx = 0;
-                            off -= 16;
-                            chunkindex++;
-                            snap = snaparray[chunkindex];
-                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                        bx = 0;
+                        off -= 16;
+                        chunkindex++;
+                        if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
                             snap = EMPTY;
-                            exceptions++;
+                        }
+                        else {
+                            snap = snaparray[chunkindex];
                         }
                     }
                     break;
@@ -407,14 +411,14 @@ public class NewMapChunkCache implements MapChunkCache {
                     bz++;
                     off+=16;
                     if(bz == 16) {  /* Next chunk? */
-                        try {
-                            bz = 0;
-                            off -= 256;
-                            chunkindex += x_dim;
-                            snap = snaparray[chunkindex];
-                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                        bz = 0;
+                        off -= 256;
+                        chunkindex += x_dim;
+                        if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
                             snap = EMPTY;
-                            exceptions++;
+                        }
+                        else {
+                            snap = snaparray[chunkindex];
                         }
                     }
                     break;
@@ -423,14 +427,14 @@ public class NewMapChunkCache implements MapChunkCache {
                     bx--;
                     off--;
                     if(bx == -1) {  /* Next chunk? */
-                        try {
-                            bx = 15;
-                            off += 16;
-                            chunkindex--;
-                            snap = snaparray[chunkindex];
-                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                        bx = 15;
+                        off += 16;
+                        chunkindex--;
+                        if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
                             snap = EMPTY;
-                            exceptions++;
+                        }
+                        else {
+                            snap = snaparray[chunkindex];
                         }
                     }
                     break;
@@ -445,14 +449,14 @@ public class NewMapChunkCache implements MapChunkCache {
                     bz--;
                     off-=16;
                     if(bz == -1) {  /* Next chunk? */
-                        try {
-                            bz = 15;
-                            off += 256;
-                            chunkindex -= x_dim;
-                            snap = snaparray[chunkindex];
-                        } catch (ArrayIndexOutOfBoundsException aioobx) {
+                        bz = 15;
+                        off += 256;
+                        chunkindex -= x_dim;
+                        if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
                             snap = EMPTY;
-                            exceptions++;
+                        }
+                        else {
+                            snap = snaparray[chunkindex];
                         }
                     }
                     break;
@@ -773,7 +777,7 @@ public class NewMapChunkCache implements MapChunkCache {
             x_dim = x_max - x_min + 1;            
         }
     
-        int snapcnt = x_dim * (z_max-z_min+1);
+        snapcnt = x_dim * (z_max-z_min+1);
         snaparray = new ChunkSnapshot[snapcnt];
         snaptile = new DynIntHashMap[snapcnt];
         isSectionNotEmpty = new boolean[snapcnt][];
