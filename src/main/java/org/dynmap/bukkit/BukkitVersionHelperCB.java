@@ -2,6 +2,7 @@ package org.dynmap.bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -16,8 +17,10 @@ import org.dynmap.common.BiomeMap;
 public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Class<?> nmsblock;
     private Class<?> nmsblockarray;
+    private Class<?> nmsmaterial;
     private Field blockbyid;
     private Field blockname;
+    private Field material;
     
     BukkitVersionHelperCB() {
     }
@@ -39,8 +42,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         // Get block fields
         nmsblock = getNMSClass("net.minecraft.server.Block");
         nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
+        nmsmaterial = getNMSClass("net.minecraft.server.Material");
         blockbyid = getField(nmsblock, new String[] { "byId" }, nmsblockarray);
         blockname = getPrivateField(nmsblock, new String[] { "name" }, String.class);
+        material = getField(nmsblock, new String[] { "material" }, nmsmaterial);
 
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
@@ -142,5 +147,34 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             }
         }
         return names;
+    }
+    /**
+     * Get block material index list
+     */
+    public int[] getBlockMaterialMap() {
+        try {
+            Object[] byid = (Object[])blockbyid.get(nmsblock);
+            int[] map = new int[byid.length];
+            ArrayList<Object> mats = new ArrayList<Object>();
+            for (int i = 0; i < map.length; i++) {
+                if (byid[i] != null) {
+                    Object mat = (Object)material.get(byid[i]);
+                    if (mat != null) {
+                        map[i] = mats.indexOf(mat);
+                        if (map[i] < 0) {
+                            map[i] = mats.size();
+                            mats.add(mat);
+                        }
+                    }
+                    else {
+                        map[i] = -1;
+                    }
+                }
+            }
+            return map;
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        }
+        return new int[0];
     }
 }

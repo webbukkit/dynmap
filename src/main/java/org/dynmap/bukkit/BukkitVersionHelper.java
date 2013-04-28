@@ -124,4 +124,8 @@ public abstract class BukkitVersionHelper {
      * Get biome name list
      */
     public abstract String[] getBiomeNames();
+    /**
+     * Get block material index list
+     */
+    public abstract int[] getBlockMaterialMap();
 }

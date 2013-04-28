@@ -756,6 +756,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         core.setDataFolder(dataDirectory);
         core.setServer(new BukkitServer());
         core.setBlockNames(helper.getBlockShortNames());
+        core.setBlockMaterialMap(helper.getBlockMaterialMap());
         core.setBiomeNames(helper.getBiomeNames());
         
         /* Load configuration */
