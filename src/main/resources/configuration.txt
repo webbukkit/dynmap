@@ -322,8 +322,10 @@ trusted-proxies:
   - "127.0.0.1"
   - "0:0:0:0:0:0:0:1"
   
+# Join/quit message format for web chat: set to "" to disable notice on web UI
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
+
 spammessage: "You may only chat once every %interval% seconds."
 # format for messages from web: %playername% substitutes sender ID (typically IP), %message% includes text
 webmsgformat: "&color;2[WEB] %playername%: &color;f%message%"
