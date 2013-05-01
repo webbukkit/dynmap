@@ -1,14 +1,18 @@
 # All paths in this configuration file are relative to Dynmap's data-folder: minecraft_server/plugins/dynmap/
 
 # All map templates are defined in the templates directory
-# The 'classic' FlatMap and KzedMap templates are used, which can be found in normal.txt, nether.txt, and skylands.txt
-#  To use these, do not set deftemplatesuffix (make sure deftemplatesuffix is commented, below)
-# To use the HDMap very-low-res map templates as world defaults (normal-vlowres, nether-vlowres and skylands-vlowres), set value to vlowres
-#   The definitions of these templates are in normal-vlowres.txt, nether-vlowres.txt, and skylands-vlowres.txt
-# To use the HDMap low-res map templates as world defaults (normal-lowres, nether-lowres and skylands-lowres), set value to lowres
-#   The definitions of these templates are in normal-lowres.txt, nether-lowres.txt, and skylands-lowres.txt
-# To use the HDMap hi-res map templates (these can take a VERY long time for initial fullrender), set value to hires
-#   The definitions of these templates are in normal-hires.txt, nether-hires.txt, and skylands-hires.txt
+# To use the HDMap very-low-res (2 ppb) map templates as world defaults, set value to vlowres
+#   The definitions of these templates are in normal-vlowres.txt, nether-vlowres.txt, and the_end-vlowres.txt
+# To use the HDMap low-res (4 ppb) map templates as world defaults, set value to lowres
+#   The definitions of these templates are in normal-lowres.txt, nether-lowres.txt, and the_end-lowres.txt
+# To use the HDMap hi-res (16 ppb) map templates (these can take a VERY long time for initial fullrender), set value to hires
+#   The definitions of these templates are in normal-hires.txt, nether-hires.txt, and the_end-hires.txt
+# To use the HDMap low-res (4 ppb) map templates, with support for boosting resolution selectively to hi-res (16 ppb), set value to low_boost_hi
+#   The definitions of these templates are in normal-low_boost_hi.txt, nether-low_boost_hi.txt, and the_end-low_boost_hi.txt
+# To use the HDMap hi-res (16 ppb) map templates, with support for boosting resolution selectively to vhi-res (32 ppb), set value to hi_boost_vhi
+#   The definitions of these templates are in normal-hi_boost_vhi.txt, nether-hi_boost_vhi.txt, and the_end-hi_boost_vhi.txt
+# To use the HDMap hi-res (16 ppb) map templates, with support for boosting resolution selectively to xhi-res (64 ppb), set value to hi_boost_xhi
+#   The definitions of these templates are in normal-hi_boost_xhi.txt, nether-hi_boost_xhi.txt, and the_end-hi_boost_xhi.txt
 deftemplatesuffix: vlowres
 
 components:
