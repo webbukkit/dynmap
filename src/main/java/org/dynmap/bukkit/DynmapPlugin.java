@@ -751,6 +751,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         if(core == null)
             core = new DynmapCore();
         /* Inject dependencies */
+        core.setPluginJarFile(this.getFile());
         core.setPluginVersion(version, "CraftBukkit");
         core.setMinecraftVersion(mcver);
         core.setDataFolder(dataDirectory);
