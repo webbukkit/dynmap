@@ -849,6 +849,7 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
+            boolean didload = false;
             boolean isunloadpending = false;
             if (queue != null) {
                 isunloadpending = helper.isInUnloadQueue(queue, chunk.x, chunk.z);
@@ -858,12 +859,18 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             try {
                 if (!wasLoaded) {
-                    w.loadChunk(chunk.x, chunk.z, false);
+                    didload = w.loadChunk(chunk.x, chunk.z, false);
+                }
+                else {  /* If already was loaded, no need to load */
+                    didload = true;
                 }
             } catch (Throwable t) { /* Catch chunk error from Bukkit */
                 Log.warning("Bukkit error loading chunk " + chunk.x + "," + chunk.z + " on " + w.getName());
+                if(!wasLoaded) {    /* If wasn't loaded, we loaded it if it now is */
+                    didload = w.isChunkLoaded(chunk.x, chunk.z);
+                }
             }
-            boolean didload = w.isChunkLoaded(chunk.x, chunk.z);
+            boolean didgenerate = false;
             /* If it did load, make cache of it */
             if(didload) {
                 tileData = new DynIntHashMap();
@@ -898,7 +905,7 @@ public class NewMapChunkCache implements MapChunkCache {
                         }
                         /* Get tile entity data */
                         List<Object> vals = new ArrayList<Object>();
-                        Map<?,?> tileents = helper.getTileEntitiesForChunk(c);
+                        Map tileents = helper.getTileEntitiesForChunk(c);
                         for(Object t : tileents.values()) {
                             int te_x = helper.getTileEntityX(t);
                             int te_y = helper.getTileEntityY(t);
