@@ -2,8 +2,13 @@ package org.dynmap.bukkit;
 /**
  * Bukkit specific implementation of DynmapWorld
  */
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.permissions.Permission;
@@ -12,6 +17,7 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.TileFlags;
 
 public class BukkitWorld extends DynmapWorld {
     private World world;
@@ -160,4 +166,58 @@ public class BukkitWorld extends DynmapWorld {
     public World getWorld() {
         return world;
     }
+    
+    // Return false if unimplemented
+    @Override
+    public int getChunkMap(TileFlags map) {
+        map.clear();
+        if (world == null) return -1;
+        int cnt = 0;
+        // Mark loaded chunks
+        for(Chunk c : world.getLoadedChunks()) {
+            map.setFlag(c.getX(), c.getZ(), true);
+            cnt++;
+        }
+        File f = world.getWorldFolder();
+        File regiondir = new File(f, "region");
+        File[] lst = regiondir.listFiles();
+        if(lst != null) {
+            byte[] hdr = new byte[4096];
+            for(File rf : lst) {
+                if(!rf.getName().endsWith(".mca")) {
+                    continue;
+                }
+                String[] parts = rf.getName().split("\\.");
+                if((!parts[0].equals("r")) && (parts.length != 4)) continue;
+                
+                RandomAccessFile rfile = null;
+                int x = 0, z = 0;
+                try {
+                    x = Integer.parseInt(parts[1]);
+                    z = Integer.parseInt(parts[2]);
+                    rfile = new RandomAccessFile(rf, "r");
+                    rfile.read(hdr, 0, hdr.length);
+                } catch (IOException iox) {
+                    Arrays.fill(hdr,  (byte)0);
+                } catch (NumberFormatException nfx) {
+                    Arrays.fill(hdr,  (byte)0);
+                } finally {
+                    if(rfile != null) {
+                        try { rfile.close(); } catch (IOException iox) {}
+                    }
+                }
+                for (int i = 0; i < 1024; i++) {
+                    int v = hdr[4*i] | hdr[4*i + 1] | hdr[4*i + 2] | hdr[4*i + 3];
+                    if (v == 0) continue;
+                    int xx = (x << 5) | (i & 0x1F);
+                    int zz = (z << 5) | ((i >> 5) & 0x1F);
+                    if (!map.setFlag(xx, zz, true)) {
+                        cnt++;
+                    }
+                }
+            }
+        }
+        return cnt;
+    }
+
 }
