@@ -87,6 +87,12 @@ commands:
            /<command> listcircles - list details of all circles
            /<command> updatecircle <label> <arg>:<value> ... - update attributes of circle with given label
            /<command> updatecircle id:<id> <arg>:<value> ... - update attributes of circle with given ID
+           /<command> getdesc id:<id> type:<icon|area|circle|line> - get description for marker with given ID
+           /<command> getdesc <label> type:<icon|area|circle|line> - get description for marker with given label
+           /<command> resetdesc id:<id> type:<icon|area|circle|line> - clear description for marker with given ID
+           /<command> resetdesc <label> type:<icon|area|circle|line> - clear description for marker with given label
+           /<command> appenddesc id:<id> type:<icon|area|circle|line> desc:"text" - append text line to description for marker with given ID
+           /<command> appenddesc <label> type:<icon|area|circle|line> desc:"text" - append text line to description for marker with given label
            
   dmap:
     description: List and modify dynmap configuration
@@ -147,6 +153,9 @@ permissions:
       dynmap.marker.updatecircle: true
       dynmap.marker.listcircles: true
       dynmap.marker.deletecircle: true
+      dynmap.marker.getdesc: true
+      dynmap.marker.resetdesc: true
+      dynmap.marker.appenddesc: true
       dynmap.dmap.worldlist: true
       dynmap.dmap.worldset: true
       dynmap.dmap.worldreset: true
@@ -291,6 +300,15 @@ permissions:
     default: op            
   dynmap.marker.deletecircle:
     description: Allows /dmarker deletecircle
+    default: op
+  dynmap.marker.getdesc:
+    description: Allows /dmarker getdesc
+    default: op
+  dynmap.marker.resetdesc:
+    description: Allows /dmarker resetdesc
+    default: op
+  dynmap.marker.appenddesc:
+    description: Allows /dmarker appenddesc
     default: op
   dynmap.dmap.worldlist:
     description: Allows /dmap worldlist
