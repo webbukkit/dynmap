@@ -93,6 +93,11 @@ commands:
            /<command> resetdesc <label> type:<icon|area|circle|line> - clear description for marker with given label
            /<command> appenddesc id:<id> type:<icon|area|circle|line> desc:"text" - append text line to description for marker with given ID
            /<command> appenddesc <label> type:<icon|area|circle|line> desc:"text" - append text line to description for marker with given label
+           /<command> importdesc id:<id> type:<icon|area|circle|line> file:<filename> - import description from given file for marker with given ID
+           /<command> importdesc <label> type:<icon|area|circle|line> file:<filename> - import description from given file for marker with given label
+           /<command> importlabel id:<id> type:<icon|area|circle|line> file:<filename> - import label with markup from given file for marker with given ID
+           /<command> importlabel <label> type:<icon|area|circle|line> file:<filename> - import label with markup from given file for marker with given label
+           /<command> getlabel id:<id> type:<icon|area|circle|line> - get label for marker with given ID
            
   dmap:
     description: List and modify dynmap configuration
@@ -156,6 +161,9 @@ permissions:
       dynmap.marker.getdesc: true
       dynmap.marker.resetdesc: true
       dynmap.marker.appenddesc: true
+      dynmap.marker.importdesc: true
+      dynmap.marker.getlabel: true
+      dynmap.marker.importlabel: true
       dynmap.dmap.worldlist: true
       dynmap.dmap.worldset: true
       dynmap.dmap.worldreset: true
@@ -309,6 +317,15 @@ permissions:
     default: op
   dynmap.marker.appenddesc:
     description: Allows /dmarker appenddesc
+    default: op
+  dynmap.marker.importdesc:
+    description: Allows /dmarker importdesc
+    default: op
+  dynmap.marker.getlabel:
+    description: Allows /dmarker getlabel
+    default: op
+  dynmap.marker.importlabel:
+    description: Allows /dmarker importlabel
     default: op
   dynmap.dmap.worldlist:
     description: Allows /dmap worldlist
