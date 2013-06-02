@@ -305,8 +305,11 @@ progressloginterval: 100
 # Interval the browser should poll for updates.
 updaterate: 2000
 
-# If nonzero, server will pause fullrender/radiusrender processing when 'fullrenderplayerlimit' or more user's are logged in
+# If nonzero, server will pause fullrender/radiusrender processing when 'fullrenderplayerlimit' or more users are logged in
 fullrenderplayerlimit: 0
+
+# If nonzero, server will pause update render processing when 'updateplayerlimit' or more users are logged in
+updateplayerlimit: 0
 
 showplayerfacesinmenu: true
 
