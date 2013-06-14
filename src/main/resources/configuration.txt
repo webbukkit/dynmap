@@ -319,6 +319,11 @@ showplayerfacesinmenu: true
 # Control whether players that are hidden or not on current map are grayed out (true=yes)
 grayplayerswhenhidden: true
 
+# Use player permissions to order player list: first to last, players are ordered by first permission listed that they have
+# That is, anyone with first listed permission goes before anyone with second, etc, with users with none of the nodes going last
+player-sort-permission-nodes:
+  - bukkit.command.op
+  
 # Set sidebaropened: 'true' to pin menu sidebar opened permanently, 'pinned' to default the sidebar to pinned, but allow it to unpin
 #sidebaropened: true
 

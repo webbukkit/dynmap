@@ -111,6 +111,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private Method ismodloaded;
     private HashMap<String, BukkitWorld> world_by_name = new HashMap<String, BukkitWorld>();
     private HashSet<String> modsused = new HashSet<String>();
+    
+    private HashMap<String, Integer> sortWeights = new HashMap<String, Integer>();
     /* Lookup cache */
     private World last_world;
     private BukkitWorld last_bworld;
@@ -629,6 +631,22 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             return false;
         }
+        @Override
+        public int getSortWeight() {
+            Integer wt = sortWeights.get(getName());
+            if (wt != null)
+                return wt;
+            return 0;
+        }
+        @Override
+        public void setSortWeight(int wt) {
+            if (wt == 0) {
+                sortWeights.remove(getName());
+            }
+            else {
+                sortWeights.put(getName(), wt);
+            }
+        }
     }
     /* Handler for generic console command sender */
     public class BukkitCommandSender implements DynmapCommandSender {
@@ -663,6 +681,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 return sender.isOp();
             else
                 return false;
+        }
+        @Override
+        public boolean hasPermissionNode(String node) {
+            if (sender != null) {
+                return sender.hasPermission(node);
+            }
+            return false;
         }
     }
     

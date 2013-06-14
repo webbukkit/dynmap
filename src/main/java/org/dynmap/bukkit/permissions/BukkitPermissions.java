@@ -39,7 +39,7 @@ public class BukkitPermissions implements PermissionProvider {
     }
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
-        Player p = Bukkit.getPlayerExact(name);
+        Player p = Bukkit.getPlayerExact(player);
         HashSet<String> hasperms = null;
         if (p != null) {
             hasperms = new HashSet<String>();
