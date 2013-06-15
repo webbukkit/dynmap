@@ -30,6 +30,7 @@ commands:
            /<command> resetstats - Reset render statistics.
            /<command> sendtoweb msg - Send message to web users
            /<command> purgequeue - Set tile update queue to empty
+           /<command> purgequeue worldname - Set tile update queue to empty for world 'worldname'
            /<command> purgemap worldname mapname - Delete all the tiles for map 'mapname' of world 'worldname'
            /<command> pause - Show render pause state
            /<command> pause <all|none|full|update> - Set render pause state
