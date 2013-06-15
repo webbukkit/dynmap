@@ -30,6 +30,7 @@ commands:
            /<command> resetstats - Reset render statistics.
            /<command> sendtoweb msg - Send message to web users
            /<command> purgequeue - Set tile update queue to empty
+           /<command> purgemap worldname mapname - Delete all the tiles for map 'mapname' of world 'worldname'
            /<command> pause - Show render pause state
            /<command> pause <all|none|full|update> - Set render pause state
            /<command> ids-for-ip <ipaddress> - Show player IDs that have logged in from given IP address
@@ -131,6 +132,7 @@ permissions:
       dynmap.resetstats: true
       dynmap.sendtoweb: true
       dynmap.purgequeue: true
+      dynmap.purgemap: true
       dynmap.ids-for-ip: true
       dynmap.ips-for-id: true
       dynmap.webregister: true
@@ -215,6 +217,9 @@ permissions:
     default: op
   dynmap.purgequeue:
     description: Allows /dynmap purgequeue
+    default: op
+  dynmap.purgemap:
+    description: Allows /dynmap purgeqmap
     default: op
   dynmap.pause:
     description: Allows /dynmap pause
