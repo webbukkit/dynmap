@@ -310,9 +310,14 @@ updaterate: 2000
 
 # If nonzero, server will pause fullrender/radiusrender processing when 'fullrenderplayerlimit' or more users are logged in
 fullrenderplayerlimit: 0
-
 # If nonzero, server will pause update render processing when 'updateplayerlimit' or more users are logged in
 updateplayerlimit: 0
+# Target limit on server thread use - msec per tick
+per-tick-time-limit: 50
+# If TPS of server is below this setting, update renders processing is paused
+update-min-tps: 18.0
+# If TPS of server is below this setting, full/radius renders processing is paused
+fullrender-min-tps: 18.0
 
 showplayerfacesinmenu: true
 

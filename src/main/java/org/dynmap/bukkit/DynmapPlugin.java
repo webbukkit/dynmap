@@ -49,7 +49,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -111,7 +110,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private Method ismodloaded;
     private HashMap<String, BukkitWorld> world_by_name = new HashMap<String, BukkitWorld>();
     private HashSet<String> modsused = new HashSet<String>();
+    // TPS calculator
+    private double tps;
+    private long lasttick;
+    private long perTickLimit;
+    private long cur_tick_starttime;
+    private long avgticklen = 50000000;
     
+    private int chunks_in_cur_tick = 0;
+    private long cur_tick;
+    private long prev_tick;
+
     private HashMap<String, Integer> sortWeights = new HashMap<String, Integer>();
     /* Lookup cache */
     private World last_world;
@@ -201,8 +210,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public class BukkitServer implements DynmapServerInterface {
         /* Chunk load handling */
         private Object loadlock = new Object();
-        private int chunks_in_cur_tick = 0;
-        private long cur_tick;
 
         @Override
         public int getBlockIDAt(String wname, int x, int y, int z) {
@@ -298,36 +305,22 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     }, DynmapPlugin.this);
                     break;
                 case PLAYER_CHAT:
-                    try {
-                        Class.forName("org.bukkit.event.player.AsyncPlayerChatEvent");
-                        pm.registerEvents(new Listener() {
-                            @EventHandler(priority=EventPriority.MONITOR)
-                            public void onPlayerChat(AsyncPlayerChatEvent evt) {
-                                if(evt.isCancelled()) return;
-                                final Player p = evt.getPlayer();
-                                final String msg = evt.getMessage();
-                                getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, new Runnable() {
-                                    public void run() {
-                                        DynmapPlayer dp = null;
-                                        if(p != null)
-                                            dp = new BukkitPlayer(p);
-                                        core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, dp, msg);
-                                    }
-                                });
-                            }
-                        }, DynmapPlugin.this);
-                    } catch (ClassNotFoundException cnfx) {
-                        pm.registerEvents(new Listener() {
-                            @EventHandler(priority=EventPriority.MONITOR)
-                            public void onPlayerChat(PlayerChatEvent evt) {
-                                if(evt.isCancelled()) return;
-                                DynmapPlayer p = null;
-                                if(evt.getPlayer() != null)
-                                    p = new BukkitPlayer(evt.getPlayer());
-                                core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, p, evt.getMessage());
-                            }
-                        }, DynmapPlugin.this);
-                    }
+                    pm.registerEvents(new Listener() {
+                        @EventHandler(priority=EventPriority.MONITOR)
+                        public void onPlayerChat(AsyncPlayerChatEvent evt) {
+                            if(evt.isCancelled()) return;
+                            final Player p = evt.getPlayer();
+                            final String msg = evt.getMessage();
+                            getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, new Runnable() {
+                                public void run() {
+                                    DynmapPlayer dp = null;
+                                    if(p != null)
+                                        dp = new BukkitPlayer(p);
+                                    core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, dp, msg);
+                                }
+                            });
+                        }
+                    }, DynmapPlugin.this);
                     break;
                 case BLOCK_BREAK:
                     pm.registerEvents(new Listener() {
@@ -458,22 +451,25 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             final MapChunkCache cc = c;
 
             while(!cc.isDoneLoading()) {
-                synchronized(loadlock) {
-                    long now = System.currentTimeMillis();
-                    
-                    if(cur_tick != (now/50)) {  /* New tick? */
-                        chunks_in_cur_tick = mapManager.getMaxChunkLoadsPerTick();
-                        cur_tick = now/50;
-                    }
-                }
                 Future<Boolean> f = core.getServer().callSyncMethod(new Callable<Boolean>() {
                     public Boolean call() throws Exception {
-                        boolean exhausted;
+                        boolean exhausted = true;
+                        
                         synchronized(loadlock) {
+                            if (prev_tick != cur_tick) {
+                                prev_tick = cur_tick;
+                                cur_tick_starttime = System.nanoTime();
+                            }                            
                             if(chunks_in_cur_tick > 0) {
-                                chunks_in_cur_tick -= cc.loadChunks(chunks_in_cur_tick);
+                                boolean done = false;
+                                while (!done) {
+                                    int cnt = chunks_in_cur_tick;
+                                    if (cnt > 5) cnt = 5;
+                                    chunks_in_cur_tick -= cc.loadChunks(cnt);
+                                    exhausted = (chunks_in_cur_tick == 0) || ((System.nanoTime() - cur_tick_starttime) > perTickLimit);
+                                    done = exhausted || cc.isDoneLoading();
+                                }
                             }
-                            exhausted = (chunks_in_cur_tick == 0);
                         }
                         return exhausted;
                     }
@@ -527,6 +523,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
             }
             return false;
+        }
+
+        @Override
+        public double getServerTPS() {
+            return tps;
         }
     }
     /**
@@ -811,6 +812,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         else {
             doEnable();
         }
+        // Start tps calculation
+        lasttick = System.nanoTime();
+        tps = 20.0;
+        perTickLimit = core.getMaxTickUseMS() * 1000000;
+
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            public void run() {
+                processTick();
+            }
+        }, 1, 1);
     }
     
     private boolean readyToEnable() {
@@ -872,7 +883,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         Log.info("Disabled");
     }
-
+    
+    private void processTick() {
+        long now = System.nanoTime();
+        long elapsed = now - lasttick;
+        lasttick = now;
+        avgticklen = ((avgticklen * 99) / 100) + (elapsed / 100);
+        tps = (double)1E9 / (double)avgticklen;
+        if (mapManager != null) {
+            chunks_in_cur_tick = mapManager.getMaxChunkLoadsPerTick();
+        }
+        cur_tick++;
+        
+        // Tick core
+        if (core != null) {
+            core.serverTick(tps);
+        }
+    }
+    
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         DynmapCommandSender dsender;

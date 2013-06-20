@@ -4,8 +4,10 @@
 	<artifactId>dynmap</artifactId>
 	<name>dynmap</name>
 	<properties>
+	   	<timestamp>${maven.build.timestamp}</timestamp>
+   		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>	
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<BUILD_NUMBER>Dev</BUILD_NUMBER>
+		<BUILD_NUMBER>Dev(${timestamp})</BUILD_NUMBER>
 	</properties>
 	<url>http://github.com/webbukkit/dynmap/</url>
 	<issueManagement>
