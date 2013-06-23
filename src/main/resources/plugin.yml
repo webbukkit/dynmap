@@ -32,6 +32,7 @@ commands:
            /<command> purgequeue - Set tile update queue to empty
            /<command> purgequeue worldname - Set tile update queue to empty for world 'worldname'
            /<command> purgemap worldname mapname - Delete all the tiles for map 'mapname' of world 'worldname'
+           /<command> purgeworld worldname - Delete all the files for world 'worldname'
            /<command> pause - Show render pause state
            /<command> pause <all|none|full|update> - Set render pause state
            /<command> ids-for-ip <ipaddress> - Show player IDs that have logged in from given IP address
@@ -134,6 +135,7 @@ permissions:
       dynmap.sendtoweb: true
       dynmap.purgequeue: true
       dynmap.purgemap: true
+      dynmap.purgeworld: true
       dynmap.ids-for-ip: true
       dynmap.ips-for-id: true
       dynmap.webregister: true
@@ -220,7 +222,10 @@ permissions:
     description: Allows /dynmap purgequeue
     default: op
   dynmap.purgemap:
-    description: Allows /dynmap purgeqmap
+    description: Allows /dynmap purgemap
+    default: op
+  dynmap.purgeworld:
+    description: Allows /dynmap purgeworld
     default: op
   dynmap.pause:
     description: Allows /dynmap pause
