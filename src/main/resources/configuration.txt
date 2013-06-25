@@ -412,6 +412,11 @@ custom-commands:
         preupdatecommand: ""
         # Command run just after any image file is written or updated: run with single parameter with fully qualified file name
         postupdatecommand: ""
+
+# Snapshot cache size, in chunks
+snapshotcachesize: 500
+# Snapshot cache uses soft references (true), else weak references (false)
+soft-ref-cache: true
         
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
