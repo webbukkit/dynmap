@@ -318,6 +318,8 @@ per-tick-time-limit: 50
 update-min-tps: 18.0
 # If TPS of server is below this setting, full/radius renders processing is paused
 fullrender-min-tps: 18.0
+# If TPS of server is below this setting, zoom out processing is paused
+zoomout-min-tps: 18.0
 
 showplayerfacesinmenu: true
 
