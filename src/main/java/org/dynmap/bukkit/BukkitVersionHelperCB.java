@@ -44,7 +44,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
         nmsmaterial = getNMSClass("net.minecraft.server.Material");
         blockbyid = getField(nmsblock, new String[] { "byId" }, nmsblockarray);
-        blockname = getPrivateField(nmsblock, new String[] { "name" }, String.class);
+        blockname = getPrivateField(nmsblock, new String[] { "name", "b" }, String.class);
         material = getField(nmsblock, new String[] { "material" }, nmsmaterial);
 
         /* Set up biomebase fields */
