@@ -50,6 +50,8 @@ components:
     protected-player-info: false
     # If true, hide players with invisibility potion effects active
     hide-if-invisiblity-potion: true
+    # If true, player names are not shown on map, chat, list
+    hidenames: false
   #- class: org.dynmap.JsonFileClientUpdateComponent
   #  writeinterval: 1
   #  sendhealth: true
@@ -72,6 +74,7 @@ components:
   #  # Limit length of single chat messages
   #  chatlengthlimit: 256
   #  hide-if-invisiblity-potion: true
+  #  hidenames: false
    
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
@@ -378,6 +381,8 @@ msg:
     players: "Players"
     chatrequireslogin: "Chat Requires Login"
     chatnotallowed: "You are not permitted to send chat messages"
+    hiddennamejoin: "Player joined"
+    hiddennamequit: "Player quit"
 
 # URL for client configuration (only need to be tailored for proxies or other non-standard configurations)
 url:
