@@ -35,15 +35,16 @@ public class GroupManagerPermissions implements PermissionProvider {
     }
 
     @Override
-    public boolean has(CommandSender sender, String permission) {
+    public boolean has(CommandSender sender, String permission) {        
         Player player = sender instanceof Player ? (Player) sender : null;
-        return (player != null) ? wh.getWorldPermissions(player).has(player, name + "." + permission) : true;
+        boolean rslt = (player != null) ? gm.getWorldsHolder().getDefaultWorld().getPermissionsHandler().permission(player, name + "." + permission) : true;
+        return rslt;
     }
     
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
         HashSet<String> hasperms = new HashSet<String>();
-        AnjoPermissionsHandler apm = wh.getWorldPermissionsByPlayerName(player);
+        AnjoPermissionsHandler apm = gm.getWorldsHolder().getDefaultWorld().getPermissionsHandler();
         if (apm != null) {
             for (String pp : perms) {
                 if (apm.permission(player, name + "." + pp)) {
@@ -55,10 +56,11 @@ public class GroupManagerPermissions implements PermissionProvider {
     }
     @Override
     public boolean hasOfflinePermission(String player, String perm) {
-        AnjoPermissionsHandler apm = wh.getWorldPermissionsByPlayerName(player);
+        AnjoPermissionsHandler apm = gm.getWorldsHolder().getDefaultWorld().getPermissionsHandler();
+        boolean rslt = false;
         if(apm != null) {
-            return apm.permission(player, name + "." + perm);
+            rslt = apm.permission(player, name + "." + perm);
         }
-        return false;
+        return rslt;
     }
 }

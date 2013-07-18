@@ -24,8 +24,9 @@ public class PEXPermissions implements PermissionProvider {
         server.getPluginManager().enablePlugin(permissionsPlugin);
         if(permissionsPlugin.isEnabled() == false)
             return null;
-        if(PermissionsEx.isAvailable() == false)
-            return null;
+        //Broken in new dev builds, apparently
+        //if(PermissionsEx.isAvailable() == false)
+        //    return null;
         Log.info("Using PermissionsEx " + permissionsPlugin.getDescription().getVersion() + " for access control");
         return new PEXPermissions(name);
     }

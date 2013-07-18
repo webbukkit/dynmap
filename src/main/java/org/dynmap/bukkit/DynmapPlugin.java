@@ -749,11 +749,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         if (permissions == null)
             permissions = bPermPermissions.create(getServer(), "dynmap", perdefs);
         if (permissions == null)
-            permissions = GroupManagerPermissions.create(getServer(), "dynmap");
-        if (permissions == null)
             permissions = PermBukkitPermissions.create(getServer(), "dynmap", perdefs);
         if (permissions == null)
             permissions = NijikokunPermissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = GroupManagerPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap", perdefs);
         if (permissions == null)
