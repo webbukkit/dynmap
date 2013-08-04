@@ -216,6 +216,13 @@ enabletilehash: true
 # Optional - enable smooth lighting by default on all maps supporting it (can be set per map as lighting option)
 smooth-lighting: true
 
+# Optional - render specific block IDs using the texures and models of another block ID: can be used to hide/disguise specific
+#  blocks (e.g. make ores look like stone, hide chests) or to provide simple support for rendering unsupported custom blocks
+block-id-alias:
+#    "14": 1
+#    "15": 1
+#    "16": 1
+  
 # Default image format for HDMaps (png, jpg, jpg-q75, jpg-q80, jpg-q85, jpg-q90, jpg-q95, jpg-q100)
 # Has no effect on maps with explicit format settings
 image-format: png
