@@ -108,6 +108,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private Metrics metrics;
     private BukkitEnableCoreCallback enabCoreCB = new BukkitEnableCoreCallback();
     private Method ismodloaded;
+    private Method instance;
+    private Method getindexedmodlist;
+    private Method getversion;
     private HashMap<String, BukkitWorld> world_by_name = new HashMap<String, BukkitWorld>();
     private HashSet<String> modsused = new HashSet<String>();
     // TPS calculator
@@ -199,6 +202,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         try {
             Class<?> c = Class.forName("cpw.mods.fml.common.Loader");
             ismodloaded = c.getMethod("isModLoaded", String.class);
+            instance = c.getMethod("instance");
+            getindexedmodlist = c.getMethod("getIndexedModList");
+            c = Class.forName("cpw.mods.fml.common.ModContainer");
+            getversion = c.getMethod("getVersion");
         } catch (NoSuchMethodException nsmx) {
         } catch (ClassNotFoundException e) {
         }
@@ -521,6 +528,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             return false;
         }
+        @Override
+        public String getModVersion(String name) {
+            if((instance != null) && (getindexedmodlist != null) && (getversion != null)) {
+                try {
+                    Object inst = instance.invoke(null);
+                    Map<?,?> modmap = (Map<?,?>) getindexedmodlist.invoke(inst);
+                    Object mod = modmap.get(name);
+                    if (mod != null) {
+                        return (String) getversion.invoke(mod);
+                    }
+                } catch (IllegalArgumentException iax) {
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                }
+            }
+            return null;
+        }
+
 
         @Override
         public double getServerTPS() {
