@@ -282,7 +282,8 @@ tilespath: web/tiles
 webpath: web
 
 # The network-interface the webserver will bind to (0.0.0.0 for all interfaces, 127.0.0.1 for only local access).
-webserver-bindaddress: 0.0.0.0
+# If not set, uses same setting as server in server.properties (or 0.0.0.0 if not specified)
+#webserver-bindaddress: 0.0.0.0
 
 # The TCP-port the webserver will listen on.
 webserver-port: 8123

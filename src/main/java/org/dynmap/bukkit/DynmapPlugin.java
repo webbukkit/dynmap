@@ -16,6 +16,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -550,6 +551,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public double getServerTPS() {
             return tps;
+        }
+        
+        @Override
+        public String getServerIP() {
+            return Bukkit.getServer().getIp();
         }
     }
     /**
