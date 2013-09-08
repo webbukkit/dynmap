@@ -228,7 +228,10 @@ public class SpoutPluginBlocks {
         }
         String rslt = sb.toString();
         /* Now, generate spout texture file - see if changed */
-        File st = new File(datadir, "renderdata/spout-texture.txt");
+        File renderdata = new File(datadir, "renderdata");
+        if (renderdata.exists() == false)
+            renderdata.mkdirs();
+        File st = new File(renderdata, "spout-texture.txt");
         if(st.exists()) {
             FileReader fr = null;
             StringBuilder sbold = new StringBuilder();
