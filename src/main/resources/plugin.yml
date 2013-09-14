@@ -300,7 +300,7 @@ permissions:
     description: Allows /dmarker addline
     default: op            
   dynmap.marker.updateline:
-    description: Allows /dmarker updatelineyn
+    description: Allows /dmarker updateline
     default: op            
   dynmap.marker.listlines:
     description: Allows /dmarker listlines
