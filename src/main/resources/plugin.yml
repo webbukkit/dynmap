@@ -239,7 +239,7 @@ permissions:
   dynmap.webregister:
     description: Allows /dynmap webregister
     default: true
-  dynmao,webregister.other:
+  dynmap.webregister.other:
     description: Allows /dynmap webregister userid
     default: op
   dynmap.marker.add:
@@ -300,7 +300,7 @@ permissions:
     description: Allows /dmarker addline
     default: op            
   dynmap.marker.updateline:
-    description: Allows /dmarker updateline
+    description: Allows /dmarker updatelineyn
     default: op            
   dynmap.marker.listlines:
     description: Allows /dmarker listlines
