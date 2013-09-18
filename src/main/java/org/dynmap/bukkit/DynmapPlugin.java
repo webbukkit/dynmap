@@ -155,7 +155,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         return bw;
     }
-    private final void removeWorld(World w) {
+    final void removeWorld(World w) {
         world_by_name.remove(w.getName());
         if(w == last_world) {
             last_world = null;
@@ -556,6 +556,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public String getServerIP() {
             return Bukkit.getServer().getIp();
+        }
+        @Override
+        public File getModContainerFile(String mod) {
+            return null;
         }
     }
     /**
