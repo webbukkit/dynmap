@@ -1,6 +1,7 @@
 package org.dynmap.bukkit;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Field blockbyid;
     private Field blockname;
     private Field material;
+    private Method blockbyidfunc;   // 1.7+ method for getting block by id
     
     BukkitVersionHelperCB() {
     }
@@ -43,17 +45,20 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmsblock = getNMSClass("net.minecraft.server.Block");
         nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
         nmsmaterial = getNMSClass("net.minecraft.server.Material");
-        blockbyid = getField(nmsblock, new String[] { "byId" }, nmsblockarray);
+        blockbyid = getFieldNoFail(nmsblock, new String[] { "byId" }, nmsblockarray);
+        if (blockbyid == null) {
+            blockbyidfunc = getMethod(nmsblock, new String[] { "e" }, new Class[] { int.class });
+        }
         blockname = getPrivateField(nmsblock, new String[] { "name", "b" }, String.class);
-        material = getField(nmsblock, new String[] { "material" }, nmsmaterial);
+        material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);
 
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
         biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
-        biomebaselist = getField(biomebase, new String[] { "biomes" }, biomebasearray);
+        biomebaselist = getPrivateField(biomebase, new String[] { "biomes" }, biomebasearray);
         biomebasetemp = getField(biomebase, new String[] { "temperature", "F" }, float.class);
         biomebasehumi = getField(biomebase, new String[] { "humidity", "G" }, float.class);
-        biomebaseidstring = getField(biomebase, new String[] { "y" }, String.class);
+        biomebaseidstring = getField(biomebase, new String[] { "y", "af" }, String.class);
         biomebaseid = getField(biomebase, new String[] { "id" }, int.class);
         /* n.m.s.World */
         nmsworld = getNMSClass("net.minecraft.server.WorldServer");
@@ -89,15 +94,15 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nbttagstring = getNMSClass("net.minecraft.server.NBTTagString");
         nbttagintarray = getNMSClass("net.minecraft.server.NBTTagIntArray");
         compound_get = getMethod(nbttagcompound, new String[] { "get" }, new Class[] { String.class });
-        nbttagbyte_val = getField(nbttagbyte, new String[] { "data" }, byte.class);
-        nbttagshort_val = getField(nbttagshort, new String[] { "data" }, short.class);
-        nbttagint_val = getField(nbttagint, new String[] { "data" }, int.class);
-        nbttaglong_val = getField(nbttaglong, new String[] { "data" }, long.class);
-        nbttagfloat_val = getField(nbttagfloat, new String[] { "data" }, float.class);
-        nbttagdouble_val = getField(nbttagdouble, new String[] { "data" }, double.class);
-        nbttagbytearray_val = getField(nbttagbytearray, new String[] { "data" }, byte[].class);
-        nbttagstring_val = getField(nbttagstring, new String[] { "data" }, String.class);
-        nbttagintarray_val = getField(nbttagintarray, new String[] { "data" }, int[].class);
+        nbttagbyte_val = getPrivateField(nbttagbyte, new String[] { "data" }, byte.class);
+        nbttagshort_val = getPrivateField(nbttagshort, new String[] { "data" }, short.class);
+        nbttagint_val = getPrivateField(nbttagint, new String[] { "data" }, int.class);
+        nbttaglong_val = getPrivateField(nbttaglong, new String[] { "data" }, long.class);
+        nbttagfloat_val = getPrivateField(nbttagfloat, new String[] { "data" }, float.class);
+        nbttagdouble_val = getPrivateField(nbttagdouble, new String[] { "data" }, double.class);
+        nbttagbytearray_val = getPrivateField(nbttagbytearray, new String[] { "data" }, byte[].class);
+        nbttagstring_val = getPrivateField(nbttagstring, new String[] { "data" }, String.class);
+        nbttagintarray_val = getPrivateField(nbttagintarray, new String[] { "data" }, int[].class);
 
         /** Tile entity */
         nms_tileentity = getNMSClass("net.minecraft.server.TileEntity");
@@ -117,16 +122,27 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     @Override
     public String[] getBlockShortNames() {
         try {
-            Object[] byid = (Object[])blockbyid.get(nmsblock);
-            String[] names = new String[byid.length];
-            for (int i = 0; i < names.length; i++) {
-                if (byid[i] != null) {
-                    names[i] = (String)blockname.get(byid[i]);
+            String[] names = new String[4096];
+            if (blockbyid != null)  {
+                Object[] byid = (Object[])blockbyid.get(nmsblock);
+                for (int i = 0; i < names.length; i++) {
+                    if (byid[i] != null) {
+                        names[i] = (String)blockname.get(byid[i]);
+                    }
+                }
+            }
+            else {
+                for (int i = 0; i < names.length; i++) {
+                    Object blk = blockbyidfunc.invoke(nmsblock, i);
+                    if (blk != null) {
+                        names[i] = (String)blockname.get(blk);
+                    }
                 }
             }
             return names;
         } catch (IllegalArgumentException e) {
         } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
         }
         return new String[0];
     }
@@ -153,27 +169,49 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
      */
     public int[] getBlockMaterialMap() {
         try {
-            Object[] byid = (Object[])blockbyid.get(nmsblock);
-            int[] map = new int[byid.length];
-            ArrayList<Object> mats = new ArrayList<Object>();
-            for (int i = 0; i < map.length; i++) {
-                if (byid[i] != null) {
-                    Object mat = (Object)material.get(byid[i]);
-                    if (mat != null) {
-                        map[i] = mats.indexOf(mat);
-                        if (map[i] < 0) {
-                            map[i] = mats.size();
-                            mats.add(mat);
+            int[] map = new int[4096];
+            if (blockbyid != null) {
+                Object[] byid = (Object[])blockbyid.get(nmsblock);
+                ArrayList<Object> mats = new ArrayList<Object>();
+                for (int i = 0; i < map.length; i++) {
+                    if (byid[i] != null) {
+                        Object mat = (Object)material.get(byid[i]);
+                        if (mat != null) {
+                            map[i] = mats.indexOf(mat);
+                            if (map[i] < 0) {
+                                map[i] = mats.size();
+                                mats.add(mat);
+                            }
+                        }
+                        else {
+                            map[i] = -1;
                         }
                     }
-                    else {
-                        map[i] = -1;
+                }
+            }
+            else {
+                ArrayList<Object> mats = new ArrayList<Object>();
+                for (int i = 0; i < map.length; i++) {
+                    Object blk = blockbyidfunc.invoke(nmsblock, i);
+                    if (blk != null) {
+                        Object mat = (Object)material.get(blk);
+                        if (mat != null) {
+                            map[i] = mats.indexOf(mat);
+                            if (map[i] < 0) {
+                                map[i] = mats.size();
+                                mats.add(mat);
+                            }
+                        }
+                        else {
+                            map[i] = -1;
+                        }
                     }
                 }
             }
             return map;
         } catch (IllegalArgumentException e) {
         } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
         }
         return new int[0];
     }
