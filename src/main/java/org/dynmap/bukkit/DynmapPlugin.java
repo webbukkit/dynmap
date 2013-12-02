@@ -823,6 +823,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         core.setBlockNames(helper.getBlockShortNames());
         core.setBlockMaterialMap(helper.getBlockMaterialMap());
         core.setBiomeNames(helper.getBiomeNames());
+        // Placate dev.bukkit.org
+        core.disableVersionCheck();
         
         /* Load configuration */
         if(!core.initConfiguration(enabCoreCB)) {
