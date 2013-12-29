@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -561,6 +562,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public File getModContainerFile(String mod) {
             return null;
+        }
+
+        @Override
+        public List<String> getModList() {
+            return Collections.emptyList();
         }
     }
     /**
