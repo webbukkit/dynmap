@@ -193,6 +193,9 @@ usenormalthreadpriority: true
 # Save and restore pending tile renders - prevents their loss on server shutdown or /reload
 saverestorepending: true
 
+# Save period for pending jobs (in seconds): periodic saving for crash recovery of jobs
+save-pending-period: 900
+
 # Zoom-out tile update period - how often to scan for and process tile updates into zoom-out tiles (in seconds)
 zoomoutperiod: 30
 
