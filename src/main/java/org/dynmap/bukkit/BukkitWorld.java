@@ -36,6 +36,20 @@ public class BukkitWorld extends DynmapWorld {
         this.env = env;
         skylight = (env == World.Environment.NORMAL);
         new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
+        // Generate non-default environment lighting table
+        switch (env) {
+            case NETHER:
+                {
+                    float f = 0.1F;
+                    for (int i = 0; i <= 15; ++i) {
+                        float f1 = 1.0F - (float)i / 15.0F;
+                        this.setBrightnessTableEntry(i,  (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
     /**
      * Set world online

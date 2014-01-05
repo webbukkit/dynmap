@@ -219,6 +219,10 @@ enabletilehash: true
 # Optional - enable smooth lighting by default on all maps supporting it (can be set per map as lighting option)
 smooth-lighting: true
 
+# Optional - use world provider lighting table (good for custom worlds with custom lighting curves, like nether)
+#   false=classic Dynmap lighting curve
+use-brightness-table: true
+
 # Optional - render specific block IDs using the texures and models of another block ID: can be used to hide/disguise specific
 #  blocks (e.g. make ores look like stone, hide chests) or to provide simple support for rendering unsupported custom blocks
 block-id-alias:
