@@ -445,3 +445,5 @@ verbose: false
 # Enables debugging.
 #debuggers:
 #  - class: org.dynmap.debug.LogDebugger
+# Debug: dump blocks missing render data
+dump-missing-blocks: false

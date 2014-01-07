@@ -568,6 +568,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public List<String> getModList() {
             return Collections.emptyList();
         }
+
+        @Override
+        public Map<Integer, String> getBlockIDMap() {
+            String[] bsn = helper.getBlockShortNames();
+            HashMap<Integer, String> map = new HashMap<Integer, String>();
+            for (int i = 0; i < bsn.length; i++) {
+                if (bsn[i] != null) {
+                    map.put(i, bsn[i]);
+                }
+            }
+            return map;
+        }
     }
     /**
      * Player access abstraction class
