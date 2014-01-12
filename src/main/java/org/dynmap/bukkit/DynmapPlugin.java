@@ -2,6 +2,7 @@ package org.dynmap.bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
@@ -579,6 +580,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
             }
             return map;
+        }
+
+        @Override
+        public InputStream openResource(String modid, String rname) {
+            return null;    // No mods supported
         }
     }
     /**
