@@ -88,6 +88,10 @@ public abstract class BukkitVersionHelper {
      * Remove entities from given chunk
      */
     public abstract void removeEntitiesFromChunk(Chunk c);
+    /**
+     * Get inhabited ticks count from chunk
+     */
+    public abstract long getInhabitedTicks(Chunk c);
     /** 
      * Get tile entities map from chunk
      */

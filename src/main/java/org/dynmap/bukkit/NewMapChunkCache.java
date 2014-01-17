@@ -49,6 +49,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private byte[][] sameneighborbiomecnt;
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
+    private long[] inhabitedTicks;  /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     
     private int chunks_read;    /* Number of chunks actually loaded */
     private int chunks_attempted;   /* Number of chunks attempted to load */
@@ -593,6 +594,14 @@ public class NewMapChunkCache implements MapChunkCache {
                 int yoff, int zoff) {
             return null;
         }
+        @Override
+        public long getInhabitedTicks() {
+            try {
+                return inhabitedTicks[chunkindex];
+            } catch (Exception x) {
+                return 0;
+            }
+        }
      }
 
     private class OurEndMapIterator extends OurMapIterator {
@@ -779,6 +788,7 @@ public class NewMapChunkCache implements MapChunkCache {
     
         snapcnt = x_dim * (z_max-z_min+1);
         snaparray = new ChunkSnapshot[snapcnt];
+        inhabitedTicks = new long[snapcnt];
         snaptile = new DynIntHashMap[snapcnt];
         isSectionNotEmpty = new boolean[snapcnt][];
     }
@@ -829,10 +839,12 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             /* Check if cached chunk snapshot found */
             ChunkSnapshot ss = null;
+            long inhabited_ticks = 0;
             DynIntHashMap tileData = null;
             SnapshotRec ssr = DynmapPlugin.plugin.sscache.getSnapshot(dw.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
             if(ssr != null) {
                 ss = ssr.ss;
+                inhabited_ticks = ssr.inhabitedTicks;
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
@@ -844,6 +856,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 int idx = (chunk.x-x_min) + (chunk.z - z_min)*x_dim;
                 snaparray[idx] = ss;
                 snaptile[idx] = ssr.tileData;
+                inhabitedTicks[idx] = inhabited_ticks;
                 
                 continue;
             }
@@ -870,6 +883,8 @@ public class NewMapChunkCache implements MapChunkCache {
                 tileData = new DynIntHashMap();
 
                 Chunk c = w.getChunkAt(chunk.x, chunk.z);   /* Get the chunk */
+                /* Get inhabited ticks count */
+                inhabited_ticks = helper.getInhabitedTicks(c);
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
@@ -919,12 +934,15 @@ public class NewMapChunkCache implements MapChunkCache {
                     if(ss != null) {
                         ssr = new SnapshotRec();
                         ssr.ss = ss;
+                        ssr.inhabitedTicks = inhabited_ticks;
                         ssr.tileData = tileData;
                         DynmapPlugin.plugin.sscache.putSnapshot(dw.getName(), chunk.x, chunk.z, ssr, blockdata, biome, biomeraw, highesty);
                     }
                 }
-                snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
-                snaptile[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = tileData;
+                int chunkIndex = (chunk.x-x_min) + (chunk.z - z_min)*x_dim;
+                snaparray[chunkIndex] = ss;
+                snaptile[chunkIndex] = tileData;
+                inhabitedTicks[chunkIndex] = inhabited_ticks;
                 
                 /* If wasn't loaded before, we need to do unload */
                 if (!wasLoaded) {
@@ -987,6 +1005,7 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaparray[i] = null;
             }
             snaparray = null;
+            inhabitedTicks = null;
         }
     }
     private void initSectionData(int idx) {

@@ -81,7 +81,11 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities" }, new Class[0]);
-        nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class); 
+        nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
+        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q" }, Long.class);
+        if (nmsc_inhabitedticks == null) {
+            Log.info("inhabitedTicks field not found - inhabited shader not functional");
+        }
         /** nbt classes */
         nbttagcompound = getNMSClass("net.minecraft.server.NBTTagCompound");
         nbttagbyte = getNMSClass("net.minecraft.server.NBTTagByte");

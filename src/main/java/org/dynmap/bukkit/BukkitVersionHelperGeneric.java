@@ -51,6 +51,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> nmschunk;
     protected Method nmsc_removeentities;
     protected Field nmsc_tileentities;
+    protected Field nmsc_inhabitedticks;
     /** nbt classes */
     protected Class<?> nbttagcompound;
     protected Class<?> nbttagbyte;
@@ -291,6 +292,21 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
             callMethod(omsc, nmsc_removeentities, nullargs, null);
         }
     }
+    /**
+     * Get inhabited ticks count from chunk
+     */
+    private static final Long zero = new Long(0);
+    public long getInhabitedTicks(Chunk c) {
+        if (nmsc_inhabitedticks == null) {
+            return 0;
+        }
+        Object omsc = callMethod(c, cc_gethandle, nullargs, null);
+        if(omsc != null) {
+            return (Long)getFieldValue(omsc, nmsc_inhabitedticks, zero);
+        }
+        return 0;
+    }
+
     /** Get tile entities map from chunk */
     public Map getTileEntitiesForChunk(Chunk c) {
         Object omsc = callMethod(c, cc_gethandle, nullargs, null);

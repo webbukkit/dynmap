@@ -14,6 +14,7 @@ import org.dynmap.utils.DynIntHashMap;
 public class SnapshotCache {
     public static class SnapshotRec {
         public ChunkSnapshot ss;
+        public long inhabitedTicks;
         public DynIntHashMap tileData;
     };
 
