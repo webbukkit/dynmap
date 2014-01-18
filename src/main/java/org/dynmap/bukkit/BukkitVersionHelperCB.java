@@ -82,7 +82,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities" }, new Class[0]);
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q" }, Long.class);
+        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
