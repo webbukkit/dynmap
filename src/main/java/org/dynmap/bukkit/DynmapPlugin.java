@@ -218,7 +218,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     /**
      * Server access abstraction class
      */
-    public class BukkitServer implements DynmapServerInterface {
+    public class BukkitServer extends DynmapServerInterface {
         /* Chunk load handling */
         private Object loadlock = new Object();
 
@@ -560,15 +560,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public String getServerIP() {
             return Bukkit.getServer().getIp();
         }
-        @Override
-        public File getModContainerFile(String mod) {
-            return null;
-        }
-
-        @Override
-        public List<String> getModList() {
-            return Collections.emptyList();
-        }
 
         @Override
         public Map<Integer, String> getBlockIDMap() {
@@ -580,11 +571,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
             }
             return map;
-        }
-
-        @Override
-        public InputStream openResource(String modid, String rname) {
-            return null;    // No mods supported
         }
     }
     /**
