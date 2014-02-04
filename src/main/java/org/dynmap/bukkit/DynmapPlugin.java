@@ -219,9 +219,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
      * Server access abstraction class
      */
     public class BukkitServer extends DynmapServerInterface {
-        /* Chunk load handling */
-        private Object loadlock = new Object();
-
         @Override
         public int getBlockIDAt(String wname, int x, int y, int z) {
             World w = getServer().getWorld(wname);
@@ -463,20 +460,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     public Boolean call() throws Exception {
                         boolean exhausted = true;
                         
-                        synchronized(loadlock) {
-                            if (prev_tick != cur_tick) {
-                                prev_tick = cur_tick;
-                                cur_tick_starttime = System.nanoTime();
-                            }                            
-                            if(chunks_in_cur_tick > 0) {
-                                boolean done = false;
-                                while (!done) {
-                                    int cnt = chunks_in_cur_tick;
-                                    if (cnt > 5) cnt = 5;
-                                    chunks_in_cur_tick -= cc.loadChunks(cnt);
-                                    exhausted = (chunks_in_cur_tick == 0) || ((System.nanoTime() - cur_tick_starttime) > perTickLimit);
-                                    done = exhausted || cc.isDoneLoading();
-                                }
+                        if (prev_tick != cur_tick) {
+                            prev_tick = cur_tick;
+                            cur_tick_starttime = System.nanoTime();
+                        }                            
+                        if(chunks_in_cur_tick > 0) {
+                            boolean done = false;
+                            while (!done) {
+                                int cnt = chunks_in_cur_tick;
+                                if (cnt > 5) cnt = 5;
+                                chunks_in_cur_tick -= cc.loadChunks(cnt);
+                                exhausted = (chunks_in_cur_tick == 0) || ((System.nanoTime() - cur_tick_starttime) > perTickLimit);
+                                done = exhausted || cc.isDoneLoading();
                             }
                         }
                         return exhausted;
