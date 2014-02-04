@@ -27,7 +27,7 @@ import org.getspout.spoutapi.block.SpoutChunk;
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
-public class NewMapChunkCache implements MapChunkCache {
+public class NewMapChunkCache extends MapChunkCache {
     private static boolean init = false;
     private static boolean use_spout = false;    
 
@@ -50,12 +50,6 @@ public class NewMapChunkCache implements MapChunkCache {
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
     private long[] inhabitedTicks;  /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    
-    private int chunks_read;    /* Number of chunks actually loaded */
-    private int chunks_attempted;   /* Number of chunks attempted to load */
-    private long total_loadtime;    /* Total time loading chunks, in nanoseconds */
-    
-    private long exceptions;
     
     private static BukkitVersionHelper helper = BukkitVersionHelper.getHelper();
     
@@ -211,7 +205,6 @@ public class NewMapChunkCache implements MapChunkCache {
             try {
                 return biomemap[x - x_base][z - z_base];
             } catch (Exception ex) {
-                exceptions++;
                 return BiomeMap.NULL;
             }
         }
@@ -241,7 +234,6 @@ public class NewMapChunkCache implements MapChunkCache {
                     mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
             } catch (Exception x) {
-                exceptions++;
                 mult = 0xFFFFFF;
             }
             return mult;
@@ -272,7 +264,6 @@ public class NewMapChunkCache implements MapChunkCache {
                     mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
             } catch (Exception x) {
-                exceptions++;
                 mult = 0xFFFFFF;
             }
             return mult;
@@ -314,7 +305,6 @@ public class NewMapChunkCache implements MapChunkCache {
                     mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
             } catch (Exception x) {
-                exceptions++;
                 mult = 0xFFFFFF;
             }
             return mult;
@@ -342,7 +332,6 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
                 return ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
             } catch (Exception x) {
-                exceptions++;
                 return 0xFFFFFF;
             }
         }
@@ -372,7 +361,6 @@ public class NewMapChunkCache implements MapChunkCache {
                     mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
             } catch (Exception x) {
-                exceptions++;
                 mult = 0xFFFFFF;
             }
             return mult;
@@ -807,7 +795,6 @@ public class NewMapChunkCache implements MapChunkCache {
     public int loadChunks(int max_to_load) {
         if(dw.isLoaded() == false)
             return 0;
-        long t0 = System.nanoTime();
         Object queue = helper.getUnloadQueue(helper.getNMSWorld(w));
         
         int cnt = 0;
@@ -818,6 +805,7 @@ public class NewMapChunkCache implements MapChunkCache {
         //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
         // Load the required chunks.
         while((cnt < max_to_load) && iterator.hasNext()) {
+            long startTime = System.nanoTime();
             DynmapChunk chunk = iterator.next();
             boolean vis = true;
             if(visible_limits != null) {
@@ -858,9 +846,9 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaptile[idx] = ssr.tileData;
                 inhabitedTicks[idx] = inhabited_ticks;
                 
+                endChunkLoad(startTime, ChunkStats.CACHED_SNAPSHOT_HIT);
                 continue;
             }
-            chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = false;
             boolean isunloadpending = false;
@@ -946,7 +934,6 @@ public class NewMapChunkCache implements MapChunkCache {
                 
                 /* If wasn't loaded before, we need to do unload */
                 if (!wasLoaded) {
-                    chunks_read++;
                     /* Since we only remember ones we loaded, and we're synchronous, no player has
                      * moved, so it must be safe (also prevent chunk leak, which appears to happen
                      * because isChunkInUse defined "in use" as being within 256 blocks of a player,
@@ -954,10 +941,18 @@ public class NewMapChunkCache implements MapChunkCache {
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
                     helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
+                    endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
                 }
                 else if (isunloadpending) { /* Else, if loaded and unload is pending */
                     w.unloadChunkRequest(chunk.x, chunk.z); /* Request new unload */
+                    endChunkLoad(startTime, ChunkStats.LOADED_CHUNKS);
                 }
+                else {
+                    endChunkLoad(startTime, ChunkStats.LOADED_CHUNKS);
+                }
+            }
+            else {
+                endChunkLoad(startTime, ChunkStats.UNGENERATED_CHUNKS);
             }
             cnt++;
         }
@@ -973,7 +968,6 @@ public class NewMapChunkCache implements MapChunkCache {
                     isempty = false;
             }
         }
-        total_loadtime += System.nanoTime() - t0;
 
         return cnt;
     }
@@ -1071,22 +1065,6 @@ public class NewMapChunkCache implements MapChunkCache {
     @Override
     public DynmapWorld getWorld() {
         return dw;
-    }
-    @Override
-    public int getChunksLoaded() {
-        return chunks_read;
-    }
-    @Override
-    public int getChunkLoadsAttempted() {
-        return chunks_attempted;
-    }
-    @Override
-    public long getTotalRuntimeNanos() {
-        return total_loadtime;
-    }
-    @Override
-    public long getExceptionCount() {
-        return exceptions;
     }
     
     static {
