@@ -8,7 +8,6 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
-import org.bukkit.command.CommandSender;
 import org.bukkit.ChunkSnapshot;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
@@ -805,44 +804,9 @@ public class NewMapChunkCache implements MapChunkCache {
         return ss;
     }
 
-    public enum TimeStep {
-        loadChunk,
-        getChunkAt,
-        getChunkSnapshot,
-        getTileEntityData,
-        unloadChunkNoSave,
-        unloadChunkRequest,
-        isChunkLoaded,
-        isInUnloadQueue,
-        getEmptyChunkSnapshot,
-        getSnapshotCache,
-        putSnapshotCache,
-        loadLoop,
-        loadCalls
-    }
-    public static long[] timetot = new long[16];
-    public static long[] cnttot = new long[16];
-    public static long[] timestart = new long[16];
-    
-    private static final void startTime(TimeStep idx) {
-        timestart[idx.ordinal()] = System.nanoTime();
-    }
-    private static final void stopTime(TimeStep idx) {
-        int ord = idx.ordinal();
-        timetot[ord] += System.nanoTime() - timestart[ord];
-        cnttot[ord]++;
-    }
-    public static void dumpStats(CommandSender sender) {
-        for (TimeStep ts : TimeStep.values()) {
-            sender.sendMessage("  " + ts + ": " + timetot[ts.ordinal()] + "ns, " + cnttot[ts.ordinal()] + " calls, " + (0.001 * timetot[ts.ordinal()] / cnttot[ts.ordinal()]) + "us/call" );
-        }
-    }
-    
     public int loadChunks(int max_to_load) {
         if(dw.isLoaded() == false)
             return 0;
-        startTime(TimeStep.loadCalls);
-
         long t0 = System.nanoTime();
         Object queue = helper.getUnloadQueue(helper.getNMSWorld(w));
         
@@ -854,8 +818,6 @@ public class NewMapChunkCache implements MapChunkCache {
         //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
         // Load the required chunks.
         while((cnt < max_to_load) && iterator.hasNext()) {
-            startTime(TimeStep.loadLoop);
-            
             DynmapChunk chunk = iterator.next();
             boolean vis = true;
             if(visible_limits != null) {
@@ -879,10 +841,7 @@ public class NewMapChunkCache implements MapChunkCache {
             ChunkSnapshot ss = null;
             long inhabited_ticks = 0;
             DynIntHashMap tileData = null;
-            startTime(TimeStep.getSnapshotCache);
             SnapshotRec ssr = DynmapPlugin.plugin.sscache.getSnapshot(dw.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
-            stopTime(TimeStep.getSnapshotCache);
-
             if(ssr != null) {
                 ss = ssr.ss;
                 inhabited_ticks = ssr.inhabitedTicks;
@@ -898,47 +857,32 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaparray[idx] = ss;
                 snaptile[idx] = ssr.tileData;
                 inhabitedTicks[idx] = inhabited_ticks;
-                stopTime(TimeStep.loadLoop);
-
+                
                 continue;
             }
             chunks_attempted++;
-            startTime(TimeStep.isChunkLoaded);
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
-            stopTime(TimeStep.isChunkLoaded);
             boolean didload = false;
             boolean isunloadpending = false;
             if (queue != null) {
-                startTime(TimeStep.isInUnloadQueue);
                 isunloadpending = helper.isInUnloadQueue(queue, chunk.x, chunk.z);
-                stopTime(TimeStep.isInUnloadQueue);
             }
             if (isunloadpending) {  /* Workaround: can't be pending if not loaded */
                 wasLoaded = true;
             }
             try {
-                startTime(TimeStep.loadChunk);
-                try {
-               didload = w.loadChunk(chunk.x, chunk.z, false);
-                } finally {
-                    stopTime(TimeStep.loadChunk);
-                }
+                didload = w.loadChunk(chunk.x, chunk.z, false);
             } catch (Throwable t) { /* Catch chunk error from Bukkit */
                 Log.warning("Bukkit error loading chunk " + chunk.x + "," + chunk.z + " on " + w.getName());
                 if(!wasLoaded) {    /* If wasn't loaded, we loaded it if it now is */
-                    startTime(TimeStep.isChunkLoaded);
                     didload = w.isChunkLoaded(chunk.x, chunk.z);
-                    stopTime(TimeStep.isChunkLoaded);
                 }
             }
             /* If it did load, make cache of it */
             if(didload) {
                 tileData = new DynIntHashMap();
 
-                startTime(TimeStep.getChunkAt);
                 Chunk c = w.getChunkAt(chunk.x, chunk.z);   /* Get the chunk */
-                stopTime(TimeStep.getChunkAt);
-
                 /* Get inhabited ticks count */
                 inhabited_ticks = helper.getInhabitedTicks(c);
                 if(!vis) {
@@ -951,14 +895,11 @@ public class NewMapChunkCache implements MapChunkCache {
                 }
                 else {
                     if(blockdata || highesty) {
-                        startTime(TimeStep.getChunkSnapshot);
                         ss = c.getChunkSnapshot(highesty, biome, biomeraw);
-                        stopTime(TimeStep.getChunkSnapshot);
                         if(use_spout) {
                             ss = checkSpoutData(c, ss);
                         }
                         /* Get tile entity data */
-                        startTime(TimeStep.getTileEntityData);
                         List<Object> vals = new ArrayList<Object>();
                         Map<?,?> tileents = helper.getTileEntitiesForChunk(c);
                         for(Object t : tileents.values()) {
@@ -987,21 +928,15 @@ public class NewMapChunkCache implements MapChunkCache {
                                 }
                             }
                         }
-                        stopTime(TimeStep.getTileEntityData);
                     }
-                    else {
-                        startTime(TimeStep.getEmptyChunkSnapshot);
+                    else
                         ss = w.getEmptyChunkSnapshot(chunk.x, chunk.z, biome, biomeraw);
-                        stopTime(TimeStep.getEmptyChunkSnapshot);
-                    }
                     if(ss != null) {
                         ssr = new SnapshotRec();
                         ssr.ss = ss;
                         ssr.inhabitedTicks = inhabited_ticks;
                         ssr.tileData = tileData;
-                        startTime(TimeStep.putSnapshotCache);
                         DynmapPlugin.plugin.sscache.putSnapshot(dw.getName(), chunk.x, chunk.z, ssr, blockdata, biome, biomeraw, highesty);
-                        stopTime(TimeStep.putSnapshotCache);
                     }
                 }
                 int chunkIndex = (chunk.x-x_min) + (chunk.z - z_min)*x_dim;
@@ -1018,18 +953,13 @@ public class NewMapChunkCache implements MapChunkCache {
                      * while the actual in-use chunk area for a player where the chunks are managed
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
-                    startTime(TimeStep.unloadChunkNoSave);
                     helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
-                    stopTime(TimeStep.unloadChunkNoSave);
                 }
                 else if (isunloadpending) { /* Else, if loaded and unload is pending */
-                    startTime(TimeStep.unloadChunkRequest);
                     w.unloadChunkRequest(chunk.x, chunk.z); /* Request new unload */
-                    stopTime(TimeStep.unloadChunkRequest);
                 }
             }
             cnt++;
-            stopTime(TimeStep.loadLoop);
         }
         DynmapCore.setIgnoreChunkLoads(false);
 
@@ -1044,7 +974,6 @@ public class NewMapChunkCache implements MapChunkCache {
             }
         }
         total_loadtime += System.nanoTime() - t0;
-        stopTime(TimeStep.loadCalls);
 
         return cnt;
     }
