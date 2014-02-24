@@ -116,6 +116,10 @@ commands:
            /<command> mapset worldname:mapname attrib:value attrib:value - update given map on given world with given attributes
            /<command> worldreset worldname - reset given world to default template for world type
            /<command> worldreset worldname templatename - reset given world to given template
+  dynmapexp:
+    description: Map export commands
+    usage: |
+           /<command> shader <shadername> - Export material library for shader <shadername>
            
 permissions:
   dynmap.*:
