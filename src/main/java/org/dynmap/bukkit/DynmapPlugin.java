@@ -343,7 +343,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     break;
                 case SIGN_CHANGE:
                     pm.registerEvents(new Listener() {
-                        @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+                        @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
                         public void onSignChange(SignChangeEvent evt) {
                             Block b = evt.getBlock();
                             Location l = b.getLocation();
@@ -1650,5 +1650,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         } catch (IOException e) {
             // Failed to submit the stats :-(
         }
+    }
+    @Override
+    public void processSignChange(int blkid, String world, int x, int y, int z,
+            String[] lines, String playerid) {
+        core.processSignChange(blkid, world, x, y, z, lines, playerid);
     }
 }

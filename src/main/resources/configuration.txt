@@ -86,6 +86,8 @@ components:
     type: markers
     showlabel: false
     enablesigns: false
+    # Default marker set for sign markers
+    default-sign-set: markers
     # (optional) add spawn point markers to standard marker layer
     showspawn: true
     spawnicon: world
