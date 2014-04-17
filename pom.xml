@@ -58,8 +58,8 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>org.dynmap:dynmap-api:jar:*</include>
-									<include>org.dynmap:DynmapCore:jar:*</include>
+									<include>us.dynmap:dynmap-api:jar:*</include>
+									<include>us.dynmap:DynmapCore:jar:*</include>
 								</includes>
 							</artifactSet>
 						</configuration>
