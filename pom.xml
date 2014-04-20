@@ -162,5 +162,5 @@
 			<version>2.10.1</version>
 		</dependency>
 	</dependencies>
-	<version>1.9.5</version>
+	<version>1.9.5-SNAPSHOT</version>
 </project>
