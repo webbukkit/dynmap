@@ -15,6 +15,9 @@
 #   The definitions of these templates are in normal-hi_boost_xhi.txt, nether-hi_boost_xhi.txt, and the_end-hi_boost_xhi.txt
 deftemplatesuffix: vlowres
 
+# Map storage scheme: only uncommoent one 'type' value
+#  filetree: classic and default scheme: tree of files, with all map data under the directory indicated by 'tilespath' setting
+#  sqlite: single SQLite database file (this can get VERY BIG), located at 'dbfile' setting (default is file dynmap.db in data directory)
 storage:
   # Filetree storage (standard tree of image files for maps)
   type: filetree
