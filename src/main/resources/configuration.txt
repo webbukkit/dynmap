@@ -395,6 +395,9 @@ persist-ids-by-ip: true
 # If true, map text to cyrillic
 cyrillic-support: false
 
+# If true, coordinates will be rounded
+round-coordinates: true
+
 # Messages to customize
 msg:
     maptypes: "Map Types"
