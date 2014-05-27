@@ -56,9 +56,9 @@ import java.util.logging.Level;
  * <p> The metrics class obtains data about a plugin and submits statistics about it to the metrics backend. </p> <p>
  * Public methods provided by this class: </p>
  * <code>
- * Graph createGraph(String name); <br/>
- * void addCustomData(BukkitMetrics.Plotter plotter); <br/>
- * void start(); <br/>
+ * Graph createGraph(String name); <br>
+ * void addCustomData(BukkitMetrics.Plotter plotter); <br>
+ * void start(); <br>
  * </code>
  */
 public class Metrics {
