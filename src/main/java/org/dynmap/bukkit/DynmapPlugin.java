@@ -636,7 +636,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public int getHealth() {
             if(player != null)
-                return player.getHealth();
+                return (int)player.getHealth();
             else
                 return 0;
         }
