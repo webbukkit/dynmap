@@ -18,12 +18,20 @@ deftemplatesuffix: hires
 # Map storage scheme: only uncommoent one 'type' value
 #  filetree: classic and default scheme: tree of files, with all map data under the directory indicated by 'tilespath' setting
 #  sqlite: single SQLite database file (this can get VERY BIG), located at 'dbfile' setting (default is file dynmap.db in data directory)
+#  mysql: MySQL database, at hostname:port in database, accessed via userid with password
 storage:
   # Filetree storage (standard tree of image files for maps)
   type: filetree
   # SQLite db for map storage (uses dbfile as storage location)
   #type: sqlite
   #dbfile: dynmap.db
+  # MySQL DB for map storage (at 'hostname':'port' in database 'database' using user 'userid' and password 'password'
+  #type: mysql
+  #hostname: localhost
+  #port: 3306
+  #database: dynmap
+  #userid: dynmap
+  #password: dynmap
   
 components:
   - class: org.dynmap.ClientConfigurationComponent
