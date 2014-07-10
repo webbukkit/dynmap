@@ -3,13 +3,17 @@ package org.dynmap.bukkit;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.dynmap.Log;
 
 /**
@@ -79,6 +83,10 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Field nmst_x;
     protected Field nmst_y;
     protected Field nmst_z;
+    /** Server */
+    protected Method server_getonlineplayers;
+    /** Player */
+    protected Method player_gethealth;
 
     BukkitVersionHelperGeneric() {
         failed = false;
@@ -99,6 +107,12 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         /* CraftChunk */
         craftchunk = getOBCClass("org.bukkit.craftbukkit.CraftChunk");
         cc_gethandle = getMethod(craftchunk, new String[] { "getHandle" }, new Class[0]);
+        
+        /** Server */
+        server_getonlineplayers = getMethod(Server.class, new String[] { "getOnlinePlayers" }, new Class[0]);
+        /** Player */
+        player_gethealth = getMethod(Player.class, new String[] { "getHealth" }, new Class[0]);
+        
         /* Get NMS classes and fields */
         if(!failed)
             loadNMS();
@@ -385,4 +399,31 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         }
         return null;
     }
+    /**
+     * Get list of online players
+     */
+    public Player[] getOnlinePlayers() {
+        Object players = callMethod(Bukkit.getServer(), server_getonlineplayers, nullargs, null);
+        if (players instanceof Player[]) {  /* Pre 1.7.10 */
+            return (Player[]) players;
+        }
+        else {
+            @SuppressWarnings("unchecked")
+            Collection<? extends Player> p = (Collection<? extends Player>) players;
+            return p.toArray(new Player[0]);
+        }
+    }
+    /**
+     * Get player health
+     */
+    public int getHealth(Player p) {
+        Object health = callMethod(p, player_gethealth, nullargs, null);
+        if (health instanceof Integer) {
+            return (Integer) health;
+        }
+        else {
+            return ((Double) health).intValue();
+        }
+    }
+
 }

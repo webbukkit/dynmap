@@ -47,7 +47,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmsmaterial = getNMSClass("net.minecraft.server.Material");
         blockbyid = getFieldNoFail(nmsblock, new String[] { "byId" }, nmsblockarray);
         if (blockbyid == null) {
-            blockbyidfunc = getMethod(nmsblock, new String[] { "e" }, new Class[] { int.class });
+            blockbyidfunc = getMethod(nmsblock, new String[] { "getById", "e" }, new Class[] { int.class });
         }
         blockname = getPrivateField(nmsblock, new String[] { "name", "b" }, String.class);
         material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);

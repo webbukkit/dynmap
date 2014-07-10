@@ -234,7 +234,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         @Override
         public DynmapPlayer[] getOnlinePlayers() {
-            Player[] players = getServer().getOnlinePlayers();
+            Player[] players = helper.getOnlinePlayers();
             DynmapPlayer[] dplay = new DynmapPlayer[players.length];
             for(int i = 0; i < players.length; i++)
                 dplay[i] = new BukkitPlayer(players[i]);
@@ -507,7 +507,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         @Override
         public int getCurrentPlayers() {
-            return getServer().getOnlinePlayers().length;
+            return helper.getOnlinePlayers().length;
         }
         @Override
         public boolean isModLoaded(String name) {
@@ -636,7 +636,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public int getHealth() {
             if(player != null)
-                return player.getHealth();
+                return helper.getHealth(player);
             else
                 return 0;
         }
