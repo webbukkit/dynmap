@@ -738,7 +738,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         Object[] biomelist = helper.getBiomeBaseList();
         /* Loop through list, skipping well known biomes */
         for(int i = 0; i < biomelist.length; i++) {
-            if (BiomeMap.byBiomeID(i) != null) continue;
+            if (!BiomeMap.byBiomeID(i).isDefault()) continue;
             Object bb = biomelist[i];
             if(bb != null) {
                 String id =  helper.getBiomeBaseIDString(bb);
