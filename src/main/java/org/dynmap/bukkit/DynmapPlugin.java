@@ -730,13 +730,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
     
-    public void loadExtraBiomes() {
+    public void loadExtraBiomes(String mcver) {
         int cnt = 0;
         
+        BiomeMap.loadWellKnownByVersion(mcver);
         /* Find array of biomes in biomebase */
         Object[] biomelist = helper.getBiomeBaseList();
-        /* Loop through list, starting afer well known biomes */
-        for(int i = BiomeMap.LAST_WELL_KNOWN+1; i < biomelist.length; i++) {
+        /* Loop through list, skipping well known biomes */
+        for(int i = 0; i < biomelist.length; i++) {
+            if (BiomeMap.byBiomeID(i) != null) continue;
             Object bb = biomelist[i];
             if(bb != null) {
                 String id =  helper.getBiomeBaseIDString(bb);
@@ -775,8 +777,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         PluginDescriptionFile pdfFile = this.getDescription();
         version = pdfFile.getVersion();
 
+        /* Get MC version */
+        String bukkitver = getServer().getVersion();
+        String mcver = "1.0.0";
+        int idx = bukkitver.indexOf("(MC: ");
+        if(idx > 0) {
+            mcver = bukkitver.substring(idx+5);
+            idx = mcver.indexOf(")");
+            if(idx > 0) mcver = mcver.substring(0, idx);
+        }
+
         /* Load extra biomes, if any */
-        loadExtraBiomes();
+        loadExtraBiomes(mcver);
              
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
@@ -805,17 +817,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         File dataDirectory = this.getDataFolder();
         if(dataDirectory.exists() == false)
             dataDirectory.mkdirs();
- 
-        /* Get MC version */
-        String bukkitver = getServer().getVersion();
-        String mcver = "1.0.0";
-        int idx = bukkitver.indexOf("(MC: ");
-        if(idx > 0) {
-            mcver = bukkitver.substring(idx+5);
-            idx = mcver.indexOf(")");
-            if(idx > 0) mcver = mcver.substring(0, idx);
-        }
-        
+         
         /* Instantiate core */
         if(core == null)
             core = new DynmapCore();
