@@ -1,5 +1,7 @@
 package org.dynmap.bukkit;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 
@@ -10,35 +12,47 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
-
+    private Method rawbiome;
+    
+    public BukkitVersionHelperGlowstone() {
+        try {
+            Class<?> c = Class.forName("net.glowstone.GlowChunkSnapshot");
+            rawbiome = c.getMethod("getRawBiomes", new Class[0]);
+        } catch (SecurityException e) {
+        } catch (NoSuchMethodException e) {
+        } catch (ClassNotFoundException e) {
+        }
+        if (rawbiome == null) {
+            throw new IllegalArgumentException("Error initializing dynmap - Glowstone version incompatible!");
+        }
+    }
+    
     @Override
     public Object[] getBiomeBaseList() {
-        // TODO Auto-generated method stub
         return new Object[0];
     }
 
     @Override
     public float getBiomeBaseTemperature(Object bb) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public float getBiomeBaseHumidity(Object bb) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public String getBiomeBaseIDString(Object bb) {
-        // TODO Auto-generated method stub
         return "";
     }
 
     @Override
     public int getBiomeBaseID(Object bb) {
-        // TODO Auto-generated method stub
-        return 0;
+        if (bb != null) 
+            return (Integer) bb;
+        else
+            return 0;
     }
 
     @Override
@@ -55,8 +69,20 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
 
     @Override
     public Object[] getBiomeBaseFromSnapshot(ChunkSnapshot css) {
-        // TODO Auto-generated method stub
-        return new Integer[256];
+        Integer b[] = new Integer[256];
+        byte[] rb = null;
+        try {
+            rb = (byte[]) rawbiome.invoke(css, new Object[0]);
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
+        }
+        if (rb != null) {
+            for (int i = 0; i < 256; i++) {
+                b[i] = Integer.valueOf(255 & (int)rb[i]);
+            }
+        }
+        return b;
     }
 
     @Override
@@ -391,14 +417,12 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
 
     @Override
     public Player[] getOnlinePlayers() {
-        // TODO Auto-generated method stub
         return Bukkit.getServer().getOnlinePlayers();
     }
 
     @Override
     public int getHealth(Player p) {
-        // TODO Auto-generated method stub
-        return 0;
+        return p.getHealth();
     }
 
 }
