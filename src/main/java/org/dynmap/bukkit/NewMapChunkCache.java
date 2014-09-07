@@ -795,7 +795,7 @@ public class NewMapChunkCache extends MapChunkCache {
     public int loadChunks(int max_to_load) {
         if(dw.isLoaded() == false)
             return 0;
-        Object queue = helper.getUnloadQueue(helper.getNMSWorld(w));
+        Object queue = helper.getUnloadQueue(w);
         
         int cnt = 0;
         if(iterator == null)

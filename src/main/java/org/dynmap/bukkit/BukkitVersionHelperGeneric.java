@@ -269,13 +269,13 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     }
 
     /* Get net.minecraft.server.world for given world */
-    public Object getNMSWorld(World w) {
+    protected Object getNMSWorld(World w) {
         return callMethod(w, cw_gethandle, nullargs, null);
     }
 
     /* Get unload queue for given NMS world */
-    public Object getUnloadQueue(Object nmsworld) {
-        Object cps = getFieldValue(nmsworld, nmsw_chunkproviderserver, null); // Get chunkproviderserver
+    public Object getUnloadQueue(World world) {
+        Object cps = getFieldValue(getNMSWorld(world), nmsw_chunkproviderserver, null); // Get chunkproviderserver
         if(cps != null) {
             return getFieldValue(cps, cps_unloadqueue, null);
         }
@@ -293,12 +293,12 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     public Object[] getBiomeBaseFromSnapshot(ChunkSnapshot css) {
         return (Object[])getFieldValue(css, ccss_biome, null);
     }
-    public boolean isCraftChunkSnapshot(ChunkSnapshot css) {
-        if(craftchunksnapshot != null) {
-            return craftchunksnapshot.isAssignableFrom(css.getClass());
-        }
-        return false;
-    }
+//    public boolean isCraftChunkSnapshot(ChunkSnapshot css) {
+//        if(craftchunksnapshot != null) {
+//            return craftchunksnapshot.isAssignableFrom(css.getClass());
+//        }
+//        return false;
+//    }
     /** Remove entities from given chunk */
     public void removeEntitiesFromChunk(Chunk c) {
         Object omsc = callMethod(c, cc_gethandle, nullargs, null);

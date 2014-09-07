@@ -23,6 +23,7 @@ public abstract class BukkitVersionHelper {
     
     public static final BukkitVersionHelper getHelper() {
         if(helper == null) {
+            Log.info("version=" + Bukkit.getServer().getVersion());
             if(Bukkit.getServer().getVersion().contains("MCPC")) {
                 Log.severe("*********************************************************************************");
                 Log.severe("* MCPC-Plus is no longer supported via the Bukkit version of Dynmap.            *");
@@ -36,6 +37,10 @@ public abstract class BukkitVersionHelper {
                 Log.severe("* Install the appropriate Forge version of Dynmap.                              *"); 
                 Log.severe("* Add the DynmapCBBridge plugin to enable support for Dynmap-compatible plugins *");
                 Log.severe("*********************************************************************************");
+            }
+            else if(Bukkit.getServer().getClass().getName().contains("GlowServer")) {
+                Log.info("Loading Glowstone support");
+                helper = new BukkitVersionHelperGlowstone();
             }
             else {
                 helper = new BukkitVersionHelperCB();
@@ -66,14 +71,10 @@ public abstract class BukkitVersionHelper {
      * Get ID from biomebase
      */
     public abstract int getBiomeBaseID(Object bb);
-    /** 
-     * Get net.minecraft.server.world for given world
-     */
-    public abstract Object getNMSWorld(World w);
     /**
      *  Get unload queue for given NMS world
      */
-    public abstract Object getUnloadQueue(Object nmsworld);
+    public abstract Object getUnloadQueue(World world);
     /**
      *  For testing unload queue for presence of givne chunk
      */
@@ -85,7 +86,7 @@ public abstract class BukkitVersionHelper {
     /**
      * Test if normal chunk snapshot
      */
-    public abstract boolean isCraftChunkSnapshot(ChunkSnapshot css);
+//    public abstract boolean isCraftChunkSnapshot(ChunkSnapshot css);
     /** 
      * Remove entities from given chunk
      */
