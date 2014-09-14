@@ -2,27 +2,33 @@ package org.dynmap.bukkit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     private Method rawbiome;
+    private Method server_getonlineplayers;
     
     public BukkitVersionHelperGlowstone() {
         try {
             Class<?> c = Class.forName("net.glowstone.GlowChunkSnapshot");
             rawbiome = c.getMethod("getRawBiomes", new Class[0]);
+
+            /** Server */
+            server_getonlineplayers = Server.class.getMethod("getOnlinePlayers", new Class[0]);
         } catch (SecurityException e) {
         } catch (NoSuchMethodException e) {
         } catch (ClassNotFoundException e) {
         }
-        if (rawbiome == null) {
+        if ((rawbiome == null) && (server_getonlineplayers == null)) {
             throw new IllegalArgumentException("Error initializing dynmap - Glowstone version incompatible!");
         }
     }
@@ -415,9 +421,26 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
         return null;
     }
 
-    @Override
+    /**
+     * Get list of online players
+     */
     public Player[] getOnlinePlayers() {
-        return Bukkit.getServer().getOnlinePlayers();
+        Object players;
+        try {
+            players = server_getonlineplayers.invoke(Bukkit.getServer(), new Object[0]);
+            if (players instanceof Player[]) {  /* Pre 1.7.10 */
+                return (Player[]) players;
+            }
+            else {
+                @SuppressWarnings("unchecked")
+                Collection<? extends Player> p = (Collection<? extends Player>) players;
+                return p.toArray(new Player[0]);
+            }
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
+        }
+        return new Player[0];
     }
 
     @Override
