@@ -416,7 +416,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get player health
      */
-    public int getHealth(Player p) {
+    @Override
+    public double getHealth(Player p) {
         Object health = callMethod(p, player_gethealth, nullargs, null);
         if (health instanceof Integer) {
             return (Integer) health;

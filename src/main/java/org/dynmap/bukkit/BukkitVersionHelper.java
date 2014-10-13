@@ -142,5 +142,5 @@ public abstract class BukkitVersionHelper {
     /**
      * Get player health
      */
-    public abstract int getHealth(Player p);
+    public abstract double getHealth(Player p);
 }
