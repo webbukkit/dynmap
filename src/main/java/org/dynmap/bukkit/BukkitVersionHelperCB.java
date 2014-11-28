@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
@@ -58,7 +59,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         biomebaselist = getPrivateField(biomebase, new String[] { "biomes" }, biomebasearray);
         biomebasetemp = getField(biomebase, new String[] { "temperature", "F" }, float.class);
         biomebasehumi = getField(biomebase, new String[] { "humidity", "G" }, float.class);
-        biomebaseidstring = getField(biomebase, new String[] { "y", "af" }, String.class);
+        biomebaseidstring = getField(biomebase, new String[] { "y", "af", "ah" }, String.class);
         biomebaseid = getField(biomebase, new String[] { "id" }, int.class);
         /* n.m.s.World */
         nmsworld = getNMSClass("net.minecraft.server.WorldServer");
@@ -82,7 +83,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities" }, new Class[0]);
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q" }, long.class);
+        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q", "u" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
@@ -111,9 +112,18 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** Tile entity */
         nms_tileentity = getNMSClass("net.minecraft.server.TileEntity");
         nmst_readnbt = getMethod(nms_tileentity, new String[] { "b" }, new Class[] { nbttagcompound });
-        nmst_x = getField(nms_tileentity, new String[] { "x" }, int.class); 
-        nmst_y = getField(nms_tileentity, new String[] { "y" }, int.class); 
-        nmst_z = getField(nms_tileentity, new String[] { "z" }, int.class); 
+        nmst_getposition = getMethodNoFail(nms_tileentity, new String[] { "getPosition" }, new Class[0]); // Try 1.8 method
+        if (nmst_getposition == null) {
+            nmst_x = getField(nms_tileentity, new String[] { "x" }, int.class); 
+            nmst_y = getField(nms_tileentity, new String[] { "y" }, int.class); 
+            nmst_z = getField(nms_tileentity, new String[] { "z" }, int.class); 
+        }
+        else {  /* BlockPosition */
+            nms_blockposition = getNMSClass("net.minecraft.server.BlockPosition");
+            nmsbp_getx = getMethod(nms_blockposition, new String[] { "getX" }, new Class[0]);
+            nmsbp_gety = getMethod(nms_blockposition, new String[] { "getY" }, new Class[0]);
+            nmsbp_getz = getMethod(nms_blockposition, new String[] { "getZ" }, new Class[0]);
+        }
     }
     @Override
     public void unloadChunkNoSave(World w, Chunk c, int cx, int cz) {

@@ -83,6 +83,13 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Field nmst_x;
     protected Field nmst_y;
     protected Field nmst_z;
+    protected Method nmst_getposition;
+    /** BlockPosition */
+    protected Class<?> nms_blockposition;
+    protected Method nmsbp_getx;
+    protected Method nmsbp_gety;
+    protected Method nmsbp_getz;
+    
     /** Server */
     protected Method server_getonlineplayers;
     /** Player */
@@ -231,6 +238,17 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         failed = true;
         return null;
     }
+    protected Method getMethodNoFail(Class<?> cls, String[] ids, Class[] args) {
+        if(cls == null) return null;
+        for(String id : ids) {
+            try {
+                return cls.getMethod(id, args);
+            } catch (SecurityException e) {
+            } catch (NoSuchMethodException e) {
+            }
+        }
+        return null;
+    }
     private Object callMethod(Object obj, Method meth, Object[] args, Object def) {
         if((obj == null) || (meth == null)) {
             return def;
@@ -333,19 +351,37 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
      * Get X coordinate of tile entity
      */
     public int getTileEntityX(Object te) {
-        return (Integer)getFieldValue(te, nmst_x, 0);
+        if (nmst_getposition == null) {
+            return (Integer)getFieldValue(te, nmst_x, 0);
+        }
+        else {
+            Object pos = callMethod(te, nmst_getposition, nullargs, null);
+            return (Integer) callMethod(pos, nmsbp_getx, nullargs, null);
+        }
     }
     /**
      * Get Y coordinate of tile entity
      */
     public int getTileEntityY(Object te) {
-        return (Integer)getFieldValue(te, nmst_y, 0);
+        if (nmst_getposition == null) {
+            return (Integer)getFieldValue(te, nmst_y, 0);
+        }
+        else {
+            Object pos = callMethod(te, nmst_getposition, nullargs, null);
+            return (Integer) callMethod(pos, nmsbp_gety, nullargs, null);
+        }
     }
     /**
      * Get Z coordinate of tile entity
      */
     public int getTileEntityZ(Object te) {
-        return (Integer)getFieldValue(te, nmst_z, 0);
+        if (nmst_getposition == null) {
+            return (Integer)getFieldValue(te, nmst_z, 0);
+        }
+        else {
+            Object pos = callMethod(te, nmst_getposition, nullargs, null);
+            return (Integer) callMethod(pos, nmsbp_getz, nullargs, null);
+        }
     }
     /**
      * Read tile entity NBT
