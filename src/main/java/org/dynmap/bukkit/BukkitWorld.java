@@ -11,6 +11,7 @@ import java.util.List;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.dynmap.DynmapChunk;
@@ -124,7 +125,10 @@ public class BukkitWorld extends DynmapWorld {
     @Override
     public int getLightLevel(int x, int y, int z) {
         if(world != null) {
-            return world.getBlockAt(x, y, z).getLightLevel();
+            if ((y >= 0) && (y < this.worldheight)) {
+                return world.getBlockAt(x, y, z).getLightLevel();
+            }
+            return 0;
         }
         else {
             return -1;
@@ -149,7 +153,12 @@ public class BukkitWorld extends DynmapWorld {
     @Override
     public int getSkyLightLevel(int x, int y, int z) {
         if(world != null) {
-            return world.getBlockAt(x, y, z).getLightFromSky();
+            if ((y >= 0) && (y < this.worldheight)) {
+                return world.getBlockAt(x, y, z).getLightFromSky();
+            }
+            else {
+                return 15;
+            }
         }
         else {
             return -1;
