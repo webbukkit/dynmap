@@ -718,19 +718,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         Object[] biomelist = helper.getBiomeBaseList();
         /* Loop through list, skipping well known biomes */
         for(int i = 0; i < biomelist.length; i++) {
-            if (!BiomeMap.byBiomeID(i).isDefault()) continue;
             Object bb = biomelist[i];
             if(bb != null) {
-                String id =  helper.getBiomeBaseIDString(bb);
-                if(id == null) {
-                   id = "BIOME_" + i;
-                }
                 float tmp = helper.getBiomeBaseTemperature(bb);
                 float hum = helper.getBiomeBaseHumidity(bb);
-
-                BiomeMap m = new BiomeMap(i, id, tmp, hum);
-                Log.verboseinfo("Add custom biome [" + m.toString() + "] (" + i + ")");
-                cnt++;
+                BiomeMap bmap = BiomeMap.byBiomeID(i);
+                if (bmap.isDefault()) {
+                    String id =  helper.getBiomeBaseIDString(bb);
+                    if(id == null) {
+                        id = "BIOME_" + i;
+                    }
+                    BiomeMap m = new BiomeMap(i, id, tmp, hum);
+                    Log.verboseinfo("Add custom biome [" + m.toString() + "] (" + i + ")");
+                    cnt++;
+                }
+                else {
+                    bmap.setTemperature(tmp);
+                    bmap.setRainfall(hum);
+                }
             }
         }
         if(cnt > 0) {
