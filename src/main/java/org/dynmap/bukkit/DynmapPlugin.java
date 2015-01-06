@@ -257,6 +257,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             return false;
         }
         @Override
+        public boolean isServerThread() {
+            return Bukkit.getServer().isPrimaryThread();
+        }
+
+        @Override
         public String stripChatColor(String s) {
             return ChatColor.stripColor(s);
         }
