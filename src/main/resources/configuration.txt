@@ -274,7 +274,7 @@ custom-colors-support: true
 #refreshskins: false
 
 # Customize URL used for fetching player skins (%player% is macro for name)
-skin-url: "http://s3.amazonaws.com/MinecraftSkins/%player%.png"
+skin-url: "http://skins.minecraft.net/MinecraftSkins/%player%.png"
 
 # Control behavior for new (1.0+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
 #   default is 'newrose' (preserve pre-1.0 maps, rotate rose)
