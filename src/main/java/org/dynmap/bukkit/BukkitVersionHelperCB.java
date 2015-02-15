@@ -12,6 +12,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
 import org.dynmap.common.BiomeMap;
+import org.dynmap.utils.Polygon;
 
 /**
  * Helper for isolation of bukkit version specific issues
@@ -24,6 +25,12 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Field blockname;
     private Field material;
     private Method blockbyidfunc;   // 1.7+ method for getting block by id
+    private Method getworldborder;  // 1.8+ method for getting world border
+    private Class<?> nmsworldborder;
+    private Method worldborderminx;
+    private Method worldbordermaxx;
+    private Method worldborderminz;
+    private Method worldbordermaxz;
     
     BukkitVersionHelperCB() {
     }
@@ -65,6 +72,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmsworld = getNMSClass("net.minecraft.server.WorldServer");
         chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
         nmsw_chunkproviderserver = getField(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
+        getworldborder = getMethodNoFail(nmsworld, new String[] { "af" }, nulltypes);
         
         longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
         if(longhashset != null) {
@@ -81,12 +89,21 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         }
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
-        nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities" }, new Class[0]);
+        nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities" }, nulltypes);
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
         nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q", "u" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
+        /** n.m.s.WorldBorder */
+        nmsworldborder = getNMSClassNoFail("net.minecraft.server.WorldBorder");
+        if (nmsworldborder != null) {
+            worldborderminx = getMethod(nmsworldborder, new String[] { "b" }, nulltypes);
+            worldborderminz = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
+            worldbordermaxx = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
+            worldbordermaxz = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+        }
+        
         /** nbt classes */
         nbttagcompound = getNMSClass("net.minecraft.server.NBTTagCompound");
         nbttagbyte = getNMSClass("net.minecraft.server.NBTTagByte");
@@ -228,5 +245,29 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         } catch (InvocationTargetException e) {
         }
         return new int[0];
+    }
+    @Override
+    public Polygon getWorldBorder(World world) {
+        Polygon p = null;
+        if ((getworldborder == null) || (world == null)) {
+            return null;
+        }
+        Object cw = getNMSWorld(world);
+        if (cw == null) return null;
+        Object wb = callMethod(cw, getworldborder, nullargs, null);
+        if (wb != null) {
+            double minx = (Double) callMethod(wb, worldborderminx, nullargs, Double.MIN_VALUE);
+            double minz = (Double) callMethod(wb, worldborderminz, nullargs, Double.MIN_VALUE);
+            double maxx = (Double) callMethod(wb, worldbordermaxx, nullargs, Double.MAX_VALUE);
+            double maxz = (Double) callMethod(wb, worldbordermaxz, nullargs, Double.MAX_VALUE);
+            if (maxx < 1E7) {
+                p = new Polygon();
+                p.addVertex(minx, minz);
+                p.addVertex(minx, maxz);
+                p.addVertex(maxx, maxz);
+                p.addVertex(maxx, minz);
+            }
+        }
+        return p;
     }
 }

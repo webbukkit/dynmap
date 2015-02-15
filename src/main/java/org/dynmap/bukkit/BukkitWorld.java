@@ -18,6 +18,7 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.Polygon;
 import org.dynmap.utils.TileFlags;
 
 public class BukkitWorld extends DynmapWorld {
@@ -242,5 +243,8 @@ public class BukkitWorld extends DynmapWorld {
         }
         return cnt;
     }
-
+    @Override
+    public Polygon getWorldBorder() {
+        return DynmapPlugin.plugin.getWorldBorder(world);
+    }
 }

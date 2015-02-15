@@ -23,7 +23,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     private String obc_package; // Package used for org.bukkit.craftbukkit
     protected String nms_package; // Package used for net.minecraft.server
     private boolean failed;
-    private static final Object[] nullargs = new Object[0];
+    protected static final Object[] nullargs = new Object[0];
+    protected static final Class[] nulltypes = new Class[0];
     private static final Map nullmap = Collections.emptyMap();
     
     /** CraftChunkSnapshot */
@@ -143,7 +144,11 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> getNMSClass(String classname) {
         return getClassByName(classname, "net.minecraft.server", nms_package, false);
     }
-    
+
+    protected Class<?> getNMSClassNoFail(String classname) {
+        return getClassByName(classname, "net.minecraft.server", nms_package, true);
+    }
+
     protected Class<?> getClassByName(String classname, String base, String mapping, boolean nofail) {
         String n = classname;
         int idx = classname.indexOf(base);
@@ -249,7 +254,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         }
         return null;
     }
-    private Object callMethod(Object obj, Method meth, Object[] args, Object def) {
+    protected Object callMethod(Object obj, Method meth, Object[] args, Object def) {
         if((obj == null) || (meth == null)) {
             return def;
         }

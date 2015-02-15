@@ -13,6 +13,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.Log;
+import org.dynmap.utils.Polygon;
 
 /**
  * Helper for isolation of bukkit version specific issues
@@ -143,4 +144,8 @@ public abstract class BukkitVersionHelper {
      * Get player health
      */
     public abstract double getHealth(Player p);
+    /**
+     * Get world border
+     */
+    public Polygon getWorldBorder(World world) { return null; }
 }
