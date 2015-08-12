@@ -2,11 +2,9 @@ package org.dynmap.bukkit;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -96,6 +94,7 @@ import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.modsupport.ModSupportImpl;
 import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
@@ -103,11 +102,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private PermissionProvider permissions;
     private String version;
     public SnapshotCache sscache;
-    private boolean has_spout = false;
     public PlayerList playerList;
     private MapManager mapManager;
     public static DynmapPlugin plugin;
-    public SpoutPluginBlocks spb;
     public PluginManager pm;
     private Metrics metrics;
     private BukkitEnableCoreCallback enabCoreCB = new BukkitEnableCoreCallback();
@@ -169,26 +166,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private class BukkitEnableCoreCallback extends DynmapCore.EnableCoreCallbacks {
         @Override
         public void configurationLoaded() {
-            /* Check for Spout */
-            if(detectSpout()) {
-                if(core.configuration.getBoolean("spout/enabled", true)) {
-                    has_spout = true;
-                    Log.info("Detected Spout");
-                    if(spb == null) {
-                        spb = new SpoutPluginBlocks(DynmapPlugin.this);
-                    }
-                    modsused.add("SpoutPlugin");
-                }
-                else {
-                    Log.info("Detected Spout - Support Disabled");
-                }
+            File st = new File(core.getDataFolder(), "renderdata/spout-texture.txt");
+            if(st.exists()) {
+                st.delete();
             }
-            if(!has_spout) {    /* If not, clean up old spout texture, if needed */
-                File st = new File(core.getDataFolder(), "renderdata/spout-texture.txt");
-                if(st.exists())
-                    st.delete();
-            }
-            
         }
     }
     
@@ -276,6 +257,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 return true;
             return false;
         }
+        @Override
+        public boolean isServerThread() {
+            return Bukkit.getServer().isPrimaryThread();
+        }
+
         @Override
         public String stripChatColor(String s) {
             return ChatColor.stripColor(s);
@@ -634,7 +620,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             return false;
         }
         @Override
-        public int getHealth() {
+        public double getHealth() {
             if(player != null)
                 return helper.getHealth(player);
             else
@@ -738,19 +724,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         Object[] biomelist = helper.getBiomeBaseList();
         /* Loop through list, skipping well known biomes */
         for(int i = 0; i < biomelist.length; i++) {
-            if (!BiomeMap.byBiomeID(i).isDefault()) continue;
             Object bb = biomelist[i];
             if(bb != null) {
-                String id =  helper.getBiomeBaseIDString(bb);
-                if(id == null) {
-                   id = "BIOME_" + i;
-                }
                 float tmp = helper.getBiomeBaseTemperature(bb);
                 float hum = helper.getBiomeBaseHumidity(bb);
-
-                BiomeMap m = new BiomeMap(i, id, tmp, hum);
-                Log.verboseinfo("Add custom biome [" + m.toString() + "] (" + i + ")");
-                cnt++;
+                BiomeMap bmap = BiomeMap.byBiomeID(i);
+                if (bmap.isDefault()) {
+                    String id =  helper.getBiomeBaseIDString(bb);
+                    if(id == null) {
+                        id = "BIOME_" + i;
+                    }
+                    BiomeMap m = new BiomeMap(i, id, tmp, hum);
+                    Log.verboseinfo("Add custom biome [" + m.toString() + "] (" + i + ")");
+                    cnt++;
+                }
+                else {
+                    bmap.setTemperature(tmp);
+                    bmap.setRainfall(hum);
+                }
             }
         }
         if(cnt > 0) {
@@ -842,7 +833,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
                 public void onPluginEnabled(PluginEnableEvent evt) {
                     if (!readyToEnable()) {
-                        spb.markPluginEnabled(evt.getPlugin());
                         if (readyToEnable()) { /* If we;re ready now, finish enable */
                             doEnable();   /* Finish enable */
                         }
@@ -867,18 +857,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
     
     private boolean readyToEnable() {
-        if (spb != null) {
-            return spb.isReady();
-        }
         return true;
     }
     
     private void doEnable() {
-        /* Prep spout support, if needed */
-        if(spb != null) {
-            spb.processSpoutBlocks(this, core);
-        }
-        
         /* Enable core */
         if(!core.enableCore(enabCoreCB)) {
             this.setEnabled(false);
@@ -1515,18 +1497,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
 
-    private boolean detectSpout() {
-        Plugin p = this.getServer().getPluginManager().getPlugin("Spout");
-        if(p != null) {
-            return p.isEnabled();
-        }
-        return false;
-    }
-    
-    public boolean hasSpout() {
-        return has_spout;
-    }
-
     @Override
     public void assertPlayerInvisibility(String player, boolean is_invisible,
             String plugin_id) {
@@ -1573,14 +1543,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 @Override
                 public int getValue() {
                     if (!core.configuration.getBoolean("disable-webserver", false))
-                        return 1;
-                    return 0;
-                }
-            });
-            features.addPlotter(new Metrics.Plotter("Spout") {
-                @Override
-                public int getValue() {
-                    if(plugin.has_spout)
                         return 1;
                     return 0;
                 }
@@ -1657,5 +1619,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public void processSignChange(int blkid, String world, int x, int y, int z,
             String[] lines, String playerid) {
         core.processSignChange(blkid, world, x, y, z, lines, playerid);
+    }
+    
+    Polygon getWorldBorder(World w) {
+        return helper.getWorldBorder(w);
     }
 }

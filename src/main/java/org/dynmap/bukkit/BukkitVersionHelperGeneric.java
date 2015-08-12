@@ -23,7 +23,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     private String obc_package; // Package used for org.bukkit.craftbukkit
     protected String nms_package; // Package used for net.minecraft.server
     private boolean failed;
-    private static final Object[] nullargs = new Object[0];
+    protected static final Object[] nullargs = new Object[0];
+    protected static final Class[] nulltypes = new Class[0];
     private static final Map nullmap = Collections.emptyMap();
     
     /** CraftChunkSnapshot */
@@ -83,6 +84,13 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Field nmst_x;
     protected Field nmst_y;
     protected Field nmst_z;
+    protected Method nmst_getposition;
+    /** BlockPosition */
+    protected Class<?> nms_blockposition;
+    protected Method nmsbp_getx;
+    protected Method nmsbp_gety;
+    protected Method nmsbp_getz;
+    
     /** Server */
     protected Method server_getonlineplayers;
     /** Player */
@@ -136,7 +144,11 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> getNMSClass(String classname) {
         return getClassByName(classname, "net.minecraft.server", nms_package, false);
     }
-    
+
+    protected Class<?> getNMSClassNoFail(String classname) {
+        return getClassByName(classname, "net.minecraft.server", nms_package, true);
+    }
+
     protected Class<?> getClassByName(String classname, String base, String mapping, boolean nofail) {
         String n = classname;
         int idx = classname.indexOf(base);
@@ -231,7 +243,18 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         failed = true;
         return null;
     }
-    private Object callMethod(Object obj, Method meth, Object[] args, Object def) {
+    protected Method getMethodNoFail(Class<?> cls, String[] ids, Class[] args) {
+        if(cls == null) return null;
+        for(String id : ids) {
+            try {
+                return cls.getMethod(id, args);
+            } catch (SecurityException e) {
+            } catch (NoSuchMethodException e) {
+            }
+        }
+        return null;
+    }
+    protected Object callMethod(Object obj, Method meth, Object[] args, Object def) {
         if((obj == null) || (meth == null)) {
             return def;
         }
@@ -333,19 +356,37 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
      * Get X coordinate of tile entity
      */
     public int getTileEntityX(Object te) {
-        return (Integer)getFieldValue(te, nmst_x, 0);
+        if (nmst_getposition == null) {
+            return (Integer)getFieldValue(te, nmst_x, 0);
+        }
+        else {
+            Object pos = callMethod(te, nmst_getposition, nullargs, null);
+            return (Integer) callMethod(pos, nmsbp_getx, nullargs, null);
+        }
     }
     /**
      * Get Y coordinate of tile entity
      */
     public int getTileEntityY(Object te) {
-        return (Integer)getFieldValue(te, nmst_y, 0);
+        if (nmst_getposition == null) {
+            return (Integer)getFieldValue(te, nmst_y, 0);
+        }
+        else {
+            Object pos = callMethod(te, nmst_getposition, nullargs, null);
+            return (Integer) callMethod(pos, nmsbp_gety, nullargs, null);
+        }
     }
     /**
      * Get Z coordinate of tile entity
      */
     public int getTileEntityZ(Object te) {
-        return (Integer)getFieldValue(te, nmst_z, 0);
+        if (nmst_getposition == null) {
+            return (Integer)getFieldValue(te, nmst_z, 0);
+        }
+        else {
+            Object pos = callMethod(te, nmst_getposition, nullargs, null);
+            return (Integer) callMethod(pos, nmsbp_getz, nullargs, null);
+        }
     }
     /**
      * Read tile entity NBT
@@ -416,7 +457,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get player health
      */
-    public int getHealth(Player p) {
+    @Override
+    public double getHealth(Player p) {
         Object health = callMethod(p, player_gethealth, nullargs, null);
         if (health instanceof Integer) {
             return (Integer) health;

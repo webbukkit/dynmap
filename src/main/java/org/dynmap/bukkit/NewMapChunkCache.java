@@ -22,14 +22,12 @@ import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.BlockStep;
 import org.dynmap.utils.VisibilityLimit;
-import org.getspout.spoutapi.block.SpoutChunk;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
 public class NewMapChunkCache extends MapChunkCache {
     private static boolean init = false;
-    private static boolean use_spout = false;    
 
     private World w;
     private DynmapWorld dw;
@@ -737,8 +735,6 @@ public class NewMapChunkCache extends MapChunkCache {
      */
     public NewMapChunkCache() {
         if(!init) {
-            use_spout = DynmapPlugin.plugin.hasSpout();
-            
             init = true;
         }
     }
@@ -781,17 +777,6 @@ public class NewMapChunkCache extends MapChunkCache {
         isSectionNotEmpty = new boolean[snapcnt][];
     }
     
-    private ChunkSnapshot checkSpoutData(Chunk c, ChunkSnapshot ss) {
-        if(c instanceof SpoutChunk) {
-            SpoutChunk sc = (SpoutChunk)c;
-            short[] custids = sc.getCustomBlockIds();
-            if(custids != null) {
-                return new SpoutChunkSnapshot(ss, custids, c.getWorld().getMaxHeight());
-            }
-        }
-        return ss;
-    }
-
     public int loadChunks(int max_to_load) {
         if(dw.isLoaded() == false)
             return 0;
@@ -884,9 +869,6 @@ public class NewMapChunkCache extends MapChunkCache {
                 else {
                     if(blockdata || highesty) {
                         ss = c.getChunkSnapshot(highesty, biome, biomeraw);
-                        if(use_spout) {
-                            ss = checkSpoutData(c, ss);
-                        }
                         /* Get tile entity data */
                         List<Object> vals = new ArrayList<Object>();
                         Map<?,?> tileents = helper.getTileEntitiesForChunk(c);
