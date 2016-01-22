@@ -89,7 +89,6 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         }
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
-        nmsc_removeentities = getMethod(nmschunk, new String[] { "removeEntities" }, nulltypes);
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
         nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q", "u" }, long.class);
         if (nmsc_inhabitedticks == null) {
@@ -144,7 +143,6 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     }
     @Override
     public void unloadChunkNoSave(World w, Chunk c, int cx, int cz) {
-        this.removeEntitiesFromChunk(c);
         w.unloadChunk(cx, cz, false, false);
     }
     /**
