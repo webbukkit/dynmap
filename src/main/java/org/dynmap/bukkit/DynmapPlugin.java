@@ -956,11 +956,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     @Override
     public final int triggerRenderOfVolume(String wid, int minx, int miny, int minz,
             int maxx, int maxy, int maxz) {
+    	sscache.invalidateSnapshot(wid, minx, miny, minz, maxx, maxy, maxz);
         return core.triggerRenderOfVolume(wid, minx, miny, minz, maxx, maxy, maxz);
     }
 
     @Override
     public final int triggerRenderOfBlock(String wid, int x, int y, int z) {
+    	sscache.invalidateSnapshot(wid, x, y, z);
         return core.triggerRenderOfBlock(wid, x, y, z);
     }
 
