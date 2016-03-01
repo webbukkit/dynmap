@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -62,17 +63,23 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
 
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
-        biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
-        biomebaselist = getPrivateField(biomebase, new String[] { "biomes" }, biomebasearray);
-        biomebasetemp = getField(biomebase, new String[] { "temperature", "F" }, float.class);
-        biomebasehumi = getField(biomebase, new String[] { "humidity", "G" }, float.class);
-        biomebaseidstring = getField(biomebase, new String[] { "y", "af", "ah" }, String.class);
-        biomebaseid = getField(biomebase, new String[] { "id" }, int.class);
+        biomebasearray = getNMSClass("[Lnet.minecraft.server.BiomeBase;");
+        biomebaselist = getPrivateFieldNoFail(biomebase, new String[] { "biomes" }, biomebasearray);
+        if (biomebaselist == null) {
+            biomebaseset = getPrivateField(biomebase, new String[] { "i" }, Set.class); // 1.9
+        }
+        biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "C", "F" }, float.class);
+        biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "D", "G" }, float.class);
+        biomebaseidstring = getPrivateField(biomebase, new String[] { "z", "y", "af", "ah" }, String.class);
+        biomebaseid = getPrivateField(biomebase, new String[] { "id", "E" }, int.class);
         /* n.m.s.World */
         nmsworld = getNMSClass("net.minecraft.server.WorldServer");
         chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
-        nmsw_chunkproviderserver = getField(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
-        getworldborder = getMethodNoFail(nmsworld, new String[] { "af" }, nulltypes);
+        nmsw_chunkproviderserver = getFieldNoFail(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
+        if (nmsw_chunkproviderserver == null) {
+            nmsw_getchunkproviderserver = getMethod(nmsworld, new String[] { "getChunkProviderServer" }, nulltypes); // 1.9
+        }
+        getworldborder = getMethodNoFail(nmsworld, new String[] { "getWorldBorder", "af" }, nulltypes);
         
         longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
         if(longhashset != null) {
@@ -90,7 +97,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q", "u" }, long.class);
+        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "v", "s", "q", "u" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
@@ -127,7 +134,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
 
         /** Tile entity */
         nms_tileentity = getNMSClass("net.minecraft.server.TileEntity");
-        nmst_readnbt = getMethod(nms_tileentity, new String[] { "b" }, new Class[] { nbttagcompound });
+        nmst_readnbt = getMethod(nms_tileentity, new String[] { "a", "b" }, new Class[] { nbttagcompound });
         nmst_getposition = getMethodNoFail(nms_tileentity, new String[] { "getPosition" }, new Class[0]); // Try 1.8 method
         if (nmst_getposition == null) {
             nmst_x = getField(nms_tileentity, new String[] { "x" }, int.class); 
