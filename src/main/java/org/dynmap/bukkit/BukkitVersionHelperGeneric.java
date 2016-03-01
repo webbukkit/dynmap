@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -41,6 +42,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> biomebase;
     protected Class<?> biomebasearray;
     protected Field biomebaselist;
+    protected Field biomebaseset;
     protected Field biomebasetemp;
     protected Field biomebasehumi;
     protected Field biomebaseidstring;
@@ -50,6 +52,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> chunkprovserver;
     protected Class<?> longhashset;
     protected Field nmsw_chunkproviderserver;
+    protected Method nmsw_getchunkproviderserver;
     protected Field cps_unloadqueue;
     protected Method lhs_containskey;
     /** n.m.s.Chunk */
@@ -201,6 +204,12 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
      * Get private field
      */
     protected Field getPrivateField(Class<?> cls, String[] ids, Class<?> type) {
+        return getPrivateField(cls, ids, type, false);
+    }
+    protected Field getPrivateFieldNoFail(Class<?> cls, String[] ids, Class<?> type) {
+        return getPrivateField(cls, ids, type, true);
+    }
+    private Field getPrivateField(Class<?> cls, String[] ids, Class<?> type, boolean nofail) {
         if((cls == null) || (type == null)) return null;
         for(String id : ids) {
             try {
@@ -212,8 +221,10 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
             } catch (NoSuchFieldException nsfx) {
             }
         }
-        Log.severe("Unable to find field " + ids[0] + " for " + cls.getName());
-        failed = true;
+        if(!nofail) {
+            Log.severe("Unable to find field " + ids[0] + " for " + cls.getName());
+            failed = true;
+        }
         return null;
     }
     protected Object getFieldValue(Object obj, Field field, Object def) {
@@ -271,7 +282,11 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
      * Get list of defined biomebase objects
      */
     public Object[] getBiomeBaseList() {
-        return (Object[]) getFieldValue(biomebase, biomebaselist, new Object[0]);
+        if (biomebaselist != null) {
+            return (Object[]) getFieldValue(biomebase, biomebaselist, new Object[0]);
+        } else {
+            return ((Set) getFieldValue(biomebase, biomebaselist, Collections.emptySet())).toArray();
+        }
     }
     /** Get temperature from biomebase */
     public float getBiomeBaseTemperature(Object bb) {
@@ -297,7 +312,12 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
 
     /* Get unload queue for given NMS world */
     public Object getUnloadQueue(World world) {
-        Object cps = getFieldValue(getNMSWorld(world), nmsw_chunkproviderserver, null); // Get chunkproviderserver
+        Object cps = null;
+        if (nmsw_chunkproviderserver != null) {
+            cps = getFieldValue(getNMSWorld(world), nmsw_chunkproviderserver, null);
+        } else {
+            cps = callMethod(getNMSWorld(world), nmsw_getchunkproviderserver, nullargs, null);
+        }
         if(cps != null) {
             return getFieldValue(cps, cps_unloadqueue, null);
         }
