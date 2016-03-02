@@ -31,6 +31,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Method worldbordermaxx;
     private Method worldborderminz;
     private Method worldbordermaxz;
+    private Method getbiomebyid;
+    private Method getidbybiome;
     
     BukkitVersionHelperCB() {
     }
@@ -63,15 +65,26 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
         biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
-        biomebaselist = getPrivateField(biomebase, new String[] { "biomes" }, biomebasearray);
-        biomebasetemp = getField(biomebase, new String[] { "temperature", "F" }, float.class);
-        biomebasehumi = getField(biomebase, new String[] { "humidity", "G" }, float.class);
-        biomebaseidstring = getField(biomebase, new String[] { "y", "af", "ah" }, String.class);
-        biomebaseid = getField(biomebase, new String[] { "id" }, int.class);
+        biomebaselist = getPrivateFieldNoFail(biomebase, new String[] { "biomes" }, biomebasearray);
+        if (biomebaselist == null) {
+            getbiomebyid = getMethod(biomebase, new String[] { "a" }, new Class[] { int.class} );
+        }
+        biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C" }, float.class);
+        biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D" }, float.class);
+        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z" }, String.class);
+        biomebaseid = getFieldNoFail(biomebase, new String[] { "id" }, int.class);
+        if (biomebaseid == null) {
+            getidbybiome = getMethod(biomebase, new String[] { "a" }, new Class[] { biomebase } );
+        }
         /* n.m.s.World */
         nmsworld = getNMSClass("net.minecraft.server.WorldServer");
         chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
-        nmsw_chunkproviderserver = getField(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
+        nmsw_chunkproviderserver = getPrivateFieldNoFail(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
+        if (nmsw_chunkproviderserver == null) {
+            Class nmsworldbase = getNMSClass("net.minecraft.server.World");
+            Class nmsichunkprovider = getNMSClass("net.minecraft.server.IChunkProvider");
+            nmsw_chunkproviderserver = getPrivateField(nmsworldbase, new String[] { "chunkProvider" }, nmsichunkprovider);
+        }
         getworldborder = getMethodNoFail(nmsworld, new String[] { "af" }, nulltypes);
         
         longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
@@ -90,7 +103,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q", "u" }, long.class);
+        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
@@ -127,7 +140,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
 
         /** Tile entity */
         nms_tileentity = getNMSClass("net.minecraft.server.TileEntity");
-        nmst_readnbt = getMethod(nms_tileentity, new String[] { "b" }, new Class[] { nbttagcompound });
+        nmst_readnbt = getMethod(nms_tileentity, new String[] { "b", "save" }, new Class[] { nbttagcompound });
         nmst_getposition = getMethodNoFail(nms_tileentity, new String[] { "getPosition" }, new Class[0]); // Try 1.8 method
         if (nmst_getposition == null) {
             nmst_x = getField(nms_tileentity, new String[] { "x" }, int.class); 
@@ -268,4 +281,38 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         }
         return p;
     }
+    private Object[] biomelist = null;
+    /**
+     * Get list of defined biomebase objects
+     */
+    public Object[] getBiomeBaseList() {
+        if (getbiomebyid != null) {
+            if (biomelist == null) {
+                biomelist = new Object[256];
+                for (int i = 0; i < 256; i++) {
+                    try {
+                        biomelist[i] = getbiomebyid.invoke(biomebase, i);
+                    } catch (IllegalAccessException x) {
+                    } catch (IllegalArgumentException x) {
+                    } catch (InvocationTargetException x) {
+                    }
+                }
+            }
+            return biomelist;
+        }
+        return super.getBiomeBaseList();
+    }
+    /** Get ID from biomebase */
+    public int getBiomeBaseID(Object bb) {
+        if (getidbybiome != null) {
+            try {
+                return (Integer) getidbybiome.invoke(biomebase,  bb);
+            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException e) {
+            } catch (InvocationTargetException e) {
+            }
+        }
+        return super.getBiomeBaseID(bb);
+    }
+
 }

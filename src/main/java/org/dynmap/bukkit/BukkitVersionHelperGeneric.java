@@ -200,7 +200,19 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get private field
      */
+    protected Field getPrivateFieldNoFail(Class<?> cls, String[] ids, Class<?> type) {
+        return getPrivateField(cls, ids, type, true);
+    }
+    /**
+     * Get private field
+     */
     protected Field getPrivateField(Class<?> cls, String[] ids, Class<?> type) {
+        return getPrivateField(cls, ids, type, false);
+    }
+    /**
+     * Get private field
+     */
+    protected Field getPrivateField(Class<?> cls, String[] ids, Class<?> type, boolean nofail) {
         if((cls == null) || (type == null)) return null;
         for(String id : ids) {
             try {
@@ -212,8 +224,10 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
             } catch (NoSuchFieldException nsfx) {
             }
         }
-        Log.severe("Unable to find field " + ids[0] + " for " + cls.getName());
-        failed = true;
+        if (!nofail) {
+            Log.severe("Unable to find field " + ids[0] + " for " + cls.getName());
+            failed = true;
+        }
         return null;
     }
     protected Object getFieldValue(Object obj, Field field, Object def) {
