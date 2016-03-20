@@ -88,6 +88,10 @@ public abstract class BukkitVersionHelper {
      * Test if normal chunk snapshot
      */
 //    public abstract boolean isCraftChunkSnapshot(ChunkSnapshot css);
+    /** 
+     * Remove entities from given chunk
+     */
+    public abstract void removeEntitiesFromChunk(Chunk c);
     /**
      * Get inhabited ticks count from chunk
      */

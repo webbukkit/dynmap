@@ -54,6 +54,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Method lhs_containskey;
     /** n.m.s.Chunk */
     protected Class<?> nmschunk;
+    protected Method nmsc_removeentities;
     protected Field nmsc_tileentities;
     protected Field nmsc_inhabitedticks;
     /** nbt classes */
@@ -335,7 +336,13 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
 //        }
 //        return false;
 //    }
-
+    /** Remove entities from given chunk */
+    public void removeEntitiesFromChunk(Chunk c) {
+        Object omsc = callMethod(c, cc_gethandle, nullargs, null);
+        if(omsc != null) {
+            callMethod(omsc, nmsc_removeentities, nullargs, null);
+        }
+    }
     /**
      * Get inhabited ticks count from chunk
      */
