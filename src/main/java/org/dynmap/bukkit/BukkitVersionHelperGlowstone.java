@@ -92,12 +92,6 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     }
 
     @Override
-    public void removeEntitiesFromChunk(Chunk c) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public long getInhabitedTicks(Chunk c) {
         // TODO Auto-generated method stub
         return 0;
