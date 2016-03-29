@@ -922,11 +922,15 @@ public class NewMapChunkCache extends MapChunkCache {
                      * while the actual in-use chunk area for a player where the chunks are managed
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
-                    helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
+                    if (w.isChunkInUse(chunk.x, chunk.z) == false) {
+                        helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
+                    }
                     endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
                 }
                 else if (isunloadpending) { /* Else, if loaded and unload is pending */
-                    w.unloadChunkRequest(chunk.x, chunk.z); /* Request new unload */
+                    if (w.isChunkInUse(chunk.x, chunk.z) == false) {
+                        w.unloadChunkRequest(chunk.x, chunk.z); /* Request new unload */
+                    }
                     endChunkLoad(startTime, ChunkStats.LOADED_CHUNKS);
                 }
                 else {
