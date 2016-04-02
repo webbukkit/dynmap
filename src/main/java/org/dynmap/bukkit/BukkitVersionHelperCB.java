@@ -103,7 +103,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v" }, long.class);
+        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
@@ -288,8 +288,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     public Object[] getBiomeBaseList() {
         if (getbiomebyid != null) {
             if (biomelist == null) {
-                biomelist = new Object[256];
-                for (int i = 0; i < 256; i++) {
+                biomelist = new Object[1024];
+                for (int i = 0; i < 1024; i++) {
                     try {
                         biomelist[i] = getbiomebyid.invoke(biomebase, i);
                     } catch (IllegalAccessException x) {

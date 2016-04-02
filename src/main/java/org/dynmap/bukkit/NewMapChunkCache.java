@@ -48,6 +48,7 @@ public class NewMapChunkCache extends MapChunkCache {
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
     private long[] inhabitedTicks;  /* Index = (x-x_min) + ((z-z_min)*x_dim) */
+    private static final BiomeMap[] nullBiomeMap = { BiomeMap.NULL };
     
     private static BukkitVersionHelper helper = BukkitVersionHelper.getHelper();
     
@@ -145,8 +146,8 @@ public class NewMapChunkCache extends MapChunkCache {
                 sameneighborbiomecnt[i] = new byte[z_size];
                 biomemap[i] = new BiomeMap[z_size];
             }
+            ChunkSnapshot last_css = null;
             Object[] biomebase = null;
-            ChunkSnapshot biome_css = null;
             for(int i = 0; i < x_size; i++) {
                 for(int j = 0; j < z_size; j++) {
                     BiomeMap bm;
@@ -156,15 +157,19 @@ public class NewMapChunkCache extends MapChunkCache {
                     else {
                         stepPosition(BlockStep.Z_PLUS);
                     }
-                    if(snap != biome_css) {
-                        biomebase = null;
-                        biome_css = snap;
-                        if (biome_css instanceof SpoutChunkSnapshot) {
-                            biome_css = ((SpoutChunkSnapshot)biome_css).chunk;
+                    if (last_css != snap) {
+                        if ((snap instanceof EmptyChunk) || (snap instanceof PlainChunk)) {
+                            biomebase = nullBiomeMap;
                         }
-                        biomebase = helper.getBiomeBaseFromSnapshot(biome_css);
+                        else {
+                            biomebase = helper.getBiomeBaseFromSnapshot(snap);
+                        }
+                        last_css = snap;
                     }
-                    if(biomebase != null) {
+                    if (biomebase == nullBiomeMap) {
+                        bm = BiomeMap.NULL;
+                    }
+                    else if(biomebase != null) {
                         bm = BiomeMap.byBiomeID(helper.getBiomeBaseID(biomebase[bz << 4 | bx]));
                     }
                     else {
@@ -675,56 +680,6 @@ public class NewMapChunkCache extends MapChunkCache {
             return (sy < 4);
         }
     }
-    
-    private static class SpoutChunkSnapshot implements ChunkSnapshot {
-        private ChunkSnapshot chunk;
-        private short[] customids; 
-        private final int shiftx;
-        private final int shiftz;
-        
-        SpoutChunkSnapshot(ChunkSnapshot chunk, short[] customids, int height) {
-            this.chunk = chunk;
-            this.customids = customids.clone();
-            int sx = 11;
-            int sz = 7; /* 128 high values */
-            while(height > 128) {
-                sx++;
-                sz++;
-                height = (height >> 1);
-            }
-            shiftx = sx;
-            shiftz = sz;
-        }
-        /* Need these for interface, but not used */
-        public final int getX() { return chunk.getX(); }
-        public final int getZ() { return chunk.getZ(); }
-        public final String getWorldName() { return chunk.getWorldName(); }
-        public final Biome getBiome(int x, int z) { return chunk.getBiome(x, z); }
-        public final double getRawBiomeTemperature(int x, int z) { return chunk.getRawBiomeTemperature(x, z); }
-        public final double getRawBiomeRainfall(int x, int z) { return chunk.getRawBiomeRainfall(x, z); }
-        public final long getCaptureFullTime() { return chunk.getCaptureFullTime(); }
-        
-        public final int getBlockTypeId(int x, int y, int z) {
-            int id = customids[(x << shiftx) | (z << shiftz) | y];
-            if(id != 0) return id;
-            return chunk.getBlockTypeId(x, y, z);
-        }
-        public final int getBlockData(int x, int y, int z) {
-            return chunk.getBlockData(x, y, z);
-        }
-        public final int getBlockSkyLight(int x, int y, int z) {
-            return chunk.getBlockSkyLight(x, y, z);
-        }
-        public final int getBlockEmittedLight(int x, int y, int z) {
-            return chunk.getBlockEmittedLight(x, y, z);
-        }
-        public final int getHighestBlockYAt(int x, int z) {
-            return chunk.getHighestBlockYAt(x, z);
-        }
-        public boolean isSectionEmpty(int sy) {
-            return chunk.isSectionEmpty(sy);
-        }
-    }
 
     private static final EmptyChunk EMPTY = new EmptyChunk();
     private static final PlainChunk STONE = new PlainChunk(1);
@@ -1056,7 +1011,7 @@ public class NewMapChunkCache extends MapChunkCache {
     static {
         Biome[] b = Biome.values();
         BiomeMap[] bm = BiomeMap.values();
-        biome_to_bmap = new BiomeMap[256];
+        biome_to_bmap = new BiomeMap[1024];
         for(int i = 0; i < biome_to_bmap.length; i++) {
             biome_to_bmap[i] = BiomeMap.NULL;
         }
