@@ -318,7 +318,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /* Get unload queue for given NMS world */
     public Object getUnloadQueue(World world) {
         Object cps = getFieldValue(getNMSWorld(world), nmsw_chunkproviderserver, null); // Get chunkproviderserver
-        if(cps != null) {
+        if ((cps != null) && (cps_unloadqueue != null)) {
             return getFieldValue(cps, cps_unloadqueue, null);
         }
         return null;
