@@ -878,7 +878,13 @@ public class NewMapChunkCache extends MapChunkCache {
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
                     if (w.isChunkInUse(chunk.x, chunk.z) == false) {
-                        helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
+                        if (helper.isUnloadChunkBroken()) {
+                            // Give up on broken unloadChunk API - lets see if this works
+                            w.unloadChunkRequest(chunk.x, chunk.z);
+                        }
+                        else {
+                            helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
+                        }
                     }
                     endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
                 }

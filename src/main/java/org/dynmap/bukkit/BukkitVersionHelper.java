@@ -144,4 +144,8 @@ public abstract class BukkitVersionHelper {
      * Get world border
      */
     public Polygon getWorldBorder(World world) { return null; }
+    /**
+     * Test if broken unloadChunk
+     */
+    public boolean isUnloadChunkBroken() { return false; }
 }

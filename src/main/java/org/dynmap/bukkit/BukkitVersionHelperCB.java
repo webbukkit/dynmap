@@ -33,8 +33,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Method worldbordermaxz;
     private Method getbiomebyid;
     private Method getidbybiome;
+    private boolean isBadUnload = false;
     
     BukkitVersionHelperCB() {
+        isBadUnload = Bukkit.getServer().getBukkitVersion().contains("1.9");
     }
     @Override
     protected String getNMSPackage() {
@@ -314,5 +316,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         }
         return super.getBiomeBaseID(bb);
     }
+    /**
+     * Test if broken unloadChunk
+     */
+    @Override
+    public boolean isUnloadChunkBroken() { return isBadUnload; }
 
 }
