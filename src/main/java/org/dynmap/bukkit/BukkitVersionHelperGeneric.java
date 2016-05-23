@@ -3,7 +3,6 @@ package org.dynmap.bukkit;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -99,7 +98,6 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
 
     BukkitVersionHelperGeneric() {
         failed = false;
-        Server srv = Bukkit.getServer();
         /* Look up base classname for bukkit server - tells us OBC package */
         obc_package = Bukkit.getServer().getClass().getPackage().getName();
         /* Get NMS package */
