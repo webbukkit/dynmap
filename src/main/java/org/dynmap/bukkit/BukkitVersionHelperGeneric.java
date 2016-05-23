@@ -24,8 +24,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected String nms_package; // Package used for net.minecraft.server
     private boolean failed;
     protected static final Object[] nullargs = new Object[0];
-    protected static final Class[] nulltypes = new Class[0];
-    private static final Map nullmap = Collections.emptyMap();
+    protected static final Class<?>[] nulltypes = new Class[0];
+    private static final Map<?, ?> nullmap = Collections.emptyMap();
     
     /** CraftChunkSnapshot */
     private Class<?> craftchunksnapshot;
@@ -249,7 +249,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get method
      */
-    protected Method getMethod(Class<?> cls, String[] ids, Class[] args) {
+    protected Method getMethod(Class<?> cls, String[] ids, Class<?>[] args) {
         if(cls == null) return null;
         for(String id : ids) {
             try {
@@ -262,7 +262,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         failed = true;
         return null;
     }
-    protected Method getMethodNoFail(Class<?> cls, String[] ids, Class[] args) {
+    protected Method getMethodNoFail(Class<?> cls, String[] ids, Class<?>[] args) {
         if(cls == null) return null;
         for(String id : ids) {
             try {
@@ -360,10 +360,10 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     }
 
     /** Get tile entities map from chunk */
-    public Map getTileEntitiesForChunk(Chunk c) {
+    public Map<?, ?> getTileEntitiesForChunk(Chunk c) {
         Object omsc = callMethod(c, cc_gethandle, nullargs, null);
         if(omsc != null) {
-            return (Map)getFieldValue(omsc, nmsc_tileentities, nullmap);
+            return (Map<?, ?>)getFieldValue(omsc, nmsc_tileentities, nullmap);
         }
         return nullmap;
     }
