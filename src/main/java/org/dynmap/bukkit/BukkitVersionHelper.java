@@ -90,7 +90,7 @@ public abstract class BukkitVersionHelper {
     /** 
      * Get tile entities map from chunk
      */
-    public abstract Map getTileEntitiesForChunk(Chunk c);
+    public abstract Map<?, ?> getTileEntitiesForChunk(Chunk c);
     /**
      * Get X coordinate of tile entity
      */

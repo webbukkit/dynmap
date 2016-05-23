@@ -98,7 +98,7 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     }
 
     @Override
-    public Map getTileEntitiesForChunk(Chunk c) {
+    public Map<?, ?> getTileEntitiesForChunk(Chunk c) {
         // TODO Auto-generated method stub
         return Collections.emptyMap();
     }
