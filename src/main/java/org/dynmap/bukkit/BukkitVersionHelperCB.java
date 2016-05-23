@@ -11,7 +11,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
-import org.dynmap.common.BiomeMap;
 import org.dynmap.utils.Polygon;
 
 /**
@@ -83,8 +82,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
         nmsw_chunkproviderserver = getPrivateFieldNoFail(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
         if (nmsw_chunkproviderserver == null) {
-            Class nmsworldbase = getNMSClass("net.minecraft.server.World");
-            Class nmsichunkprovider = getNMSClass("net.minecraft.server.IChunkProvider");
+            Class<?> nmsworldbase = getNMSClass("net.minecraft.server.World");
+            Class<?> nmsichunkprovider = getNMSClass("net.minecraft.server.IChunkProvider");
             nmsw_chunkproviderserver = getPrivateField(nmsworldbase, new String[] { "chunkProvider" }, nmsichunkprovider);
         }
         getworldborder = getMethodNoFail(nmsworld, new String[] { "af" }, nulltypes);

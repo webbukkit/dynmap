@@ -1,15 +1,10 @@
 package org.dynmap.bukkit;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.Log;
@@ -95,7 +90,7 @@ public abstract class BukkitVersionHelper {
     /** 
      * Get tile entities map from chunk
      */
-    public abstract Map getTileEntitiesForChunk(Chunk c);
+    public abstract Map<?, ?> getTileEntitiesForChunk(Chunk c);
     /**
      * Get X coordinate of tile entity
      */
