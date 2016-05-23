@@ -11,7 +11,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
-import org.dynmap.common.BiomeMap;
 import org.dynmap.utils.Polygon;
 
 /**
