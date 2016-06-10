@@ -51,6 +51,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> longhashset;
     protected Field nmsw_chunkproviderserver;
     protected Field cps_unloadqueue;
+    protected boolean cps_unloadqueue_isSet;
     protected Method lhs_containskey;
     /** n.m.s.Chunk */
     protected Class<?> nmschunk;
