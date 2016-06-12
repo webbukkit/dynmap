@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -328,6 +329,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /* For testing unload queue for presence of givne chunk */
     public boolean isInUnloadQueue(Object unloadqueue, int x, int z) {
         if(unloadqueue != null) {
+            if (cps_unloadqueue_isSet)
+                return ((Set) unloadqueue).contains(Long.valueOf((long)x & 0xFFFFFFFF | ((long)z & 0xFFFFFFFF) << 32));
             return (Boolean)callMethod(unloadqueue, lhs_containskey, new Object[] { x, z }, true);
         }
         return true;
