@@ -3,10 +3,10 @@ package org.dynmap.bukkit;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -24,8 +24,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected String nms_package; // Package used for net.minecraft.server
     private boolean failed;
     protected static final Object[] nullargs = new Object[0];
-    protected static final Class[] nulltypes = new Class[0];
-    private static final Map nullmap = Collections.emptyMap();
+    protected static final Class<?>[] nulltypes = new Class[0];
+    private static final Map<?, ?> nullmap = Collections.emptyMap();
     
     /** CraftChunkSnapshot */
     private Class<?> craftchunksnapshot;
@@ -51,6 +51,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> longhashset;
     protected Field nmsw_chunkproviderserver;
     protected Field cps_unloadqueue;
+    protected boolean cps_unloadqueue_isSet;
     protected Method lhs_containskey;
     /** n.m.s.Chunk */
     protected Class<?> nmschunk;
@@ -97,7 +98,6 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
 
     BukkitVersionHelperGeneric() {
         failed = false;
-        Server srv = Bukkit.getServer();
         /* Look up base classname for bukkit server - tells us OBC package */
         obc_package = Bukkit.getServer().getClass().getPackage().getName();
         /* Get NMS package */
@@ -249,7 +249,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get method
      */
-    protected Method getMethod(Class<?> cls, String[] ids, Class[] args) {
+    protected Method getMethod(Class<?> cls, String[] ids, Class<?>[] args) {
         if(cls == null) return null;
         for(String id : ids) {
             try {
@@ -262,7 +262,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         failed = true;
         return null;
     }
-    protected Method getMethodNoFail(Class<?> cls, String[] ids, Class[] args) {
+    protected Method getMethodNoFail(Class<?> cls, String[] ids, Class<?>[] args) {
         if(cls == null) return null;
         for(String id : ids) {
             try {
@@ -327,6 +327,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /* For testing unload queue for presence of givne chunk */
     public boolean isInUnloadQueue(Object unloadqueue, int x, int z) {
         if(unloadqueue != null) {
+            if (cps_unloadqueue_isSet)
+                return ((Set) unloadqueue).contains(Long.valueOf((long)x & 0xFFFFFFFF | ((long)z & 0xFFFFFFFF) << 32));
             return (Boolean)callMethod(unloadqueue, lhs_containskey, new Object[] { x, z }, true);
         }
         return true;
@@ -358,10 +360,10 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     }
 
     /** Get tile entities map from chunk */
-    public Map getTileEntitiesForChunk(Chunk c) {
+    public Map<?, ?> getTileEntitiesForChunk(Chunk c) {
         Object omsc = callMethod(c, cc_gethandle, nullargs, null);
         if(omsc != null) {
-            return (Map)getFieldValue(omsc, nmsc_tileentities, nullmap);
+            return (Map<?, ?>)getFieldValue(omsc, nmsc_tileentities, nullmap);
         }
         return nullmap;
     }

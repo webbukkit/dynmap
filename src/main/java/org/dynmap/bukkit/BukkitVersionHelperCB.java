@@ -5,13 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
-import org.dynmap.common.BiomeMap;
+import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.utils.Polygon;
 
 /**
@@ -36,7 +37,16 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private boolean isBadUnload = false;
     
     BukkitVersionHelperCB() {
-        isBadUnload = Bukkit.getServer().getBukkitVersion().contains("1.9");
+        String bukkitver = DynmapPlugin.plugin.getServer().getVersion();
+        String mcver = "1.0.0";
+        int idx = bukkitver.indexOf("(MC: ");
+        if(idx > 0) {
+            mcver = bukkitver.substring(idx+5);
+            idx = mcver.indexOf(")");
+            if(idx > 0) mcver = mcver.substring(0, idx);
+        }
+        isBadUnload = HDBlockModels.checkVersionRange(mcver, "1.9-");
+        Log.verboseinfo("MCVER=" + mcver + ", isBadUnload=" + isBadUnload);
     }
     @Override
     protected String getNMSPackage() {
@@ -83,8 +93,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
         nmsw_chunkproviderserver = getPrivateFieldNoFail(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
         if (nmsw_chunkproviderserver == null) {
-            Class nmsworldbase = getNMSClass("net.minecraft.server.World");
-            Class nmsichunkprovider = getNMSClass("net.minecraft.server.IChunkProvider");
+            Class<?> nmsworldbase = getNMSClass("net.minecraft.server.World");
+            Class<?> nmsichunkprovider = getNMSClass("net.minecraft.server.IChunkProvider");
             nmsw_chunkproviderserver = getPrivateField(nmsworldbase, new String[] { "chunkProvider" }, nmsichunkprovider);
         }
         getworldborder = getMethodNoFail(nmsworld, new String[] { "af" }, nulltypes);
@@ -94,18 +104,27 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { int.class, int.class });
         }
         else {
-            longhashset = getOBCClass("org.bukkit.craftbukkit.util.LongHashset");
-            lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
+            longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashset");
+            if (longhashset != null) {
+                lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
+            }
         }
 
-        cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longhashset); 
+        cps_unloadqueue_isSet = false;
+        if (longhashset != null) {
+            cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longhashset); 
+        }
+        if(cps_unloadqueue == null) {
+            cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, Set.class); 
+            cps_unloadqueue_isSet = true;
+        }
         if(cps_unloadqueue == null) {
             Log.info("Unload queue not found - default to unload all chunks");
         }
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v" }, long.class);
+        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v", "w" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
