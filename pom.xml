@@ -48,21 +48,28 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.5</version>
+				<version>3.0.0</version>
+				<configuration>
+					<artifactSet>
+						<includes>
+							<include>org.bstats:*</include>
+							<include>us.dynmap:dynmap-api:jar:*</include>
+							<include>us.dynmap:DynmapCore:jar:*</include>
+						</includes>
+					</artifactSet>
+					<relocations>
+						<relocation>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>org.dynmap</shadedPattern>
+						</relocation>
+					</relocations>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
 						</goals>
-						<configuration>
-							<artifactSet>
-								<includes>
-									<include>us.dynmap:dynmap-api:jar:*</include>
-									<include>us.dynmap:DynmapCore:jar:*</include>
-								</includes>
-							</artifactSet>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -90,6 +97,10 @@
 			</snapshots>
 			<id>dynmap-repo</id>
 			<url>http://repo.mikeprimm.com/</url>
+		</repository>
+		<repository>
+			<id>bstats-repo</id>
+			<url>http://repo.bstats.org/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -133,6 +144,11 @@
 			<groupId>org.anjocaido</groupId>
 			<artifactId>EssentialsGroupManager</artifactId>
 			<version>2.10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bstats</groupId>
+			<artifactId>bstats-bukkit</artifactId>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 	<version>2.5-SNAPSHOT</version>
