@@ -81,8 +81,14 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         if (biomebaselist == null) {
             getbiomebyid = getMethod(biomebase, new String[] { "a" }, new Class[] { int.class} );
         }
-        biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C" }, float.class);
-        biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D" }, float.class);
+        biomebasetemp = getPrivateFieldNoFail(biomebase, new String[] { "B" }, float.class);
+        if (biomebasetemp != null) {
+            biomebasehumi = getPrivateField(biomebase, new String[] { "C" }, float.class);
+        }
+        else {
+            biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C" }, float.class);
+            biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D" }, float.class);
+        }
         biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z" }, String.class);
         biomebaseid = getFieldNoFail(biomebase, new String[] { "id" }, int.class);
         if (biomebaseid == null) {
