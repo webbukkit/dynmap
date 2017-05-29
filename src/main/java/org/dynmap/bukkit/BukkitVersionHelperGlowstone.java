@@ -19,7 +19,7 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     
     public BukkitVersionHelperGlowstone() {
         try {
-            Class<?> c = Class.forName("net.glowstone.GlowChunkSnapshot");
+            Class<?> c = Class.forName("net.glowstone.chunk.GlowChunkSnapshot");
             rawbiome = c.getMethod("getRawBiomes", new Class[0]);
 
             /** Server */
