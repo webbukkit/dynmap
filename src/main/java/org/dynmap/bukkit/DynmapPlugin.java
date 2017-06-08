@@ -1,7 +1,6 @@
 package org.dynmap.bukkit;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
@@ -16,6 +15,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.bstats.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -1536,86 +1536,37 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
     
     private void initMetrics() {
-        try {
-            metrics = new Metrics(this);
-            
-            Metrics.Graph features = metrics.createGraph("Features Used");
-            
-            features.addPlotter(new Metrics.Plotter("Internal Web Server") {
-                @Override
-                public int getValue() {
-                    if (!core.configuration.getBoolean("disable-webserver", false))
-                        return 1;
-                    return 0;
-                }
-            });
-            features.addPlotter(new Metrics.Plotter("Login Security") {
-                @Override
-                public int getValue() {
-                    if(core.configuration.getBoolean("login-enabled", false))
-                        return 1;
-                    return 0;
-                }
-            });
-            features.addPlotter(new Metrics.Plotter("Player Info Protected") {
-                @Override
-                public int getValue() {
-                    if(core.player_info_protected)
-                        return 1;
-                    return 0;
-                }
-            });
-            
-            Metrics.Graph maps = metrics.createGraph("Map Data");
-            maps.addPlotter(new Metrics.Plotter("Worlds") {
-                @Override
-                public int getValue() {
-                    if(core.mapManager != null)
-                        return core.mapManager.getWorlds().size();
-                    return 0;
-                }
-            });
-            maps.addPlotter(new Metrics.Plotter("Maps") {
-                @Override
-                public int getValue() {
-                    int cnt = 0;
-                    if(core.mapManager != null) {
-                        for(DynmapWorld w :core.mapManager.getWorlds()) {
-                            cnt += w.maps.size();
-                        }
-                    }
-                    return cnt;
-                }
-            });
-            maps.addPlotter(new Metrics.Plotter("HD Maps") {
-                @Override
-                public int getValue() {
-                    int cnt = 0;
-                    if(core.mapManager != null) {
-                        for(DynmapWorld w :core.mapManager.getWorlds()) {
-                            for(MapType mt : w.maps) {
-                                if(mt instanceof HDMap) {
-                                    cnt++;
-                                }
-                            }
-                        }
-                    }
-                    return cnt;
-                }
-            });
-            for (String mod : modsused) {
-                features.addPlotter(new Metrics.Plotter(mod + " Blocks") {
-                    @Override
-                    public int getValue() {
-                        return 1;
-                    }
-                });
+        metrics = new Metrics(this);
+
+        metrics.addCustomChart(new Metrics.MultiLineChart("features_used") {
+            @Override
+            public HashMap<String, Integer> getValues(HashMap<String, Integer> hashMap) {
+                hashMap.put("internal_web_server", core.configuration.getBoolean("disable-webserver", false) ? 0 : 1);
+                hashMap.put("login_security", core.configuration.getBoolean("login-enabled", false) ? 1 : 0);
+                hashMap.put("player_info_protected", core.player_info_protected ? 1 : 0);
+                for (String mod : modsused)
+                    hashMap.put(mod + "_blocks", 1);
+                return hashMap;
             }
-            
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
-        }
+        });
+
+        metrics.addCustomChart(new Metrics.MultiLineChart("map_data") {
+            @Override
+            public HashMap<String, Integer> getValues(HashMap<String, Integer> hashMap) {
+                hashMap.put("worlds", core.mapManager != null ? core.mapManager.getWorlds().size() : 0);
+                int maps = 0, hdmaps = 0;
+                if (core.mapManager != null)
+                    for (DynmapWorld w : core.mapManager.getWorlds()) {
+                        for (MapType mt : w.maps)
+                            if (mt instanceof HDMap)
+                                ++hdmaps;
+                        maps += w.maps.size();
+                    }
+                hashMap.put("maps", maps);
+                hashMap.put("hd_maps", hdmaps);
+                return hashMap;
+            }
+        });
     }
     @Override
     public void processSignChange(int blkid, String world, int x, int y, int z,
