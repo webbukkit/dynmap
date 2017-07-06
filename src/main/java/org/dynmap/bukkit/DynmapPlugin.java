@@ -548,7 +548,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             HashMap<Integer, String> map = new HashMap<Integer, String>();
             for (int i = 0; i < bsn.length; i++) {
                 if (bsn[i] != null) {
-                    map.put(i, bsn[i]);
+                    map.put(i, "minecraft:" + bsn[i]);
                 }
             }
             return map;
@@ -818,7 +818,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         core.setMinecraftVersion(mcver);
         core.setDataFolder(dataDirectory);
         core.setServer(new BukkitServer());
-        core.setBlockNames(helper.getBlockShortNames());
         core.setBlockMaterialMap(helper.getBlockMaterialMap());
         core.setBiomeNames(helper.getBiomeNames());
         
