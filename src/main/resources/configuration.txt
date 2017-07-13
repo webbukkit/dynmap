@@ -278,11 +278,6 @@ custom-colors-support: true
 # Customize URL used for fetching player skins (%player% is macro for name)
 skin-url: "http://skins.minecraft.net/MinecraftSkins/%player%.png"
 
-# Control behavior for new (1.0+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
-#   default is 'newrose' (preserve pre-1.0 maps, rotate rose)
-#   'newnorth' is used to rotate maps and rose (requires fullrender of any HDMap map - same as 'newrose' for FlatMap or KzedMap)
-compass-mode: newnorth
-
 render-triggers:
   #- playermove
   #- playerjoin
@@ -444,16 +439,7 @@ url:
     #tiles: "tiles/"
     # markers base URL
     #markers: "tiles/"
-    
-# Spout support controls
-spout:
-    # If false, ignore spout even if detected
-    enabled: true
-    # If true, previously loaded textures will be assumed to still be valid (faster startup, but
-    # can result in stale textures if originals are updated - delete files in texturepacks/standard/spoout
-    # to clean cached textures and force reload on next startup)
-    use-existing-textures: true
-    
+
 # Customization commands - allows scripts to be run before/after certain events
 custom-commands:
     image-updates:
