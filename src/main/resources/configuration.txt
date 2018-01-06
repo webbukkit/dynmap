@@ -190,6 +190,12 @@ components:
   #  redirecturl: inactive.html
   #  #showmessage: 'You were inactive for too long.'
   
+  # List markers of current world in sidebar and pan map to them on click.
+  # Note: depends on org.dynmap.MarkersComponent component defined above
+  #- class: org.dynmap.ClientComponent
+  #  type: sidebarmarkers
+  #  #title: 'Markers (current world)'
+  
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"
 
