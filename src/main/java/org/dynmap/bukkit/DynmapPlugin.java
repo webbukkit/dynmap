@@ -78,6 +78,7 @@ import org.dynmap.MapManager;
 import org.dynmap.MapType;
 import org.dynmap.PlayerList;
 import org.dynmap.bukkit.permissions.BukkitPermissions;
+import org.dynmap.bukkit.permissions.LuckPermsPermissions;
 import org.dynmap.bukkit.permissions.NijikokunPermissions;
 import org.dynmap.bukkit.permissions.OpPermissions;
 import org.dynmap.bukkit.permissions.PEXPermissions;
@@ -800,6 +801,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             permissions = NijikokunPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = GroupManagerPermissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = LuckPermsPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap", perdefs);
         if (permissions == null)
