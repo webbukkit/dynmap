@@ -3,6 +3,7 @@ package org.dynmap.bukkit;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -15,6 +16,14 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.Log;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.ForwardingMultimap;
+import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 /**
  * Helper for isolation of bukkit version specific issues
@@ -95,6 +104,15 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Method server_getonlineplayers;
     /** Player */
     protected Method player_gethealth;
+    // CraftPlayer
+    private Class<?> obc_craftplayer;
+    private Method obcplayer_getprofile;
+    // GameProfile
+    private Class<?> cma_gameprofile;
+    private Method cmaprofile_getproperties;
+    // Property
+    private Class<?> cma_property;
+    private Method cmaproperty_getvalue;
 
     BukkitVersionHelperGeneric() {
         failed = false;
@@ -120,7 +138,17 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         server_getonlineplayers = getMethod(Server.class, new String[] { "getOnlinePlayers" }, new Class[0]);
         /** Player */
         player_gethealth = getMethod(Player.class, new String[] { "getHealth" }, new Class[0]);
-        
+
+        // CraftPlayer
+        obc_craftplayer = getOBCClass("org.bukkit.craftbukkit.entity.CraftPlayer");
+        obcplayer_getprofile = getMethod(obc_craftplayer, new String[] { "getProfile" }, new Class[0]);
+        // GameProfile
+        cma_gameprofile = getOBCClass("com.mojang.authlib.GameProfile");
+        cmaprofile_getproperties = getMethod(cma_gameprofile, new String[] { "getProperties" }, new Class[0]);
+        // Property
+        cma_property = getOBCClass("com.mojang.authlib.properties.Property");
+	    cmaproperty_getvalue = getMethod(cma_property, new String[] { "getValue" }, new Class[0]);
+        		
         /* Get NMS classes and fields */
         if(!failed)
             loadNMS();
@@ -481,6 +509,53 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         else {
             return ((Double) health).intValue();
         }
+    }
+    
+    private static final Gson gson = new GsonBuilder().create();
+
+    public class TexturesPayload {
+        public long timestamp;
+        public String profileId;
+        public String profileName;
+        public boolean isPublic;
+        public Map<String, ProfileTexture> textures;
+
+    }
+    public class ProfileTexture {
+        public String url;
+    }
+
+    /**
+     * Get skin URL for player
+     * @param player
+     */
+    public String getSkinURL(Player player) {
+    	String url = null;
+        Object profile = callMethod(player, obcplayer_getprofile, nullargs, null);
+    	if (profile != null) {
+    		Object propmap = callMethod(profile, cmaprofile_getproperties, nullargs, null);
+    		if ((propmap != null) && (propmap instanceof ForwardingMultimap)) {
+    			ForwardingMultimap<String, Object> fmm = (ForwardingMultimap<String, Object>) propmap;
+    			Collection<Object> txt = fmm.get("textures");
+    	        Object textureProperty = Iterables.getFirst(fmm.get("textures"), null);
+    	        if (textureProperty != null) {
+    				String val = (String) callMethod(textureProperty, cmaproperty_getvalue, nullargs, null);
+    				if (val != null) {
+    					TexturesPayload result = null;
+    					try {
+    						String json = new String(Base64Coder.decode(val), Charsets.UTF_8);
+    						result = gson.fromJson(json, TexturesPayload.class);
+    					} catch (JsonParseException e) {
+    					}
+    					if ((result != null) && (result.textures != null) && (result.textures.containsKey("SKIN"))) {
+    						url = result.textures.get("SKIN").url;
+    					}
+    				}
+    			}
+    		}
+    	}
+    	
+    	return url;
     }
 
 }

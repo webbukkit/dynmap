@@ -143,4 +143,9 @@ public abstract class BukkitVersionHelper {
      * Test if broken unloadChunk
      */
     public boolean isUnloadChunkBroken() { return false; }
+    /**
+     * Get skin URL for player
+     * @param player
+     */
+    public String getSkinURL(Player player) { return null; }
 }
