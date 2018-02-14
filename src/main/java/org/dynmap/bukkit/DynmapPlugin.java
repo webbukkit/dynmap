@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -560,11 +561,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public class BukkitPlayer extends BukkitCommandSender implements DynmapPlayer {
         private Player player;
         private OfflinePlayer offplayer;
+        private String skinurl;
+        private UUID uuid;
         
         public BukkitPlayer(Player p) {
             super(p);
             player = p;
             offplayer = p.getPlayer();
+            uuid = p.getUniqueId();
+            skinurl = helper.getSkinURL(p);
         }
         public BukkitPlayer(OfflinePlayer p) {
             super(null);
@@ -671,6 +676,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             else {
                 sortWeights.put(getName(), wt);
             }
+        }
+        @Override
+        public String getSkinURL() {
+        	return skinurl;
+        }
+        @Override
+        public UUID getUUID() {
+        	return uuid;
         }
     }
     /* Handler for generic console command sender */
