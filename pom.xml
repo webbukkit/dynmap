@@ -146,6 +146,11 @@
 			<version>2.10.1</version>
 		</dependency>
 		<dependency>
+			<groupId>me.lucko.luckperms</groupId>
+			<artifactId>luckperms-api</artifactId>
+			<version>4.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
 			<version>1.1</version>
