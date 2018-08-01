@@ -58,6 +58,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Class<?> nmsworld;
     protected Class<?> chunkprovserver;
     protected Class<?> longhashset;
+    protected Class<?> longset;
     protected Field nmsw_chunkproviderserver;
     protected Field cps_unloadqueue;
     protected boolean cps_unloadqueue_isSet;
