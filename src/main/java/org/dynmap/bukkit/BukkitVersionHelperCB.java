@@ -81,15 +81,20 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         if (biomebaselist == null) {
             getbiomebyid = getMethod(biomebase, new String[] { "a" }, new Class[] { int.class} );
         }
-        biomebasetemp = getPrivateFieldNoFail(biomebase, new String[] { "B" }, float.class);
+        biomebasetemp = getPrivateFieldNoFail(biomebase, new String[] {"aO"}, float.class);
         if (biomebasetemp != null) {
-            biomebasehumi = getPrivateField(biomebase, new String[] { "C" }, float.class);
+            biomebasehumi = getPrivateField(biomebase, new String[] { "aP" }, float.class);
+        } else {
+            biomebasetemp = getPrivateFieldNoFail(biomebase, new String[] { "B" }, float.class);
+            if (biomebasetemp != null) {
+                biomebasehumi = getPrivateField(biomebase, new String[] { "C" }, float.class);
+            }
+            else {
+                biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C" }, float.class);
+                biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D" }, float.class);
+            }
         }
-        else {
-            biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C" }, float.class);
-            biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D" }, float.class);
-        }
-        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z" }, String.class);
+        biomebaseidstring = getPrivateField(biomebase, new String[] { "aL", "y", "af", "ah", "z" }, String.class);
         biomebaseid = getFieldNoFail(biomebase, new String[] { "id" }, int.class);
         if (biomebaseid == null) {
             getidbybiome = getMethod(biomebase, new String[] { "a" }, new Class[] { biomebase } );
@@ -104,7 +109,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             nmsw_chunkproviderserver = getPrivateField(nmsworldbase, new String[] { "chunkProvider" }, nmsichunkprovider);
         }
         getworldborder = getMethodNoFail(nmsworld, new String[] { "af" }, nulltypes);
-        
+
         longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.util.LongHashSet");
         if(longhashset != null) {
             lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { int.class, int.class });
@@ -116,8 +121,16 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             }
         }
 
+        try {
+            longset = Class.forName("org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.longs.LongSet");
+        } catch (ClassNotFoundException ignore) {
+        }
         cps_unloadqueue_isSet = false;
-        if (longhashset != null) {
+        if (longset != null) {
+            cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longset);
+            // LongSet implements Set
+            cps_unloadqueue_isSet = true;
+        } else if (longhashset != null) {
             cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longhashset); 
         }
         if(cps_unloadqueue == null) {
@@ -130,7 +143,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v", "w" }, long.class);
+        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "A", "s", "q", "u", "v", "w" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
