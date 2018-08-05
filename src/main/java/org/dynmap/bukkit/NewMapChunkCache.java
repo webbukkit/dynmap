@@ -16,6 +16,7 @@ import org.dynmap.Log;
 import org.dynmap.bukkit.SnapshotCache.SnapshotRec;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.hdmap.HDBlockModels;
+import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.RenderPatchFactory;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.MapChunkCache;
@@ -61,6 +62,10 @@ public class NewMapChunkCache extends MapChunkCache {
         return (cy << 8) | (cz << 4) | cx;
     }
 
+    private static DynmapBlockState getTypeAt(ChunkSnapshot ss, int x, int y, int z) {
+        return (DynmapBlockState) BukkitVersionHelper.stateByID.get((ss.getBlockTypeId(x, y, z) << 4) | ss.getBlockData(x, y, z));
+    }
+
     /**
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
@@ -69,8 +74,7 @@ public class NewMapChunkCache extends MapChunkCache {
         private int x, y, z, chunkindex, bx, bz, off;  
         private ChunkSnapshot snap;
         private BlockStep laststep;
-        private int typeid = -1;
-        private int blkdata = -1;
+        private DynmapBlockState type = null;
         private final int worldheight;
         private final int x_base;
         private final int z_base;
@@ -101,23 +105,17 @@ public class NewMapChunkCache extends MapChunkCache {
             }
             laststep = BlockStep.Y_MINUS;
             if((y >= 0) && (y < worldheight))
-                typeid = blkdata = -1;
+                type = null;
             else
-                typeid = blkdata = 0;
+                type = DynmapBlockState.AIR;
         }
+        
         @Override
-        public final int getBlockTypeID() {
-            if(typeid < 0) {
-                typeid = snap.getBlockTypeId(bx, y, bz);
+        public final DynmapBlockState getBlockType() {
+            if (type == null) {
+                type = getTypeAt(snap, bx, y, bz);
             }
-            return typeid;
-        }
-        @Override
-        public final int getBlockData() {
-            if(blkdata < 0) {
-                blkdata = snap.getBlockData(bx, y, bz);
-            }
-            return blkdata;
+            return type;
         }
         @Override
         public int getBlockSkyLight() {
@@ -373,8 +371,7 @@ public class NewMapChunkCache extends MapChunkCache {
          */
         @Override
         public final void stepPosition(BlockStep step) {
-            typeid = -1;
-            blkdata = -1;
+            type = null;
             switch(step.ordinal()) {
                 case 0:
                     x++;
@@ -395,7 +392,7 @@ public class NewMapChunkCache extends MapChunkCache {
                 case 1:
                     y++;
                     if(y >= worldheight) {
-                        typeid = blkdata = 0;
+                        type = DynmapBlockState.AIR;
                     }
                     break;
                 case 2:
@@ -433,7 +430,7 @@ public class NewMapChunkCache extends MapChunkCache {
                 case 4:
                     y--;
                     if(y < 0) {
-                        typeid = blkdata = 0;
+                        type = DynmapBlockState.AIR;
                     }
                     break;
                 case 5:
@@ -479,10 +476,10 @@ public class NewMapChunkCache extends MapChunkCache {
                 laststep = BlockStep.Y_MINUS;
             this.y = y;
             if((y < 0) || (y >= worldheight)) {
-                typeid = blkdata = 0;
+                type = DynmapBlockState.AIR;
             }
             else {
-                typeid = blkdata = -1;
+                type = null;
             }
         }
         @Override
@@ -498,24 +495,24 @@ public class NewMapChunkCache extends MapChunkCache {
             return z;
         }
         @Override
-        public final int getBlockTypeIDAt(BlockStep s) {
+        public final DynmapBlockState getBlockTypeAt(BlockStep s) {
             if(s == BlockStep.Y_MINUS) {
                 if(y > 0)
-                    return snap.getBlockTypeId(bx, y-1, bz);
+                    return getTypeAt(snap, bx, y-1, bz);
             }
             else if(s == BlockStep.Y_PLUS) {
                 if(y < (worldheight-1))
-                    return snap.getBlockTypeId(bx, y+1, bz);
+                    return getTypeAt(snap, bx, y+1, bz);
             }
             else {
                 BlockStep ls = laststep;
                 stepPosition(s);
-                int tid = snap.getBlockTypeId(bx, y, bz);
+                DynmapBlockState tid = getTypeAt(snap, bx, y, bz);
                 unstepPosition();
                 laststep = ls;
                 return tid;
             }
-            return 0;
+            return DynmapBlockState.AIR;
         }
         @Override
         public BlockStep getLastStep() {
@@ -557,27 +554,15 @@ public class NewMapChunkCache extends MapChunkCache {
             return null;
         }
         @Override
-        public int getBlockTypeIDAt(int xoff, int yoff, int zoff) {
+        public DynmapBlockState getBlockTypeAt(int xoff, int yoff, int zoff) {
             int xx = this.x + xoff;
             int yy = this.y + yoff;
             int zz = this.z + zoff;
             int idx = ((xx >> 4) - x_min) + (((zz >> 4) - z_min) * x_dim);
             try {
-                return snaparray[idx].getBlockTypeId(xx & 0xF, yy, zz & 0xF);
+                return getTypeAt(snaparray[idx], xx & 0xF, yy, zz & 0xF);
             } catch (Exception x) {
-                return 0;
-            }
-        }
-        @Override
-        public int getBlockDataAt(int xoff, int yoff, int zoff) {
-            int xx = this.x + xoff;
-            int yy = this.y + yoff;
-            int zz = this.z + zoff;
-            int idx = ((xx >> 4) - x_min) + (((zz >> 4) - z_min) * x_dim);
-            try {
-                return snaparray[idx].getBlockData(xx & 0xF, yy, zz & 0xF);
-            } catch (Exception x) {
-                return 0;
+                return DynmapBlockState.AIR;
             }
         }
         @Override
@@ -600,6 +585,7 @@ public class NewMapChunkCache extends MapChunkCache {
         OurEndMapIterator(int x0, int y0, int z0) {
             super(x0, y0, z0);
         }
+        @Override
         public final int getBlockSkyLight() {
             return 15;
         }
@@ -609,35 +595,47 @@ public class NewMapChunkCache extends MapChunkCache {
      */
     private static class EmptyChunk implements ChunkSnapshot {
         /* Need these for interface, but not used */
+        @Override
         public int getX() { return 0; }
+        @Override
         public int getZ() { return 0; }
+        @Override
         public String getWorldName() { return ""; }
+        @Override
         public long getCaptureFullTime() { return 0; }
-        
+        @Override
         public final int getBlockTypeId(int x, int y, int z) {
             return 0;
         }
+        @Override
         public final int getBlockData(int x, int y, int z) {
             return 0;
         }
+        @Override
         public final int getBlockSkyLight(int x, int y, int z) {
             return 15;
         }
+        @Override
         public final int getBlockEmittedLight(int x, int y, int z) {
             return 0;
         }
+        @Override
         public final int getHighestBlockYAt(int x, int z) {
             return 0;
         }
+        @Override
         public Biome getBiome(int x, int z) {
             return null;
         }
+        @Override
         public double getRawBiomeTemperature(int x, int z) {
             return 0.0;
         }
+        @Override
         public double getRawBiomeRainfall(int x, int z) {
             return 0.0;
         }
+        @Override
         public boolean isSectionEmpty(int sy) {
             return true;
         }
@@ -650,32 +648,44 @@ public class NewMapChunkCache extends MapChunkCache {
         private int fillid;
         PlainChunk(int fillid) { this.fillid = fillid; }
         /* Need these for interface, but not used */
+        @Override
         public int getX() { return 0; }
+        @Override
         public int getZ() { return 0; }
+        @Override
         public String getWorldName() { return ""; }
+        @Override
         public Biome getBiome(int x, int z) { return null; }
+        @Override
         public double getRawBiomeTemperature(int x, int z) { return 0.0; }
+        @Override
         public double getRawBiomeRainfall(int x, int z) { return 0.0; }
+        @Override
         public long getCaptureFullTime() { return 0; }
-        
+        @Override
         public final int getBlockTypeId(int x, int y, int z) {
             if(y < 64) return fillid;
             return 0;
         }
+        @Override
         public final int getBlockData(int x, int y, int z) {
             return 0;
         }
+        @Override
         public final int getBlockSkyLight(int x, int y, int z) {
             if(y < 64)
                 return 0;
             return 15;
         }
+        @Override
         public final int getBlockEmittedLight(int x, int y, int z) {
             return 0;
         }
+        @Override
         public final int getHighestBlockYAt(int x, int z) {
             return 64;
         }
+        @Override
         public boolean isSectionEmpty(int sy) {
             return (sy < 4);
         }
@@ -833,9 +843,7 @@ public class NewMapChunkCache extends MapChunkCache {
                             int te_z = helper.getTileEntityZ(t);
                             int cx = te_x & 0xF;
                             int cz = te_z & 0xF;
-                            int blkid = ss.getBlockTypeId(cx, te_y, cz);
-                            int blkdat = ss.getBlockData(cx, te_y, cz);
-                            String[] te_fields = HDBlockModels.getTileEntityFieldsNeeded(blkid,  blkdat);
+                            String[] te_fields = HDBlockModels.getTileEntityFieldsNeeded(getTypeAt(ss, cx, te_y, cz));
                             if(te_fields != null) {
                                 Object nbtcompound = helper.readTileEntityNBT(t);
                                 

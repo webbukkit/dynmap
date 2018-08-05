@@ -791,6 +791,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             if(idx > 0) mcver = mcver.substring(0, idx);
         }
 
+        // Initialize block states
+        helper.initializeBlockStates();
+        
         /* Load extra biomes, if any */
         loadExtraBiomes(mcver);
              

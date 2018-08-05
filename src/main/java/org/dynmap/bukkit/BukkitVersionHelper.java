@@ -8,6 +8,8 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.Log;
+import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.Polygon;
 
 /**
@@ -44,6 +46,9 @@ public abstract class BukkitVersionHelper {
         }
         return helper;
     }
+    
+    public static DynIntHashMap stateByID = new DynIntHashMap();
+    
     protected BukkitVersionHelper() {
         
     }
@@ -148,4 +153,25 @@ public abstract class BukkitVersionHelper {
      * @param player
      */
     public String getSkinURL(Player player) { return null; }
+    /**
+     * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
+     */
+    public void initializeBlockStates() {
+        String[] blkname = getBlockShortNames();
+        // Keep it simple for now - just assume 16 meta states for each
+        
+        for (int i = 0; i < blkname.length; i++) {
+            // Only do defined names, and not "air"
+            if ((blkname[i] != null) && (!blkname[i].equals("air"))) {
+                Log.info("block " + blkname[i]);
+                DynmapBlockState basebs = new DynmapBlockState(null, 0, "minecraft:" + blkname, "meta=0");
+                stateByID.put((i << 4), basebs);
+                for (int m = 1; m < 16; m++) {
+                    DynmapBlockState bs = new DynmapBlockState(basebs, m, "minecraft:" + blkname, "meta=" + m);
+                    stateByID.put((i << 4) + m, bs);
+                }
+            }
+        }
+        stateByID.put(0, DynmapBlockState.AIR); // Include air block;
+    }
 }

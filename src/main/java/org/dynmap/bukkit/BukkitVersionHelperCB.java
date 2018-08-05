@@ -13,6 +13,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
 import org.dynmap.hdmap.HDBlockModels;
+import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.Polygon;
 
 /**
@@ -346,5 +347,4 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
      */
     @Override
     public boolean isUnloadChunkBroken() { return isBadUnload; }
-
 }
