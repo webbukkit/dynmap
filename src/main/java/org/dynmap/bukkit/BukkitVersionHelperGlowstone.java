@@ -140,7 +140,7 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     }
 
     @Override
-    public String[] getBlockShortNames() {
+    public String[] getBlockNames() {
         // TODO Auto-generated method stub
         return null;
     }

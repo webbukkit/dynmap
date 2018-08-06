@@ -186,18 +186,25 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     public void unloadChunkNoSave(World w, Chunk c, int cx, int cz) {
         w.unloadChunk(cx, cz, false, false);
     }
+    private String stripBlockString(String bname) {
+    	int idx = bname.indexOf('{');
+    	if (idx >= 0) bname = bname.substring(idx+1);
+    	idx = bname.indexOf('}');
+    	if (idx >= 0) bname = bname.substring(0, idx);
+    	return bname;
+    }
     /**
      * Get block short name list
      */
     @Override
-    public String[] getBlockShortNames() {
+    public String[] getBlockNames() {
         try {
             String[] names = new String[4096];
             if (blockbyid != null)  {
                 Object[] byid = (Object[])blockbyid.get(nmsblock);
                 for (int i = 0; i < names.length; i++) {
                     if (byid[i] != null) {
-                        names[i] = (String)blockname.get(byid[i]);
+                        names[i] = stripBlockString(byid[i].toString());
                     }
                 }
             }
@@ -205,7 +212,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                 for (int i = 0; i < names.length; i++) {
                     Object blk = blockbyidfunc.invoke(nmsblock, i);
                     if (blk != null) {
-                        names[i] = (String)blockname.get(blk);
+                        names[i] = stripBlockString(blk.toString());
                     }
                 }
             }

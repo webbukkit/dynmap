@@ -1,5 +1,6 @@
 package org.dynmap.bukkit;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -47,7 +48,7 @@ public abstract class BukkitVersionHelper {
         return helper;
     }
     
-    public static DynIntHashMap stateByID = new DynIntHashMap();
+    public static DynmapBlockState[] stateByID = new DynmapBlockState[65536];
     
     protected BukkitVersionHelper() {
         
@@ -121,9 +122,9 @@ public abstract class BukkitVersionHelper {
      */
     public abstract void unloadChunkNoSave(World w, Chunk c, int cx, int cz);
     /**
-     * Get block short name list
+     * Get block name list
      */
-    public abstract String[] getBlockShortNames();
+    public abstract String[] getBlockNames();
     /**
      * Get biome name list
      */
@@ -157,21 +158,28 @@ public abstract class BukkitVersionHelper {
      * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
      */
     public void initializeBlockStates() {
-        String[] blkname = getBlockShortNames();
+        String[] blkname = getBlockNames();
         // Keep it simple for now - just assume 16 meta states for each
-        
+        Arrays.fill(stateByID, DynmapBlockState.AIR);
         for (int i = 0; i < blkname.length; i++) {
+        	if (blkname[i] == null) continue;
+        	String bn = blkname[i];
+        	if (bn.indexOf(':') < 0) {
+        		bn = "minecraft:" + bn;
+        	}
             // Only do defined names, and not "air"
-            if ((blkname[i] != null) && (!blkname[i].equals("air"))) {
-                Log.info("block " + blkname[i]);
-                DynmapBlockState basebs = new DynmapBlockState(null, 0, "minecraft:" + blkname, "meta=0");
-                stateByID.put((i << 4), basebs);
+            if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
+                DynmapBlockState basebs = new DynmapBlockState(null, 0, bn, "meta=0");
+                stateByID[i << 4] = basebs;
                 for (int m = 1; m < 16; m++) {
-                    DynmapBlockState bs = new DynmapBlockState(basebs, m, "minecraft:" + blkname, "meta=" + m);
-                    stateByID.put((i << 4) + m, bs);
+                    DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, "meta=" + m);
+                    stateByID[(i << 4) + m] = bs;
                 }
             }
         }
-        stateByID.put(0, DynmapBlockState.AIR); // Include air block;
+        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
+        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
+        	Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
+        }
     }
 }

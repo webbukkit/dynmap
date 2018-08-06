@@ -545,11 +545,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         @Override
         public Map<Integer, String> getBlockIDMap() {
-            String[] bsn = helper.getBlockShortNames();
+            String[] bsn = helper.getBlockNames();
             HashMap<Integer, String> map = new HashMap<Integer, String>();
             for (int i = 0; i < bsn.length; i++) {
                 if (bsn[i] != null) {
-                    map.put(i, "minecraft:" + bsn[i]);
+                	if (bsn[i].indexOf(':') < 0)
+                		map.put(i, "minecraft:" + bsn[i]);
+                	else
+                		map.put(i, bsn[i]);
                 }
             }
             return map;

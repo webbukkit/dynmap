@@ -63,7 +63,7 @@ public class NewMapChunkCache extends MapChunkCache {
     }
 
     private static DynmapBlockState getTypeAt(ChunkSnapshot ss, int x, int y, int z) {
-        return (DynmapBlockState) BukkitVersionHelper.stateByID.get((ss.getBlockTypeId(x, y, z) << 4) | ss.getBlockData(x, y, z));
+        return BukkitVersionHelper.stateByID[(ss.getBlockTypeId(x, y, z) << 4) | ss.getBlockData(x, y, z)];
     }
 
     /**
