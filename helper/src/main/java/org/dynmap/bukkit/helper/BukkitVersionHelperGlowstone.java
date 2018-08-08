@@ -1,4 +1,4 @@
-package org.dynmap.bukkit;
+package org.dynmap.bukkit.helper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

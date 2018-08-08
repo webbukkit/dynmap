@@ -1,4 +1,4 @@
-package org.dynmap.bukkit;
+package org.dynmap.bukkit.helper;
 /**
  * Bukkit specific implementation of DynmapWorld
  */
@@ -177,9 +177,7 @@ public class BukkitWorld extends DynmapWorld {
     @Override
     public MapChunkCache getChunkCache(List<DynmapChunk> chunks) {
         if(isLoaded()) {
-            NewMapChunkCache c = new NewMapChunkCache();
-            c.setChunks(this, chunks);
-            return c;
+        	return BukkitVersionHelper.helper.getChunkCache(this, chunks);
         }
         else {
             return null;
@@ -244,6 +242,6 @@ public class BukkitWorld extends DynmapWorld {
     }
     @Override
     public Polygon getWorldBorder() {
-        return DynmapPlugin.plugin.getWorldBorder(world);
+        return BukkitVersionHelper.helper.getWorldBorder(world);
     }
 }

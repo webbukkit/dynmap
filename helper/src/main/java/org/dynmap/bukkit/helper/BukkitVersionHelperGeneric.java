@@ -1,4 +1,4 @@
-package org.dynmap.bukkit;
+package org.dynmap.bukkit.helper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +37,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     private static final Map<?, ?> nullmap = Collections.emptyMap();
     
     /** CraftChunkSnapshot */
-    private Class<?> craftchunksnapshot;
+    protected Class<?> craftchunksnapshot;
     private Field ccss_biome;
     /** CraftChunk */
     private Class<?> craftchunk;
@@ -114,7 +114,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     private Class<?> cma_property;
     private Method cmaproperty_getvalue;
 
-    BukkitVersionHelperGeneric() {
+    protected BukkitVersionHelperGeneric() {
         failed = false;
         /* Look up base classname for bukkit server - tells us OBC package */
         obc_package = Bukkit.getServer().getClass().getPackage().getName();

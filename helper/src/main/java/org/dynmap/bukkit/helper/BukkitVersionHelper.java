@@ -1,54 +1,26 @@
-package org.dynmap.bukkit;
+package org.dynmap.bukkit.helper;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.utils.DynIntHashMap;
+import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 
 /**
  * Helper for isolation of bukkit version specific issues
  */
 public abstract class BukkitVersionHelper {
-
-    private static BukkitVersionHelper helper = null;
+    public static BukkitVersionHelper helper = null;
     
-    public static final BukkitVersionHelper getHelper() {
-        if(helper == null) {
-            Log.info("version=" + Bukkit.getServer().getVersion());
-            if(Bukkit.getServer().getVersion().contains("MCPC")) {
-                Log.severe("*********************************************************************************");
-                Log.severe("* MCPC-Plus is no longer supported via the Bukkit version of Dynmap.            *");
-                Log.severe("* Install the appropriate Forge version of Dynmap.                              *");
-                Log.severe("* Add the DynmapCBBridge plugin to enable support for Dynmap-compatible plugins *");
-                Log.severe("*********************************************************************************");
-            }
-            else if(Bukkit.getServer().getVersion().contains("BukkitForge")) {
-                Log.severe("*********************************************************************************");
-                Log.severe("* BukkitForge is not supported via the Bukkit version of Dynmap.                *");
-                Log.severe("* Install the appropriate Forge version of Dynmap.                              *"); 
-                Log.severe("* Add the DynmapCBBridge plugin to enable support for Dynmap-compatible plugins *");
-                Log.severe("*********************************************************************************");
-            }
-            else if(Bukkit.getServer().getClass().getName().contains("GlowServer")) {
-                Log.info("Loading Glowstone support");
-                helper = new BukkitVersionHelperGlowstone();
-            }
-            else {
-                helper = new BukkitVersionHelperCB();
-            }
-        }
-        return helper;
-    }
-    
-    public static DynmapBlockState[] stateByID = new DynmapBlockState[65536];
+    public static DynmapBlockState[] stateByID;
     
     protected BukkitVersionHelper() {
         
@@ -160,6 +132,7 @@ public abstract class BukkitVersionHelper {
     public void initializeBlockStates() {
         String[] blkname = getBlockNames();
         // Keep it simple for now - just assume 16 meta states for each
+        stateByID = new DynmapBlockState[16*blkname.length];
         Arrays.fill(stateByID, DynmapBlockState.AIR);
         for (int i = 0; i < blkname.length; i++) {
         	if (blkname[i] == null) continue;
@@ -182,4 +155,18 @@ public abstract class BukkitVersionHelper {
         	Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
         }
     }
+    /**
+     * Create chunk cache for given chunks of given world
+     * @param dw - world
+     * @param chunks - chunk list
+     * @return cache
+     */
+    public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
+        NewMapChunkCache c = new NewMapChunkCache();
+        c.setChunks(dw, chunks);
+        return c;
+    }
+	public Object[] getBlockIDFieldFromSnapshot(ChunkSnapshot css) {
+		return null;
+	}
 }

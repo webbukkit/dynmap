@@ -1,4 +1,4 @@
-package org.dynmap.bukkit;
+package org.dynmap.bukkit.helper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +13,6 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.dynmap.Log;
 import org.dynmap.hdmap.HDBlockModels;
-import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.Polygon;
 
 /**
@@ -24,7 +23,6 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Class<?> nmsblockarray;
     private Class<?> nmsmaterial;
     private Field blockbyid;
-    private Field blockname;
     private Field material;
     private Method blockbyidfunc;   // 1.7+ method for getting block by id
     private Method getworldborder;  // 1.8+ method for getting world border
@@ -37,8 +35,9 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Method getidbybiome;
     private boolean isBadUnload = false;
     
-    BukkitVersionHelperCB() {
-        String bukkitver = DynmapPlugin.plugin.getServer().getVersion();
+    public BukkitVersionHelperCB() {
+    	
+        String bukkitver = Bukkit.getServer().getVersion();
         String mcver = "1.0.0";
         int idx = bukkitver.indexOf("(MC: ");
         if(idx > 0) {
@@ -72,7 +71,6 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         if (blockbyid == null) {
             blockbyidfunc = getMethod(nmsblock, new String[] { "getById", "e" }, new Class[] { int.class });
         }
-        blockname = getPrivateField(nmsblock, new String[] { "name", "b" }, String.class);
         material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);
 
         /* Set up biomebase fields */
@@ -87,10 +85,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             biomebasehumi = getPrivateField(biomebase, new String[] { "C" }, float.class);
         }
         else {
-            biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C" }, float.class);
-            biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D" }, float.class);
+            biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C", "aO" }, float.class);
+            biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D", "aP" }, float.class);
         }
-        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z" }, String.class);
+        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z", "aS" }, String.class);
         biomebaseid = getFieldNoFail(biomebase, new String[] { "id" }, int.class);
         if (biomebaseid == null) {
             getidbybiome = getMethod(biomebase, new String[] { "a" }, new Class[] { biomebase } );
@@ -115,6 +113,13 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             if (longhashset != null) {
                 lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
             }
+            else {
+            	longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.longs.LongSet");
+            	if (longhashset != null) {
+                    lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { long.class });
+                    cps_unloadqueue_isSet = true;
+            	}
+            }
         }
 
         cps_unloadqueue_isSet = false;
@@ -131,7 +136,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v", "w" }, long.class);
+        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v", "w", "A" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }

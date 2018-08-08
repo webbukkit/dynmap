@@ -1,4 +1,4 @@
-package org.dynmap.bukkit;
+package org.dynmap.bukkit.helper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
-import org.dynmap.bukkit.SnapshotCache.SnapshotRec;
+import org.dynmap.bukkit.helper.SnapshotCache.SnapshotRec;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.renderer.DynmapBlockState;
@@ -50,9 +50,7 @@ public class NewMapChunkCache extends MapChunkCache {
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
     private long[] inhabitedTicks;  /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     private static final BiomeMap[] nullBiomeMap = { BiomeMap.NULL };
-    
-    private static BukkitVersionHelper helper = BukkitVersionHelper.getHelper();
-    
+        
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
@@ -160,7 +158,7 @@ public class NewMapChunkCache extends MapChunkCache {
                             biomebase = nullBiomeMap;
                         }
                         else {
-                            biomebase = helper.getBiomeBaseFromSnapshot(snap);
+                            biomebase = BukkitVersionHelper.helper.getBiomeBaseFromSnapshot(snap);
                         }
                         last_css = snap;
                     }
@@ -168,7 +166,7 @@ public class NewMapChunkCache extends MapChunkCache {
                         bm = BiomeMap.NULL;
                     }
                     else if(biomebase != null) {
-                        bm = BiomeMap.byBiomeID(helper.getBiomeBaseID(biomebase[bz << 4 | bx]));
+                        bm = BiomeMap.byBiomeID(BukkitVersionHelper.helper.getBiomeBaseID(biomebase[bz << 4 | bx]));
                     }
                     else {
                         Biome bb = snap.getBiome(bx, bz);
@@ -745,7 +743,7 @@ public class NewMapChunkCache extends MapChunkCache {
     public int loadChunks(int max_to_load) {
         if(dw.isLoaded() == false)
             return 0;
-        Object queue = helper.getUnloadQueue(w);
+        Object queue = BukkitVersionHelper.helper.getUnloadQueue(w);
         
         int cnt = 0;
         if(iterator == null)
@@ -779,7 +777,7 @@ public class NewMapChunkCache extends MapChunkCache {
             ChunkSnapshot ss = null;
             long inhabited_ticks = 0;
             DynIntHashMap tileData = null;
-            SnapshotRec ssr = DynmapPlugin.plugin.sscache.getSnapshot(dw.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
+            SnapshotRec ssr = SnapshotCache.sscache.getSnapshot(dw.getName(), chunk.x, chunk.z, blockdata, biome, biomeraw, highesty); 
             if(ssr != null) {
                 ss = ssr.ss;
                 inhabited_ticks = ssr.inhabitedTicks;
@@ -803,7 +801,7 @@ public class NewMapChunkCache extends MapChunkCache {
             boolean didload = false;
             boolean isunloadpending = false;
             if (queue != null) {
-                isunloadpending = helper.isInUnloadQueue(queue, chunk.x, chunk.z);
+                isunloadpending = BukkitVersionHelper.helper.isInUnloadQueue(queue, chunk.x, chunk.z);
             }
             if (isunloadpending) {  /* Workaround: can't be pending if not loaded */
                 wasLoaded = true;
@@ -822,7 +820,7 @@ public class NewMapChunkCache extends MapChunkCache {
 
                 Chunk c = w.getChunkAt(chunk.x, chunk.z);   /* Get the chunk */
                 /* Get inhabited ticks count */
-                inhabited_ticks = helper.getInhabitedTicks(c);
+                inhabited_ticks = BukkitVersionHelper.helper.getInhabitedTicks(c);
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
@@ -836,20 +834,20 @@ public class NewMapChunkCache extends MapChunkCache {
                         ss = c.getChunkSnapshot(highesty, biome, biomeraw);
                         /* Get tile entity data */
                         List<Object> vals = new ArrayList<Object>();
-                        Map<?,?> tileents = helper.getTileEntitiesForChunk(c);
+                        Map<?,?> tileents = BukkitVersionHelper.helper.getTileEntitiesForChunk(c);
                         for(Object t : tileents.values()) {
-                            int te_x = helper.getTileEntityX(t);
-                            int te_y = helper.getTileEntityY(t);
-                            int te_z = helper.getTileEntityZ(t);
+                            int te_x = BukkitVersionHelper.helper.getTileEntityX(t);
+                            int te_y = BukkitVersionHelper.helper.getTileEntityY(t);
+                            int te_z = BukkitVersionHelper.helper.getTileEntityZ(t);
                             int cx = te_x & 0xF;
                             int cz = te_z & 0xF;
                             String[] te_fields = HDBlockModels.getTileEntityFieldsNeeded(getTypeAt(ss, cx, te_y, cz));
                             if(te_fields != null) {
-                                Object nbtcompound = helper.readTileEntityNBT(t);
+                                Object nbtcompound = BukkitVersionHelper.helper.readTileEntityNBT(t);
                                 
                                 vals.clear();
                                 for(String id: te_fields) {
-                                    Object val = helper.getFieldValue(nbtcompound, id);
+                                    Object val = BukkitVersionHelper.helper.getFieldValue(nbtcompound, id);
                                     if(val != null) {
                                         vals.add(id);
                                         vals.add(val);
@@ -869,7 +867,7 @@ public class NewMapChunkCache extends MapChunkCache {
                         ssr.ss = ss;
                         ssr.inhabitedTicks = inhabited_ticks;
                         ssr.tileData = tileData;
-                        DynmapPlugin.plugin.sscache.putSnapshot(dw.getName(), chunk.x, chunk.z, ssr, blockdata, biome, biomeraw, highesty);
+                        SnapshotCache.sscache.putSnapshot(dw.getName(), chunk.x, chunk.z, ssr, blockdata, biome, biomeraw, highesty);
                     }
                 }
                 int chunkIndex = (chunk.x-x_min) + (chunk.z - z_min)*x_dim;
@@ -886,12 +884,12 @@ public class NewMapChunkCache extends MapChunkCache {
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
                     if (w.isChunkInUse(chunk.x, chunk.z) == false) {
-                        if (helper.isUnloadChunkBroken()) {
+                        if (BukkitVersionHelper.helper.isUnloadChunkBroken()) {
                             // Give up on broken unloadChunk API - lets see if this works
                             w.unloadChunkRequest(chunk.x, chunk.z);
                         }
                         else {
-                            helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
+                        	BukkitVersionHelper.helper.unloadChunkNoSave(w, c, chunk.x, chunk.z);
                         }
                     }
                     endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);

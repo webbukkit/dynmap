@@ -1,4 +1,4 @@
-package org.dynmap.bukkit;
+package org.dynmap.bukkit.helper;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -12,6 +12,9 @@ import org.bukkit.ChunkSnapshot;
 import org.dynmap.utils.DynIntHashMap;
 
 public class SnapshotCache {
+	
+	public static SnapshotCache sscache;
+	
     public static class SnapshotRec {
         public ChunkSnapshot ss;
         public long inhabitedTicks;

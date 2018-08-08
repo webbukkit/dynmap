@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>us.dynmap</groupId>
+    <artifactId>dynmap-bukkit</artifactId>
+    <version>3.0-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <artifactId>dynmap-helper</artifactId>
+  <groupId>us.dynmap</groupId>
+  <version>3.0-SNAPSHOT</version>
+  
+  	<dependencies>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.7.10-R0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>us.dynmap</groupId>
+			<artifactId>dynmap-api</artifactId>
+			<version>3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>us.dynmap</groupId>
+			<artifactId>DynmapCore</artifactId>
+			<version>3.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.google.code.gson</groupId>
+    		<artifactId>gson</artifactId>
+    		<version>2.8.2</version>
+		</dependency>
+  	</dependencies>
+  	<repositories>
+		<repository>
+			<id>dynmap-repo</id>
+			<url>http://repo.mikeprimm.com/</url>
+		</repository>
+    	<repository>
+    	    <id>spigot-repo</id>
+	        <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    	</repository>
+	</repositories>
+  
+  	<name>dynmap-helper</name>
+</project>
