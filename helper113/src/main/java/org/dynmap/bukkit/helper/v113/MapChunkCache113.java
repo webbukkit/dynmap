@@ -362,6 +362,7 @@ public class MapChunkCache113 extends MapChunkCache {
                     mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
                 }
             } catch (Exception x) {
+            	Log.warning("Water colormult exception", x);
                 mult = 0xFFFFFF;
             }
             return mult;
@@ -597,8 +598,6 @@ public class MapChunkCache113 extends MapChunkCache {
         public int getBlockEmittedLight(int x, int y, int z);
         public int getHighestBlockYAt(int x, int z);
         public Biome getBiome(int x, int z);
-        public double getRawBiomeTemperature(int x, int z);
-        public double getRawBiomeRainfall(int x, int z);
         public boolean isSectionEmpty(int sy);
         public Object[] getBiomeBaseFromSnapshot();
     }
@@ -606,35 +605,44 @@ public class MapChunkCache113 extends MapChunkCache {
     public static class WrappedSnapshot implements Snapshot {
     	private final ChunkSnapshot ss;
     	private final DataPaletteBlock[] blockids;
-    	
+    	private final int sectionmask;
 		public WrappedSnapshot(ChunkSnapshot ss) {
     		this.ss = ss;
     		blockids = (DataPaletteBlock[]) BukkitVersionHelper.helper.getBlockIDFieldFromSnapshot(ss);
+    		int mask = 0;
+    		for (int i = 0; i < blockids.length; i++) {
+    			if (ss.isSectionEmpty(i))
+    				mask |= (1 << i);
+    		}
+    		sectionmask = mask;
     	}
+		@Override
     	public final DynmapBlockState getBlockType(int x, int y, int z) {
+    		if ((sectionmask & (1 << (y >> 4))) != 0)
+    			return DynmapBlockState.AIR;
     		return BukkitVersionHelperSpigot113.dataToState.getOrDefault(blockids[y >> 4].a(x & 0xF, y & 0xF, z & 0xF), DynmapBlockState.AIR);
     	}
+		@Override
         public final int getBlockSkyLight(int x, int y, int z) {
         	return ss.getBlockSkyLight(x, y, z);
         }
+		@Override
         public final int getBlockEmittedLight(int x, int y, int z) {
         	return ss.getBlockEmittedLight(x, y, z);
         }
+		@Override
         public final int getHighestBlockYAt(int x, int z) {
         	return ss.getHighestBlockYAt(x, z);
         }
+		@Override
         public final Biome getBiome(int x, int z) {
         	return ss.getBiome(x, z);
         }
-        public final double getRawBiomeTemperature(int x, int z) {
-        	return ss.getRawBiomeTemperature(x, z);
-        }
-        public final double getRawBiomeRainfall(int x, int z) {
-        	return 0.0;
-        }
+		@Override
         public final boolean isSectionEmpty(int sy) {
-        	return ss.isSectionEmpty(sy);
+        	return (sectionmask & (1 << sy)) != 0;
         }
+		@Override
         public final Object[] getBiomeBaseFromSnapshot() {
         	return BukkitVersionHelper.helper.getBiomeBaseFromSnapshot(ss);
         }
@@ -647,27 +655,27 @@ public class MapChunkCache113 extends MapChunkCache {
         public final DynmapBlockState getBlockType(int x, int y, int z) {
             return DynmapBlockState.AIR;
         }
+		@Override
         public final int getBlockSkyLight(int x, int y, int z) {
             return 15;
         }
+		@Override
         public final int getBlockEmittedLight(int x, int y, int z) {
             return 0;
         }
+		@Override
         public final int getHighestBlockYAt(int x, int z) {
             return 0;
         }
+		@Override
         public Biome getBiome(int x, int z) {
             return null;
         }
-        public double getRawBiomeTemperature(int x, int z) {
-            return 0.0;
-        }
-        public double getRawBiomeRainfall(int x, int z) {
-            return 0.0;
-        }
+		@Override
         public boolean isSectionEmpty(int sy) {
             return true;
         }
+		@Override
         public Object[] getBiomeBaseFromSnapshot() {
         	return new Object[256];
         }
@@ -680,26 +688,31 @@ public class MapChunkCache113 extends MapChunkCache {
         private DynmapBlockState fill;
         PlainChunk(String blockname) { this.fill = DynmapBlockState.getBaseStateByName(blockname); }
 
+		@Override
         public final DynmapBlockState getBlockType(int x, int y, int z) {
             return (y < 64) ? fill : DynmapBlockState.AIR;
         }
+		@Override
         public Biome getBiome(int x, int z) { return null; }
-        public double getRawBiomeTemperature(int x, int z) { return 0.0; }
-        public double getRawBiomeRainfall(int x, int z) { return 0.0; }
+		@Override
         public final int getBlockSkyLight(int x, int y, int z) {
             if(y < 64)
                 return 0;
             return 15;
         }
+		@Override
         public final int getBlockEmittedLight(int x, int y, int z) {
             return 0;
         }
+		@Override
         public final int getHighestBlockYAt(int x, int z) {
             return 64;
         }
+		@Override
         public boolean isSectionEmpty(int sy) {
             return (sy < 4);
         }
+		@Override
         public Object[] getBiomeBaseFromSnapshot() {
         	return new Object[256];
         }
