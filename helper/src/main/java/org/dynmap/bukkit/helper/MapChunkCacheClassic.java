@@ -1,27 +1,42 @@
-package org.dynmap.bukkit.helper.v113;
+package org.dynmap.bukkit.helper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import org.bukkit.World;
+import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
 import org.bukkit.ChunkSnapshot;
-import org.dynmap.bukkit.helper.AbstractMapChunkCache;
-import org.dynmap.bukkit.helper.BukkitVersionHelper;
+import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCore;
+import org.dynmap.DynmapWorld;
+import org.dynmap.Log;
+import org.dynmap.bukkit.helper.AbstractMapChunkCache.Snapshot;
+import org.dynmap.bukkit.helper.SnapshotCache.SnapshotRec;
+import org.dynmap.common.BiomeMap;
+import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.renderer.DynmapBlockState;
-
-import net.minecraft.server.v1_13_R1.DataPaletteBlock;
+import org.dynmap.renderer.RenderPatchFactory;
+import org.dynmap.utils.DynIntHashMap;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.BlockStep;
+import org.dynmap.utils.VisibilityLimit;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
-public class MapChunkCache113 extends AbstractMapChunkCache {
+public class MapChunkCacheClassic extends AbstractMapChunkCache {
 
     public static class WrappedSnapshot implements Snapshot {
     	private final ChunkSnapshot ss;
-    	private final DataPaletteBlock[] blockids;
     	private final int sectionmask;
 		public WrappedSnapshot(ChunkSnapshot ss) {
     		this.ss = ss;
-    		blockids = (DataPaletteBlock[]) BukkitVersionHelper.helper.getBlockIDFieldFromSnapshot(ss);
     		int mask = 0;
-    		for (int i = 0; i < blockids.length; i++) {
+    		for (int i = 0; i < 16; i++) {
     			if (ss.isSectionEmpty(i))
     				mask |= (1 << i);
     		}
@@ -31,7 +46,7 @@ public class MapChunkCache113 extends AbstractMapChunkCache {
     	public final DynmapBlockState getBlockType(int x, int y, int z) {
     		if ((sectionmask & (1 << (y >> 4))) != 0)
     			return DynmapBlockState.AIR;
-    		return BukkitVersionHelperSpigot113.dataToState.getOrDefault(blockids[y >> 4].a(x & 0xF, y & 0xF, z & 0xF), DynmapBlockState.AIR);
+            return BukkitVersionHelper.stateByID[(ss.getBlockTypeId(x, y, z) << 4) | ss.getBlockData(x, y, z)];
     	}
 		@Override
         public final int getBlockSkyLight(int x, int y, int z) {
@@ -59,8 +74,16 @@ public class MapChunkCache113 extends AbstractMapChunkCache {
         }
     }
 
+    /**
+     * Construct empty cache
+     */
+    public MapChunkCacheClassic() {
+    	
+    }
+
 	@Override
 	public Snapshot wrapChunkSnapshot(ChunkSnapshot css) {
 		return new WrappedSnapshot(css);
 	}
+    
 }

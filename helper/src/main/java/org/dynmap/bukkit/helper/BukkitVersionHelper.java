@@ -162,7 +162,7 @@ public abstract class BukkitVersionHelper {
      * @return cache
      */
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        NewMapChunkCache c = new NewMapChunkCache();
+        AbstractMapChunkCache c = new MapChunkCacheClassic();
         c.setChunks(dw, chunks);
         return c;
     }
