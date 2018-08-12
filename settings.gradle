@@ -1,0 +1,8 @@
+rootProject.name = 'dynmap-common'
+include ':dynmap'
+include ':dynmap-helper-113'
+include ':dynmap-helper'
+
+project(':dynmap').projectDir = "$rootDir/bukkit" as File
+project(':dynmap-helper-113').projectDir = "$rootDir/helper113" as File
+project(':dynmap-helper').projectDir = "$rootDir/helper" as File

@@ -1,6 +1,6 @@
 name: dynmap
 main: org.dynmap.bukkit.DynmapPlugin
-version: "${project.version}-${BUILD_NUMBER}"
+version: "${version}-${buildnumber}"
 authors: [mikeprimm]
 website: "http://www.minecraftforum.net/topic/1543523-dynmap-dynamic-web-based-maps-for-minecraft/"
 softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit, GroupManager ]

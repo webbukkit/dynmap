@@ -1,0 +1,9 @@
+
+description = 'dynmap-helper'
+
+dependencies {
+  compile group: 'us.dynmap', name: 'dynmap-api', version: "${project.version}"
+  compile group: 'us.dynmap', name: 'DynmapCore', version: "${project.version}"
+  compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
+  compile group: 'com.google.code.gson', name: 'gson', version:'2.8.2'
+}
