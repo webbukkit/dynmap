@@ -48,7 +48,7 @@ texturefile:id=yellow_bed,filename=assets/minecraft/textures/entity/bed/yellow.p
 texturefile:id=lime_bed,filename=assets/minecraft/textures/entity/bed/lime.png,format=BED
 texturefile:id=pink_bed,filename=assets/minecraft/textures/entity/bed/pink.png,format=BED
 texturefile:id=gray_bed,filename=assets/minecraft/textures/entity/bed/gray.png,format=BED
-texturefile:id=silver_bed,filename=assets/minecraft/textures/entity/bed/silver.png,format=BED
+texturefile:id=light_gray_bed,filename=assets/minecraft/textures/entity/bed/light_gray.png,format=BED
 texturefile:id=cyan_bed,filename=assets/minecraft/textures/entity/bed/cyan.png,format=BED
 texturefile:id=purple_bed,filename=assets/minecraft/textures/entity/bed/purple.png,format=BED
 texturefile:id=blue_bed,filename=assets/minecraft/textures/entity/bed/blue.png,format=BED
@@ -99,22 +99,22 @@ texture:id=hardened_clay_stained_white
 texture:id=hardened_clay_stained_yellow
 texture:id=hay_block_side
 texture:id=hay_block_top
-texture:id=wool_colored_black
-texture:id=wool_colored_blue
-texture:id=wool_colored_brown
-texture:id=wool_colored_cyan
-texture:id=wool_colored_gray
-texture:id=wool_colored_green
-texture:id=wool_colored_light_blue
-texture:id=wool_colored_lime
-texture:id=wool_colored_magenta
-texture:id=wool_colored_orange
-texture:id=wool_colored_pink
-texture:id=wool_colored_purple
-texture:id=wool_colored_red
-texture:id=wool_colored_silver
-texture:id=wool_colored_white
-texture:id=wool_colored_yellow
+texture:id=black_wool
+texture:id=blue_wool
+texture:id=brown_wool
+texture:id=cyan_wool
+texture:id=gray_wool
+texture:id=green_wool
+texture:id=light_blue_wppl
+texture:id=lime_wool
+texture:id=magenta_wool
+texture:id=orange_wool
+texture:id=pink_wool
+texture:id=purple_wool
+texture:id=red_wool
+texture:id=light_gray_wool
+texture:id=white_wool
+texture:id=yellow_wool
 texture:id=hardened_clay
 texture:id=coal_block
 texture:id=stone
@@ -199,9 +199,14 @@ texture:id=stone_slab_top
 texture:id=stonebrick
 texture:id=nether_brick
 texture:id=brick
-texture:id=web
-texture:id=deadbush
-texture:id=tallgrass
+texture:id=cobweb
+texture:id=dead_bush
+texture:id=grass
+texture:id=tall_grass
+texture:id=dead_bush
+texture:id=seagrass
+texture:id=tall_seagrass_top
+texture:id=tall_seagrass_bottom
 texture:id=fern
 texture:id=tnt_bottom
 texture:id=tnt_side
@@ -812,15 +817,18 @@ block:id=sticky_piston,data=12,north=0:piston_inner,south=0:piston_bottom,top=26
 # Sticky piston - extended facing south (TODO: side)
 block:id=sticky_piston,data=13,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
 # Web
-block:id=web,patch0-1=0:web,transparency=TRANSPARENT
-# Dead shrub
-block:id=tallgrass,data=0,patch0-1=0:deadbush,transparency=TRANSPARENT
-# Tall Grass
-block:id=tallgrass,data=1,patch0-1=1000:tallgrass,transparency=TRANSPARENT
+block:id=cobweb,patch0-1=0:cobweb,transparency=TRANSPARENT
+# Grass
+block:id=grass,patch0-1=1000:grass,transparency=TRANSPARENT
 # Fern
-block:id=tallgrass,data=2,patch0-1=1000:fern,transparency=TRANSPARENT
+block:id=fern,patch0-1=1000:fern,transparency=TRANSPARENT
 # Dead shrub
-block:id=deadbush,patch0-1=0:deadbush,transparency=TRANSPARENT
+block:id=dead_bush,patch0-1=0:dead_bush,transparency=TRANSPARENT
+# Seagrass
+block:id=seagrass,patch0-1=1000:seagrass,transparency=TRANSPARENT
+# Tall seagrass
+block:id=seagrass,data=0,patch0-1=1000:tall_seagrass_top,transparency=TRANSPARENT
+block:id=seagrass,data=1.patch0-1=1000:tall_seagrass_bottom,transparency=TRANSPARENT
 # Piston - facing down
 block:id=piston,data=0,top=0:piston_bottom,bottom=0:piston_top_normal,allsides=5000:piston_side,transparency=TRANSPARENT
 # Piston - facing up
@@ -834,17 +842,17 @@ block:id=piston,data=4,north=0:piston_top_normal,south=0:piston_bottom,top=0:pis
 # Piston - facing south
 block:id=piston,data=5,north=0:piston_bottom,south=0:piston_top_normal,top=5000:piston_side,bottom=0:piston_side,east=4000:piston_side,west=6000:piston_side,transparency=TRANSPARENT
 # Piston - extended facing down (TODO:piston extension side)
-block:id=piston,data=8,top=0:piston_bottom,bottom=0:piston_inner,allsides=5262,transparency=TRANSPARENT
+block:id=piston,data=6,top=0:piston_bottom,bottom=0:piston_inner,allsides=5262,transparency=TRANSPARENT
 # Piston - extended facing up (TODO:piston extension side)
-block:id=piston,data=9,top=0:piston_inner,bottom=0:piston_bottom,allsides=262,transparency=TRANSPARENT
+block:id=piston,data=7,top=0:piston_inner,bottom=0:piston_bottom,allsides=262,transparency=TRANSPARENT
 # Piston - extended facing east (TODO:piston extension side)
-block:id=piston,data=10,east=0:piston_inner,west=0:piston_bottom,top=6262,bottom=4262,north=4262,south=6262,transparency=TRANSPARENT
+block:id=piston,data=8,east=0:piston_inner,west=0:piston_bottom,top=6262,bottom=4262,north=4262,south=6262,transparency=TRANSPARENT
 # Piston - extended facing west (TODO:piston extension side)
-block:id=piston,data=11,west=0:piston_inner,east=0:piston_bottom,top=4262,bottom=6262,north=6262,south=4262,transparency=TRANSPARENT
+block:id=piston,data=9,west=0:piston_inner,east=0:piston_bottom,top=4262,bottom=6262,north=6262,south=4262,transparency=TRANSPARENT
 # Piston - extended facing north (TODO:piston extension side)
-block:id=piston,data=12,north=0:piston_inner,south=0:piston_bottom,top=262,bottom=5262,east=6262,west=4262,transparency=TRANSPARENT
+block:id=piston,data=10,north=0:piston_inner,south=0:piston_bottom,top=262,bottom=5262,east=6262,west=4262,transparency=TRANSPARENT
 # Piston - extended facing south (TODO:piston extension side)
-block:id=piston,data=13,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
+block:id=piston,data=11,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
 # Piston extension- facing down (TODO:piston extension side)
 block:id=piston_head,data=0,top=0:piston_inner,bottom=0:piston_top_normal,allsides=5261,transparency=TRANSPARENT
 # Piston extension - facing up (TODO:piston extension side)
@@ -858,34 +866,34 @@ block:id=piston_head,data=4,north=0:piston_top_normal,south=0:piston_inner,top=2
 # Piston extension - facing south (TODO:piston extension side)
 block:id=piston_head,data=5,north=0:piston_inner,south=0:piston_top_normal,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
 # Sticky piston extension - facing down (TODO:piston extension side)
-block:id=piston_head,data=8,top=0:piston_inner,bottom=0:piston_top_sticky,allsides=5261,transparency=TRANSPARENT
+block:id=piston_head,data=6,top=0:piston_inner,bottom=0:piston_top_sticky,allsides=5261,transparency=TRANSPARENT
 # Sticky piston extension - facing up (TODO:piston extension side)
-block:id=piston_head,data=9,top=0:piston_top_sticky,bottom=0:piston_inner,allsides=261,transparency=TRANSPARENT
+block:id=piston_head,data=7,top=0:piston_top_sticky,bottom=0:piston_inner,allsides=261,transparency=TRANSPARENT
 # Sticky piston extension - facing east (TODO:piston extension side)
-block:id=piston_head,data=10,east=0:piston_top_sticky,west=0:piston_inner,top=6261,bottom=4261,north=4261,south=6261,transparency=TRANSPARENT
+block:id=piston_head,data=8,east=0:piston_top_sticky,west=0:piston_inner,top=6261,bottom=4261,north=4261,south=6261,transparency=TRANSPARENT
 # Sticky piston extension - facing west (TODO:piston extension side)
-block:id=piston_head,data=11,west=0:piston_top_sticky,east=0:piston_inner,top=4261,bottom=6261,north=6261,south=4261,transparency=TRANSPARENT
+block:id=piston_head,data=9,west=0:piston_top_sticky,east=0:piston_inner,top=4261,bottom=6261,north=6261,south=4261,transparency=TRANSPARENT
 # Sticky piston extension - facing north (TODO:piston extension side)
-block:id=piston_head,data=12,north=0:piston_top_sticky,south=0:piston_inner,top=261,bottom=5261,east=6261,west=4261,transparency=TRANSPARENT
+block:id=piston_head,data=10,north=0:piston_top_sticky,south=0:piston_inner,top=261,bottom=5261,east=6261,west=4261,transparency=TRANSPARENT
 # Sticky piston extension - facing south (TODO:piston extension side)
-block:id=piston_head,data=13,north=0:piston_inner,south=0:piston_top_sticky,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
+block:id=piston_head,data=11,north=0:piston_inner,south=0:piston_top_sticky,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
 # Wool
-block:id=wool,data=0,allfaces=0:wool_colored_white,stdrot=true
-block:id=wool,data=1,allfaces=0:wool_colored_orange,stdrot=true
-block:id=wool,data=2,allfaces=0:wool_colored_magenta,stdrot=true
-block:id=wool,data=3,allfaces=0:wool_colored_light_blue,stdrot=true
-block:id=wool,data=4,allfaces=0:wool_colored_yellow,stdrot=true
-block:id=wool,data=5,allfaces=0:wool_colored_lime,stdrot=true
-block:id=wool,data=6,allfaces=0:wool_colored_pink,stdrot=true
-block:id=wool,data=7,allfaces=0:wool_colored_gray,stdrot=true
-block:id=wool,data=8,allfaces=0:wool_colored_silver,stdrot=true
-block:id=wool,data=9,allfaces=0:wool_colored_cyan,stdrot=true
-block:id=wool,data=10,allfaces=0:wool_colored_purple,stdrot=true
-block:id=wool,data=11,allfaces=0:wool_colored_blue,stdrot=true
-block:id=wool,data=12,allfaces=0:wool_colored_brown,stdrot=true
-block:id=wool,data=13,allfaces=0:wool_colored_green,stdrot=true
-block:id=wool,data=14,allfaces=0:wool_colored_red,stdrot=true
-block:id=wool,data=15,allfaces=0:wool_colored_black,stdrot=true
+block:id=white_wool,allfaces=0:white_wool,stdrot=true
+block:id=orange_wool,allfaces=0:orange_wool,stdrot=true
+block:id=magenta_wool,allfaces=0:magenta_wool,stdrot=true
+block:id=light_blue_wool,allfaces=0:light_blue_wool,stdrot=true
+block:id=yellow_wool,allfaces=0:yellow_wool,stdrot=true
+block:id=lime_wool,allfaces=0:lime_wool,stdrot=true
+block:id=pink_wool,allfaces=0:pink_wool,stdrot=true
+block:id=gray_wool,allfaces=0:gray_wool,stdrot=true
+block:id=light_gray_wool,allfaces=0:light_gray_wool,stdrot=true
+block:id=cyan_wool,allfaces=0:cyan_wool,stdrot=true
+block:id=purple_wool,allfaces=0:purple_wool,stdrot=true
+block:id=blue_wool,dallfaces=0:blue_wool,stdrot=true
+block:id=brown_wool,allfaces=0:brown_wool,stdrot=true
+block:id=green_wool,allfaces=0:green_wool,stdrot=true
+block:id=red_wool,allfaces=0:red_wool,stdrot=true
+block:id=black_wool,allfaces=0:black_wool,stdrot=true
 # Dandelion
 block:id=yellow_flower,patch0-1=0:flower_dandelion,transparency=TRANSPARENT
 # Rose
@@ -1466,22 +1474,22 @@ block:id=dark_oak_stairs,data=*,patch0-2=0:dark_oak_planks,transparency=SEMITRAN
 # (170) Hay
 block:id=hay_block,data=*,allsides=0:hay_block_side,topbottom=0:hay_block_top,stdrot=true
 # (171) Carpet
-block:id=carpet,data=15,stdrot=true,allfaces=0:wool_colored_black
-block:id=carpet,data=14,stdrot=true,allfaces=0:wool_colored_red
-block:id=carpet,data=13,stdrot=true,allfaces=0:wool_colored_green
-block:id=carpet,data=12,stdrot=true,allfaces=0:wool_colored_brown
-block:id=carpet,data=11,stdrot=true,allfaces=0:wool_colored_blue
-block:id=carpet,data=10,stdrot=true,allfaces=0:wool_colored_purple
-block:id=carpet,data=9,stdrot=true,allfaces=0:wool_colored_cyan
-block:id=carpet,data=8,stdrot=true,allfaces=0:wool_colored_silver
-block:id=carpet,data=7,stdrot=true,allfaces=0:wool_colored_gray
-block:id=carpet,data=6,stdrot=true,allfaces=0:wool_colored_pink
-block:id=carpet,data=5,stdrot=true,allfaces=0:wool_colored_lime
-block:id=carpet,data=4,stdrot=true,allfaces=0:wool_colored_yellow
-block:id=carpet,data=3,stdrot=true,allfaces=0:wool_colored_light_blue
-block:id=carpet,data=2,stdrot=true,allfaces=0:wool_colored_magenta
-block:id=carpet,data=1,stdrot=true,allfaces=0:wool_colored_orange
-block:id=carpet,data=0,stdrot=true,allfaces=0:wool_colored_white
+block:id=black_carpet,stdrot=true,allfaces=0:black_wool
+block:id=red_carpet,stdrot=true,allfaces=0:red_wool
+block:id=green_carpet,stdrot=true,allfaces=0:green_wool
+block:id=brown_carpet,stdrot=true,allfaces=0:brown_wool
+block:id=blue_carpet,,stdrot=true,allfaces=0:blue_wool
+block:id=purple_carpet,stdrot=true,allfaces=0:purple_wool
+block:id=cyan_carpet,stdrot=true,allfaces=0:cyan_wool
+block:id=light_gray_carpet,stdrot=true,allfaces=0:light_gray_wool
+block:id=gray_carpet,stdrot=true,allfaces=0:gray_wool
+block:id=pink_carpet,stdrot=true,allfaces=0:pink_wool
+block:id=lime_carpet,,stdrot=true,allfaces=0:lime_wool
+block:id=yellow_carpet,stdrot=true,allfaces=0:yellow_wool
+block:id=light_blue_carpet,stdrot=true,allfaces=0:light_blue_wool
+block:id=magenta_carpet,stdrot=true,allfaces=0:magenta_wool
+block:id=orange_carpet,stdrot=true,allfaces=0:orange_wool
+block:id=white_carpet,stdrot=true,allfaces=0:white_wool
 # (172) Hardened clay
 block:id=hardened_clay,data=*,stdrot=true,allfaces=0:hardened_clay
 # (173) Coal block    

@@ -356,7 +356,7 @@ patchblock:id=standing_sign,data=11,patch0=SignFront@67,patch1=SignBack@67,patch
 # Fire
 patchblock:id=fire,data=*,patch0=VertX0,patch1=VertX0@90,patch2=VertX0@180,patch3=VertX0@270,patch4=SlopeXUpZTop675,patch5=SlopeXUpZTop675@90,patch6=SlopeXUpZTop675@180,patch4=SlopeXUpZTop675@270
 # Bed - head - pointing west
-block:id=bed,data=8,scale=16
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=8,scale=16
 layer:0,1,2
 ***-------------
 ***-------------
@@ -409,16 +409,16 @@ layer:9
 -******---------
 ----------------
 # Bed - head - pointing north
-block:id=bed,data=9,scale=16
-rotate:id=bed,data=8,rot=90
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=9,scale=16
+rotate:id=white_bed,data=8,rot=90
 # Bed - head - pointing east
-block:id=bed,data=10,scale=16
-rotate:id=bed,data=8,rot=180
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=10,scale=16
+rotate:id=white_bed,data=8,rot=180
 # Bed - head - pointing south
-block:id=bed,data=11,scale=16
-rotate:id=bed,data=8,rot=270
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=11,scale=16
+rotate:id=white_bed,data=8,rot=270
 # Bed - foot - pointing west
-block:id=bed,data=0,scale=16
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=0,scale=16
 layer:0,1,2
 -------------***
 -------------***
@@ -454,14 +454,14 @@ layer:3,4,5,6,7,8
 ****************
 ****************
 # Bed - foot - pointing north
-block:id=bed,data=1,scale=16
-rotate:id=bed,data=0,rot=90
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=1,scale=16
+rotate:id=white_bed,data=0,rot=90
 # Bed - foot - pointing east
-block:id=bed,data=2,scale=16
-rotate:id=bed,data=0,rot=180
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=2,scale=16
+rotate:id=white_bed,data=0,rot=180
 # Bed - foot - pointing south
-block:id=bed,data=3,scale=16
-rotate:id=bed,data=0,rot=270
+block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=3,scale=16
+rotate:id=white_bed,data=0,rot=270
 
 # Wooden/Iron Door
 customblock:id=wooden_door,id=iron_door,data=*,class=org.dynmap.hdmap.renderer.DoorRenderer
@@ -498,7 +498,7 @@ patchrotate:id=lever,data=14,rotx=180
 patchblock:id=cactus,data=*,patch0=VertX00625,patch1=VertX00625@90,patch2=VertX00625@180,patch3=VertX00625@270,patch4=HorizY100ZTop,patch5=HorizY100ZTop@180/0/0
 # Redstone repeater (on) facing east
 # Redstone repeater (off) facing east
-block:id=unpowered_repeater,id=powered_repeater,data=0,data=4,data=8,data=12,scale=16
+block:id=repeater,data=0,data=1,data=2,data=3,data=16,data=17,data=18,data=19,data=32,data=33,data=34,data=35,data=48,data=49,data=50,data=51,scale=16
 layer:0,1
 ****************
 ****************
@@ -535,16 +535,16 @@ layer:2,3,4,5,6,7,8,9
 ----------------
 # Redstone repeater (on) facing south
 # Redstone repeater (off) facing south
-block:id=unpowered_repeater,id=powered_repeater,data=1,data=5,data=9,data=13,scale=16
-rotate:id=unpowered_repeater,data=0,rot=90
+block:id=repeater,data=4,data=5,data=6,data=7,data=20,data=21,data=22,data=23,data=36,data=37,data=38,data=39,data=52,data=53,data=54,data=55,scale=16
+rotate:id=repeater,data=0,rot=90
 # Redstone repeater (on) facing west
 # Redstone repeater (off) facing west
-block:id=unpowered_repeater,id=powered_repeater,data=2,data=6,data=10,data=14,scale=16
-rotate:id=unpowered_repeater,data=0,rot=180
+block:id=repeater,data=8,data=9,data=10,data=11,data=24,data=25,data=26,data=27,data=40,data=41,data=42,data=43,data=56,data=57,data=58,data=59,scale=16
+rotate:id=repeater,data=0,rot=180
 # Redstone repeater (on) facing north
 # Redstone repeater (off) facing north
-block:id=unpowered_repeater,id=powered_repeater,data=3,data=7,data=11,data=15,scale=16
-rotate:id=unpowered_repeater,data=0,rot=270
+block:id=repeater,data=12,data=13,data=14,data=15,data=28,data=29,data=30,data=31,data=44,data=45,data=46,data=47,data=60,data=61,data=62,data=63,scale=16
+rotate:id=repeater,data=0,rot=270
 # Sticky piston - extended facing down
 # Piston - extended facing down
 block:id=sticky_piston,id=piston,data=8,scale=8
@@ -707,7 +707,7 @@ customblock:id=glass_pane,id=iron_bars,data=*,class=org.dynmap.hdmap.renderer.Pa
 # Dead schrub (tall grass)
 # Sapling
 # Sugar Cane
-patchblock:id=sapling,id=web,id=tallgrass,id=deadbush,id=yellow_flower,id=red_flower,id=brown_mushroom,id=red_mushroom,id=reeds,id=nether_wart,data=*,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+patchblock:id=sapling,id=cobweb,id=tallgrass,id=deadbush,id=yellow_flower,id=red_flower,id=brown_mushroom,id=red_mushroom,id=reeds,id=nether_wart,data=*,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
 # Vines - N side of block
 patchblock:id=vine,data=2,patch0=VertX0In
@@ -1012,7 +1012,7 @@ boxblock:id=daylight_detector,data=*,ymax=0.375
 
 # (149) Redstone Comparator (inactive)
 # (150) Redstone Comparator (active)
-block:id=unpowered_comparator,id=powered_comparator,data=0,data=4,data=8,data=12,scale=16
+block:id=comparator,data=0,data=1,data=2,data=3,scale=16
 layer:0,1
 ****************
 ****************
@@ -1064,12 +1064,12 @@ layer:4,5,6
 ----------------
 ----------------
 ----------------
-block:id=unpowered_comparator,id=powered_comparator,data=1,data=5,data=9,data=13,scale=16
-rotate:id=unpowered_comparator,data=0,rot=90
-block:id=unpowered_comparator,id=powered_comparator,data=2,data=6,data=10,data=14,scale=16
-rotate:id=unpowered_comparator,data=0,rot=180
-block:id=unpowered_comparator,id=powered_comparator,data=3,data=7,data=11,data=15,scale=16
-rotate:id=unpowered_comparator,data=0,rot=270
+block:id=comparator,data=4,data=5,data=6,data=7,scale=16
+rotate:id=comparator,data=0,rot=90
+block:id=comparator,,data=8,data=9,data=10,data=11,scale=16
+rotate:id=comparator,data=0,rot=180
+block:id=comparator,data=12,data=13,data=14,data=15,scale=16
+rotate:id=comparator,data=0,rot=270
 
 # (154)	Hopper
 block:id=hopper,data=*,scale=16

@@ -392,6 +392,9 @@ public class HDBlockModels {
                                 modlist.add(new HDBlockVolumetricModel(bblk.blockName, databits, scale, new long[0], blockset));
                                 cnt++;
                             }
+                            else {
+                            	Log.severe("Invalid model block name " + bname + " at line " + rdr.getLineNumber());
+                            }
                         }
                     }
                     else {
@@ -542,6 +545,9 @@ public class HDBlockModels {
                     			DynmapBlockState bs = bbs.getState(i);
                     			changeIgnoredBlocks.set(bs.globalStateIndex);
                     		}
+                    	}
+                    	else {
+                        	Log.severe("Invalid update ignore block name " + nm + " at line " + rdr.getLineNumber());
                     	}
                     }
                 }
@@ -735,6 +741,9 @@ public class HDBlockModels {
                                 pmodlist.add(new HDBlockPatchModel(bs.blockName, databits, patcharray, blockset));
                                 cnt++;
                             }
+                            else {
+                            	Log.severe("Invalid patchmodel block name " + nm + " at line " + rdr.getLineNumber());
+                            }
                         }
                     }
                     else {
@@ -796,6 +805,9 @@ public class HDBlockModels {
                                 pmodlist.add(new HDBlockPatchModel(bs.blockName, databits, patcharray, blockset));
                                 cnt++;
                             }
+                            else {
+                            	Log.severe("Invalid boxmodel block name " + nm + " at line " + rdr.getLineNumber());
+                            }
                         }
                     }
                     else {
@@ -850,6 +862,9 @@ public class HDBlockModels {
                                     }
                                 }
                                 cnt++;
+                            }
+                            else {
+                            	Log.severe("Invalid custommodel block name " + nm + " at line " + rdr.getLineNumber());
                             }
                         }
                     }
