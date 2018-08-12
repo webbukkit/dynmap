@@ -170,7 +170,7 @@
 	<version>3.0-SNAPSHOT</version>
 	<parent>
 	   	<groupId>us.dynmap</groupId>
-   		<artifactId>dynmap-bukkit</artifactId>
+   		<artifactId>dynmap-common</artifactId>
    		<version>3.0-SNAPSHOT</version>
    		<relativePath>..</relativePath>    
 	</parent>

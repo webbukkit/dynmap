@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>us.dynmap</groupId>
-	<artifactId>dynmap-bukkit</artifactId>
+	<artifactId>dynmap-common</artifactId>
 	<name>dynmap-bukkit</name>
 	<properties>
 		<timestamp>${maven.build.timestamp}</timestamp>
@@ -17,7 +17,7 @@
 	</issueManagement>
 	<packaging>pom</packaging>
 	<modules>
-		<module>core</module>
+		<module>bukkit</module>
 		<module>helper113</module>
 		<module>helper</module>
 	</modules>
