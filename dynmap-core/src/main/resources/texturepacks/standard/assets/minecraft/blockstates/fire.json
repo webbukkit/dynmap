@@ -1,0 +1,50 @@
+{
+    "multipart": [
+        {   "when": {"north": false, "east": false, "south": false, "west": false, "up": false},
+            "apply": [
+                { "model": "block/fire_floor0" },
+                { "model": "block/fire_floor1" }
+            ]
+        },
+        {   "when": {"OR": [{"north": true}, {"north": false, "east": false, "south": false, "west": false, "up": false}]},
+            "apply": [
+                { "model": "block/fire_side0" },
+                { "model": "block/fire_side1" },
+                { "model": "block/fire_side_alt0" },
+                { "model": "block/fire_side_alt1" }
+            ]
+        },
+        {   "when": {"OR": [{"east": true}, {"north": false, "east": false, "south": false, "west": false, "up": false}]},
+            "apply": [
+                { "model": "block/fire_side0", "y": 90 },
+                { "model": "block/fire_side1", "y": 90 },
+                { "model": "block/fire_side_alt0", "y": 90 },
+                { "model": "block/fire_side_alt1", "y": 90 }
+            ]
+        },
+        {   "when": {"OR": [{"south": true}, {"north": false, "east": false, "south": false, "west": false, "up": false}]},
+            "apply": [
+                { "model": "block/fire_side0", "y": 180 },
+                { "model": "block/fire_side1", "y": 180 },
+                { "model": "block/fire_side_alt0", "y": 180 },
+                { "model": "block/fire_side_alt1", "y": 180 }
+            ]
+        },
+        {   "when": {"OR": [{"west": true}, {"north": false, "east": false, "south": false, "west": false, "up": false}]},
+            "apply": [
+                { "model": "block/fire_side0", "y": 270 },
+                { "model": "block/fire_side1", "y": 270 },
+                { "model": "block/fire_side_alt0", "y": 270 },
+                { "model": "block/fire_side_alt1", "y": 270 }
+            ]
+        },
+        {   "when": {"up": true},
+            "apply": [
+                { "model": "block/fire_up0" },
+                { "model": "block/fire_up1" },
+                { "model": "block/fire_up_alt0" },
+                { "model": "block/fire_up_alt1" }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "axis=y": { "model": "block/bone_block" },
+        "axis=z": { "model": "block/bone_block", "x": 90 },
+        "axis=x": { "model": "block/bone_block", "x": 90, "y": 90 }
+    }
+}

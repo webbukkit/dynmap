@@ -1,0 +1,32 @@
+{
+    "parent": "block/block",
+    "textures": {
+        "particle": "block/turtle_egg",
+        "all": "block/turtle_egg"
+    },
+    "elements": [
+        {   "from": [ 5, 0, 4 ],
+            "to": [ 10, 7, 9 ],
+            "faces": {
+                "down":  { "uv": [  0, 0,  4, 4 ], "texture": "#all" },
+                "up":    { "uv": [  0, 0,  4, 4 ], "texture": "#all" },
+                "north": { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "south": { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "west":  { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "east":  { "uv": [ 1, 4, 5, 11 ], "texture": "#all" }
+            }
+        },
+        {
+            "from": [ 1, 0, 7 ],
+            "to": [ 5, 5, 11 ],
+            "faces": {
+                "down":  { "uv": [  6, 7,  10, 11 ], "texture": "#all" },
+                "up":    { "uv": [  6, 7,  10, 11 ], "texture": "#all" },
+                "north": { "uv": [ 10, 10, 14, 15 ], "texture": "#all" },
+                "south": { "uv": [ 10, 10, 14, 15 ], "texture": "#all" },
+                "west":  { "uv": [ 10, 10, 14, 15 ], "texture": "#all" },
+                "east":  { "uv": [ 10, 10, 14, 15 ], "texture": "#all" }
+            }
+        }
+    ]
+}

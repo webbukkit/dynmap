@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "age=0": { "model": "block/frosted_ice_0" },
+        "age=1": { "model": "block/frosted_ice_1" },
+        "age=2": { "model": "block/frosted_ice_2" },
+        "age=3": { "model": "block/frosted_ice_3" }
+    }
+}

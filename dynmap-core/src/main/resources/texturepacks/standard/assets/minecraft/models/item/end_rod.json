@@ -1,0 +1,6 @@
+{
+    "parent": "block/end_rod",
+    "textures": {
+        "layer0": "block/end_rod"
+    }
+}

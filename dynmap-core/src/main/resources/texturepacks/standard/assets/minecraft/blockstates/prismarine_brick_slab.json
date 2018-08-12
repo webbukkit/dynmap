@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "type=bottom": { "model": "block/prismarine_brick_slab" },
+        "type=top": { "model": "block/prismarine_brick_slab_top" },
+        "type=double": { "model": "block/prismarine_bricks" }
+    }
+}

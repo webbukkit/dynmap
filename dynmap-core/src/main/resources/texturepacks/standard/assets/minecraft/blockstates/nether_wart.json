@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "age=0": { "model": "block/nether_wart_stage0" },
+        "age=1": { "model": "block/nether_wart_stage1" },
+        "age=2": { "model": "block/nether_wart_stage1" },
+        "age=3": { "model": "block/nether_wart_stage2" }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "block/bedrock" },
+            { "model": "block/bedrock_mirrored" },
+            { "model": "block/bedrock", "y": 180 },
+            { "model": "block/bedrock_mirrored", "y": 180 }
+        ]
+    }
+}

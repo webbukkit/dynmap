@@ -1,0 +1,22 @@
+{
+    "textures": {
+        "particle": "block/cake_side",
+        "bottom": "block/cake_bottom",
+        "top": "block/cake_top",
+        "side": "block/cake_side",
+        "inside": "block/cake_inner"
+    },
+    "elements": [
+        {   "from": [ 3, 0, 1 ],
+            "to": [ 15, 8, 15 ],
+            "faces": {
+                "down":  { "texture": "#bottom", "cullface": "down" },
+                "up":    { "texture": "#top" },
+                "north": { "texture": "#side" },
+                "south": { "texture": "#side" },
+                "west":  { "texture": "#inside" },
+                "east":  { "texture": "#side" }
+            }
+        }
+    ]
+}

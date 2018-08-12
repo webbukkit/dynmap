@@ -1,0 +1,126 @@
+# These are examples of world-specific settings - customize your content as you see fit
+#
+# NOTES:
+#   All lines here are commented with the # symbol - delete the # symbol on copied lines you wish to enable
+#   Definitions of a world made here will superecede any world definition with the same name in configuration.txt
+#   Deleting this file will result in a fresh copy being produced by dynmap.jar on the next startup.
+#
+worlds:
+  # Worlds can be handled by templates, based on world type
+  # You can override the properties of the template by specifying them in this section
+  #    for example 'Title: "My Awesome World"'
+  #- name: world
+  #  title: "World"
+  #   Use 'enabled: false' to disable a certain world.
+  #  enabled: false
+  #   Use sendposition: false to prevent player positions from showing when on this world (if sendposition is globally enabled)
+  #  sendposition: false
+  #   Use sendhealth: false ot prevent player health from showing when on this world (if sendhealth is globally enabled)
+  #  sendhealth: false
+  #  # If world isn't contiguous chunks (due to teleporting, for example), fullrender needs to be given other locations to scan for tiles on each patch of chunks
+  #  fullrenderlocations:
+  #    - x: 10000
+  #      y: 64
+  #      z: 20000
+  #    - x: -15000
+  #      y: 64
+  #      z: -5000
+  #  # Use visibilitylimits to restrict which areas of maps on your world to render (zero or more shapes can be defined)
+  #  # For a rectangle, the area is defined by x0, z0 to x1, z1
+  #  # For a circle, the area is defined by a center at x,z with a radius 'r'
+  #  visibilitylimits:
+  #    - x0: -1000
+  #      z0: -1000
+  #      x1: 1000
+  #      z1: 1000
+  #    - x: -2000
+  #      z: -1000
+  #      r: 200
+  #  # Use hiddenlimits to specifically hide portions of your world (the opposite of visibilitylimits)
+  #  # For a rectangle, the area is defined by x0, z0 to x1, z1
+  #  # For a circle, the area is defined by a center at x,z with a radius 'r'
+  #  hiddenlimits:
+  #    - x0: 100
+  #      z0: 0
+  #      x1: 200
+  #      z1: 0
+  #    - x: -2000
+  #      z: -1000
+  #      r: 200
+  #  # Use hidestyle to control how hidden-but-existing chunks are to be rendered (air=empty air (same as ungenerated), stone=a flat stone plain, ocean=a flat ocean)
+  #  hidestyle: stone
+  #   Use 'template: mycustomtemplate' to use the properties specified in the template 'mycustomtemplate' to this world. Default it is set to the environment-name (normal or nether).
+  #  template: mycustomtemplate
+  #   Rest of comes from template - uncomment to tailor for world specifically
+  #  # World center - default is spawn point
+  #  center:
+  #    x: 0
+  #    y: 64
+  #    z: 0
+  #  # If bigworld set to true, use alternate directory layout better suited to large worlds
+  #  bigworld: true
+  #  # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+  #  extrazoomout: 3
+  #  # Default delay on processing of updated tiles, in seconds.  This can reduce potentially expensive re-rendering
+  #  # of frequently updated tiles (such as due to machines, pistons, quarries or other automation).  Value can also be set on
+  #  # individual maps.
+  #  tileupdatedelay: 30
+  #  maps:
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: flat
+  #      title: "Flat"
+  #      prefix: flat
+  #      perspective: iso_S_90_lowres
+  #      shader: stdtexture
+  #      lighting: shadows
+  #      mapzoomin: 1
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: surface
+  #      title: "Surface"
+  #      prefix: t
+  #      perspective: iso_SE_30_hires
+  #      shader: stdtexture
+  #      lighting: shadows
+  #      mapzoomin: 1
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: cave
+  #      title: "Cave"
+  #      prefix: ct
+  #      perspective: iso_SE_60_lowres
+  #      shader: cave
+  #      lighting: default
+  #      mapzoomin: 3
+  #
+  # To just label world, and inherit rest from template, just provide name and title
+  #- name: world2
+  #  title: "Second World"
+  #
+  #- name: nether
+  #  title: "Nether"
+  #  center:
+  #    x: 0
+  #    y: 64
+  #    z: 0
+  #  # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+  #  extrazoomout: 3
+  #  maps:
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: flat
+  #      title: "Flat"
+  #      prefix: flat
+  #      perspective: iso_S_90_lowres
+  #      shader: stdtexture
+  #      lighting: nethershadows
+  #      # Map background color (day or night)
+  #      background: "#300806"
+  #      mapzoomin: 1
+  #    - class: org.dynmap.hdmap.HDMap
+  #      name: nether
+  #      title: "Surface"
+  #      prefix: nt
+  #      perspective: iso_SE_30_hires
+  #      shader: stdtexture
+  #      lighting: nethershadows
+  #      # Map background color (day or night)
+  #      background: "#300806"
+  #      mapzoomin: 1

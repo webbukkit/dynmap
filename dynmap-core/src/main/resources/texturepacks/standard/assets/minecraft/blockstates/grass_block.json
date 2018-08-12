@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "snowy=false": [
+            { "model": "block/grass_block" },
+            { "model": "block/grass_block", "y": 90 },
+            { "model": "block/grass_block", "y": 180 },
+            { "model": "block/grass_block", "y": 270 }
+        ],
+        "snowy=true":  { "model": "block/grass_block_snow" }
+    }
+}

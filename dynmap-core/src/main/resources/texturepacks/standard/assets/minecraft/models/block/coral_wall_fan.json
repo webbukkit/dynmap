@@ -1,0 +1,26 @@
+{
+    "ambientocclusion": false,
+    "textures": {
+        "particle": "#fan"
+    },
+    "elements": [
+        {   "from": [ 0, 8, 0 ],
+            "to": [ 16, 8, 16 ],
+            "rotation": { "origin": [ 8, 8, 14 ], "axis": "x", "angle": 22.5, "rescale": true },
+            "shade": false,
+            "faces": {
+                "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#fan" },
+                "down": { "uv": [ 16, 16, 0, 0 ], "texture": "#fan" }
+            }
+        },
+        {   "from": [ 0, 8, 0 ],
+            "to": [ 16, 8, 16 ],
+            "rotation": { "origin": [ 8, 8, 14 ], "axis": "x", "angle": -22.5, "rescale": true },
+            "shade": false,
+            "faces": {
+                "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#fan" },
+                "down": { "uv": [ 16, 16, 0, 0 ], "texture": "#fan" }
+            }
+        }
+    ]
+}

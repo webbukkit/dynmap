@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C/DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta charset="utf-8" />
+
+	<META HTTP-EQUIV = "Pragma" CONTENT="no-cache">
+	<title> Minecraft Dynamic Map - Login/Register </title>
+	<link rel="icon" href="images/dynmap.ico" type="image/ico" />
+
+	<link rel="stylesheet" type="text/css" href="css/leaflet.css?_=${version}-${buildnumber}" />
+	<link rel="stylesheet" type="text/css" href="css/standalone.css?_=${version}-${buildnumber}" media="screen" />
+	<link rel="stylesheet" type="text/css" href="css/dynmap_style.css?_=${version}-${buildnumber}" media="screen" />
+	<script type="text/javascript" src="standalone/config.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="js/jquery-1.11.0.js?_=${version}-${buildnumber}"></script>
+	
+	<script type="text/javascript">
+		\$(document).ready(function() {
+			var status = \$('#status_message');
+			if(window.location.href.indexOf('error=loginfailed') >= 0)
+				\$('<div/>').text('Login Failed ').appendTo(status);
+			if(window.location.href.indexOf('error=verifyfailed') >= 0)
+				\$('<div/>').text('Password Verify Error ').appendTo(status);
+			if(window.location.href.indexOf('error=registerfailed') >= 0)
+				\$('<div/>').text('Registration failed (bad passcode?) ').appendTo(status);
+			\$('form')[0].setAttribute('action', config.url.login);
+			\$('form')[1].setAttribute('action', config.url.register);
+			document.forms['login'].elements['j_username'].focus();
+		});
+		
+		\$(function(){
+            \$('form[name=register]').submit(function(){
+                \$.post(\$(this).attr('action'), \$(this).serialize(), function(json) {
+                    if(json.result == 'success')
+                    	window.location = 'index.html';
+                    else
+                    	window.location = 'login.html?error=' + json.result;
+                }, 'json');
+                return false;
+            });
+        });
+
+		\$(function(){
+            \$('form[name=login]').submit(function(){
+                \$.post(\$(this).attr('action'), \$(this).serialize(), function(json) {
+                    if(json.result == 'success')
+                    	window.location = 'index.html';
+                    else
+                    	window.location = 'login.html?error=' + json.result;
+                }, 'json');
+                return false;
+            });
+        });
+	</script>
+	
+</head>
+<body>
+<div class='dynmaplogin'>
+<h2>Minecraft Dynamic Map - Login/Register</h2>
+<div id="status_message" class="statusmessage"></div>
+<table class='loginregister'>
+<tr><th>Existing User:</th></tr>
+<tr><td class='login'>
+<FORM METHOD=POST name=login ACTION="up/login">
+<p>
+Enter user ID and password:
+<BR>
+<BR>
+<table>
+<tr><td>User ID</td><td><input type="text" size="20" name="j_username"></td></tr>
+<tr><td>Password</td><td><input type="password" size="20" name="j_password"></td></tr>
+</table>
+<BR>
+<input type="submit" name="login" value="Login">
+</p>
+</form>
+<p>
+</td></tr>
+<tr><th>Register New User:</th></tr>
+<tr>
+<td class='register'>
+<FORM METHOD=POST name=register ACTION="up/register">
+<p>
+Run '/dynmap webregister' and enter returned registration code, along with userid and password:
+<BR>
+<BR>
+<table>
+<tr><td>User ID</td><td><input type="text" size="20" name="j_username"></td></tr>
+<tr><td>Password</td><td><input type="password" size="20" name="j_password"></td></tr>
+<tr><td>Verify Password</td><td><input type="password" size="20" name="j_verify_password"></td></tr>
+<tr><td>Registration Code</td><td><input type="text" size="20" name="j_passcode"></td></tr>
+</table>
+<BR>
+<BR>
+<input type="submit" name="register" value="Register">
+</p>
+</form>
+</td>
+</tr>
+</table>
+</div>
+
+</body>
+</html>

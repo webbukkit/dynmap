@@ -1,0 +1,7 @@
+{
+    "parent": "block/fire_side_alt",
+    "textures": {
+        "particle": "block/fire_0",
+        "fire": "block/fire_0"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube_mirrored",
+    "textures": {
+        "particle": "#all",
+        "down": "#all",
+        "up": "#all",
+        "north": "#all",
+        "east": "#all",
+        "south": "#all",
+        "west": "#all"
+    }
+}

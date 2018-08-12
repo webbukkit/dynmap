@@ -1,0 +1,41 @@
+{
+    "ambientocclusion": false,
+    "textures": {
+        "particle": "block/vine",
+        "vine": "block/vine"
+    },
+    "elements": [
+        {   "from": [ 0.8, 0, 0 ],
+            "to": [ 0.8, 16, 16 ],
+            "shade": false,
+            "faces": {
+                "west": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 },
+                "east": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 }
+            }
+        },
+        {   "from": [ 15.2, 0, 0 ],
+            "to": [ 15.2, 16, 16 ],
+            "shade": false,
+            "faces": {
+                "west": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 },
+                "east": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 }
+            }
+        },
+        {   "from": [ 0, 0, 15.2 ],
+            "to": [ 16, 16, 15.2 ],
+            "shade": false,
+            "faces": {
+                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 },
+                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 }
+            }
+        },
+        {   "from": [ 0, 0, 0.8 ],
+            "to": [ 16, 16, 0.8 ],
+            "shade": false,
+            "faces": {
+                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 },
+                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#vine", "tintindex": 0 }
+            }
+        }
+    ]
+}

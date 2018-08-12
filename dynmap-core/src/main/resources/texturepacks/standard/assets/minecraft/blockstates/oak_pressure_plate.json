@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "powered=false": { "model": "block/oak_pressure_plate" },
+        "powered=true": { "model": "block/oak_pressure_plate_down" }
+    }
+}

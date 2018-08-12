@@ -1,0 +1,40 @@
+version: 0.20
+#
+# Default template for "Normal" environment worlds (deftemplatesuffix="hi_boost_xhi")
+#  Uses the HDMap renderer with view from the SE with the "hires" resolution (16 pixels per block edge), with resolution boosted
+#  tiles rendered at 'xhires' resolution (64 pixels perblock edge)
+#
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-normal-hi_boost_xhi.txt' if you wish to customize it
+#
+templates:
+  # Template for normal world (HDMap hires with vhires boost)
+  normal-hi_boost_xhi:
+    enabled: true
+    # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+    extrazoomout: 2
+    maps:
+      - class: org.dynmap.hdmap.HDMap
+        name: flat
+        title: "Flat"
+        prefix: flat
+        perspective: iso_S_90_lowres
+        shader: stdtexture
+        lighting: shadows
+        mapzoomin: 5
+      - class: org.dynmap.hdmap.HDMap
+        name: surface
+        title: "Surface"
+        prefix: t
+        perspective: iso_SE_30_hires
+        shader: stdtexture
+        lighting: shadows
+        mapzoomin: 3
+        boostzoom: 2
+      - class: org.dynmap.hdmap.HDMap
+        name: cave
+        title: "Cave"
+        prefix: ct
+        perspective: iso_SE_60_lowres
+        shader: cave
+        lighting: default
+        mapzoomin: 5

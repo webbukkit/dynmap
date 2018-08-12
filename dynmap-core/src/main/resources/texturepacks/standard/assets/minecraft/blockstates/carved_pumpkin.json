@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "block/carved_pumpkin" },
+        "facing=south": { "model": "block/carved_pumpkin", "y": 180 },
+        "facing=west":  { "model": "block/carved_pumpkin", "y": 270 },
+        "facing=east":  { "model": "block/carved_pumpkin", "y": 90 }
+    }
+}

@@ -1,0 +1,6 @@
+{
+    "parent": "block/coral_fan",
+    "textures": {
+        "fan": "block/horn_coral_fan"
+    }
+}

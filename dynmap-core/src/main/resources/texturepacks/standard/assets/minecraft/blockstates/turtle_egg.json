@@ -1,0 +1,76 @@
+{
+    "variants": {
+        "eggs=1,hatch=0": [
+            { "model": "block/turtle_egg" },
+            { "model": "block/turtle_egg", "y": 90 },
+            { "model": "block/turtle_egg", "y": 180 },
+            { "model": "block/turtle_egg", "y": 270 }
+        ],
+        "eggs=1,hatch=1": [
+            { "model": "block/slightly_cracked_turtle_egg" },
+            { "model": "block/slightly_cracked_turtle_egg", "y": 90 },
+            { "model": "block/slightly_cracked_turtle_egg", "y": 180 },
+            { "model": "block/slightly_cracked_turtle_egg", "y": 270 }
+        ],
+        "eggs=1,hatch=2": [
+            { "model": "block/very_cracked_turtle_egg" },
+            { "model": "block/very_cracked_turtle_egg", "y": 90 },
+            { "model": "block/very_cracked_turtle_egg", "y": 180 },
+            { "model": "block/very_cracked_turtle_egg", "y": 270 }
+        ],
+        "eggs=2,hatch=0": [
+            { "model": "block/two_turtle_eggs" },
+            { "model": "block/two_turtle_eggs", "y": 90 },
+            { "model": "block/two_turtle_eggs", "y": 180 },
+            { "model": "block/two_turtle_eggs", "y": 270 }
+        ],
+        "eggs=2,hatch=1": [
+            { "model": "block/two_slightly_cracked_turtle_eggs" },
+            { "model": "block/two_slightly_cracked_turtle_eggs", "y": 90 },
+            { "model": "block/two_slightly_cracked_turtle_eggs", "y": 180 },
+            { "model": "block/two_slightly_cracked_turtle_eggs", "y": 270 }
+        ],
+        "eggs=2,hatch=2": [
+            { "model": "block/two_very_cracked_turtle_eggs" },
+            { "model": "block/two_very_cracked_turtle_eggs", "y": 90 },
+            { "model": "block/two_very_cracked_turtle_eggs", "y": 180 },
+            { "model": "block/two_very_cracked_turtle_eggs", "y": 270 }
+        ],
+        "eggs=3,hatch=0": [
+            { "model": "block/three_turtle_eggs" },
+            { "model": "block/three_turtle_eggs", "y": 90 },
+            { "model": "block/three_turtle_eggs", "y": 180 },
+            { "model": "block/three_turtle_eggs", "y": 270 }
+        ],
+        "eggs=3,hatch=1": [
+            { "model": "block/three_slightly_cracked_turtle_eggs" },
+            { "model": "block/three_slightly_cracked_turtle_eggs", "y": 90 },
+            { "model": "block/three_slightly_cracked_turtle_eggs", "y": 180 },
+            { "model": "block/three_slightly_cracked_turtle_eggs", "y": 270 }
+        ],
+        "eggs=3,hatch=2": [
+            { "model": "block/three_very_cracked_turtle_eggs" },
+            { "model": "block/three_very_cracked_turtle_eggs", "y": 90 },
+            { "model": "block/three_very_cracked_turtle_eggs", "y": 180 },
+            { "model": "block/three_very_cracked_turtle_eggs", "y": 270 }
+        ],
+        "eggs=4,hatch=0": [
+            { "model": "block/four_turtle_eggs" },
+            { "model": "block/four_turtle_eggs", "y": 90 },
+            { "model": "block/four_turtle_eggs", "y": 180 },
+            { "model": "block/four_turtle_eggs", "y": 270 }
+        ],
+        "eggs=4,hatch=1": [
+            { "model": "block/four_slightly_cracked_turtle_eggs" },
+            { "model": "block/four_slightly_cracked_turtle_eggs", "y": 90 },
+            { "model": "block/four_slightly_cracked_turtle_eggs", "y": 180 },
+            { "model": "block/four_slightly_cracked_turtle_eggs", "y": 270 }
+        ],
+        "eggs=4,hatch=2": [
+            { "model": "block/four_very_cracked_turtle_eggs" },
+            { "model": "block/four_very_cracked_turtle_eggs", "y": 90 },
+            { "model": "block/four_very_cracked_turtle_eggs", "y": 180 },
+            { "model": "block/four_very_cracked_turtle_eggs", "y": 270 }
+        ]
+    }
+}

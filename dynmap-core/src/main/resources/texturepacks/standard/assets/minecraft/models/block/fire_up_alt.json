@@ -1,0 +1,17 @@
+{
+    "ambientocclusion": false,
+    "elements": [
+        {   "from": [ 0, 16, 0 ],
+            "to": [ 16, 16, 16 ],
+            "rotation": { "origin": [ 8, 16, 16 ], "axis": "x", "angle": -22.5, "rescale": true },
+            "shade": false,
+            "faces": { "down": { "uv": [ 0, 0, 16, 16 ], "texture": "#fire", "rotation": 180 }}
+        },
+        {   "from": [ 0, 16, 0 ],
+            "to": [ 16, 16, 16 ],
+            "rotation": { "origin": [ 8, 16, 0 ], "axis": "x", "angle": 22.5, "rescale": true },
+            "shade": false,
+            "faces": { "down": { "uv": [ 0, 0, 16, 16 ], "texture": "#fire" }}
+        }
+    ]
+}

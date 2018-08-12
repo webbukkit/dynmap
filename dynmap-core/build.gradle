@@ -1,0 +1,52 @@
+description = "DynmapCore"
+
+dependencies {
+    compile "us.dynmap:DynmapCoreAPI:${project.version}"
+    compile 'org.eclipse.jetty:jetty-server:8.1.21.v20160908'
+    compile 'org.eclipse.jetty:jetty-servlet:8.1.21.v20160908'
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'org.yaml:snakeyaml:1.9'
+    compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
+}
+
+processResources {
+    // replace stuff in mcmod.info, nothing else
+	from('src/main/resources') {
+	    include 'core.yml'
+	    include 'lightings.txt'
+	    include 'perspectives.txt'
+		include 'extracted/web/version.js'
+		include 'extracted/web/index.html'
+		include 'extracted/web/login.html'
+        // replace version and mcversion
+        expand(
+                buildnumber: project.parent.ext.globals.buildNumber,
+                version: project.version
+        )
+    }
+}
+
+jar {
+   classifier = 'unshaded'
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('com.googlecode.json-simple:json-simple:'))
+		include(dependency('org.yaml:snakeyaml:'))
+		include(dependency('com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:'))
+        include(dependency('org.eclipse.jetty::'))
+        include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
+	}
+	relocate('org.json.simple', 'org.dynmap.json.simple')
+	relocate('org.yaml.snakeyaml', 'org.dynmap.snakeyaml')
+	relocate('org.eclipse.jetty', 'org.dynmap.jetty')
+	relocate('org.owasp.html', 'org.dynmap.org.owasp.html')
+	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
+    destinationDir = file '../target'
+    classifier = ''
+}
+
+artifacts {
+    archives shadowJar
+}

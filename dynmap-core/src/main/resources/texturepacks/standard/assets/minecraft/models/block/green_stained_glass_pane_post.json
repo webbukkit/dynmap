@@ -1,0 +1,7 @@
+{
+    "parent": "block/template_glass_pane_post",
+    "textures": {
+        "edge": "block/green_stained_glass_pane_top",
+        "pane": "block/green_stained_glass"
+    }
+}

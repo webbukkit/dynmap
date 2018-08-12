@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "mode=save": { "model": "block/structure_block_save" },
+        "mode=load": { "model": "block/structure_block_load" },
+        "mode=corner": { "model": "block/structure_block_corner" },
+        "mode=data": { "model": "block/structure_block_data" }
+    }
+}

@@ -1,0 +1,3 @@
+{
+    "parent": "item/template_spawn_egg"
+}

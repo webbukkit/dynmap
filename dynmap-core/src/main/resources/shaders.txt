@@ -1,0 +1,183 @@
+#
+# This file contains default standard shader definitions.  The contents of this file are replaced and updated
+# during upgrades, so new or updated shader definitions should be done in the custom-shaders.txt file
+#
+shaders:
+  # Default shader - used if shader not specified or invalid
+  - class: org.dynmap.hdmap.TexturePackHDShader
+    name: default
+    texturepack: standard
+
+  # Color scheme based shaders
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: defaultscheme
+    colorscheme: default
+
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: ovocean
+    colorscheme: ovocean
+   
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: flames
+    colorscheme: flames
+
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: sk89q
+    colorscheme: sk89q
+   
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: amidst
+    biomecolored: biome
+    colorscheme: amidst
+
+  # Biome based shaders
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: biome
+    biomecolored: biome
+    
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: temperature
+    biomecolored: temperature
+    
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: rainfall
+    biomecolored: rainfall
+    
+  # No transparency default color scheme shader
+  - class: org.dynmap.hdmap.DefaultHDShader
+    name: no_transparency
+    colorscheme: default
+    transparency: false
+  
+  # Cave view shader
+  - class: org.dynmap.hdmap.CaveHDShader
+    name: cave
+
+  # Cave view shader - only lit caves
+  - class: org.dynmap.hdmap.CaveHDShader
+    name: lit-cave
+    onlyiflit: true
+
+  # Cave view shader - hide various soft blocks
+  - class: org.dynmap.hdmap.CaveHDShader
+    name: cave-noplants
+    hiddenids: [ 6, 17, 18, 31, 32, 37, 38, 39, 40, 50, 55, 78, 81, 83, 86, 99, 100, 103, 104, 105, 111, 115 ]
+    
+  # Texture pack based shader for standard Minecraft textures
+  - class: org.dynmap.hdmap.TexturePackHDShader
+    name: stdtexture
+    texturepack: standard
+
+  # Standard texture cave view shader
+  - class: org.dynmap.hdmap.TexturePackHDCaveShader
+    name: stdtexture-cave
+    texturepack: standard
+    max-sky-light: 0
+    min-emitted-light: 1
+    
+  # Texture pack based shader for standard Minecraft textures, without biome-tinted grass/leaves
+  - class: org.dynmap.hdmap.TexturePackHDShader
+    name: stdtexture-nobiome
+    texturepack: standard
+    biomeshaded: false
+
+  # Texture pack based shader for standard Minecraft textures, with grid for region file borders (512x512)
+  - class: org.dynmap.hdmap.TexturePackHDShader
+    name: stdtexture-mcr-grid
+    texturepack: standard
+    grid-scale: 512
+    
+  # Topological map shader    
+  - class: org.dynmap.hdmap.TopoHDShader
+    name: topo
+    color127: "#FFFFFF"
+    color111: "#8B4513"
+    color95: "#D2B48C"
+    color79: "#FFFF00"
+    color63: "#008000"
+    color47: "#228B22"
+    color31: "#104010"
+    color15: "#6B8E23"
+    color0: "#696969"
+    linecolor: "#000000"
+    watercolor: "#0000FF"
+    wateralpha: 1.0
+
+  # Topological map shader (spread over 256 height)
+  - class: org.dynmap.hdmap.TopoHDShader
+    name: topo256
+    color255: "#FFFFFF"
+    color222: "#8B4513"
+    color190: "#D2B48C"
+    color158: "#FFFF00"
+    color126: "#008000"
+    color94: "#228B22"
+    color62: "#104010"
+    color30: "#6B8E23"
+    color0: "#696969"
+    linecolor: "#000000"
+    watercolor: "#0000FF"
+    wateralpha: 1.0
+
+  # Topological map shader (hide plants and other soft features)    
+  - class: org.dynmap.hdmap.TopoHDShader
+    name: topo-noplants
+    color127: "#FFFFFF"
+    color111: "#8B4513"
+    color95: "#D2B48C"
+    color79: "#FFFF00"
+    color63: "#008000"
+    color47: "#228B22"
+    color31: "#104010"
+    color15: "#6B8E23"
+    color0: "#696969"
+    linecolor: "#000000"
+    watercolor: "#0000FF"
+    wateralpha: 1.0
+    hiddenids: [ 6, 17, 18, 31, 32, 37, 38, 39, 40, 50, 55, 78, 81, 83, 86, 99, 100, 103, 104, 105, 111, 115 ]
+ 
+   # Topological map shader (hide plants and other soft features)    
+  - class: org.dynmap.hdmap.TopoHDShader
+    name: topo256-noplants
+    color255: "#FFFFFF"
+    color222: "#8B4513"
+    color190: "#D2B48C"
+    color158: "#FFFF00"
+    color126: "#008000"
+    color94: "#228B22"
+    color62: "#104010"
+    color30: "#6B8E23"
+    color0: "#696969"
+    linecolor: "#000000"
+    watercolor: "#0000FF"
+    wateralpha: 1.0
+    hiddenids: [ 6, 17, 18, 31, 32, 37, 38, 39, 40, 50, 55, 78, 81, 83, 86, 99, 100, 103, 104, 105, 111, 115 ]
+ 
+  # Alternate topological map shader (thanks to TerraNetworkOrg!)
+  - class: org.dynmap.hdmap.TopoHDShader
+    name: TerraNetworkOrgTopo
+    color127: "#4F2101"
+    color120: "#8B4513" 
+    color108: "#D2B48C"
+    color96: "#C99653"
+    color84: "#CB9C0B"
+    color72: "#B1B62E"
+    color60: "#0F8D0F"
+    color48: "#14703B"
+    color36: "#106343"
+    color24: "#0E5347"
+    color12: "#939393"
+    color0: "#696969"
+    linecolor: "#000000"
+    watercolor: "#1F1FEA"
+    wateralpha: 1.0
+    
+  # Inhabited time map shader    
+  - class: org.dynmap.hdmap.InhabitedHDShader
+    name: inhabited
+    color10: "#0000FF"
+    color30: "#00FFFF"
+    color100: "#008000"
+    color300: "#FFFF00"
+    color1000: "#FF8000"
+    color3000: "#FF0000"

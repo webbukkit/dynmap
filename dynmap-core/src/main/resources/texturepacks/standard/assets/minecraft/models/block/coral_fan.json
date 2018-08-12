@@ -1,0 +1,44 @@
+{
+    "ambientocclusion": false,
+    "textures": {
+        "particle": "#fan"
+    },
+    "elements": [
+        {   "from": [ 8, 0, 0 ],
+            "to": [ 24, 0, 16 ],
+            "rotation": { "origin": [ 8, 0, 0 ], "axis": "z", "angle": 22.5, "rescale": false },
+            "shade": false,
+            "faces": {
+                "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#fan", "rotation": 90 },
+                "down": { "uv": [ 0, 16, 16, 0 ], "texture": "#fan", "rotation": 270 }
+            }
+        },
+        {   "from": [ -8, 0, 0 ],
+            "to": [ 8, 0, 16 ],
+            "rotation": { "origin": [ 8, 0, 0 ], "axis": "z", "angle": -22.5, "rescale": false },
+            "shade": false,
+            "faces": {
+                "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#fan", "rotation": 270 },
+                "down": { "uv": [ 0, 16, 16, 0 ], "texture": "#fan", "rotation": 90 }
+            }
+        },
+        {   "from": [ 0, 0, 8 ],
+            "to": [ 16, 0, 24 ],
+            "rotation": { "origin": [ 0, 0, 8 ], "axis": "x", "angle": -22.5, "rescale": false },
+            "shade": false,
+            "faces": {
+                "up": { "uv": [ 16, 16, 0, 0 ], "texture": "#fan" },
+                "down": { "uv": [ 16, 0, 0, 16 ], "texture": "#fan" }
+            }
+        },
+        {   "from": [ 0, 0, -8 ],
+            "to": [ 16, 0, 8 ],
+            "rotation": { "origin": [ 0, 0, 8 ], "axis": "x", "angle": 22.5, "rescale": false },
+            "shade": false,
+            "faces": {
+                "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#fan" },
+                "down": { "uv": [ 0, 16, 16, 0 ], "texture": "#fan" }
+            }
+        }
+    ]
+}
