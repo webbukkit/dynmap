@@ -4,7 +4,7 @@ description = 'dynmap'
 dependencies {
   compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
     compile 'com.nijikokun.bukkit:Permissions:3.1.6'
-    compile "us.dynmap:dynmap-api:${project.version}"
+    compile project(":dynmap-api")
     compile "us.dynmap:DynmapCore:${project.version}"
     compile group: 'ru.tehkode', name: 'PermissionsEx', version:'1.19.1'
     compile group: 'de.bananaco', name: 'bPermissions', version:'2.9.1'
@@ -38,7 +38,7 @@ jar {
 shadowJar {
     dependencies {
         include(dependency('org.bstats::'))
-		include(dependency('us.dynmap:dynmap-api:'))
+		include(dependency(':dynmap-api'))
 		include(dependency('us.dynmap:DynmapCore:'))
         include(dependency(':bukkit-helper'))
         include(dependency(':bukkit-helper-113'))
