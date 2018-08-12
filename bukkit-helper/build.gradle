@@ -1,5 +1,5 @@
 
-description = 'dynmap-helper'
+description = 'bukkit-helper'
 
 dependencies {
   compile group: 'us.dynmap', name: 'dynmap-api', version: "${project.version}"

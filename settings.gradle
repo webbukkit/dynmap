@@ -1,8 +1,8 @@
 rootProject.name = 'dynmap-common'
 include ':dynmap'
-include ':dynmap-helper-113'
-include ':dynmap-helper'
+include ':bukkit-helper-113'
+include ':bukkit-helper'
 
 project(':dynmap').projectDir = "$rootDir/bukkit" as File
-project(':dynmap-helper-113').projectDir = "$rootDir/helper113" as File
-project(':dynmap-helper').projectDir = "$rootDir/helper" as File
+project(':bukkit-helper-113').projectDir = "$rootDir/bukkit-helper-113" as File
+project(':bukkit-helper').projectDir = "$rootDir/bukkit-helper" as File
