@@ -409,8 +409,8 @@ texture:id=sponge_wet
 texture:id=slime
 texture:id=iron_trapdoor
 texture:id=prismarine_bricks
-texture:id=prismarine_dark
-texture:id=prismarine_rough
+texture:id=dark_prismarine
+texture:id=prismarine
 texture:id=sea_lantern
 texture:id=daylight_detector_inverted_top
 texture:id=red_sandstone_bottom
@@ -1526,11 +1526,11 @@ block:id=barrier,data=*,transparency=TRANSPARENT
 # Iron Trapdoor
 block:id=iron_trapdoor,allfaces=0:iron_trapdoor,stdrot=true,transparency=TRANSPARENT
 # Prismarine
-block:id=prismarine,data=0,allfaces=0:prismarine_rough,stdrot=true
+block:id=prismarine,allfaces=0:prismarine,stdrot=true
 # Prismarine Bricks
-block:id=prismarine,data=1,allfaces=0:prismarine_bricks,stdrot=true
+block:id=prismarine_bricks,allfaces=0:prismarine_bricks,stdrot=true
 # Dark Prismarine
-block:id=prismarine,data=2,allfaces=0:prismarine_dark,stdrot=true
+block:id=dark_prismarine,allfaces=0:dark_prismarine,stdrot=true
 # Sea Lantern
 block:id=sea_lantern,data=*,allfaces=0:sea_lantern,stdrot=true
 
