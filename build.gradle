@@ -42,3 +42,10 @@ subprojects {
   	options.encoding = 'UTF-8'
   }
 }
+
+clean {
+  delete "target" 
+}
+
+task setupCIWorkspace {
+}
