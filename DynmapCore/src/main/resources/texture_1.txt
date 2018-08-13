@@ -196,7 +196,7 @@ texture:id=gold_block
 texture:id=iron_block
 texture:id=stone_slab_side
 texture:id=stone_slab_top
-texture:id=stonebrick
+texture:id=stone_bricks
 texture:id=nether_brick
 texture:id=brick
 texture:id=cobweb
@@ -268,9 +268,9 @@ texture:id=cake_inner
 texture:id=cake_side
 texture:id=cake_top
 texture:id=trapdoor
-texture:id=stonebrick_mossy
-texture:id=stonebrick_cracked
-texture:id=stonebrick_carved
+texture:id=mossy_stone_bricks
+texture:id=cracked_stone_bricks
+texture:id=chiseled_stone_bricks
 texture:id=mushroom_block_inside
 texture:id=mushroom_block_skin_brown
 texture:id=mushroom_block_skin_red
@@ -916,6 +916,7 @@ block:id=red_mushroom,patch0-1=0:mushroom_red,transparency=TRANSPARENT
 block:id=gold_block,allfaces=0:gold_block,stdrot=true
 # Iron block
 block:id=iron_block,allfaces=0:iron_block,stdrot=true
+
 # Double Slab - stone
 block:id=double_stone_slab,data=0,allsides=0:stone_slab_side,topbottom=0:stone_slab_top,stdrot=true
 block:id=double_stone_slab,data=8,allfaces=0:stone_slab_top,stdrot=true
@@ -932,8 +933,8 @@ block:id=double_stone_slab,data=11,allfaces=0:cobblestone,stdrot=true
 block:id=double_stone_slab,data=4,allfaces=0:brick,stdrot=true
 block:id=double_stone_slab,data=12,allfaces=0:brick,stdrot=true
 # Double Slab - Stone Brick
-block:id=double_stone_slab,data=5,allfaces=0:stonebrick,stdrot=true
-block:id=double_stone_slab,data=13,allfaces=0:stonebrick,stdrot=true
+block:id=double_stone_slab,data=5,allfaces=0:stone_bricks,stdrot=true
+block:id=double_stone_slab,data=13,allfaces=0:stone_bricks,stdrot=true
 # Double Slab - Nether Brick
 block:id=double_stone_slab,data=6,allfaces=0:nether_brick,stdrot=true
 block:id=double_stone_slab,data=14,allfaces=0:nether_brick,stdrot=true
@@ -951,11 +952,12 @@ block:id=stone_slab,data=3,data=11,allfaces=0:cobblestone,stdrot=true,transparen
 # Slab - Brick
 block:id=stone_slab,data=4,data=12,allfaces=0:brick,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Stone Brick
-block:id=stone_slab,data=5,data=13,allfaces=0:stonebrick,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,data=5,data=13,allfaces=0:stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Nether brick
 block:id=stone_slab,data=6,data=14,allfaces=0:nether_brick,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Quartz
 block:id=stone_slab,data=7,data=15,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true,transparency=SEMITRANSPARENT
+
 # Brick Block
 block:id=brick_block,allfaces=0:brick,stdrot=true
 # TNT
@@ -1142,20 +1144,27 @@ block:id=stained_glass,data=15,allfaces=12000:glass_black,stdrot=true,transparen
 
 # Trapdoor
 block:id=trapdoor,allfaces=0:trapdoor,stdrot=true,transparency=TRANSPARENT
+
 # Stone w/ silverfish inside
-block:id=monster_egg,data=0,allfaces=0:stone,stdrot=true
+block:id=infested_stone,allfaces=0:stone,stdrot=true
 # Cobblestone w/ silverfish inside
-block:id=monster_egg,data=1,allfaces=0:cobblestone,stdrot=true
+block:id=infested_cobblestone,allfaces=0:cobblestone,stdrot=true
 # Stone Bricks w/ silverfish inside
-block:id=monster_egg,data=2,allfaces=0:stonebrick,stdrot=true
+block:id=infested_stone_bricks,allfaces=0:stone_bricks,stdrot=true
+# Cracked Stone Bricks w/ silverfish inside
+block:id=infested_cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
+# Chiseled Stone Bricks w/ silverfish inside
+block:id=infested_chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
+
 # Stone Bricks
-block:id=stonebrick,data=0,allfaces=0:stonebrick,stdrot=true
+block:id=stone_bricks,allfaces=0:stone_bricks,stdrot=true
 # Mossy Stone Bricks
-block:id=stonebrick,data=1,allfaces=0:stonebrick_mossy,stdrot=true
+block:id=mossy_stone_bricks,allfaces=0:mossy_stone_bricks,stdrot=true
 # Cracked Stone Bricks
-block:id=stonebrick,data=2,allfaces=0:stonebrick_cracked,stdrot=true
-# Patterned Stone Bricks
-block:id=stonebrick,data=3,allfaces=0:stonebrick_carved,stdrot=true
+block:id=cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
+# Chiseled Stone Bricks
+block:id=chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
+
 # Brown Mushroom Block - inside
 # Red Mushroom Block - inside
 block:id=brown_mushroom_block,id=red_mushroom_block,data=0,allfaces=0:mushroom_block_inside,stdrot=true
@@ -1222,7 +1231,7 @@ block:id=fence_gate,patch0-2=0:oak_planks,stdrot=true,transparency=TRANSPARENT
 # Brick stair
 block:id=brick_stairs,data=*,patch0-2=0:brick,transparency=SEMITRANSPARENT
 # Stone brick stair
-block:id=stone_brick_stairs,data=*,patch0-2=0:stonebrick,transparency=SEMITRANSPARENT
+block:id=stone_brick_stairs,data=*,patch0-2=0:stone_bricks,transparency=SEMITRANSPARENT
 # Mycelium1
 block:id=mycelium,top=0:mycelium_top,allsides=0:mycelium_side,bottom=0:dirt,stdrot=true
 # Lily pad
