@@ -2,6 +2,7 @@ package org.dynmap.hdmap.renderer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -199,7 +200,7 @@ public class ImmibisMicroRenderer extends CustomRenderer {
         { 22, 101, 22, 22, 22, 22 } // 89 = dropper
     };
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         /* Flesh out sides map */

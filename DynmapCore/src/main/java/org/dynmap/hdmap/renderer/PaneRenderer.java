@@ -1,5 +1,6 @@
 package org.dynmap.hdmap.renderer;
 
+import java.util.BitSet;
 import java.util.Map;
 
 import org.dynmap.hdmap.HDBlockStateTextureMap;
@@ -27,7 +28,7 @@ public class PaneRenderer extends CustomRenderer {
     private RenderPatch[][] meshes = new RenderPatch[16][];
     
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         buildPatches(rpf);

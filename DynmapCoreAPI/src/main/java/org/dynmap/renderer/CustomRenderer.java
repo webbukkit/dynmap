@@ -1,5 +1,6 @@
 package org.dynmap.renderer;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public abstract class CustomRenderer {
      * @param custparm - parameter strings for custom renderer - renderer specific
      * @return true if initialized successfully, false if not
      */
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         return true;
     }
     /**

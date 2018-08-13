@@ -1,6 +1,7 @@
 package org.dynmap.hdmap.renderer;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Map;
 
 import org.dynmap.renderer.CustomRenderer;
@@ -23,7 +24,7 @@ public class ThaumFurnaceRenderer extends CustomRenderer {
     private static final int TXTIDX_LAVA = 24;     /* Lava */
     
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         blkbs = DynmapBlockState.getBaseStateByName(blkname); /* Remember our block ID */

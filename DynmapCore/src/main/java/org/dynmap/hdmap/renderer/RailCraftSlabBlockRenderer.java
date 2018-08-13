@@ -35,7 +35,7 @@ public class RailCraftSlabBlockRenderer extends CustomRenderer {
     }
     
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         setID(blkname);   /* Mark block as a stair */

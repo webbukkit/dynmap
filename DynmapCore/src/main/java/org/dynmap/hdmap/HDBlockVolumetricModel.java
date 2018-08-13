@@ -1,5 +1,6 @@
 package org.dynmap.hdmap;
 
+import java.util.BitSet;
 import java.util.HashMap;
 
 public class HDBlockVolumetricModel extends HDBlockModel {
@@ -17,7 +18,7 @@ public class HDBlockVolumetricModel extends HDBlockModel {
      *    if array is short, other elements area are assumed to be zero (fills from bottom of block up)
      * @param blockset - ID of set of blocks defining model
      */
-    public HDBlockVolumetricModel(String blockname, int databits, int nativeres, long[] blockflags, String blockset) {
+    public HDBlockVolumetricModel(String blockname, BitSet databits, int nativeres, long[] blockflags, String blockset) {
         super(blockname, databits, blockset);
         
         this.nativeres = nativeres;

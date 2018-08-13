@@ -105,7 +105,7 @@ texture:id=brown_wool
 texture:id=cyan_wool
 texture:id=gray_wool
 texture:id=green_wool
-texture:id=light_blue_wppl
+texture:id=light_blue_wool
 texture:id=lime_wool
 texture:id=magenta_wool
 texture:id=orange_wool
@@ -174,9 +174,9 @@ texture:id=furnace_front_on
 texture:id=dispenser_front_horizontal
 texture:id=dispenser_front_vertical
 texture:id=sandstone_bottom
-texture:id=sandstone_carved
-texture:id=sandstone_normal
-texture:id=sandstone_smooth
+texture:id=chiseled_sandstone
+texture:id=sandstone
+texture:id=cut_sandstone
 texture:id=sandstone_top
 texture:id=noteblock
 texture:id=rail_golden_powered
@@ -411,9 +411,9 @@ texture:id=prismarine_rough
 texture:id=sea_lantern
 texture:id=daylight_detector_inverted_top
 texture:id=red_sandstone_bottom
-texture:id=red_sandstone_carved
-texture:id=red_sandstone_normal
-texture:id=red_sandstone_smooth
+texture:id=chiseled_red_sandstone
+texture:id=red_sandstone
+texture:id=cut_red_sandstone
 texture:id=red_sandstone_top
 texture:id=dark_oak_planks
 texture:id=acacia_door_lower
@@ -721,11 +721,11 @@ block:id=dispenser,data=6,data=7,face0=0:furnace_top,face1=0:furnace_top,face2=0
 block:id=dispenser,data=8,data=9,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:dispenser_front_horizontal,face5=0:furnace_side,stdrot=true
 block:id=dispenser,data=10,data=11,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:furnace_side,face5=0:dispenser_front_horizontal,stdrot=true
 # Sandstone
-block:id=sandstone,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone_normal,stdrot=true
+block:id=sandstone,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true
 # Carved Sandstone
-block:id=chiseled_sandstone,allsides=0:sandstone_carved,topbottom=0:sandstone_top,stdrot=true
+block:id=chiseled_sandstone,allsides=0:chiseled_sandstone,topbottom=0:sandstone_top,stdrot=true
 # Smooth Sandstone
-block:id=cut_sandstone,allsides=0:sandstone_smooth,topbottom=0:sandstone_top,stdrot=true
+block:id=cut_sandstone,allsides=0:cut_sandstone,topbottom=0:sandstone_top,stdrot=true
 # Note Block 
 block:id=note_block,allfaces=0:noteblock,stdrot=true
 # White Bed
@@ -828,7 +828,7 @@ block:id=dead_bush,patch0-1=0:dead_bush,transparency=TRANSPARENT
 block:id=seagrass,patch0-1=1000:seagrass,transparency=TRANSPARENT
 # Tall seagrass
 block:id=seagrass,data=0,patch0-1=1000:tall_seagrass_top,transparency=TRANSPARENT
-block:id=seagrass,data=1.patch0-1=1000:tall_seagrass_bottom,transparency=TRANSPARENT
+block:id=seagrass,data=1,patch0-1=1000:tall_seagrass_bottom,transparency=TRANSPARENT
 # Piston - facing down
 block:id=piston,data=0,top=0:piston_bottom,bottom=0:piston_top_normal,allsides=5000:piston_side,transparency=TRANSPARENT
 # Piston - facing up
@@ -920,7 +920,7 @@ block:id=iron_block,allfaces=0:iron_block,stdrot=true
 block:id=double_stone_slab,data=0,allsides=0:stone_slab_side,topbottom=0:stone_slab_top,stdrot=true
 block:id=double_stone_slab,data=8,allfaces=0:stone_slab_top,stdrot=true
 # Double Slab - Sandstone
-block:id=double_stone_slab,data=1,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone_normal,stdrot=true
+block:id=double_stone_slab,data=1,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true
 block:id=double_stone_slab,data=9,allfaces=0:sandstone_top,stdrot=true
 # Double Slab - Wood
 block:id=double_stone_slab,data=2,allfaces=0:oak_planks,stdrot=true
@@ -943,7 +943,7 @@ block:id=double_stone_slab,data=15,top=0:quartz_block_top,bottom=0:quartz_block_
 # Slab - stone
 block:id=stone_slab,data=0,data=8,allsides=0:stone_slab_side,topbottom=0:stone_slab_top,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Sandstone
-block:id=stone_slab,data=1,data=9,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone_normal,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,data=1,data=9,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Wood
 block:id=stone_slab,data=2,data=10,allfaces=0:oak_planks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Cobblestone
@@ -1286,7 +1286,7 @@ block:id=wooden_slab,data=5,data=13,allfaces=0:dark_oak_planks,stdrot=true,trans
 # Cocoa Plant (TODO: handle different stages, orientations)
 block:id=cocoa,data=*,allsides=0:cocoa_stage_2
 # Sandstone stairs
-block:id=sandstone_stairs,data=*,patch0=0:sandstone_normal,patch1=0:sandstone_top,patch2=0:sandstone_bottom,transparency=SEMITRANSPARENT
+block:id=sandstone_stairs,data=*,patch0=0:sandstone,patch1=0:sandstone_top,patch2=0:sandstone_bottom,transparency=SEMITRANSPARENT
 # Emerald Ore
 block:id=emerald_ore,data=*,allfaces=0:emerald_ore,stdrot=true
 # Ender Chest (facing east)
@@ -1332,7 +1332,7 @@ block:id=flower_pot,data=8,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:mushro
 # Flower pot with cactus
 block:id=flower_pot,data=9,patch0-5=0:flower_pot,patch6=0:dirt,patch7-10=0:cactus_side,patch11=0:cactus_top,transparency=TRANSPARENT
 # Flower pot with dead bush
-block:id=flower_pot,data=10,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:deadbush,transparency=TRANSPARENT
+block:id=flower_pot,data=10,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:dead_bush,transparency=TRANSPARENT
 # Flower pot with fern
 block:id=flower_pot,data=11,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=1000:fern,transparency=TRANSPARENT
 # Carrots
@@ -1521,23 +1521,23 @@ block:id=sea_lantern,data=*,allfaces=0:sea_lantern,stdrot=true
 block:id=daylight_detector_inverted,data=*,allsides=0:daylight_detector_side,bottom=0:daylight_detector_side,top=0:daylight_detector_inverted_top,stdrot=true,transparency=TRANSPARENT
 
 # Red Sandstone
-block:id=red_sandstone,data=0,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone_normal,stdrot=true
+block:id=red_sandstone,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true
 
 # Carved Red Sandstone
-block:id=red_sandstone,data=1,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=0:red_sandstone_carved,topbottom=0:red_sandstone_top,stdrot=true
+block:id=chiseled_red_sandstone,allsides=0:chiseled_red_sandstone,topbottom=0:red_sandstone_top,stdrot=true
 
 # Smooth Red Sandstone
-block:id=red_sandstone,data=2,allsides=0:red_sandstone_smooth,topbottom=0:red_sandstone_top,stdrot=true
+block:id=cut_red_sandstone,allsides=0:cut_red_sandstone,topbottom=0:red_sandstone_top,stdrot=true
 
 # Red Sandstone stairs
-block:id=red_sandstone_stairs,data=*,patch0=0:red_sandstone_normal,patch1=0:red_sandstone_top,patch2=0:red_sandstone_bottom,transparency=SEMITRANSPARENT
+block:id=red_sandstone_stairs,data=*,patch0=0:red_sandstone,patch1=0:red_sandstone_top,patch2=0:red_sandstone_bottom,transparency=SEMITRANSPARENT
 
 # Red Sandstone Slab (Double)
-block:id=double_stone_slab2,data=0,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone_normal,stdrot=true
+block:id=double_stone_slab2,data=0,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true
 block:id=double_stone_slab2,data=8,allfaces=0:red_sandstone_top,stdrot=true
 
 # Red Sandstone Slab
-block:id=stone_slab2,data=0,data=8,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone_normal,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab2,data=0,data=8,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true,transparency=SEMITRANSPARENT
 
 # Fence Gate (Spruce)
 block:id=spruce_fence_gate,patch0-2=0:spruce_planks,stdrot=true,transparency=TRANSPARENT

@@ -1,6 +1,7 @@
 package org.dynmap.hdmap.renderer;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Map;
 
 import org.dynmap.renderer.MapDataContext;
@@ -12,7 +13,7 @@ public class RPSupportFrameRenderer extends RPMicroRenderer {
     private int frame_txt_side;
     private int frame_txt_edge;
  
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         frame_txt_side = super.getMaximumTextureCount();    /* Get index for side and edge textures */

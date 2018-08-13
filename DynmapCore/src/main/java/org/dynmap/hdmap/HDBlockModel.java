@@ -1,5 +1,7 @@
 package org.dynmap.hdmap;
 
+import java.util.BitSet;
+
 import org.dynmap.renderer.DynmapBlockState;
 
 public abstract class HDBlockModel {
@@ -10,12 +12,12 @@ public abstract class HDBlockModel {
      * @param databits - bitmap of block data bits matching this model (bit N is set if data=N would match)
      * @param blockset - ID of block definition set
      */
-    protected HDBlockModel(String blockname, int databits, String blockset) {
+    protected HDBlockModel(String blockname, BitSet databits, String blockset) {
         this.blockset = blockset;
         DynmapBlockState bblk = DynmapBlockState.getBaseStateByName(blockname);
         if (bblk.isNotAir()) {
             for (int i = 0; i < bblk.getStateCount(); i++) {
-                if((databits & (1<<i)) != 0) {
+                if (databits.isEmpty() || databits.get(i)) {
                     DynmapBlockState bs = bblk.getState(i);
                     HDBlockModel prev = HDBlockModels.models_by_id_data.put(bs.globalStateIndex, this);
                     if((prev != null) && (prev != this)) {

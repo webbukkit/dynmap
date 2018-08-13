@@ -175,7 +175,7 @@ ignore-updates:id=leaves,id=leaves2,data=*
 # Birch Wood stair
 # Jungle Wood stair
 # (156)	Quartz Stairs
-customblock:idoak_stairs,id=stone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+customblock:idoak_stairs,id=stone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 # Slab (stone, sandstone, wood, cobblestone)
 # Wood Slab
@@ -1143,123 +1143,123 @@ layer:11,12,13,14,15
 ****************
 
 # Colored glass pane (160)
-[1.7.0-]customblock:id=stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
 # Acacia Stairs (163)
 # Dark Oak Stairs (164)
-[1.7.0-]customblock:id=acacia_stairs,id=dark_oak_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+customblock:id=acacia_stairs,id=dark_oak_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 # (171) Carpet
 boxblock:id=carpet,data=*,ymax=0.0625
 # (175) Double Plant
-[1.7.0-]customblock:id=double_plant,data=0,data=1,data=2,data=3,data=4,data=5,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6
-[1.7.0-]customblock:id=double_plant,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6,metasrc=below
+customblock:id=double_plant,data=0,data=1,data=2,data=3,data=4,data=5,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6
+customblock:id=double_plant,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6,metasrc=below
 
 # 1.8 blocks
 
 # Iron Trapdoor
-[1.8.0-]boxblock:id=iron_trapdoor,data=0,data=1,data=2,data=3,ymax=0.1875
-[1.8.0-]boxblock:id=iron_trapdoor,data=4,data=12,zmin=0.8125
-[1.8.0-]boxblock:id=iron_trapdoor,data=5,data=13,zmax=0.1875
-[1.8.0-]boxblock:id=iron_trapdoor,data=6,data=14,xmin=0.8125
-[1.8.0-]boxblock:id=iron_trapdoor,data=7,data=15,xmax=0.1875
-[1.8.0-]boxblock:id=iron_trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
+boxblock:id=iron_trapdoor,data=0,data=1,data=2,data=3,ymax=0.1875
+boxblock:id=iron_trapdoor,data=4,data=12,zmin=0.8125
+boxblock:id=iron_trapdoor,data=5,data=13,zmax=0.1875
+boxblock:id=iron_trapdoor,data=6,data=14,xmin=0.8125
+boxblock:id=iron_trapdoor,data=7,data=15,xmax=0.1875
+boxblock:id=iron_trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
 
 # Inverted Daylight Sensor
-[1.8.0-]boxblock:id=daylight_detector_inverted,data=*,ymax=0.375
+boxblock:id=daylight_detector_inverted,data=*,ymax=0.375
 
 # Red Sandstone stairs
-[1.8.0-]customblock:id=red_sandstone_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+customblock:id=red_sandstone_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 # Red Sandstone Slab
-[1.8.0-]boxblock:id=stone_slab2,data=0,ymax=0.5
-[1.8.0-]boxblock:id=stone_slab2,data=8,ymin=0.5
+boxblock:id=stone_slab2,data=0,ymax=0.5
+boxblock:id=stone_slab2,data=8,ymin=0.5
 
 # Fence Gate (Spruce)
-[1.8.0-]customblock:id=spruce_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=spruce_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
 
 # Fence Gate (Birch)
-[1.8.0-]customblock:id=birch_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=birch_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
 
 # Fence Gate (Jungle)
-[1.8.0-]customblock:id=jungle_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=jungle_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
 
 # Fence Gate (Dark Oak)
-[1.8.0-]customblock:id=dark_oak_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=dark_oak_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
 
 # Fence Gate (Acacia)
-[1.8.0-]customblock:id=acacia_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=acacia_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
 
 # Fence (Spruce)
-[1.8.0-]customblock:id=spruce_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=183
+customblock:id=spruce_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=183
 
 # Fence (Birch)
-[1.8.0-]customblock:id=birch_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=184
+customblock:id=birch_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=184
 
 # Fence (Jungle)
-[1.8.0-]customblock:id=jungle_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=185
+customblock:id=jungle_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=185
 
 # Fence (Dark Oak)
-[1.8.0-]customblock:id=dark_oak_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=186
+customblock:id=dark_oak_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=186
 
 # Fence (Acacia)
-[1.8.0-]customblock:id=acacia_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=187
+customblock:id=acacia_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=187
 
 # Wooden Door Block (Spruce)
 # Wooden Door Block (Birch)
 # Wooden Door Block (Jungle)
 # Wooden Door Block (Acacia)
 # Wooden Door Block (Dark Oak)
-[1.8.0-]customblock:id=spruce_door,id=birch_door,id=jungle_door,id=acacia_door,id=dark_oak_door,data=*,class=org.dynmap.hdmap.renderer.DoorRenderer
+customblock:id=spruce_door,id=birch_door,id=jungle_door,id=acacia_door,id=dark_oak_door,data=*,class=org.dynmap.hdmap.renderer.DoorRenderer
 
 # 1.9 models
 
 # End rod
-#[1.9.0-]block:id=end_rod,data=*,patch0=0:end_rod,transparency=TRANSPARENT
+#block:id=end_rod,data=*,patch0=0:end_rod,transparency=TRANSPARENT
 
 # Chorus Plant
-[1.9.0-]customblock:id=chorus_plant,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=wall,link0=200
+customblock:id=chorus_plant,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=wall,link0=200
 
 # Chorus Flower
-[1.9.0-]block:id=chorus_flower,data=*,scale=8
-[1.9.0-]layer:0,7
-[1.9.0-]--------
-[1.9.0-]-******-
-[1.9.0-]-******-
-[1.9.0-]-******-
-[1.9.0-]-******-
-[1.9.0-]-******-
-[1.9.0-]-******-
-[1.9.0-]--------
-[1.9.0-]layer:1,2,3,4,5,6
-[1.9.0-]-******-
-[1.9.0-]********
-[1.9.0-]********
-[1.9.0-]********
-[1.9.0-]********
-[1.9.0-]********
-[1.9.0-]********
-[1.9.0-]-******-
+block:id=chorus_flower,data=*,scale=8
+layer:0,7
+--------
+-******-
+-******-
+-******-
+-******-
+-******-
+-******-
+--------
+layer:1,2,3,4,5,6
+-******-
+********
+********
+********
+********
+********
+********
+-******-
 
 # Purpur Block
 
 # Purpur Pillar
 
 # Purpur Stairs
-[1.9.0-]customblock:id=purpur_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+customblock:id=purpur_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 # Purpur Slab (Double)
 
 # Purpur Slab
-[1.9.0-]boxblock:id=purpur_slab,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,ymax=0.5
-[1.9.0-]boxblock:id=purpur_slab,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,ymin=0.5
+boxblock:id=purpur_slab,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,ymax=0.5
+boxblock:id=purpur_slab,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,ymin=0.5
 
 # End Stone Bricks
 
 # Beetroot
-[1.9.0-]patchblock:id=beetroots,data=*,patch0=VertX075,patch1=VertX075@90,patch2=VertX025,patch3=VertX025@90
+patchblock:id=beetroots,data=*,patch0=VertX075,patch1=VertX075@90,patch2=VertX025,patch3=VertX025@90
 
 # Grass Path
-[1.9.0-]boxblock:id=grass_path,data=*,ymax=0.9375
+boxblock:id=grass_path,data=*,ymax=0.9375
 
 # 209		End Gateway
 

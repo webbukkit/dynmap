@@ -1,6 +1,7 @@
 package org.dynmap.hdmap.renderer;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class FenceGateBlockRenderer extends CustomRenderer {
     private RenderPatch[][] meshes = new RenderPatch[8][];
     
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         buildMeshes(rpf);

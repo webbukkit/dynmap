@@ -1,5 +1,6 @@
 package org.dynmap.hdmap;
 
+import java.util.BitSet;
 import java.util.Map;
 
 import org.dynmap.Log;
@@ -11,7 +12,7 @@ import org.dynmap.renderer.RenderPatch;
 public class CustomBlockModel extends HDBlockModel {
     public CustomRenderer render;
 
-    public CustomBlockModel(String blockname, int databits, String classname, Map<String,String> classparm, String blockset) {
+    public CustomBlockModel(String blockname, BitSet databits, String classname, Map<String,String> classparm, String blockset) {
         super(blockname, databits, blockset);
         try {
             Class<?> cls = Class.forName(classname);   /* Get class */
@@ -24,7 +25,7 @@ public class CustomBlockModel extends HDBlockModel {
                 if(render.getTileEntityFieldsNeeded() != null) {
                     DynmapBlockState bbs = DynmapBlockState.getBaseStateByName(blockname);
                     for(int i = 0; i < bbs.getStateCount(); i++) {
-                        if ((databits & (1 << i)) != 0) {
+                        if (databits.isEmpty() || databits.get(i)) {
                             DynmapBlockState bs = bbs.getState(i);
                             HDBlockModels.customModelsRequestingTileData.set(bs.globalStateIndex);
                         }

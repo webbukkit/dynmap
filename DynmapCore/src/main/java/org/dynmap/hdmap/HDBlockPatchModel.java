@@ -1,5 +1,7 @@
 package org.dynmap.hdmap;
 
+import java.util.BitSet;
+
 import org.dynmap.utils.PatchDefinition;
 
 public class HDBlockPatchModel extends HDBlockModel {
@@ -14,7 +16,7 @@ public class HDBlockPatchModel extends HDBlockModel {
      * @param patches - list of patches (surfaces composing model)
      * @param blockset - ID of set of blocks defining model
      */
-    public HDBlockPatchModel(String blockname, int databits, PatchDefinition[] patches, String blockset) {
+    public HDBlockPatchModel(String blockname, BitSet databits, PatchDefinition[] patches, String blockset) {
         super(blockname, databits, blockset);
         this.patches = patches;
         int max = 0;

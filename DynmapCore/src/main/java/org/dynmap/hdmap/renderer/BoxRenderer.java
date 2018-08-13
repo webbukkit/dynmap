@@ -1,6 +1,7 @@
 package org.dynmap.hdmap.renderer;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Map;
 
 import org.dynmap.renderer.CustomRenderer;
@@ -18,7 +19,7 @@ public class BoxRenderer extends CustomRenderer {
     private static final int patchlist[] = { 1, 4, 2, 5, 0, 3 };
 
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         double xmin = 0.0, xmax = 1.0;

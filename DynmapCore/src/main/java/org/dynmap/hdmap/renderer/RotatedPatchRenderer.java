@@ -1,6 +1,7 @@
 package org.dynmap.hdmap.renderer;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Map;
 
 import org.dynmap.Log;
@@ -32,7 +33,7 @@ public class RotatedPatchRenderer extends CustomRenderer {
     private String[] tileEntityAttribs = null;
 
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, int blockdatamask, Map<String,String> custparm) {
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         ArrayList<RenderPatch> patches = new ArrayList<RenderPatch>();

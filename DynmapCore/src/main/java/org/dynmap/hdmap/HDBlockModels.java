@@ -324,6 +324,7 @@ public class HDBlockModels {
         int cnt = 0;
         boolean need_mod_cfg = false;
         boolean mod_cfg_loaded = false;
+        BitSet databits = new BitSet();
         String modname = "minecraft";
         String modversion = null;
         final String mcver = core.getDynmapPluginPlatformVersion();
@@ -363,7 +364,7 @@ public class HDBlockModels {
                 }
                 else if(line.startsWith("block:")) {
                     ArrayList<String> blknames = new ArrayList<String>();
-                    int databits = 0;
+                    databits.clear();
                     scale = 0;
                     line = line.substring(6);
                     String[] args = line.split(",");
@@ -375,16 +376,16 @@ public class HDBlockModels {
                         }
                         else if(av[0].equals("data")) {
                             if(av[1].equals("*"))
-                                databits = 0xFFFF;
+                                databits.clear();
                             else
-                                databits |= (1 << getIntValue(varvals,av[1]));
+                                databits.set(getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("scale")) {
                             scale = Integer.parseInt(av[1]);
                         }
                     }
                     /* If we have everything, build block */
-                    if((blknames.size() > 0) && (databits != 0) && (scale > 0)) {
+                    if((blknames.size() > 0) && (scale > 0)) {
                         modlist.clear();
                         for(String bname : blknames) {
                             DynmapBlockState bblk = DynmapBlockState.getBaseStateByName(bname);
@@ -521,7 +522,7 @@ public class HDBlockModels {
                 }
                 else if(line.startsWith("ignore-updates:")) {
                     ArrayList<String> blknames = new ArrayList<String>();
-                    int blkdat = 0;
+                    databits.clear();
                     line = line.substring(line.indexOf(':')+1);
                     String[] args = line.split(",");
                     for(String a : args) {
@@ -532,18 +533,19 @@ public class HDBlockModels {
                         }
                         else if(av[0].equals("data")) {
                             if(av[1].equals("*"))
-                                blkdat = 0xFFFF;
+                                databits.clear();
                             else
-                                blkdat |= (1 << getIntValue(varvals,av[1]));
+                                databits.set(getIntValue(varvals,av[1]));
                         }
                     }
-                    if(blkdat == 0) blkdat = 0xFFFF;
                     for (String nm : blknames) {
                     	DynmapBlockState bbs = DynmapBlockState.getBaseStateByName(nm);
                     	if (bbs.isNotAir()) {
                     		for (int i = 0; i < bbs.getStateCount(); i++) {
                     			DynmapBlockState bs = bbs.getState(i);
-                    			changeIgnoredBlocks.set(bs.globalStateIndex);
+                    			if (databits.isEmpty() || databits.get(i)) {
+                    				changeIgnoredBlocks.set(bs.globalStateIndex);
+                    			}
                     		}
                     	}
                     	else {
@@ -681,7 +683,7 @@ public class HDBlockModels {
                 }
                 else if(line.startsWith("patchblock:")) {
                     ArrayList<String> blknames = new ArrayList<String>();
-                    int databits = 0;
+                    databits.clear();
                     line = line.substring(11);
                     String[] args = line.split(",");
                     ArrayList<PatchDefinition> patches = new ArrayList<PatchDefinition>();
@@ -693,9 +695,9 @@ public class HDBlockModels {
                         }
                         else if(av[0].equals("data")) {
                             if(av[1].equals("*"))
-                                databits = 0xFFFF;
+                                databits.clear();
                             else
-                                databits |= (1 << getIntValue(varvals,av[1]));
+                                databits.set(getIntValue(varvals,av[1]));
                         }
                         else if(av[0].startsWith("patch")) {
                             int patchnum0, patchnum1;
@@ -730,7 +732,7 @@ public class HDBlockModels {
                     }
                     /* If we have everything, build block */
                     pmodlist.clear();
-                    if((blknames.size() > 0) && (databits != 0)) {
+                    if (blknames.size() > 0) {
                         PatchDefinition[] patcharray = patches.toArray(new PatchDefinition[patches.size()]);
                         if(patcharray.length > max_patches)
                             max_patches = patcharray.length;
@@ -753,7 +755,7 @@ public class HDBlockModels {
                 // Shortcut for defining a patchblock that is a simple rectangular prism, with sidex corresponding to full block sides
                 else if(line.startsWith("boxblock:")) {
                     ArrayList<String> blknames = new ArrayList<String>();
-                    int databits = 0;
+                    databits.clear();
                     line = line.substring(9);
                     String[] args = line.split(",");
                     double xmin = 0.0, xmax = 1.0, ymin = 0.0, ymax = 1.0, zmin = 0.0, zmax = 1.0;
@@ -765,9 +767,9 @@ public class HDBlockModels {
                         }
                         else if(av[0].equals("data")) {
                             if(av[1].equals("*"))
-                                databits = 0xFFFF;
+                                databits.clear();
                             else
-                                databits |= (1 << getIntValue(varvals,av[1]));
+                                databits.set(getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("xmin")) {
                             xmin = Double.parseDouble(av[1]);
@@ -790,7 +792,7 @@ public class HDBlockModels {
                     }
                     /* If we have everything, build block */
                     pmodlist.clear();
-                    if((blknames.size() > 0) && (databits != 0)) {
+                    if (blknames.size() > 0) {
                         ArrayList<RenderPatch> pd = new ArrayList<RenderPatch>();
                         CustomRenderer.addBox(pdf, pd, xmin, xmax, ymin, ymax, zmin, zmax, boxPatchList);
                         PatchDefinition[] patcharray = new PatchDefinition[pd.size()];
@@ -817,7 +819,7 @@ public class HDBlockModels {
                 else if(line.startsWith("customblock:")) {
                     ArrayList<String> blknames = new ArrayList<String>();
                     HashMap<String,String> custargs = new HashMap<String,String>();
-                    int databits = 0;
+                    databits.clear();
                     line = line.substring(12);
                     String[] args = line.split(",");
                     String cls = null;
@@ -829,9 +831,9 @@ public class HDBlockModels {
                         }
                         else if(av[0].equals("data")) {
                             if(av[1].equals("*"))
-                                databits = 0xFFFF;
+                                databits.clear();
                             else
-                                databits |= (1 << getIntValue(varvals,av[1]));
+                                databits.set(getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("class")) {
                             cls = av[1];
@@ -846,7 +848,7 @@ public class HDBlockModels {
                         }
                     }
                     /* If we have everything, build block */
-                    if((blknames.size() > 0) && (databits != 0) && (cls != null)) {
+                    if ((blknames.size() > 0) && (cls != null)) {
                         for (String nm : blknames) {
                             DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
                             if (bs.isNotAir()) {
