@@ -1,7 +1,7 @@
 description = "DynmapCore"
 
 dependencies {
-    compile "us.dynmap:DynmapCoreAPI:${project.version}"
+    compile project(path: ':DynmapCoreAPI', configuration: 'shadow')
     compile 'org.eclipse.jetty:jetty-server:8.1.21.v20160908'
     compile 'org.eclipse.jetty:jetty-servlet:8.1.21.v20160908'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'

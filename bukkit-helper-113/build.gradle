@@ -3,8 +3,8 @@ description = 'bukkit-helper-1.13'
 
 dependencies {
   compile project(':bukkit-helper')
-  compile group: 'us.dynmap', name: 'dynmap-api', version: "${project.version}"
-  compile group: 'us.dynmap', name: 'DynmapCore', version: "${project.version}"
+  compile project(path: ':dynmap-api', configuration: 'shadow')
+  compile project(path: ':DynmapCore', configuration: 'shadow')
   compile group: 'org.bukkit', name: 'bukkit', version:'1.13-R0.1-SNAPSHOT'
   compile group: 'org.bukkit', name: 'craftbukkit', version:'1.13-R0.1-SNAPSHOT'
 }

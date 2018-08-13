@@ -1,10 +1,11 @@
 # Eclipse stuff
-/.classpath
-/.project
-/.settings
+.classpath
+.project
+.settings
 
 # netbeans
 /nbproject
+
 
 # we use maven!
 /build.xml
