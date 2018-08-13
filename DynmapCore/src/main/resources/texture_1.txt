@@ -61,14 +61,17 @@ texture:id=redstone_block
 texture:id=grass_block_side
 texture:id=grass_block_side_overlay
 texture:id=grass_block_snow
-texture:id=quartz_ore
+texture:id=nether_quartz_ore
 texture:id=quartz_block_bottom
-texture:id=quartz_block_chiseled
-texture:id=quartz_block_chiseled_top
-texture:id=quartz_block_lines
-texture:id=quartz_block_lines_top
+texture:id=chiseled_quartz_block
+texture:id=chiseled_quartz_block_top
+
+texture:id=quartz_pillar
+texture:id=quartz_pillar_top
+
 texture:id=quartz_block_side
 texture:id=quartz_block_top
+
 texture:id=rail_normal_turned
 texture:id=rail_normal
 texture:id=rail_activator
@@ -198,7 +201,7 @@ texture:id=stone_slab_side
 texture:id=stone_slab_top
 texture:id=stone_bricks
 texture:id=nether_brick
-texture:id=brick
+texture:id=bricks
 texture:id=cobweb
 texture:id=dead_bush
 texture:id=grass
@@ -495,7 +498,7 @@ texture:id=yellow_concrete
 texture:id=lime_concrete
 texture:id=pink_concrete
 texture:id=gray_concrete
-texture:id=silver_concrete
+texture:id=light_gray_concrete
 texture:id=cyan_concrete
 texture:id=purple_concrete
 texture:id=blue_concrete
@@ -511,7 +514,7 @@ texture:id=yellow_concrete_powder
 texture:id=lime_concrete_powder
 texture:id=pink_concrete_powder
 texture:id=gray_concrete_powder
-texture:id=silver_concrete_powder
+texture:id=light_gray_concrete_powder
 texture:id=cyan_concrete_powder
 texture:id=purple_concrete_powder
 texture:id=blue_concrete_powder
@@ -930,8 +933,8 @@ block:id=double_stone_slab,data=10,allfaces=0:oak_planks,stdrot=true
 block:id=double_stone_slab,data=3,allfaces=0:cobblestone,stdrot=true
 block:id=double_stone_slab,data=11,allfaces=0:cobblestone,stdrot=true
 # Double Slab - Brick
-block:id=double_stone_slab,data=4,allfaces=0:brick,stdrot=true
-block:id=double_stone_slab,data=12,allfaces=0:brick,stdrot=true
+block:id=double_stone_slab,data=4,allfaces=0:bricks,stdrot=true
+block:id=double_stone_slab,data=12,allfaces=0:bricks,stdrot=true
 # Double Slab - Stone Brick
 block:id=double_stone_slab,data=5,allfaces=0:stone_bricks,stdrot=true
 block:id=double_stone_slab,data=13,allfaces=0:stone_bricks,stdrot=true
@@ -950,7 +953,7 @@ block:id=stone_slab,data=2,data=10,allfaces=0:oak_planks,stdrot=true,transparenc
 # Slab - Cobblestone
 block:id=stone_slab,data=3,data=11,allfaces=0:cobblestone,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Brick
-block:id=stone_slab,data=4,data=12,allfaces=0:brick,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,data=4,data=12,allfaces=0:bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Stone Brick
 block:id=stone_slab,data=5,data=13,allfaces=0:stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Nether brick
@@ -959,7 +962,7 @@ block:id=stone_slab,data=6,data=14,allfaces=0:nether_brick,stdrot=true,transpare
 block:id=stone_slab,data=7,data=15,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true,transparency=SEMITRANSPARENT
 
 # Brick Block
-block:id=brick_block,allfaces=0:brick,stdrot=true
+block:id=bricks,allfaces=0:bricks,stdrot=true
 # TNT
 block:id=tnt,top=0:tnt_top,bottom=0:tnt_bottom,allsides=0:tnt_side,stdrot=true
 # Bookshelf
@@ -1229,7 +1232,7 @@ block:id=vine,patch0-4=2000:vine,transparency=TRANSPARENT
 # Fence gate
 block:id=fence_gate,patch0-2=0:oak_planks,stdrot=true,transparency=TRANSPARENT
 # Brick stair
-block:id=brick_stairs,data=*,patch0-2=0:brick,transparency=SEMITRANSPARENT
+block:id=brick_stairs,data=*,patch0-2=0:bricks,transparency=SEMITRANSPARENT
 # Stone brick stair
 block:id=stone_brick_stairs,data=*,patch0-2=0:stone_bricks,transparency=SEMITRANSPARENT
 # Mycelium1
@@ -1391,21 +1394,26 @@ block:id=daylight_detector,data=*,allsides=0:daylight_detector_side,bottom=0:day
 block:id=redstone_block,data=*,allfaces=0:redstone_block,stdrot=true
 
 # (153)	Nether Quartz Ore
-block:id=quartz_ore,data=*,allfaces=0:quartz_ore,stdrot=true
+block:id=nether_quartz_ore,allfaces=0:nether_quartz_ore,stdrot=true
 
 # (154)	Hopper
 block:id=hopper,data=*,allsides=0:hopper_outside,top=0:hopper_inside,bottom=0:hopper_outside,stdrot=true
 
 #  (155:0) Block of Quartz
 block:id=quartz_block,data=0,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
+
+#  (155:0) Smooth Quartz
+block:id=smooth_quartz,data=0,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
+
 #  (155:1) Chiseled Quartz Block
-block:id=quartz_block,data=1,top=0:quartz_block_chiseled_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_chiseled,stdrot=true
+block:id=chiseled_quartz_block,top=0:chiseled_quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:chiseled_quartz_block,stdrot=true
+
 #  (155:2) Pillar Quartz Block (vertical)
-block:id=quartz_block,data=2,top=0:quartz_block_lines_top,bottom=0:quartz_block_lines_top,allsides=0:quartz_block_lines,stdrot=true
+block:id=quartz_pillar,data=2,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top,allsides=0:quartz_pillar,stdrot=true
 #  (155:3) Pillar Quartz Block (north-south)
-block:id=quartz_block,data=3,top=4000:quartz_block_lines,bottom=4000:quartz_block_lines,east=6000:quartz_block_lines,west=6000:quartz_block_lines,north=0:quartz_block_lines_top,south=0:quartz_block_lines_top,stdrot=true
+block:id=quartz_pillar,data=3,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
 #  (155:4) Pillar Quartz Block (east-west)
-block:id=quartz_block,data=4,top=0:quartz_block_lines,bottom=0:quartz_block_lines,north=6000:quartz_block_lines,south=6000:quartz_block_lines,east=0:quartz_block_lines_top,west=0:quartz_block_lines_top,stdrot=true
+block:id=quartz_pillar,data=4,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6000:quartz_pillar,south=6000:quartz_pillar,east=0:quartz_pillar_top,west=0:quartz_pillar_top,stdrot=true
 
 # (156)	Quartz Stairs
 block:id=quartz_stairs,data=*,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
@@ -1900,7 +1908,7 @@ block:id=yellow_concrete,allfaces=0:yellow_concrete,stdrot=true
 block:id=lime_concrete,allfaces=0:lime_concrete,stdrot=true
 block:id=pink_concrete,allfaces=0:pink_concrete,stdrot=true
 block:id=gray_concrete,allfaces=0:gray_concrete,stdrot=true
-block:id=silver_concrete,allfaces=0:silver_concrete,stdrot=true
+block:id=light_gray_concrete,allfaces=0:light_gray_concrete,stdrot=true
 block:id=cyan_concrete,allfaces=0:cyan_concrete,stdrot=true
 block:id=purple_concrete,allfaces=0:purple_concrete,stdrot=true
 block:id=blue_concrete,allfaces=0:blue_concrete,stdrot=true
@@ -1918,7 +1926,7 @@ block:id=yellow_concrete_powder,allfaces=0:yellow_concrete_powder,stdrot=true
 block:id=lime_concrete_powder,allfaces=0:lime_concrete_powder,stdrot=true
 block:id=pink_concrete_powder,allfaces=0:pink_concrete_powder,stdrot=true
 block:id=gray_concrete_powder,allfaces=0:gray_concrete_powder,stdrot=true
-block:id=silver_concrete_powder,allfaces=0:silver_concrete_powder,stdrot=true
+block:id=light_gray_concrete_powder,allfaces=0:light_gray_concrete_powder,stdrot=true
 block:id=cyan_concrete_powder,allfaces=0:cyan_concrete_powder,stdrot=true
 block:id=purple_concrete_powder,allfaces=0:purple_concrete_powder,stdrot=true
 block:id=blue_concrete_powder,allfaces=0:blue_concrete_powder,stdrot=true
@@ -1926,4 +1934,3 @@ block:id=brown_concrete_powder,allfaces=0:brown_concrete_powder,stdrot=true
 block:id=green_concrete_powder,allfaces=0:green_concrete_powder,stdrot=true
 block:id=red_concrete_powder,allfaces=0:red_concrete_powder,stdrot=true
 block:id=black_concrete_powder,allfaces=0:black_concrete_powder,stdrot=true
-
