@@ -163,7 +163,7 @@ ignore-updates:id=water,data=*
 # Lava
 ignore-updates:id=lava,data=*
 # Leaves
-ignore-updates:id=leaves,id=leaves2,data=*
+ignore-updates:id=oak_leaves,id=birch_leaves,id=spruce_leaves,id=jungle_leaves,id=acacia_leaves,id=dark_oak_leaves
 
 # Wood Stair
 # Cobblestone Stair
@@ -175,7 +175,7 @@ ignore-updates:id=leaves,id=leaves2,data=*
 # Birch Wood stair
 # Jungle Wood stair
 # (156)	Quartz Stairs
-customblock:idoak_stairs,id=stone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
+customblock:id=oak_stairs,id=cobblestone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 # Slab (stone, sandstone, wood, cobblestone)
 # Wood Slab
@@ -192,10 +192,9 @@ boxblock:id=snow_layer,data=4,data=12,ymax=0.625
 boxblock:id=snow_layer,data=5,data=13,ymax=0.75
 boxblock:id=snow_layer,data=6,data=14,ymax=0.875
 
-# Torch - up
-# Redstone torch on - up
-# Redstone torch off - up
-patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=5,data=0,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
+# Torch
+# Redstone torch
+patchblock:id=torch,id=redstone_torch,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
 # Torch - pointing south
 # Redstone torch on - pointing south
 # Redstone torch off - pointing south
@@ -212,7 +211,7 @@ patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=3,patch0=Torc
 # Redstone torch on - pointing east
 # Redstone torch off - pointing east
 patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=4,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
-ignore-updates:id=unlit_redstone_torch,id=redstone_torch,data=*
+ignore-updates:id=redstone_wall_torch,id=redstone_torch
 
 # Fence
 # Nether Brick Fence
