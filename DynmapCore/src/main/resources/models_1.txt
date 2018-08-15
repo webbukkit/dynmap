@@ -1143,6 +1143,23 @@ layer:11,12,13,14,15
 
 # Colored glass pane (160)
 customblock:id=stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=white_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=orange_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=magenta_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=light_blue_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=yellow_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=lime_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=pink_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=gray_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=light_gray_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=cyan_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=purple_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=blue_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=brown_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=green_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=red_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=black_stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+
 # Acacia Stairs (163)
 # Dark Oak Stairs (164)
 customblock:id=acacia_stairs,id=dark_oak_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
