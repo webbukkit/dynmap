@@ -348,38 +348,38 @@ texture:id=double_plant_sunflower_front
 texture:id=double_plant_sunflower_top
 texture:id=double_plant_syringa_bottom
 texture:id=double_plant_syringa_top
-texture:id=white_stained_glass,material=GLASS
-texture:id=orange_stained_glass,material=GLASS
-texture:id=magenta_stained_glass,material=GLASS
-texture:id=light_blue_stained_glass,material=GLASS
-texture:id=yellow_stained_glass,material=GLASS
-texture:id=lime_stained_glass,material=GLASS
-texture:id=pink_stained_glass,material=GLASS
-texture:id=gray_stained_glass,material=GLASS
-texture:id=light_gray_stained_glass,material=GLASS
-texture:id=cyan_stained_glass,material=GLASS
-texture:id=purple_stained_glass,material=GLASS
+texture:id=black_stained_glass,material=GLASS
 texture:id=blue_stained_glass,material=GLASS
 texture:id=brown_stained_glass,material=GLASS
+texture:id=cyan_stained_glass,material=GLASS
+texture:id=gray_stained_glass,material=GLASS
 texture:id=green_stained_glass,material=GLASS
+texture:id=light_blue_stained_glass,material=GLASS
+texture:id=lime_stained_glass,material=GLASS
+texture:id=magenta_stained_glass,material=GLASS
+texture:id=orange_stained_glass,material=GLASS
+texture:id=pink_stained_glass,material=GLASS
+texture:id=purple_stained_glass,material=GLASS
 texture:id=red_stained_glass,material=GLASS
-texture:id=black_stained_glass,material=GLASS
-texture:id=white_stained_glass_pane_top,material=GLASS
-texture:id=orange_stained_glass_pane_top,material=GLASS
-texture:id=magenta_stained_glass_pane_top,material=GLASS
-texture:id=light_blue_stained_glass_pane_top,material=GLASS
-texture:id=yellow_stained_glass_pane_top,material=GLASS
-texture:id=lime_stained_glass_pane_top,material=GLASS
-texture:id=pink_stained_glass_pane_top,material=GLASS
-texture:id=gray_stained_glass_pane_top,material=GLASS
-texture:id=light_gray_stained_glass_pane_top,material=GLASS
-texture:id=cyan_stained_glass_pane_top,material=GLASS
-texture:id=purple_stained_glass_pane_top,material=GLASS
+texture:id=light_gray_stained_glass,material=GLASS
+texture:id=white_stained_glass,material=GLASS
+texture:id=yellow_stained_glass,material=GLASS
+texture:id=black_stained_glass_pane_top,material=GLASS
 texture:id=blue_stained_glass_pane_top,material=GLASS
 texture:id=brown_stained_glass_pane_top,material=GLASS
+texture:id=cyan_stained_glass_pane_top,material=GLASS
+texture:id=gray_stained_glass_pane_top,material=GLASS
 texture:id=green_stained_glass_pane_top,material=GLASS
+texture:id=light_blue_stained_glass_pane_top,material=GLASS
+texture:id=lime_stained_glass_pane_top,material=GLASS
+texture:id=magenta_stained_glass_pane_top,material=GLASS
+texture:id=orange_stained_glass_pane_top,material=GLASS
+texture:id=pink_stained_glass_pane_top,material=GLASS
+texture:id=purple_stained_glass_pane_top,material=GLASS
 texture:id=red_stained_glass_pane_top,material=GLASS
-texture:id=black_stained_glass_pane_top,material=GLASS
+texture:id=light_gray_stained_glass_pane_top,material=GLASS
+texture:id=white_stained_glass_pane_top,material=GLASS
+texture:id=yellow_stained_glass_pane_top,material=GLASS
 texture:id=ice_packed
 texture:id=acacia_leaves
 texture:id=dark_oak_leaves
@@ -1060,8 +1060,8 @@ block:id=double_stone_slab,data=11,allfaces=0:cobblestone,stdrot=true
 block:id=double_stone_slab,data=4,allfaces=0:bricks,stdrot=true
 block:id=double_stone_slab,data=12,allfaces=0:bricks,stdrot=true
 # Double Slab - Stone Brick
-block:id=double_stone_slab,data=5,allfaces=0:stonebrick,stdrot=true
-block:id=double_stone_slab,data=13,allfaces=0:stonebrick,stdrot=true
+block:id=double_stone_slab,data=5,allfaces=0:stone_bricks,stdrot=true
+block:id=double_stone_slab,data=13,allfaces=0:stone_bricks,stdrot=true
 # Double Slab - Nether Brick
 block:id=double_stone_slab,data=6,allfaces=0:nether_brick,stdrot=true
 block:id=double_stone_slab,data=14,allfaces=0:nether_brick,stdrot=true
@@ -1080,7 +1080,7 @@ block:id=stone_slab,data=3,data=11,allfaces=0:cobblestone,stdrot=true,transparen
 # Slab - Brick
 block:id=stone_slab,data=4,data=12,allfaces=0:bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Stone Brick
-block:id=stone_slab,data=5,data=13,allfaces=0:stonebrick,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,data=5,data=13,allfaces=0:stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Nether brick
 block:id=stone_slab,data=6,data=14,allfaces=0:nether_brick,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Quartz
@@ -1173,6 +1173,7 @@ block:id=infested_stone_bricks,allfaces=0:stone_bricks,stdrot=true
 block:id=infested_cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
 # Chiseled Stone Bricks w/ silverfish inside
 block:id=infested_chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
+
 # Stone Bricks
 block:id=stone_bricks,allfaces=0:stone_bricks,stdrot=true
 # Mossy Stone Bricks
@@ -1247,7 +1248,7 @@ block:id=fence_gate,patch0-2=0:oak_planks,stdrot=true,transparency=TRANSPARENT
 # Brick stair
 block:id=brick_stairs,data=*,patch0-2=0:bricks,transparency=SEMITRANSPARENT
 # Stone brick stair
-block:id=stone_brick_stairs,data=*,patch0-2=0:stonebrick,transparency=SEMITRANSPARENT
+block:id=stone_brick_stairs,data=*,patch0-2=0:stone_bricks,transparency=SEMITRANSPARENT
 # Mycelium1
 block:id=mycelium,top=0:mycelium_top,allsides=0:mycelium_side,bottom=0:dirt,stdrot=true
 # Lily pad
@@ -1407,7 +1408,7 @@ block:id=daylight_detector,data=*,allsides=0:daylight_detector_side,bottom=0:day
 block:id=redstone_block,data=*,allfaces=0:redstone_block,stdrot=true
 
 # (153)	Nether Quartz Ore
-block:id=nether_quartz_ore,allfaces=0:nether_quartz_ore,stdrot=true
+block:id=nether_quartz_ore,data=*,allfaces=0:nether_quartz_ore,stdrot=true
 
 # (154)	Hopper
 block:id=hopper,data=*,allsides=0:hopper_outside,top=0:hopper_inside,bottom=0:hopper_outside,stdrot=true
@@ -1424,6 +1425,7 @@ block:id=quartz_pillar,data=2,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top
 block:id=quartz_pillar,data=3,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
 #  (155:4) Pillar Quartz Block (east-west)
 block:id=quartz_pillar,data=4,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6000:quartz_pillar,south=6000:quartz_pillar,east=0:quartz_pillar_top,west=0:quartz_pillar_top,stdrot=true
+
 # (156)	Quartz Stairs
 block:id=quartz_stairs,data=*,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
 
@@ -1475,22 +1477,23 @@ block:id=stained_hardened_clay,data=2,stdrot=true,allfaces=0:hardened_clay_stain
 block:id=stained_hardened_clay,data=1,stdrot=true,allfaces=0:hardened_clay_stained_orange
 block:id=stained_hardened_clay,data=0,stdrot=true,allfaces=0:hardened_clay_stained_white
 # (160) Stained Glass Pane
-block:id=white_stained_glass_pane,patch0=12000:glass,patch1=12000:white_glass_pane_top,transparency=TRANSPARENT
-block:id=orange_stained_glass_pane,patch0=12000:glass,patch1=12000:orange_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=magenta_stained_glass_pane,patch0=12000:glass,patch1=12000:magenta_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=light_blue_stained_glass_pane,patch0=12000:glass,patch1=12000:light_blue_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=yellow_stained_glass_pane,patch0=12000:glass,patch1=12000:yellow_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=lime_stained_glass_pane,patch0=12000:glass,patch1=12000:lime_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=pink_stained_glass_pane,patch0=12000:glass,patch1=12000:pink_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=gray_stained_glass_pane,patch0=12000:glass,patch1=12000:gray_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=light_gray_stained_glass_pane,patch0=12000:glass,patch1=12000:light_gray_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=cyan_stained_glass_pane,patch0=12000:glass,patch1=12000:cyan_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=purple_stained_glass_pane,patch0=12000:glass,patch1=12000:purple_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=blue_stained_glass_pane,patch0=12000:glass,patch1=12000:blue_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=brown_stained_glass_pane,patch0=12000:glass,patch1=12000:brown_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=green_stained_glass_pane,patch0=12000:glass,patch1=12000:green_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=red_stained_glass_pane,patch0=12000:glass,patch1=12000:red_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=black_stained_glass_pane,patch0=12000:glass,patch1=12000:black_stained_glass_pane_top,transparency=TRANSPARENT
+
+block:id=white_stained_glass_pane,patch0=12000:white_stained_glass,patch1=12000:white_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=orange_stained_glass_pane,patch0=12000:orange_stained_glass,patch1=12000:orange_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=magenta_stained_glass_pane,patch0=12000:magenta_stained_glass,patch1=12000:magenta_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=light_blue_stained_glass_pane,patch0=12000:light_blue_stained_glass,patch1=12000:light_blue_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=yellow_stained_glass_pane,patch0=12000:yellow_stained_glass,patch1=12000:yellow_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=lime_stained_glass_pane,patch0=12000:lime_stained_glass,patch1=12000:lime_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=pink_stained_glass_pane,patch0=12000:pink_stained_glass,patch1=12000:pink_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=gray_stained_glass_pane,patch0=12000:gray_stained_glass,patch1=12000:gray_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=light_gray_stained_glass_pane,patch0=12000:light_gray_stained_glass,patch1=12000:light_gray_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=cyan_stained_glass_pane,patch0=12000:cyan_stained_glass,patch1=12000:cyan_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=purple_stained_glass_pane,patch0=12000:purple_stained_glass,patch1=12000:purple_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=blue_stained_glass_pane,patch0=12000:blue_stained_glass,patch1=12000:blue_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=brown_stained_glass_pane,patch0=12000:brown_stained_glass,patch1=12000:brown_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=green_stained_glass_pane,patch0=12000:green_stained_glass,patch1=12000:green_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=red_stained_glass_pane,patch0=12000:red_stained_glass,patch1=12000:red_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=black_stained_glass_pane,patch0=12000:black_stained_glass,patch1=12000:black_stained_glass_pane_top,transparency=TRANSPARENT
 
 # Acacia Stairs (163)
 block:id=acacia_stairs,data=*,patch0-2=0:acacia_planks,transparency=SEMITRANSPARENT
@@ -1943,4 +1946,5 @@ block:id=brown_concrete_powder,allfaces=0:brown_concrete_powder,stdrot=true
 block:id=green_concrete_powder,allfaces=0:green_concrete_powder,stdrot=true
 block:id=red_concrete_powder,allfaces=0:red_concrete_powder,stdrot=true
 block:id=black_concrete_powder,allfaces=0:black_concrete_powder,stdrot=true
+
 
