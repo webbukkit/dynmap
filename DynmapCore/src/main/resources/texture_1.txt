@@ -61,12 +61,12 @@ texture:id=redstone_block
 texture:id=grass_block_side
 texture:id=grass_block_side_overlay
 texture:id=grass_block_snow
-texture:id=quartz_ore
+texture:id=nether_quartz_ore
 texture:id=quartz_block_bottom
-texture:id=quartz_block_chiseled
-texture:id=quartz_block_chiseled_top
-texture:id=quartz_block_lines
-texture:id=quartz_block_lines_top
+texture:id=chiseled_quartz_block
+texture:id=chiseled_quartz_block_top
+texture:id=quartz_pillar
+texture:id=quartz_pillar_top
 texture:id=quartz_block_side
 texture:id=quartz_block_top
 texture:id=rail_corner
@@ -204,7 +204,7 @@ texture:id=gold_block
 texture:id=iron_block
 texture:id=stone_slab_side
 texture:id=stone_slab_top
-texture:id=stonebrick
+texture:id=stone_bricks
 texture:id=nether_brick
 texture:id=bricks
 texture:id=cobweb
@@ -276,9 +276,9 @@ texture:id=cake_inner
 texture:id=cake_side
 texture:id=cake_top
 texture:id=trapdoor
-texture:id=stonebrick_mossy
-texture:id=stonebrick_cracked
-texture:id=stonebrick_carved
+texture:id=mossy_stone_bricks
+texture:id=cracked_stone_bricks
+texture:id=chiseled_stone_bricks
 texture:id=mushroom_block_inside
 texture:id=mushroom_block_skin_brown
 texture:id=mushroom_block_skin_red
@@ -348,38 +348,38 @@ texture:id=double_plant_sunflower_front
 texture:id=double_plant_sunflower_top
 texture:id=double_plant_syringa_bottom
 texture:id=double_plant_syringa_top
-texture:id=glass_black,material=GLASS
-texture:id=glass_blue,material=GLASS
-texture:id=glass_brown,material=GLASS
-texture:id=glass_cyan,material=GLASS
-texture:id=glass_gray,material=GLASS
-texture:id=glass_green,material=GLASS
-texture:id=glass_light_blue,material=GLASS
-texture:id=glass_lime,material=GLASS
-texture:id=glass_magenta,material=GLASS
-texture:id=glass_orange,material=GLASS
-texture:id=glass_pink,material=GLASS
-texture:id=glass_purple,material=GLASS
-texture:id=glass_red,material=GLASS
-texture:id=glass_silver,material=GLASS
-texture:id=glass_white,material=GLASS
-texture:id=glass_yellow,material=GLASS
-texture:id=glass_pane_top_black,material=GLASS
-texture:id=glass_pane_top_blue,material=GLASS
-texture:id=glass_pane_top_brown,material=GLASS
-texture:id=glass_pane_top_cyan,material=GLASS
-texture:id=glass_pane_top_gray,material=GLASS
-texture:id=glass_pane_top_green,material=GLASS
-texture:id=glass_pane_top_light_blue,material=GLASS
-texture:id=glass_pane_top_lime,material=GLASS
-texture:id=glass_pane_top_magenta,material=GLASS
-texture:id=glass_pane_top_orange,material=GLASS
-texture:id=glass_pane_top_pink,material=GLASS
-texture:id=glass_pane_top_purple,material=GLASS
-texture:id=glass_pane_top_red,material=GLASS
-texture:id=glass_pane_top_silver,material=GLASS
-texture:id=glass_pane_top_white,material=GLASS
-texture:id=glass_pane_top_yellow,material=GLASS
+texture:id=white_stained_glass,material=GLASS
+texture:id=orange_stained_glass,material=GLASS
+texture:id=magenta_stained_glass,material=GLASS
+texture:id=light_blue_stained_glass,material=GLASS
+texture:id=yellow_stained_glass,material=GLASS
+texture:id=lime_stained_glass,material=GLASS
+texture:id=pink_stained_glass,material=GLASS
+texture:id=gray_stained_glass,material=GLASS
+texture:id=light_gray_stained_glass,material=GLASS
+texture:id=cyan_stained_glass,material=GLASS
+texture:id=purple_stained_glass,material=GLASS
+texture:id=blue_stained_glass,material=GLASS
+texture:id=brown_stained_glass,material=GLASS
+texture:id=green_stained_glass,material=GLASS
+texture:id=red_stained_glass,material=GLASS
+texture:id=black_stained_glass,material=GLASS
+texture:id=white_stained_glass_pane_top,material=GLASS
+texture:id=orange_stained_glass_pane_top,material=GLASS
+texture:id=magenta_stained_glass_pane_top,material=GLASS
+texture:id=light_blue_stained_glass_pane_top,material=GLASS
+texture:id=yellow_stained_glass_pane_top,material=GLASS
+texture:id=lime_stained_glass_pane_top,material=GLASS
+texture:id=pink_stained_glass_pane_top,material=GLASS
+texture:id=gray_stained_glass_pane_top,material=GLASS
+texture:id=light_gray_stained_glass_pane_top,material=GLASS
+texture:id=cyan_stained_glass_pane_top,material=GLASS
+texture:id=purple_stained_glass_pane_top,material=GLASS
+texture:id=blue_stained_glass_pane_top,material=GLASS
+texture:id=brown_stained_glass_pane_top,material=GLASS
+texture:id=green_stained_glass_pane_top,material=GLASS
+texture:id=red_stained_glass_pane_top,material=GLASS
+texture:id=black_stained_glass_pane_top,material=GLASS
 texture:id=ice_packed
 texture:id=acacia_leaves
 texture:id=dark_oak_leaves
@@ -406,8 +406,8 @@ texture:id=sponge_wet
 texture:id=slime
 texture:id=iron_trapdoor
 texture:id=prismarine_bricks
-texture:id=prismarine_dark
-texture:id=prismarine_rough
+texture:id=dark_prismarine
+texture:id=prismarine
 texture:id=sea_lantern
 texture:id=daylight_detector_inverted_top
 texture:id=red_sandstone_bottom
@@ -487,38 +487,38 @@ texture:id=glazed_terracotta_brown
 texture:id=glazed_terracotta_green
 texture:id=glazed_terracotta_red
 texture:id=glazed_terracotta_black
-texture:id=concrete_white
-texture:id=concrete_orange
-texture:id=concrete_magenta
-texture:id=concrete_light_blue
-texture:id=concrete_yellow
-texture:id=concrete_lime
-texture:id=concrete_pink
-texture:id=concrete_gray
-texture:id=concrete_silver
-texture:id=concrete_cyan
-texture:id=concrete_purple
-texture:id=concrete_blue
-texture:id=concrete_brown
-texture:id=concrete_green
-texture:id=concrete_red
-texture:id=concrete_black
-texture:id=concrete_powder_white
-texture:id=concrete_powder_orange
-texture:id=concrete_powder_magenta
-texture:id=concrete_powder_light_blue
-texture:id=concrete_powder_yellow
-texture:id=concrete_powder_lime
-texture:id=concrete_powder_pink
-texture:id=concrete_powder_gray
-texture:id=concrete_powder_silver
-texture:id=concrete_powder_cyan
-texture:id=concrete_powder_purple
-texture:id=concrete_powder_blue
-texture:id=concrete_powder_brown
-texture:id=concrete_powder_green
-texture:id=concrete_powder_red
-texture:id=concrete_powder_black
+texture:id=white_concrete
+texture:id=orange_concrete
+texture:id=magenta_concrete
+texture:id=light_blue_concrete
+texture:id=yellow_concrete
+texture:id=lime_concrete
+texture:id=pink_concrete
+texture:id=gray_concrete
+texture:id=light_gray_concrete
+texture:id=cyan_concrete
+texture:id=purple_concrete
+texture:id=blue_concrete
+texture:id=brown_concrete
+texture:id=green_concrete
+texture:id=red_concrete
+texture:id=black_concrete
+texture:id=white_concrete_powder
+texture:id=orange_concrete_powder
+texture:id=magenta_concrete_powder
+texture:id=light_blue_concrete_powder
+texture:id=yellow_concrete_powder
+texture:id=lime_concrete_powder
+texture:id=pink_concrete_powder
+texture:id=gray_concrete_powder
+texture:id=light_gray_concrete_powder
+texture:id=cyan_concrete_powder
+texture:id=purple_concrete_powder
+texture:id=blue_concrete_powder
+texture:id=brown_concrete_powder
+texture:id=green_concrete_powder
+texture:id=red_concrete_powder
+texture:id=black_concrete_powder
 texture:id=pozdol_top
 texture:id=pozdol_side
 
@@ -889,7 +889,7 @@ block:id=gray_wool,allfaces=0:gray_wool,stdrot=true
 block:id=light_gray_wool,allfaces=0:light_gray_wool,stdrot=true
 block:id=cyan_wool,allfaces=0:cyan_wool,stdrot=true
 block:id=purple_wool,allfaces=0:purple_wool,stdrot=true
-block:id=blue_wool,dallfaces=0:blue_wool,stdrot=true
+block:id=blue_wool,allfaces=0:blue_wool,stdrot=true
 block:id=brown_wool,allfaces=0:brown_wool,stdrot=true
 block:id=green_wool,allfaces=0:green_wool,stdrot=true
 block:id=red_wool,allfaces=0:red_wool,stdrot=true
@@ -1144,39 +1144,43 @@ block:id=powered_repeater,data=3,data=7,data=11,data=15,top=0:repeater_on,allsid
 # Locked Chest (95)
 [-1.6.4]block:id=stained_glass,data=*,top=6000,bottom=6005,south=2,north=1,east=4,west=3,txtid=chest
 # Stained Glass (95)
-block:id=stained_glass,data=0,allfaces=12000:glass_white,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=1,allfaces=12000:glass_orange,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=2,allfaces=12000:glass_magenta,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=3,allfaces=12000:glass_light_blue,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=4,allfaces=12000:glass_yellow,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=5,allfaces=12000:glass_lime,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=6,allfaces=12000:glass_pink,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=7,allfaces=12000:glass_gray,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=8,allfaces=12000:glass_silver,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=9,allfaces=12000:glass_cyan,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=10,allfaces=12000:glass_purple,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=11,allfaces=12000:glass_blue,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=12,allfaces=12000:glass_brown,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=13,allfaces=12000:glass_green,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=14,allfaces=12000:glass_red,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=15,allfaces=12000:glass_black,stdrot=true,transparency=TRANSPARENT
+block:id=white_stained_glass,allfaces=12000:white_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=orange_stained_glass,allfaces=12000:orange_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=magenta_stained_glass,allfaces=12000:magenta_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=light_blue_stained_glass,allfaces=12000:light_blue_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=yellow_stained_glass,allfaces=12000:yellow_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=lime_stained_glass,allfaces=12000:lime_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=pink_stained_glass,allfaces=12000:pink_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=gray_stained_glass,allfaces=12000:gray_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=light_gray_stained_glass,allfaces=12000:light_gray_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=cyan_stained_glass,allfaces=12000:cyan_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=purple_stained_glass,allfaces=12000:purple_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=blue_stained_glass,allfaces=12000:blue_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=brown_stained_glass,allfaces=12000:brown_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=green_stained_glass,allfaces=12000:green_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=red_stained_glass,allfaces=12000:red_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=black_stained_glass,allfaces=12000:black_stained_glass,stdrot=true,transparency=TRANSPARENT
 
 # Trapdoor
 block:id=trapdoor,allfaces=0:trapdoor,stdrot=true,transparency=TRANSPARENT
 # Stone w/ silverfish inside
-block:id=monster_egg,data=0,allfaces=0:stone,stdrot=true
+block:id=infested_stone,allfaces=0:stone,stdrot=true
 # Cobblestone w/ silverfish inside
-block:id=monster_egg,data=1,allfaces=0:cobblestone,stdrot=true
+block:id=infested_cobblestone,allfaces=0:cobblestone,stdrot=true
 # Stone Bricks w/ silverfish inside
-block:id=monster_egg,data=2,allfaces=0:stonebrick,stdrot=true
+block:id=infested_stone_bricks,allfaces=0:stone_bricks,stdrot=true
+# Cracked Stone Bricks w/ silverfish inside
+block:id=infested_cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
+# Chiseled Stone Bricks w/ silverfish inside
+block:id=infested_chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
 # Stone Bricks
-block:id=stonebrick,data=0,allfaces=0:stonebrick,stdrot=true
+block:id=stone_bricks,allfaces=0:stone_bricks,stdrot=true
 # Mossy Stone Bricks
-block:id=stonebrick,data=1,allfaces=0:stonebrick_mossy,stdrot=true
+block:id=mossy_stone_bricks,allfaces=0:mossy_stone_bricks,stdrot=true
 # Cracked Stone Bricks
-block:id=stonebrick,data=2,allfaces=0:stonebrick_cracked,stdrot=true
-# Patterned Stone Bricks
-block:id=stonebrick,data=3,allfaces=0:stonebrick_carved,stdrot=true
+block:id=cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
+# Chiseled Stone Bricks
+block:id=chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
 # Brown Mushroom Block - inside
 # Red Mushroom Block - inside
 block:id=brown_mushroom_block,id=red_mushroom_block,data=0,allfaces=0:mushroom_block_inside,stdrot=true
@@ -1403,22 +1407,23 @@ block:id=daylight_detector,data=*,allsides=0:daylight_detector_side,bottom=0:day
 block:id=redstone_block,data=*,allfaces=0:redstone_block,stdrot=true
 
 # (153)	Nether Quartz Ore
-block:id=quartz_ore,data=*,allfaces=0:quartz_ore,stdrot=true
+block:id=nether_quartz_ore,allfaces=0:nether_quartz_ore,stdrot=true
 
 # (154)	Hopper
 block:id=hopper,data=*,allsides=0:hopper_outside,top=0:hopper_inside,bottom=0:hopper_outside,stdrot=true
 
 #  (155:0) Block of Quartz
 block:id=quartz_block,data=0,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
+#  (155:0) Smooth Quartz
+block:id=smooth_quartz,data=0,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
 #  (155:1) Chiseled Quartz Block
-block:id=quartz_block,data=1,top=0:quartz_block_chiseled_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_chiseled,stdrot=true
+block:id=chiseled_quartz_block,top=0:chiseled_quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:chiseled_quartz_block,stdrot=true
 #  (155:2) Pillar Quartz Block (vertical)
-block:id=quartz_block,data=2,top=0:quartz_block_lines_top,bottom=0:quartz_block_lines_top,allsides=0:quartz_block_lines,stdrot=true
+block:id=quartz_pillar,data=2,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top,allsides=0:quartz_pillar,stdrot=true
 #  (155:3) Pillar Quartz Block (north-south)
-block:id=quartz_block,data=3,top=4000:quartz_block_lines,bottom=4000:quartz_block_lines,east=6000:quartz_block_lines,west=6000:quartz_block_lines,north=0:quartz_block_lines_top,south=0:quartz_block_lines_top,stdrot=true
+block:id=quartz_pillar,data=3,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
 #  (155:4) Pillar Quartz Block (east-west)
-block:id=quartz_block,data=4,top=0:quartz_block_lines,bottom=0:quartz_block_lines,north=6000:quartz_block_lines,south=6000:quartz_block_lines,east=0:quartz_block_lines_top,west=0:quartz_block_lines_top,stdrot=true
-
+block:id=quartz_pillar,data=4,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6000:quartz_pillar,south=6000:quartz_pillar,east=0:quartz_pillar_top,west=0:quartz_pillar_top,stdrot=true
 # (156)	Quartz Stairs
 block:id=quartz_stairs,data=*,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
 
@@ -1470,22 +1475,22 @@ block:id=stained_hardened_clay,data=2,stdrot=true,allfaces=0:hardened_clay_stain
 block:id=stained_hardened_clay,data=1,stdrot=true,allfaces=0:hardened_clay_stained_orange
 block:id=stained_hardened_clay,data=0,stdrot=true,allfaces=0:hardened_clay_stained_white
 # (160) Stained Glass Pane
-block:id=stained_glass_pane,data=0,patch0=12000:glass_white,patch1=12000:glass_pane_top_white,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=1,patch0=12000:glass_orange,patch1=12000:glass_pane_top_orange,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=2,patch0=12000:glass_magenta,patch1=12000:glass_pane_top_magenta,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=3,patch0=12000:glass_light_blue,patch1=12000:glass_pane_top_light_blue,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=4,patch0=12000:glass_yellow,patch1=12000:glass_pane_top_yellow,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=5,patch0=12000:glass_lime,patch1=12000:glass_pane_top_lime,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=6,patch0=12000:glass_pink,patch1=12000:glass_pane_top_pink,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=7,patch0=12000:glass_gray,patch1=12000:glass_pane_top_gray,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=8,patch0=12000:glass_silver,patch1=12000:glass_pane_top_silver,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=9,patch0=12000:glass_cyan,patch1=12000:glass_pane_top_cyan,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=10,patch0=12000:glass_purple,patch1=12000:glass_pane_top_purple,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=11,patch0=12000:glass_blue,patch1=12000:glass_pane_top_blue,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=12,patch0=12000:glass_brown,patch1=12000:glass_pane_top_brown,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=13,patch0=12000:glass_green,patch1=12000:glass_pane_top_green,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=14,patch0=12000:glass_red,patch1=12000:glass_pane_top_red,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=15,patch0=12000:glass_black,patch1=12000:glass_pane_top_black,transparency=TRANSPARENT
+block:id=white_stained_glass_pane,patch0=12000:glass,patch1=12000:white_glass_pane_top,transparency=TRANSPARENT
+block:id=orange_stained_glass_pane,patch0=12000:glass,patch1=12000:orange_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=magenta_stained_glass_pane,patch0=12000:glass,patch1=12000:magenta_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=light_blue_stained_glass_pane,patch0=12000:glass,patch1=12000:light_blue_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=yellow_stained_glass_pane,patch0=12000:glass,patch1=12000:yellow_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=lime_stained_glass_pane,patch0=12000:glass,patch1=12000:lime_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=pink_stained_glass_pane,patch0=12000:glass,patch1=12000:pink_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=gray_stained_glass_pane,patch0=12000:glass,patch1=12000:gray_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=light_gray_stained_glass_pane,patch0=12000:glass,patch1=12000:light_gray_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=cyan_stained_glass_pane,patch0=12000:glass,patch1=12000:cyan_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=purple_stained_glass_pane,patch0=12000:glass,patch1=12000:purple_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=blue_stained_glass_pane,patch0=12000:glass,patch1=12000:blue_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=brown_stained_glass_pane,patch0=12000:glass,patch1=12000:brown_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=green_stained_glass_pane,patch0=12000:glass,patch1=12000:green_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=red_stained_glass_pane,patch0=12000:glass,patch1=12000:red_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=black_stained_glass_pane,patch0=12000:glass,patch1=12000:black_stained_glass_pane_top,transparency=TRANSPARENT
 
 # Acacia Stairs (163)
 block:id=acacia_stairs,data=*,patch0-2=0:acacia_planks,transparency=SEMITRANSPARENT
@@ -1530,11 +1535,11 @@ block:id=barrier,data=*,transparency=TRANSPARENT
 # Iron Trapdoor
 block:id=iron_trapdoor,allfaces=0:iron_trapdoor,stdrot=true,transparency=TRANSPARENT
 # Prismarine
-block:id=prismarine,data=0,allfaces=0:prismarine_rough,stdrot=true
+block:id=prismarine,allfaces=0:prismarine,stdrot=true
 # Prismarine Bricks
-block:id=prismarine,data=1,allfaces=0:prismarine_bricks,stdrot=true
+block:id=prismarine_bricks,allfaces=0:prismarine_bricks,stdrot=true
 # Dark Prismarine
-block:id=prismarine,data=2,allfaces=0:prismarine_dark,stdrot=true
+block:id=dark_prismarine,allfaces=0:dark_prismarine,stdrot=true
 # Sea Lantern
 block:id=sea_lantern,data=*,allfaces=0:sea_lantern,stdrot=true
 
@@ -1904,38 +1909,38 @@ block:id=black_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terrac
 block:id=black_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_black,west=0:glazed_terracotta_black,east=5000:glazed_terracotta_black,south=4000:glazed_terracotta_black,north=6000:glazed_terracotta_black
 
 # Concrete
-block:id=concrete,data=0,stdrot=true,allfaces=0:concrete_white
-block:id=concrete,data=1,stdrot=true,allfaces=0:concrete_orange
-block:id=concrete,data=2,stdrot=true,allfaces=0:concrete_magenta
-block:id=concrete,data=3,stdrot=true,allfaces=0:concrete_light_blue
-block:id=concrete,data=4,stdrot=true,allfaces=0:concrete_yellow
-block:id=concrete,data=5,stdrot=true,allfaces=0:concrete_lime
-block:id=concrete,data=6,stdrot=true,allfaces=0:concrete_pink
-block:id=concrete,data=7,stdrot=true,allfaces=0:concrete_gray
-block:id=concrete,data=8,stdrot=true,allfaces=0:concrete_silver
-block:id=concrete,data=9,stdrot=true,allfaces=0:concrete_cyan
-block:id=concrete,data=10,stdrot=true,allfaces=0:concrete_purple
-block:id=concrete,data=11,stdrot=true,allfaces=0:concrete_blue
-block:id=concrete,data=12,stdrot=true,allfaces=0:concrete_brown
-block:id=concrete,data=13,stdrot=true,allfaces=0:concrete_green
-block:id=concrete,data=14,stdrot=true,allfaces=0:concrete_red
-block:id=concrete,data=15,stdrot=true,allfaces=0:concrete_black
+block:id=white_concrete,allfaces=0:white_concrete,stdrot=true
+block:id=orange_concrete,allfaces=0:orange_concrete,stdrot=true
+block:id=magenta_concrete,allfaces=0:magenta_concrete,stdrot=true
+block:id=light_blue_concrete,allfaces=0:light_blue_concrete,stdrot=true
+block:id=yellow_concrete,allfaces=0:yellow_concrete,stdrot=true
+block:id=lime_concrete,allfaces=0:lime_concrete,stdrot=true
+block:id=pink_concrete,allfaces=0:pink_concrete,stdrot=true
+block:id=gray_concrete,allfaces=0:gray_concrete,stdrot=true
+block:id=light_gray_concrete,allfaces=0:light_gray_concrete,stdrot=true
+block:id=cyan_concrete,allfaces=0:cyan_concrete,stdrot=true
+block:id=purple_concrete,allfaces=0:purple_concrete,stdrot=true
+block:id=blue_concrete,allfaces=0:blue_concrete,stdrot=true
+block:id=brown_concrete,allfaces=0:brown_concrete,stdrot=true
+block:id=green_concrete,allfaces=0:green_concrete,stdrot=true
+block:id=red_concrete,allfaces=0:red_concrete,stdrot=true
+block:id=black_concrete,allfaces=0:black_concrete,stdrot=true
 
 # Concrete Powder
-block:id=concrete_powder,data=0,stdrot=true,allfaces=0:concrete_powder_white
-block:id=concrete_powder,data=1,stdrot=true,allfaces=0:concrete_powder_orange
-block:id=concrete_powder,data=2,stdrot=true,allfaces=0:concrete_powder_magenta
-block:id=concrete_powder,data=3,stdrot=true,allfaces=0:concrete_powder_light_blue
-block:id=concrete_powder,data=4,stdrot=true,allfaces=0:concrete_powder_yellow
-block:id=concrete_powder,data=5,stdrot=true,allfaces=0:concrete_powder_lime
-block:id=concrete_powder,data=6,stdrot=true,allfaces=0:concrete_powder_pink
-block:id=concrete_powder,data=7,stdrot=true,allfaces=0:concrete_powder_gray
-block:id=concrete_powder,data=8,stdrot=true,allfaces=0:concrete_powder_silver
-block:id=concrete_powder,data=9,stdrot=true,allfaces=0:concrete_powder_cyan
-block:id=concrete_powder,data=10,stdrot=true,allfaces=0:concrete_powder_purple
-block:id=concrete_powder,data=11,stdrot=true,allfaces=0:concrete_powder_blue
-block:id=concrete_powder,data=12,stdrot=true,allfaces=0:concrete_powder_brown
-block:id=concrete_powder,data=13,stdrot=true,allfaces=0:concrete_powder_green
-block:id=concrete_powder,data=14,stdrot=true,allfaces=0:concrete_powder_red
-block:id=concrete_powder,data=15,stdrot=true,allfaces=0:concrete_powder_black
+block:id=white_concrete_powder,allfaces=0:white_concrete_powder,stdrot=true
+block:id=orange_concrete_powder,allfaces=0:orange_concrete_powder,stdrot=true
+block:id=magenta_concrete_powder,allfaces=0:magenta_concrete_powder,stdrot=true
+block:id=light_blue_concrete_powder,allfaces=0:light_blue_concrete_powder,stdrot=true
+block:id=yellow_concrete_powder,allfaces=0:yellow_concrete_powder,stdrot=true
+block:id=lime_concrete_powder,allfaces=0:lime_concrete_powder,stdrot=true
+block:id=pink_concrete_powder,allfaces=0:pink_concrete_powder,stdrot=true
+block:id=gray_concrete_powder,allfaces=0:gray_concrete_powder,stdrot=true
+block:id=light_gray_concrete_powder,allfaces=0:light_gray_concrete_powder,stdrot=true
+block:id=cyan_concrete_powder,allfaces=0:cyan_concrete_powder,stdrot=true
+block:id=purple_concrete_powder,allfaces=0:purple_concrete_powder,stdrot=true
+block:id=blue_concrete_powder,allfaces=0:blue_concrete_powder,stdrot=true
+block:id=brown_concrete_powder,allfaces=0:brown_concrete_powder,stdrot=true
+block:id=green_concrete_powder,allfaces=0:green_concrete_powder,stdrot=true
+block:id=red_concrete_powder,allfaces=0:red_concrete_powder,stdrot=true
+block:id=black_concrete_powder,allfaces=0:black_concrete_powder,stdrot=true
 
