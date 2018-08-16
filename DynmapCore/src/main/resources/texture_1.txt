@@ -204,7 +204,10 @@ texture:id=gold_block
 texture:id=iron_block
 texture:id=stone_slab_side
 texture:id=stone_slab_top
-texture:id=stonebrick
+texture:id=stone_bricks
+texture:id=mossy_stone_bricks
+texture:id=cracked_stone_bricks
+texture:id=chiseled_stone_bricks
 texture:id=nether_brick
 texture:id=bricks
 texture:id=cobweb
@@ -260,7 +263,7 @@ texture:id=cactus_bottom
 texture:id=cactus_side
 texture:id=cactus_top
 texture:id=clay
-texture:id=reeds
+texture:id=sugar_cane
 texture:id=jukebox_side
 texture:id=jukebox_top
 texture:id=pumpkin_side
@@ -268,20 +271,25 @@ texture:id=pumpkin_top
 texture:id=netherrack
 texture:id=soul_sand
 texture:id=glowstone
-texture:id=portal
-texture:id=pumpkin_face_off
-texture:id=pumpkin_face_on
+texture:id=nether_portal
+texture:id=carved_pumpkin
+texture:id=jack_o_lantern
 texture:id=cake_bottom
 texture:id=cake_inner
 texture:id=cake_side
 texture:id=cake_top
-texture:id=trapdoor
-texture:id=stonebrick_mossy
-texture:id=stonebrick_cracked
-texture:id=stonebrick_carved
+texture:id=oak_trapdoor
+texture:id=spruce_trapdoor
+texture:id=birch_trapdoor
+texture:id=jungle_trapdoor
+texture:id=acacia_trapdoor
+texture:id=dark_oak_trapdoor
+texture:id=stone_bricks_mossy
+texture:id=stone_bricks_cracked
+texture:id=stone_bricks_carved
 texture:id=mushroom_block_inside
-texture:id=mushroom_block_skin_brown
-texture:id=mushroom_block_skin_red
+texture:id=brown_mushroom_block
+texture:id=red_mushroom_block
 texture:id=mushroom_block_skin_stem
 texture:id=enchanting_table_bottom
 texture:id=enchanting_table_side
@@ -302,8 +310,10 @@ texture:id=redstone_lamp_on
 texture:id=iron_bars
 texture:id=melon_side
 texture:id=melon_top
-texture:id=pumpkin_stem_disconnected
-texture:id=melon_stem_disconnected
+texture:id=attached_pumpkin_stem
+texture:id=attached_melon_stem
+texture:id=pumpkin_stem
+texture:id=melon_stem
 texture:id=vine
 texture:id=mycelium_side
 texture:id=mycelium_top
@@ -313,7 +323,7 @@ texture:id=nether_wart_stage_1
 texture:id=nether_wart_stage_2
 texture:id=emerald_ore
 texture:id=emerald_block
-texture:id=repeater_off
+texture:id=repeater
 texture:id=repeater_on
 texture:id=cocoa_stage_2
 texture:id=command_block
@@ -348,38 +358,38 @@ texture:id=double_plant_sunflower_front
 texture:id=double_plant_sunflower_top
 texture:id=double_plant_syringa_bottom
 texture:id=double_plant_syringa_top
-texture:id=glass_black,material=GLASS
-texture:id=glass_blue,material=GLASS
-texture:id=glass_brown,material=GLASS
-texture:id=glass_cyan,material=GLASS
-texture:id=glass_gray,material=GLASS
-texture:id=glass_green,material=GLASS
-texture:id=glass_light_blue,material=GLASS
-texture:id=glass_lime,material=GLASS
-texture:id=glass_magenta,material=GLASS
-texture:id=glass_orange,material=GLASS
-texture:id=glass_pink,material=GLASS
-texture:id=glass_purple,material=GLASS
-texture:id=glass_red,material=GLASS
-texture:id=glass_silver,material=GLASS
-texture:id=glass_white,material=GLASS
-texture:id=glass_yellow,material=GLASS
-texture:id=glass_pane_top_black,material=GLASS
-texture:id=glass_pane_top_blue,material=GLASS
-texture:id=glass_pane_top_brown,material=GLASS
-texture:id=glass_pane_top_cyan,material=GLASS
-texture:id=glass_pane_top_gray,material=GLASS
-texture:id=glass_pane_top_green,material=GLASS
-texture:id=glass_pane_top_light_blue,material=GLASS
-texture:id=glass_pane_top_lime,material=GLASS
-texture:id=glass_pane_top_magenta,material=GLASS
-texture:id=glass_pane_top_orange,material=GLASS
-texture:id=glass_pane_top_pink,material=GLASS
-texture:id=glass_pane_top_purple,material=GLASS
-texture:id=glass_pane_top_red,material=GLASS
-texture:id=glass_pane_top_silver,material=GLASS
-texture:id=glass_pane_top_white,material=GLASS
-texture:id=glass_pane_top_yellow,material=GLASS
+texture:id=black_stained_glass,material=GLASS
+texture:id=blue_stained_glass,material=GLASS
+texture:id=brown_stained_glass,material=GLASS
+texture:id=cyan_stained_glass,material=GLASS
+texture:id=gray_stained_glass,material=GLASS
+texture:id=green_stained_glass,material=GLASS
+texture:id=light_blue_stained_glass,material=GLASS
+texture:id=lime_stained_glass,material=GLASS
+texture:id=magenta_stained_glass,material=GLASS
+texture:id=orange_stained_glass,material=GLASS
+texture:id=pink_stained_glass,material=GLASS
+texture:id=purple_stained_glass,material=GLASS
+texture:id=red_stained_glass,material=GLASS
+texture:id=silver_stained_glass,material=GLASS
+texture:id=white_stained_glass,material=GLASS
+texture:id=yellow_stained_glass,material=GLASS
+texture:id=black_stained_glass_top,material=GLASS
+texture:id=blue_stained_glass_top,material=GLASS
+texture:id=brown_stained_glass_top,material=GLASS
+texture:id=cyan_stained_glass_top,material=GLASS
+texture:id=gray_stained_glass_top,material=GLASS
+texture:id=green_stained_glass_top,material=GLASS
+texture:id=light_blue_stained_glass_top,material=GLASS
+texture:id=lime_stained_glass_top,material=GLASS
+texture:id=magenta_stained_glass_top,material=GLASS
+texture:id=orange_stained_glass_top,material=GLASS
+texture:id=pink_stained_glass_top,material=GLASS
+texture:id=purple_stained_glass_top,material=GLASS
+texture:id=red_stained_glass_top,material=GLASS
+texture:id=silver_stained_glass_top,material=GLASS
+texture:id=white_stained_glass_top,material=GLASS
+texture:id=yellow_stained_glass_top,material=GLASS
 texture:id=ice_packed
 texture:id=acacia_leaves
 texture:id=dark_oak_leaves
@@ -1041,6 +1051,183 @@ block:id=redstone_torch,data=1,patch0=0:redstone_torch_off,transparency=TRANSPAR
 block:id=redstone_wall_torch,data=0,data=2,data=4,data=6,patch0=0:redstone_torch,transparency=TRANSPARENT
 # Redstone Wall Torch - unlit
 block:id=redstone_wall_torch,data=1,data=3,data=5,data=7,patch0=0:redstone_torch_off,transparency=TRANSPARENT
+# Stone button
+block:id=stone_button,allfaces=0:stone,stdrot=true,transparency=TRANSPARENT
+# Snow
+block:id=snow,allfaces=0:snow,stdrot=true,transparency=TRANSPARENT
+# Ice
+block:id=ice,allfaces=12000:ice,stdrot=true,transparency=TRANSPARENT
+# Snow block
+block:id=snow_block,allfaces=0:snow,stdrot=true
+# Cactus
+block:id=cactus,patch0=0:cactus_side,patch1=0:cactus_side,patch2=0:cactus_side,patch3=0:cactus_side,patch4=0:cactus_top,patch5=0:cactus_bottom,transparency=SEMITRANSPARENT
+# Clay block
+block:id=clay,allfaces=0:clay,stdrot=true
+# Sugar Cane
+block:id=sugar_cane,patch0-1=0:sugar_cane,transparency=TRANSPARENT
+# Jukebox
+block:id=jukebox,allsides=0:jukebox_side,topbottom=0:jukebox_top,stdrot=true
+# Oak Fence
+block:id=oak_fence,patch0-2=0:oak_planks,transparency=TRANSPARENT
+# Pumpkin
+block:id=pumpkin,allsides=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Netherrock
+block:id=netherrack,allfaces=0:netherrack,stdrot=true
+# SoulSand
+block:id=soul_sand,allfaces=0:soul_sand,stdrot=true
+# Glowstone Block
+block:id=glowstone,allfaces=0:glowstone,stdrot=true
+# Nether Portal
+block:id=nether_portal,allfaces=0:nether_portal,stdrot=true,transparency=TRANSPARENT
+# Carved Pumpkin (west)
+block:id=carved_pumpkin,data=0,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_side,west=0:carved_pumpkin,topbottom=0:pumpkin_top,stdrot=true
+# Carved Pumpkin (north)
+block:id=carved_pumpkin,data=1,north=0:carved_pumpkin,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Carved Pumpkin (east)
+block:id=carved_pumpkin,data=2,north=0:pumpkin_side,south=0:pumpkin_side,east=0:carved_pumpkin,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Carved Pumpkin (south)
+block:id=carved_pumpkin,data=3,north=0:pumpkin_side,south=0:carved_pumpkin,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Jack-O-Lantern (west)
+block:id=jack_o_lantern,data=0,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_side,west=0:jack_o_lantern,topbottom=0:pumpkin_top,stdrot=true
+# Jack-O-Lantern (north)
+block:id=jack_o_lantern,data=1,north=0:jack_o_lantern,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Jack-O-Lantern (east)
+block:id=jack_o_lantern,data=2,north=0:pumpkin_side,south=0:pumpkin_side,east=0:jack_o_lantern,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Jack-O-Lantern (south)
+block:id=jack_o_lantern,data=3,north=0:pumpkin_side,south=0:jack_o_lantern,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Cake Block
+block:id=cake,allsides=0:cake_side,top=0:cake_top,bottom=0:cake_bottom,stdrot=true,transparency=TRANSPARENT
+# Repeater (on) facing east
+block:id=repeater,data=0,data=2,data=16,data=18,data=32,data=34,data=48,data=50,top=6000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (off) facing east
+block:id=repeater,data=1,data=3,data=17,data=19,data=33,data=35,data=49,data=51,top=6000:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (on) facing south
+block:id=repeater,data=4,data=6,data=20,data=22,data=36,data=38,data=52,data=54,,top=5000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (off) facing south
+block:id=repeater,data=5,data=7,data=21,data=23,data=37,data=39,data=53,data=55,top=5000:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (on) facing west
+block:id=repeater,data=8,data=10,data=24,data=26,data=40,data=42,data=56,data=58,top=4000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (off) facing west
+block:id=repeater,data=9,data=11,data=25,data=27,data=41,data=43,data=57,data=59,top=4000:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (on) facing north
+block:id=repeater,data=12,data=14,data=28,data=30,data=44,data=46,data=60,data=62,top=0:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (off) facing north
+block:id=repeater,data=13,data=15,data=29,data=31,data=45,data=47,data=61,data=63,top=0:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Stained Glass (95)
+block:id=white_stained_glass,dallfaces=12000:white_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=orange_stained_glass,allfaces=12000:orange_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=magenta_stained_glass,allfaces=12000:magenta_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=light_blue_stained_glass,allfaces=12000:light_blue_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=yellow_stained_glass,allfaces=12000:yellow_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=lime_stained_glass,allfaces=12000:lime_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=pink_stained_glass,allfaces=12000:pink_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=gray_stained_glass,allfaces=12000:gray_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=silver_stained_glass,allfaces=12000:silver_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=cyan_stained_glass,allfaces=12000:cyan_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=purple_stained_glass,allfaces=12000:purple_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=blue_stained_glass,allfaces=12000:blue_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=brown_stained_glass,allfaces=12000:brown_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=green_stained_glass,allfaces=12000:green_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=red_stained_glass,allfaces=12000:red_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=black_stained_glass,allfaces=12000:black_stained_glass,stdrot=true,transparency=TRANSPARENT
+# Oak Trapdoor
+block:id=oak_trapdoor,allfaces=0:oak_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Spruce Trapdoor
+block:id=spruce_trapdoor,allfaces=0:spruce_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Birch Trapdoor
+block:id=birch_trapdoor,allfaces=0:birch_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Jungle Trapdoor
+block:id=jungle_trapdoor,allfaces=0:jungle_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Acacia Trapdoor
+block:id=acacia_trapdoor,allfaces=0:acacia_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Dark Oak Trapdoor
+block:id=dark_oak_trapdoor,allfaces=0:dark_oak_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Infested Stone
+block:id=infested_stone,allfaces=0:stone,stdrot=true
+# Infested Cobblestone
+block:id=infested_cobblestone,allfaces=0:cobblestone,stdrot=true
+# Infested Stone Bricks
+block:id=infested_stone_bricks,allfaces=0:stone_bricks,stdrot=true
+# Infested Mossy Stone Bricks
+block:id=infested_mossy_stone_bricks,allfaces=0:mossy_stone_bricks,stdrot=true
+# Infested Cracked Stone Bricks
+block:id=infested_cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
+# Infested Chiseled Stone Bricks
+block:id=infested_chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
+# Stone Bricks
+block:id=stone_bricks,allfaces=0:stone_bricks,stdrot=true
+# Mossy Stone Bricks
+block:id=mossy_stone_bricks,allfaces=0:mossy_stone_bricks,stdrot=true
+# Cracked Stone Bricks
+block:id=cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
+# Chiseled Stone Bricks
+block:id=chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
+
+#TODO: the data map here is a mess - need to rework for 1.13 mapping (maybe custom renderer)
+# Brown Mushroom Block - inside
+# Red Mushroom Block - inside
+block:id=brown_mushroom_block,id=red_mushroom_block,data=0,allfaces=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - N-E-top cap color
+block:id=brown_mushroom_block,data=1,top=0:brown_mushroom_block,north=0:brown_mushroom_block,east=0:brown_mushroom_block,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - N-E-top cap color
+block:id=red_mushroom_block,data=1,top=0:red_mushroom_block,north=0:red_mushroom_block,east=0:red_mushroom_block,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - E-top cap color
+block:id=brown_mushroom_block,data=2,top=0:brown_mushroom_block,east=0:brown_mushroom_block,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - E-top cap color
+block:id=red_mushroom_block,data=2,top=0:red_mushroom_block,east=0:red_mushroom_block,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - S-E-top cap color
+block:id=brown_mushroom_block,data=3,top=0:brown_mushroom_block,south=0:brown_mushroom_block,east=0:brown_mushroom_block,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - S-E-top cap color
+block:id=red_mushroom_block,data=3,top=0:red_mushroom_block,south=0:red_mushroom_block,east=0:red_mushroom_block,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - N-top cap color
+block:id=brown_mushroom_block,data=4,top=0:brown_mushroom_block,north=0:brown_mushroom_block,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - N-top cap color
+block:id=red_mushroom_block,data=4,top=0:red_mushroom_block,north=0:red_mushroom_block,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top cap color
+block:id=brown_mushroom_block,data=5,top=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top cap color
+block:id=red_mushroom_block,data=5,top=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top-S cap color
+block:id=brown_mushroom_block,data=6,top=0:brown_mushroom_block,south=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top-S cap color
+block:id=red_mushroom_block,data=6,top=0:red_mushroom_block,south=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - N-W cap color
+block:id=brown_mushroom_block,data=7,top=0:brown_mushroom_block,north=0:brown_mushroom_block,west=0:brown_mushroom_block,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - N-W cap color
+block:id=red_mushroom_block,data=7,top=0:red_mushroom_block,north=0:red_mushroom_block,west=0:red_mushroom_block,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top-W cap color
+block:id=brown_mushroom_block,data=8,top=0:brown_mushroom_block,west=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top-W cap color
+block:id=red_mushroom_block,data=8,top=0:red_mushroom_block,west=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top-S-W cap color
+block:id=brown_mushroom_block,data=9,top=0:brown_mushroom_block,west=0:brown_mushroom_block,south=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top-S-W cap color
+block:id=red_mushroom_block,data=9,top=0:red_mushroom_block,west=0:red_mushroom_block,south=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - all cap
+block:id=brown_mushroom_block,data=14,topbottom=0:brown_mushroom_block,allsides=0:brown_mushroom_block,stdrot=true
+# Red Mushroom Block - all cap
+block:id=red_mushroom_block,data=14,topbottom=0:red_mushroom_block,allsides=0:red_mushroom_block,stdrot=true
+
+# Brown Mushroom Block - stem
+# Red Mushroom Block - stem
+block:id=mushroom_stem,topbottom=0:mushroom_block_inside,allsides=0:mushroom_block_skin_stem,stdrot=true
+
+# Iron fence
+block:id=iron_bars,patch0-1=0:iron_bars,transparency=TRANSPARENT
+# Glass pane
+block:id=glass_pane,patch0=12000:glass,patch1=12000:glass_pane_top,transparency=TRANSPARENT
+# Watermellon
+block:id=melon,allsides=0:melon_side,topbottom=0:melon_top,stdrot=true
+# Attached Pumpkin stem 
+block:id=attached_pumpkin_stem,allsides=1000:attached_pumpkin_stem,stdrot=true,transparency=TRANSPARENT
+# Attached Melon stem
+block:id=attached_melon_stem,allsides=1000:attached_melon_stem,stdrot=true,transparency=TRANSPARENT
+# Pumpkin stem 
+block:id=pumpkin_stem,allsides=1000:pumpkin_stem,stdrot=true,transparency=TRANSPARENT
+# Melon stem
+block:id=melon_stem,allsides=1000:melon_stem,stdrot=true,transparency=TRANSPARENT
+# Vines
+block:id=vine,patch0-4=2000:vine,transparency=TRANSPARENT
 
 ############
 
@@ -1060,8 +1247,8 @@ block:id=double_stone_slab,data=11,allfaces=0:cobblestone,stdrot=true
 block:id=double_stone_slab,data=4,allfaces=0:bricks,stdrot=true
 block:id=double_stone_slab,data=12,allfaces=0:bricks,stdrot=true
 # Double Slab - Stone Brick
-block:id=double_stone_slab,data=5,allfaces=0:stonebrick,stdrot=true
-block:id=double_stone_slab,data=13,allfaces=0:stonebrick,stdrot=true
+block:id=double_stone_slab,data=5,allfaces=0:stone_bricks,stdrot=true
+block:id=double_stone_slab,data=13,allfaces=0:stone_bricks,stdrot=true
 # Double Slab - Nether Brick
 block:id=double_stone_slab,data=6,allfaces=0:nether_brick,stdrot=true
 block:id=double_stone_slab,data=14,allfaces=0:nether_brick,stdrot=true
@@ -1080,170 +1267,20 @@ block:id=stone_slab,data=3,data=11,allfaces=0:cobblestone,stdrot=true,transparen
 # Slab - Brick
 block:id=stone_slab,data=4,data=12,allfaces=0:bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Stone Brick
-block:id=stone_slab,data=5,data=13,allfaces=0:stonebrick,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,data=5,data=13,allfaces=0:stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Nether brick
 block:id=stone_slab,data=6,data=14,allfaces=0:nether_brick,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Quartz
 block:id=stone_slab,data=7,data=15,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true,transparency=SEMITRANSPARENT
 
 
-# Stone button
-block:id=stone_button,allfaces=0:stone,stdrot=true,transparency=TRANSPARENT
-# Snow
-block:id=snow_layer,allfaces=0:snow,stdrot=true,transparency=TRANSPARENT
-# Ice
-block:id=ice,allfaces=12000:ice,stdrot=true,transparency=TRANSPARENT
-# Snow block
-block:id=snow,allfaces=0:snow,stdrot=true
-# Cactus
-block:id=cactus,patch0=0:cactus_side,patch1=0:cactus_side,patch2=0:cactus_side,patch3=0:cactus_side,patch4=0:cactus_top,patch5=0:cactus_bottom,transparency=SEMITRANSPARENT
-# Clay block
-block:id=clay,allfaces=0:clay,stdrot=true
-# Sugar Cane
-block:id=reeds,patch0-1=0:reeds,transparency=TRANSPARENT
-# Jukebox
-block:id=jukebox,allsides=0:jukebox_side,topbottom=0:jukebox_top,stdrot=true
-# Fence
-block:id=fence,patch0-2=0:oak_planks,transparency=TRANSPARENT
-# Pumpkin
-block:id=pumpkin,allsides=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
-# Netherrock
-block:id=netherrack,allfaces=0:netherrack,stdrot=true
-# SoulSand
-block:id=soul_sand,allfaces=0:soul_sand,stdrot=true
-# Glowstone Block
-block:id=glowstone,allfaces=0:glowstone,stdrot=true
-# Portal
-block:id=portal,allfaces=0:portal,stdrot=true,transparency=TRANSPARENT
-# Jack O Lantern (east)
-block:id=lit_pumpkin,data=2,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_face_on,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
-# Jack O Lantern (south)
-block:id=lit_pumpkin,data=3,north=0:pumpkin_side,south=0:pumpkin_face_on,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
-# Jack O Lantern (west)
-block:id=lit_pumpkin,data=0,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_face_on,topbottom=0:pumpkin_top,stdrot=true
-# Jack O Lantern (north)
-block:id=lit_pumpkin,data=1,north=0:pumpkin_face_on,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
-# Cake Block
-block:id=cake,allsides=0:cake_side,top=0:cake_top,bottom=0:cake_bottom,stdrot=true,transparency=TRANSPARENT
-# Repeater (off) facing east
-block:id=unpowered_repeater,data=0,data=4,data=8,data=12,top=6000:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (off) facing south
-block:id=unpowered_repeater,data=1,data=5,data=9,data=13,top=5000:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (off) facing west
-block:id=unpowered_repeater,data=2,data=6,data=10,data=14,top=4000:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (off) facing west
-block:id=unpowered_repeater,data=3,data=7,data=11,data=15,top=0:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (on) facing east
-block:id=powered_repeater,data=0,data=4,data=8,data=12,top=6000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (on) facing south
-block:id=powered_repeater,data=1,data=5,data=9,data=13,top=5000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (on) facing west
-block:id=powered_repeater,data=2,data=6,data=10,data=14,top=4000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (on) facing west
-block:id=powered_repeater,data=3,data=7,data=11,data=15,top=0:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Locked Chest (95)
-[-1.6.4]block:id=stained_glass,data=*,top=6000,bottom=6005,south=2,north=1,east=4,west=3,txtid=chest
-# Stained Glass (95)
-block:id=stained_glass,data=0,allfaces=12000:glass_white,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=1,allfaces=12000:glass_orange,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=2,allfaces=12000:glass_magenta,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=3,allfaces=12000:glass_light_blue,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=4,allfaces=12000:glass_yellow,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=5,allfaces=12000:glass_lime,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=6,allfaces=12000:glass_pink,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=7,allfaces=12000:glass_gray,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=8,allfaces=12000:glass_silver,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=9,allfaces=12000:glass_cyan,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=10,allfaces=12000:glass_purple,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=11,allfaces=12000:glass_blue,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=12,allfaces=12000:glass_brown,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=13,allfaces=12000:glass_green,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=14,allfaces=12000:glass_red,stdrot=true,transparency=TRANSPARENT
-block:id=stained_glass,data=15,allfaces=12000:glass_black,stdrot=true,transparency=TRANSPARENT
 
-# Trapdoor
-block:id=trapdoor,allfaces=0:trapdoor,stdrot=true,transparency=TRANSPARENT
-# Stone w/ silverfish inside
-block:id=monster_egg,data=0,allfaces=0:stone,stdrot=true
-# Cobblestone w/ silverfish inside
-block:id=monster_egg,data=1,allfaces=0:cobblestone,stdrot=true
-# Stone Bricks w/ silverfish inside
-block:id=monster_egg,data=2,allfaces=0:stonebrick,stdrot=true
-# Stone Bricks
-block:id=stonebrick,data=0,allfaces=0:stonebrick,stdrot=true
-# Mossy Stone Bricks
-block:id=stonebrick,data=1,allfaces=0:stonebrick_mossy,stdrot=true
-# Cracked Stone Bricks
-block:id=stonebrick,data=2,allfaces=0:stonebrick_cracked,stdrot=true
-# Patterned Stone Bricks
-block:id=stonebrick,data=3,allfaces=0:stonebrick_carved,stdrot=true
-# Brown Mushroom Block - inside
-# Red Mushroom Block - inside
-block:id=brown_mushroom_block,id=red_mushroom_block,data=0,allfaces=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - N-E-top cap color
-block:id=brown_mushroom_block,data=1,top=0:mushroom_block_skin_brown,north=0:mushroom_block_skin_brown,east=0:mushroom_block_skin_brown,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - N-E-top cap color
-block:id=red_mushroom_block,data=1,top=0:mushroom_block_skin_red,north=0:mushroom_block_skin_red,east=0:mushroom_block_skin_red,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - E-top cap color
-block:id=brown_mushroom_block,data=2,top=0:mushroom_block_skin_brown,east=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - E-top cap color
-block:id=red_mushroom_block,data=2,top=0:mushroom_block_skin_red,east=0:mushroom_block_skin_red,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - S-E-top cap color
-block:id=brown_mushroom_block,data=3,top=0:mushroom_block_skin_brown,south=0:mushroom_block_skin_brown,east=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - S-E-top cap color
-block:id=red_mushroom_block,data=3,top=0:mushroom_block_skin_red,south=0:mushroom_block_skin_red,east=0:mushroom_block_skin_red,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - N-top cap color
-block:id=brown_mushroom_block,data=4,top=0:mushroom_block_skin_brown,north=0:mushroom_block_skin_brown,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - N-top cap color
-block:id=red_mushroom_block,data=4,top=0:mushroom_block_skin_red,north=0:mushroom_block_skin_red,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top cap color
-block:id=brown_mushroom_block,data=5,top=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top cap color
-block:id=red_mushroom_block,data=5,top=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top-S cap color
-block:id=brown_mushroom_block,data=6,top=0:mushroom_block_skin_brown,south=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top-S cap color
-block:id=red_mushroom_block,data=6,top=0:mushroom_block_skin_red,south=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - N-W cap color
-block:id=brown_mushroom_block,data=7,top=0:mushroom_block_skin_brown,north=0:mushroom_block_skin_brown,west=0:mushroom_block_skin_brown,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - N-W cap color
-block:id=red_mushroom_block,data=7,top=0:mushroom_block_skin_red,north=0:mushroom_block_skin_red,west=0:mushroom_block_skin_red,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top-W cap color
-block:id=brown_mushroom_block,data=8,top=0:mushroom_block_skin_brown,west=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top-W cap color
-block:id=red_mushroom_block,data=8,top=0:mushroom_block_skin_red,west=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top-S-W cap color
-block:id=brown_mushroom_block,data=9,top=0:mushroom_block_skin_brown,west=0:mushroom_block_skin_brown,south=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top-S-W cap color
-block:id=red_mushroom_block,data=9,top=0:mushroom_block_skin_red,west=0:mushroom_block_skin_red,south=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - stem
-# Red Mushroom Block - stem
-block:id=brown_mushroom_block,id=red_mushroom_block,data=10,topbottom=0:mushroom_block_inside,allsides=0:mushroom_block_skin_stem,stdrot=true
-# Brown Mushroom Block - all cap
-block:id=brown_mushroom_block,data=14,topbottom=0:mushroom_block_skin_brown,allsides=0:mushroom_block_skin_brown,stdrot=true
-# Red Mushroom Block - all cap
-block:id=red_mushroom_block,data=14,topbottom=0:mushroom_block_skin_red,allsides=0:mushroom_block_skin_red,stdrot=true
-# Brown Mushroom Block - stem all sides
-# Red Mushroom Block - stem all sides
-block:id=brown_mushroom_block,id=red_mushroom_block,data=15,allfaces=0:mushroom_block_skin_stem,stdrot=true
-# Iron fence
-block:id=iron_bars,patch0-1=0:iron_bars,transparency=TRANSPARENT
-# Glass pane
-block:id=glass_pane,patch0=12000:glass,patch1=12000:glass_pane_top,transparency=TRANSPARENT
-# Watermellon
-block:id=melon_block,allsides=0:melon_side,topbottom=0:melon_top,stdrot=true
-# Pumpkin stem 
-block:id=pumpkin_stem,allsides=1000:pumpkin_stem_disconnected,stdrot=true,transparency=TRANSPARENT
-# Melon stem
-block:id=melon_stem,allsides=1000:melon_stem_disconnected,stdrot=true,transparency=TRANSPARENT
-# Vines
-block:id=vine,patch0-4=2000:vine,transparency=TRANSPARENT
 # Fence gate
 block:id=fence_gate,patch0-2=0:oak_planks,stdrot=true,transparency=TRANSPARENT
 # Brick stair
 block:id=brick_stairs,data=*,patch0-2=0:bricks,transparency=SEMITRANSPARENT
 # Stone brick stair
-block:id=stone_brick_stairs,data=*,patch0-2=0:stonebrick,transparency=SEMITRANSPARENT
+block:id=stone_brick_stairs,data=*,patch0-2=0:stone_bricks,transparency=SEMITRANSPARENT
 # Mycelium1
 block:id=mycelium,top=0:mycelium_top,allsides=0:mycelium_side,bottom=0:dirt,stdrot=true
 # Lily pad
@@ -1470,22 +1507,22 @@ block:id=stained_hardened_clay,data=2,stdrot=true,allfaces=0:hardened_clay_stain
 block:id=stained_hardened_clay,data=1,stdrot=true,allfaces=0:hardened_clay_stained_orange
 block:id=stained_hardened_clay,data=0,stdrot=true,allfaces=0:hardened_clay_stained_white
 # (160) Stained Glass Pane
-block:id=stained_glass_pane,data=0,patch0=12000:glass_white,patch1=12000:glass_pane_top_white,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=1,patch0=12000:glass_orange,patch1=12000:glass_pane_top_orange,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=2,patch0=12000:glass_magenta,patch1=12000:glass_pane_top_magenta,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=3,patch0=12000:glass_light_blue,patch1=12000:glass_pane_top_light_blue,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=4,patch0=12000:glass_yellow,patch1=12000:glass_pane_top_yellow,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=5,patch0=12000:glass_lime,patch1=12000:glass_pane_top_lime,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=6,patch0=12000:glass_pink,patch1=12000:glass_pane_top_pink,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=7,patch0=12000:glass_gray,patch1=12000:glass_pane_top_gray,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=8,patch0=12000:glass_silver,patch1=12000:glass_pane_top_silver,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=9,patch0=12000:glass_cyan,patch1=12000:glass_pane_top_cyan,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=10,patch0=12000:glass_purple,patch1=12000:glass_pane_top_purple,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=11,patch0=12000:glass_blue,patch1=12000:glass_pane_top_blue,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=12,patch0=12000:glass_brown,patch1=12000:glass_pane_top_brown,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=13,patch0=12000:glass_green,patch1=12000:glass_pane_top_green,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=14,patch0=12000:glass_red,patch1=12000:glass_pane_top_red,transparency=TRANSPARENT
-block:id=stained_glass_pane,data=15,patch0=12000:glass_black,patch1=12000:glass_pane_top_black,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=0,patch0=12000:white_stained_glass,patch1=12000:white_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=1,patch0=12000:orange_stained_glass,patch1=12000:orange_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=2,patch0=12000:magenta_stained_glass,patch1=12000:magenta_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=3,patch0=12000:light_blue_stained_glass,patch1=12000:light_blue_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=4,patch0=12000:yellow_stained_glass,patch1=12000:yellow_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=5,patch0=12000:lime_stained_glass,patch1=12000:lime_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=6,patch0=12000:pink_stained_glass,patch1=12000:pink_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=7,patch0=12000:gray_stained_glass,patch1=12000:gray_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=8,patch0=12000:silver_stained_glass,patch1=12000:silver_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=9,patch0=12000:cyan_stained_glass,patch1=12000:cyan_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=10,patch0=12000:purple_stained_glass,patch1=12000:purple_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=11,patch0=12000:blue_stained_glass,patch1=12000:blue_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=12,patch0=12000:brown_stained_glass,patch1=12000:brown_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=13,patch0=12000:green_stained_glass,patch1=12000:green_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=14,patch0=12000:red_stained_glass,patch1=12000:red_stained_glass_top,transparency=TRANSPARENT
+block:id=stained_glass_pane,data=15,patch0=12000:black_stained_glass,patch1=12000:black_stained_glass_top,transparency=TRANSPARENT
 
 # Acacia Stairs (163)
 block:id=acacia_stairs,data=*,patch0-2=0:acacia_planks,transparency=SEMITRANSPARENT
