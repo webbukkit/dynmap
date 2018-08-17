@@ -184,14 +184,13 @@ boxblock:id=stone_slab,id=wooden_slab,data=0,data=1,data=2,data=3,data=4,data=5,
 # Top Wood Slab
 boxblock:id=stone_slab,id=wooden_slab,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,ymin=0.5
 # Snow
-boxblock:id=snow_layer,data=0,data=8,ymax=0.125
-boxblock:id=snow_layer,data=1,data=9,ymax=0.25
-boxblock:id=snow_layer,data=2,data=10,ymax=0.375
-boxblock:id=snow_layer,data=3,data=11,ymax=0.5
-boxblock:id=snow_layer,data=4,data=12,ymax=0.625
-boxblock:id=snow_layer,data=5,data=13,ymax=0.75
-boxblock:id=snow_layer,data=6,data=14,ymax=0.875
-
+boxblock:id=snow,data=0,ymax=0.125
+boxblock:id=snow,data=1,ymax=0.25
+boxblock:id=snow,data=2,ymax=0.375
+boxblock:id=snow,data=3,ymax=0.5
+boxblock:id=snow,data=4,ymax=0.625
+boxblock:id=snow,data=5,ymax=0.75
+boxblock:id=snow,data=6,ymax=0.875
 # Torch
 # Redstone torch
 patchblock:id=torch,id=redstone_torch,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
