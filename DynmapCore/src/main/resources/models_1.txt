@@ -272,7 +272,7 @@ patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=1,patc
 # Powered rails - flat - north/south (powred)
 # (157)	Activator Rail
 patchblock:id=golden_rail,id=activator_rail,data=9,patch0=HorizY001ZTop@90
-# Rails - ascending to south 
+# Rails - ascending to south
 # Powered rails - ascending to south (powered or unpowered)
 # Detector rails - ascending to south
 # (157)	Activator Rail
