@@ -208,7 +208,7 @@ texture:id=stone_bricks
 texture:id=mossy_stone_bricks
 texture:id=cracked_stone_bricks
 texture:id=chiseled_stone_bricks
-texture:id=nether_brick
+texture:id=nether_bricks
 texture:id=bricks
 texture:id=cobweb
 texture:id=dead_bush
@@ -305,7 +305,7 @@ texture:id=endframe_side
 texture:id=endframe_top
 texture:id=end_stone
 texture:id=dragon_egg
-texture:id=redstone_lamp_off
+texture:id=redstone_lamp
 texture:id=redstone_lamp_on
 texture:id=iron_bars
 texture:id=melon_side
@@ -317,10 +317,10 @@ texture:id=melon_stem
 texture:id=vine
 texture:id=mycelium_side
 texture:id=mycelium_top
-texture:id=waterlily
-texture:id=nether_wart_stage_0
-texture:id=nether_wart_stage_1
-texture:id=nether_wart_stage_2
+texture:id=lily_pad
+texture:id=nether_wart_stage0
+texture:id=nether_wart_stage1
+texture:id=nether_wart_stage2
 texture:id=emerald_ore
 texture:id=emerald_block
 texture:id=repeater
@@ -329,19 +329,19 @@ texture:id=cocoa_stage_2
 texture:id=command_block
 texture:id=beacon
 texture:id=flower_pot
-texture:id=carrots_stage_0
-texture:id=carrots_stage_1
-texture:id=carrots_stage_2
-texture:id=carrots_stage_3
-texture:id=potatoes_stage_0
-texture:id=potatoes_stage_1
-texture:id=potatoes_stage_2
-texture:id=potatoes_stage_3
+texture:id=carrots_stage0
+texture:id=carrots_stage1
+texture:id=carrots_stage2
+texture:id=carrots_stage3
+texture:id=potatoes_stage0
+texture:id=potatoes_stage1
+texture:id=potatoes_stage2
+texture:id=potatoes_stage3
 texture:id=anvil_base
 texture:id=anvil_top_damaged_0
 texture:id=anvil_top_damaged_1
 texture:id=anvil_top_damaged_2
-texture:id=trip_wire_source
+texture:id=tripwire_hook
 texture:id=podzol_top
 texture:id=podzol_side
 texture:id=double_plant_fern_bottom
@@ -474,7 +474,7 @@ texture:id=frosted_ice_2
 texture:id=frosted_ice_3
 texture:id=magma
 texture:id=nether_wart_block
-texture:id=red_nether_brick
+texture:id=red_nether_bricks
 texture:id=bone_block_side
 texture:id=bone_block_top
 texture:id=structure_block_save
@@ -1228,6 +1228,177 @@ block:id=pumpkin_stem,allsides=1000:pumpkin_stem,stdrot=true,transparency=TRANSP
 block:id=melon_stem,allsides=1000:melon_stem,stdrot=true,transparency=TRANSPARENT
 # Vines
 block:id=vine,patch0-4=2000:vine,transparency=TRANSPARENT
+# Fence gate
+block:id=oak_fence_gate,patch0-2=0:oak_planks,stdrot=true,transparency=TRANSPARENT
+# Brick stair
+block:id=brick_stairs,patch0-2=0:bricks,transparency=SEMITRANSPARENT
+# Stone brick stair
+block:id=stone_brick_stairs,patch0-2=0:stone_bricks,transparency=SEMITRANSPARENT
+# Mycelium
+block:id=mycelium,data=0,allsides=0:grass_block_snow,top=1000:grass_block_top,bottom=0:dirt,stdrot=true
+block:id=mycelium,data=1,top=0:mycelium_top,allsides=0:mycelium_side,bottom=0:dirt,stdrot=true
+# Lily pad
+block:id=lily_pad,patch0=15000:lily_pad,transparency=TRANSPARENT
+# Nether brick
+block:id=nether_bricks,allfaces=0:nether_bricks,stdrot=true
+# Nether brick fence
+block:id=nether_brick_fence,patch0-2=0:nether_bricks,transparency=TRANSPARENT
+# Nether brick stairs
+block:id=nether_brick_stairs,patch0-2=0:nether_bricks,transparency=SEMITRANSPARENT
+# Nether Wart (small)
+block:id=nether_wart,data=0,patch0-1=0:nether_wart_stage0,transparency=TRANSPARENT
+# Nether Wart (medium)
+block:id=nether_wart,data=1,data=2,patch0-1=0:nether_wart_stage1,transparency=TRANSPARENT
+# Nether Wart (large)
+block:id=nether_wart,data=3,patch0-1=0:nether_wart_stage2,transparency=TRANSPARENT
+# Enchantment table
+block:id=enchanting_table,top=0:enchanting_table_top,allsides=0:enchanting_table_side,bottom=0:enchanting_table_bottom,stdrot=true,transparency=TRANSPARENT
+# Brewing stand
+block:id=brewing_stand,patch0=0:brewing_stand_base,patch1-7=0:brewing_stand,transparency=TRANSPARENT
+# Cauldron
+block:id=cauldron,data=*,top=0:cauldron_top,bottom=0:cauldron_bottom,allsides=0:cauldron_side,stdrot=true,transparency=TRANSPARENT
+# End portal
+block:id=end_portal,data=*,topbottom=0:endportal,stdrot=true
+# End portal frame (no eye)
+block:id=end_portal_frame,data=0,data=1,data=2,data=3,top=0:endframe_top,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
+# End portal fram (eye installed) (TODO: eye installed)
+block:id=end_portal_frame,data=4,data=5,data=6,data=7,top=0:endframe_eye,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
+# End stone
+block:id=end_stone,allfaces=0:end_stone,stdrot=true
+# Dragon Egg
+block:id=dragon_egg,data=*,allfaces=0:dragon_egg,stdrot=true
+# Redstone lamp (on)
+block:id=redstone_lamp,data=0,allfaces=0:redstone_lamp_on,stdrot=true
+# Redstone lamp (off)
+block:id=redstone_lamp,data=1,allfaces=0:redstone_lamp,stdrot=true
+# Cocoa Plant (TODO: handle different stages, orientations)
+block:id=cocoa,allsides=0:cocoa_stage_2
+# Sandstone stairs
+block:id=sandstone_stairs,patch0=0:sandstone,patch1=0:sandstone_top,patch2=0:sandstone_bottom,transparency=SEMITRANSPARENT
+# Emerald Ore
+block:id=emerald_ore,allfaces=0:emerald_ore,stdrot=true
+# Ender Chest
+block:id=ender_chest,patch0=0:enderchest,patch1=1:enderchest,patch2=2:enderchest,patch3=3:enderchest,patch4=4:enderchest,patch5=5:enderchest
+# Tripwire Hook
+block:id=tripwire_hook,patch0-5=0:cobblestone,patch6-7=0:tripwire_hook,transparency=TRANSPARENT
+# Tripwire
+block:id=tripwire
+# Block of Emerald
+block:id=emerald_block,allfaces=0:emerald_block,stdrot=true
+# Spruce Wooden stairs
+block:id=spruce_stairs,patch0-2=0:spruce_planks,transparency=SEMITRANSPARENT
+# Birch Wooden stairs
+block:id=birch_stairs,patch0-2=0:birch_planks,transparency=SEMITRANSPARENT
+# Jungle Wooden stairs
+block:id=jungle_stairs,patch0-2=0:jungle_planks,transparency=SEMITRANSPARENT
+# Command Block
+block:id=command_block,data=0,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_conditional,north=5000:command_block_conditional,east=5000:command_block_conditional,west=5000:command_block_conditional
+block:id=command_block,data=1,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_conditional,north=0:command_block_conditional,east=0:command_block_conditional,west=0:command_block_conditional
+block:id=command_block,data=2,top=6000:command_block_conditional,bottom=6000:command_block_conditional,south=6000:command_block_conditional,north=6000:command_block_conditional,east=0:command_block_front,west=0:command_block_back
+block:id=command_block,data=3,top=4000:command_block_conditional,bottom=4000:command_block_conditional,south=4000:command_block_conditional,north=4000:command_block_conditional,east=0:command_block_back,west=0:command_block_front
+block:id=command_block,data=4,top=0:command_block_conditional,bottom=0:command_block_conditional,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_conditional,west=4000:command_block_conditional
+block:id=command_block,data=5,top=5000:command_block_conditional,bottom=5000:command_block_conditional,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_conditional,west=6000:command_block_conditional
+block:id=command_block,data=6,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_side,north=5000:command_block_side,east=5000:command_block_side,west=5000:command_block_side
+block:id=command_block,data=7,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_side,north=0:command_block_side,east=0:command_block_side,west=0:command_block_side
+block:id=command_block,data=8,top=6000:command_block_side,bottom=6000:command_block_side,south=6000:command_block_side,north=6000:command_block_side,east=0:command_block_front,west=0:command_block_back
+block:id=command_block,data=9,top=4000:command_block_side,bottom=4000:command_block_side,south=4000:command_block_side,north=4000:command_block_side,east=0:command_block_back,west=0:command_block_front
+block:id=command_block,data=10,top=0:command_block_side,bottom=0:command_block_side,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_side,west=4000:command_block_side
+block:id=command_block,data=11,top=5000:command_block_side,bottom=5000:command_block_side,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_side,west=6000:command_block_side
+# Beacon
+block:id=beacon,patch0-5=12000:glass,patch6-9=0:obsidian,patch10=6000:obsidian,patch11-14=0:beacon,patch15=6000:beacon,transparency=TRANSPARENT
+# Cobblestone wall
+block:id=cobblestone_wall,patch0-2=0:cobblestone,transparency=TRANSPARENT
+# Mossy cobblestone wall
+block:id=mossy_cobblestone_wall,patch0-2=0:mossy_cobblestone,transparency=TRANSPARENT
+# Flower pot
+block:id=flower_pot,patch0-5=0:flower_pot,patch6=0:dirt,transparency=TRANSPARENT
+# Flower pot with Oak Sapling
+block:id=potted_oak_sapling,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:oak_sapling,transparency=TRANSPARENT
+# Flower pot with Spruce Sapling
+block:id=potted_spruce_sapling,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:spruce_sapling,transparency=TRANSPARENT
+# Flower pot with Birch Sapling
+block:id=potted_birch_sapling,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:birch_sapling,transparency=TRANSPARENT
+# Flower pot with Jungle Sapling
+block:id=potted_jungle_sapling,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:jungle_sapling,transparency=TRANSPARENT
+# Flower pot with Acacia Sapling
+block:id=potted_acacia_sapling,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:acacia_sapling,transparency=TRANSPARENT
+# Flower pot with Dark Oak Sapling
+block:id=potted_dark_oak_sapling,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:dark_oak_sapling,transparency=TRANSPARENT
+# Flower pot with fern
+block:id=potted_fern,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=1000:fern,transparency=TRANSPARENT
+# Flower pot with dandelion
+block:id=potted_dandelion,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:dandelion,transparency=TRANSPARENT
+# Flower pot with poppy
+block:id=potted_poppy,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:poppy,transparency=TRANSPARENT
+# Flower pot with blue orchid
+block:id=potted_blue_orchid,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:blue_orchid,transparency=TRANSPARENT
+# Flower pot with allium
+block:id=potted_allium,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:allium,transparency=TRANSPARENT
+# Flower pot with azure bluet
+block:id=potted_azure_bluet,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:azure_bluet,transparency=TRANSPARENT
+# Flower pot with red tulip
+block:id=potted_red_tulip,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:red_tulip,transparency=TRANSPARENT
+# Flower pot with orange tulip
+block:id=potted_orange_tulip,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:orange_tulip,transparency=TRANSPARENT
+# Flower pot with white tulip
+block:id=potted_white_tulip,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:white_tulip,transparency=TRANSPARENT
+# Flower pot with pink tulip
+block:id=potted_pink_tulip,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:pink_tulip,transparency=TRANSPARENT
+# Flower pot with oxeye daisy
+block:id=potted_oxeye_daisy,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:oxeye_daisy,transparency=TRANSPARENT
+# Flower pot with red mushroom
+block:id=potted_red_mushroom,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:red_mushroom,transparency=TRANSPARENT
+# Flower pot with brown mushroom
+block:id=potted_brown_mushroom,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:brown_mushroom,transparency=TRANSPARENT
+# Flower pot with dead bush
+block:id=potted_dead_bush,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:dead_bush,transparency=TRANSPARENT
+# Flower pot with cactus
+block:id=potted_cactus,patch0-5=0:flower_pot,patch6=0:dirt,patch7-10=0:cactus_side,patch11=0:cactus_top,transparency=TRANSPARENT
+# Carrots
+block:id=carrots,data=0,data=1,patch0-3=0:carrots_stage0,transparency=TRANSPARENT
+block:id=carrots,data=2,data=3,patch0-3=0:carrots_stage1,transparency=TRANSPARENT
+block:id=carrots,data=4,data=5,data=6,patch0-3=0:carrots_stage2,transparency=TRANSPARENT
+block:id=carrots,data=7,patch0-3=0:carrots_stage3,transparency=TRANSPARENT
+# Potato
+block:id=potatoes,data=0,data=1,patch0-3=0:potatoes_stage0,transparency=TRANSPARENT
+block:id=potatoes,data=2,data=3,patch0-3=0:potatoes_stage1,transparency=TRANSPARENT
+block:id=potatoes,data=4,data=5,data=6,patch0-3=0:potatoes_stage2,transparency=TRANSPARENT
+block:id=potatoes,data=7,patch0-3=0:potatoes_stage3,transparency=TRANSPARENT
+# Oak button
+block:id=oak_button,allfaces=0:oak_planks,stdrot=true,transparency=TRANSPARENT
+# Spruce button
+block:id=spruce_button,allfaces=0:spruce_planks,stdrot=true,transparency=TRANSPARENT
+# Birch button
+block:id=birch_button,allfaces=0:birch_planks,stdrot=true,transparency=TRANSPARENT
+# Jungle button
+block:id=jungle_button,allfaces=0:jungle_planks,stdrot=true,transparency=TRANSPARENT
+# Acacia button
+block:id=acacia_button,allfaces=0:acacia_planks,stdrot=true,transparency=TRANSPARENT
+# Dark Oak button
+block:id=dark_oak_button,allfaces=0:dark_oak_planks,stdrot=true,transparency=TRANSPARENT
+
+# Wall skulls and skulls
+block:id=skeleton_wall_skull,patch0=5:skeleton,patch1=4:skeleton,patch2=1:skeleton,patch3=0:skeleton,patch4=2:skeleton,patch5=3:skeleton,transparency=TRANSPARENT
+block:id=skeleton_skull,patch0=5:skeleton,patch1=4:skeleton,patch2=1:skeleton,patch3=0:skeleton,patch4=2:skeleton,patch5=3:skeleton,transparency=TRANSPARENT
+block:id=wither_skeleton_wall_skull,patch0=5:wither,patch1=4:wither,patch2=1:wither,patch3=0:wither,patch4=2:wither,patch5=3:wither,transparency=TRANSPARENT
+block:id=wither_skeleton_skull,patch0=5:wither,patch1=4:wither,patch2=1:wither,patch3=0:wither,patch4=2:wither,patch5=3:wither,transparency=TRANSPARENT
+block:id=zombie_wall_head,patch0=5:zombie,patch1=4:zombie,patch2=1:zombie,patch3=0:zombie,patch4=2:zombie,patch5=3:zombie,transparency=TRANSPARENT
+block:id=zombie_head,patch0=5:zombie,patch1=4:zombie,patch2=1:zombie,patch3=0:zombie,patch4=2:zombie,patch5=3:zombie,transparency=TRANSPARENT
+block:id=player_wall_head,patch0=5:char,patch1=4:char,patch2=1:char,patch3=0:char,patch4=2:char,patch5=3:char,transparency=TRANSPARENT
+block:id=player_head,patch0=5:char,patch1=4:char,patch2=1:char,patch3=0:char,patch4=2:char,patch5=3:char,transparency=TRANSPARENT
+block:id=creeper_wall_head,patch0=5:creeper,patch1=4:creeper,patch2=1:creeper,patch3=0:creeper,patch4=2:creeper,patch5=3:creeper,transparency=TRANSPARENT
+block:id=creeper_head,patch0=5:creeper,patch1=4:creeper,patch2=1:creeper,patch3=0:creeper,patch4=2:creeper,patch5=3:creeper,transparency=TRANSPARENT
+#TODO: specific skull for dragon
+block:id=dragon_wall_head,patch0=5:creeper,patch1=4:creeper,patch2=1:creeper,patch3=0:creeper,patch4=2:creeper,patch5=3:creeper,transparency=TRANSPARENT
+block:id=dragon_head,patch0=5:creeper,patch1=4:creeper,patch2=1:creeper,patch3=0:creeper,patch4=2:creeper,patch5=3:creeper,transparency=TRANSPARENT
+# Anvil (normal)
+block:id=anvil,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_0,transparency=TRANSPARENT
+# Anvil (slight damage)
+block:id=chipped_anvil,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_1,transparency=TRANSPARENT
+# Anvil (heavy damage)
+block:id=damaged_anvil,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_2,transparency=TRANSPARENT
+# Trap Chest
+block:id=trapped_chest,patch0=0:trapchest,patch1=1:trapchest,patch2=2:trapchest,patch3=3:trapchest,patch4=4:trapchest,patch5=5:trapchest,patch6=0:bigtrapchest,patch7=1:bigtrapchest,patch8=2:bigtrapchest,patch9=3:bigtrapchest,patch10=4:bigtrapchest,patch11=5:bigtrapchest,patch12=6:bigtrapchest,patch13=7:bigtrapchest,patch14=8:bigtrapchest,patch15=9:bigtrapchest
 
 ############
 
@@ -1250,8 +1421,8 @@ block:id=double_stone_slab,data=12,allfaces=0:bricks,stdrot=true
 block:id=double_stone_slab,data=5,allfaces=0:stone_bricks,stdrot=true
 block:id=double_stone_slab,data=13,allfaces=0:stone_bricks,stdrot=true
 # Double Slab - Nether Brick
-block:id=double_stone_slab,data=6,allfaces=0:nether_brick,stdrot=true
-block:id=double_stone_slab,data=14,allfaces=0:nether_brick,stdrot=true
+block:id=double_stone_slab,data=6,allfaces=0:nether_bricks,stdrot=true
+block:id=double_stone_slab,data=14,allfaces=0:nether_bricks,stdrot=true
 # Double Slab - Quartz
 block:id=double_stone_slab,data=7,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side
 block:id=double_stone_slab,data=15,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side
@@ -1269,54 +1440,11 @@ block:id=stone_slab,data=4,data=12,allfaces=0:bricks,stdrot=true,transparency=SE
 # Slab - Stone Brick
 block:id=stone_slab,data=5,data=13,allfaces=0:stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Nether brick
-block:id=stone_slab,data=6,data=14,allfaces=0:nether_brick,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,data=6,data=14,allfaces=0:nether_bricks,stdrot=true,transparency=SEMITRANSPARENT
 # Slab - Quartz
 block:id=stone_slab,data=7,data=15,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true,transparency=SEMITRANSPARENT
 
 
-
-# Fence gate
-block:id=fence_gate,patch0-2=0:oak_planks,stdrot=true,transparency=TRANSPARENT
-# Brick stair
-block:id=brick_stairs,data=*,patch0-2=0:bricks,transparency=SEMITRANSPARENT
-# Stone brick stair
-block:id=stone_brick_stairs,data=*,patch0-2=0:stone_bricks,transparency=SEMITRANSPARENT
-# Mycelium1
-block:id=mycelium,top=0:mycelium_top,allsides=0:mycelium_side,bottom=0:dirt,stdrot=true
-# Lily pad
-block:id=waterlily,patch0=15000:waterlily,transparency=TRANSPARENT
-# Nether brick
-block:id=nether_brick,allfaces=0:nether_brick,stdrot=true
-# Nether brick fence
-block:id=nether_brick_fence,patch0-2=0:nether_brick,transparency=TRANSPARENT
-# Nether brick stairs
-block:id=nether_brick_stairs,data=*,patch0-2=0:nether_brick,transparency=SEMITRANSPARENT
-# Nether Wart (small)
-block:id=nether_wart,data=0,patch0-1=0:nether_wart_stage_0,transparency=TRANSPARENT
-# Nether Wart (medium)
-block:id=nether_wart,data=1,data=2,patch0-1=0:nether_wart_stage_1,transparency=TRANSPARENT
-# Nether Wart (large)
-block:id=nether_wart,data=3,data=4,data=5,data=6,data=7,patch0-1=0:nether_wart_stage_2,transparency=TRANSPARENT
-# Enchantment table
-block:id=enchanting_table,data=*,top=0:enchanting_table_top,allsides=0:enchanting_table_side,bottom=0:enchanting_table_bottom,stdrot=true,transparency=TRANSPARENT
-# Brewing stand
-block:id=brewing_stand,data=*,patch0=0:brewing_stand_base,patch1-7=0:brewing_stand,transparency=TRANSPARENT
-# Cauldron
-block:id=cauldron,data=*,top=0:cauldron_top,bottom=0:cauldron_bottom,allsides=0:cauldron_side,stdrot=true,transparency=TRANSPARENT
-# End portal
-block:id=end_portal,data=*,topbottom=0:endportal,stdrot=true
-# End portal frame (no eye)
-block:id=end_portal_frame,data=0,data=1,data=2,data=3,top=0:endframe_top,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
-# End portal fram (eye installed) (TODO: eye installed)
-block:id=end_portal_frame,data=4,data=5,data=6,data=7,top=0:endframe_eye,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
-# White stone
-block:id=end_stone,data=*,allfaces=0:end_stone,stdrot=true
-# Dragon Egg
-block:id=dragon_egg,data=*,allfaces=0:dragon_egg,stdrot=true
-# Redstone lamp (off)
-block:id=redstone_lamp,data=*,allfaces=0:redstone_lamp_off,stdrot=true
-# Redstone lamp (on)
-block:id=lit_redstone_lamp,data=*,allfaces=0:redstone_lamp_on,stdrot=true
 # Wooden Double Slab (Oak)
 block:id=double_wooden_slab,data=0,data=8,allfaces=0:oak_planks,stdrot=true
 # Wooden Double Slab (Spruce)
@@ -1341,81 +1469,6 @@ block:id=wooden_slab,data=3,data=11,allfaces=0:jungle_planks,stdrot=true,transpa
 block:id=wooden_slab,data=4,data=12,allfaces=0:acacia_planks,stdrot=true,transparency=SEMITRANSPARENT
 # Wooden Slab (Big Oak)
 block:id=wooden_slab,data=5,data=13,allfaces=0:dark_oak_planks,stdrot=true,transparency=SEMITRANSPARENT
-# Cocoa Plant (TODO: handle different stages, orientations)
-block:id=cocoa,data=*,allsides=0:cocoa_stage_2
-# Sandstone stairs
-block:id=sandstone_stairs,data=*,patch0=0:sandstone,patch1=0:sandstone_top,patch2=0:sandstone_bottom,transparency=SEMITRANSPARENT
-# Emerald Ore
-block:id=emerald_ore,data=*,allfaces=0:emerald_ore,stdrot=true
-# Ender Chest (facing east)
-block:id=ender_chest,data=*,patch0=0:enderchest,patch1=1:enderchest,patch2=2:enderchest,patch3=3:enderchest,patch4=4:enderchest,patch5=5:enderchest
-# Tripwire Hook
-block:id=tripwire_hook,data=*,patch0-5=0:cobblestone,patch6-7=0:trip_wire_source,transparency=TRANSPARENT
-# Tripwire
-block:id=tripwire,data=*
-# Block of Emerald
-block:id=emerald_block,data=*,allfaces=0:emerald_block,stdrot=true
-# Spruce Wooden stairs
-block:id=spruce_stairs,data=*,patch0-2=0:spruce_planks,transparency=SEMITRANSPARENT
-# Birch Wooden stairs
-block:id=birch_stairs,data=*,patch0-2=0:birch_planks,transparency=SEMITRANSPARENT
-# Jungle Wooden stairs
-block:id=jungle_stairs,data=*,patch0-2=0:jungle_planks,transparency=SEMITRANSPARENT
-# Command block
-block:id=command_block,data=*,allfaces=0:command_block,stdrot=true
-# Beacon
-block:id=beacon,data=*,patch0-5=12000:glass,patch6-9=0:obsidian,patch10=6000:obsidian,patch11-14=0:beacon,patch15=6000:beacon,transparency=TRANSPARENT
-# Cobblestone wall
-block:id=cobblestone_wall,data=0,data=2,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,patch0-2=0:cobblestone,transparency=TRANSPARENT
-# Mossy cobblestone wall
-block:id=cobblestone_wall,data=1,patch0-2=0:mossy_cobblestone,transparency=TRANSPARENT
-# Flower pot
-block:id=flower_pot,data=0,patch0-5=0:flower_pot,patch6=0:dirt,transparency=TRANSPARENT
-# Flower pot with Rose
-block:id=flower_pot,data=1,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:red_tulip,transparency=TRANSPARENT
-# Flower pot with Dandelion
-block:id=flower_pot,data=2,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:dandelion,transparency=TRANSPARENT
-# Flower pot with Oak Sapling
-block:id=flower_pot,data=3,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:oak_sapling,transparency=TRANSPARENT
-# Flower pot with Spruce Sapling
-block:id=flower_pot,data=4,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:spruce_sapling,transparency=TRANSPARENT
-# Flower pot with Birch Sapling
-block:id=flower_pot,data=5,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:birch_sapling,transparency=TRANSPARENT
-# Flower pot with Jungle Sapling
-block:id=flower_pot,data=6,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:jungle_sapling,transparency=TRANSPARENT
-# Flower pot with Red Mushroom
-block:id=flower_pot,data=7,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:red_mushroom,transparency=TRANSPARENT
-# Flower pot with Brown Mushroom
-block:id=flower_pot,data=8,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:brown_mushroom,transparency=TRANSPARENT
-# Flower pot with cactus
-block:id=flower_pot,data=9,patch0-5=0:flower_pot,patch6=0:dirt,patch7-10=0:cactus_side,patch11=0:cactus_top,transparency=TRANSPARENT
-# Flower pot with dead bush
-block:id=flower_pot,data=10,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:dead_bush,transparency=TRANSPARENT
-# Flower pot with fern
-block:id=flower_pot,data=11,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=1000:fern,transparency=TRANSPARENT
-# Carrots
-block:id=carrots,data=0,data=1,patch0-3=0:carrots_stage_0,transparency=TRANSPARENT
-block:id=carrots,data=2,data=3,patch0-3=0:carrots_stage_1,transparency=TRANSPARENT
-block:id=carrots,data=4,data=5,data=6,patch0-3=0:carrots_stage_2,transparency=TRANSPARENT
-block:id=carrots,data=7,patch0-3=0:carrots_stage_3,transparency=TRANSPARENT
-# Potato
-block:id=potatoes,data=0,data=1,patch0-3=0:potatoes_stage_0,transparency=TRANSPARENT
-block:id=potatoes,data=2,data=3,patch0-3=0:potatoes_stage_1,transparency=TRANSPARENT
-block:id=potatoes,data=4,data=5,data=6,patch0-3=0:potatoes_stage_2,transparency=TRANSPARENT
-block:id=potatoes,data=7,patch0-3=0:potatoes_stage_3,transparency=TRANSPARENT
-# Wooden button
-block:id=wooden_button,allfaces=0:oak_planks,stdrot=true,transparency=TRANSPARENT
-# Head
-block:id=skull,data=*,patch0=5:skeleton,patch1=4:skeleton,patch2=1:skeleton,patch3=0:skeleton,patch4=2:skeleton,patch5=3:skeleton,patch6=5:wither,patch7=4:wither,patch8=1:wither,patch9=0:wither,patch10=2:wither,patch11=3:wither,patch12=5:zombie,patch13=4:zombie,patch14=1:zombie,patch15=0:zombie,patch16=2:zombie,patch17=3:zombie,patch18=5:char,patch19=4:char,patch20=1:char,patch21=0:char,patch22=2:char,patch23=3:char,patch24=5:creeper,patch25=4:creeper,patch26=1:creeper,patch27=0:creeper,patch28=2:creeper,patch29=3:creeper,transparency=TRANSPARENT
-# Anvil (normal)
-block:id=anvil,data=0,data=1,data=2,data=3,data=12,data=13,data=14,data=15,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_0,transparency=TRANSPARENT
-# Anvil (slight damage)
-block:id=anvil,data=4,data=5,data=6,data=7,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_1,transparency=TRANSPARENT
-# Anvil (heavy damage)
-block:id=anvil,data=8,data=9,data=10,data=11,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_2,transparency=TRANSPARENT
-
-# Trap Chest
-block:id=trapped_chest,data=*,patch0=0:trapchest,patch1=1:trapchest,patch2=2:trapchest,patch3=3:trapchest,patch4=4:trapchest,patch5=5:trapchest,patch6=0:bigtrapchest,patch7=1:bigtrapchest,patch8=2:bigtrapchest,patch9=3:bigtrapchest,patch10=4:bigtrapchest,patch11=5:bigtrapchest,patch12=6:bigtrapchest,patch13=7:bigtrapchest,patch14=8:bigtrapchest,patch15=9:bigtrapchest
 
 # Light weighted pressure plate
 block:id=light_weighted_pressure_plate,allfaces=0:gold_block,stdrot=true,transparency=TRANSPARENT
@@ -1687,20 +1740,6 @@ block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dir
 # End Gateway
 block:id=end_gateway,data=*,stdrot=true,allfaces=0:endportal
 
-# Command Block (1.9 improvements)
-block:id=command_block,data=0,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_side,north=5000:command_block_side,east=5000:command_block_side,west=5000:command_block_side
-block:id=command_block,data=1,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_side,north=0:command_block_side,east=0:command_block_side,west=0:command_block_side
-block:id=command_block,data=2,top=6000:command_block_side,bottom=6000:command_block_side,south=6000:command_block_side,north=6000:command_block_side,east=0:command_block_front,west=0:command_block_back
-block:id=command_block,data=3,top=4000:command_block_side,bottom=4000:command_block_side,south=4000:command_block_side,north=4000:command_block_side,east=0:command_block_back,west=0:command_block_front
-block:id=command_block,data=4,top=0:command_block_side,bottom=0:command_block_side,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_side,west=4000:command_block_side
-block:id=command_block,data=5,top=5000:command_block_side,bottom=5000:command_block_side,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_side,west=6000:command_block_side
-block:id=command_block,data=8,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_conditional,north=5000:command_block_conditional,east=5000:command_block_conditional,west=5000:command_block_conditional
-block:id=command_block,data=9,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_conditional,north=0:command_block_conditional,east=0:command_block_conditional,west=0:command_block_conditional
-block:id=command_block,data=10,top=6000:command_block_conditional,bottom=6000:command_block_conditional,south=6000:command_block_conditional,north=6000:command_block_conditional,east=0:command_block_front,west=0:command_block_back
-block:id=command_block,data=11,top=4000:command_block_conditional,bottom=4000:command_block_conditional,south=4000:command_block_conditional,north=4000:command_block_conditional,east=0:command_block_back,west=0:command_block_front
-block:id=command_block,data=12,top=0:command_block_conditional,bottom=0:command_block_conditional,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_conditional,west=4000:command_block_conditional
-block:id=command_block,data=13,top=5000:command_block_conditional,bottom=5000:command_block_conditional,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_conditional,west=6000:command_block_conditional
-
 # Repeating Command Block
 block:id=repeating_command_block,data=0,top=4000:repeating_command_block_back,bottom=4000:repeating_command_block_front,south=5000:repeating_command_block_side,north=5000:repeating_command_block_side,east=5000:repeating_command_block_side,west=5000:repeating_command_block_side
 block:id=repeating_command_block,data=1,top=4000:repeating_command_block_front,bottom=4000:repeating_command_block_back,south=0:repeating_command_block_side,north=0:repeating_command_block_side,east=0:repeating_command_block_side,west=0:repeating_command_block_side
@@ -1742,7 +1781,7 @@ block:id=magma,data=*,stdrot=true,allfaces=0:magma
 block:id=nether_wart_block,data=*,stdrot=true,allfaces=0:nether_wart_block
 
 # Red Nether Block
-block:id=red_nether_brick,data=*,stdrot=true,allfaces=0:red_nether_brick
+block:id=red_nether_bricks,stdrot=true,allfaces=0:red_nether_bricks
 
 # Bone Block
 block:id=bone_block,data=0,allsides=0:bone_block_side,topbottom=0:bone_block_top,stdrot=true
