@@ -1587,22 +1587,23 @@ block:id=dark_oak_stairs,data=*,patch0-2=0:dark_oak_planks,transparency=SEMITRAN
 # (170) Hay
 block:id=hay_block,data=*,allsides=0:hay_block_side,topbottom=0:hay_block_top,stdrot=true
 # (171) Carpet
-block:id=black_carpet,stdrot=true,allfaces=0:black_wool
-block:id=red_carpet,stdrot=true,allfaces=0:red_wool
-block:id=green_carpet,stdrot=true,allfaces=0:green_wool
-block:id=brown_carpet,stdrot=true,allfaces=0:brown_wool
-block:id=blue_carpet,,stdrot=true,allfaces=0:blue_wool
-block:id=purple_carpet,stdrot=true,allfaces=0:purple_wool
-block:id=cyan_carpet,stdrot=true,allfaces=0:cyan_wool
-block:id=light_gray_carpet,stdrot=true,allfaces=0:light_gray_wool
-block:id=gray_carpet,stdrot=true,allfaces=0:gray_wool
-block:id=pink_carpet,stdrot=true,allfaces=0:pink_wool
-block:id=lime_carpet,,stdrot=true,allfaces=0:lime_wool
-block:id=yellow_carpet,stdrot=true,allfaces=0:yellow_wool
-block:id=light_blue_carpet,stdrot=true,allfaces=0:light_blue_wool
-block:id=magenta_carpet,stdrot=true,allfaces=0:magenta_wool
-block:id=orange_carpet,stdrot=true,allfaces=0:orange_wool
-block:id=white_carpet,stdrot=true,allfaces=0:white_wool
+block:id=black_carpet,stdrot=true,allfaces=0:black_wool,transparency=TRANSPARENT
+block:id=red_carpet,stdrot=true,allfaces=0:red_wool,transparency=TRANSPARENT
+block:id=green_carpet,stdrot=true,allfaces=0:green_wool,transparency=TRANSPARENT
+block:id=brown_carpet,stdrot=true,allfaces=0:brown_wool,transparency=TRANSPARENT
+block:id=blue_carpet,,stdrot=true,allfaces=0:blue_wool,transparency=TRANSPARENT
+block:id=purple_carpet,stdrot=true,allfaces=0:purple_wool,transparency=TRANSPARENT
+block:id=cyan_carpet,stdrot=true,allfaces=0:cyan_wool,transparency=TRANSPARENT
+block:id=light_gray_carpet,stdrot=true,allfaces=0:light_gray_wool,transparency=TRANSPARENT
+block:id=gray_carpet,stdrot=true,allfaces=0:gray_wool,transparency=TRANSPARENT
+block:id=pink_carpet,stdrot=true,allfaces=0:pink_wool,transparency=TRANSPARENT
+block:id=lime_carpet,,stdrot=true,allfaces=0:lime_wool,transparency=TRANSPARENT
+block:id=yellow_carpet,stdrot=true,allfaces=0:yellow_wool,transparency=TRANSPARENT
+block:id=light_blue_carpet,stdrot=true,allfaces=0:light_blue_wool,transparency=TRANSPARENT
+block:id=magenta_carpet,stdrot=true,allfaces=0:magenta_wool,transparency=TRANSPARENT
+block:id=orange_carpet,stdrot=true,allfaces=0:orange_wool,transparency=TRANSPARENT
+block:id=white_carpet,stdrot=true,allfaces=0:white_wool,transparency=TRANSPARENT
+
 # (172) Hardened clay
 block:id=hardened_clay,data=*,stdrot=true,allfaces=0:hardened_clay
 # (173) Coal block

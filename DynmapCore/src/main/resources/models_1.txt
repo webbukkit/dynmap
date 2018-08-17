@@ -1152,7 +1152,8 @@ customblock:id=stained_glass_pane,id=white_stained_glass_pane,id=orange_stained_
 customblock:id=acacia_stairs,id=dark_oak_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 # (171) Carpet
-boxblock:id=carpet,data=*,ymax=0.0625
+boxblock:,id=white_carpet,id=orange_carpet,id=magenta_carpet,id=light_blue_carpet,id=yellow_carpet,id=lime_carpet,id=pink_carpet,id=gray_carpet,id=light_gray_carpet,id=cyan_carpet,id=purple_carpet,id=blue_carpet,id=brown_carpet,id=green_carpet,id=red_carpet,id=black_carpet,data=*,ymax=0.0625
+
 # (175) Double Plant
 customblock:id=double_plant,data=0,data=1,data=2,data=3,data=4,data=5,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6
 customblock:id=double_plant,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6,metasrc=below
