@@ -212,21 +212,27 @@ boxblock:id=snow,data=6,ymax=0.875
 # Redstone torch
 patchblock:id=torch,id=redstone_torch,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
 # Torch - pointing south
+patchblock:id=wall_torch,data=3,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
+# Torch - pointing north
+patchblock:id=wall_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
+# Torch - pointing west
+patchblock:id=wall_torch,data=1,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
+# Torch - pointing east
+patchblock:id=wall_torch,data=0,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+
 # Redstone torch on - pointing south
 # Redstone torch off - pointing south
-patchblock:id=torch,id=redstone_torch,data=1,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
-# Torch - pointing north
+patchblock:id=redstone_wall_torch,data=6,data=7,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
 # Redstone torch on - pointing north
 # Redstone torch off - pointing north
-patchblock:id=torch,id=redstone_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
-# Torch - pointing west
+patchblock:id=redstone_wall_torch,data=4,data=5,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
 # Redstone torch on - pointing west
 # Redstone torch off - pointing west
-patchblock:id=torch,id=redstone_torch,data=3,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
-# Torch - pointing east
+patchblock:id=redstone_wall_torch,data=2,data=3,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
 # Redstone torch on - pointing east
 # Redstone torch off - pointing east
-patchblock:id=torch,id=redstone_torch,data=4,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+patchblock:id=redstone_wall_torch,data=0,data=1,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+
 ignore-updates:id=redstone_wall_torch,id=redstone_torch
 
 # Oak fence

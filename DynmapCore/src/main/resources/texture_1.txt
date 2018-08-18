@@ -609,100 +609,100 @@ block:id=iron_ore,allfaces=0:iron_ore,stdrot=true
 # Coal Ore
 block:id=coal_ore,allfaces=0:coal_ore,stdrot=true
 # Log (oak)
-block:id=oak_log,data=0,allsides=0:oak_log,topbottom=0:oak_log_top,stdrot=true
-block:id=oak_log,data=1,north=0:oak_log_top,south=0:oak_log_top,east=4000:oak_log,west=4000:oak_log,top=0:oak_log,bottom=0:oak_log
+block:id=oak_log,data=1,allsides=0:oak_log,topbottom=0:oak_log_top,stdrot=true
+block:id=oak_log,data=0,north=0:oak_log_top,south=0:oak_log_top,east=4000:oak_log,west=4000:oak_log,top=0:oak_log,bottom=0:oak_log
 block:id=oak_log,data=2,north=4000:oak_log,south=4000:oak_log,east=0:oak_log_top,west=0:oak_log_top,top=4000:oak_log,bottom=4000:oak_log
 # Log (spruce/pine)
-block:id=spruce_log,data=0,allsides=0:spruce_log,topbottom=0:spruce_log_top,stdrot=true
-block:id=spruce_log,data=1,north=0:spruce_log_top,south=0:spruce_log_top,east=4000:spruce_log,west=4000:spruce_log,top=0:spruce_log,bottom=0:spruce_log
+block:id=spruce_log,data=1,allsides=0:spruce_log,topbottom=0:spruce_log_top,stdrot=true
+block:id=spruce_log,data=0,north=0:spruce_log_top,south=0:spruce_log_top,east=4000:spruce_log,west=4000:spruce_log,top=0:spruce_log,bottom=0:spruce_log
 block:id=spruce_log,data=2,north=4000:spruce_log,south=4000:spruce_log,east=0:spruce_log_top,west=0:spruce_log_top,top=4000:spruce_log,bottom=4000:spruce_log
 # Log (birch)
-block:id=birch_log,data=0,allsides=0:birch_log,topbottom=0:birch_log_top,stdrot=true
-block:id=birch_log,data=1,north=0:birch_log_top,south=0:birch_log_top,east=4000:birch_log,west=4000:birch_log,top=0:birch_log,bottom=0:birch_log
+block:id=birch_log,data=1,allsides=0:birch_log,topbottom=0:birch_log_top,stdrot=true
+block:id=birch_log,data=0,north=0:birch_log_top,south=0:birch_log_top,east=4000:birch_log,west=4000:birch_log,top=0:birch_log,bottom=0:birch_log
 block:id=birch_log,data=2,north=4000:birch_log,south=4000:birch_log,east=0:birch_log_top,west=0:birch_log_top,top=4000:birch_log,bottom=4000:birch_log
 # Log (jungle)
-block:id=jungle_log,data=0,allsides=0:jungle_log,topbottom=0:jungle_log_top,stdrot=true
-block:id=jungle_log,data=1,north=0:jungle_log_top,south=0:jungle_log_top,east=4000:jungle_log,west=4000:jungle_log,top=0:jungle_log,bottom=0:jungle_log
+block:id=jungle_log,data=1,allsides=0:jungle_log,topbottom=0:jungle_log_top,stdrot=true
+block:id=jungle_log,data=0,north=0:jungle_log_top,south=0:jungle_log_top,east=4000:jungle_log,west=4000:jungle_log,top=0:jungle_log,bottom=0:jungle_log
 block:id=jungle_log,data=2,north=4000:jungle_log,south=4000:jungle_log,east=0:jungle_log_top,west=0:jungle_log_top,top=4000:jungle_log,bottom=4000:jungle_log
 # Log (acacia)
-block:id=acacia_log,data=0,allsides=0:acacia_log,topbottom=0:acacia_log_top,stdrot=true
-block:id=acacia_log,data=1,north=0:acacia_log_top,south=0:acacia_log_top,east=4000:acacia_log,west=4000:acacia_log,top=0:acacia_log,bottom=0:acacia_log
+block:id=acacia_log,data=1,allsides=0:acacia_log,topbottom=0:acacia_log_top,stdrot=true
+block:id=acacia_log,data=0,north=0:acacia_log_top,south=0:acacia_log_top,east=4000:acacia_log,west=4000:acacia_log,top=0:acacia_log,bottom=0:acacia_log
 block:id=acacia_log,data=2,north=4000:acacia_log,south=4000:acacia_log,east=0:acacia_log_top,west=0:acacia_log_top,top=4000:acacia_log,bottom=4000:acacia_log
 # Log (dark oak)
-block:id=dark_oak_log,data=0,allsides=0:dark_oak_log,topbottom=0:dark_oak_log_top,stdrot=true
-block:id=dark_oak_log,data=1,north=0:dark_oak_log_top,south=0:dark_oak_log_top,east=4000:dark_oak_log,west=4000:dark_oak_log,top=0:dark_oak_log,bottom=0:dark_oak_log
+block:id=dark_oak_log,data=1,allsides=0:dark_oak_log,topbottom=0:dark_oak_log_top,stdrot=true
+block:id=dark_oak_log,data=0,north=0:dark_oak_log_top,south=0:dark_oak_log_top,east=4000:dark_oak_log,west=4000:dark_oak_log,top=0:dark_oak_log,bottom=0:dark_oak_log
 block:id=dark_oak_log,data=2,north=4000:dark_oak_log,south=4000:dark_oak_log,east=0:dark_oak_log_top,west=0:dark_oak_log_top,top=4000:dark_oak_log,bottom=4000:dark_oak_log
 # Stripped log (oak)
-block:id=stripped_oak_log,data=0,allsides=0:stripped_oak_log,topbottom=0:stripped_oak_log_top,stdrot=true
-block:id=stripped_oak_log,data=1,north=0:stripped_oak_log_top,south=0:stripped_oak_log_top,east=4000:stripped_oak_log,west=4000:stripped_oak_log,top=0:stripped_oak_log,bottom=0:stripped_oak_log
+block:id=stripped_oak_log,data=1,allsides=0:stripped_oak_log,topbottom=0:stripped_oak_log_top,stdrot=true
+block:id=stripped_oak_log,data=0,north=0:stripped_oak_log_top,south=0:stripped_oak_log_top,east=4000:stripped_oak_log,west=4000:stripped_oak_log,top=0:stripped_oak_log,bottom=0:stripped_oak_log
 block:id=stripped_oak_log,data=2,north=4000:stripped_oak_log,south=4000:stripped_oak_log,east=0:stripped_oak_log_top,west=0:stripped_oak_log_top,top=4000:stripped_oak_log,bottom=4000:stripped_oak_log
 # Stripped log (spruce/pine)
-block:id=stripped_spruce_log,data=0,allsides=0:stripped_spruce_log,topbottom=0:stripped_spruce_log_top,stdrot=true
-block:id=stripped_spruce_log,data=1,north=0:stripped_spruce_log_top,south=0:stripped_spruce_log_top,east=4000:stripped_spruce_log,west=4000:stripped_spruce_log,top=0:stripped_spruce_log,bottom=0:stripped_spruce_log
+block:id=stripped_spruce_log,data=1,allsides=0:stripped_spruce_log,topbottom=0:stripped_spruce_log_top,stdrot=true
+block:id=stripped_spruce_log,data=0,north=0:stripped_spruce_log_top,south=0:stripped_spruce_log_top,east=4000:stripped_spruce_log,west=4000:stripped_spruce_log,top=0:stripped_spruce_log,bottom=0:stripped_spruce_log
 block:id=stripped_spruce_log,data=2,north=4000:stripped_spruce_log,south=4000:stripped_spruce_log,east=0:stripped_spruce_log_top,west=0:stripped_spruce_log_top,top=4000:stripped_spruce_log,bottom=4000:stripped_spruce_log
 # Stripped log (birch)
-block:id=stripped_birch_log,data=0,allsides=0:stripped_birch_log,topbottom=0:stripped_birch_log_top,stdrot=true
-block:id=stripped_birch_log,data=1,north=0:stripped_birch_log_top,south=0:stripped_birch_log_top,east=4000:stripped_birch_log,west=4000:stripped_birch_log,top=0:stripped_birch_log,bottom=0:stripped_birch_log
+block:id=stripped_birch_log,data=1,allsides=0:stripped_birch_log,topbottom=0:stripped_birch_log_top,stdrot=true
+block:id=stripped_birch_log,data=0,north=0:stripped_birch_log_top,south=0:stripped_birch_log_top,east=4000:stripped_birch_log,west=4000:stripped_birch_log,top=0:stripped_birch_log,bottom=0:stripped_birch_log
 block:id=stripped_birch_log,data=2,north=4000:stripped_birch_log,south=4000:stripped_birch_log,east=0:stripped_birch_log_top,west=0:stripped_birch_log_top,top=4000:stripped_birch_log,bottom=4000:stripped_birch_log
 # Stripped log (jungle)
-block:id=stripped_jungle_log,data=0,allsides=0:stripped_jungle_log,topbottom=0:stripped_jungle_log_top,stdrot=true
-block:id=stripped_jungle_log,data=1,north=0:stripped_jungle_log_top,south=0:stripped_jungle_log_top,east=4000:stripped_jungle_log,west=4000:stripped_jungle_log,top=0:stripped_jungle_log,bottom=0:stripped_jungle_log
+block:id=stripped_jungle_log,data=1,allsides=0:stripped_jungle_log,topbottom=0:stripped_jungle_log_top,stdrot=true
+block:id=stripped_jungle_log,data=0,north=0:stripped_jungle_log_top,south=0:stripped_jungle_log_top,east=4000:stripped_jungle_log,west=4000:stripped_jungle_log,top=0:stripped_jungle_log,bottom=0:stripped_jungle_log
 block:id=stripped_jungle_log,data=2,north=4000:stripped_jungle_log,south=4000:stripped_jungle_log,east=0:stripped_jungle_log_top,west=0:stripped_jungle_log_top,top=4000:stripped_jungle_log,bottom=4000:stripped_jungle_log
 # Stripped log (acacia)
-block:id=stripped_acacia_log,data=0,allsides=0:stripped_acacia_log,topbottom=0:stripped_acacia_log_top,stdrot=true
-block:id=stripped_acacia_log,data=1,north=0:stripped_acacia_log_top,south=0:stripped_acacia_log_top,east=4000:stripped_acacia_log,west=4000:stripped_acacia_log,top=0:stripped_acacia_log,bottom=0:stripped_acacia_log
+block:id=stripped_acacia_log,data=1,allsides=0:stripped_acacia_log,topbottom=0:stripped_acacia_log_top,stdrot=true
+block:id=stripped_acacia_log,data=0,north=0:stripped_acacia_log_top,south=0:stripped_acacia_log_top,east=4000:stripped_acacia_log,west=4000:stripped_acacia_log,top=0:stripped_acacia_log,bottom=0:stripped_acacia_log
 block:id=stripped_acacia_log,data=2,north=4000:stripped_acacia_log,south=4000:stripped_acacia_log,east=0:stripped_acacia_log_top,west=0:stripped_acacia_log_top,top=4000:stripped_acacia_log,bottom=4000:stripped_acacia_log
 # Stripped log (dark oak)
-block:id=stripped_dark_oak_log,data=0,allsides=0:stripped_dark_oak_log,topbottom=0:stripped_dark_oak_log_top,stdrot=true
-block:id=stripped_dark_oak_log,data=1,north=0:stripped_dark_oak_log_top,south=0:stripped_dark_oak_log_top,east=4000:stripped_dark_oak_log,west=4000:stripped_dark_oak_log,top=0:stripped_dark_oak_log,bottom=0:stripped_dark_oak_log
+block:id=stripped_dark_oak_log,data=1,allsides=0:stripped_dark_oak_log,topbottom=0:stripped_dark_oak_log_top,stdrot=true
+block:id=stripped_dark_oak_log,data=0,north=0:stripped_dark_oak_log_top,south=0:stripped_dark_oak_log_top,east=4000:stripped_dark_oak_log,west=4000:stripped_dark_oak_log,top=0:stripped_dark_oak_log,bottom=0:stripped_dark_oak_log
 block:id=stripped_dark_oak_log,data=2,north=4000:stripped_dark_oak_log,south=4000:stripped_dark_oak_log,east=0:stripped_dark_oak_log_top,west=0:stripped_dark_oak_log_top,top=4000:stripped_dark_oak_log,bottom=4000:stripped_dark_oak_log
 # Wood (oak)
-block:id=oak_wood,data=0,allsides=0:oak_log,topbottom=0:oak_log,stdrot=true
-block:id=oak_wood,data=1,north=0:oak_log,south=0:oak_log,east=4000:oak_log,west=4000:oak_log,top=0:oak_log,bottom=0:oak_log
+block:id=oak_wood,data=1,allsides=0:oak_log,topbottom=0:oak_log,stdrot=true
+block:id=oak_wood,data=0,north=0:oak_log,south=0:oak_log,east=4000:oak_log,west=4000:oak_log,top=0:oak_log,bottom=0:oak_log
 block:id=oak_wood,data=2,north=4000:oak_log,south=4000:oak_log,east=0:oak_log,west=0:oak_log,top=4000:oak_log,bottom=4000:oak_log
 # Wood (spruce/pine)
-block:id=spruce_wood,data=0,allsides=0:spruce_log,topbottom=0:spruce_log,stdrot=true
-block:id=spruce_wood,data=1,north=0:spruce_log,south=0:spruce_log,east=4000:spruce_log,west=4000:spruce_log,top=0:spruce_log,bottom=0:spruce_log
+block:id=spruce_wood,data=1,allsides=0:spruce_log,topbottom=0:spruce_log,stdrot=true
+block:id=spruce_wood,data=0,north=0:spruce_log,south=0:spruce_log,east=4000:spruce_log,west=4000:spruce_log,top=0:spruce_log,bottom=0:spruce_log
 block:id=spruce_wood,data=2,north=4000:spruce_log,south=4000:spruce_log,east=0:spruce_log,west=0:spruce_log,top=4000:spruce_log,bottom=4000:spruce_log
 # Wood (birch)
-block:id=birch_wood,data=0,allsides=0:birch_log,topbottom=0:birch_log,stdrot=true
-block:id=birch_wood,data=1,north=0:birch_log,south=0:birch_log,east=4000:birch_log,west=4000:birch_log,top=0:birch_log,bottom=0:birch_log
+block:id=birch_wood,data=1,allsides=0:birch_log,topbottom=0:birch_log,stdrot=true
+block:id=birch_wood,data=0,north=0:birch_log,south=0:birch_log,east=4000:birch_log,west=4000:birch_log,top=0:birch_log,bottom=0:birch_log
 block:id=birch_wood,data=2,north=4000:birch_log,south=4000:birch_log,east=0:birch_log,west=0:birch_log,top=4000:birch_log,bottom=4000:birch_log
 # Wood (jungle)
-block:id=jungle_wood,data=0,allsides=0:jungle_log,topbottom=0:jungle_log,stdrot=true
-block:id=jungle_wood,data=1,north=0:jungle_log,south=0:jungle_log,east=4000:jungle_log,west=4000:jungle_log,top=0:jungle_log,bottom=0:jungle_log
+block:id=jungle_wood,data=1,allsides=0:jungle_log,topbottom=0:jungle_log,stdrot=true
+block:id=jungle_wood,data=0,north=0:jungle_log,south=0:jungle_log,east=4000:jungle_log,west=4000:jungle_log,top=0:jungle_log,bottom=0:jungle_log
 block:id=jungle_wood,data=2,north=4000:jungle_log,south=4000:jungle_log,east=0:jungle_log,west=0:jungle_log,top=4000:jungle_log,bottom=4000:jungle_log
 # Wood (acacia)
-block:id=acacia_wood,data=0,allsides=0:acacia_log,topbottom=0:acacia_log,stdrot=true
-block:id=acacia_wood,data=1,north=0:acacia_log,south=0:acacia_log,east=4000:acacia_log,west=4000:acacia_log,top=0:acacia_log,bottom=0:acacia_log
+block:id=acacia_wood,data=1,allsides=0:acacia_log,topbottom=0:acacia_log,stdrot=true
+block:id=acacia_wood,data=0,north=0:acacia_log,south=0:acacia_log,east=4000:acacia_log,west=4000:acacia_log,top=0:acacia_log,bottom=0:acacia_log
 block:id=acacia_wood,data=2,north=4000:acacia_log,south=4000:acacia_log,east=0:acacia_log,west=0:acacia_log,top=4000:acacia_log,bottom=4000:acacia_log
 # Wood (dark oak)
-block:id=dark_oak_wood,data=0,allsides=0:dark_oak_log,topbottom=0:dark_oak_log,stdrot=true
-block:id=dark_oak_wood,data=1,north=0:dark_oak_log,south=0:dark_oak_log,east=4000:dark_oak_log,west=4000:dark_oak_log,top=0:dark_oak_log,bottom=0:dark_oak_log
+block:id=dark_oak_wood,data=1,allsides=0:dark_oak_log,topbottom=0:dark_oak_log,stdrot=true
+block:id=dark_oak_wood,data=0,north=0:dark_oak_log,south=0:dark_oak_log,east=4000:dark_oak_log,west=4000:dark_oak_log,top=0:dark_oak_log,bottom=0:dark_oak_log
 block:id=dark_oak_wood,data=2,north=4000:dark_oak_log,south=4000:dark_oak_log,east=0:dark_oak_log,west=0:dark_oak_log,top=4000:dark_oak_log,bottom=4000:dark_oak_log
 # Stripped wood (oak)
-block:id=stripped_oak_wood,data=0,allsides=0:stripped_oak_log,topbottom=0:stripped_oak_log,stdrot=true
-block:id=stripped_oak_wood,data=1,north=0:stripped_oak_log,south=0:stripped_oak_log,east=4000:stripped_oak_log,west=4000:stripped_oak_log,top=0:stripped_oak_log,bottom=0:stripped_oak_log
+block:id=stripped_oak_wood,data=1,allsides=0:stripped_oak_log,topbottom=0:stripped_oak_log,stdrot=true
+block:id=stripped_oak_wood,data=0,north=0:stripped_oak_log,south=0:stripped_oak_log,east=4000:stripped_oak_log,west=4000:stripped_oak_log,top=0:stripped_oak_log,bottom=0:stripped_oak_log
 block:id=stripped_oak_wood,data=2,north=4000:stripped_oak_log,south=4000:stripped_oak_log,east=0:stripped_oak_log,west=0:stripped_oak_log,top=4000:stripped_oak_log,bottom=4000:stripped_oak_log
 # Stripped wood (spruce/pine)
-block:id=stripped_spruce_wood,data=0,allsides=0:stripped_spruce_log,topbottom=0:stripped_spruce_log,stdrot=true
-block:id=stripped_spruce_wood,data=1,north=0:stripped_spruce_log,south=0:stripped_spruce_log,east=4000:stripped_spruce_log,west=4000:stripped_spruce_log,top=0:stripped_spruce_log,bottom=0:stripped_spruce_log
+block:id=stripped_spruce_wood,data=1,allsides=0:stripped_spruce_log,topbottom=0:stripped_spruce_log,stdrot=true
+block:id=stripped_spruce_wood,data=0,north=0:stripped_spruce_log,south=0:stripped_spruce_log,east=4000:stripped_spruce_log,west=4000:stripped_spruce_log,top=0:stripped_spruce_log,bottom=0:stripped_spruce_log
 block:id=stripped_spruce_wood,data=2,north=4000:stripped_spruce_log,south=4000:stripped_spruce_log,east=0:stripped_spruce_log,west=0:stripped_spruce_log,top=4000:stripped_spruce_log,bottom=4000:stripped_spruce_log
 # Stripped wood (birch)
-block:id=stripped_birch_wood,data=0,allsides=0:stripped_birch_log,topbottom=0:stripped_birch_log,stdrot=true
-block:id=stripped_birch_wood,data=1,north=0:stripped_birch_log,south=0:stripped_birch_log,east=4000:stripped_birch_log,west=4000:stripped_birch_log,top=0:stripped_birch_log,bottom=0:stripped_birch_log
+block:id=stripped_birch_wood,data=1,allsides=0:stripped_birch_log,topbottom=0:stripped_birch_log,stdrot=true
+block:id=stripped_birch_wood,data=0,north=0:stripped_birch_log,south=0:stripped_birch_log,east=4000:stripped_birch_log,west=4000:stripped_birch_log,top=0:stripped_birch_log,bottom=0:stripped_birch_log
 block:id=stripped_birch_wood,data=2,north=4000:stripped_birch_log,south=4000:stripped_birch_log,east=0:stripped_birch_log,west=0:stripped_birch_log,top=4000:stripped_birch_log,bottom=4000:stripped_birch_log
 # Stripped wood (jungle)
-block:id=stripped_jungle_wood,data=0,allsides=0:stripped_jungle_log,topbottom=0:stripped_jungle_log,stdrot=true
-block:id=stripped_jungle_wood,data=1,north=0:stripped_jungle_log,south=0:stripped_jungle_log,east=4000:stripped_jungle_log,west=4000:stripped_jungle_log,top=0:stripped_jungle_log,bottom=0:stripped_jungle_log
+block:id=stripped_jungle_wood,data=1,allsides=0:stripped_jungle_log,topbottom=0:stripped_jungle_log,stdrot=true
+block:id=stripped_jungle_wood,data=0,north=0:stripped_jungle_log,south=0:stripped_jungle_log,east=4000:stripped_jungle_log,west=4000:stripped_jungle_log,top=0:stripped_jungle_log,bottom=0:stripped_jungle_log
 block:id=stripped_jungle_wood,data=2,north=4000:stripped_jungle_log,south=4000:stripped_jungle_log,east=0:stripped_jungle_log,west=0:stripped_jungle_log,top=4000:stripped_jungle_log,bottom=4000:stripped_jungle_log
 # Stripped wood (acacia)
-block:id=stripped_acacia_wood,data=0,allsides=0:stripped_acacia_log,topbottom=0:stripped_acacia_log,stdrot=true
-block:id=stripped_acacia_wood,data=1,north=0:stripped_acacia_log,south=0:stripped_acacia_log,east=4000:stripped_acacia_log,west=4000:stripped_acacia_log,top=0:stripped_acacia_log,bottom=0:stripped_acacia_log
+block:id=stripped_acacia_wood,data=1,allsides=0:stripped_acacia_log,topbottom=0:stripped_acacia_log,stdrot=true
+block:id=stripped_acacia_wood,data=0,north=0:stripped_acacia_log,south=0:stripped_acacia_log,east=4000:stripped_acacia_log,west=4000:stripped_acacia_log,top=0:stripped_acacia_log,bottom=0:stripped_acacia_log
 block:id=stripped_acacia_wood,data=2,north=4000:stripped_acacia_log,south=4000:stripped_acacia_log,east=0:stripped_acacia_log,west=0:stripped_acacia_log,top=4000:stripped_acacia_log,bottom=4000:stripped_acacia_log
 # Stripped wood (dark oak)
-block:id=stripped_dark_oak_wood,data=0,allsides=0:stripped_dark_oak_log,topbottom=0:stripped_dark_oak_log,stdrot=true
-block:id=stripped_dark_oak_wood,data=1,north=0:stripped_dark_oak_log,south=0:stripped_dark_oak_log,east=4000:stripped_dark_oak_log,west=4000:stripped_dark_oak_log,top=0:stripped_dark_oak_log,bottom=0:stripped_dark_oak_log
+block:id=stripped_dark_oak_wood,data=1,allsides=0:stripped_dark_oak_log,topbottom=0:stripped_dark_oak_log,stdrot=true
+block:id=stripped_dark_oak_wood,data=0,north=0:stripped_dark_oak_log,south=0:stripped_dark_oak_log,east=4000:stripped_dark_oak_log,west=4000:stripped_dark_oak_log,top=0:stripped_dark_oak_log,bottom=0:stripped_dark_oak_log
 block:id=stripped_dark_oak_wood,data=2,north=4000:stripped_dark_oak_log,south=4000:stripped_dark_oak_log,east=0:stripped_dark_oak_log,west=0:stripped_dark_oak_log,top=4000:stripped_dark_oak_log,bottom=4000:stripped_dark_oak_log
 # Leaves (oak)
 block:id=oak_leaves,allfaces=2000:oak_leaves,stdrot=true,transparency=LEAVES
@@ -1488,8 +1488,8 @@ block:id=quartz_block,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsid
 #  Chiseled Quartz Block
 block:id=chiseled_quartz_block,top=0:chiseled_quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:chiseled_quartz_block,stdrot=true
 #  Quartz Pillar
-block:id=quartz_pillar,data=0,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top,allsides=0:quartz_pillar,stdrot=true
-block:id=quartz_pillar,data=1,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
+block:id=quartz_pillar,data=1,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top,allsides=0:quartz_pillar,stdrot=true
+block:id=quartz_pillar,data=0,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
 block:id=quartz_pillar,data=2,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6000:quartz_pillar,south=6000:quartz_pillar,east=0:quartz_pillar_top,west=0:quartz_pillar_top,stdrot=true
 
 # Quartz Stairs
@@ -1565,8 +1565,11 @@ block:id=acacia_stairs,data=*,patch0-2=0:acacia_planks,transparency=SEMITRANSPAR
 # Dark Oak Stairs (164)
 block:id=dark_oak_stairs,data=*,patch0-2=0:dark_oak_planks,transparency=SEMITRANSPARENT
 
-# (170) Hay
-block:id=hay_block,data=*,allsides=0:hay_block_side,topbottom=0:hay_block_top,stdrot=true
+# Hay block
+block:id=hay_block,data=1,allsides=0:hay_block_side,topbottom=0:hay_block_top,stdrot=true
+block:id=hay_block,data=0,north=0:hay_block_top,south=0:hay_block_top,east=4000:hay_block_side,west=4000:hay_block_side,top=0:hay_block_side,bottom=0:hay_block_side
+block:id=hay_block,data=2,north=4000:hay_block_side,south=4000:hay_block_side,east=0:hay_block_top,west=0:hay_block_top,top=4000:hay_block_side,bottom=4000:hay_block_side
+
 # (171) Carpet
 block:id=black_carpet,stdrot=true,allfaces=0:black_wool
 block:id=red_carpet,stdrot=true,allfaces=0:red_wool
@@ -1699,8 +1702,8 @@ block:id=chorus_flower,data=5,stdrot=true,allfaces=0:chorus_flower_dead,transpar
 block:id=purpur_block,data=*,stdrot=true,allfaces=0:purpur_block
 
 # Purpur Pillar
-block:id=purpur_pillar,data=0,allsides=0:purpur_pillar,topbottom=0:purpur_pillar_top,stdrot=true
-block:id=purpur_pillar,data=1,north=0:purpur_pillar_top,south=0:purpur_pillar_top,east=4000:purpur_pillar,west=4000:purpur_pillar,top=0:purpur_pillar,bottom=0:purpur_pillar
+block:id=purpur_pillar,data=1,allsides=0:purpur_pillar,topbottom=0:purpur_pillar_top,stdrot=true
+block:id=purpur_pillar,data=0,north=0:purpur_pillar_top,south=0:purpur_pillar_top,east=4000:purpur_pillar,west=4000:purpur_pillar,top=0:purpur_pillar,bottom=0:purpur_pillar
 block:id=purpur_pillar,data=2,north=4000:purpur_pillar,south=4000:purpur_pillar,east=0:purpur_pillar_top,west=0:purpur_pillar_top,top=4000:purpur_pillar,bottom=4000:purpur_pillar
 
 # Purpur Stairs
@@ -1716,7 +1719,7 @@ block:id=beetroots,data=2,patch0-3=0:beetroots_stage2,transparency=TRANSPARENT
 block:id=beetroots,data=3,patch0-3=0:beetroots_stage3,transparency=TRANSPARENT
 
 # Grass Path
-block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true,transparency=SEMITRANSPARENT
+block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
 
 # End Gateway
 block:id=end_gateway,data=*,stdrot=true,allfaces=0:endportal
@@ -1765,8 +1768,8 @@ block:id=nether_wart_block,data=*,stdrot=true,allfaces=0:nether_wart_block
 block:id=red_nether_bricks,stdrot=true,allfaces=0:red_nether_bricks
 
 # Bone Block
-block:id=bone_block,data=0,allsides=0:bone_block_side,topbottom=0:bone_block_top,stdrot=true
-block:id=bone_block,data=1,north=0:bone_block_top,south=0:bone_block_top,east=4000:bone_block_side,west=4000:bone_block_side,top=0:bone_block_side,bottom=0:bone_block_side
+block:id=bone_block,data=1,allsides=0:bone_block_side,topbottom=0:bone_block_top,stdrot=true
+block:id=bone_block,data=0,north=0:bone_block_top,south=0:bone_block_top,east=4000:bone_block_side,west=4000:bone_block_side,top=0:bone_block_side,bottom=0:bone_block_side
 block:id=bone_block,data=2,north=4000:bone_block_side,south=4000:bone_block_side,east=0:bone_block_top,west=0:bone_block_top,top=4000:bone_block_side,bottom=4000:bone_block_side
 
 # Structure Block
