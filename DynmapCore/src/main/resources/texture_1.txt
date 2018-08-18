@@ -345,20 +345,20 @@ texture:id=damaged_anvil_top
 texture:id=tripwire_hook
 texture:id=podzol_top
 texture:id=podzol_side
-texture:id=double_plant_fern_bottom
-texture:id=double_plant_fern_top
-texture:id=double_plant_grass_bottom
-texture:id=double_plant_grass_top
-texture:id=double_plant_paeonia_bottom
-texture:id=double_plant_paeonia_top
-texture:id=double_plant_rose_bottom
-texture:id=double_plant_rose_top
-texture:id=double_plant_sunflower_back
-texture:id=double_plant_sunflower_bottom
-texture:id=double_plant_sunflower_front
-texture:id=double_plant_sunflower_top
-texture:id=double_plant_syringa_bottom
-texture:id=double_plant_syringa_top
+texture:id=large_fern_bottom
+texture:id=large_fern_top
+texture:id=tall_grass_bottom
+texture:id=tall_grass_top
+texture:id=peony_bottom
+texture:id=peony_top
+texture:id=rose_bush_bottom
+texture:id=rose_bush_top
+texture:id=sunflower_back
+texture:id=sunflower_bottom
+texture:id=sunflower_front
+texture:id=sunflower_top
+texture:id=lilac_bottom
+texture:id=lilac_top
 texture:id=black_stained_glass,material=GLASS
 texture:id=blue_stained_glass,material=GLASS
 texture:id=brown_stained_glass,material=GLASS
@@ -391,7 +391,7 @@ texture:id=red_stained_glass_pane_top,material=GLASS
 texture:id=light_gray_stained_glass_pane_top,material=GLASS
 texture:id=white_stained_glass_pane_top,material=GLASS
 texture:id=yellow_stained_glass_pane_top,material=GLASS
-texture:id=ice_packed
+texture:id=packed_ice
 texture:id=acacia_leaves
 texture:id=dark_oak_leaves
 texture:id=acacia_log
@@ -414,11 +414,11 @@ texture:id=polished_diorite
 texture:id=andesite
 texture:id=polished_andesite
 texture:id=wet_sponge
-texture:id=slime
+texture:id=slime_block
 texture:id=iron_trapdoor
 texture:id=prismarine_bricks
-texture:id=prismarine_dark
-texture:id=prismarine_rough
+texture:id=dark_prismarine
+texture:id=prismarine
 texture:id=sea_lantern
 texture:id=daylight_detector_inverted_top
 texture:id=red_sandstone_bottom
@@ -450,11 +450,11 @@ texture:id=chorus_flower_dead
 texture:id=purpur_block
 texture:id=purpur_pillar_top
 texture:id=purpur_pillar
-texture:id=end_bricks
-texture:id=beetroots_stage_0
-texture:id=beetroots_stage_1
-texture:id=beetroots_stage_2
-texture:id=beetroots_stage_3
+texture:id=end_stone_bricks
+texture:id=beetroots_stage0
+texture:id=beetroots_stage1
+texture:id=beetroots_stage2
+texture:id=beetroots_stage3
 texture:id=grass_path_top
 texture:id=grass_path_side
 texture:id=command_block_back
@@ -816,17 +816,17 @@ block:id=sticky_piston,data=4,north=0:piston_top_sticky,south=0:piston_bottom,to
 # Sticky piston - facing south
 block:id=sticky_piston,data=5,north=0:piston_bottom,south=0:piston_top_sticky,top=5000:piston_side,bottom=0:piston_side,east=4000:piston_side,west=6000:piston_side,transparency=TRANSPARENT
 # Sticky piston - extended facing down (TODO: side)
-block:id=sticky_piston,data=8,top=0:piston_bottom,bottom=0:piston_inner,allsides=5262,transparency=TRANSPARENT
+block:id=sticky_piston,data=6,top=0:piston_bottom,bottom=0:piston_inner,allsides=5262,transparency=TRANSPARENT
 # Sticky piston - extended facing up  (TODO: side)
-block:id=sticky_piston,data=9,top=0:piston_inner,bottom=0:piston_bottom,allsides=262,transparency=TRANSPARENT
+block:id=sticky_piston,data=7,top=0:piston_inner,bottom=0:piston_bottom,allsides=262,transparency=TRANSPARENT
 # Sticky piston - extended facing east (TODO: side)
-block:id=sticky_piston,data=10,east=0:piston_inner,west=0:piston_bottom,top=6262,bottom=4262,north=4262,south=6262,transparency=TRANSPARENT
+block:id=sticky_piston,data=8,east=0:piston_inner,west=0:piston_bottom,top=6262,bottom=4262,north=4262,south=6262,transparency=TRANSPARENT
 # Sticky piston - extended facing west (TODO: side)
-block:id=sticky_piston,data=11,west=0:piston_inner,east=0:piston_bottom,top=4262,bottom=6262,north=6262,south=4262,transparency=TRANSPARENT
+block:id=sticky_piston,data=9,west=0:piston_inner,east=0:piston_bottom,top=4262,bottom=6262,north=6262,south=4262,transparency=TRANSPARENT
 # Sticky piston - extended facing north (TODO: side)
-block:id=sticky_piston,data=12,north=0:piston_inner,south=0:piston_bottom,top=262,bottom=5262,east=6262,west=4262,transparency=TRANSPARENT
+block:id=sticky_piston,data=10,north=0:piston_inner,south=0:piston_bottom,top=262,bottom=5262,east=6262,west=4262,transparency=TRANSPARENT
 # Sticky piston - extended facing south (TODO: side)
-block:id=sticky_piston,data=13,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
+block:id=sticky_piston,data=11,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
 # Web
 block:id=cobweb,patch0-1=0:cobweb,transparency=TRANSPARENT
 # Grass
@@ -1458,19 +1458,21 @@ block:id=light_weighted_pressure_plate,allfaces=0:gold_block,stdrot=true,transpa
 # Heavy weighted pressure plate
 block:id=heavy_weighted_pressure_plate,allfaces=0:iron_block,stdrot=true,transparency=TRANSPARENT
 
-# (149) Redstone Comparator (inactive)
-block:id=unpowered_comparator,data=0,data=4,data=8,data=12,top=6000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=unpowered_comparator,data=1,data=5,data=9,data=13,top=5000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=unpowered_comparator,data=2,data=6,data=10,data=14,top=4000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=unpowered_comparator,data=3,data=7,data=11,data=15,top=0:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# (150) Redstone Comparator (active)
-block:id=powered_comparator,data=0,data=4,data=8,data=12,top=6000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=powered_comparator,data=1,data=5,data=9,data=13,top=5000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=powered_comparator,data=2,data=6,data=10,data=14,top=4000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=powered_comparator,data=3,data=7,data=11,data=15,top=0:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Redstone Comparator (active)
+block:id=comparator,data=0,data=2,top=6000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=comparator,data=4,data=6,top=5000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=comparator,data=8,data=10,top=4000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=comparator,data=12,data=14,top=0:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Redstone Comparator (inactive)
+block:id=comparator,data=1,data=3,top=6000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=comparator,data=5,data=7,top=5000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=comparator,data=9,data=11,top=4000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=comparator,data=13,data=15,top=0:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
 
-# (151) Daylight Sensor
-block:id=daylight_detector,data=*,allsides=0:daylight_detector_side,bottom=0:daylight_detector_side,top=0:daylight_detector_top,stdrot=true,transparency=TRANSPARENT
+# Daylight Sensor
+# Inverted Daylight Sensor
+block:id=daylight_detector,data=16-31,allsides=0:daylight_detector_side,bottom=0:daylight_detector_side,top=0:daylight_detector_top,stdrot=true,transparency=TRANSPARENT
+block:id=daylight_detector,data=0-15,allsides=0:daylight_detector_side,bottom=0:daylight_detector_side,top=0:daylight_detector_inverted_top,stdrot=true,transparency=TRANSPARENT
 
 # (152) Block of Redstone
 block:id=redstone_block,data=*,allfaces=0:redstone_block,stdrot=true
@@ -1481,41 +1483,39 @@ block:id=nether_quartz_ore,data=*,allfaces=0:nether_quartz_ore,stdrot=true
 # (154)	Hopper
 block:id=hopper,data=*,allsides=0:hopper_outside,top=0:hopper_inside,bottom=0:hopper_outside,stdrot=true
 
-#  (155:0) Block of Quartz
-block:id=quartz_block,data=0,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
-#  (155:1) Chiseled Quartz Block
-block:id=quartz_block,data=1,top=0:chiseled_quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:chiseled_quartz_block,stdrot=true
-#  (155:2) Pillar Quartz Block (vertical)
-block:id=quartz_block,data=2,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top,allsides=0:quartz_pillar,stdrot=true
-#  (155:3) Pillar Quartz Block (north-south)
-block:id=quartz_block,data=3,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
-#  (155:4) Pillar Quartz Block (east-west)
-block:id=quartz_block,data=4,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6000:quartz_pillar,south=6000:quartz_pillar,east=0:quartz_pillar_top,west=0:quartz_pillar_top,stdrot=true
+#  Block of Quartz
+block:id=quartz_block,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
+#  Chiseled Quartz Block
+block:id=chiseled_quartz_block,top=0:chiseled_quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:chiseled_quartz_block,stdrot=true
+#  Quartz Pillar
+block:id=quartz_pillar,data=0,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top,allsides=0:quartz_pillar,stdrot=true
+block:id=quartz_pillar,data=1,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
+block:id=quartz_pillar,data=2,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6000:quartz_pillar,south=6000:quartz_pillar,east=0:quartz_pillar_top,west=0:quartz_pillar_top,stdrot=true
 
-# (156)	Quartz Stairs
-block:id=quartz_stairs,data=*,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
+# Quartz Stairs
+block:id=quartz_stairs,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
 
-# (157)	Activator Rail
+# Activator Rail
 # Activator rail - heading east-west - unpowered
-block:id=activator_rail,data=0,patch0=0:activator_rail,transparency=TRANSPARENT
+block:id=activator_rail,data=7,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - incline to east - unpowered
 # Activator rail - incline to west - unpowered
-block:id=activator_rail,data=4,data=5,patch0=0:activator_rail,transparency=TRANSPARENT
+block:id=activator_rail,data=8,data=9,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - heading east-west - powered
-block:id=activator_rail,data=8,patch0=0:activator_rail_on,transparency=TRANSPARENT
+block:id=activator_rail,data=1,patch0=0:activator_rail_on,transparency=TRANSPARENT
 # Activator rail - incline to east - powered
 # Activator rail - incline to west - powered
-block:id=activator_rail,data=12,data=13,patch0=0:activator_rail_on,transparency=TRANSPARENT
+block:id=activator_rail,data=2,data=3,patch0=0:activator_rail_on,transparency=TRANSPARENT
 # Activator rail - heading north-south - unpowered
-block:id=activator_rail,data=1,patch0=0:activator_rail,transparency=TRANSPARENT
+block:id=activator_rail,data=6,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - inclined to north - unpowered
 # Activator rail - inclined to south - unpowered
-block:id=activator_rail,data=2,data=3,patch0=0:activator_rail,transparency=TRANSPARENT
+block:id=activator_rail,data=10,data=11,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - heading north-south - powered
-block:id=activator_rail,data=9,patch0=0:activator_rail_on,transparency=TRANSPARENT
+block:id=activator_rail,data=0,patch0=0:activator_rail_on,transparency=TRANSPARENT
 # Activator rail - inclined to north - powered
 # Activator rail - inclined to south - powered
-block:id=activator_rail,data=10,data=11,patch0=0:activator_rail_on,transparency=TRANSPARENT
+block:id=activator_rail,data=4,data=5,patch0=0:activator_rail_on,transparency=TRANSPARENT
 
 # (158)	Dropper
 block:id=dropper,data=0,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical
@@ -1589,30 +1589,43 @@ block:id=terracotta,data=*,stdrot=true,allfaces=0:terracotta
 # (173) Coal block    
 block:id=coal_block,data=*,stdrot=true,allfaces=0:coal_block
 # (174) Packed Ice
-block:id=packed_ice,allfaces=0:ice_packed,stdrot=true
-# (175) Double Plant
-block:id=double_plant,data=0,data=1,data=2,data=3,data=4,data=5,patch0=0:double_plant_sunflower_bottom,patch1=0:double_plant_syringa_bottom,patch2=1000:double_plant_grass_bottom,patch3=1000:double_plant_fern_bottom,patch4=0:double_plant_rose_bottom,patch5=0:double_plant_paeonia_bottom,transparency=TRANSPARENT
-block:id=double_plant,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,patch0=0:double_plant_sunflower_top,patch1=0:double_plant_syringa_top,patch2=1000:double_plant_grass_top,patch3=1000:double_plant_fern_top,patch4=0:double_plant_rose_top,patch5=0:double_plant_paeonia_top,transparency=TRANSPARENT
+block:id=packed_ice,allfaces=0:packed_ice,stdrot=true
+# Sunflower
+block:id=sunflower,data=0,patch0-1=0:sunflower_top,transparency=TRANSPARENT
+block:id=sunflower,data=1,patch0-1=0:sunflower_bottom,transparency=TRANSPARENT
+# Lilac
+block:id=lilac,data=0,patch0-1=0:lilac_top,transparency=TRANSPARENT
+block:id=lilac,data=1,patch0-1=0:lilac_bottom,transparency=TRANSPARENT
+# Rose bush
+block:id=rose_bush,data=0,patch0-1=0:rose_bush_top,transparency=TRANSPARENT
+block:id=rose_bush,data=1,patch0-1=0:rose_bush_bottom,transparency=TRANSPARENT
+# Peony
+block:id=peony,data=0,patch0-1=0:peony_top,transparency=TRANSPARENT
+block:id=peony,data=1,patch0-1=0:peony_bottom,transparency=TRANSPARENT
+# Tall grass
+block:id=tall_grass,data=0,patch0-1=1000:tall_grass_top,transparency=TRANSPARENT
+block:id=tall_grass,data=1,patch0-1=1000:tall_grass_bottom,transparency=TRANSPARENT
+# Large fern
+block:id=large_fern,data=0,patch0-1=1000:large_fern_top,transparency=TRANSPARENT
+block:id=large_fern,data=1,patch0-1=1000:large_fern_bottom,transparency=TRANSPARENT
 
 # Wet Sponge
 block:id=wet_sponge,allfaces=0:wet_sponge,stdrot=true
 # Slime Block
-block:id=slime,data=*,allfaces=0:slime,stdrot=true
+block:id=slime_block,data=*,allfaces=0:slime_block,stdrot=true
 # Barrier
 block:id=barrier,data=*,transparency=TRANSPARENT
 # Iron Trapdoor
 block:id=iron_trapdoor,allfaces=0:iron_trapdoor,stdrot=true,transparency=TRANSPARENT
 # Prismarine
-block:id=prismarine,data=0,allfaces=0:prismarine_rough,stdrot=true
+block:id=prismarine,allfaces=0:prismarine,stdrot=true
 # Prismarine Bricks
-block:id=prismarine,data=1,allfaces=0:prismarine_bricks,stdrot=true
+block:id=prismarine_bricks,allfaces=0:prismarine_bricks,stdrot=true
 # Dark Prismarine
-block:id=prismarine,data=2,allfaces=0:prismarine_dark,stdrot=true
+block:id=dark_prismarine,allfaces=0:dark_prismarine,stdrot=true
 # Sea Lantern
 block:id=sea_lantern,data=*,allfaces=0:sea_lantern,stdrot=true
 
-# Inverted Daylight Sensor
-block:id=daylight_detector_inverted,data=*,allsides=0:daylight_detector_side,bottom=0:daylight_detector_side,top=0:daylight_detector_inverted_top,stdrot=true,transparency=TRANSPARENT
 
 # Red Sandstone
 block:id=red_sandstone,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true
@@ -1625,13 +1638,6 @@ block:id=cut_red_sandstone,allsides=0:cut_red_sandstone,topbottom=0:red_sandston
 
 # Red Sandstone stairs
 block:id=red_sandstone_stairs,data=*,patch0=0:red_sandstone,patch1=0:red_sandstone_top,patch2=0:red_sandstone_bottom,transparency=SEMITRANSPARENT
-
-# Red Sandstone Slab (Double)
-block:id=double_stone_slab2,data=0,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true
-block:id=double_stone_slab2,data=8,allfaces=0:red_sandstone_top,stdrot=true
-
-# Red Sandstone Slab
-block:id=stone_slab2,data=0,data=8,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true,transparency=SEMITRANSPARENT
 
 # Fence Gate (Spruce)
 block:id=spruce_fence_gate,patch0-2=0:spruce_planks,stdrot=true,transparency=TRANSPARENT
@@ -1694,28 +1700,20 @@ block:id=purpur_block,data=*,stdrot=true,allfaces=0:purpur_block
 
 # Purpur Pillar
 block:id=purpur_pillar,data=0,allsides=0:purpur_pillar,topbottom=0:purpur_pillar_top,stdrot=true
-block:id=purpur_pillar,data=4,north=0:purpur_pillar_top,south=0:purpur_pillar_top,east=4000:purpur_pillar,west=4000:purpur_pillar,top=0:purpur_pillar,bottom=0:purpur_pillar
-block:id=purpur_pillar,data=8,north=4000:purpur_pillar,south=4000:purpur_pillar,east=0:purpur_pillar_top,west=0:purpur_pillar_top,top=4000:purpur_pillar,bottom=4000:purpur_pillar
-block:id=purpur_pillar,data=12,allfaces=0:purpur_pillar,stdrot=true
+block:id=purpur_pillar,data=1,north=0:purpur_pillar_top,south=0:purpur_pillar_top,east=4000:purpur_pillar,west=4000:purpur_pillar,top=0:purpur_pillar,bottom=0:purpur_pillar
+block:id=purpur_pillar,data=2,north=4000:purpur_pillar,south=4000:purpur_pillar,east=0:purpur_pillar_top,west=0:purpur_pillar_top,top=4000:purpur_pillar,bottom=4000:purpur_pillar
 
 # Purpur Stairs
 block:id=purpur_stairs,data=*,patch0-2=0:purpur_block,transparency=SEMITRANSPARENT
 
-# Purpur Slab (Double)
-block:id=purpur_double_slab,data=0,bottom=0:purpur_block,top=0:purpur_block,allsides=0:purpur_block,stdrot=true
-block:id=purpur_double_slab,data=8,allfaces=0:purpur_block,stdrot=true
-
-# Purpur Slab
-block:id=purpur_slab,data=0,data=8,bottom=0:purpur_block,top=0:purpur_block,allsides=0:purpur_block,stdrot=true,transparency=SEMITRANSPARENT
-
 # End Stone Bricks
-block:id=end_bricks,data=*,stdrot=true,allfaces=0:end_bricks
+block:id=end_stone_bricks,data=*,stdrot=true,allfaces=0:end_stone_bricks
 
 # Beetroot
-block:id=beetroots,data=0,patch0-3=0:beetroots_stage_0,transparency=TRANSPARENT
-block:id=beetroots,data=1,patch0-3=0:beetroots_stage_1,transparency=TRANSPARENT
-block:id=beetroots,data=2,patch0-3=0:beetroots_stage_2,transparency=TRANSPARENT
-block:id=beetroots,data=3,patch0-3=0:beetroots_stage_3,transparency=TRANSPARENT
+block:id=beetroots,data=0,patch0-3=0:beetroots_stage0,transparency=TRANSPARENT
+block:id=beetroots,data=1,patch0-3=0:beetroots_stage1,transparency=TRANSPARENT
+block:id=beetroots,data=2,patch0-3=0:beetroots_stage2,transparency=TRANSPARENT
+block:id=beetroots,data=3,patch0-3=0:beetroots_stage3,transparency=TRANSPARENT
 
 # Grass Path
 block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true,transparency=SEMITRANSPARENT
@@ -1730,12 +1728,12 @@ block:id=repeating_command_block,data=2,top=6000:repeating_command_block_side,bo
 block:id=repeating_command_block,data=3,top=4000:repeating_command_block_side,bottom=4000:repeating_command_block_side,south=4000:repeating_command_block_side,north=4000:repeating_command_block_side,east=0:repeating_command_block_back,west=0:repeating_command_block_front
 block:id=repeating_command_block,data=4,top=0:repeating_command_block_side,bottom=0:repeating_command_block_side,south=0:repeating_command_block_back,north=0:repeating_command_block_front,east=4000:repeating_command_block_side,west=4000:repeating_command_block_side
 block:id=repeating_command_block,data=5,top=5000:repeating_command_block_side,bottom=5000:repeating_command_block_side,south=0:repeating_command_block_front,north=0:repeating_command_block_back,east=6000:repeating_command_block_side,west=6000:repeating_command_block_side
-block:id=repeating_command_block,data=8,top=4000:repeating_command_block_back,bottom=4000:repeating_command_block_front,south=5000:repeating_command_block_conditional,north=5000:repeating_command_block_conditional,east=5000:repeating_command_block_conditional,west=5000:repeating_command_block_conditional
-block:id=repeating_command_block,data=9,top=4000:repeating_command_block_front,bottom=4000:repeating_command_block_back,south=0:repeating_command_block_conditional,north=0:repeating_command_block_conditional,east=0:repeating_command_block_conditional,west=0:repeating_command_block_conditional
-block:id=repeating_command_block,data=10,top=6000:repeating_command_block_conditional,bottom=6000:repeating_command_block_conditional,south=6000:repeating_command_block_conditional,north=6000:repeating_command_block_conditional,east=0:repeating_command_block_front,west=0:repeating_command_block_back
-block:id=repeating_command_block,data=11,top=4000:repeating_command_block_conditional,bottom=4000:repeating_command_block_conditional,south=4000:repeating_command_block_conditional,north=4000:repeating_command_block_conditional,east=0:repeating_command_block_back,west=0:repeating_command_block_front
-block:id=repeating_command_block,data=12,top=0:repeating_command_block_conditional,bottom=0:repeating_command_block_conditional,south=0:repeating_command_block_back,north=0:repeating_command_block_front,east=4000:repeating_command_block_conditional,west=4000:repeating_command_block_conditional
-block:id=repeating_command_block,data=13,top=5000:repeating_command_block_conditional,bottom=5000:repeating_command_block_conditional,south=0:repeating_command_block_front,north=0:repeating_command_block_back,east=6000:repeating_command_block_conditional,west=6000:repeating_command_block_conditional
+block:id=repeating_command_block,data=6,top=4000:repeating_command_block_back,bottom=4000:repeating_command_block_front,south=5000:repeating_command_block_conditional,north=5000:repeating_command_block_conditional,east=5000:repeating_command_block_conditional,west=5000:repeating_command_block_conditional
+block:id=repeating_command_block,data=7,top=4000:repeating_command_block_front,bottom=4000:repeating_command_block_back,south=0:repeating_command_block_conditional,north=0:repeating_command_block_conditional,east=0:repeating_command_block_conditional,west=0:repeating_command_block_conditional
+block:id=repeating_command_block,data=8,top=6000:repeating_command_block_conditional,bottom=6000:repeating_command_block_conditional,south=6000:repeating_command_block_conditional,north=6000:repeating_command_block_conditional,east=0:repeating_command_block_front,west=0:repeating_command_block_back
+block:id=repeating_command_block,data=9,top=4000:repeating_command_block_conditional,bottom=4000:repeating_command_block_conditional,south=4000:repeating_command_block_conditional,north=4000:repeating_command_block_conditional,east=0:repeating_command_block_back,west=0:repeating_command_block_front
+block:id=repeating_command_block,data=10,top=0:repeating_command_block_conditional,bottom=0:repeating_command_block_conditional,south=0:repeating_command_block_back,north=0:repeating_command_block_front,east=4000:repeating_command_block_conditional,west=4000:repeating_command_block_conditional
+block:id=repeating_command_block,data=11,top=5000:repeating_command_block_conditional,bottom=5000:repeating_command_block_conditional,south=0:repeating_command_block_front,north=0:repeating_command_block_back,east=6000:repeating_command_block_conditional,west=6000:repeating_command_block_conditional
 
 # Chain Command Block
 block:id=chain_command_block,data=0,top=4000:chain_command_block_back,bottom=4000:chain_command_block_front,south=5000:chain_command_block_side,north=5000:chain_command_block_side,east=5000:chain_command_block_side,west=5000:chain_command_block_side
@@ -1744,12 +1742,12 @@ block:id=chain_command_block,data=2,top=6000:chain_command_block_side,bottom=600
 block:id=chain_command_block,data=3,top=4000:chain_command_block_side,bottom=4000:chain_command_block_side,south=4000:chain_command_block_side,north=4000:chain_command_block_side,east=0:chain_command_block_back,west=0:chain_command_block_front
 block:id=chain_command_block,data=4,top=0:chain_command_block_side,bottom=0:chain_command_block_side,south=0:chain_command_block_back,north=0:chain_command_block_front,east=4000:chain_command_block_side,west=4000:chain_command_block_side
 block:id=chain_command_block,data=5,top=5000:chain_command_block_side,bottom=5000:chain_command_block_side,south=0:chain_command_block_front,north=0:chain_command_block_back,east=6000:chain_command_block_side,west=6000:chain_command_block_side
-block:id=chain_command_block,data=8,top=4000:chain_command_block_back,bottom=4000:chain_command_block_front,south=5000:chain_command_block_conditional,north=5000:chain_command_block_conditional,east=5000:chain_command_block_conditional,west=5000:chain_command_block_conditional
-block:id=chain_command_block,data=9,top=4000:chain_command_block_front,bottom=4000:chain_command_block_back,south=0:chain_command_block_conditional,north=0:chain_command_block_conditional,east=0:chain_command_block_conditional,west=0:chain_command_block_conditional
-block:id=chain_command_block,data=10,top=6000:chain_command_block_conditional,bottom=6000:chain_command_block_conditional,south=6000:chain_command_block_conditional,north=6000:chain_command_block_conditional,east=0:chain_command_block_front,west=0:chain_command_block_back
-block:id=chain_command_block,data=11,top=4000:chain_command_block_conditional,bottom=4000:chain_command_block_conditional,south=4000:chain_command_block_conditional,north=4000:chain_command_block_conditional,east=0:chain_command_block_back,west=0:chain_command_block_front
-block:id=chain_command_block,data=12,top=0:chain_command_block_conditional,bottom=0:chain_command_block_conditional,south=0:chain_command_block_back,north=0:chain_command_block_front,east=4000:chain_command_block_conditional,west=4000:chain_command_block_conditional
-block:id=chain_command_block,data=13,top=5000:chain_command_block_conditional,bottom=5000:chain_command_block_conditional,south=0:chain_command_block_front,north=0:chain_command_block_back,east=6000:chain_command_block_conditional,west=6000:chain_command_block_conditional
+block:id=chain_command_block,data=6,top=4000:chain_command_block_back,bottom=4000:chain_command_block_front,south=5000:chain_command_block_conditional,north=5000:chain_command_block_conditional,east=5000:chain_command_block_conditional,west=5000:chain_command_block_conditional
+block:id=chain_command_block,data=7,top=4000:chain_command_block_front,bottom=4000:chain_command_block_back,south=0:chain_command_block_conditional,north=0:chain_command_block_conditional,east=0:chain_command_block_conditional,west=0:chain_command_block_conditional
+block:id=chain_command_block,data=8,top=6000:chain_command_block_conditional,bottom=6000:chain_command_block_conditional,south=6000:chain_command_block_conditional,north=6000:chain_command_block_conditional,east=0:chain_command_block_front,west=0:chain_command_block_back
+block:id=chain_command_block,data=9,top=4000:chain_command_block_conditional,bottom=4000:chain_command_block_conditional,south=4000:chain_command_block_conditional,north=4000:chain_command_block_conditional,east=0:chain_command_block_back,west=0:chain_command_block_front
+block:id=chain_command_block,data=10,top=0:chain_command_block_conditional,bottom=0:chain_command_block_conditional,south=0:chain_command_block_back,north=0:chain_command_block_front,east=4000:chain_command_block_conditional,west=4000:chain_command_block_conditional
+block:id=chain_command_block,data=11,top=5000:chain_command_block_conditional,bottom=5000:chain_command_block_conditional,south=0:chain_command_block_front,north=0:chain_command_block_back,east=6000:chain_command_block_conditional,west=6000:chain_command_block_conditional
 
 # Frosted Ice
 block:id=frosted_ice,data=0,allfaces=12000:frosted_ice_0,stdrot=true,transparency=TRANSPARENT
@@ -1758,7 +1756,7 @@ block:id=frosted_ice,data=2,allfaces=12000:frosted_ice_2,stdrot=true,transparenc
 block:id=frosted_ice,data=3,allfaces=12000:frosted_ice_3,stdrot=true,transparency=TRANSPARENT
 
 # Magma Block
-block:id=magma,data=*,stdrot=true,allfaces=0:magma
+block:id=magma_block,data=*,stdrot=true,allfaces=0:magma
 
 # Nether Wart Block
 block:id=nether_wart_block,data=*,stdrot=true,allfaces=0:nether_wart_block
@@ -1768,9 +1766,8 @@ block:id=red_nether_bricks,stdrot=true,allfaces=0:red_nether_bricks
 
 # Bone Block
 block:id=bone_block,data=0,allsides=0:bone_block_side,topbottom=0:bone_block_top,stdrot=true
-block:id=bone_block,data=4,north=0:bone_block_top,south=0:bone_block_top,east=4000:bone_block_side,west=4000:bone_block_side,top=0:bone_block_side,bottom=0:bone_block_side
-block:id=bone_block,data=8,north=4000:bone_block_side,south=4000:bone_block_side,east=0:bone_block_top,west=0:bone_block_top,top=4000:bone_block_side,bottom=4000:bone_block_side
-block:id=bone_block,data=12,allfaces=0:bone_block_side,stdrot=true
+block:id=bone_block,data=1,north=0:bone_block_top,south=0:bone_block_top,east=4000:bone_block_side,west=4000:bone_block_side,top=0:bone_block_side,bottom=0:bone_block_side
+block:id=bone_block,data=2,north=4000:bone_block_side,south=4000:bone_block_side,east=0:bone_block_top,west=0:bone_block_top,top=4000:bone_block_side,bottom=4000:bone_block_side
 
 # Structure Block
 block:id=structure_block,data=0,stdrot=true,allfaces=0:structure_block_save
@@ -1998,6 +1995,3 @@ block:id=green_concrete_powder,stdrot=true,allfaces=0:green_concrete_powder
 block:id=red_concrete_powder,stdrot=true,allfaces=0:red_concrete_powder
 block:id=black_concrete_powder,stdrot=true,allfaces=0:black_concrete_powder
 
-# Tall grass
-block:id=tall_grass,data=0,patch0-1=1000:tall_grass_top,transparency=TRANSPARENT
-block:id=tall_grass,data=1,patch0-1=1000:tall_grass_bottom,transparency=TRANSPARENT

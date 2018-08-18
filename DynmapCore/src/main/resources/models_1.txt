@@ -239,10 +239,15 @@ ignore-updates:id=redstone_wall_torch,id=redstone_torch
 customblock:id=oak_fence,id=spruce_fence,id=birch_fence,id=jungle_fence,id=acacia_fence,id=dark_oak_fence,id=nether_brick_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=107
 
 # Stone pressure plate
-# Wooden pressure plate
+# Oak pressure plate
+# Spruce pressure plate
+# Birch pressure plate
+# Jungle pressure plate
+# Acacia pressure plate
+# Dark Oak pressure plate
 # Light weighted pressure plate
 # Heavy weighted pressure plate
-boxblock:id=wooden_pressure_plate,id=stone_pressure_plate,id=light_weighted_pressure_plate,id=heavy_weighted_pressure_plate,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275
+boxblock:id=oak_pressure_plate,id=spruce_pressure_plate,id=birch_pressure_plate,id=jungle_pressure_plate,id=acacia_pressure_plate,id=dark_oak_pressure_plate,id=stone_pressure_plate,id=light_weighted_pressure_plate,id=heavy_weighted_pressure_plate,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275
 
 # Trapdoor (closed)
 boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=12,data=13,data=14,data=15,data=28,data=29,data=30,data=31,data=44,data=45,data=46,data=47,data=60,data=61,data=62,data=63,ymax=0.1875
@@ -261,65 +266,56 @@ boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor
 # Carrot
 # Potatoes
 patchblock:id=wheat,id=carrots,id=potatoes,patch0=VertX075,patch1=VertX075@90,patch2=VertX025,patch3=VertX025@90
-# Stone Button - facing bottom
-# Oak button - facing bottom
-# Spruce button - facing bottom
-# Birch button - facing bottom
-# Jungle button - facing bottom
-# Acacia button - facing bottom
-# Dark oak button - facing bottom
-boxblock:id=stone_button,id=wooden_button,data=0,data=8,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
-# Stone Button - facing south
-# Wooden Button - facing south
-boxblock:id=stone_button,id=wooden_button,data=1,data=9,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-# Stone Button - facing north
-# Wooden Button - facing north
-boxblock:id=stone_button,id=wooden_button,data=2,data=10,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-# Stone Button - facing west
-# Wooden Button - facing west
-boxblock:id=stone_button,id=wooden_button,data=3,data=11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-# Stone Button - facing east
-# Wooden Button - facing east
-boxblock:id=stone_button,id=wooden_button,data=4,data=12,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-# Stone Button - facing top
-# Wooden Button - facing top
-boxblock:id=stone_button,id=wooden_button,data=5,data=13,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+# Stone Button 
+# Oak button
+# Spruce button
+# Birch button
+# Jungle button
+# Acacia button
+# Dark oak button
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=0,data=8,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=1,data=9,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=2,data=10,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=3,data=11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=4,data=12,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=5,data=13,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+
 # Rails - flat - east/west
 # Powered rails - flat - east/west
 # Detector rails - flat - east/west
 # (157)	Activator Rail
-patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=0,patch0=HorizY001ZTop
+patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=0,patch0=HorizY001ZTop
 # Powered rails - flat - east/west (powered)
 # (157)	Activator Rail
-patchblock:id=golden_rail,id=activator_rail,data=8,patch0=HorizY001ZTop
+patchblock:id=powered_rail,id=activator_rail,data=8,patch0=HorizY001ZTop
 # Rails - flat - north/south
 # Powered rails - flat - north/south
 # Detector rails - flat - north/south
 # (157)	Activator Rail
-patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=1,patch0=HorizY001ZTop@90
+patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=1,patch0=HorizY001ZTop@90
 # Powered rails - flat - north/south (powred)
 # (157)	Activator Rail
-patchblock:id=golden_rail,id=activator_rail,data=9,patch0=HorizY001ZTop@90
+patchblock:id=powered_rail,id=activator_rail,data=9,patch0=HorizY001ZTop@90
 # Rails - ascending to south 
 # Powered rails - ascending to south (powered or unpowered)
 # Detector rails - ascending to south
 # (157)	Activator Rail
-patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=2,data=10,patch0=SlopeXUpZTop
+patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=10,patch0=SlopeXUpZTop
 # Rails - ascending to north
 # Powered rails - ascending to north
 # Detector rails - ascending to north
 # (157)	Activator Rail
-patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=3,data=11,patch0=SlopeXUpZTop@180
+patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=3,data=11,patch0=SlopeXUpZTop@180
 # Rails - ascending to east
 # Powered rails - ascending to east
 # Detector rails - ascending to east
 # (157)	Activator Rail
-patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=4,data=12,patch0=SlopeXUpZTop@270
+patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=12,patch0=SlopeXUpZTop@270
 # Rails - ascending to west
 # Powered rails - ascending to west
 # Detector rails - ascending to west
 # (157)	Activator Rail
-patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=5,data=13,patch0=SlopeXUpZTop@90
+patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=5,data=13,patch0=SlopeXUpZTop@90
 # Rails - northeast corner
 patchblock:id=rail,data=6,patch0=HorizY001ZTop@90
 # Rails - southeast corner
@@ -490,8 +486,9 @@ rotate:id=white_bed,data=0,rot=180
 block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=3,scale=16
 rotate:id=white_bed,data=0,rot=270
 
-# Wooden/Iron Door
-customblock:id=wooden_door,id=iron_door,class=org.dynmap.hdmap.renderer.DoorRenderer
+# Oak door
+# Iron Door
+customblock:id=oak_door,id=iron_door,class=org.dynmap.hdmap.renderer.DoorRenderer
 
 # Wall lever, facing south
 patchblock:id=lever,data=1,patch0=WLeverBase1@270,patch1=WLeverBase2@270,patch2=WLeverBase3@270,patch3=WLeverBase4@270,patch4=WLeverBase5@270,patch5=WLeverSide1@270,patch6=WLeverSide2@270,patch7=WLeverSide3@270,patch8=WLeverSide4@270
@@ -751,6 +748,14 @@ patchblock:id=tall_seagrass,id=seagrass,id=fern,id=grass,id=cobweb,id=tall_grass
 # Red mushroom
 patchblock:id=dandelion,id=poppy,id=blue_orchid,id=allium,id=azure_bluet,id=red_tulip,id=orange_tulip,id=white_tulip,id=pink_tulip,id=oxeye_daisy,id=brown_mushroom,id=red_mushroom,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
+# Sunflower
+# Lilac
+# Rose bush
+# Peony
+# Tall grass
+# Large fern
+patchblock:id=sunflower,id=lilac,id=rose_bush,id=peony,id=tall_grass,id=large_fern,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+
 # Sapling (oak, spruce, birch, jungle, acacia, dark oak)
 patchblock:id=oak_sapling,id=spruce_sapling,id=birch_sapling,id=jungle_sapling,id=acacia_sapling,id=dark_oak_sapling,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
@@ -784,8 +789,8 @@ patchblock:id=vine,data=13,patch0=VertX0In@270,patch1=VertX0In@90,patch2=VertX0I
 patchblock:id=vine,data=11,patch0=VertX0In,patch1=VertX0In@180,patch2=VertX0In@270
 # Vines - N+S+E+W sides of block
 patchblock:id=vine,data=15,patch0=VertX0In@270,patch1=VertX0In@90,patch2=VertX0In@180,patch3=VertX0In
-# Fence gate
-customblock:id=fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+# Oak fence gate
+customblock:id=oak_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
 # Pumpkin stem
 # Mellon stem
 block:id=pumpkin_stem,id=melon_stem,scale=16
@@ -807,28 +812,28 @@ layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 ----------------
 ----------------
 # Lily pad
-patchblock:id=waterlily,patch0=HorizY001ZTop
+patchblock:id=lily_pad,patch0=HorizY001ZTop
 # Water (1 down)
 # Lava (1 down)
-boxblock:id=flowing_water,id=water,id=flowing_lava,id=lava,data=1,ymax=0.875
+boxblock:id=water,id=lava,data=1,ymax=0.875
 # Water (2 down)
 # Lava (2 down)
-boxblock:id=flowing_water,id=water,id=flowing_lava,id=lava,data=2,ymax=0.75
+boxblock:id=water,id=lava,data=2,ymax=0.75
 # Water (3 down)
 # Lava (3 down)
-boxblock:id=flowing_water,id=water,id=flowing_lava,id=lava,data=3,ymax=0.625
+boxblock:id=water,id=lava,data=3,ymax=0.625
 # Water (4 down)
 # Lava (4 down)
-boxblock:id=flowing_water,id=water,id=flowing_lava,id=lava,data=4,ymax=0.5
+boxblock:id=water,id=lava,data=4,ymax=0.5
 # Water (5 down)
 # Lava (5 down)
-boxblock:id=flowing_water,id=water,id=flowing_lava,id=lava,data=5,ymax=0.375
+boxblock:id=water,id=lava,data=5,ymax=0.375
 # Water (6 down)
 # Lava (6 down)
-boxblock:id=flowing_water,id=water,id=flowing_lava,id=lava,data=6,ymax=0.25
+boxblock:id=water,id=lava,data=6,ymax=0.25
 # Water (7 down)
 # Lava (7 down)
-boxblock:id=flowing_water,id=water,id=flowing_lava,id=lava,data=7,ymax=0.125
+boxblock:id=water,id=lava,data=7,ymax=0.125
 # Enchantment Table
 boxblock:id=enchanting_table,ymax=0.75
 
@@ -1025,12 +1030,12 @@ patchblock:id=flower_pot,data=1,data=2,data=7,data=8,patch0=FlowerPotTop,patch1=
 patchblock:id=flower_pot,data=3,data=4,data=5,data=6,data=10,data=11,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotPlant,patch8=FlowerPotPlant@90
 # Flower pot with cactus
 patchblock:id=flower_pot,data=9,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotCactusSide,patch8=FlowerPotCactusSide@90,,patch9=FlowerPotCactusSide@180,,patch10=FlowerPotCactusSide@270,,patch11=FlowerPotCactusTop
-# Head
-patch:id=HeadTop,Ox=0.75,Oy=0.5,Oz=0.75,Ux=0.25,Uy=0.5,Uz=0.75,Vx=0.75,Vy=0.5,Vz=0.25,visibility=bottom
-patch:id=HeadBottom,Ox=0.25,Oy=0.0,Oz=0.25,Ux=0.75,Uy=0.0,Uz=0.25,Vx=0.25,Vy=0.0,Vz=0.75,visibility=top
-patch:id=HeadSide,Ox=0.75,Oy=0.0,Oz=0.25,Ux=0.25,Uy=0.0,Uz=0.25,Vx=0.75,Vy=0.5,Vz=0.25,visibility=top
-#patchblock:id=skull,patch0=HeadTop,patch1=HeadBottom,patch2=HeadSide,patch3=HeadSide@90,patch4=HeadSide@180,patch5=HeadSide@270
-customblock:id=skull,class=org.dynmap.hdmap.renderer.SkullRenderer
+
+# Wall head (TODO: Fix renderer)
+customblock:id=skeleton_wall_skull,id=wither_skeleton_wall_skull,id=zombie_wall_head,id=player_wall_head,id=creeper_wall_head,id=dragon_wall_head,class=org.dynmap.hdmap.renderer.WallHeadRenderer
+# Head (TODO: Fix renderer)
+customblock:id=skeleton_skull,id=wither_skeleton_skull,id=zombie_head,id=player_head,id=creeper_head,id=dragon_head,class=org.dynmap.hdmap.renderer.HeadRenderer
+
 # Anvil
 patch:id=AnvilBaseSide,Ox=0.0,Oy=0.0,Oz=0.125,Ux=1.0,Uy=0.0,Uz=0.125,Vx=0.0,Vy=1.0,Vz=0.125,Umin=0.125,Umax=0.875,Vmin=0.0,Vmax=0.25,visibility=both
 patch:id=AnvilBaseTop,Ox=0.0,Oy=0.25,Oz=0.0,Ux=1.0,Uy=0.25,Uz=0.0,Vx=0.0,Vy=0.25,Vz=1.0,Umin=0.125,Umax=0.875,Vmin=0.125,Vmax=0.875,visibility=bottom
@@ -1052,7 +1057,7 @@ patchrotate:id=anvil,data=1,rot=90
 patchblock:id=anvil,data=3,data=7,data=11,data=15
 patchrotate:id=anvil,data=1,rot=180
 
-# (151) Daylight Sensor
+# Daylight Sensor
 boxblock:id=daylight_detector,ymax=0.375
 
 # (149) Redstone Comparator (inactive)
@@ -1187,8 +1192,10 @@ layer:11,12,13,14,15
 ****************
 ****************
 
-# Colored glass pane (160)
-customblock:id=stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+# Glass pane
+customblock:id=glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+
+# Colored glass pane
 customblock:id=white_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
 customblock:id=orange_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
 customblock:id=magenta_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
@@ -1212,9 +1219,6 @@ customblock:id=acacia_stairs,id=dark_oak_stairs,class=org.dynmap.hdmap.renderer.
 
 # (171) Carpet
 boxblock:id=black_carpet,id=red_carpet,id=green_carpet,id=brown_carpet,id=blue_carpet,id=purple_carpet,id=cyan_carpet,id=light_gray_carpet,id=gray_carpet,id=pink_carpet,id=lime_carpet,id=yellow_carpet,id=light_blue_carpet,id=magenta_carpet,id=orange_carpet,id=white_carpet,ymax=0.0625
-# (175) Double Plant
-customblock:id=double_plant,data=0,data=1,data=2,data=3,data=4,data=5,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6
-customblock:id=double_plant,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6,metasrc=below
 
 # Iron Trapdoor
 boxblock:id=iron_trapdoor,data=0,data=1,data=2,data=3,ymax=0.1875
@@ -1223,9 +1227,6 @@ boxblock:id=iron_trapdoor,data=5,data=13,zmax=0.1875
 boxblock:id=iron_trapdoor,data=6,data=14,xmin=0.8125
 boxblock:id=iron_trapdoor,data=7,data=15,xmax=0.1875
 boxblock:id=iron_trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
-
-# Inverted Daylight Sensor
-boxblock:id=daylight_detector_inverted,ymax=0.375
 
 # Red Sandstone stairs
 customblock:id=red_sandstone_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer

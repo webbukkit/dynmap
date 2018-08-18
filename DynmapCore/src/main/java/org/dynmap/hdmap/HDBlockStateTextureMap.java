@@ -1,6 +1,7 @@
 package org.dynmap.hdmap;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 import org.dynmap.hdmap.TexturePack;
@@ -78,13 +79,13 @@ public class HDBlockStateTextureMap {
     }
     
     // Add block state to table, with given block IDs and state indexes
-    public void addToTable(List<String> blocknames, List<Integer> stateidx) {
+    public void addToTable(List<String> blocknames, BitSet stateidx) {
         /* Add entries to lookup table */
         for (String blkname : blocknames) {
             DynmapBlockState baseblk = DynmapBlockState.getBaseStateByName(blkname);
             if (baseblk.isNotAir()) {
                 if (stateidx != null) {
-                    for (Integer stateid : stateidx) {
+                	for (int stateid = stateidx.nextSetBit(0); stateid >= 0; stateid = stateidx.nextSetBit(stateid+1)) {
                         DynmapBlockState bs = baseblk.getState(stateid);
                         if (bs.isAir()) {
                         	Log.warning("Invalid texture block state: " + blkname + ":" + stateid);

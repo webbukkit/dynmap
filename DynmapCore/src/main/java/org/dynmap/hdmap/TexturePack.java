@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -481,7 +482,7 @@ public class TexturePack {
         private Map<Integer, Integer> key_to_index = new HashMap<Integer, Integer>();
         private List<Integer> texture_ids = new ArrayList<Integer>();
         private List<String> blocknames = new ArrayList<String>();
-        private List<Integer> stateids = new ArrayList<Integer>();
+        private BitSet stateids = new BitSet();
         private BlockTransparency trans = BlockTransparency.OPAQUE;
         private int colorMult = 0;
         private CustomColorMultiplier custColorMult = null;
@@ -545,7 +546,7 @@ public class TexturePack {
     /**
      * Add settings for texture map
      */
-    private static void addTextureIndex(String id, List<String> blocknames, List<Integer> stateids, BlockTransparency trans, int colorMult, CustomColorMultiplier custColorMult, String blockset) {
+    private static void addTextureIndex(String id, List<String> blocknames, BitSet stateids, BlockTransparency trans, int colorMult, CustomColorMultiplier custColorMult, String blockset) {
         TextureMap idx = textmap_by_id.get(id);
         if(idx == null) {   /* Add empty one, if not found */
             idx = new TextureMap();
@@ -1933,7 +1934,7 @@ public class TexturePack {
                 }
                 else if(line.startsWith("block:")) {
                     List<String> blknames = new ArrayList<String>();
-                    List<Integer> stateids = null;
+                    BitSet stateids = null;
                     int srctxtid = TXTID_TERRAINPNG;
                     if (!terrain_ok)
                         srctxtid = TXTID_INVALID;  // Mark as not usable
@@ -1977,8 +1978,19 @@ public class TexturePack {
                                     stateids = null;
                                 }
                                 else {
-                                    if (stateids == null) { stateids = new ArrayList<Integer>(); }
-                                    stateids.add(getIntValue(varvals,av[1]));
+                                    if (stateids == null) { stateids = new BitSet(); }
+                                    // See if range
+                                    if (av[1].indexOf('-') >= 0) {
+                                    	String[] tok = av[1].split("-");
+                                    	int v1 = getIntValue(varvals, tok[0]);
+                                    	int v2 = getIntValue(varvals, tok[1]);
+                                		for (int v = v1; v <= v2; v++) {
+                                           	stateids.set(v);
+                                		}                               			
+                                    }
+                                    else {
+                                    	stateids.set(getIntValue(varvals,av[1]));
+                                    }
                                 }
                             }
                             else if(av[0].equals("top") || av[0].equals("y-") || av[0].equals("face1")) {
@@ -2143,7 +2155,7 @@ public class TexturePack {
                 }
                 else if(line.startsWith("copyblock:")) {
                     List<String> blknames = new ArrayList<String>();
-                    List<Integer> stateids = null;
+                    BitSet stateids = null;
                     line = line.substring(line.indexOf(':')+1);
                     String[] args = line.split(",");
                     String srcname = null;
@@ -2163,8 +2175,19 @@ public class TexturePack {
                                 stateids = null;    // Set all
                             }
                             else {
-                                if (stateids == null) { stateids = new ArrayList<Integer>(); }
-                                stateids.add(getIntValue(varvals,av[1]));
+                                if (stateids == null) { stateids = new BitSet(); }
+                                // See if range
+                                if (av[1].indexOf('-') >= 0) {
+                                	String[] tok = av[1].split("-");
+                                	int v1 = getIntValue(varvals, tok[0]);
+                                	int v2 = getIntValue(varvals, tok[1]);
+                            		for (int v = v1; v <= v2; v++) {
+                                       	stateids.set(v);
+                            		}                               			
+                                }
+                                else {
+                                	stateids.set(getIntValue(varvals,av[1]));
+                                }
                             }
                         }
                         else if(av[0].equals("srcid")) {
@@ -2210,7 +2233,7 @@ public class TexturePack {
                                     }
                                 }
                                 else {
-                                    for (Integer stateid : stateids) {
+                                    for (int stateid = stateids.nextSetBit(0); stateid >= 0; stateid = stateids.nextSetBit(stateid+1)) {
                                         DynmapBlockState dblk2 = dblk.getState(stateid);
                                         HDBlockStateTextureMap.copyToStateIndex(dblk2, map);
                                     }
@@ -2259,7 +2282,7 @@ public class TexturePack {
                 }
                 else if(line.startsWith("texturemap:")) {
                     List<String> blknames = new ArrayList<String>();
-                    List<Integer> stateids = new ArrayList<Integer>();
+                    BitSet stateids = null;
                     String mapid = null;
                     line = line.substring(line.indexOf(':') + 1);
                     BlockTransparency trans = BlockTransparency.OPAQUE;
@@ -2283,7 +2306,19 @@ public class TexturePack {
                                 stateids = null;
                             }
                             else {
-                                stateids.add(getIntValue(varvals,av[1]));
+                            	if (stateids == null) { stateids = new BitSet(); }
+                                // See if range
+                                if (av[1].indexOf('-') >= 0) {
+                                	String[] tok = av[1].split("-");
+                                	int v1 = getIntValue(varvals, tok[0]);
+                                	int v2 = getIntValue(varvals, tok[1]);
+                            		for (int v = v1; v <= v2; v++) {
+                                       	stateids.set(v);
+                            		}                               			
+                                }
+                                else {
+                                	stateids.set(getIntValue(varvals,av[1]));
+                                }
                             }
                         }
                         else if(av[0].equals("transparency")) {
@@ -2315,10 +2350,6 @@ public class TexturePack {
                                 Log.severe("Error loading custom color multiplier - " + av[1] + ": " + x.getMessage());
                             }
                         }
-                    }
-                    /* If no states, assume all */
-                    if (stateids.isEmpty()) {
-                        stateids = null;
                     }
                     /* If we have everything, build texture map */
                     if((blknames.size() > 0) && (mapid != null)) {
