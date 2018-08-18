@@ -177,12 +177,28 @@ ignore-updates:id=oak_leaves,id=birch_leaves,id=spruce_leaves,id=jungle_leaves,i
 # (156)	Quartz Stairs
 customblock:id=oak_stairs,id=cobblestone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
-# Slab (stone, sandstone, wood, cobblestone)
-# Wood Slab
-boxblock:id=stone_slab,id=wooden_slab,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,ymax=0.5
-# Top Slab (stone, sandstone, wood, cobblestone)
-# Top Wood Slab
-boxblock:id=stone_slab,id=wooden_slab,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,ymin=0.5
+
+# Oak slab
+# Spruce slab
+# Birch slab
+# Jungle slab
+# Acacia slab
+# Dark oak slab
+boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,id=dark_oak_slab,data=0,data=1,ymin=0.5
+boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,id=dark_oak_slab,data=2,data=3,ymax=0.5
+# Stone slab
+# Sandstone slab
+# Petified oak slab
+# Cobblestone slab
+# Brick slab
+# Stone brick slab
+# Nether brick slab
+# Quartz slab
+# Red sandstone slab
+# Purpur slab
+boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,data=0,data=1,ymin=0.5
+boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,data=2,data=3,ymax=0.5
+
 # Snow
 boxblock:id=snow,data=0,ymax=0.125
 boxblock:id=snow,data=1,ymax=0.25
@@ -198,48 +214,60 @@ patchblock:id=torch,id=redstone_torch,patch0=VertX04375#0,patch1=VertX04375@90#0
 # Torch - pointing south
 # Redstone torch on - pointing south
 # Redstone torch off - pointing south
-patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=1,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
+patchblock:id=torch,id=redstone_torch,data=1,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
 # Torch - pointing north
 # Redstone torch on - pointing north
 # Redstone torch off - pointing north
-patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
+patchblock:id=torch,id=redstone_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
 # Torch - pointing west
 # Redstone torch on - pointing west
 # Redstone torch off - pointing west
-patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=3,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
+patchblock:id=torch,id=redstone_torch,data=3,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
 # Torch - pointing east
 # Redstone torch on - pointing east
 # Redstone torch off - pointing east
-patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=4,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+patchblock:id=torch,id=redstone_torch,data=4,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
 ignore-updates:id=redstone_wall_torch,id=redstone_torch
 
-# Fence
-# Nether Brick Fence
-customblock:id=fence,id=nether_brick_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=107
+# Oak fence
+# Spruce fence
+# Birch fence
+# Jungle fence
+# Acacia fence
+# Dark oak fence
+# Nether brick fence
+customblock:id=oak_fence,id=spruce_fence,id=birch_fence,id=jungle_fence,id=acacia_fence,id=dark_oak_fence,id=nether_brick_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=107
 
 # Stone pressure plate
 # Wooden pressure plate
 # Light weighted pressure plate
 # Heavy weighted pressure plate
 boxblock:id=wooden_pressure_plate,id=stone_pressure_plate,id=light_weighted_pressure_plate,id=heavy_weighted_pressure_plate,data=*,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275
+
 # Trapdoor (closed)
-boxblock:id=trapdoor,data=0,data=1,data=2,data=3,ymax=0.1875
+boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=12,data=13,data=14,data=15,data=28,data=29,data=30,data=31,data=44,data=45,data=46,data=47,data=60,data=61,data=62,data=63,ymax=0.1875
 # Trapdoor (open: west attach)
-boxblock:id=trapdoor,data=4,data=12,zmin=0.8125
+boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=32,data=33,data=34,data=35,data=40,data=41,data=42,data=43,zmin=0.8125
 # Trapdoor (open: east attach)
-boxblock:id=trapdoor,data=5,data=13,zmax=0.1875
+boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=48,data=49,data=50,data=51,data=56,data=57,data=58,data=59,zmax=0.1875
 # Trapdoor (open: south attach)
-boxblock:id=trapdoor,data=6,data=14,xmin=0.8125
+boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=16,data=17,data=18,data=19,data=24,data=25,data=26,data=27,xmin=0.8125
 # Trapdoor (open: north attach)
-boxblock:id=trapdoor,data=7,data=15,xmax=0.1875
+boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=0,data=1,data=2,data=3,data=8,data=9,data=10,data=11,xmax=0.1875
 # Trapdoor (closed - top)
-boxblock:id=trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
+boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=4,data=5,data=6,data=7,data=20,data=21,data=22,data=23,data=36,data=37,data=38,data=39,data=52,data=53,data=54,data=55,ymin=0.8125
+
 # Crops
 # Carrot
 # Potatoes
 patchblock:id=wheat,id=carrots,id=potatoes,data=*,patch0=VertX075,patch1=VertX075@90,patch2=VertX025,patch3=VertX025@90
 # Stone Button - facing bottom
-# Wooden Button - facing bottom
+# Oak button - facing bottom
+# Spruce button - facing bottom
+# Birch button - facing bottom
+# Jungle button - facing bottom
+# Acacia button - facing bottom
+# Dark oak button - facing bottom
 boxblock:id=stone_button,id=wooden_button,data=0,data=8,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
 # Stone Button - facing south
 # Wooden Button - facing south
@@ -1142,7 +1170,24 @@ layer:11,12,13,14,15
 ****************
 
 # Colored glass pane (160)
-customblock:id=stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=white_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=orange_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=magenta_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=light_blue_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=yellow_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=lime_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=pink_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=gray_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=light_gray_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=cyan_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=purple_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=blue_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=brown_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=green_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=red_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=black_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+
 # Acacia Stairs (163)
 # Dark Oak Stairs (164)
 customblock:id=acacia_stairs,id=dark_oak_stairs,data=*,class=org.dynmap.hdmap.renderer.StairStateRenderer
