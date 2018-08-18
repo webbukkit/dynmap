@@ -1322,4 +1322,11 @@ boxblock:id=grass_path,ymax=0.9375
 
 # 255		Structure Block
 
-# 1.10 blocks
+# 1.13 blocks
+
+# Kelp
+# Kelp Plant
+patchblock:id=kelp,id=kelp_plant,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+
+# Turtle egg
+boxblock:id=turtle_egg,xmin=0.3125,xmax=0.625,ymax=0.4375,zmin=0.25,zmax=0.5625
