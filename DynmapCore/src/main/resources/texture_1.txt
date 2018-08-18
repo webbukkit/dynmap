@@ -61,23 +61,23 @@ texture:id=redstone_block
 texture:id=grass_block_side
 texture:id=grass_block_side_overlay
 texture:id=grass_block_snow
-texture:id=quartz_ore
+texture:id=nether_quartz_ore
 texture:id=quartz_block_bottom
-texture:id=quartz_block_chiseled
-texture:id=quartz_block_chiseled_top
-texture:id=quartz_block_lines
-texture:id=quartz_block_lines_top
+texture:id=chiseled_quartz_block
+texture:id=chiseled_quartz_block_top
+texture:id=quartz_pillar
+texture:id=quartz_pillar_top
 texture:id=quartz_block_side
 texture:id=quartz_block_top
 texture:id=rail_corner
 texture:id=rail
-texture:id=rail_activator
-texture:id=rail_activator_powered
+texture:id=activator_rail
+texture:id=activator_rail_on
 texture:id=daylight_detector_side
 texture:id=daylight_detector_top
-texture:id=comparator_off
+texture:id=comparator
 texture:id=comparator_on
-texture:id=dropper_front_horizontal
+texture:id=dropper_front
 texture:id=dropper_front_vertical
 texture:id=hopper_inside
 texture:id=hopper_outside
@@ -115,7 +115,7 @@ texture:id=red_wool
 texture:id=light_gray_wool
 texture:id=white_wool
 texture:id=yellow_wool
-texture:id=hardened_clay
+texture:id=terracotta
 texture:id=coal_block
 texture:id=stone
 texture:id=grass_block_top
@@ -171,8 +171,8 @@ texture:id=furnace_side
 texture:id=furnace_top
 texture:id=furnace_front
 texture:id=furnace_front_on
-texture:id=dispenser
-texture:id=dispenser_vertical
+texture:id=dispenser_front
+texture:id=dispenser_front_vertical
 texture:id=sandstone_bottom
 texture:id=chiseled_sandstone
 texture:id=sandstone
@@ -186,7 +186,7 @@ texture:id=detector_rail
 texture:id=piston_bottom
 texture:id=piston_inner
 texture:id=piston_side
-texture:id=piston_top_normal
+texture:id=piston_top
 texture:id=piston_top_sticky
 texture:id=dandelion
 texture:id=poppy
@@ -291,7 +291,7 @@ texture:id=stone_bricks_carved
 texture:id=mushroom_block_inside
 texture:id=brown_mushroom_block
 texture:id=red_mushroom_block
-texture:id=mushroom_block_skin_stem
+texture:id=mushroom_stem
 texture:id=enchanting_table_bottom
 texture:id=enchanting_table_side
 texture:id=enchanting_table_top
@@ -301,9 +301,9 @@ texture:id=cauldron_bottom
 texture:id=cauldron_inner
 texture:id=cauldron_side
 texture:id=cauldron_top
-texture:id=endframe_eye
-texture:id=endframe_side
-texture:id=endframe_top
+texture:id=end_portal_frame_eye
+texture:id=end_portal_frame_side
+texture:id=end_portal_frame_top
 texture:id=end_stone
 texture:id=dragon_egg
 texture:id=redstone_lamp
@@ -326,7 +326,7 @@ texture:id=emerald_ore
 texture:id=emerald_block
 texture:id=repeater
 texture:id=repeater_on
-texture:id=cocoa_stage_2
+texture:id=cocoa_stage2
 texture:id=command_block
 texture:id=beacon
 texture:id=flower_pot
@@ -338,10 +338,10 @@ texture:id=potatoes_stage0
 texture:id=potatoes_stage1
 texture:id=potatoes_stage2
 texture:id=potatoes_stage3
-texture:id=anvil_base
-texture:id=anvil_top_damaged_0
-texture:id=anvil_top_damaged_1
-texture:id=anvil_top_damaged_2
+texture:id=anvil
+texture:id=anvil_top
+texture:id=chipped_anvil_top
+texture:id=damaged_anvil_top
 texture:id=tripwire_hook
 texture:id=podzol_top
 texture:id=podzol_side
@@ -725,12 +725,12 @@ block:id=lapis_ore,allfaces=0:lapis_ore,stdrot=true
 # Lapis Lazuli Block
 block:id=lapis_block,allfaces=0:lapis_block,stdrot=true
 # Dispenser
-block:id=dispenser,data=0,data=1,face0=0:dispenser_vertical,face1=0:furnace_top,face2=0:furnace_top,face3=0:furnace_top,face4=0:furnace_top,face5=0:furnace_top,stdrot=true
-block:id=dispenser,data=2,data=3,face0=0:furnace_top,face1=0:dispenser_vertical,face2=0:furnace_top,face3=0:furnace_top,face4=0:furnace_top,face5=0:furnace_top,stdrot=true
-block:id=dispenser,data=4,data=5,face0=0:furnace_top,face1=0:furnace_top,face2=0:dispenser,face3=0:furnace_side,face4=0:furnace_side,face5=0:furnace_side,stdrot=true
-block:id=dispenser,data=6,data=7,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:dispenser,face4=0:furnace_side,face5=0:furnace_side,stdrot=true
-block:id=dispenser,data=8,data=9,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:dispenser,face5=0:furnace_side,stdrot=true
-block:id=dispenser,data=10,data=11,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:furnace_side,face5=0:dispenser,stdrot=true
+block:id=dispenser,data=0,data=1,face0=0:dispenser_front_vertical,face1=0:furnace_top,face2=0:furnace_top,face3=0:furnace_top,face4=0:furnace_top,face5=0:furnace_top,stdrot=true
+block:id=dispenser,data=2,data=3,face0=0:furnace_top,face1=0:dispenser_front_vertical,face2=0:furnace_top,face3=0:furnace_top,face4=0:furnace_top,face5=0:furnace_top,stdrot=true
+block:id=dispenser,data=4,data=5,face0=0:furnace_top,face1=0:furnace_top,face2=0:dispenser_front,face3=0:furnace_side,face4=0:furnace_side,face5=0:furnace_side,stdrot=true
+block:id=dispenser,data=6,data=7,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:dispenser_front,face4=0:furnace_side,face5=0:furnace_side,stdrot=true
+block:id=dispenser,data=8,data=9,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:dispenser_front,face5=0:furnace_side,stdrot=true
+block:id=dispenser,data=10,data=11,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:furnace_side,face5=0:dispenser_front,stdrot=true
 # Sandstone
 block:id=sandstone,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true
 # Carved Sandstone
@@ -841,17 +841,17 @@ block:id=seagrass,patch0-1=1000:seagrass,transparency=TRANSPARENT
 block:id=tall_seagrass,data=0,patch0-1=1000:tall_seagrass_top,transparency=TRANSPARENT
 block:id=tall_seagrass,data=1,patch0-1=1000:tall_seagrass_bottom,transparency=TRANSPARENT
 # Piston - facing down
-block:id=piston,data=0,top=0:piston_bottom,bottom=0:piston_top_normal,allsides=5000:piston_side,transparency=TRANSPARENT
+block:id=piston,data=0,top=0:piston_bottom,bottom=0:piston_top,allsides=5000:piston_side,transparency=TRANSPARENT
 # Piston - facing up
-block:id=piston,data=1,top=0:piston_top_normal,bottom=0:piston_bottom,allsides=0:piston_side,transparency=TRANSPARENT
+block:id=piston,data=1,top=0:piston_top,bottom=0:piston_bottom,allsides=0:piston_side,transparency=TRANSPARENT
 # Piston - facing east
-block:id=piston,data=2,east=0:piston_top_normal,west=0:piston_bottom,top=6000:piston_side,bottom=4000:piston_side,north=4000:piston_side,south=6000:piston_side,transparency=TRANSPARENT
+block:id=piston,data=2,east=0:piston_top,west=0:piston_bottom,top=6000:piston_side,bottom=4000:piston_side,north=4000:piston_side,south=6000:piston_side,transparency=TRANSPARENT
 # Piston - facing west
-block:id=piston,data=3,west=0:piston_top_normal,east=0:piston_bottom,top=4000:piston_side,bottom=6000:piston_side,north=6000:piston_side,south=4000:piston_side,transparency=TRANSPARENT
+block:id=piston,data=3,west=0:piston_top,east=0:piston_bottom,top=4000:piston_side,bottom=6000:piston_side,north=6000:piston_side,south=4000:piston_side,transparency=TRANSPARENT
 # Piston - facing north
-block:id=piston,data=4,north=0:piston_top_normal,south=0:piston_bottom,top=0:piston_side,bottom=5000:piston_side,east=6000:piston_side,west=4000:piston_side,transparency=TRANSPARENT
+block:id=piston,data=4,north=0:piston_top,south=0:piston_bottom,top=0:piston_side,bottom=5000:piston_side,east=6000:piston_side,west=4000:piston_side,transparency=TRANSPARENT
 # Piston - facing south
-block:id=piston,data=5,north=0:piston_bottom,south=0:piston_top_normal,top=5000:piston_side,bottom=0:piston_side,east=4000:piston_side,west=6000:piston_side,transparency=TRANSPARENT
+block:id=piston,data=5,north=0:piston_bottom,south=0:piston_top,top=5000:piston_side,bottom=0:piston_side,east=4000:piston_side,west=6000:piston_side,transparency=TRANSPARENT
 # Piston - extended facing down (TODO:piston extension side)
 block:id=piston,data=6,top=0:piston_bottom,bottom=0:piston_inner,allsides=5262,transparency=TRANSPARENT
 # Piston - extended facing up (TODO:piston extension side)
@@ -865,17 +865,17 @@ block:id=piston,data=10,north=0:piston_inner,south=0:piston_bottom,top=262,botto
 # Piston - extended facing south (TODO:piston extension side)
 block:id=piston,data=11,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
 # Piston extension- facing down (TODO:piston extension side)
-block:id=piston_head,data=0,top=0:piston_inner,bottom=0:piston_top_normal,allsides=5261,transparency=TRANSPARENT
+block:id=piston_head,data=0,top=0:piston_inner,bottom=0:piston_top,allsides=5261,transparency=TRANSPARENT
 # Piston extension - facing up (TODO:piston extension side)
-block:id=piston_head,data=1,top=0:piston_top_normal,bottom=0:piston_inner,allsides=261,transparency=TRANSPARENT
+block:id=piston_head,data=1,top=0:piston_top,bottom=0:piston_inner,allsides=261,transparency=TRANSPARENT
 # Piston extension - facing east (TODO:piston extension side)
-block:id=piston_head,data=2,east=0:piston_top_normal,west=0:piston_inner,top=6261,bottom=4261,north=4261,south=6261,transparency=TRANSPARENT
+block:id=piston_head,data=2,east=0:piston_top,west=0:piston_inner,top=6261,bottom=4261,north=4261,south=6261,transparency=TRANSPARENT
 # Piston extension - facing west (TODO:piston extension side)
-block:id=piston_head,data=3,west=0:piston_top_normal,east=0:piston_inner,top=4261,bottom=6261,north=6261,south=4261,transparency=TRANSPARENT
+block:id=piston_head,data=3,west=0:piston_top,east=0:piston_inner,top=4261,bottom=6261,north=6261,south=4261,transparency=TRANSPARENT
 # Piston extension - facing north (TODO:piston extension side)
-block:id=piston_head,data=4,north=0:piston_top_normal,south=0:piston_inner,top=261,bottom=5261,east=6261,west=4261,transparency=TRANSPARENT
+block:id=piston_head,data=4,north=0:piston_top,south=0:piston_inner,top=261,bottom=5261,east=6261,west=4261,transparency=TRANSPARENT
 # Piston extension - facing south (TODO:piston extension side)
-block:id=piston_head,data=5,north=0:piston_inner,south=0:piston_top_normal,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
+block:id=piston_head,data=5,north=0:piston_inner,south=0:piston_top,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
 # Sticky piston extension - facing down (TODO:piston extension side)
 block:id=piston_head,data=6,top=0:piston_inner,bottom=0:piston_top_sticky,allsides=5261,transparency=TRANSPARENT
 # Sticky piston extension - facing up (TODO:piston extension side)
@@ -1211,7 +1211,7 @@ block:id=red_mushroom_block,data=14,topbottom=0:red_mushroom_block,allsides=0:re
 
 # Brown Mushroom Block - stem
 # Red Mushroom Block - stem
-block:id=mushroom_stem,topbottom=0:mushroom_block_inside,allsides=0:mushroom_block_skin_stem,stdrot=true
+block:id=mushroom_stem,topbottom=0:mushroom_block_inside,allsides=0:mushroom_stem,stdrot=true
 
 # Iron fence
 block:id=iron_bars,patch0-1=0:iron_bars,transparency=TRANSPARENT
@@ -1261,9 +1261,9 @@ block:id=cauldron,data=*,top=0:cauldron_top,bottom=0:cauldron_bottom,allsides=0:
 # End portal
 block:id=end_portal,data=*,topbottom=0:endportal,stdrot=true
 # End portal frame (no eye)
-block:id=end_portal_frame,data=0,data=1,data=2,data=3,top=0:endframe_top,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
+block:id=end_portal_frame,data=0,data=1,data=2,data=3,top=0:end_portal_frame_top,allsides=0:end_portal_frame_side,bottom=0:end_stone,stdrot=true
 # End portal fram (eye installed) (TODO: eye installed)
-block:id=end_portal_frame,data=4,data=5,data=6,data=7,top=0:endframe_eye,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
+block:id=end_portal_frame,data=4,data=5,data=6,data=7,top=0:end_portal_frame_eye,allsides=0:end_portal_frame_side,bottom=0:end_stone,stdrot=true
 # End stone
 block:id=end_stone,allfaces=0:end_stone,stdrot=true
 # Dragon Egg
@@ -1273,7 +1273,7 @@ block:id=redstone_lamp,data=0,allfaces=0:redstone_lamp_on,stdrot=true
 # Redstone lamp (off)
 block:id=redstone_lamp,data=1,allfaces=0:redstone_lamp,stdrot=true
 # Cocoa Plant (TODO: handle different stages, orientations)
-block:id=cocoa,allsides=0:cocoa_stage_2
+block:id=cocoa,allsides=0:cocoa_stage2
 # Sandstone stairs
 block:id=sandstone_stairs,patch0=0:sandstone,patch1=0:sandstone_top,patch2=0:sandstone_bottom,transparency=SEMITRANSPARENT
 # Emerald Ore
@@ -1393,11 +1393,11 @@ block:id=creeper_head,patch0=5:creeper,patch1=4:creeper,patch2=1:creeper,patch3=
 block:id=dragon_wall_head,patch0=5:creeper,patch1=4:creeper,patch2=1:creeper,patch3=0:creeper,patch4=2:creeper,patch5=3:creeper,transparency=TRANSPARENT
 block:id=dragon_head,patch0=5:creeper,patch1=4:creeper,patch2=1:creeper,patch3=0:creeper,patch4=2:creeper,patch5=3:creeper,transparency=TRANSPARENT
 # Anvil (normal)
-block:id=anvil,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_0,transparency=TRANSPARENT
+block:id=anvil,patch0-19=0:anvil,patch20=6000:anvil_top,transparency=TRANSPARENT
 # Anvil (slight damage)
-block:id=chipped_anvil,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_1,transparency=TRANSPARENT
+block:id=chipped_anvil,patch0-19=0:anvil,patch20=6000:chipped_anvil_top,transparency=TRANSPARENT
 # Anvil (heavy damage)
-block:id=damaged_anvil,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_2,transparency=TRANSPARENT
+block:id=damaged_anvil,patch0-19=0:anvil,patch20=6000:damaged_anvil_top,transparency=TRANSPARENT
 # Trap Chest
 block:id=trapped_chest,patch0=0:trapchest,patch1=1:trapchest,patch2=2:trapchest,patch3=3:trapchest,patch4=4:trapchest,patch5=5:trapchest,patch6=0:bigtrapchest,patch7=1:bigtrapchest,patch8=2:bigtrapchest,patch9=3:bigtrapchest,patch10=4:bigtrapchest,patch11=5:bigtrapchest,patch12=6:bigtrapchest,patch13=7:bigtrapchest,patch14=8:bigtrapchest,patch15=9:bigtrapchest
 
@@ -1459,10 +1459,10 @@ block:id=light_weighted_pressure_plate,allfaces=0:gold_block,stdrot=true,transpa
 block:id=heavy_weighted_pressure_plate,allfaces=0:iron_block,stdrot=true,transparency=TRANSPARENT
 
 # (149) Redstone Comparator (inactive)
-block:id=unpowered_comparator,data=0,data=4,data=8,data=12,top=6000:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=unpowered_comparator,data=1,data=5,data=9,data=13,top=5000:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=unpowered_comparator,data=2,data=6,data=10,data=14,top=4000:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=unpowered_comparator,data=3,data=7,data=11,data=15,top=0:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=unpowered_comparator,data=0,data=4,data=8,data=12,top=6000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=unpowered_comparator,data=1,data=5,data=9,data=13,top=5000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=unpowered_comparator,data=2,data=6,data=10,data=14,top=4000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=unpowered_comparator,data=3,data=7,data=11,data=15,top=0:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
 # (150) Redstone Comparator (active)
 block:id=powered_comparator,data=0,data=4,data=8,data=12,top=6000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
 block:id=powered_comparator,data=1,data=5,data=9,data=13,top=5000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
@@ -1476,7 +1476,7 @@ block:id=daylight_detector,data=*,allsides=0:daylight_detector_side,bottom=0:day
 block:id=redstone_block,data=*,allfaces=0:redstone_block,stdrot=true
 
 # (153)	Nether Quartz Ore
-block:id=quartz_ore,data=*,allfaces=0:quartz_ore,stdrot=true
+block:id=nether_quartz_ore,data=*,allfaces=0:nether_quartz_ore,stdrot=true
 
 # (154)	Hopper
 block:id=hopper,data=*,allsides=0:hopper_outside,top=0:hopper_inside,bottom=0:hopper_outside,stdrot=true
@@ -1484,46 +1484,46 @@ block:id=hopper,data=*,allsides=0:hopper_outside,top=0:hopper_inside,bottom=0:ho
 #  (155:0) Block of Quartz
 block:id=quartz_block,data=0,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
 #  (155:1) Chiseled Quartz Block
-block:id=quartz_block,data=1,top=0:quartz_block_chiseled_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_chiseled,stdrot=true
+block:id=quartz_block,data=1,top=0:chiseled_quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:chiseled_quartz_block,stdrot=true
 #  (155:2) Pillar Quartz Block (vertical)
-block:id=quartz_block,data=2,top=0:quartz_block_lines_top,bottom=0:quartz_block_lines_top,allsides=0:quartz_block_lines,stdrot=true
+block:id=quartz_block,data=2,top=0:quartz_pillar_top,bottom=0:quartz_pillar_top,allsides=0:quartz_pillar,stdrot=true
 #  (155:3) Pillar Quartz Block (north-south)
-block:id=quartz_block,data=3,top=4000:quartz_block_lines,bottom=4000:quartz_block_lines,east=6000:quartz_block_lines,west=6000:quartz_block_lines,north=0:quartz_block_lines_top,south=0:quartz_block_lines_top,stdrot=true
+block:id=quartz_block,data=3,top=4000:quartz_pillar,bottom=4000:quartz_pillar,east=6000:quartz_pillar,west=6000:quartz_pillar,north=0:quartz_pillar_top,south=0:quartz_pillar_top,stdrot=true
 #  (155:4) Pillar Quartz Block (east-west)
-block:id=quartz_block,data=4,top=0:quartz_block_lines,bottom=0:quartz_block_lines,north=6000:quartz_block_lines,south=6000:quartz_block_lines,east=0:quartz_block_lines_top,west=0:quartz_block_lines_top,stdrot=true
+block:id=quartz_block,data=4,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6000:quartz_pillar,south=6000:quartz_pillar,east=0:quartz_pillar_top,west=0:quartz_pillar_top,stdrot=true
 
 # (156)	Quartz Stairs
 block:id=quartz_stairs,data=*,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
 
 # (157)	Activator Rail
 # Activator rail - heading east-west - unpowered
-block:id=activator_rail,data=0,patch0=0:rail_activator,transparency=TRANSPARENT
+block:id=activator_rail,data=0,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - incline to east - unpowered
 # Activator rail - incline to west - unpowered
-block:id=activator_rail,data=4,data=5,patch0=0:rail_activator,transparency=TRANSPARENT
+block:id=activator_rail,data=4,data=5,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - heading east-west - powered
-block:id=activator_rail,data=8,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+block:id=activator_rail,data=8,patch0=0:activator_rail_on,transparency=TRANSPARENT
 # Activator rail - incline to east - powered
 # Activator rail - incline to west - powered
-block:id=activator_rail,data=12,data=13,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+block:id=activator_rail,data=12,data=13,patch0=0:activator_rail_on,transparency=TRANSPARENT
 # Activator rail - heading north-south - unpowered
-block:id=activator_rail,data=1,patch0=0:rail_activator,transparency=TRANSPARENT
+block:id=activator_rail,data=1,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - inclined to north - unpowered
 # Activator rail - inclined to south - unpowered
-block:id=activator_rail,data=2,data=3,patch0=0:rail_activator,transparency=TRANSPARENT
+block:id=activator_rail,data=2,data=3,patch0=0:activator_rail,transparency=TRANSPARENT
 # Activator rail - heading north-south - powered
-block:id=activator_rail,data=9,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+block:id=activator_rail,data=9,patch0=0:activator_rail_on,transparency=TRANSPARENT
 # Activator rail - inclined to north - powered
 # Activator rail - inclined to south - powered
-block:id=activator_rail,data=10,data=11,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+block:id=activator_rail,data=10,data=11,patch0=0:activator_rail_on,transparency=TRANSPARENT
 
 # (158)	Dropper
 block:id=dropper,data=0,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical
 block:id=dropper,data=1,top=6000:dropper_front_vertical,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=0:furnace_top
-block:id=dropper,data=2,top=0:furnace_top,east=0:dropper_front_horizontal,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=3,top=0:furnace_top,west=0:dropper_front_horizontal,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=4,top=0:furnace_top,north=0:dropper_front_horizontal,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=5,top=0:furnace_top,south=0:dropper_front_horizontal,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=2,top=0:furnace_top,east=0:dropper_front,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=3,top=0:furnace_top,west=0:dropper_front,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=4,top=0:furnace_top,north=0:dropper_front,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=5,top=0:furnace_top,south=0:dropper_front,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
 
 # (159) Colored clay
 block:id=black_terracotta,stdrot=true,allfaces=0:black_terracotta
@@ -1584,8 +1584,8 @@ block:id=light_blue_carpet,stdrot=true,allfaces=0:light_blue_wool
 block:id=magenta_carpet,stdrot=true,allfaces=0:magenta_wool
 block:id=orange_carpet,stdrot=true,allfaces=0:orange_wool
 block:id=white_carpet,stdrot=true,allfaces=0:white_wool
-# (172) Hardened clay
-block:id=hardened_clay,data=*,stdrot=true,allfaces=0:hardened_clay
+# Terracotta
+block:id=terracotta,data=*,stdrot=true,allfaces=0:terracotta
 # (173) Coal block    
 block:id=coal_block,data=*,stdrot=true,allfaces=0:coal_block
 # (174) Packed Ice
