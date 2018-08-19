@@ -7,8 +7,8 @@ plugins {
 
 allprojects  {
   repositories {
-     mavenCentral()
      mavenLocal()
+     mavenCentral()
      maven { url "https://oss.sonatype.org/content/repositories/releases" }
      maven { url "http://repo.mikeprimm.com" }
      maven { url "http://repo.maven.apache.org/maven2" }
