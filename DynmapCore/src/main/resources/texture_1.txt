@@ -2015,6 +2015,16 @@ texture:id=brain_coral_block
 texture:id=bubble_coral_block
 texture:id=fire_coral_block
 texture:id=horn_coral_block
+texture:id=dead_tube_coral_fan
+texture:id=dead_brain_coral_fan
+texture:id=dead_bubble_coral_fan
+texture:id=dead_fire_coral_fan
+texture:id=dead_horn_coral_fan
+texture:id=tube_coral_fan
+texture:id=brain_coral_fan
+texture:id=bubble_coral_fan
+texture:id=fire_coral_fan
+texture:id=horn_coral_fan
 
 # Kelp
 block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
@@ -2058,106 +2068,66 @@ block:id=fire_coral_block,allfaces=0:fire_coral_block,stdrot=true
 # Horn coral block
 block:id=horn_coral_block,allfaces=0:horn_coral_block,stdrot=true
 
-#[18:55:16] [Server thread/INFO]: [dynmap] 8464: blk=minecraft:dead_tube_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8465: blk=minecraft:dead_tube_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8466: blk=minecraft:dead_tube_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8467: blk=minecraft:dead_tube_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8468: blk=minecraft:dead_tube_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8469: blk=minecraft:dead_tube_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8470: blk=minecraft:dead_tube_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8471: blk=minecraft:dead_tube_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8472: blk=minecraft:dead_brain_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8473: blk=minecraft:dead_brain_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8474: blk=minecraft:dead_brain_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8475: blk=minecraft:dead_brain_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8476: blk=minecraft:dead_brain_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8477: blk=minecraft:dead_brain_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8478: blk=minecraft:dead_brain_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8479: blk=minecraft:dead_brain_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8480: blk=minecraft:dead_bubble_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8481: blk=minecraft:dead_bubble_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8482: blk=minecraft:dead_bubble_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8483: blk=minecraft:dead_bubble_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8484: blk=minecraft:dead_bubble_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8485: blk=minecraft:dead_bubble_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8486: blk=minecraft:dead_bubble_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8487: blk=minecraft:dead_bubble_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8488: blk=minecraft:dead_fire_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8489: blk=minecraft:dead_fire_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8490: blk=minecraft:dead_fire_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8491: blk=minecraft:dead_fire_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8492: blk=minecraft:dead_fire_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8493: blk=minecraft:dead_fire_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8494: blk=minecraft:dead_fire_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8495: blk=minecraft:dead_fire_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8496: blk=minecraft:dead_horn_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8497: blk=minecraft:dead_horn_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8498: blk=minecraft:dead_horn_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8499: blk=minecraft:dead_horn_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8500: blk=minecraft:dead_horn_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8501: blk=minecraft:dead_horn_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8502: blk=minecraft:dead_horn_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8503: blk=minecraft:dead_horn_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8504: blk=minecraft:tube_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8505: blk=minecraft:tube_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8506: blk=minecraft:tube_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8507: blk=minecraft:tube_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8508: blk=minecraft:tube_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8509: blk=minecraft:tube_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8510: blk=minecraft:tube_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8511: blk=minecraft:tube_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8512: blk=minecraft:brain_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8513: blk=minecraft:brain_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8514: blk=minecraft:brain_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8515: blk=minecraft:brain_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8516: blk=minecraft:brain_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8517: blk=minecraft:brain_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8518: blk=minecraft:brain_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8519: blk=minecraft:brain_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8520: blk=minecraft:bubble_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8521: blk=minecraft:bubble_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8522: blk=minecraft:bubble_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8523: blk=minecraft:bubble_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8524: blk=minecraft:bubble_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8525: blk=minecraft:bubble_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8526: blk=minecraft:bubble_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8527: blk=minecraft:bubble_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8528: blk=minecraft:fire_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8529: blk=minecraft:fire_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8530: blk=minecraft:fire_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8531: blk=minecraft:fire_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8532: blk=minecraft:fire_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8533: blk=minecraft:fire_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8534: blk=minecraft:fire_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8535: blk=minecraft:fire_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8536: blk=minecraft:horn_coral_wall_fan, idx=0, state=facing=north,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8537: blk=minecraft:horn_coral_wall_fan, idx=1, state=facing=north,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8538: blk=minecraft:horn_coral_wall_fan, idx=2, state=facing=south,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8539: blk=minecraft:horn_coral_wall_fan, idx=3, state=facing=south,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8540: blk=minecraft:horn_coral_wall_fan, idx=4, state=facing=west,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8541: blk=minecraft:horn_coral_wall_fan, idx=5, state=facing=west,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8542: blk=minecraft:horn_coral_wall_fan, idx=6, state=facing=east,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8543: blk=minecraft:horn_coral_wall_fan, idx=7, state=facing=east,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8544: blk=minecraft:dead_tube_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8545: blk=minecraft:dead_tube_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8546: blk=minecraft:dead_brain_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8547: blk=minecraft:dead_brain_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8548: blk=minecraft:dead_bubble_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8549: blk=minecraft:dead_bubble_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8550: blk=minecraft:dead_fire_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8551: blk=minecraft:dead_fire_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8552: blk=minecraft:dead_horn_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8553: blk=minecraft:dead_horn_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8554: blk=minecraft:tube_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8555: blk=minecraft:tube_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8556: blk=minecraft:brain_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8557: blk=minecraft:brain_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8558: blk=minecraft:bubble_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8559: blk=minecraft:bubble_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8560: blk=minecraft:fire_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8561: blk=minecraft:fire_coral_fan, idx=1, state=waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8562: blk=minecraft:horn_coral_fan, idx=0, state=waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8563: blk=minecraft:horn_coral_fan, idx=1, state=waterlogged=false
+# Dead tube coral wall fan
+block:id=dead_tube_coral_wall_fan,patch0-1=0:dead_tube_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead brain coral wall fan
+block:id=dead_brain_coral_wall_fan,patch0-1=0:dead_brain_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead bubble coral wall fan
+block:id=dead_bubble_coral_wall_fan,patch0-1=0:dead_bubble_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead fire coral wall fan
+block:id=dead_fire_coral_wall_fan,patch0-1=0:dead_fire_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead horn coral wall fan
+block:id=dead_horn_coral_wall_fan,patch0-1=0:dead_horn_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Tube coral wall fan
+block:id=tube_coral_wall_fan,patch0-1=0:tube_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Brain coral wall fan
+block:id=brain_coral_wall_fan,patch0-1=0:brain_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Bubble coral wall fan
+block:id=bubble_coral_wall_fan,patch0-1=0:bubble_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Fire coral wall fan
+block:id=fire_coral_wall_fan,patch0-1=0:fire_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Horn coral wall fan
+block:id=horn_coral_wall_fan,patch0-1=0:horn_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead tube coral fan
+block:id=dead_tube_coral_wall_fan,patch0-3=0:dead_tube_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead brain coral fan
+block:id=dead_brain_coral_fan,patch0-3=0:dead_brain_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead bubble coral fan
+block:id=dead_bubble_coral_fan,patch0-3=0:dead_bubble_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead fire coral fan
+block:id=dead_fire_coral_fan,patch0-3=0:dead_fire_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Dead horn coral fan
+block:id=dead_horn_coral_fan,patch0-3=0:dead_horn_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Tube coral fan
+block:id=tube_coral_wall_fan,patch0-3=0:tube_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Brain coral fan
+block:id=brain_coral_fan,patch0-3=0:brain_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Bubble coral fan
+block:id=bubble_coral_fan,patch0-3=0:bubble_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Fire coral fan
+block:id=fire_coral_fan,patch0-3=0:fire_coral_fan,stdrot=true,transparency=TRANSPARENT
+
+# Horn coral fan
+block:id=horn_coral_fan,patch0-3=0:horn_coral_fan,stdrot=true,transparency=TRANSPARENT
+
 #[18:55:16] [Server thread/INFO]: [dynmap] 8564: blk=minecraft:sea_pickle, idx=0, state=pickles=1,waterlogged=true
 #[18:55:16] [Server thread/INFO]: [dynmap] 8565: blk=minecraft:sea_pickle, idx=1, state=pickles=1,waterlogged=false
 #[18:55:16] [Server thread/INFO]: [dynmap] 8566: blk=minecraft:sea_pickle, idx=2, state=pickles=2,waterlogged=true

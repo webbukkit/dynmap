@@ -1330,3 +1330,31 @@ patchblock:id=kelp,id=kelp_plant,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
 # Turtle egg
 boxblock:id=turtle_egg,xmin=0.3125,xmax=0.625,ymax=0.4375,zmin=0.25,zmax=0.5625
+
+# Patch for coral wall fan - 22.5 degrees up
+patch:id=CoralFan0u,Ox=0.0,Oy=0.4375,Oz=0.0,Ux=1.0,Uy=0.4375,Uz=0.0,Vx=0.0,Vy=0.9375,Vz=1.0
+patch:id=CoralFan1u,Ox=1.0,Oy=0.4375,Oz=1.0,Ux=0.0,Uy=0.4375,Uz=1.0,Vx=1.0,Vy=0.9375,Vz=0.0
+patch:id=CoralFan2u,Ox=1.0,Oy=0.4375,Oz=0.0,Ux=1.0,Uy=0.4375,Uz=1.0,Vx=0.0,Vy=0.9375,Vz=0.0
+patch:id=CoralFan3u,Ox=0.0,Oy=0.4375,Oz=1.0,Ux=0.0,Uy=0.4375,Uz=0.0,Vx=1.0,Vy=0.9375,Vz=1.0
+# Patch for coral wall fan - 22.5 degrees down
+patch:id=CoralFan0d,Ox=0.0,Oy=0.5625,Oz=0.0,Ux=1.0,Uy=0.5625,Uz=0.0,Vx=0.0,Vy=0.0625,Vz=1.0
+patch:id=CoralFan1d,Ox=1.0,Oy=0.5625,Oz=1.0,Ux=0.0,Uy=0.5625,Uz=1.0,Vx=1.0,Vy=0.0625,Vz=0.0
+patch:id=CoralFan2d,Ox=1.0,Oy=0.5625,Oz=0.0,Ux=1.0,Uy=0.5625,Uz=1.0,Vx=0.0,Vy=0.0625,Vz=0.0
+patch:id=CoralFan3d,Ox=0.0,Oy=0.5625,Oz=1.0,Ux=0.0,Uy=0.5625,Uz=0.0,Vx=1.0,Vy=0.0625,Vz=1.0
+# Patch for coral fan - 22.5 degrees up
+patch:id=CoralFan0f,Ox=0.0,Oy=0.0,Oz=0.5,Ux=1.0,Uy=0.0,Uz=0.5,Vx=0.0,Vy=0.5,Vz=1.0
+patch:id=CoralFan1f,Ox=1.0,Oy=0.0,Oz=0.5,Ux=0.0,Uy=0.0,Uz=0.5,Vx=1.0,Vy=0.5,Vz=0.0
+patch:id=CoralFan2f,Ox=0.5,Oy=0.0,Oz=0.0,Ux=0.5,Uy=0.0,Uz=1.0,Vx=0.0,Vy=0.5,Vz=0.0
+patch:id=CoralFan3f,Ox=0.5,Oy=0.0,Oz=1.0,Ux=0.5,Uy=0.0,Uz=0.0,Vx=1.0,Vy=0.5,Vz=1.0
+
+# Coral fan on Z- (north)
+patchblock:id=dead_tube_coral_wall_fan,id=dead_fire_coral_wall_fan,id=dead_brain_coral_wall_fan,id=dead_horn_coral_wall_fan,id=dead_bubble_coral_wall_fan,id=tube_coral_wall_fan,id=fire_coral_wall_fan,id=brain_coral_wall_fan,id=horn_coral_wall_fan,id=bubble_coral_wall_fan,data=0,data=1,patch0=CoralFan1u,patch1=CoralFan1d
+# Coral fan on Z+ (south)
+patchblock:id=dead_tube_coral_wall_fan,id=dead_fire_coral_wall_fan,id=dead_brain_coral_wall_fan,id=dead_horn_coral_wall_fan,id=dead_bubble_coral_wall_fan,id=tube_coral_wall_fan,id=fire_coral_wall_fan,id=brain_coral_wall_fan,id=horn_coral_wall_fan,id=bubble_coral_wall_fan,data=2,data=3,patch0=CoralFan0u,patch1=CoralFan0d
+# Coral fan on X- (west)
+patchblock:id=dead_tube_coral_wall_fan,id=dead_fire_coral_wall_fan,id=dead_brain_coral_wall_fan,id=dead_horn_coral_wall_fan,id=dead_bubble_coral_wall_fan,id=tube_coral_wall_fan,id=fire_coral_wall_fan,id=brain_coral_wall_fan,id=horn_coral_wall_fan,id=bubble_coral_wall_fan,data=4,data=5,patch0=CoralFan2u,patch1=CoralFan2d
+# Coral fan on X+ (east)
+patchblock:id=dead_tube_coral_wall_fan,id=dead_fire_coral_wall_fan,id=dead_brain_coral_wall_fan,id=dead_horn_coral_wall_fan,id=dead_bubble_coral_wall_fan,id=tube_coral_wall_fan,id=fire_coral_wall_fan,id=brain_coral_wall_fan,id=horn_coral_wall_fan,id=bubble_coral_wall_fan,data=6,data=7,patch0=CoralFan3u,patch1=CoralFan3d
+# Coral fan on bottom
+patchblock:id=dead_tube_coral_fan,id=dead_fire_coral_fan,id=dead_brain_coral_fan,id=dead_horn_coral_fan,id=dead_bubble_coral_fan,id=tube_coral_fan,id=fire_coral_fan,id=brain_coral_fan,id=horn_coral_fan,id=bubble_coral_fan,data=0,data=1,patch0=CoralFan0f,patch1=CoralFan1f,patch2=CoralFan2f,patch3=CoralFan3f
+
