@@ -124,7 +124,6 @@ public class DynmapBlockState {
         matchflags |= isWater(blockName) ? MATCH_WATER : 0;
         matchflags |= (blockName.equals(SNOW_BLOCK) || blockName.equals(SNOW_LAYER_BLOCK)) ? MATCH_SNOW : 0;
         matchflags |= blockName.equals(GRASS_BLOCK) ? MATCH_GRASS : 0;
-        matchflags |= stateName.contains("waterlogged=true") ? MATCH_WATERLOGGED : 0;
     }
     /**
      * Get state for same base block with given index
@@ -280,6 +279,12 @@ public class DynmapBlockState {
      */
     public final boolean isWaterlogged() {
         return (matchflags & MATCH_WATERLOGGED) != 0;
+    }
+    /**
+     * Set state to be waterlogged (block filled with water)
+     */
+    public final void setWaterlogged() {
+    	matchflags |= MATCH_WATERLOGGED;
     }
     /**
      * Test for matching blockname

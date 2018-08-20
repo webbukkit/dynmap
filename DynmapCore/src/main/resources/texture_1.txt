@@ -1628,7 +1628,7 @@ block:id=prismarine_bricks,allfaces=0:prismarine_bricks,stdrot=true
 # Dark Prismarine
 block:id=dark_prismarine,allfaces=0:dark_prismarine,stdrot=true
 # Sea Lantern
-block:id=sea_lantern,data=*,allfaces=0:sea_lantern,stdrot=true
+block:id=sea_lantern,allfaces=0:sea_lantern,stdrot=true
 
 
 # Red Sandstone
@@ -2006,6 +2006,8 @@ texture:id=dried_kelp_side
 texture:id=dried_kelp_top
 texture:id=dried_kelp_bottom
 texture:id=turtle_egg
+texture:id=turtle_egg_slightly_cracked
+texture:id=turtle_egg_very_cracked
 texture:id=dead_tube_coral_block
 texture:id=dead_brain_coral_block
 texture:id=dead_bubble_coral_block
@@ -2027,7 +2029,7 @@ texture:id=bubble_coral_fan
 texture:id=fire_coral_fan
 texture:id=horn_coral_fan
 texture:id=blue_ice
-tecture:id=sea_pickles
+texture:id=sea_pickle
 
 # Kelp
 block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
@@ -2036,10 +2038,14 @@ block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
 block:id=kelp,patch0-1=1000:kelp_plant,stdrot=true,transparency=TRANSPARENT
 
 # Dried kelp block
-block:id=dried_kelp,allsides=0:dried_kelp_side,top=0:dried_kelp_top,bottom=0:dried_kelp_bottom,stdrot=true
+block:id=dried_kelp_block,allsides=0:dried_kelp_side,top=0:dried_kelp_top,bottom=0:dried_kelp_bottom,stdrot=true
 
 # Turtle egg
-block:id=turtle_egg,allfaces=0:turtle_egg,stdrot=true,transparency=TRANSPARENT
+block:id=turtle_egg,data=0,data=3,data=6,data=9,patch0-5=0:turtle_egg,transparency=TRANSPARENT
+# Turtle egg - slightly cracked
+block:id=turtle_egg,data=1,data=4,data=7,data=10,patch0-5=0:turtle_egg_slightly_cracked,transparency=TRANSPARENT
+# Turtle egg - very cracked
+block:id=turtle_egg,data=2,data=5,data=8,data=11,patch0-5=0:turtle_egg_very_cracked,transparency=TRANSPARENT
 
 # Dead tube coral block
 block:id=dead_tube_coral_block,allfaces=0:dead_tube_coral_block,stdrot=true
@@ -2131,17 +2137,11 @@ block:id=fire_coral_fan,patch0-3=0:fire_coral_fan,stdrot=true,transparency=TRANS
 # Horn coral fan
 block:id=horn_coral_fan,patch0-3=0:horn_coral_fan,stdrot=true,transparency=TRANSPARENT
 
-#[18:55:16] [Server thread/INFO]: [dynmap] 8564: blk=minecraft:sea_pickle, idx=0, state=pickles=1,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8565: blk=minecraft:sea_pickle, idx=1, state=pickles=1,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8566: blk=minecraft:sea_pickle, idx=2, state=pickles=2,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8567: blk=minecraft:sea_pickle, idx=3, state=pickles=2,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8568: blk=minecraft:sea_pickle, idx=4, state=pickles=3,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8569: blk=minecraft:sea_pickle, idx=5, state=pickles=3,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8570: blk=minecraft:sea_pickle, idx=6, state=pickles=4,waterlogged=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8571: blk=minecraft:sea_pickle, idx=7, state=pickles=4,waterlogged=false
+# Sea pickle
+block:id=sea_pickle,patch0-5=0:sea_pickle,transparency=TRANSPARENT
 
 # Blue Ice
-block:id=bloe_ice,allfaces=0:blue_ice,stdrot=true
+block:id=blue_ice,allfaces=0:blue_ice,stdrot=true
 
 #[18:55:16] [Server thread/INFO]: [dynmap] 8573: blk=minecraft:conduit, idx=0, state=
 

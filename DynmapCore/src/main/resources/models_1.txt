@@ -1328,8 +1328,14 @@ boxblock:id=grass_path,ymax=0.9375
 # Kelp Plant
 patchblock:id=kelp,id=kelp_plant,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
-# Turtle egg
-boxblock:id=turtle_egg,xmin=0.3125,xmax=0.625,ymax=0.4375,zmin=0.25,zmax=0.5625
+# Turtle egg - single
+customblock:id=turtle_egg,data=0,data=1,data=2,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.3125:0:0.25/0.625:0.4275:0.5625
+# Turtle egg - double
+customblock:id=turtle_egg,data=3,data=4,data=5,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.3125:0:0.25/0.625:0.4275:0.5625,cuboid1=0.0625:0:0.4275/0.3125:0.3125:0.6875
+# Turtle egg - triple
+customblock:id=turtle_egg,data=6,data=7,data=8,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.3125:0:0.25/0.625:0.4275:0.5625,cuboid1=0.0625:0:0.4275/0.3125:0.3125:0.6875,cuboid2=0.6875:0:0.4275/0.875:0.25:0.625
+# Turtle egg - quad
+customblock:id=turtle_egg,data=9,data=10,data=11,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.3125:0:0.25/0.625:0.4275:0.5625,cuboid1=0.0625:0:0.4275/0.3125:0.3125:0.6875,cuboid2=0.6875:0:0.4275/0.875:0.25:0.625,cuboid3=0.4275:0:0.625/0.625:0.1875:0.8125
 
 # Patch for coral wall fan - 22.5 degrees up
 patch:id=CoralFan0u,Ox=0.0,Oy=0.4375,Oz=0.0,Ux=1.0,Uy=0.4375,Uz=0.0,Vx=0.0,Vy=0.9375,Vz=1.0
@@ -1358,3 +1364,11 @@ patchblock:id=dead_tube_coral_wall_fan,id=dead_fire_coral_wall_fan,id=dead_brain
 # Coral fan on bottom
 patchblock:id=dead_tube_coral_fan,id=dead_fire_coral_fan,id=dead_brain_coral_fan,id=dead_horn_coral_fan,id=dead_bubble_coral_fan,id=tube_coral_fan,id=fire_coral_fan,id=brain_coral_fan,id=horn_coral_fan,id=bubble_coral_fan,data=0,data=1,patch0=CoralFan0f,patch1=CoralFan1f,patch2=CoralFan2f,patch3=CoralFan3f
 
+# Sea pickle - single
+customblock:id=sea_pickle,data=0,data=1,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.375:0:0.375/0.625:0.375:0.625
+# Sea pickle - double
+customblock:id=sea_pickle,data=2,data=3,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.1875:0:0.1875/0.4375:0.375:0.4375,cuboid1=0.5:0:0.5/0.75:0.25:0.75
+# Sea pickle - triple
+customblock:id=sea_pickle,data=4,data=5,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.375:0:0.5625/0.625:0.375:0.8125,cuboid1=0.125:0:0.125/0.375:0.25:0.375,cuboid2=0.5:0:0.25/0.75:0.375:0.5
+# Sea pickle - quad
+customblock:id=sea_pickle,data=6,data=7,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.125:0:0.125/0.375:0.375:0.375,cuboid1=0.5625:0:0.625/0.8125:0.25:0.875,cuboid2=0.5625:0:0.125/0.8125:0.375:0.375,cuboid3=0.125:0:0.5/0.375:0.4275:0.75

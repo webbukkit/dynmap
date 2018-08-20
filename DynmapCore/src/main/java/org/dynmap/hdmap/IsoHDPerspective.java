@@ -512,6 +512,7 @@ public class IsoHDPerspective implements HDPerspective {
          * Process visit of ray to block
          */
         private final boolean visit_block(HDShaderState[] shaderstate, boolean[] shaderdone) {
+        	boolean done = false;
             lastblocktype = blocktype;
             blocktype = mapiter.getBlockType();
             if(skiptoair) {	/* If skipping until we see air */
@@ -520,6 +521,7 @@ public class IsoHDPerspective implements HDPerspective {
                 }
             }
             else if(nonairhit || blocktype.isNotAir()) {
+            	done = true;
             	// If waterlogged, start by rendering as if full water block
             	if (blocktype.isWaterlogged()) {
             		DynmapBlockState saved_type = blocktype;
@@ -527,7 +529,6 @@ public class IsoHDPerspective implements HDPerspective {
             			full_water = DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK);
             		}
             		blocktype = full_water;	// Switch to water state
-                    boolean done = true;
                     subalpha = -1;
                     for (int i = 0; i < shaderstate.length; i++) {
                         if(!shaderdone[i]) {
@@ -535,20 +536,22 @@ public class IsoHDPerspective implements HDPerspective {
                         }
                         done = done && shaderdone[i];
                     }
+                    /* If all are done, we're out */
+                    if (done) {
+                        return true;
+                    }
                     // Restore block type
                     blocktype = saved_type;
-                    /* If all are done, we're out */
-                    if (done)
-                        return true;
                     nonairhit = true;
             	}
+                short[] model;
                 RenderPatch[] patches = scalemodels.getPatchModel(blocktype);
                 /* If no patches, see if custom model */
-                if(patches == null) {
+                if (patches == null) {
                     CustomBlockModel cbm = scalemodels.getCustomBlockModel(blocktype);
-                    if(cbm != null) {   /* If found, see if cached already */
+                    if (cbm != null) {   /* If found, see if cached already */
                         patches = this.getCustomMesh();
-                        if(patches == null) {
+                        if (patches == null) {
                             patches = cbm.getMeshForBlock(mapiter);
                             this.setCustomMesh(patches);
                         }
@@ -556,14 +559,12 @@ public class IsoHDPerspective implements HDPerspective {
                 }
                 /* Look up to see if block is modelled */
                 if(patches != null) {
-                    return handlePatches(patches, shaderstate, shaderdone);
+                    done = handlePatches(patches, shaderstate, shaderdone);
                 }
-                short[] model = scalemodels.getScaledModel(blocktype);
-                if(model != null) {
-                    return handleSubModel(model, shaderstate, shaderdone);
+                else if ((model = scalemodels.getScaledModel(blocktype)) != null) {
+                    done = handleSubModel(model, shaderstate, shaderdone);
                 }
                 else {
-                    boolean done = true;
                     subalpha = -1;
                     for(int i = 0; i < shaderstate.length; i++) {
                         if(!shaderdone[i]) {
@@ -571,13 +572,11 @@ public class IsoHDPerspective implements HDPerspective {
                         }
                         done = done && shaderdone[i];
                     }
-                    /* If all are done, we're out */
-                    if(done)
-                        return true;
-                    nonairhit = true;
+                    if (!done)
+                        nonairhit = true;
                 }
             }
-            return false;
+            return done;
         }
         
         /* Skip empty : return false if exited */

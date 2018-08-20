@@ -2727,7 +2727,7 @@ public class TexturePack {
         /* If clear-inside op, get out early */
         if((textop == COLORMOD_CLEARINSIDE) || (textop == COLORMOD_MULTTONED_CLEARINSIDE)) {
             /* Check if previous block is same block type as we are: surface is transparent if it is */
-            if (blk.matchingBaseState(lastblocktype)) {
+            if (blk.matchingBaseState(lastblocktype) || (blk.isWater() && lastblocktype.isWaterlogged())) {
                 rslt.setTransparent();
                 return;
             }
@@ -3480,10 +3480,10 @@ public class TexturePack {
             textid = textid % COLORMOD_MULT_INTERNAL;
             BlockStep step = steps[patchidx];
             /* If clear-inside op, get out early */
-            if((mod == COLORMOD_CLEARINSIDE) || (mod == COLORMOD_MULTTONED_CLEARINSIDE)) {
+            if ((mod == COLORMOD_CLEARINSIDE) || (mod == COLORMOD_MULTTONED_CLEARINSIDE)) {
                 BlockStep dir = step.opposite();
                 /* Check if previous block is same block type as we are: surface is transparent if it is */
-                if (blk == mapiter.getBlockTypeAt(dir)) {
+                if (blk.matchingBaseState(mapiter.getBlockTypeAt(dir))) {
                     continue;   // Skip: no texture
                 }
                 /* If water block, to watercolor tone op */

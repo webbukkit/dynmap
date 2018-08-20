@@ -28,6 +28,7 @@ import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.bukkit.helper.v113.MapChunkCache113;
 import net.minecraft.server.v1_13_R1.Block;
+import net.minecraft.server.v1_13_R1.BlockFluids;
 import net.minecraft.server.v1_13_R1.IBlockData;
 import net.minecraft.server.v1_13_R1.IBlockState;
 
@@ -110,9 +111,12 @@ public class BukkitVersionHelperSpigot113 extends BukkitVersionHelperCB {
     			sb = fname.substring(off1+1, off2);
     		}
             DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb);
+            if ((!bd.s().e()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
+            	bs.setWaterlogged();
+            }
     		dataToState.put(bd,  bs);
     		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
-    		Log.info(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb);
+    		Log.info(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());
     	}
     }
     /**
