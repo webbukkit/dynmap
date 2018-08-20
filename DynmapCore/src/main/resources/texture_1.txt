@@ -2027,6 +2027,7 @@ texture:id=bubble_coral_fan
 texture:id=fire_coral_fan
 texture:id=horn_coral_fan
 texture:id=blue_ice
+tecture:id=sea_pickles
 
 # Kelp
 block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
@@ -2143,12 +2144,12 @@ block:id=horn_coral_fan,patch0-3=0:horn_coral_fan,stdrot=true,transparency=TRANS
 block:id=bloe_ice,allfaces=0:blue_ice,stdrot=true
 
 #[18:55:16] [Server thread/INFO]: [dynmap] 8573: blk=minecraft:conduit, idx=0, state=
-#[18:55:16] [Server thread/INFO]: [dynmap] 8574: blk=minecraft:void_air, idx=0, state=
-#[18:55:16] [Server thread/INFO]: [dynmap] 8575: blk=minecraft:cave_air, idx=0, state=
-#[18:55:16] [Server thread/INFO]: [dynmap] 8576: blk=minecraft:bubble_column, idx=0, state=drag=true
-#[18:55:16] [Server thread/INFO]: [dynmap] 8577: blk=minecraft:bubble_column, idx=1, state=drag=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8578: blk=minecraft:structure_block, idx=0, state=mode=save
-#[18:55:16] [Server thread/INFO]: [dynmap] 8579: blk=minecraft:structure_block, idx=1, state=mode=load
-#[18:55:16] [Server thread/INFO]: [dynmap] 8580: blk=minecraft:structure_block, idx=2, state=mode=corner
-#[18:55:16] [Server thread/INFO]: [dynmap] 8581: blk=minecraft:structure_block, idx=3, state=mode=data
 
+# Void air
+block:id=void_air,transparency=TRANSPARENT
+
+# Cave air
+block:id=cave_air,transparency=TRANSPARENT
+
+# Bubble column
+block:id=bubble_column,topbottom=12000:water_still,allsides=12000:water_flow,stdrot=true,transparency=SEMITRANSPARENT
