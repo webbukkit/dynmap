@@ -79,6 +79,8 @@ public class IsoHDPerspective implements HDPerspective {
 
     private static final BlockStep [] semi_steps = { BlockStep.Y_PLUS, BlockStep.X_MINUS, BlockStep.X_PLUS, BlockStep.Z_MINUS, BlockStep.Z_PLUS };
 
+    private DynmapBlockState full_water = null;
+    
     private class OurPerspectiveState implements HDPerspectiveState {
         DynmapBlockState blocktype = DynmapBlockState.AIR;
         DynmapBlockState lastblocktype = DynmapBlockState.AIR;
@@ -518,6 +520,28 @@ public class IsoHDPerspective implements HDPerspective {
                 }
             }
             else if(nonairhit || blocktype.isNotAir()) {
+            	// If waterlogged, start by rendering as if full water block
+            	if (blocktype.isWaterlogged()) {
+            		DynmapBlockState saved_type = blocktype;
+            		if (full_water == null) {
+            			full_water = DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK);
+            		}
+            		blocktype = full_water;	// Switch to water state
+                    boolean done = true;
+                    subalpha = -1;
+                    for (int i = 0; i < shaderstate.length; i++) {
+                        if(!shaderdone[i]) {
+                            shaderdone[i] = shaderstate[i].processBlock(this);
+                        }
+                        done = done && shaderdone[i];
+                    }
+                    // Restore block type
+                    blocktype = saved_type;
+                    /* If all are done, we're out */
+                    if (done)
+                        return true;
+                    nonairhit = true;
+            	}
                 RenderPatch[] patches = scalemodels.getPatchModel(blocktype);
                 /* If no patches, see if custom model */
                 if(patches == null) {

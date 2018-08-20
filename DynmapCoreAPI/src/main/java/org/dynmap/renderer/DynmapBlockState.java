@@ -33,6 +33,7 @@ public class DynmapBlockState {
     private static int MATCH_SNOW = 1 << 2;
     private static int MATCH_LOG = 1 << 3;
     private static int MATCH_GRASS = 1 << 4;
+    private static int MATCH_WATERLOGGED = 1 << 5;
     
     // Map of base blocks by name
     private static HashMap<String, DynmapBlockState> blocksByName = new HashMap<String, DynmapBlockState>();
@@ -84,7 +85,7 @@ public class DynmapBlockState {
     public DynmapBlockState(DynmapBlockState base, int stateidx, String blkname, String statename) {
         globalStateIndex = (nextGlobalStateIndex++);    // Assign index
         if (base == null) base = this;
-        baseState = this;
+        baseState = base;
         stateIndex = stateidx;
         if (blkname.indexOf(':') == -1) {   // No mod:, assume minecraft:
             blkname = "minecraft:" + blkname;
@@ -123,6 +124,7 @@ public class DynmapBlockState {
         matchflags |= isWater(blockName) ? MATCH_WATER : 0;
         matchflags |= (blockName.equals(SNOW_BLOCK) || blockName.equals(SNOW_LAYER_BLOCK)) ? MATCH_SNOW : 0;
         matchflags |= blockName.equals(GRASS_BLOCK) ? MATCH_GRASS : 0;
+        matchflags |= stateName.contains("waterlogged=true") ? MATCH_WATERLOGGED : 0;
     }
     /**
      * Get state for same base block with given index
@@ -272,6 +274,12 @@ public class DynmapBlockState {
      */
     public final boolean isGrass() {
         return (matchflags & MATCH_GRASS) != 0;
+    }
+    /**
+     * Test if block is waterlogged (in block filled with water)
+     */
+    public final boolean isWaterlogged() {
+        return (matchflags & MATCH_WATERLOGGED) != 0;
     }
     /**
      * Test for matching blockname

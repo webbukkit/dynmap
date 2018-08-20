@@ -134,7 +134,8 @@ texture:id=bedrock
 #texture:id=water_still,material=WATER
 #TODO: fix when I figure out 1.13 biome shading logic
 texturefile:id=water_still,filename=assets/minecraft/textures/blocks/water_still.png,xcount=1,ycount=1
-texture:id=water_flow,material=WATER
+#texture:id=water_flow,material=WATER
+texturefile:id=water_flow,filename=assets/minecraft/textures/blocks/water_flow.png,xcount=1,ycount=1
 texture:id=lava_still
 texture:id=lava_flow
 texture:id=sand
@@ -2025,6 +2026,7 @@ texture:id=brain_coral_fan
 texture:id=bubble_coral_fan
 texture:id=fire_coral_fan
 texture:id=horn_coral_fan
+texture:id=blue_ice
 
 # Kelp
 block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
@@ -2136,7 +2138,10 @@ block:id=horn_coral_fan,patch0-3=0:horn_coral_fan,stdrot=true,transparency=TRANS
 #[18:55:16] [Server thread/INFO]: [dynmap] 8569: blk=minecraft:sea_pickle, idx=5, state=pickles=3,waterlogged=false
 #[18:55:16] [Server thread/INFO]: [dynmap] 8570: blk=minecraft:sea_pickle, idx=6, state=pickles=4,waterlogged=true
 #[18:55:16] [Server thread/INFO]: [dynmap] 8571: blk=minecraft:sea_pickle, idx=7, state=pickles=4,waterlogged=false
-#[18:55:16] [Server thread/INFO]: [dynmap] 8572: blk=minecraft:blue_ice, idx=0, state=
+
+# Blue Ice
+block:id=bloe_ice,allfaces=0:blue_ice,stdrot=true
+
 #[18:55:16] [Server thread/INFO]: [dynmap] 8573: blk=minecraft:conduit, idx=0, state=
 #[18:55:16] [Server thread/INFO]: [dynmap] 8574: blk=minecraft:void_air, idx=0, state=
 #[18:55:16] [Server thread/INFO]: [dynmap] 8575: blk=minecraft:cave_air, idx=0, state=
