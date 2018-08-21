@@ -107,7 +107,7 @@ public class TexturePackHDShader implements HDShader {
         final protected HDMap map;
         final private TexturePack scaledtp;
         final private HDLighting lighting;
-        private DynmapBlockState lastblk;
+        protected DynmapBlockState lastblk;
         final boolean do_biome_shading;
         final boolean do_better_grass;
         DynLongHashMap ctm_cache;

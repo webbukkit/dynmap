@@ -1,3 +1,4 @@
+version: ${version}
 #
 # This file contains default standard shader definitions.  The contents of this file are replaced and updated
 # during upgrades, so new or updated shader definitions should be done in the custom-shaders.txt file
@@ -74,6 +75,11 @@ shaders:
     texturepack: standard
     max-sky-light: 0
     min-emitted-light: 1
+
+  # Standard texture underwater view shader
+  - class: org.dynmap.hdmap.TexturePackHDUnderwaterShader
+    name: stdtexture-underwater
+    texturepack: standard
     
   # Texture pack based shader for standard Minecraft textures, without biome-tinted grass/leaves
   - class: org.dynmap.hdmap.TexturePackHDShader

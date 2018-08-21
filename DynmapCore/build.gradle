@@ -15,6 +15,7 @@ processResources {
 	    include 'core.yml'
 	    include 'lightings.txt'
 	    include 'perspectives.txt'
+	    include 'shaders.txt'
 		include 'extracted/web/version.js'
 		include 'extracted/web/index.html'
 		include 'extracted/web/login.html'
