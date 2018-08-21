@@ -889,6 +889,8 @@ block:id=piston_head,data=9,west=0:piston_top_sticky,east=0:piston_inner,top=426
 block:id=piston_head,data=10,north=0:piston_top_sticky,south=0:piston_inner,top=261,bottom=5261,east=6261,west=4261,transparency=TRANSPARENT
 # Sticky piston extension - facing south (TODO:piston extension side)
 block:id=piston_head,data=11,north=0:piston_inner,south=0:piston_top_sticky,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
+# Moving piston (don't show)
+block:id=moving_piston
 # Wool
 block:id=white_wool,allfaces=0:white_wool,stdrot=true
 block:id=orange_wool,allfaces=0:orange_wool,stdrot=true
@@ -1452,6 +1454,15 @@ block:id=red_sandstone_slab,data=4,data=5,bottom=0:red_sandstone_bottom,top=0:re
 # Purpur slab
 block:id=purpur_slab,data=0,data=1,data=2,data=3,allfaces=0:purpur_block,stdrot=true,transparency=SEMITRANSPARENT
 block:id=purpur_slab,data=4,data=5,allfaces=0:purpur_block,stdrot=true
+# Prismarine slab
+block:id=prismarine_slab,data=0,data=1,data=2,data=3,allfaces=0:prismarine,stdrot=true,transparency=SEMITRANSPARENT
+block:id=prismarine_slab,data=4,data=5,allfaces=0:prismarine,stdrot=true
+# Prismarine brick slab
+block:id=prismarine_brick_slab,data=0,data=1,data=2,data=3,allfaces=0:prismarine_bricks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=prismarine_brick_slab,data=4,data=5,allfaces=0:prismarine_bricks,stdrot=true
+# Dsrk prismarine slab
+block:id=dark_prismarine_slab,data=0,data=1,data=2,data=3,allfaces=0:dark_prismarine,stdrot=true,transparency=SEMITRANSPARENT
+block:id=dark_prismarine_slab,data=4,data=5,allfaces=0:dark_prismarine,stdrot=true
 
 
 # Light weighted pressure plate
@@ -1519,12 +1530,12 @@ block:id=activator_rail,data=0,patch0=0:activator_rail_on,transparency=TRANSPARE
 block:id=activator_rail,data=4,data=5,patch0=0:activator_rail_on,transparency=TRANSPARENT
 
 # (158)	Dropper
-block:id=dropper,data=0,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical
-block:id=dropper,data=1,top=6000:dropper_front_vertical,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=0:furnace_top
-block:id=dropper,data=2,top=0:furnace_top,east=0:dropper_front,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=3,top=0:furnace_top,west=0:dropper_front,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=4,top=0:furnace_top,north=0:dropper_front,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=5,top=0:furnace_top,south=0:dropper_front,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=0-1,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical
+block:id=dropper,data=2-3,top=6000:dropper_front_vertical,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=0:furnace_top
+block:id=dropper,data=4-5,top=0:furnace_top,east=0:dropper_front,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=6-7,top=0:furnace_top,west=0:dropper_front,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=8-9,top=0:furnace_top,north=0:dropper_front,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=10-11,top=0:furnace_top,south=0:dropper_front,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
 
 # (159) Colored clay
 block:id=black_terracotta,stdrot=true,allfaces=0:black_terracotta
@@ -1641,7 +1652,16 @@ block:id=chiseled_red_sandstone,allsides=0:chiseled_red_sandstone,topbottom=0:re
 block:id=cut_red_sandstone,allsides=0:cut_red_sandstone,topbottom=0:red_sandstone_top,stdrot=true
 
 # Red Sandstone stairs
-block:id=red_sandstone_stairs,data=*,patch0=0:red_sandstone,patch1=0:red_sandstone_top,patch2=0:red_sandstone_bottom,transparency=SEMITRANSPARENT
+block:id=red_sandstone_stairs,patch0=0:red_sandstone,patch1=0:red_sandstone_top,patch2=0:red_sandstone_bottom,transparency=SEMITRANSPARENT
+
+# Prismarine stairs
+block:id=prismarine_stairs,patch0-2=0:prismarine,transparency=SEMITRANSPARENT
+
+# Prismarine brick stairs
+block:id=prismarine_brick_stairs,patch0-2=0:prismarine_bricks,transparency=SEMITRANSPARENT
+
+# Dark prismarine stairs
+block:id=dark_prismarine_stairs,patch0-2=0:dark_prismarine,transparency=SEMITRANSPARENT
 
 # Fence Gate (Spruce)
 block:id=spruce_fence_gate,patch0-2=0:spruce_planks,stdrot=true,transparency=TRANSPARENT
@@ -2035,7 +2055,7 @@ texture:id=sea_pickle
 block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
 
 # Kelp plant
-block:id=kelp,patch0-1=1000:kelp_plant,stdrot=true,transparency=TRANSPARENT
+block:id=kelp_plant,patch0-1=1000:kelp_plant,stdrot=true,transparency=TRANSPARENT
 
 # Dried kelp block
 block:id=dried_kelp_block,allsides=0:dried_kelp_side,top=0:dried_kelp_top,bottom=0:dried_kelp_bottom,stdrot=true
