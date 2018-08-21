@@ -2185,8 +2185,8 @@ block:id=void_air,transparency=TRANSPARENT
 # Cave air
 block:id=cave_air,transparency=TRANSPARENT
 
-# Bubble column
-block:id=bubble_column,topbottom=12000:water_still,allsides=12000:water_flow,stdrot=true,transparency=SEMITRANSPARENT
+# Bubble column (taken care of due to being waterlogged)
+block:id=bubble_column,transparency=SEMITRANSPARENT
 
 # Smooth stone
 block:id=smooth_stone,allfaces=0:stone_slab_top,stdrot=true
