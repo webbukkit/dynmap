@@ -27,6 +27,9 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.bukkit.helper.v113.MapChunkCache113;
+import org.dynmap.common.BiomeMap;
+
+import net.minecraft.server.v1_13_R1.BiomeBase;
 import net.minecraft.server.v1_13_R1.Block;
 import net.minecraft.server.v1_13_R1.BlockFluids;
 import net.minecraft.server.v1_13_R1.IBlockData;
@@ -131,4 +134,13 @@ public class BukkitVersionHelperSpigot113 extends BukkitVersionHelperCB {
         c.setChunks(dw, chunks);
         return c;
     }
+    
+	/**
+	 * Get biome base water multiplier
+	 */
+    @Override
+	public int getBiomeBaseWaterMult(Object bb) {
+		return ((BiomeBase)bb).n();
+	}
+
 }

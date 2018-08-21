@@ -169,4 +169,11 @@ public abstract class BukkitVersionHelper {
 	public Object[] getBlockIDFieldFromSnapshot(ChunkSnapshot css) {
 		return null;
 	}
+	/**
+	 * Get biome base water multiplier
+	 */
+	public int getBiomeBaseWaterMult(Object bb) {
+		return -1;
+	}
+
 }
