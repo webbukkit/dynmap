@@ -116,7 +116,7 @@ public class BukkitVersionHelperSpigot113 extends BukkitVersionHelperCB {
             }
     		dataToState.put(bd,  bs);
     		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
-    		Log.info(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());
+    		Log.verboseinfo(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());
     	}
     }
     /**

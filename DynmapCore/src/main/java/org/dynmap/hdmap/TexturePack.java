@@ -1693,7 +1693,9 @@ public class TexturePack {
             DynmapBlockState blk = DynmapBlockState.getStateByGlobalIndex(gidx);
             if (blk.isAir()) continue;
             HDBlockStateTextureMap tm = HDBlockStateTextureMap.getByBlockState(blk);
-            if (tm == null) continue;
+            if (tm == HDBlockStateTextureMap.BLANK) {
+                Log.severe("Block " + blk + " - no texture mapping");
+            }
             int cnt = HDBlockModels.getNeededTextureCount(blk);
             if(cnt > tm.faces.length){
                 Log.severe("Block " + blk + " - not enough textures for faces (" + cnt + " > " + tm.faces.length + ")");
