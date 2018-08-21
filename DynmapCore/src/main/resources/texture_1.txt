@@ -838,10 +838,10 @@ block:id=fern,patch0-1=1000:fern,transparency=TRANSPARENT
 # Dead shrub
 block:id=dead_bush,patch0-1=0:dead_bush,transparency=TRANSPARENT
 # Seagrass
-block:id=seagrass,patch0-1=1000:seagrass,transparency=TRANSPARENT
+block:id=seagrass,patch0-3=1000:seagrass,transparency=TRANSPARENT
 # Tall seagrass
-block:id=tall_seagrass,data=0,patch0-1=1000:tall_seagrass_top,transparency=TRANSPARENT
-block:id=tall_seagrass,data=1,patch0-1=1000:tall_seagrass_bottom,transparency=TRANSPARENT
+block:id=tall_seagrass,data=0,patch0-3=1000:tall_seagrass_top,transparency=TRANSPARENT
+block:id=tall_seagrass,data=1,patch0-3=1000:tall_seagrass_bottom,transparency=TRANSPARENT
 # Piston - facing down
 block:id=piston,data=0,top=0:piston_bottom,bottom=0:piston_top,allsides=5000:piston_side,transparency=TRANSPARENT
 # Piston - facing up
