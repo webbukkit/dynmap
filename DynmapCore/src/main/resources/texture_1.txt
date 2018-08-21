@@ -18,6 +18,7 @@ texturefile:id=wither,filename=assets/minecraft/textures/entity/wither/wither.pn
 texturefile:id=trapchest,filename=assets/minecraft/textures/entity/chest/trapped.png,format=CHEST
 texturefile:id=bigtrapchest,filename=assets/minecraft/textures/entity/chest/trapped_double.png,format=BIGCHEST
 texturefile:id=endportal,filename=assets/minecraft/textures/environment/end_sky.png
+texturefile:id=shulker,filename=assets/minecraft/textures/entity/shulker/shulker.png,format=SHULKER
 texturefile:id=shulker_white,filename=assets/minecraft/textures/entity/shulker/shulker_white.png,format=SHULKER
 texturefile:id=shulker_orange,filename=assets/minecraft/textures/entity/shulker/shulker_orange.png,format=SHULKER
 texturefile:id=shulker_magenta,filename=assets/minecraft/textures/entity/shulker/shulker_magenta.png,format=SHULKER
@@ -1799,16 +1800,19 @@ block:id=structure_block,data=1,stdrot=true,allfaces=0:structure_block_load
 block:id=structure_block,data=2,stdrot=true,allfaces=0:structure_block_corner
 block:id=structure_block,data=3,stdrot=true,allfaces=0:structure_block_data
 
+# Structure void
+block:id=structure_void,transparency=TRANSPARENT
 
 # Observer Block
-block:id=observer,data=0,top=4000:observer_back,east=0:observer_top,south=4000:observer_side,north=4000:observer_side,west=0:observer_top,bottom=4000:observer_front
-block:id=observer,data=1,top=4000:observer_front,east=5000:observer_top,south=4000:observer_side,north=4000:observer_side,west=5000:observer_top,bottom=4000:observer_back
-block:id=observer,data=2,top=4000:observer_top,east=0:observer_front,south=0:observer_side,north=0:observer_side,west=0:observer_back,bottom=4000:observer_top
-block:id=observer,data=3,top=6000:observer_top,east=0:observer_back,south=0:observer_side,north=0:observer_side,west=0:observer_front,bottom=6000:observer_top
-block:id=observer,data=4,top=5000:observer_top,east=0:observer_side,south=0:observer_back,north=0:observer_front,west=0:observer_side,bottom=5000:observer_top
-block:id=observer,data=5,top=0:observer_top,east=0:observer_side,south=0:observer_front,north=0:observer_back,west=0:observer_side,bottom=0:observer_top
+block:id=observer,data=0-1,top=4000:observer_back,east=0:observer_top,south=4000:observer_side,north=4000:observer_side,west=0:observer_top,bottom=4000:observer_front
+block:id=observer,data=2-3,top=4000:observer_front,east=5000:observer_top,south=4000:observer_side,north=4000:observer_side,west=5000:observer_top,bottom=4000:observer_back
+block:id=observer,data=4-5,top=4000:observer_top,east=0:observer_front,south=0:observer_side,north=0:observer_side,west=0:observer_back,bottom=4000:observer_top
+block:id=observer,data=6-7,top=6000:observer_top,east=0:observer_back,south=0:observer_side,north=0:observer_side,west=0:observer_front,bottom=6000:observer_top
+block:id=observer,data=8-9,top=5000:observer_top,east=0:observer_side,south=0:observer_back,north=0:observer_front,west=0:observer_side,bottom=5000:observer_top
+block:id=observer,data=10-11,top=0:observer_top,east=0:observer_side,south=0:observer_front,north=0:observer_back,west=0:observer_side,bottom=0:observer_top
 
 # Shulker Blocks (facing bottom)
+block:id=shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker
 block:id=white_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_white
 block:id=orange_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_orange
 block:id=magenta_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_magenta
@@ -1827,6 +1831,7 @@ block:id=red_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=500
 block:id=black_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_black
 
 # Shulker Blocks (facing top)
+block:id=shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker
 block:id=white_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_white
 block:id=orange_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_orange
 block:id=magenta_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_magenta
@@ -1845,6 +1850,7 @@ block:id=red_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txt
 block:id=black_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_black
 
 # Shulker Blocks (facing north)
+block:id=shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker
 block:id=white_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_white
 block:id=orange_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_orange
 block:id=magenta_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_magenta
@@ -1863,6 +1869,7 @@ block:id=red_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=
 block:id=black_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_black
 
 # Shulker Blocks (facing south)
+block:id=shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker
 block:id=white_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_white
 block:id=orange_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_orange
 block:id=magenta_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_magenta
@@ -1881,6 +1888,7 @@ block:id=red_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=
 block:id=black_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_black
 
 # Shulker Blocks (facing west)
+block:id=shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker
 block:id=white_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_white
 block:id=orange_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_orange
 block:id=magenta_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_magenta
@@ -1899,6 +1907,7 @@ block:id=red_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west
 block:id=black_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_black
 
 # Shulker Blocks (facing east)
+block:id=shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker
 block:id=white_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_white
 block:id=orange_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_orange
 block:id=magenta_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_magenta
@@ -2038,6 +2047,11 @@ texture:id=brain_coral_block
 texture:id=bubble_coral_block
 texture:id=fire_coral_block
 texture:id=horn_coral_block
+texture:id=tube_coral
+texture:id=brain_coral
+texture:id=bubble_coral
+texture:id=fire_coral
+texture:id=horn_coral
 texture:id=dead_tube_coral_fan
 texture:id=dead_brain_coral_fan
 texture:id=dead_bubble_coral_fan
@@ -2128,7 +2142,7 @@ block:id=fire_coral_wall_fan,patch0-1=0:fire_coral_fan,stdrot=true,transparency=
 block:id=horn_coral_wall_fan,patch0-1=0:horn_coral_fan,stdrot=true,transparency=TRANSPARENT
 
 # Dead tube coral fan
-block:id=dead_tube_coral_wall_fan,patch0-3=0:dead_tube_coral_fan,stdrot=true,transparency=TRANSPARENT
+block:id=dead_tube_coral_fan,patch0-3=0:dead_tube_coral_fan,stdrot=true,transparency=TRANSPARENT
 
 # Dead brain coral fan
 block:id=dead_brain_coral_fan,patch0-3=0:dead_brain_coral_fan,stdrot=true,transparency=TRANSPARENT
@@ -2143,7 +2157,7 @@ block:id=dead_fire_coral_fan,patch0-3=0:dead_fire_coral_fan,stdrot=true,transpar
 block:id=dead_horn_coral_fan,patch0-3=0:dead_horn_coral_fan,stdrot=true,transparency=TRANSPARENT
 
 # Tube coral fan
-block:id=tube_coral_wall_fan,patch0-3=0:tube_coral_fan,stdrot=true,transparency=TRANSPARENT
+block:id=tube_coral_fan,patch0-3=0:tube_coral_fan,stdrot=true,transparency=TRANSPARENT
 
 # Brain coral fan
 block:id=brain_coral_fan,patch0-3=0:brain_coral_fan,stdrot=true,transparency=TRANSPARENT
@@ -2173,3 +2187,30 @@ block:id=cave_air,transparency=TRANSPARENT
 
 # Bubble column
 block:id=bubble_column,topbottom=12000:water_still,allsides=12000:water_flow,stdrot=true,transparency=SEMITRANSPARENT
+
+# Smooth stone
+block:id=smooth_stone,allfaces=0:stone_slab_top,stdrot=true
+
+# Smooth sandstone
+block:id=smooth_sandstone,allfaces=0:sandstone_top,stdrot=true
+
+# Smooth quartz
+block:id=smooth_quartz,allfaces=0:quartz_block_top,stdrot=true
+
+# Smooth red sandstone
+block:id=smooth_red_sandstone,allfaces=0:red_sandstone_top,stdrot=true
+
+# Tube coral
+block:id=tube_coral,patch0-1=0:tube_coral,transparency=TRANSPARENT
+
+# Brain coral
+block:id=brain_coral,patch0-1=0:brain_coral,transparency=TRANSPARENT
+
+# Bubble coral
+block:id=bubble_coral,patch0-1=0:bubble_coral,transparency=TRANSPARENT
+
+# Fire coral
+block:id=fire_coral,patch0-1=0:fire_coral,transparency=TRANSPARENT
+
+# Horn coral
+block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT

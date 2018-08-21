@@ -1372,3 +1372,10 @@ customblock:id=sea_pickle,data=2,data=3,class=org.dynmap.hdmap.renderer.CuboidRe
 customblock:id=sea_pickle,data=4,data=5,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.375:0:0.5625/0.625:0.375:0.8125,cuboid1=0.125:0:0.125/0.375:0.25:0.375,cuboid2=0.5:0:0.25/0.75:0.375:0.5
 # Sea pickle - quad
 customblock:id=sea_pickle,data=6,data=7,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.125:0:0.125/0.375:0.375:0.375,cuboid1=0.5625:0:0.625/0.8125:0.25:0.875,cuboid2=0.5625:0:0.125/0.8125:0.375:0.375,cuboid3=0.125:0:0.5/0.375:0.4275:0.75
+
+# Tube coral
+# Brain coral
+# Bubble coral
+# Fire coral
+# Horn coral
+patchblock:id=tube_coral,id=brain_coral,id=bubble_coral,id=fire_coral,id=horn_coral,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
