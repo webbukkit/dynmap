@@ -2026,6 +2026,7 @@ texture:id=fire_coral_fan
 texture:id=horn_coral_fan
 texture:id=blue_ice
 texture:id=sea_pickle
+texture:id=conduit
 
 # Kelp
 block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
@@ -2139,7 +2140,8 @@ block:id=sea_pickle,patch0-5=0:sea_pickle,transparency=TRANSPARENT
 # Blue Ice
 block:id=blue_ice,allfaces=0:blue_ice,stdrot=true
 
-#[18:55:16] [Server thread/INFO]: [dynmap] 8573: blk=minecraft:conduit, idx=0, state=
+# Conduit
+block:id=conduit,allfaces=0:conduit,transparency=TRANSPARENT
 
 # Void air
 block:id=void_air,transparency=TRANSPARENT

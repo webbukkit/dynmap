@@ -1385,3 +1385,6 @@ customblock:id=sea_pickle,data=6,data=7,class=org.dynmap.hdmap.renderer.CuboidRe
 # Fire coral
 # Horn coral
 patchblock:id=tube_coral,id=brain_coral,id=bubble_coral,id=fire_coral,id=horn_coral,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+
+# Conduit
+boxblock:id=conduit,xmin=0.3125,xmax=0.6875,ymin=0.3125,ymax=0.6875,zmin=0.3125,zmax=0.6875
