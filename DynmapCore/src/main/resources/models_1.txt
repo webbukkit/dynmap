@@ -287,41 +287,17 @@ boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungl
 boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=5,data=13,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
 
 # Rails - flat - east/west
-# Powered rails - flat - east/west
-# Detector rails - flat - east/west
-# (157)	Activator Rail
-patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=0,patch0=HorizY001ZTop
-# Powered rails - flat - east/west (powered)
-# (157)	Activator Rail
-patchblock:id=powered_rail,id=activator_rail,data=8,patch0=HorizY001ZTop
+patchblock:id=rail,data=0,patch0=HorizY001ZTop
 # Rails - flat - north/south
-# Powered rails - flat - north/south
-# Detector rails - flat - north/south
-# (157)	Activator Rail
-patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=1,patch0=HorizY001ZTop@90
-# Powered rails - flat - north/south (powred)
-# (157)	Activator Rail
-patchblock:id=powered_rail,id=activator_rail,data=9,patch0=HorizY001ZTop@90
+patchblock:id=rail,data=1,patch0=HorizY001ZTop@90
 # Rails - ascending to south 
-# Powered rails - ascending to south (powered or unpowered)
-# Detector rails - ascending to south
-# (157)	Activator Rail
-patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=10,patch0=SlopeXUpZTop
+patchblock:id=rail,data=2,data=10,patch0=SlopeXUpZTop
 # Rails - ascending to north
-# Powered rails - ascending to north
-# Detector rails - ascending to north
-# (157)	Activator Rail
-patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=3,data=11,patch0=SlopeXUpZTop@180
+patchblock:id=rail,data=3,data=11,patch0=SlopeXUpZTop@180
 # Rails - ascending to east
-# Powered rails - ascending to east
-# Detector rails - ascending to east
-# (157)	Activator Rail
-patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=12,patch0=SlopeXUpZTop@270
+patchblock:id=rail,data=4,data=12,patch0=SlopeXUpZTop@270
 # Rails - ascending to west
-# Powered rails - ascending to west
-# Detector rails - ascending to west
-# (157)	Activator Rail
-patchblock:id=rail,id=powered_rail,id=detector_rail,id=activator_rail,data=5,data=13,patch0=SlopeXUpZTop@90
+patchblock:id=rail,data=5,data=13,patch0=SlopeXUpZTop@90
 # Rails - northeast corner
 patchblock:id=rail,data=6,patch0=HorizY001ZTop@90
 # Rails - southeast corner
@@ -330,6 +306,33 @@ patchblock:id=rail,data=7,patch0=HorizY001ZTop@180
 patchblock:id=rail,data=8,patch0=HorizY001ZTop@270
 # Rails - northwest corner
 patchblock:id=rail,data=9,patch0=HorizY001ZTop
+
+# Powered rails - flat - east/west
+# Detector rails - flat - east/west
+# Activator Rail - flat - east/west
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=0,data=6,patch0=HorizY001ZTop
+# Powered rails - flat - north/south
+# Detector rails - flat - north/south
+# Activator Rail - flat - north/south
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=1,data=7,patch0=HorizY001ZTop@90
+# Powered rails - ascending to south 
+# Detector rails - ascending to south 
+# Activator Rail - ascending to south 
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=8,patch0=SlopeXUpZTop
+# Powered rails - ascending to north 
+# Detector rails - ascending to north 
+# Activator Rail - ascending to north 
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=3,data=9,patch0=SlopeXUpZTop@180
+# Powered rails - ascending to east 
+# Detector rails - ascending to east 
+# Activator Rail - ascending to east 
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=10,patch0=SlopeXUpZTop@270
+# Powered rails - ascending to west 
+# Detector rails - ascending to west 
+# Activator Rail - ascending to west 
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=5,data=11,patch0=SlopeXUpZTop@90
+
+
 # Ladder - attached to east side of block
 patchblock:id=ladder,data=2,patch0=VertX0In@270
 # Ladder - attached to west side of block

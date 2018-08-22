@@ -774,37 +774,16 @@ block:id=red_bed,patch0=0:red_bed,patch1=1:red_bed,patch2=2:red_bed,patch3=3:red
 # Black Bed
 block:id=black_bed,patch0=0:black_bed,patch1=1:black_bed,patch2=2:black_bed,patch3=3:black_bed,patch4=4:black_bed,patch5=5:black_bed,patch6=6:black_bed,patch7=7:black_bed,patch8=8:black_bed,patch9=9:black_bed,patch10=10:black_bed,patch11=11:black_bed,patch12=12:black_bed,patch13=13:black_bed,patch14=14:black_bed,patch15=15:black_bed,patch16=16:black_bed,patch17=17:black_bed,transparency=TRANSPARENT
 
-# Powered rail - heading north-south - powered
-block:id=powered_rail,data=0,patch0=0:powered_rail_on,transparency=TRANSPARENT
-# Powered rail - heading east-west - powered
-block:id=powered_rail,data=1,patch0=0:powered_rail_on,transparency=TRANSPARENT
-# Powered rail - incline to east - powered
-# Powered rail - incline to west - powered
-block:id=powered_rail,data=2,data=3,patch0=0:powered_rail_on,transparency=TRANSPARENT
-# Powered rail - inclined to north - powered
-# Powered rail - inclined to south - powered
-block:id=powered_rail,data=4,data=5,patch0=0:powered_rail_on,transparency=TRANSPARENT
-# Powered rail - heading north-south - unpowered
-block:id=powered_rail,data=6,patch0=0:powered_rail,transparency=TRANSPARENT
-# Powered rail - heading east-west - unpowered
-block:id=powered_rail,data=7,patch0=0:powered_rail,transparency=TRANSPARENT
-# Powered rail - incline to east - unpowered
-# Powered rail - incline to west - unpowered
-block:id=powered_rail,data=4,data=5,patch0=0:powered_rail,transparency=TRANSPARENT
-# Powered rail - inclined to north - unpowered
-# Powered rail - inclined to south - unpowered
-block:id=powered_rail,data=2,data=3,patch0=0:powered_rail,transparency=TRANSPARENT
+# Powered rail - powered
+block:id=powered_rail,data=0-5,patch0=0:powered_rail_on,transparency=TRANSPARENT
+# Powered rail - unpowered
+block:id=powered_rail,data=6-11,patch0=0:powered_rail,transparency=TRANSPARENT
 
-# Detector rail - heading east-west
-block:id=detector_rail,data=0,patch0=0:detector_rail,transparency=TRANSPARENT
-# Detector rail - incline to east
-# Detector rail - incline to west
-block:id=detector_rail,data=4,data=5,patch0=0:detector_rail,transparency=TRANSPARENT
-# Detector rail - heading north-south
-block:id=detector_rail,data=1,patch0=0:detector_rail,transparency=TRANSPARENT
-# Detector rail - incline to north
-# Detector rail - incline to south
-block:id=detector_rail,data=2,data=3,patch0=0:detector_rail,transparency=TRANSPARENT
+# Detector rail - powered
+block:id=detector_rail,data=0-5,patch0=0:detector_rail_on,transparency=TRANSPARENT
+# Detector rail - unpowered
+block:id=detector_rail,data=6-11,patch0=0:detector_rail,transparency=TRANSPARENT
+
 # Sticky piston - facing down
 block:id=sticky_piston,data=0,top=0:piston_bottom,bottom=0:piston_top_sticky,allsides=5000:piston_side,transparency=TRANSPARENT
 # Sticky piston - facing up
@@ -1508,27 +1487,10 @@ block:id=quartz_pillar,data=2,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6
 # Quartz Stairs
 block:id=quartz_stairs,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
 
-# Activator Rail
-# Activator rail - heading east-west - unpowered
-block:id=activator_rail,data=7,patch0=0:activator_rail,transparency=TRANSPARENT
-# Activator rail - incline to east - unpowered
-# Activator rail - incline to west - unpowered
-block:id=activator_rail,data=8,data=9,patch0=0:activator_rail,transparency=TRANSPARENT
-# Activator rail - heading east-west - powered
-block:id=activator_rail,data=1,patch0=0:activator_rail_on,transparency=TRANSPARENT
-# Activator rail - incline to east - powered
-# Activator rail - incline to west - powered
-block:id=activator_rail,data=2,data=3,patch0=0:activator_rail_on,transparency=TRANSPARENT
-# Activator rail - heading north-south - unpowered
-block:id=activator_rail,data=6,patch0=0:activator_rail,transparency=TRANSPARENT
-# Activator rail - inclined to north - unpowered
-# Activator rail - inclined to south - unpowered
-block:id=activator_rail,data=10,data=11,patch0=0:activator_rail,transparency=TRANSPARENT
-# Activator rail - heading north-south - powered
-block:id=activator_rail,data=0,patch0=0:activator_rail_on,transparency=TRANSPARENT
-# Activator rail - inclined to north - powered
-# Activator rail - inclined to south - powered
-block:id=activator_rail,data=4,data=5,patch0=0:activator_rail_on,transparency=TRANSPARENT
+# Activator rail - powered
+block:id=activator_rail,data=0-5,patch0=0:activator_rail_on,transparency=TRANSPARENT
+# Activator rail - unpowered
+block:id=activator_rail,data=6-11,patch0=0:activator_rail,transparency=TRANSPARENT
 
 # (158)	Dropper
 block:id=dropper,data=0-1,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical
