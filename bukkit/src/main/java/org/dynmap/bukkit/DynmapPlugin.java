@@ -763,7 +763,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
                 if (watermult != -1) {
                 	bmap.setWaterColorMultiplier(watermult);
-                	Log.info("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
+                	Log.verboseinfo("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
                 }
             }
         }

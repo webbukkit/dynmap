@@ -1694,7 +1694,7 @@ public class TexturePack {
             if (blk.isAir()) continue;
             HDBlockStateTextureMap tm = HDBlockStateTextureMap.getByBlockState(blk);
             if (tm == HDBlockStateTextureMap.BLANK) {
-                Log.severe("Block " + blk + " - no texture mapping");
+                Log.verboseinfo("Block " + blk + " - no texture mapping");
             }
             int cnt = HDBlockModels.getNeededTextureCount(blk);
             if(cnt > tm.faces.length){

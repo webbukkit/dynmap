@@ -242,7 +242,7 @@ ignore-updates:id=redstone_wall_torch,id=redstone_torch
 # Acacia fence
 # Dark oak fence
 # Nether brick fence
-customblock:id=oak_fence,id=spruce_fence,id=birch_fence,id=jungle_fence,id=acacia_fence,id=dark_oak_fence,id=nether_brick_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=107
+customblock:id=oak_fence,id=spruce_fence,id=birch_fence,id=jungle_fence,id=acacia_fence,id=dark_oak_fence,id=nether_brick_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence
 
 # Stone pressure plate
 # Oak pressure plate
@@ -1028,7 +1028,8 @@ customblock:id=ender_chest,class=org.dynmap.hdmap.renderer.ChestRenderer,doublec
 patchblock:id=beacon,patch0=BeaconGlassSide,patch1=BeaconGlassSide@90,patch2=BeaconGlassSide@180,patch3=BeaconGlassSide@270,patch4=BeaconGlassTop,patch5=BeaconGlassBottom,patch6=BeaconObsidianSide,patch7=BeaconObsidianSide@90,patch8=BeaconObsidianSide@180,patch9=BeaconObsidianSide@270,patch10=BeaconObsidianTop,patch11=BeaconLightSide,patch12=BeaconLightSide@90,patch13=BeaconLightSide@180,,patch14=BeaconLightSide@270,patch15=BeaconLightTop
 
 # Cobblestone wall
-customblock:id=cobblestone_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=wall,link0=107
+# Mossy cobblestone wall
+customblock:id=cobblestone_wall,id=mossy_cobblestone_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
 
 # Flower pot
 patchblock:id=flower_pot,data=0,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt
@@ -1255,19 +1256,19 @@ customblock:id=dark_oak_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBloc
 customblock:id=acacia_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
 
 # Fence (Spruce)
-customblock:id=spruce_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=183
+customblock:id=spruce_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence,link0=183
 
 # Fence (Birch)
-customblock:id=birch_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=184
+customblock:id=birch_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence,link0=184
 
 # Fence (Jungle)
-customblock:id=jungle_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=185
+customblock:id=jungle_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence,link0=185
 
 # Fence (Dark Oak)
-customblock:id=dark_oak_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=186
+customblock:id=dark_oak_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence,link0=186
 
 # Fence (Acacia)
-customblock:id=acacia_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=187
+customblock:id=acacia_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence,link0=187
 
 # Wooden Door Block (Spruce)
 # Wooden Door Block (Birch)
@@ -1280,7 +1281,7 @@ customblock:id=spruce_door,id=birch_door,id=jungle_door,id=acacia_door,id=dark_o
 #block:id=end_rod,patch0=0:end_rod,transparency=TRANSPARENT
 
 # Chorus Plant
-customblock:id=chorus_plant,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=wall,link0=200
+customblock:id=chorus_plant,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall,link0=200
 
 # Chorus Flower
 block:id=chorus_flower,scale=8
