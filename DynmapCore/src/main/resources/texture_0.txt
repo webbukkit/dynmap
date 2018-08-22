@@ -10,11 +10,12 @@ texturefile:id=chest,filename=assets/minecraft/textures/entity/chest/normal.png,
 texturefile:id=enderchest,filename=assets/minecraft/textures/entity/chest/ender.png,format=CHEST
 texturefile:id=bigchest,filename=assets/minecraft/textures/entity/chest/normal_double.png,format=BIGCHEST
 texturefile:id=sign,filename=assets/minecraft/textures/entity/sign.png,format=SIGN
+texturefile:id=skeleton,filename=assets/minecraft/textures/entity/skeleton/skeleton.png,format=SKIN
+texturefile:id=zombie,filename=assets/minecraft/textures/entity/zombie/zombie.png,format=SKIN
+texturefile:id=char,filename=assets/minecraft/textures/entity/steve.png,format=SKIN
+texturefile:id=creeper,filename=assets/minecraft/textures/entity/creeper/creeper.png,format=SKIN
+texturefile:id=wither,filename=assets/minecraft/textures/entity/wither/wither.png,format=SKIN
 texturefile:id=skeleton,filename=mob/skeleton.png,format=SKIN
-texturefile:id=zombie,filename=mob/zombie.png,format=SKIN
-texturefile:id=char,filename=mob/char.png,format=SKIN
-texturefile:id=creeper,filename=mob/creeper.png,format=SKIN
-texturefile:id=wither,filename=mob/skeleton_wither.png,format=SKIN
 texturefile:id=trapchest,filename=assets/minecraft/textures/entity/chest/trapped.png,format=CHEST
 texturefile:id=bigtrapchest,filename=assets/minecraft/textures/entity/chest/trapped_double.png,format=BIGCHEST
 texturefile:id=endportal,filename=assets/minecraft/textures/environment/end_sky.png

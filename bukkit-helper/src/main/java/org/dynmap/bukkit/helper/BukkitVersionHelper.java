@@ -152,7 +152,7 @@ public abstract class BukkitVersionHelper {
         }
         for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
         	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
-        	Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
+        	Log.verboseinfo(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
         }
     }
     /**
