@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "block/jack_o_lantern" },
+        "facing=south": { "model": "block/jack_o_lantern", "y": 180 },
+        "facing=west":  { "model": "block/jack_o_lantern", "y": 270 },
+        "facing=east":  { "model": "block/jack_o_lantern", "y": 90 }
+    }
+}

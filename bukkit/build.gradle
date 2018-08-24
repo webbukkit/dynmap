@@ -1,0 +1,58 @@
+
+description = 'dynmap'
+
+dependencies {
+  compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
+    compile 'com.nijikokun.bukkit:Permissions:3.1.6'
+    compile project(path: ":dynmap-api", configuration: "shadow")
+    compile project(path: ":DynmapCore", configuration: "shadow")
+    compile group: 'ru.tehkode', name: 'PermissionsEx', version:'1.19.1'
+    compile group: 'de.bananaco', name: 'bPermissions', version:'2.9.1'
+    compile group: 'com.platymuus.bukkit.permissions', name: 'PermissionsBukkit', version:'1.6'
+    compile group: 'org.anjocaido', name: 'EssentialsGroupManager', version:'2.10.1'
+    compile group: 'org.bstats', name: 'bstats-bukkit', version:'1.1'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version:'1.1.1'
+    compile group: 'com.google.code.gson', name: 'gson', version:'2.8.2'
+    compile project(':bukkit-helper')
+    implementation(project(':bukkit-helper-113')) { 
+        transitive = false
+    }
+}
+
+processResources {
+    // replace stuff in mcmod.info, nothing else
+	from('src/main/resources') {
+	    include "plugin.yml"
+        // replace version and mcversion
+        expand(
+                buildnumber: project.parent.ext.globals.buildNumber,
+                version: project.version
+        )
+    }
+}
+
+jar {
+   classifier = 'unshaded'
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('org.bstats::'))
+		include(dependency(':dynmap-api'))
+		include(dependency(":DynmapCore"))
+        include(dependency(':bukkit-helper'))
+        include(dependency(':bukkit-helper-113'))
+	}
+	relocate('org.bstats', 'org.dynmap.bstats')
+    destinationDir = file '../target'
+    archiveName = "Dynmap-${parent.version}-spigot.jar"
+    classifier = ''
+}
+shadowJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
+}
+
+artifacts {
+    archives shadowJar
+}

@@ -1,0 +1,84 @@
+version: ${version}
+#
+# This file contains default standard lighting profiles.  The contents of this file CAN need to be replaced and updated
+# during upgrades, so new or updated lighting definitions should be done in the custom-lightings.txt file
+#
+lightings:
+    # Default lighting - no effects, shadows, day/night
+    - class: org.dynmap.hdmap.DefaultHDLighting 
+      name: default
+    # Shadows enabled day mode
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: shadows
+      shadowstrength: 1.0
+    # Night view (default moonight level is 4)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: night
+      shadowstrength: 1.0
+      ambientlight: 4
+    # A 'bright' night view (easier to see unlit landscape dimly)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: brightnight
+      shadowstrength: 1.0
+      ambientlight: 8
+    # Night and day view
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: nightandday
+      shadowstrength: 1.0
+      ambientlight: 4
+      night-and-day: true
+    # 'Bright' Night and day view
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: brightnightandday
+      shadowstrength: 1.0
+      ambientlight: 8
+      night-and-day: true
+    # Shadows enabled nether
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: nethershadows
+      shadowstrength: 0.5
+      ambientlight: 4
+    # Shadows enabled day mode  (smooth lighting)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: shadows-smooth
+      shadowstrength: 1.0
+      smooth-lighting: true
+    # Night view (default moonight level is 4)  (smooth lighting)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: night-smooth
+      shadowstrength: 1.0
+      ambientlight: 4
+      smooth-lighting: true
+    # A 'bright' night view (easier to see unlit landscape dimly)  (smooth lighting)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: brightnight-smooth
+      shadowstrength: 1.0
+      ambientlight: 8
+      smooth-lighting: true
+    # Night and day view (smooth lighting)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: nightandday-smooth
+      shadowstrength: 1.0
+      ambientlight: 4
+      night-and-day: true
+      smooth-lighting: true
+    # 'Bright' Night and day view  (smooth lighting)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: brightnightandday-smooth
+      shadowstrength: 1.0
+      ambientlight: 8
+      night-and-day: true
+      smooth-lighting: true
+    # Shadows enabled day mode (always classic lighting map)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: shadows-classic
+      shadowstrength: 1.0
+      use-brightness-table: false
+    # Shadows enabled nether  (always classic lighting map)
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: nethershadows-classic
+      shadowstrength: 0.5
+      ambientlight: 4
+      use-brightness-table: false
+      
+      

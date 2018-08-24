@@ -1,10 +1,11 @@
 # Eclipse stuff
-/.classpath
-/.project
-/.settings
+.classpath
+.project
+.settings
 
 # netbeans
 /nbproject
+
 
 # we use maven!
 /build.xml
@@ -24,3 +25,5 @@
 # Mac filesystem dust
 /.DS_Store
 /dependency-reduced-pom.xml
+
+/.gradle

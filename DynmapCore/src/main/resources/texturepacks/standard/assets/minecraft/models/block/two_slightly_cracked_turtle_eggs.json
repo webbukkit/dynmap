@@ -1,0 +1,6 @@
+{
+    "parent": "block/two_turtle_eggs",
+    "textures": {
+        "all": "block/turtle_egg_slightly_cracked"
+    }
+}

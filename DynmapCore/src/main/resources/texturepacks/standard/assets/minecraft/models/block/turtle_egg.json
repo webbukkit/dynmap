@@ -1,0 +1,20 @@
+{
+    "parent": "block/block",
+    "textures": {
+        "particle": "block/turtle_egg",
+        "all": "block/turtle_egg"
+    },
+    "elements": [
+        {   "from": [ 5, 0, 4 ],
+            "to": [ 10, 7, 9 ],
+            "faces": {
+                "down":  { "uv": [  0, 0,  4, 4 ], "texture": "#all" },
+                "up":    { "uv": [  0, 0,  4, 4 ], "texture": "#all" },
+                "north": { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "south": { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "west":  { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "east":  { "uv": [ 1, 4, 5, 11 ], "texture": "#all" }
+            }
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "block/green_concrete_powder" },
+            { "model": "block/green_concrete_powder", "y": 90 },
+            { "model": "block/green_concrete_powder", "y": 180 },
+            { "model": "block/green_concrete_powder", "y": 270 }
+        ]
+    }
+}

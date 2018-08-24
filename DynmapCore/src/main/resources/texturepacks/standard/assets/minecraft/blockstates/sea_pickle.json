@@ -1,0 +1,52 @@
+{
+    "variants": {
+        "pickles=1,waterlogged=false": [
+            { "model": "block/dead_sea_pickle" },
+            { "model": "block/dead_sea_pickle", "y": 90 },
+            { "model": "block/dead_sea_pickle", "y": 180 },
+            { "model": "block/dead_sea_pickle", "y": 270 }
+        ],
+        "pickles=2,waterlogged=false": [
+            { "model": "block/two_dead_sea_pickles" },
+            { "model": "block/two_dead_sea_pickles", "y": 90 },
+            { "model": "block/two_dead_sea_pickles", "y": 180 },
+            { "model": "block/two_dead_sea_pickles", "y": 270 }
+        ],
+        "pickles=3,waterlogged=false": [
+            { "model": "block/three_dead_sea_pickles" },
+            { "model": "block/three_dead_sea_pickles", "y": 90 },
+            { "model": "block/three_dead_sea_pickles", "y": 180 },
+            { "model": "block/three_dead_sea_pickles", "y": 270 }
+        ],
+        "pickles=4,waterlogged=false": [
+            { "model": "block/four_dead_sea_pickles" },
+            { "model": "block/four_dead_sea_pickles", "y": 90 },
+            { "model": "block/four_dead_sea_pickles", "y": 180 },
+            { "model": "block/four_dead_sea_pickles", "y": 270 }
+        ],
+        "pickles=1,waterlogged=true": [
+            { "model": "block/sea_pickle" },
+            { "model": "block/sea_pickle", "y": 90 },
+            { "model": "block/sea_pickle", "y": 180 },
+            { "model": "block/sea_pickle", "y": 270 }
+        ],
+        "pickles=2,waterlogged=true": [
+            { "model": "block/two_sea_pickles" },
+            { "model": "block/two_sea_pickles", "y": 90 },
+            { "model": "block/two_sea_pickles", "y": 180 },
+            { "model": "block/two_sea_pickles", "y": 270 }
+        ],
+        "pickles=3,waterlogged=true": [
+            { "model": "block/three_sea_pickles" },
+            { "model": "block/three_sea_pickles", "y": 90 },
+            { "model": "block/three_sea_pickles", "y": 180 },
+            { "model": "block/three_sea_pickles", "y": 270 }
+        ],
+        "pickles=4,waterlogged=true": [
+            { "model": "block/four_sea_pickles" },
+            { "model": "block/four_sea_pickles", "y": 90 },
+            { "model": "block/four_sea_pickles", "y": 180 },
+            { "model": "block/four_sea_pickles", "y": 270 }
+        ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "textures": {
+        "texture": "block/brown_mushroom_block",
+        "particle": "block/brown_mushroom_block"
+    },
+    "elements": [
+        {   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 0 ],
+            "faces": {
+                "north": { "texture": "#texture", "cullface":"north" }
+            }
+        }
+    ]
+}

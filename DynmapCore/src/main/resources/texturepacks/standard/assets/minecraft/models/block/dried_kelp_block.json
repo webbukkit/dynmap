@@ -1,0 +1,25 @@
+{
+    "parent": "block/block",
+    "textures": {
+        "particle": "block/dried_kelp_side",
+        "down": "block/dried_kelp_bottom",
+        "up": "block/dried_kelp_top",
+        "north": "block/dried_kelp_side",
+        "east": "block/dried_kelp_side",
+        "south": "block/dried_kelp_side",
+        "west": "block/dried_kelp_side"
+    },
+    "elements": [
+        {   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "down":  { "texture": "#down", "cullface": "down" },
+                "up":    { "texture": "#up", "cullface": "up" },
+                "north": { "texture": "#north", "cullface": "north" },
+                "south": { "uv": [16, 0, 0, 16], "texture": "#south", "cullface": "south" },
+                "west":  { "texture": "#west", "cullface": "west" },
+                "east":  { "uv": [16, 0, 0, 16], "texture": "#east", "cullface": "east" }
+            }
+        }
+    ]
+}

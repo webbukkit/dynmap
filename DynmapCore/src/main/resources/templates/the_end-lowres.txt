@@ -1,0 +1,37 @@
+version: 0.20
+#
+# Default template for "The End" environment worlds (deftemplatesuffix="lowres")
+#  Uses the HDMap renderer with view from the SE with the "lowres" resolution (4 pixels per block edge)
+#
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-the_end-lowres.txt' if you wish to customize it
+#
+templates:
+  # The End world template (HDMap lowres)
+  the_end-lowres:
+    enabled: true
+    # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+    extrazoomout: 2
+    #center:
+    #  x: 0
+    #  y: 64
+    #  z: 0
+    maps:
+      - class: org.dynmap.hdmap.HDMap
+        name: flat
+        title: "Flat"
+        prefix: flat
+        perspective: iso_S_90_lowres
+        shader: stdtexture
+        lighting: brightnight
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
+      - class: org.dynmap.hdmap.HDMap
+        name: the_end
+        title: "Surface"
+        prefix: st
+        perspective: iso_SE_60_lowres
+        shader: stdtexture
+        lighting: brightnight
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 2
+            

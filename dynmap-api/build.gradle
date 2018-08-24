@@ -1,0 +1,23 @@
+
+description = "dynmap-api"
+
+dependencies {
+    compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
+    compile project(":DynmapCoreAPI")
+}
+
+jar {
+   classifier = 'unshaded'
+}
+
+shadowJar {
+    dependencies {
+        include(dependency(":DynmapCoreAPI"))
+	}
+    destinationDir = file '../target'
+    classifier = ''
+}
+
+artifacts {
+    archives shadowJar
+}

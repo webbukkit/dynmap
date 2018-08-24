@@ -1,0 +1,35 @@
+.regioninfo > * {
+	display: block;
+}
+
+.regioninfo > *:empty {
+	display: none;
+}
+
+.regioninfo .regionname {
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.regioninfo .regionflags .regionflag {
+	display: block;
+	font-size: 90%;
+	color: gray;
+	margin-left: 5px;
+}
+
+.regioninfo .owners:before {
+	content: "Owners: ";
+}
+
+.regioninfo .members:before {
+	content: "Members: ";
+}
+
+.regioninfo .regionflags:before {
+	content: "Flags: ";
+}
+
+.regioninfo .regionpriority:before {
+	content: "Priority: ";
+}

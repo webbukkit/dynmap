@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "age=0": { "model": "block/chorus_flower" },
+        "age=1": { "model": "block/chorus_flower" },
+        "age=2": { "model": "block/chorus_flower" },
+        "age=3": { "model": "block/chorus_flower" },
+        "age=4": { "model": "block/chorus_flower" },
+        "age=5": { "model": "block/chorus_flower_dead" }
+    }
+}

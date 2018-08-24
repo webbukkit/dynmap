@@ -1,0 +1,6 @@
+{
+    "parent": "block/stem_growth5",
+    "textures": {
+        "stem": "block/melon_stem"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "variants": {
+        "shape=north_south": { "model": "block/rail" },
+        "shape=east_west": { "model": "block/rail", "y": 90 },
+        "shape=ascending_east": { "model": "block/rail_raised_ne", "y": 90 },
+        "shape=ascending_west": { "model": "block/rail_raised_sw", "y": 90 },
+        "shape=ascending_north": { "model": "block/rail_raised_ne" },
+        "shape=ascending_south": { "model": "block/rail_raised_sw" },
+        "shape=south_east": { "model": "block/rail_corner" },
+        "shape=south_west": { "model": "block/rail_corner", "y": 90 },
+        "shape=north_west": { "model": "block/rail_corner", "y": 180 },
+        "shape=north_east": { "model": "block/rail_corner", "y": 270 }
+    }
+}

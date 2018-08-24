@@ -1,0 +1,51 @@
+plugins {
+    id  "com.github.johnrengelman.shadow" version "2.0.4"
+    id  'java'
+    id  'maven'
+    id  'maven-publish'
+}
+
+allprojects  {
+  repositories {
+     mavenLocal()
+     mavenCentral()
+     maven { url "https://oss.sonatype.org/content/repositories/releases" }
+     maven { url "http://repo.mikeprimm.com" }
+     maven { url "http://repo.maven.apache.org/maven2" }
+     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+     maven { url "http://repo.bstats.org/content/repositories/releases/" }
+  }
+
+  apply plugin: 'java'
+  
+  group = 'us.dynmap'
+  version = '3.0-SNAPSHOT'
+
+}
+
+class Globals {
+  String buildNumber =  System.getenv().BUILD_NUMBER ?: "Dev"
+}
+ext {
+  globals = new Globals()
+}
+
+subprojects {  
+  apply plugin: "com.github.johnrengelman.shadow"
+  apply plugin: 'java'
+  apply plugin: 'maven'
+  apply plugin: 'maven-publish'
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  tasks.withType(JavaCompile) {
+  	options.encoding = 'UTF-8'
+  }
+}
+
+clean {
+  delete "target" 
+}
+
+task setupCIWorkspace {
+}
