@@ -512,18 +512,17 @@ public class IsoHDPerspective implements HDPerspective {
          * Process visit of ray to block
          */
         private final boolean visit_block(HDShaderState[] shaderstate, boolean[] shaderdone) {
-        	boolean done = false;
             lastblocktype = blocktype;
             blocktype = mapiter.getBlockType();
-            if(skiptoair) {	/* If skipping until we see air */
+            if (skiptoair) {	/* If skipping until we see air */
                 if (blocktype.isAir()) {	/* If air, we're done */
                 	skiptoair = false;
                 }
             }
             else if(nonairhit || blocktype.isNotAir()) {
-            	done = true;
             	// If waterlogged, start by rendering as if full water block
             	if (blocktype.isWaterlogged()) {
+                	boolean done = true;
             		DynmapBlockState saved_type = blocktype;
             		if (full_water == null) {
             			full_water = DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK);
@@ -536,12 +535,12 @@ public class IsoHDPerspective implements HDPerspective {
                         }
                         done = done && shaderdone[i];
                     }
+                    // Restore block type
+                    blocktype = saved_type;
                     /* If all are done, we're out */
                     if (done) {
                         return true;
                     }
-                    // Restore block type
-                    blocktype = saved_type;
                     nonairhit = true;
             	}
                 short[] model;
@@ -559,12 +558,13 @@ public class IsoHDPerspective implements HDPerspective {
                 }
                 /* Look up to see if block is modelled */
                 if(patches != null) {
-                    done = handlePatches(patches, shaderstate, shaderdone);
+                    return handlePatches(patches, shaderstate, shaderdone);
                 }
                 else if ((model = scalemodels.getScaledModel(blocktype)) != null) {
-                    done = handleSubModel(model, shaderstate, shaderdone);
+                    return handleSubModel(model, shaderstate, shaderdone);
                 }
                 else {
+                	boolean done = true;
                     subalpha = -1;
                     for(int i = 0; i < shaderstate.length; i++) {
                         if(!shaderdone[i]) {
@@ -572,11 +572,12 @@ public class IsoHDPerspective implements HDPerspective {
                         }
                         done = done && shaderdone[i];
                     }
-                    if (!done)
-                        nonairhit = true;
+                    if (done)
+                    	return true;
+                    nonairhit = true;
                 }
             }
-            return done;
+            return false;
         }
         
         /* Skip empty : return false if exited */

@@ -32,8 +32,10 @@ import org.dynmap.common.BiomeMap;
 import net.minecraft.server.v1_13_R1.BiomeBase;
 import net.minecraft.server.v1_13_R1.Block;
 import net.minecraft.server.v1_13_R1.BlockFluids;
+import net.minecraft.server.v1_13_R1.BlockLogAbstract;
 import net.minecraft.server.v1_13_R1.IBlockData;
 import net.minecraft.server.v1_13_R1.IBlockState;
+import net.minecraft.server.v1_13_R1.Material;
 
 /**
  * Helper for isolation of bukkit version specific issues
@@ -117,6 +119,15 @@ public class BukkitVersionHelperSpigot113 extends BukkitVersionHelperCB {
             if ((!bd.s().e()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
             	bs.setWaterlogged();
             }
+            if (bd.getMaterial() == Material.AIR) {
+            	bs.setAir();
+            }
+    		if (bd.getMaterial() == Material.LEAVES) {
+    			bs.setLeaves();
+    		}
+    		if (bd.getBlock() instanceof BlockLogAbstract) {
+    			bs.setLog();
+    		}
     		dataToState.put(bd,  bs);
     		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
     		Log.verboseinfo(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());

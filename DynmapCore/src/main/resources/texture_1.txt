@@ -2143,12 +2143,6 @@ block:id=blue_ice,allfaces=0:blue_ice,stdrot=true
 # Conduit
 block:id=conduit,allfaces=0:conduit,transparency=TRANSPARENT
 
-# Void air
-block:id=void_air,transparency=TRANSPARENT
-
-# Cave air
-block:id=cave_air,transparency=TRANSPARENT
-
 # Bubble column (taken care of due to being waterlogged)
 block:id=bubble_column,transparency=SEMITRANSPARENT
 

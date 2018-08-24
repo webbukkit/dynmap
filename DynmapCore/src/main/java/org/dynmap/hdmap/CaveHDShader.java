@@ -42,7 +42,13 @@ public class CaveHDShader implements HDShader {
         name = (String) configuration.get("name");
         iflit = configuration.getBoolean("onlyiflit", false);
         
-        setHidden(DynmapBlockState.AIR); /* Air is hidden always */
+        for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); i++) {
+        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
+        	if (bs.isAir() || bs.isWater()) {
+        		setHidden(bs);
+        	}
+        }
+
         List<Object> hidden = configuration.getList("hiddennames");
         if(hidden != null) {
             for(Object o : hidden) {
@@ -60,6 +66,12 @@ public class CaveHDShader implements HDShader {
             setHidden(DynmapBlockState.SNOW_BLOCK);
             setHidden(DynmapBlockState.ICE_BLOCK);
             setHidden(DynmapBlockState.SNOW_LAYER_BLOCK);
+            for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); i++) {
+            	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
+            	if (bs.isLeaves() || bs.isSnow() || bs.isLog()) {
+            		setHidden(bs);
+            	}
+            }
         }
     }
     
@@ -166,7 +178,7 @@ public class CaveHDShader implements HDShader {
             if (isHidden(blocktype)) {
                 blocktype = DynmapBlockState.AIR;
             }
-            else {
+            else if (blocktype.isNotAir()) {
                 air = false;
                 return false;
             }

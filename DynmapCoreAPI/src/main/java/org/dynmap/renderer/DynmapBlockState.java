@@ -34,6 +34,7 @@ public class DynmapBlockState {
     private static int MATCH_LOG = 1 << 3;
     private static int MATCH_GRASS = 1 << 4;
     private static int MATCH_WATERLOGGED = 1 << 5;
+    private static int MATCH_LEAVES = 1 << 6;
     
     // Map of base blocks by name
     private static HashMap<String, DynmapBlockState> blocksByName = new HashMap<String, DynmapBlockState>();
@@ -124,6 +125,7 @@ public class DynmapBlockState {
         matchflags |= isWater(blockName) ? MATCH_WATER : 0;
         matchflags |= (blockName.equals(SNOW_BLOCK) || blockName.equals(SNOW_LAYER_BLOCK)) ? MATCH_SNOW : 0;
         matchflags |= blockName.equals(GRASS_BLOCK) ? MATCH_GRASS : 0;
+        matchflags |= log_blocks.contains(blockName) ? MATCH_LOG : 0;
     }
     /**
      * Get state for same base block with given index
@@ -192,6 +194,12 @@ public class DynmapBlockState {
         return (matchflags & MATCH_AIR) != 0;
     }
     /**
+     * Set to air
+     */
+    public final void setAir() {
+    	matchflags |= MATCH_AIR;
+    }
+    /**
      * Return number of states under base state
      * @return state count
      */
@@ -223,18 +231,10 @@ public class DynmapBlockState {
         return (matchflags & MATCH_LOG) != 0;
     }
     /**
-     * Add log block name
-     * @param name - name of custom log block
+     * Set to log block
      */
-    public void addLogBlock(String name) {
-        log_blocks.add(name);
-        // Apply to existing blocks
-        DynmapBlockState bbs = DynmapBlockState.getBaseStateByName(name);
-        if (bbs.isNotAir()) {
-            for (int i = 0; i < bbs.getStateCount(); i++) {
-                bbs.states[i].matchflags |= MATCH_LOG;
-            }
-        }
+    public final void setLog() {
+        matchflags |= MATCH_LOG;
     }
     /**
      * Test if block is water block
@@ -285,6 +285,18 @@ public class DynmapBlockState {
      */
     public final void setWaterlogged() {
     	matchflags |= MATCH_WATERLOGGED;
+    }
+    /**
+     * Test if block is leaves
+     */
+    public final boolean isLeaves() {
+        return (matchflags & MATCH_LEAVES) != 0;
+    }
+    /**
+     * Set state to be leaves
+     */
+    public final void setLeaves() {
+    	matchflags |= MATCH_LEAVES;
     }
     /**
      * Test for matching blockname
