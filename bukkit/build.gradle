@@ -45,7 +45,12 @@ shadowJar {
 	}
 	relocate('org.bstats', 'org.dynmap.bstats')
     destinationDir = file '../target'
+    archiveName = "Dynmap-${parent.version}-spigot.jar"
     classifier = ''
+}
+shadowJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
 }
 
 artifacts {
