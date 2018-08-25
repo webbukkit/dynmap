@@ -16,7 +16,7 @@ public class FenceGateBlockRenderer extends CustomRenderer {
     private static final int TEXTURE_BOTTOM = 2;
 
     // Meshes, indexed by connection combination (bit 2=open(1)/close(0), bit 0-1=0(south),1(west),2(north),3(east))
-    private RenderPatch[][] meshes = new RenderPatch[8][];
+    protected RenderPatch[][] meshes = new RenderPatch[8][];
     
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {

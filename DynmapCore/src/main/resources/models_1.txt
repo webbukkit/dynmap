@@ -801,7 +801,7 @@ patchblock:id=vine,data=11,patch0=VertX0In,patch1=VertX0In@180,patch2=VertX0In@2
 # Vines - N+S+E+W sides of block
 patchblock:id=vine,data=15,patch0=VertX0In@270,patch1=VertX0In@90,patch2=VertX0In@180,patch3=VertX0In
 # Oak fence gate
-customblock:id=oak_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=oak_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 # Pumpkin stem
 # Mellon stem
 block:id=pumpkin_stem,id=melon_stem,scale=16
@@ -1244,19 +1244,19 @@ boxblock:id=iron_trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
 customblock:id=red_sandstone_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 # Fence Gate (Spruce)
-customblock:id=spruce_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=spruce_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 
 # Fence Gate (Birch)
-customblock:id=birch_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=birch_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 
 # Fence Gate (Jungle)
-customblock:id=jungle_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=jungle_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 
 # Fence Gate (Dark Oak)
-customblock:id=dark_oak_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=dark_oak_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 
 # Fence Gate (Acacia)
-customblock:id=acacia_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+customblock:id=acacia_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 
 # Fence (Spruce)
 customblock:id=spruce_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence,link0=183
