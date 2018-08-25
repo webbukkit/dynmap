@@ -174,8 +174,11 @@ ignore-updates:id=oak_leaves,id=birch_leaves,id=spruce_leaves,id=jungle_leaves,i
 # Spruce Wood stair
 # Birch Wood stair
 # Jungle Wood stair
-# (156)	Quartz Stairs
-customblock:id=oak_stairs,id=cobblestone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
+# Quartz Stairs
+# Prismarine stairs
+# Prismarine brick stairs
+# Dark prismarine stairs
+customblock:id=oak_stairs,id=cobblestone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,id=prismarine_stairs,id=prismarine_brick_stairs,id=dark_prismarine_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
 
 
 # Oak slab
@@ -196,8 +199,11 @@ boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,
 # Quartz slab
 # Red sandstone slab
 # Purpur slab
-boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,data=0,data=1,ymin=0.5
-boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,data=2,data=3,ymax=0.5
+# Prismarine slab
+# Prismarine brick slab
+# Dark prismarine slab
+boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,id=prismarine_slab,id=prismarine_brick_slab,id=dark_prismarine_slab,data=0,data=1,ymin=0.5
+boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,id=prismarine_slab,id=prismarine_brick_slab,id=dark_prismarine_slab,data=2,data=3,ymax=0.5
 
 # Snow
 boxblock:id=snow,data=0,ymax=0.125
