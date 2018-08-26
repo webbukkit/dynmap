@@ -735,7 +735,7 @@ block:id=piston_head,data=5,data=13,scale=8
 rotate:id=piston_head,data=2,rot=90
 # Glass pane
 # Iron fence
-customblock:id=glass_pane,id=iron_bars,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=glass_pane,id=iron_bars,class=org.dynmap.hdmap.renderer.PaneStateRenderer
 
 # Web
 # Nether Wart
@@ -1211,25 +1211,25 @@ layer:11,12,13,14,15
 ****************
 
 # Glass pane
-customblock:id=glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
 
 # Colored glass pane
-customblock:id=white_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=orange_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=magenta_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=light_blue_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=yellow_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=lime_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=pink_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=gray_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=light_gray_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=cyan_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=purple_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=blue_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=brown_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=green_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=red_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
-customblock:id=black_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneRenderer
+customblock:id=white_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=orange_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=magenta_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=light_blue_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=yellow_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=lime_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=pink_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=gray_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=light_gray_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=cyan_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=purple_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=blue_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=brown_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=green_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=red_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
+customblock:id=black_stained_glass_pane,class=org.dynmap.hdmap.renderer.PaneStateRenderer
 
 # Acacia Stairs (163)
 # Dark Oak Stairs (164)

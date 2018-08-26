@@ -19,13 +19,13 @@ public class PaneRenderer extends CustomRenderer {
     private static final int TEXTURE_FACE = 0;
     private static final int TEXTURE_EDGE = 1;
 
-    private static final int SIDE_XP = 0x4;
-    private static final int SIDE_XN = 0x1;
-    private static final int SIDE_ZP = 0x8;
-    private static final int SIDE_ZN = 0x2;
+    protected static final int SIDE_XP = 0x4;
+    protected static final int SIDE_XN = 0x1;
+    protected static final int SIDE_ZP = 0x8;
+    protected static final int SIDE_ZN = 0x2;
     
     // Meshes, indexed by connection combination (bit 0=X-, bit 1=Z-, bit 2=X+, bit 3=Z+)
-    private RenderPatch[][] meshes = new RenderPatch[16][];
+    protected RenderPatch[][] meshes = new RenderPatch[16][];
     
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
@@ -57,7 +57,7 @@ public class PaneRenderer extends CustomRenderer {
         RenderPatch HorizY100ZTopStripTop_180 = rpf.getRotatedPatch(HorizY100ZTopStripTop, 0, 180, 0, TEXTURE_EDGE);
         RenderPatch HorizY100ZTopStripTop_270 = rpf.getRotatedPatch(HorizY100ZTopStripTop, 0, 270, 0, TEXTURE_EDGE);
 
-        meshes[0] = meshes[15] = new RenderPatch[] { VertX05, VertX05_90, HorizY100ZTopStrip, HorizY100ZTopStrip_90 };
+        meshes[0] = new RenderPatch[] { VertX05Strip, VertX05Strip_90, VertX05Strip_180, VertX05Strip_270 };
         meshes[1] = new RenderPatch[] { VertX05Left_90, HorizY100ZTopStripTop_90, VertX05Strip };
         meshes[2] = new RenderPatch[] { VertX05Left_180, HorizY100ZTopStripTop_180, VertX05Strip_90 };
         meshes[3] = new RenderPatch[] { VertX05Left_90, HorizY100ZTopStripTop_90, VertX05Left_180, HorizY100ZTopStripTop_180 };
@@ -72,6 +72,7 @@ public class PaneRenderer extends CustomRenderer {
         meshes[12] = new RenderPatch[] { VertX05Left_270, HorizY100ZTopStripTop_270, VertX05Left, HorizY100ZTopStripTop };
         meshes[13] = new RenderPatch[] { VertX05_270, HorizY100ZTopStrip_270, VertX05Left, HorizY100ZTopStripTop };
         meshes[14] = new RenderPatch[] { VertX05_180, HorizY100ZTopStrip_180, VertX05Left_270, HorizY100ZTopStripTop_270 };
+        meshes[15] = new RenderPatch[] { VertX05, VertX05_90, HorizY100ZTopStrip, HorizY100ZTopStrip_90 };
     }
     @Override
     public int getMaximumTextureCount() {
