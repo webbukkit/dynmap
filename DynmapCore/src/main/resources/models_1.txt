@@ -776,36 +776,9 @@ patchblock:id=sunflower,id=lilac,id=rose_bush,id=peony,id=tall_grass,id=large_fe
 # Sapling (oak, spruce, birch, jungle, acacia, dark oak)
 patchblock:id=oak_sapling,id=spruce_sapling,id=birch_sapling,id=jungle_sapling,id=acacia_sapling,id=dark_oak_sapling,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
-# Vines - N side of block
-patchblock:id=vine,data=2,patch0=VertX0In
-# Vines - E side of block
-patchblock:id=vine,data=4,patch0=VertX0In@90
-# Vines - S side of block
-patchblock:id=vine,data=8,patch0=VertX0In@180
-# Vines - W side of block
-patchblock:id=vine,data=1,patch0=VertX0In@270
-# Vines - N+E sides of block
-patchblock:id=vine,data=6,patch0=VertX0In,patch1=VertX0In@90
-# Vines - E+S side of block
-patchblock:id=vine,data=12,patch0=VertX0In@90,patch1=VertX0In@180
-# Vines - S+W side of block
-patchblock:id=vine,data=9,patch0=VertX0In@180,patch1=VertX0In@270
-# Vines - W+N side of block
-patchblock:id=vine,data=3,patch0=VertX0In@270,patch1=VertX0In
-# Vines - N+S sides of block
-patchblock:id=vine,data=10,patch0=VertX0In,patch1=VertX0In@180
-# Vines - E+W side of block
-patchblock:id=vine,data=5,patch0=VertX0In@90,patch1=VertX0In@270
-# Vines - N+E+W sides of block
-patchblock:id=vine,data=7,patch0=VertX0In@90,patch1=VertX0In@270,patch2=VertX0In
-# Vines - N+E+S side of block
-patchblock:id=vine,data=14,patch0=VertX0In@180,patch1=VertX0In,patch2=VertX0In@90
-# Vines - E+S+W side of block
-patchblock:id=vine,data=13,patch0=VertX0In@270,patch1=VertX0In@90,patch2=VertX0In@180
-# Vines - N+S+W side of block
-patchblock:id=vine,data=11,patch0=VertX0In,patch1=VertX0In@180,patch2=VertX0In@270
-# Vines - N+S+E+W sides of block
-patchblock:id=vine,data=15,patch0=VertX0In@270,patch1=VertX0In@90,patch2=VertX0In@180,patch3=VertX0In
+# Vines
+customblock:id=vine,class=org.dynmap.hdmap.renderer.VineStateRenderer
+
 # Oak fence gate
 customblock:id=oak_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 # Pumpkin stem
