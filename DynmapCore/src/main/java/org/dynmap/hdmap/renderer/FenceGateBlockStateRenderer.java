@@ -73,7 +73,7 @@ public class FenceGateBlockStateRenderer extends CustomRenderer {
             addBox(rpf, list, 0.875, 1.0, 0.3125, 1.0, 0.4375, 0.5625);
             addBox(rpf, list, 0.0, 0.125, 0.375, 0.9375, 0.8125, 0.9375);
             addBox(rpf, list, 0.875, 1.0, 0.375, 0.9375, 0.8125, 0.9375);
-            addBox(rpf, list, 0.0, 0.125, 0.75, 0.5625, 0.5625, 0.8125);
+            addBox(rpf, list, 0.0, 0.125, 0.375, 0.5625, 0.5625, 0.8125);
             addBox(rpf, list, 0.0, 0.125, 0.75, 0.9375, 0.5625, 0.8125);
             addBox(rpf, list, 0.875, 1.0, 0.375, 0.5625, 0.5625, 0.8125);
             addBox(rpf, list, 0.875, 1.0, 0.75, 0.9375, 0.5625, 0.8125);
