@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,8 +33,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Method worldborderminz;
     private Method worldbordermaxz;
     private Method getbiomebyid;
+    private Method getbiomefunc;
     private Method getidbybiome;
     private boolean isBadUnload = false;
+    protected boolean blockidsneeded = true;
     
     public BukkitVersionHelperCB() {
     	
@@ -67,9 +70,11 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmsblock = getNMSClass("net.minecraft.server.Block");
         nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
         nmsmaterial = getNMSClass("net.minecraft.server.Material");
-        blockbyid = getFieldNoFail(nmsblock, new String[] { "byId" }, nmsblockarray);
-        if (blockbyid == null) {
-            blockbyidfunc = getMethod(nmsblock, new String[] { "getById", "e" }, new Class[] { int.class });
+        if (blockidsneeded) {   // Not needed for 1.13+
+            blockbyid = getFieldNoFail(nmsblock, new String[] { "byId" }, nmsblockarray);
+            if (blockbyid == null) {
+                blockbyidfunc = getMethod(nmsblock, new String[] { "getById", "e" }, new Class[] { int.class });
+            }
         }
         material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);
 
@@ -78,17 +83,26 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
         biomebaselist = getPrivateFieldNoFail(biomebase, new String[] { "biomes" }, biomebasearray);
         if (biomebaselist == null) {
-            getbiomebyid = getMethod(biomebase, new String[] { "a" }, new Class[] { int.class} );
+            getbiomefunc = getMethodNoFail(biomebase, new String[] { "getBiome" }, new Class[] { int.class, biomebase });
+            if (getbiomefunc == null) {
+                getbiomebyid = getMethod(biomebase, new String[] { "a" }, new Class[] { int.class} );
+            }
         }
-        biomebasetemp = getPrivateFieldNoFail(biomebase, new String[] { "B" }, float.class);
-        if (biomebasetemp != null) {
-            biomebasehumi = getPrivateField(biomebase, new String[] { "C" }, float.class);
+        biomebasetempfunc = getMethodNoFail(biomebase, new String[] { "getTemperature" }, nulltypes);
+        if (biomebasetempfunc == null) {
+            biomebasetemp = getPrivateFieldNoFail(biomebase, new String[] { "B" }, float.class);
+            if (biomebasetemp != null) {
+                biomebasehumi = getPrivateField(biomebase, new String[] { "C" }, float.class);
+            }
+            else {
+                biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C", "aO" }, float.class);
+                biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D", "aP" }, float.class);
+            }
         }
         else {
-            biomebasetemp = getPrivateField(biomebase, new String[] { "temperature", "F", "C", "aO" }, float.class);
-            biomebasehumi = getPrivateField(biomebase, new String[] { "humidity", "G", "D", "aP" }, float.class);
+            biomebasehumifunc = getMethod(biomebase, new String[] { "getHumidity" }, nulltypes);
         }
-        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z", "aS" }, String.class);
+        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z", "aS", "aR" }, String.class);
         biomebaseid = getFieldNoFail(biomebase, new String[] { "id" }, int.class);
         if (biomebaseid == null) {
             getidbybiome = getMethod(biomebase, new String[] { "a" }, new Class[] { biomebase } );
@@ -252,6 +266,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     public int[] getBlockMaterialMap() {
         try {
             int[] map = new int[4096];
+            Arrays.fill(map, -1);
             if (blockbyid != null) {
                 Object[] byid = (Object[])blockbyid.get(nmsblock);
                 ArrayList<Object> mats = new ArrayList<Object>();
@@ -265,13 +280,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                                 mats.add(mat);
                             }
                         }
-                        else {
-                            map[i] = -1;
-                        }
                     }
                 }
             }
-            else {
+            else if (blockbyidfunc != null) {
                 ArrayList<Object> mats = new ArrayList<Object>();
                 for (int i = 0; i < map.length; i++) {
                     Object blk = blockbyidfunc.invoke(nmsblock, i);
@@ -283,9 +295,6 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                                 map[i] = mats.size();
                                 mats.add(mat);
                             }
-                        }
-                        else {
-                            map[i] = -1;
                         }
                     }
                 }
@@ -326,12 +335,15 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
      * Get list of defined biomebase objects
      */
     public Object[] getBiomeBaseList() {
-        if (getbiomebyid != null) {
+        if ((getbiomebyid != null) || (getbiomefunc != null)) {
             if (biomelist == null) {
                 biomelist = new Object[1024];
                 for (int i = 0; i < 1024; i++) {
                     try {
-                        biomelist[i] = getbiomebyid.invoke(biomebase, i);
+                        if (getbiomefunc != null)
+                            biomelist[i] = getbiomefunc.invoke(biomebase, i, null);
+                        else
+                            biomelist[i] = getbiomebyid.invoke(biomebase, i);
                     } catch (IllegalAccessException x) {
                     } catch (IllegalArgumentException x) {
                     } catch (InvocationTargetException x) {

@@ -1,6 +1,7 @@
 rootProject.name = 'dynmap-common'
 include ':spigot'
 include ':bukkit-helper-113'
+include ':bukkit-helper-113-1'
 include ':bukkit-helper'
 include ':dynmap-api'
 include ':DynmapCore'
@@ -13,6 +14,7 @@ include ':forge-1.8.9'
 
 project(':spigot').projectDir = "$rootDir/spigot" as File
 project(':bukkit-helper-113').projectDir = "$rootDir/bukkit-helper-113" as File
+project(':bukkit-helper-113-1').projectDir = "$rootDir/bukkit-helper-113-1" as File
 project(':bukkit-helper').projectDir = "$rootDir/bukkit-helper" as File
 project(':dynmap-api').projectDir = "$rootDir/dynmap-api" as File
 project(':DynmapCore').projectDir = "$rootDir/DynmapCore" as File

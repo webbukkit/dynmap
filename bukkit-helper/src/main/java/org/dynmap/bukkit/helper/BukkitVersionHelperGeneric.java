@@ -52,6 +52,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Field biomebaselist;
     protected Field biomebasetemp;
     protected Field biomebasehumi;
+    protected Method biomebasetempfunc;
+    protected Method biomebasehumifunc;
     protected Field biomebaseidstring;
     protected Field biomebaseid;
     /** n.m.s.World */
@@ -323,11 +325,21 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     }
     /** Get temperature from biomebase */
     public float getBiomeBaseTemperature(Object bb) {
-        return (Float) getFieldValue(bb, biomebasetemp, 0.5F);
+        if (biomebasetempfunc != null) {
+            return (Float) callMethod(bb, biomebasetempfunc, new Object[0], 0.5f);
+        }
+        else {
+            return (Float) getFieldValue(bb, biomebasetemp, 0.5F);
+        }
     }
     /** Get humidity from biomebase */
     public float getBiomeBaseHumidity(Object bb) {
-        return (Float) getFieldValue(bb, biomebasehumi, 0.5F);
+        if (biomebasehumifunc != null) {
+            return (Float) callMethod(bb, biomebasehumifunc, new Object[0], 0.5f);
+        }
+        else {
+            return (Float) getFieldValue(bb, biomebasehumi, 0.5F);
+        }
     }
     /** Get ID string from biomebase */
     public String getBiomeBaseIDString(Object bb) {
