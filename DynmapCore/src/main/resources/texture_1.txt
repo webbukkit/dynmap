@@ -883,7 +883,7 @@ block:id=gray_wool,allfaces=0:gray_wool,stdrot=true
 block:id=light_gray_wool,allfaces=0:light_gray_wool,stdrot=true
 block:id=cyan_wool,allfaces=0:cyan_wool,stdrot=true
 block:id=purple_wool,allfaces=0:purple_wool,stdrot=true
-block:id=blue_wool,dallfaces=0:blue_wool,stdrot=true
+block:id=blue_wool,allfaces=0:blue_wool,stdrot=true
 block:id=brown_wool,allfaces=0:brown_wool,stdrot=true
 block:id=green_wool,allfaces=0:green_wool,stdrot=true
 block:id=red_wool,allfaces=0:red_wool,stdrot=true
