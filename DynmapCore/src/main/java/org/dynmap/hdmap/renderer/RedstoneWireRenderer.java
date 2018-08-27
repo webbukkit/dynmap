@@ -21,7 +21,7 @@ public class RedstoneWireRenderer extends CustomRenderer {
     // Patches for sides - (N, S, E, W)
     private RenderPatch[] side_patches = new RenderPatch[4];
     // Array of lists - index: bit 0-3=bottom index, bit4=N side, 5=southside, 6=E side, 7=W side present
-    private RenderPatch[][] meshes = new RenderPatch[256][];
+    protected RenderPatch[][] meshes = new RenderPatch[256][];
     
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
@@ -88,6 +88,10 @@ public class RedstoneWireRenderer extends CustomRenderer {
                 idx |= (1 << i);
             }
         }
+        return getMesh(idx);
+    }
+    
+    protected RenderPatch[] getMesh(int idx) {
         RenderPatch[] mesh = meshes[idx];   /* Look up mesh */
         /* If not yet generated, generate it */
         if(mesh == null) {
@@ -96,6 +100,7 @@ public class RedstoneWireRenderer extends CustomRenderer {
         }
         return mesh;
     }
+    
     private RenderPatch[] buildMesh(int idx) {
         ArrayList<RenderPatch> lst = new ArrayList<RenderPatch>();
         lst.add(bottom_patches[idx & 0xF]);

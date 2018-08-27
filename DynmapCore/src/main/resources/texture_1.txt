@@ -232,10 +232,14 @@ texture:id=torch
 texture:id=fire_0
 texture:id=fire_1
 texture:id=spawner
-texture:id=redstone_dust_dot
-texture:id=redstone_dust_line0
-texture:id=redstone_dust_line1
-texture:id=redstone_dust_overlay
+#texture:id=redstone_dust_dot
+#texture:id=redstone_dust_line0
+#texture:id=redstone_dust_line1
+#texture:id=redstone_dust_overlay
+texturefile:id=redstone_dust_line,filename=assets/minecraft/textures/blocks/redstone_dust_line.png,xcount=1,ycount=1
+texturefile:id=redstone_dust_cross,filename=assets/minecraft/textures/blocks/redstone_dust_cross.png,xcount=1,ycount=1
+texturefile:id=redstone_dust_line_overlay,filename=assets/minecraft/textures/blocks/redstone_dust_line_overlay.png,xcount=1,ycount=1
+texturefile:id=redstone_dust_cross_overlay,filename=assets/minecraft/textures/blocks/redstone_dust_cross_overlay.png,xcount=1,ycount=1
 texture:id=diamond_ore
 texture:id=diamond_block
 texture:id=crafting_table_front
@@ -939,7 +943,7 @@ block:id=oak_stairs,patch0-2=0:oak_planks,transparency=SEMITRANSPARENT
 # Chest
 block:id=chest,data=*,patch0=0:chest,patch1=1:chest,patch2=2:chest,patch3=3:chest,patch4=4:chest,patch5=5:chest,patch6=0:bigchest,patch7=1:bigchest,patch8=2:bigchest,patch9=3:bigchest,patch10=4:bigchest,patch11=5:bigchest,patch12=6:bigchest,patch13=7:bigchest,patch14=8:bigchest,patch15=9:bigchest
 # Redstone wire
-block:id=redstone_wire,data=*,patch0=17000:redstone_dust_line0,patch1=17000:redstone_dust_line1,patch2=0:redstone_dust_overlay,patch3=0:redstone_dust_dot,colorMult=C00000,layer0=2,layer1=3,transparency=TRANSPARENT
+block:id=redstone_wire,data=*,patch0=17000:redstone_dust_line,patch1=17000:redstone_dust_cross,patch2=0:redstone_dust_line_overlay,patch3=0:redstone_dust_cross_overlay,colorMult=C00000,layer0=2,layer1=3,transparency=TRANSPARENT
 # Diamond ore
 block:id=diamond_ore,allfaces=0:diamond_ore,stdrot=true
 # Diamond block
