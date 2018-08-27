@@ -36,7 +36,6 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Method getbiomefunc;
     private Method getidbybiome;
     private boolean isBadUnload = false;
-    protected boolean blockidsneeded = true;
     
     public BukkitVersionHelperCB() {
     	
@@ -70,11 +69,14 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nmsblock = getNMSClass("net.minecraft.server.Block");
         nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
         nmsmaterial = getNMSClass("net.minecraft.server.Material");
+        Log.info("blockidsneeded=" + blockidsneeded);
         if (blockidsneeded) {   // Not needed for 1.13+
             blockbyid = getFieldNoFail(nmsblock, new String[] { "byId" }, nmsblockarray);
             if (blockbyid == null) {
                 blockbyidfunc = getMethod(nmsblock, new String[] { "getById", "e" }, new Class[] { int.class });
+                Log.info("blockbyidfunc found = " + (blockbyidfunc != null));
             }
+            Log.info("blockbyid found = " + (blockbyid != null));
         }
         material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);
 
