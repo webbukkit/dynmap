@@ -22,7 +22,9 @@ public abstract class BukkitVersionHelper {
     
     public static DynmapBlockState[] stateByID;
     
-    protected boolean blockidsneeded = true;
+    protected boolean isBlockIdNeeded() {
+        return true;
+    }
 
     protected BukkitVersionHelper() {
         

@@ -46,6 +46,11 @@ public class BukkitVersionHelperSpigot113 extends BukkitVersionHelperCB {
     protected Class<?> datapalettearray;
     private Field blockid_field;
 
+    @Override
+    protected boolean isBlockIdNeeded() {
+        return false;
+    }
+
     public BukkitVersionHelperSpigot113() {
 		datapalettearray =  getNMSClass("[Lnet.minecraft.server.DataPaletteBlock;");
     	blockid_field = getPrivateField(craftchunksnapshot, new String[] { "blockids" }, datapalettearray);
