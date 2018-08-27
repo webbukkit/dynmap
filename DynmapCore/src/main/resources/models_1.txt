@@ -358,7 +358,6 @@ patchblock:id=wall_sign,data=5,patch0=WSignFront@90,patch1=WSignBack@90,patch2=W
 
 # Redstone wire
 customblock:id=redstone_wire,class=org.dynmap.hdmap.renderer.RedstoneWireStateRenderer
-block:id=redstone_wire,data=*,patch0=17000:redstone_dust_line0,patch1=17000:redstone_dust_line1,patch2=0:redstone_dust_overlay,patch3=0:redstone_dust_dot,colorMult=C00000,layer0=2,layer1=3,transparency=TRANSPARENT
 
 ignore-updates:id=redstone_wire
 # Signpost - facing west
