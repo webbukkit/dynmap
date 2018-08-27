@@ -1147,50 +1147,10 @@ block:id=cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
 # Chiseled Stone Bricks
 block:id=chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
 
-#TODO: the data map here is a mess - need to rework for 1.13 mapping (maybe custom renderer)
-# Brown Mushroom Block - inside
-# Red Mushroom Block - inside
-block:id=brown_mushroom_block,id=red_mushroom_block,data=0,allfaces=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - N-E-top cap color
-block:id=brown_mushroom_block,data=1,top=0:brown_mushroom_block,north=0:brown_mushroom_block,east=0:brown_mushroom_block,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - N-E-top cap color
-block:id=red_mushroom_block,data=1,top=0:red_mushroom_block,north=0:red_mushroom_block,east=0:red_mushroom_block,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - E-top cap color
-block:id=brown_mushroom_block,data=2,top=0:brown_mushroom_block,east=0:brown_mushroom_block,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - E-top cap color
-block:id=red_mushroom_block,data=2,top=0:red_mushroom_block,east=0:red_mushroom_block,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - S-E-top cap color
-block:id=brown_mushroom_block,data=3,top=0:brown_mushroom_block,south=0:brown_mushroom_block,east=0:brown_mushroom_block,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - S-E-top cap color
-block:id=red_mushroom_block,data=3,top=0:red_mushroom_block,south=0:red_mushroom_block,east=0:red_mushroom_block,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - N-top cap color
-block:id=brown_mushroom_block,data=4,top=0:brown_mushroom_block,north=0:brown_mushroom_block,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - N-top cap color
-block:id=red_mushroom_block,data=4,top=0:red_mushroom_block,north=0:red_mushroom_block,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top cap color
-block:id=brown_mushroom_block,data=5,top=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top cap color
-block:id=red_mushroom_block,data=5,top=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top-S cap color
-block:id=brown_mushroom_block,data=6,top=0:brown_mushroom_block,south=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top-S cap color
-block:id=red_mushroom_block,data=6,top=0:red_mushroom_block,south=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - N-W cap color
-block:id=brown_mushroom_block,data=7,top=0:brown_mushroom_block,north=0:brown_mushroom_block,west=0:brown_mushroom_block,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - N-W cap color
-block:id=red_mushroom_block,data=7,top=0:red_mushroom_block,north=0:red_mushroom_block,west=0:red_mushroom_block,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top-W cap color
-block:id=brown_mushroom_block,data=8,top=0:brown_mushroom_block,west=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top-W cap color
-block:id=red_mushroom_block,data=8,top=0:red_mushroom_block,west=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - top-S-W cap color
-block:id=brown_mushroom_block,data=9,top=0:brown_mushroom_block,west=0:brown_mushroom_block,south=0:brown_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Red Mushroom Block - top-S-W cap color
-block:id=red_mushroom_block,data=9,top=0:red_mushroom_block,west=0:red_mushroom_block,south=0:red_mushroom_block,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
-# Brown Mushroom Block - all cap TODO: fix mapping
-block:id=brown_mushroom_block,topbottom=0:brown_mushroom_block,allsides=0:brown_mushroom_block,stdrot=true
-# Red Mushroom Block - all cap TODO: :fix mapping
-block:id=red_mushroom_block,topbottom=0:red_mushroom_block,allsides=0:red_mushroom_block,stdrot=true
+# Brown Mushroom Block
+block:id=brown_mushroom_block,patch0=0:brown_mushroom_block,patch1=0:mushroom_block_inside
+# Red Mushroom Block
+block:id=red_mushroom_block,patch0=0:red_mushroom_block,patch1=0:mushroom_block_inside
 
 # Brown Mushroom Block - stem
 # Red Mushroom Block - stem
