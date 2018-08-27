@@ -18,7 +18,7 @@ public class DoorRenderer extends CustomRenderer {
     public static final int TXT_BOTTOM = 1;
     
     // Indexed by combined meta
-    private RenderPatch[][] models = new RenderPatch[32][];
+    protected RenderPatch[][] models = new RenderPatch[32][];
 
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {

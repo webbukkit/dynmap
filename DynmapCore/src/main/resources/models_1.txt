@@ -505,7 +505,7 @@ rotate:id=white_bed,data=0,rot=270
 
 # Oak door
 # Iron Door
-customblock:id=oak_door,id=iron_door,class=org.dynmap.hdmap.renderer.DoorRenderer
+customblock:id=oak_door,id=iron_door,class=org.dynmap.hdmap.renderer.DoorStateRenderer
 
 # Wall lever, facing south
 patchblock:id=lever,data=1,patch0=WLeverBase1@270,patch1=WLeverBase2@270,patch2=WLeverBase3@270,patch3=WLeverBase4@270,patch4=WLeverBase5@270,patch5=WLeverSide1@270,patch6=WLeverSide2@270,patch7=WLeverSide3@270,patch8=WLeverSide4@270
@@ -1259,7 +1259,7 @@ customblock:id=acacia_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateR
 # Wooden Door Block (Jungle)
 # Wooden Door Block (Acacia)
 # Wooden Door Block (Dark Oak)
-customblock:id=spruce_door,id=birch_door,id=jungle_door,id=acacia_door,id=dark_oak_door,class=org.dynmap.hdmap.renderer.DoorRenderer
+customblock:id=spruce_door,id=birch_door,id=jungle_door,id=acacia_door,id=dark_oak_door,class=org.dynmap.hdmap.renderer.DoorStateRenderer
 
 # End rod
 #block:id=end_rod,patch0=0:end_rod,transparency=TRANSPARENT
