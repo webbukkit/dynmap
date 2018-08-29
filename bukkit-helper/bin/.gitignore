@@ -1,1 +1,4 @@
-/main/
+/target/
+/build/
+/bin/
+/.classpath
