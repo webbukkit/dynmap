@@ -245,6 +245,9 @@ public class DefaultHDShader implements HDShader {
         public int[] getLightingTable() {
             return lightingTable;
         }
+        @Override
+        public void setLastBlockState(DynmapBlockState new_lastbs) {
+        }
     }
 
     private class OurBiomeShaderState extends OurShaderState {

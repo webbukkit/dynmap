@@ -3,6 +3,8 @@ package org.dynmap.hdmap;
 import java.util.BitSet;
 import java.util.HashMap;
 
+import org.dynmap.renderer.DynmapBlockState;
+
 public class HDBlockVolumetricModel extends HDBlockModel {
     /* Volumetric model specific attributes */
     private long blockflags[];
@@ -11,15 +13,15 @@ public class HDBlockVolumetricModel extends HDBlockModel {
     /**
      * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
      * (for volumetric models)
-     * @param blockname - block name
+     * @param bs - block state
      * @param databits - bitmap of block data bits matching this model (bit N is set if data=N would match)
      * @param nativeres - native subblocks per edge of cube (up to 64)
      * @param blockflags - array of native^2 long integers representing volume of block (bit X of element (nativeres*Y+Z) is set if that subblock is filled)
      *    if array is short, other elements area are assumed to be zero (fills from bottom of block up)
      * @param blockset - ID of set of blocks defining model
      */
-    public HDBlockVolumetricModel(String blockname, BitSet databits, int nativeres, long[] blockflags, String blockset) {
-        super(blockname, databits, blockset);
+    public HDBlockVolumetricModel(DynmapBlockState bs, BitSet databits, int nativeres, long[] blockflags, String blockset) {
+        super(bs, databits, blockset);
         
         this.nativeres = nativeres;
         this.blockflags = new long[nativeres * nativeres];

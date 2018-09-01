@@ -172,7 +172,7 @@ public class TexturePackHDShader implements HDShader {
         public void reset(HDPerspectiveState ps) {
             for(int i = 0; i < color.length; i++)
                 color[i].setTransparent();
-            lastblk = DynmapBlockState.AIR;
+            setLastBlockState(DynmapBlockState.AIR);
         }
         
         /**
@@ -184,12 +184,12 @@ public class TexturePackHDShader implements HDShader {
             if ((hiddenids != null) && hiddenids.get(blocktype.globalStateIndex)) {
                 blocktype = DynmapBlockState.AIR;
             }
-            DynmapBlockState lastblocktype = lastblk;
-            lastblk = blocktype;
             
             if (blocktype.isAir()) {
                 return false;
             }
+            
+            DynmapBlockState lastblocktype = lastblk;
             
             /* Get color from textures */
             if (scaledtp != null) {
@@ -313,6 +313,10 @@ public class TexturePackHDShader implements HDShader {
         @Override
         public int[] getLightingTable() {
             return lightingTable;
+        }
+        @Override
+        public void setLastBlockState(DynmapBlockState new_lastbs) {
+            lastblk = new_lastbs;
         }
     }
 

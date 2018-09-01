@@ -804,27 +804,9 @@ layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 ----------------
 # Lily pad
 patchblock:id=lily_pad,patch0=HorizY001ZTop
-# Water (1 down)
-# Lava (1 down)
-boxblock:id=water,id=lava,data=1,ymax=0.875
-# Water (2 down)
-# Lava (2 down)
-boxblock:id=water,id=lava,data=2,ymax=0.75
-# Water (3 down)
-# Lava (3 down)
-boxblock:id=water,id=lava,data=3,ymax=0.625
-# Water (4 down)
-# Lava (4 down)
-boxblock:id=water,id=lava,data=4,ymax=0.5
-# Water (5 down)
-# Lava (5 down)
-boxblock:id=water,id=lava,data=5,ymax=0.375
-# Water (6 down)
-# Lava (6 down)
-boxblock:id=water,id=lava,data=6,ymax=0.25
-# Water (7 down)
-# Lava (7 down)
-boxblock:id=water,id=lava,data=7,ymax=0.125
+# Water
+customblock:id=water,id=lava,class=org.dynmap.hdmap.renderer.FluidStateRenderer
+
 # Enchantment Table
 boxblock:id=enchanting_table,ymax=0.75
 

@@ -12,18 +12,18 @@ import org.dynmap.renderer.RenderPatch;
 public class CustomBlockModel extends HDBlockModel {
     public CustomRenderer render;
 
-    public CustomBlockModel(String blockname, BitSet databits, String classname, Map<String,String> classparm, String blockset) {
-        super(blockname, databits, blockset);
+    public CustomBlockModel(DynmapBlockState bstate, BitSet databits, String classname, Map<String,String> classparm, String blockset) {
+        super(bstate, databits, blockset);
         try {
             Class<?> cls = Class.forName(classname);   /* Get class */
             render = (CustomRenderer) cls.newInstance();
-            if(render.initializeRenderer(HDBlockModels.pdf, blockname, databits, classparm) == false) {
+            if(render.initializeRenderer(HDBlockModels.pdf, bstate.blockName, databits, classparm) == false) {
                 Log.severe("Error loading custom renderer - " + classname);
                 render = null;
             }
             else {
                 if(render.getTileEntityFieldsNeeded() != null) {
-                    DynmapBlockState bbs = DynmapBlockState.getBaseStateByName(blockname);
+                    DynmapBlockState bbs = bstate.baseState;
                     for(int i = 0; i < bbs.getStateCount(); i++) {
                         if (databits.isEmpty() || databits.get(i)) {
                             DynmapBlockState bs = bbs.getState(i);

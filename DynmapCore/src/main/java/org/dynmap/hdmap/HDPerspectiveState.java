@@ -64,6 +64,10 @@ public interface HDPerspectiveState {
      */
     int[] getSubblockCoord();
     /**
+     * Check if point is on face
+     */
+    boolean isOnFace();
+    /**
      * Get map iterator
      * @return iterator
      */

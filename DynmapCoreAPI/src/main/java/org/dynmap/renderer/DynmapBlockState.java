@@ -76,6 +76,8 @@ public class DynmapBlockState {
     // Well known base blocks - air
     public static final DynmapBlockState AIR = new DynmapBlockState(null, 0, AIR_BLOCK, "");
 
+    private static DynmapBlockState still_water = null;
+    
     /**
      * Constructor for block state
      * @param base - base block state (null if first/only state for block)
@@ -126,6 +128,10 @@ public class DynmapBlockState {
         matchflags |= (blockName.equals(SNOW_BLOCK) || blockName.equals(SNOW_LAYER_BLOCK)) ? MATCH_SNOW : 0;
         matchflags |= blockName.equals(GRASS_BLOCK) ? MATCH_GRASS : 0;
         matchflags |= log_blocks.contains(blockName) ? MATCH_LOG : 0;
+        // If water block, set singleton
+        if (this.blockName.equals(WATER_BLOCK) && (this == this.baseState)) {
+            still_water = this;
+        }
     }
     /**
      * Get state for same base block with given index
@@ -309,6 +315,15 @@ public class DynmapBlockState {
      */
     public boolean matchingBaseState(DynmapBlockState blk) {
         return this.baseState == blk.baseState;
+    }
+    /**
+     * Get liquid state (null if not waterlogged or otherwise immmersed)
+     */
+    public DynmapBlockState getLiquidState() {
+        if (isWaterlogged()) {
+            return still_water;
+        }
+        return null;
     }
     /**
      * To printable string

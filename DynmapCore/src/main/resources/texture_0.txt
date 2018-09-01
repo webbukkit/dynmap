@@ -390,14 +390,11 @@ block:id=sapling,data=3,data=11,patch0-1=0:sapling_jungle,transparency=TRANSPARE
 # Bedrock
 block:id=bedrock,allfaces=0:bedrock,stdrot=true
 # Water
-block:id=flowing_water,allfaces=12000:water_flow,stdrot=true,transparency=SEMITRANSPARENT
 # Stationary water
-block:id=water,data=0,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,topbottom=12000:water_still,allsides=12000:water_flow,stdrot=true,transparency=SEMITRANSPARENT
-block:id=water,data=1,data=2,data=3,data=4,data=5,data=6,data=7,allfaces=12000:water_flow,stdrot=true,transparency=SEMITRANSPARENT
+block:id=water,id=flowing_water,patch0=12000:water_still,patch1=12000:water_flow,transparency=SEMITRANSPARENT
 # Lava
-block:id=flowing_lava,allfaces=0:lava_flow,stdrot=true,transparency=SEMITRANSPARENT
 # Stationary Lava
-block:id=lava,allfaces=0:lava_still,stdrot=true,transparency=SEMITRANSPARENT
+block:id=lava,id=flowing_lava,patch0=0:lava_still,patch1=0:lava_flow,transparency=SEMITRANSPARENT
 # Sand
 block:id=sand,allfaces=0:sand,stdrot=true
 [1.7.0-]block:id=sand,data=1,allfaces=0:red_sand,stdrot=true

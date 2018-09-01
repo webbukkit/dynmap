@@ -2,6 +2,7 @@ package org.dynmap.hdmap;
 
 import java.util.BitSet;
 
+import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.PatchDefinition;
 
 public class HDBlockPatchModel extends HDBlockModel {
@@ -11,13 +12,13 @@ public class HDBlockPatchModel extends HDBlockModel {
     /**
      * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
      * (for patch models)
-     * @param blockname - block name
+     * @param bs - block state
      * @param databits - bitmap of block data bits matching this model (bit N is set if data=N would match)
      * @param patches - list of patches (surfaces composing model)
      * @param blockset - ID of set of blocks defining model
      */
-    public HDBlockPatchModel(String blockname, BitSet databits, PatchDefinition[] patches, String blockset) {
-        super(blockname, databits, blockset);
+    public HDBlockPatchModel(DynmapBlockState bs, BitSet databits, PatchDefinition[] patches, String blockset) {
+        super(bs, databits, blockset);
         this.patches = patches;
         int max = 0;
         for(int i = 0; i < patches.length; i++) {

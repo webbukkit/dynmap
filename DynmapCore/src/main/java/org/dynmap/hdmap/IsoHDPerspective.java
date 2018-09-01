@@ -80,6 +80,7 @@ public class IsoHDPerspective implements HDPerspective {
     private static final BlockStep [] semi_steps = { BlockStep.Y_PLUS, BlockStep.X_MINUS, BlockStep.X_PLUS, BlockStep.Z_MINUS, BlockStep.Z_PLUS };
 
     private DynmapBlockState full_water = null;
+    private RenderPatch full_water_patch = null;
     
     private class OurPerspectiveState implements HDPerspectiveState {
         DynmapBlockState blocktype = DynmapBlockState.AIR;
@@ -122,11 +123,12 @@ public class IsoHDPerspective implements HDPerspective {
         Vector3D v0 = new Vector3D();
         Vector3D vS = new Vector3D();
         Vector3D d_cross_uv = new Vector3D();
-        double patch_t[] = new double[HDBlockModels.getMaxPatchCount()];
-        double patch_u[] = new double[HDBlockModels.getMaxPatchCount()];
-        double patch_v[] = new double[HDBlockModels.getMaxPatchCount()];
-        BlockStep patch_step[] = new BlockStep[HDBlockModels.getMaxPatchCount()];
-        int patch_id[] = new int[HDBlockModels.getMaxPatchCount()];
+        // Double max patch count to be safe for patches + water patches
+        double patch_t[] = new double[2*HDBlockModels.getMaxPatchCount()];
+        double patch_u[] = new double[2*HDBlockModels.getMaxPatchCount()];
+        double patch_v[] = new double[2*HDBlockModels.getMaxPatchCount()];
+        BlockStep patch_step[] = new BlockStep[2*HDBlockModels.getMaxPatchCount()];
+        int patch_id[] = new int[2*HDBlockModels.getMaxPatchCount()];
         int cur_patch = -1;
         double cur_patch_u;
         double cur_patch_v;
@@ -142,6 +144,7 @@ public class IsoHDPerspective implements HDPerspective {
         
         /* Cache for custom model patch lists */
         private final DynLongHashMap custom_meshes;
+        private final DynLongHashMap custom_fluid_meshes;
 
         public OurPerspectiveState(MapIterator mi, boolean isnether, int scaled) {
             mapiter = mi;
@@ -154,6 +157,7 @@ public class IsoHDPerspective implements HDPerspective {
             for(int i = 0; i < llcache.length; i++)
                 llcache[i] = new LightLevels();
             custom_meshes = new DynLongHashMap();
+            custom_fluid_meshes = new DynLongHashMap();
             modscale = basemodscale << scaled;
             scalemodels = HDBlockModels.getModelsForScale(basemodscale << scaled);
         }
@@ -394,83 +398,112 @@ public class IsoHDPerspective implements HDPerspective {
                 nonairhit = true;
                 firststep = false;
             }
+            // Set current block as last block for any incomplete shaders
+            for(int i = 0; i < shaderstate.length; i++) {
+                if(!shaderdone[i])
+                    // Update with current block as last block
+                    shaderstate[i].setLastBlockState(blocktype);
+            }
             return false;
         }
         
-        private final boolean handlePatches(RenderPatch[] patches, HDShaderState[] shaderstate, boolean[] shaderdone) {
+        private final int handlePatch(PatchDefinition pd, int hitcnt) {
+            /* Compute origin of patch */
+            v0.x = (double)x + pd.x0;
+            v0.y = (double)y + pd.y0;
+            v0.z = (double)z + pd.z0;
+            /* Compute cross product of direction and V vector */
+            d_cross_uv.set(direction);
+            d_cross_uv.crossProduct(pd.v);
+            /* Compute determinant - inner product of this with U */
+            double det = pd.u.innerProduct(d_cross_uv);
+            /* If parallel to surface, no intercept */
+            switch(pd.sidevis) {
+                case TOP:
+                    if (det < 0.000001) {
+                        return hitcnt;
+                    }
+                    break;
+                case BOTTOM:
+                    if (det > -0.000001) {
+                        return hitcnt;
+                    }
+                    break;
+                case BOTH:
+                case FLIP:
+                    if((det > -0.000001) && (det < 0.000001)) {
+                        return hitcnt;
+                    }
+                    break;
+            }
+            double inv_det = 1.0 / det; /* Calculate inverse determinant */
+            /* Compute distance from patch to ray origin */
+            vS.set(top);
+            vS.subtract(v0);
+            /* Compute u - slope times inner product of offset and cross product */
+            double u = inv_det * vS.innerProduct(d_cross_uv);
+            if((u <= pd.umin) || (u >= pd.umax)) {
+                return hitcnt;
+            }
+            /* Compute cross product of offset and U */
+            vS.crossProduct(pd.u);
+            /* Compute V using slope times inner product of direction and cross product */
+            double v = inv_det * direction.innerProduct(vS);
+            if((v <= pd.vmin) || (v >= pd.vmax) || ((u + v) >= pd.uplusvmax)) {
+                return hitcnt;
+            }
+            /* Compute parametric value of intercept */
+            double t = inv_det * pd.v.innerProduct(vS);
+            if (t > 0.000001) { /* We've got a hit */
+                patch_t[hitcnt] = t;
+                patch_u[hitcnt] = u;
+                patch_v[hitcnt] = v;
+                patch_id[hitcnt] = pd.textureindex;
+                if(det > 0) {
+                    patch_step[hitcnt] = pd.step.opposite();
+                }
+                else {
+                    if (pd.sidevis == SideVisible.FLIP) {
+                        patch_u[hitcnt] = 1 - u;
+                    }
+                    patch_step[hitcnt] = pd.step;
+                }
+                hitcnt++;
+            }
+            return hitcnt;
+        }
+        
+        private final boolean handlePatches(RenderPatch[] patches, HDShaderState[] shaderstate, boolean[] shaderdone, RenderPatch[] fluidpatches) {
             int hitcnt = 0;
+            int water_hit = Integer.MAX_VALUE; // hit index of first water hit
             /* Loop through patches : compute intercept values for each */
             for(int i = 0; i < patches.length; i++) {
-                PatchDefinition pd = (PatchDefinition)patches[i];
-                /* Compute origin of patch */
-                v0.x = (double)x + pd.x0;
-                v0.y = (double)y + pd.y0;
-                v0.z = (double)z + pd.z0;
-                /* Compute cross product of direction and V vector */
-                d_cross_uv.set(direction);
-                d_cross_uv.crossProduct(pd.v);
-                /* Compute determinant - inner product of this with U */
-                double det = pd.u.innerProduct(d_cross_uv);
-                /* If parallel to surface, no intercept */
-                switch(pd.sidevis) {
-                    case TOP:
-                        if (det < 0.000001) {
-                            continue;
-                        }
-                        break;
-                    case BOTTOM:
-                        if (det > -0.000001) {
-                            continue;
-                        }
-                        break;
-                    case BOTH:
-                    case FLIP:
-                        if((det > -0.000001) && (det < 0.000001)) {
-                            continue;
-                        }
-                        break;
+                hitcnt = handlePatch((PatchDefinition)patches[i], hitcnt);
+            }
+            if ((fluidpatches != null) && (fluidpatches.length > 0)) {
+                if (full_water == null) {
+                    full_water = DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK);
                 }
-                double inv_det = 1.0 / det; /* Calculate inverse determinant */
-                /* Compute distance from patch to ray origin */
-                vS.set(top);
-                vS.subtract(v0);
-                /* Compute u - slope times inner product of offset and cross product */
-                double u = inv_det * vS.innerProduct(d_cross_uv);
-                if((u <= pd.umin) || (u >= pd.umax)) {
-                    continue;
+                int prev_hitcnt = hitcnt;
+                for(int i = 0; i < fluidpatches.length; i++) {
+                    hitcnt = handlePatch((PatchDefinition)fluidpatches[i], hitcnt);
                 }
-                /* Compute cross product of offset and U */
-                vS.crossProduct(pd.u);
-                /* Compute V using slope times inner product of direction and cross product */
-                double v = inv_det * direction.innerProduct(vS);
-                if((v <= pd.vmin) || (v >= pd.vmax) || ((u + v) >= pd.uplusvmax)) {
-                    continue;
-                }
-                /* Compute parametric value of intercept */
-                double t = inv_det * pd.v.innerProduct(vS);
-                if (t > 0.000001) { /* We've got a hit */
-                    patch_t[hitcnt] = t;
-                    patch_u[hitcnt] = u;
-                    patch_v[hitcnt] = v;
-                    patch_id[hitcnt] = pd.textureindex;
-                    if(det > 0) {
-                        patch_step[hitcnt] = pd.step.opposite();
-                    }
-                    else {
-                        if (pd.sidevis == SideVisible.FLIP) {
-                            patch_u[hitcnt] = 1 - u;
-                        }
-                        patch_step[hitcnt] = pd.step;
-                    }
-                    hitcnt++;
+                if (prev_hitcnt < hitcnt) { // At least one water hit?
+                    water_hit = prev_hitcnt;    // Remember index
                 }
             }
             /* If no hits, we're done */
             if(hitcnt == 0) {
+                // Set current block as last block for any incomplete shaders
+                for(int i = 0; i < shaderstate.length; i++) {
+                    if(!shaderdone[i])
+                        // Update with current block as last block
+                        shaderstate[i].setLastBlockState(blocktype);
+                }
                 return false;
             }
             BlockStep old_laststep = laststep;  /* Save last step */
-            
+            DynmapBlockState cur_bt = blocktype;
             for(int i = 0; i < hitcnt; i++) {
                 /* Find closest hit (lowest parametric value) */
                 double best_t = Double.MAX_VALUE;
@@ -486,12 +519,20 @@ public class IsoHDPerspective implements HDPerspective {
                 cur_patch_v = patch_v[best_patch];
                 laststep = patch_step[best_patch];
                 cur_patch_t = best_t;
+                // If the water patch, switch to water state and patch index
+                if (best_patch >= water_hit) {
+                    blocktype = full_water;
+                }
                 /* Process the shaders */
                 boolean done = true;
                 for(int j = 0; j < shaderstate.length; j++) {
                     if(!shaderdone[j])
                         shaderdone[j] = shaderstate[j].processBlock(this);
                     done = done && shaderdone[j];
+                }
+                // If water, restore block type
+                if (best_patch >= water_hit) {
+                    blocktype = cur_bt;
                 }
                 cur_patch = -1;
                 /* If all are done, we're out */
@@ -504,10 +545,41 @@ public class IsoHDPerspective implements HDPerspective {
                 patch_t[best_patch] = Double.MAX_VALUE;
             }
             laststep = old_laststep;
-            
+
+            // Set current block as last block for any incomplete shaders
+            for(int i = 0; i < shaderstate.length; i++) {
+                if(!shaderdone[i])
+                    // Update with current block as last block
+                    shaderstate[i].setLastBlockState(blocktype);
+            }
+
             return false;
         }
-        
+
+        private RenderPatch[] getPatches(DynmapBlockState bt, boolean isFluid) {
+            RenderPatch[] patches = scalemodels.getPatchModel(bt);
+            /* If no patches, see if custom model */
+            if (patches == null) {
+                CustomBlockModel cbm = scalemodels.getCustomBlockModel(bt);
+                if (cbm != null) {   /* If found, see if cached already */
+                    if (isFluid) {
+                        patches = this.getCustomFluidMesh();
+                        if (patches == null) {
+                            patches = cbm.getMeshForBlock(mapiter);
+                            this.setCustomFluidMesh(patches);
+                        }
+                    }
+                    else {
+                        patches = this.getCustomMesh();
+                        if (patches == null) {
+                            patches = cbm.getMeshForBlock(mapiter);
+                            this.setCustomMesh(patches);
+                        }
+                    }
+                }
+            }
+            return patches;
+        }
         /**
          * Process visit of ray to block
          */
@@ -520,45 +592,17 @@ public class IsoHDPerspective implements HDPerspective {
                 }
             }
             else if(nonairhit || blocktype.isNotAir()) {
-            	// If waterlogged, start by rendering as if full water block
-            	if (blocktype.isWaterlogged()) {
-                	boolean done = true;
-            		DynmapBlockState saved_type = blocktype;
-            		if (full_water == null) {
-            			full_water = DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK);
-            		}
-            		blocktype = full_water;	// Switch to water state
-                    subalpha = -1;
-                    for (int i = 0; i < shaderstate.length; i++) {
-                        if(!shaderdone[i]) {
-                            shaderdone[i] = shaderstate[i].processBlock(this);
-                        }
-                        done = done && shaderdone[i];
-                    }
-                    // Restore block type
-                    blocktype = saved_type;
-                    /* If all are done, we're out */
-                    if (done) {
-                        return true;
-                    }
-                    nonairhit = true;
-            	}
                 short[] model;
-                RenderPatch[] patches = scalemodels.getPatchModel(blocktype);
-                /* If no patches, see if custom model */
-                if (patches == null) {
-                    CustomBlockModel cbm = scalemodels.getCustomBlockModel(blocktype);
-                    if (cbm != null) {   /* If found, see if cached already */
-                        patches = this.getCustomMesh();
-                        if (patches == null) {
-                            patches = cbm.getMeshForBlock(mapiter);
-                            this.setCustomMesh(patches);
-                        }
-                    }
-                }
+                RenderPatch[] patches = getPatches(blocktype, false);
                 /* Look up to see if block is modelled */
                 if(patches != null) {
-                    return handlePatches(patches, shaderstate, shaderdone);
+                    RenderPatch[] fluidpatches = null;
+                    // If so, check for waterlogged
+                    DynmapBlockState fluidstate = blocktype.getLiquidState();
+                    if (fluidstate != null) {
+                        fluidpatches = getPatches(fluidstate, true);
+                    }
+                    return handlePatches(patches, shaderstate, shaderdone, fluidpatches);
                 }
                 else if ((model = scalemodels.getScaledModel(blocktype)) != null) {
                     return handleSubModel(model, shaderstate, shaderdone);
@@ -569,6 +613,8 @@ public class IsoHDPerspective implements HDPerspective {
                     for(int i = 0; i < shaderstate.length; i++) {
                         if(!shaderdone[i]) {
                             shaderdone[i] = shaderstate[i].processBlock(this);
+                            // Update with current block as last block
+                            shaderstate[i].setLastBlockState(blocktype);
                         }
                         done = done && shaderdone[i];
                     }
@@ -825,6 +871,27 @@ public class IsoHDPerspective implements HDPerspective {
             return subblock_xyz;
         }
         
+        // Is the hit on a cullable face?
+        public final boolean isOnFace() {
+            double tt;
+            if(cur_patch >= 0) {    /* If patch hit */
+                tt = cur_patch_t;
+            }
+            else if(subalpha < 0) {
+                tt = t + 0.0000001;
+            }
+            else {  // Full blocks always on face
+                return true;
+            }
+            double xx = top.x + tt * direction.x;  
+            double yy = top.y + tt * direction.y;  
+            double zz = top.z + tt * direction.z;
+            double xoff = xx - fastFloor(xx);
+            double yoff = yy - fastFloor(yy);
+            double zoff = zz - fastFloor(zz);
+            return ((xoff < 0.0001) || (xoff > 0.9999) || (yoff < 0.0001) || (yoff > 0.9999) || (zoff < 0.0001) || (zoff > 0.9999));
+        }
+        
         /**
          * Get current texture index
          */
@@ -869,6 +936,20 @@ public class IsoHDPerspective implements HDPerspective {
         public final void setCustomMesh(RenderPatch[] mesh) {
             long key = this.mapiter.getBlockKey();  /* Get key for current block */
             custom_meshes.put(key,  mesh);
+        }
+        /**
+         * Get custom fluid mesh for block, if defined (null if not)
+         */
+        public final RenderPatch[] getCustomFluidMesh() {
+            long key = this.mapiter.getBlockKey();  /* Get key for current block */
+            return (RenderPatch[])custom_fluid_meshes.get(key);
+        }
+        /**
+         * Save custom mesh for block
+         */
+        public final void setCustomFluidMesh(RenderPatch[] mesh) {
+            long key = this.mapiter.getBlockKey();  /* Get key for current block */
+            custom_fluid_meshes.put(key,  mesh);
         }
     }
     

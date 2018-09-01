@@ -43,7 +43,7 @@ public class HDBlockModels {
     private static HashSet<String> loadedmods = new HashSet<String>();
     private static HashMap<Integer, HDScaledBlockModels> scaled_models_by_scale = new HashMap<Integer, HDScaledBlockModels>();
 
-    public static final int getMaxPatchCount() { return max_patches; }
+    public static final int getMaxPatchCount() { return max_patches; }  
     public static final PatchDefinitionFactory getPatchDefinitionFactory() { return pdf; }
     
     /* Reset model if defined by different block set */
@@ -390,7 +390,7 @@ public class HDBlockModels {
                         for(String bname : blknames) {
                             DynmapBlockState bblk = DynmapBlockState.getBaseStateByName(bname);
                             if (bblk.isNotAir()) {
-                                modlist.add(new HDBlockVolumetricModel(bblk.blockName, databits, scale, new long[0], blockset));
+                                modlist.add(new HDBlockVolumetricModel(bblk, databits, scale, new long[0], blockset));
                                 cnt++;
                             }
                             else {
@@ -740,7 +740,7 @@ public class HDBlockModels {
                         for(String nm : blknames) {
                             DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
                             if (bs.isNotAir()) {
-                                pmodlist.add(new HDBlockPatchModel(bs.blockName, databits, patcharray, blockset));
+                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
                                 cnt++;
                             }
                             else {
@@ -804,7 +804,7 @@ public class HDBlockModels {
                         for(String nm : blknames) {
                             DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
                             if (bs.isNotAir()) {
-                                pmodlist.add(new HDBlockPatchModel(bs.blockName, databits, patcharray, blockset));
+                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
                                 cnt++;
                             }
                             else {
@@ -852,7 +852,7 @@ public class HDBlockModels {
                         for (String nm : blknames) {
                             DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
                             if (bs.isNotAir()) {
-                                CustomBlockModel cbm = new CustomBlockModel(bs.blockName, databits, cls, custargs, blockset);
+                                CustomBlockModel cbm = new CustomBlockModel(bs, databits, cls, custargs, blockset);
                                 if(cbm.render == null) {
                                     Log.severe("Custom block model failed to initialize = line " + rdr.getLineNumber() + " of " + fname);
                                 }

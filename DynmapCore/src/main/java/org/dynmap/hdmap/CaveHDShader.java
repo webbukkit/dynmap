@@ -251,6 +251,9 @@ public class CaveHDShader implements HDShader {
         public int[] getLightingTable() {
             return lightingTable;
         }
+        @Override
+        public void setLastBlockState(DynmapBlockState new_lastbs) {
+        }
     }
 
     /**

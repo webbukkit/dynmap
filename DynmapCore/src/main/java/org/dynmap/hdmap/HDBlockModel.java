@@ -8,13 +8,13 @@ public abstract class HDBlockModel {
     private String blockset;
     /**
      * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
-     * @param blockname - block name
+     * @param bstate - block state
      * @param databits - bitmap of block data bits matching this model (bit N is set if data=N would match)
      * @param blockset - ID of block definition set
      */
-    protected HDBlockModel(String blockname, BitSet databits, String blockset) {
+    protected HDBlockModel(DynmapBlockState bstate, BitSet databits, String blockset) {
         this.blockset = blockset;
-        DynmapBlockState bblk = DynmapBlockState.getBaseStateByName(blockname);
+        DynmapBlockState bblk = bstate.baseState;
         if (bblk.isNotAir()) {
             for (int i = 0; i < bblk.getStateCount(); i++) {
                 if (databits.isEmpty() || databits.get(i)) {

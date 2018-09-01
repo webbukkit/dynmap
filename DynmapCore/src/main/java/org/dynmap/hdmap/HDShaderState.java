@@ -1,6 +1,7 @@
 package org.dynmap.hdmap;
 
 import org.dynmap.Color;
+import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DynLongHashMap;
 
 /**
@@ -59,4 +60,8 @@ public interface HDShaderState {
      * @return array of lighting values
      */
     int[] getLightingTable();
+    /**
+     * Update last block state (called before moving to next block)
+     */
+    void setLastBlockState(DynmapBlockState new_lastbs);
 }

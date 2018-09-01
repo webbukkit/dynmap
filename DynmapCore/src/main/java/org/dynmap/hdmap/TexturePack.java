@@ -2652,6 +2652,7 @@ public class TexturePack {
             }
         }
     }
+    
     /**
      * Read color for given subblock coordinate, with given block id and data and face
      */
@@ -2664,6 +2665,7 @@ public class TexturePack {
         boolean hasblockcoloring = ss.do_biome_shading && this.blockColoring.hasBlkStateValue(blk);
         // Test if we have no texture modifications
         boolean simplemap = (textid < COLORMOD_MULT_INTERNAL) && (!hasblockcoloring);
+        int[] xyz = null;
         
         if (simplemap) {    /* If simple mapping */
             int[] texture = getTileARGB(textid);
@@ -2671,7 +2673,7 @@ public class TexturePack {
             int u = 0, v = 0;
             /* If not patch, compute U and V */
             if(patchid < 0) {
-                int[] xyz = ps.getSubblockCoord();
+                xyz = ps.getSubblockCoord();
 
                 switch(laststep) {
                     case X_MINUS: /* South face: U = East (Z-), V = Down (Y-) */
@@ -2729,7 +2731,7 @@ public class TexturePack {
         /* If clear-inside op, get out early */
         if((textop == COLORMOD_CLEARINSIDE) || (textop == COLORMOD_MULTTONED_CLEARINSIDE)) {
             /* Check if previous block is same block type as we are: surface is transparent if it is */
-            if (blk.matchingBaseState(lastblocktype) || (blk.isWater() && lastblocktype.isWaterlogged())) {
+            if ((blk.matchingBaseState(lastblocktype) || (blk.isWater() && lastblocktype.isWaterlogged())) && ps.isOnFace()) {
                 rslt.setTransparent();
                 return;
             }
@@ -2747,8 +2749,7 @@ public class TexturePack {
         int u = 0, v = 0, tmp;
         
         if(patchid < 0) {
-            int[] xyz = ps.getSubblockCoord();
-
+            if (xyz == null) xyz = ps.getSubblockCoord();
             switch(laststep) {
                 case X_MINUS: /* South face: U = East (Z-), V = Down (Y-) */
                     u = native_scale-xyz[2]-1; v = native_scale-xyz[1]-1; 
