@@ -889,7 +889,7 @@ public class IsoHDPerspective implements HDPerspective {
             double xoff = xx - fastFloor(xx);
             double yoff = yy - fastFloor(yy);
             double zoff = zz - fastFloor(zz);
-            return ((xoff < 0.0001) || (xoff > 0.9999) || (yoff < 0.0001) || (yoff > 0.9999) || (zoff < 0.0001) || (zoff > 0.9999));
+            return ((xoff < 0.00001) || (xoff > 0.99999) || (yoff < 0.00001) || (yoff > 0.99999) || (zoff < 0.00001) || (zoff > 0.99999));
         }
         
         /**
