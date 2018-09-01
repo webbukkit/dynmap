@@ -473,7 +473,7 @@ public class IsoHDPerspective implements HDPerspective {
             return hitcnt;
         }
         
-        private final boolean handlePatches(RenderPatch[] patches, HDShaderState[] shaderstate, boolean[] shaderdone, RenderPatch[] fluidpatches) {
+        private final boolean handlePatches(RenderPatch[] patches, HDShaderState[] shaderstate, boolean[] shaderdone, DynmapBlockState fluidstate, RenderPatch[] fluidpatches) {
             int hitcnt = 0;
             int water_hit = Integer.MAX_VALUE; // hit index of first water hit
             /* Loop through patches : compute intercept values for each */
@@ -481,9 +481,6 @@ public class IsoHDPerspective implements HDPerspective {
                 hitcnt = handlePatch((PatchDefinition)patches[i], hitcnt);
             }
             if ((fluidpatches != null) && (fluidpatches.length > 0)) {
-                if (full_water == null) {
-                    full_water = DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK);
-                }
                 int prev_hitcnt = hitcnt;
                 for(int i = 0; i < fluidpatches.length; i++) {
                     hitcnt = handlePatch((PatchDefinition)fluidpatches[i], hitcnt);
@@ -521,7 +518,7 @@ public class IsoHDPerspective implements HDPerspective {
                 cur_patch_t = best_t;
                 // If the water patch, switch to water state and patch index
                 if (best_patch >= water_hit) {
-                    blocktype = full_water;
+                    blocktype = fluidstate;
                 }
                 /* Process the shaders */
                 boolean done = true;
@@ -602,7 +599,7 @@ public class IsoHDPerspective implements HDPerspective {
                     if (fluidstate != null) {
                         fluidpatches = getPatches(fluidstate, true);
                     }
-                    return handlePatches(patches, shaderstate, shaderdone, fluidpatches);
+                    return handlePatches(patches, shaderstate, shaderdone, fluidstate, fluidpatches);
                 }
                 else if ((model = scalemodels.getScaledModel(blocktype)) != null) {
                     return handleSubModel(model, shaderstate, shaderdone);

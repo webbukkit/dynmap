@@ -2731,7 +2731,7 @@ public class TexturePack {
         /* If clear-inside op, get out early */
         if((textop == COLORMOD_CLEARINSIDE) || (textop == COLORMOD_MULTTONED_CLEARINSIDE)) {
             /* Check if previous block is same block type as we are: surface is transparent if it is */
-            if ((blk.matchingBaseState(lastblocktype) || (blk.isWater() && lastblocktype.isWaterlogged())) && ps.isOnFace()) {
+            if ((blk.matchingBaseState(lastblocktype) || (blk.isWaterFilled() && lastblocktype.isWaterFilled())) && ps.isOnFace()) {
                 rslt.setTransparent();
                 return;
             }

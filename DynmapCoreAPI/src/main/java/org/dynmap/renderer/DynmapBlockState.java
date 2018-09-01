@@ -293,6 +293,12 @@ public class DynmapBlockState {
     	matchflags |= MATCH_WATERLOGGED;
     }
     /**
+     * Test if block is water OR waterlogged (block filled with water)
+     */
+    public final boolean isWaterFilled() {
+        return (matchflags & (MATCH_WATERLOGGED | MATCH_WATER)) != 0;
+    }
+    /**
      * Test if block is leaves
      */
     public final boolean isLeaves() {

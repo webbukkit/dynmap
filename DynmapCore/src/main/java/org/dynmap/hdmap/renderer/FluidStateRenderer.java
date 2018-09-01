@@ -47,11 +47,16 @@ public class FluidStateRenderer extends CustomRenderer {
         
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
-        int idx = ctx.getBlockType().stateIndex;
+        DynmapBlockState bs = ctx.getBlockType();
+        DynmapBlockState fbs = bs.getLiquidState();
+        if (fbs == null)
+            fbs = bs;
+        int idx = fbs.stateIndex;
         if ((idx == 0) || (idx >= 8)) {
             DynmapBlockState up = ctx.getBlockTypeAt(0, 1, 0);
-            if (up.isWater() || up.isWaterlogged())
+            if (up.isWaterFilled()) {
                 return full_mesh;
+            }
         }
         return (idx < 8) ? flat_meshes[idx] : flat_meshes[0];
     }
