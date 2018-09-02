@@ -5,10 +5,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-import org.dynmap.hdmap.HDBlockStateTextureMap;
-import org.dynmap.hdmap.TexturePack.BlockTransparency;
 import org.dynmap.renderer.CustomRenderer;
-import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;

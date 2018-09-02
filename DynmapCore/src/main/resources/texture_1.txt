@@ -1997,10 +1997,10 @@ texture:id=sea_pickle
 texture:id=conduit
 
 # Kelp
-block:id=kelp,patch0-1=1000:kelp,stdrot=true,transparency=TRANSPARENT
+block:id=kelp,patch0-1=1000:kelp,transparency=TRANSPARENT
 
 # Kelp plant
-block:id=kelp_plant,patch0-1=1000:kelp_plant,stdrot=true,transparency=TRANSPARENT
+block:id=kelp_plant,patch0-1=1000:kelp_plant,transparency=TRANSPARENT
 
 # Dried kelp block
 block:id=dried_kelp_block,allsides=0:dried_kelp_side,top=0:dried_kelp_top,bottom=0:dried_kelp_bottom,stdrot=true

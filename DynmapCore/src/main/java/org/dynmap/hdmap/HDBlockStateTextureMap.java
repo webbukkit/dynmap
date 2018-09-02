@@ -51,7 +51,7 @@ public class HDBlockStateTextureMap {
     }
     
     // Shallow copy state from another state map
-    public HDBlockStateTextureMap(HDBlockStateTextureMap map) {
+    public HDBlockStateTextureMap(HDBlockStateTextureMap map, BlockTransparency bt) {
         this.faces = map.faces;
         this.layers = map.layers;
         this.blockset = map.blockset;
@@ -59,7 +59,10 @@ public class HDBlockStateTextureMap {
         this.custColorMult = map.custColorMult;
         this.stdrotate = map.stdrotate;
         this.colorMapping = map.colorMapping;
-        this.trans = map.trans;
+        if (bt != null)
+            this.trans = bt;
+        else
+            this.trans = map.trans;
     }
 
     // Get texture index for given face
@@ -143,7 +146,12 @@ public class HDBlockStateTextureMap {
     // Copy given block state to given state index
     public static void copyToStateIndex(DynmapBlockState blk, HDBlockStateTextureMap map) {
     	resize(blk.globalStateIndex);
-        texmaps[blk.globalStateIndex] = new HDBlockStateTextureMap(map);
+    	TexturePack.BlockTransparency trans = map.trans;
+        // Force waterloogged blocks to use SEMITRANSPARENT (same as water)
+        if ((trans == TexturePack.BlockTransparency.TRANSPARENT) && blk.isWaterlogged()) {
+            trans = TexturePack.BlockTransparency.SEMITRANSPARENT;
+        }
+        texmaps[blk.globalStateIndex] = new HDBlockStateTextureMap(map, trans);
     }
     // Copy textures from source block ID to destination
     public static void remapTexture(String dest, String src) {
@@ -153,7 +161,7 @@ public class HDBlockStateTextureMap {
         for (int i = 0; i < mincnt; i++) {
             int didx = dblk.getState(i).globalStateIndex;
             int sidx = sblk.getState(i).globalStateIndex;
-            texmaps[didx] = new HDBlockStateTextureMap(texmaps[sidx]);
+            texmaps[didx] = new HDBlockStateTextureMap(texmaps[sidx], null);
         }
     }
     // Get by global state index

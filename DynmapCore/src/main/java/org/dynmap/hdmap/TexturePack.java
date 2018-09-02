@@ -188,24 +188,24 @@ public class TexturePack {
     private static final int TILEINDEX_SHULKER_COUNT = 6;
     
     /* Indexes of faces in the BED format tile file */
-    private static final int TILEINDEX_BED_HEAD_TOP = 0;
-    private static final int TILEINDEX_BED_HEAD_BOTTOM = 1;
-    private static final int TILEINDEX_BED_HEAD_LEFT = 2;
-    private static final int TILEINDEX_BED_HEAD_RIGHT = 3;
-    private static final int TILEINDEX_BED_HEAD_END = 4;
-    private static final int TILEINDEX_BED_FOOT_TOP = 5;
-    private static final int TILEINDEX_BED_FOOT_BOTTOM = 6;
-    private static final int TILEINDEX_BED_FOOT_LEFT = 7;
-    private static final int TILEINDEX_BED_FOOT_RIGHT = 8;
-    private static final int TILEINDEX_BED_FOOT_END = 9;
-    private static final int TILEINDEX_BED_HEAD_LEFTLEG_1 = 10;
-    private static final int TILEINDEX_BED_HEAD_LEFTLEG_2 = 11;
-    private static final int TILEINDEX_BED_HEAD_RIGHTLEG_1 = 12;
-    private static final int TILEINDEX_BED_HEAD_RIGHTLEG_2 = 13;
-    private static final int TILEINDEX_BED_FOOT_LEFTLEG_1 = 14;
-    private static final int TILEINDEX_BED_FOOT_LEFTLEG_2 = 15;
-    private static final int TILEINDEX_BED_FOOT_RIGHTLEG_1 = 16;
-    private static final int TILEINDEX_BED_FOOT_RIGHTLEG_2 = 17;
+    //private static final int TILEINDEX_BED_HEAD_TOP = 0;
+    //private static final int TILEINDEX_BED_HEAD_BOTTOM = 1;
+    //private static final int TILEINDEX_BED_HEAD_LEFT = 2;
+    //private static final int TILEINDEX_BED_HEAD_RIGHT = 3;
+    //private static final int TILEINDEX_BED_HEAD_END = 4;
+    //private static final int TILEINDEX_BED_FOOT_TOP = 5;
+    //private static final int TILEINDEX_BED_FOOT_BOTTOM = 6;
+    //private static final int TILEINDEX_BED_FOOT_LEFT = 7;
+    //private static final int TILEINDEX_BED_FOOT_RIGHT = 8;
+    //private static final int TILEINDEX_BED_FOOT_END = 9;
+    //private static final int TILEINDEX_BED_HEAD_LEFTLEG_1 = 10;
+    //private static final int TILEINDEX_BED_HEAD_LEFTLEG_2 = 11;
+    //private static final int TILEINDEX_BED_HEAD_RIGHTLEG_1 = 12;
+    //private static final int TILEINDEX_BED_HEAD_RIGHTLEG_2 = 13;
+    //private static final int TILEINDEX_BED_FOOT_LEFTLEG_1 = 14;
+    //private static final int TILEINDEX_BED_FOOT_LEFTLEG_2 = 15;
+    //private static final int TILEINDEX_BED_FOOT_RIGHTLEG_1 = 16;
+    //private static final int TILEINDEX_BED_FOOT_RIGHTLEG_2 = 17;
     private static final int TILEINDEX_BED_COUNT = 18;
     
     public static enum TileFileFormat {
@@ -421,7 +421,6 @@ public class TexturePack {
     private int colorMultBirch = 0x80a755;  /* From ColorizerFoliage.java in MCP */
     private int colorMultPine = 0x619961;   /* From ColorizerFoliage.java in MCP */
     private int colorMultLily = 0x208030;   /* from BlockLilyPad.java in MCP */
-    private int colorMultWater = 0xFFFFFF; 
     
     private static final int IMG_GRASSCOLOR = 0;
     private static final int IMG_FOLIAGECOLOR = 1;
@@ -2103,10 +2102,6 @@ public class TexturePack {
                                     else
                                         trans = BlockTransparency.OPAQUE;
                                 }
-                                /* If no water lighting fix */
-                                if((blknames.contains(DynmapBlockState.WATER_BLOCK) || blknames.contains(DynmapBlockState.FLOWING_WATER_BLOCK)) && (HDMapManager.waterlightingfix == false)) {
-                                    trans = BlockTransparency.TRANSPARENT;  /* Treat water as transparent if no fix */
-                                }
                             }
                             else if(av[0].equals("colorMult")) {
                                 colorMult = (int)Long.parseLong(av[1], 16);
@@ -2210,10 +2205,6 @@ public class TexturePack {
                                     trans = BlockTransparency.TRANSPARENT;
                                 else
                                     trans = BlockTransparency.OPAQUE;
-                            }
-                            /* If no water lighting fix */
-                            if((blknames.contains(DynmapBlockState.WATER_BLOCK) || blknames.contains(DynmapBlockState.FLOWING_WATER_BLOCK)) && (HDMapManager.waterlightingfix == false)) {
-                                trans = BlockTransparency.TRANSPARENT;  /* Treat water as transparent if no fix */
                             }
                         }
                     }
@@ -2335,10 +2326,6 @@ public class TexturePack {
                                     trans = BlockTransparency.TRANSPARENT;
                                 else
                                     trans = BlockTransparency.OPAQUE;
-                            }
-                            /* If no water lighting fix */
-                            if((blknames.contains(DynmapBlockState.WATER_BLOCK) || blknames.contains(DynmapBlockState.FLOWING_WATER_BLOCK)) && (HDMapManager.waterlightingfix == false)) {
-                                trans = BlockTransparency.TRANSPARENT;  /* Treat water as transparent if no fix */
                             }
                         }
                         else if(av[0].equals("colorMult")) {

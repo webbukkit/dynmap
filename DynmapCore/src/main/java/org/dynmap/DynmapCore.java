@@ -433,9 +433,6 @@ public class DynmapCore implements DynmapCommonAPI {
             defaultStorage.setLoginEnabled(this);
         }
 
-        /* Add options to avoid 0.29 re-render (fixes very inconsistent with previous maps) */
-        HDMapManager.waterlightingfix = configuration.getBoolean("correct-water-lighting", false);
-        HDMapManager.biomeshadingfix = configuration.getBoolean("correct-biome-shading", false);
         /* Load control for leaf transparency (spout lighting bug workaround) */
         transparentLeaves = configuration.getBoolean("transparent-leaves", true);
         /* Get default image format */

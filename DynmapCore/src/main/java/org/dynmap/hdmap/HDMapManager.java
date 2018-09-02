@@ -21,9 +21,6 @@ public class HDMapManager {
     public HashSet<HDMap> maps = new HashSet<HDMap>();
     public HashMap<String, ArrayList<HDMap>> maps_by_world_perspective = new HashMap<String, ArrayList<HDMap>>();
  
-    public static boolean waterlightingfix;
-    public static boolean biomeshadingfix;
-
     public void loadHDShaders(DynmapCore core) {
         Log.verboseinfo("Loading shaders...");
         /* Update mappings, if needed */
