@@ -61,11 +61,9 @@ public class PlayerFaces {
     private class LoadPlayerImages implements Runnable {
         public final String playername;
         public final String playerskinurl;
-        public final UUID playeruuid;
         public LoadPlayerImages(String playername, String playerskinurl, UUID playeruuid) {
             this.playername = playername;
             this.playerskinurl = playerskinurl;
-            this.playeruuid = playeruuid;
         }
         public void run() {
             boolean has_8x8 = storage.hasPlayerFaceImage(playername, FaceType.FACE_8X8);
@@ -199,7 +197,6 @@ public class PlayerFaces {
 
             DynmapBufferedImage.freeBufferedImage(face8x8);
             img.flush();
-            /* TODO: signal update for player icon to client */
         }
     }
     public PlayerFaces(DynmapCore core) {

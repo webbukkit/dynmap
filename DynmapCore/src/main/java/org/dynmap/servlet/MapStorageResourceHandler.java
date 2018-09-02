@@ -22,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.IOException;
 import java.io.OutputStream;
 
 public class MapStorageResourceHandler extends AbstractHandler {

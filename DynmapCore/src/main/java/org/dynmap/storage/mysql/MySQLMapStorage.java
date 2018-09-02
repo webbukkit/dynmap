@@ -781,19 +781,22 @@ public class MySQLMapStorage extends MapStorage {
     public boolean setMarkerImage(String markerid, BufferOutputStream encImage) {
         Connection c = null;
         boolean err = false;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
         try {
             c = getConnection();
             boolean exists = false;
-            PreparedStatement stmt;
             stmt = c.prepareStatement("SELECT IconName FROM " + tableMarkerIcons + " WHERE IconName=?;");
             stmt.setString(1, markerid);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 exists = true;
             }
             rs.close();
+            rs = null;
             stmt.close();
+            stmt = null;
             if (encImage == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
@@ -812,11 +815,12 @@ public class MySQLMapStorage extends MapStorage {
                 stmt.setBinaryStream(2, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
             }
             stmt.executeUpdate();
-            stmt.close();
         } catch (SQLException x) {
             Log.severe("Marker write error - " + x.getMessage());
             err = true;
         } finally {
+            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
+            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
             releaseConnection(c, err);
         }
         return !err;
@@ -851,19 +855,21 @@ public class MySQLMapStorage extends MapStorage {
     public boolean setMarkerFile(String world, String content) {
         Connection c = null;
         boolean err = false;
-        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             c = getConnection();
             boolean exists = false;
-            PreparedStatement stmt;
             stmt = c.prepareStatement("SELECT FileName FROM " + tableMarkerFiles + " WHERE FileName=?;");
             stmt.setString(1, world);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 exists = true;
             }
             rs.close();
+            rs = null;
             stmt.close();
+            stmt = null;
             if (content == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
@@ -882,11 +888,12 @@ public class MySQLMapStorage extends MapStorage {
                 stmt.setBytes(2, content.getBytes(UTF8));
             }
             stmt.executeUpdate();
-            stmt.close();
         } catch (SQLException x) {
             Log.severe("Marker file write error - " + x.getMessage());
             err = true;
         } finally {
+            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
+            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
             releaseConnection(c, err);
         }
         return !err;
@@ -972,20 +979,22 @@ public class MySQLMapStorage extends MapStorage {
     public boolean setStandaloneFile(String fileid, BufferOutputStream content) {
         Connection c = null;
         boolean err = false;
-        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             c = getConnection();
             boolean exists = false;
-            PreparedStatement stmt;
             stmt = c.prepareStatement("SELECT FileName FROM " + tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
             stmt.setString(1, fileid);
             stmt.setLong(2, serverID);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 exists = true;
             }
             rs.close();
+            rs = null;
             stmt.close();
+            stmt = null;
             if (content == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return true;
@@ -1007,11 +1016,12 @@ public class MySQLMapStorage extends MapStorage {
                 stmt.setBinaryStream(3, new BufferInputStream(content.buf, content.len), content.len);
             }
             stmt.executeUpdate();
-            stmt.close();
         } catch (SQLException x) {
             Log.severe("Standalone file write error - " + x.getMessage());
             err = true;
         } finally {
+            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
+            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
             releaseConnection(c, err);
         }
         return !err;

@@ -129,13 +129,6 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
             list.clear();
         }
     }
-
-    private static int[][] sides = {
-        { 1, 0, 0, SIDE_XP },
-        { -1, 0, 0, SIDE_XN },
-        { 0, 0, 1, SIDE_ZP },
-        { 0, 0, -1, SIDE_ZN }
-    };
     
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {

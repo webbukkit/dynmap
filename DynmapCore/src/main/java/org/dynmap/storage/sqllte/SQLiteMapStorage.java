@@ -695,20 +695,21 @@ public class SQLiteMapStorage extends MapStorage {
     public boolean setMarkerImage(String markerid, BufferOutputStream encImage) {
         Connection c = null;
         boolean err = false;
-        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             c = getConnection();
             boolean exists = false;
-            PreparedStatement stmt;
             stmt = c.prepareStatement("SELECT IconName FROM MarkerIcons WHERE IconName=?;");
             stmt.setString(1, markerid);
-            //ResultSet rs = stmt.executeQuery();
-            ResultSet rs = doExecuteQuery(stmt);
+            rs = doExecuteQuery(stmt);
             if (rs.next()) {
                 exists = true;
             }
             rs.close();
+            rs = null;
             stmt.close();
+            stmt = null;
             if (encImage == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
@@ -727,13 +728,15 @@ public class SQLiteMapStorage extends MapStorage {
                 stmt.setString(1, markerid);
                 stmt.setBytes(2, encImage.buf);
             }
-            //stmt.executeUpdate();
             doExecuteUpdate(stmt);
             stmt.close();
+            stmt = null;
         } catch (SQLException x) {
             Log.severe("Marker write error - " + x.getMessage());
             err = true;
         } finally {
+            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
+            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
             releaseConnection(c, err);
         }
         return !err;
@@ -769,26 +772,26 @@ public class SQLiteMapStorage extends MapStorage {
     public boolean setMarkerFile(String world, String content) {
         Connection c = null;
         boolean err = false;
-        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             c = getConnection();
             boolean exists = false;
-            PreparedStatement stmt;
             stmt = c.prepareStatement("SELECT FileName FROM MarkerFiles WHERE FileName=?;");
             stmt.setString(1, world);
-            //ResultSet rs = stmt.executeQuery();
-            ResultSet rs = doExecuteQuery(stmt);
+            rs = doExecuteQuery(stmt);
             if (rs.next()) {
                 exists = true;
             }
             rs.close();
+            rs = null;
             stmt.close();
+            stmt = null;
             if (content == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
                 stmt = c.prepareStatement("DELETE FROM MarkerFiles WHERE FileName=?;");
                 stmt.setString(1, world);
-                //stmt.executeUpdate();
                 doExecuteUpdate(stmt);
             }
             else if (exists) {
@@ -803,11 +806,12 @@ public class SQLiteMapStorage extends MapStorage {
             }
             //stmt.executeUpdate();
             doExecuteUpdate(stmt);
-            stmt.close();
         } catch (SQLException x) {
             Log.severe("Marker file write error - " + x.getMessage());
             err = true;
         } finally {
+            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
+            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
             releaseConnection(c, err);
         }
         return !err;

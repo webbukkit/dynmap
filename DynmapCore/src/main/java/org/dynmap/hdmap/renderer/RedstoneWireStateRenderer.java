@@ -1,21 +1,10 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Map;
-
-import org.dynmap.renderer.CustomRenderer;
-import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
-import org.dynmap.renderer.RenderPatchFactory;
-import org.dynmap.renderer.RenderPatchFactory.SideVisible;
 
 // v1.13+ redstone wire renderer
 public class RedstoneWireStateRenderer extends RedstoneWireRenderer {
-    private static final int x_off[] = { -1, 1, 0, 0 };
-    private static final int z_off[] = { 0, 0, -1, 1 };
-
 	@Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
     	int idx = ctx.getBlockType().stateIndex;

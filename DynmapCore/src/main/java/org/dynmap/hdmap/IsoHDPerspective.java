@@ -78,9 +78,6 @@ public class IsoHDPerspective implements HDPerspective {
     private boolean need_rawbiomedata = false;
 
     private static final BlockStep [] semi_steps = { BlockStep.Y_PLUS, BlockStep.X_MINUS, BlockStep.X_PLUS, BlockStep.Z_MINUS, BlockStep.Z_PLUS };
-
-    private DynmapBlockState full_water = null;
-    private RenderPatch full_water_patch = null;
     
     private class OurPerspectiveState implements HDPerspectiveState {
         DynmapBlockState blocktype = DynmapBlockState.AIR;

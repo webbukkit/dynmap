@@ -45,7 +45,6 @@ import org.dynmap.debug.Debugger;
 import org.dynmap.exporter.DynmapExpCommands;
 import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.hdmap.HDBlockStateTextureMap;
-import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.impl.MarkerAPIImpl;
