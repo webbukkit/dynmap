@@ -446,10 +446,10 @@ public class IsoHDPerspective implements HDPerspective {
             vS.crossProduct(pd.u);
             /* Compute V using slope times inner product of direction and cross product */
             double v = inv_det * direction.innerProduct(vS);
-            // Check constrains: v must be below line from (0, vmax) to (umax, vmaxatumax)
-            double urel = (u > pd.umin) ? ((pd.umax - pd.umin) / (u - pd.umin)) : 0.0; 
+            // Check constrains: v must be below line from (umin, vmax) to (umax, vmaxatumax)
+            double urel = (u > pd.umin) ? ((u - pd.umin) / (pd.umax - pd.umin)) : 0.0; 
             double vmaxatu = pd.vmax + (pd.vmaxatumax - pd.vmax) * urel;
-            // Check constrains: v must be above line from (0, vmin) to (umax, vminatumax)
+            // Check constrains: v must be above line from (umin, vmin) to (umax, vminatumax)
             double vminatu = pd.vmin + (pd.vminatumax - pd.vmin) * urel;
             if ((v <= vminatu) || (v >= vmaxatu)) {
                 return hitcnt;
