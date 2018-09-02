@@ -1977,11 +1977,11 @@ texture:id=brain_coral
 texture:id=bubble_coral
 texture:id=fire_coral
 texture:id=horn_coral
-texture:id=dead_tube_coral
-texture:id=dead_brain_coral
-texture:id=dead_bubble_coral
-texture:id=dead_fire_coral
-texture:id=dead_horn_coral
+[1.13.1-]texture:id=dead_tube_coral
+[1.13.1-]texture:id=dead_brain_coral
+[1.13.1-]texture:id=dead_bubble_coral
+[1.13.1-]texture:id=dead_fire_coral
+[1.13.1-]texture:id=dead_horn_coral
 texture:id=dead_tube_coral_fan
 texture:id=dead_brain_coral_fan
 texture:id=dead_bubble_coral_fan
@@ -2142,16 +2142,16 @@ block:id=fire_coral,patch0-1=0:fire_coral,transparency=TRANSPARENT
 block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 
 # Dead tube coral
-block:id=dead_tube_coral,patch0-1=0:dead_tube_coral,transparency=TRANSPARENT
+[1.13.1-]block:id=dead_tube_coral,patch0-1=0:dead_tube_coral,transparency=TRANSPARENT
 
 # Dead brain coral
-block:id=dead_brain_coral,patch0-1=0:dead_brain_coral,transparency=TRANSPARENT
+[1.13.1-]block:id=dead_brain_coral,patch0-1=0:dead_brain_coral,transparency=TRANSPARENT
 
 # Dead bubble coral
-block:id=dead_bubble_coral,patch0-1=0:dead_bubble_coral,transparency=TRANSPARENT
+[1.13.1-]block:id=dead_bubble_coral,patch0-1=0:dead_bubble_coral,transparency=TRANSPARENT
 
 # Dead fire coral
-block:id=dead_fire_coral,patch0-1=0:dead_fire_coral,transparency=TRANSPARENT
+[1.13.1-]block:id=dead_fire_coral,patch0-1=0:dead_fire_coral,transparency=TRANSPARENT
 
 # Dead horn coral
-block:id=dead_horn_coral,patch0-1=0:dead_horn_coral,transparency=TRANSPARENT
+[1.13.1-]block:id=dead_horn_coral,patch0-1=0:dead_horn_coral,transparency=TRANSPARENT
