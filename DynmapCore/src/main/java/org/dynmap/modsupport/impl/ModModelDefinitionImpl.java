@@ -193,8 +193,8 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
 
     public String getPatchID(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv, double umin,
-            double umax, double vmin, double vmax, double uplusvmax, SideVisible sidevis) {
-        PatchDefinition pd = pdf.getPatch(x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vmax, uplusvmax, sidevis, 0);
+            double umax, double vmin, double vminatumax, double vmax, double vmaxatumax, SideVisible sidevis) {
+        PatchDefinition pd = pdf.getPatch(x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vminatumax, vmax, vmaxatumax, sidevis, 0);
         if (pd == null)
             return null;    // Invalid patch
         for (int i = 0; i < blkPatch.size(); i++) {
@@ -247,8 +247,8 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
             // Loop through patch definitions
             for (int i = 0; i < blkPatch.size(); i++) {
                 PatchDefinition pd = blkPatch.get(i);
-                String line = String.format(Locale.US, "patch:id=patch%d,Ox=%f,Oy=%f,Oz=%f,Ux=%f,Uy=%f,Uz=%f,Vx=%f,Vy=%f,Vz=%f,Umin=%f,Umax=%f,Vmin=%f,Vmax=%f,UplusVmax=%f",
-                        i, pd.x0, pd.y0, pd.z0, pd.xu, pd.yu, pd.zu, pd.xv, pd.yv, pd.zv, pd.umin, pd.umax, pd.vmin, pd.vmax, pd.uplusvmax);
+                String line = String.format(Locale.US, "patch:id=patch%d,Ox=%f,Oy=%f,Oz=%f,Ux=%f,Uy=%f,Uz=%f,Vx=%f,Vy=%f,Vz=%f,Umin=%f,Umax=%f,Vmin=%f,Vmax=%f,VmaxAtUMax=%f,VminAtUMax=%f",
+                        i, pd.x0, pd.y0, pd.z0, pd.xu, pd.yu, pd.zu, pd.xv, pd.yv, pd.zv, pd.umin, pd.umax, pd.vmin, pd.vmax, pd.vmaxatumax, pd.vminatumax);
                 switch (pd.sidevis) {
                     case BOTTOM:
                         line += ",visibility=bottom";

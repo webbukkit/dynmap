@@ -26,23 +26,30 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
             double yu, double zu, double xv, double yv, double zv, double umin,
             double umax, double vmin, double vmax, SideVisible sidevis,
             int textureids) {
-        return getPatch(x0, y0, z0, xu, yu, zu,xv, yv, zv, umin, umax, vmin, vmax, 100.0, sidevis, textureids);
+        return getPatch(x0, y0, z0, xu, yu, zu,xv, yv, zv, umin, umax, vmin, vmax, sidevis, textureids, vmin, vmax);
     }
 
     @Override
     public RenderPatch getPatch(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv,
             double uplusvmax, SideVisible sidevis, int textureids) {
-        return getPatch(x0, y0, z0, xu, yu, zu,xv, yv, zv, 0.0, 1.0, 0.0, 1.0, uplusvmax, sidevis, textureids);
+        return getPatch(x0, y0, z0, xu, yu, zu,xv, yv, zv, 0.0, uplusvmax, 0.0, uplusvmax, sidevis, textureids, 0.0, 0.0);
     }
-
+    @Override
     public PatchDefinition getPatch(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv, double umin,
-            double umax, double vmin, double vmax, double uplusvmax, SideVisible sidevis,
+            double umax, double vmin, double vminatumax, double vmax, double vmaxatumax, SideVisible sidevis,
             int textureids) {
+        return getPatch(x0, y0, z0, xu, yu, zu,xv, yv, zv, umin, umax, vmin, vmax, sidevis, textureids, vminatumax, vmaxatumax);
+    }
+    
+    public PatchDefinition getPatch(double x0, double y0, double z0, double xu,
+            double yu, double zu, double xv, double yv, double zv, double umin,
+            double umax, double vmin, double vmax, SideVisible sidevis,
+            int textureids, double vminatumax, double vmaxatumax) {
         synchronized(lock) {
             lookup.update(x0, y0, z0, xu, yu, zu, xv, yv, zv, umin,
-                    umax, vmin, vmax, uplusvmax, sidevis, textureids);
+                    umax, vmin, vmax, sidevis, textureids, vminatumax, vmaxatumax);
             if(lookup.validate() == false)
                 return null;
             PatchDefinition pd2 = patches.get(lookup);  /* See if in cache already */

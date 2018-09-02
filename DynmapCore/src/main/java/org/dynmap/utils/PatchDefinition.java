@@ -11,7 +11,8 @@ public class PatchDefinition implements RenderPatch {
     public double xv, yv, zv;   /* Coordinates of end of V vector (relative to origin) - corresponds to v=1.0 (upper left corner) */
     public double umin, umax;   /* Limits of patch - minimum and maximum u value */
     public double vmin, vmax;   /* Limits of patch - minimum and maximum v value */
-    public double uplusvmax;    /* Limits of patch - max of u+v (triangle) */
+    public double vmaxatumax;   /* Limits of patch - max v value at max u (allows triangle or trapezoid) */
+    public double vminatumax;   /* Limits of patch - min v value at max u (allows triangle or trapezoid) */
     public Vector3D u, v;       /* U and V vector, relative to origin */
     public SideVisible sidevis;  /* Which side is visible */
     public int textureindex;
@@ -26,7 +27,8 @@ public class PatchDefinition implements RenderPatch {
         yv = zv = 0.0; xv = 1.0;
         umin = vmin = 0.0;
         umax = vmax = 1.0;
-        uplusvmax = 100.0;
+        vmaxatumax = 1.0;
+        vminatumax = 0.0;
         u = new Vector3D();
         v = new Vector3D();
         sidevis = SideVisible.BOTH;
@@ -47,7 +49,8 @@ public class PatchDefinition implements RenderPatch {
         this.vmin = pd.vmin;
         this.umax = pd.umax;
         this.vmax = pd.vmax;
-        this.uplusvmax = pd.uplusvmax;
+        this.vmaxatumax = pd.vmaxatumax;
+        this.vminatumax = pd.vminatumax;
         this.u = new Vector3D(pd.u);
         this.v = new Vector3D(pd.v);
         this.sidevis = pd.sidevis;
@@ -75,7 +78,8 @@ public class PatchDefinition implements RenderPatch {
         xv = vec.x; yv = vec.y; zv = vec.z;
         umin = orig.umin; vmin = orig.vmin;
         umax = orig.umax; vmax = orig.vmax;
-        uplusvmax = orig.uplusvmax;
+        vmaxatumax = orig.vmaxatumax;
+        vminatumax = orig.vminatumax;
         sidevis = orig.sidevis;
         this.textureindex = textureindex;
         u = new Vector3D();
@@ -104,8 +108,8 @@ public class PatchDefinition implements RenderPatch {
     }
     public void update(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv, double umin,
-            double umax, double vmin, double vmax, double uplusvmax, SideVisible sidevis,
-            int textureids) {
+            double umax, double vmin, double vmax, SideVisible sidevis,
+            int textureids, double vminatumax, double vmaxatumax) {
         this.x0 = x0;
         this.y0 = y0;
         this.z0 = z0;
@@ -119,7 +123,8 @@ public class PatchDefinition implements RenderPatch {
         this.umax = umax;
         this.vmin = vmin;
         this.vmax = vmax;
-        this.uplusvmax = uplusvmax;
+        this.vmaxatumax = vmaxatumax;
+        this.vminatumax = vminatumax;
         this.sidevis = sidevis;
         this.textureindex = textureids;
         update();
@@ -131,7 +136,7 @@ public class PatchDefinition implements RenderPatch {
         hc = (int)((Double.doubleToLongBits(x0 + xu + xv) >> 32) ^
                 (Double.doubleToLongBits(y0 + yu + yv) >> 34) ^
                 (Double.doubleToLongBits(z0 + yu + yv) >> 36) ^
-                (Double.doubleToLongBits(umin + umax + vmin + vmax + uplusvmax) >> 38)) ^
+                (Double.doubleToLongBits(umin + umax + vmin + vmax + vmaxatumax) >> 38)) ^
                 (sidevis.ordinal() << 8) ^ textureindex;
         /* Now compute normal of surface - U cross V */
         double crossx = (u.y*v.z) - (u.z*v.y);
@@ -229,6 +234,14 @@ public class PatchDefinition implements RenderPatch {
             Log.severe("Invalid vmax=" + vmax);
             good = false;
         }
+        if ((vminatumax < 0.0) || (vminatumax > vmaxatumax)) {
+            Log.severe("Invalid vminatumax=" + vminatumax);
+            good = false;
+        }
+        if(vmaxatumax > 1.0) {
+            Log.severe("Invalid vmaxatumax=" + vmaxatumax);
+            good = false;
+        }
         
         return good;
     }
@@ -244,7 +257,8 @@ public class PatchDefinition implements RenderPatch {
                     (xv == p.xv) && (yv == p.yv) && (zv == p.zv) && 
                     (umin == p.umin) && (umax == p.umax) &&
                     (vmin == p.vmin) && (vmax == p.vmax) &&
-                    (uplusvmax == p.uplusvmax) && (sidevis == p.sidevis)) {
+                    (vmaxatumax == p.vmaxatumax) && 
+                    (vminatumax == p.vminatumax) && (sidevis == p.sidevis)) {
                 return true;
             }
         }

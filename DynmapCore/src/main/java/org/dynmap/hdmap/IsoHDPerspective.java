@@ -439,14 +439,19 @@ public class IsoHDPerspective implements HDPerspective {
             vS.subtract(v0);
             /* Compute u - slope times inner product of offset and cross product */
             double u = inv_det * vS.innerProduct(d_cross_uv);
-            if((u <= pd.umin) || (u >= pd.umax)) {
+            if ((u <= pd.umin) || (u >= pd.umax)) {
                 return hitcnt;
             }
             /* Compute cross product of offset and U */
             vS.crossProduct(pd.u);
             /* Compute V using slope times inner product of direction and cross product */
             double v = inv_det * direction.innerProduct(vS);
-            if((v <= pd.vmin) || (v >= pd.vmax) || ((u + v) >= pd.uplusvmax)) {
+            // Check constrains: v must be below line from (0, vmax) to (umax, vmaxatumax)
+            double urel = (u > pd.umin) ? ((pd.umax - pd.umin) / (u - pd.umin)) : 0.0; 
+            double vmaxatu = pd.vmax + (pd.vmaxatumax - pd.vmax) * urel;
+            // Check constrains: v must be above line from (0, vmin) to (umax, vminatumax)
+            double vminatu = pd.vmin + (pd.vminatumax - pd.vmin) * urel;
+            if ((v <= vminatu) || (v >= vmaxatu)) {
                 return hitcnt;
             }
             /* Compute parametric value of intercept */

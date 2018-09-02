@@ -611,7 +611,9 @@ public class HDBlockModels {
                     double p_xv = 1.0, p_yv = 0.0, p_zv = 0.0;
                     double p_umin = 0.0, p_umax = 1.0;
                     double p_vmin = 0.0, p_vmax = 1.0;
-                    double p_uplusvmax = 100.0;
+                    double p_vmaxatumax = -1.0;
+                    double p_vminatumax = -1.0;
+                    double p_uplusvmax = -1.0;
                     SideVisible p_sidevis = SideVisible.BOTH;
                     
                     for(String a : args) {
@@ -660,7 +662,14 @@ public class HDBlockModels {
                             p_vmax = Double.parseDouble(av[1]);
                         }
                         else if(av[0].equals("UplusVmax")) {
+                            Log.warning("UplusVmax deprecated - use VmaxAtUMax - line " + rdr.getLineNumber() + " of " + fname);
                             p_uplusvmax = Double.parseDouble(av[1]);
+                        }
+                        else if(av[0].equals("VmaxAtUMax")) {
+                            p_vmaxatumax = Double.parseDouble(av[1]);
+                        }
+                        else if(av[0].equals("VminAtUMax")) {
+                            p_vminatumax = Double.parseDouble(av[1]);
                         }
                         else if(av[0].equals("visibility")) {
                             if(av[1].equals("top"))
@@ -673,9 +682,23 @@ public class HDBlockModels {
                                 p_sidevis = SideVisible.BOTH;
                         }
                     }
+                    // Deprecated: If set, compute umax, vmax, and vmaxatumax
+                    if (p_uplusvmax >= 0.0) {
+                        p_umax = p_uplusvmax;
+                        p_vmax = p_uplusvmax;
+                        p_vmaxatumax = 0.0;
+                    }
+                    // If not set, match p_vmax by default
+                    if (p_vmaxatumax < 0.0) {
+                        p_vmaxatumax = p_vmax;
+                    }
+                    // If not set, match p_vmin by default
+                    if (p_vminatumax < 0.0) {
+                        p_vminatumax = p_vmin;
+                    }
                     /* If completed, add to map */
                     if(patchid != null) {
-                        PatchDefinition pd = pdf.getPatch(p_x0, p_y0, p_z0, p_xu, p_yu, p_zu, p_xv, p_yv, p_zv, p_umin, p_umax, p_vmin, p_vmax, p_uplusvmax, p_sidevis, 0);
+                        PatchDefinition pd = pdf.getPatch(p_x0, p_y0, p_z0, p_xu, p_yu, p_zu, p_xv, p_yv, p_zv, p_umin, p_umax, p_vmin, p_vminatumax, p_vmax, p_vmaxatumax, p_sidevis, 0);
                         if(pd != null) {
                             patchdefs.put(patchid,  pd);
                         }

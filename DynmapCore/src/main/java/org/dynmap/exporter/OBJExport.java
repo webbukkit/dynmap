@@ -113,7 +113,7 @@ public class OBJExport {
         for (BlockStep s : BlockStep.values()) {
             double[] p = pp[s.getFaceEntered()];
             int ord = s.ordinal();
-            defaultPathces[ord] = fact.getPatch(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], 0, 1, 0, 1, 100, SideVisible.TOP, ord);
+            defaultPathces[ord] = fact.getPatch(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], 0, 1, 0, 0, 1, 1, SideVisible.TOP, ord);
         }
         vertices = new IndexedVector3DList(new IndexedVector3DList.ListCallback() {
             @Override
