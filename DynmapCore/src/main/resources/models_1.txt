@@ -1364,3 +1364,6 @@ customblock:id=red_mushroom_block,id=brown_mushroom_block,class=org.dynmap.hdmap
 # Dead fire coral
 # Dead horn coral
 [1.13.1-]patchblock:id=dead_tube_coral,id=dead_brain_coral,id=dead_bubble_coral,id=dead_fire_coral,id=dead_horn_coral,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+
+# Bubble column (taken care of due to being waterlogged) - needs to be patch model
+patchblock:id=bubble_column
