@@ -139,6 +139,9 @@ public class BukkitVersionHelperSpigot113_1 extends BukkitVersionHelperCB {
     		if (bd.getBlock() instanceof BlockLogAbstract) {
     			bs.setLog();
     		}
+    		if (bd.getMaterial().isSolid()) {
+    			bs.setSolid();
+    		}
     		dataToState.put(bd,  bs);
     		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
     		Log.verboseinfo(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());

@@ -131,10 +131,15 @@ public abstract class BukkitVersionHelper {
      */
     public String getSkinURL(Player player) { return null; }
     /**
+     * Get material map by block ID
+     */
+    public abstract BukkitMaterial[] getMaterialList();
+    /**
      * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
      */
     public void initializeBlockStates() {
         String[] blkname = getBlockNames();
+        BukkitMaterial[] blkmat = getMaterialList();
         // Keep it simple for now - just assume 16 meta states for each
         stateByID = new DynmapBlockState[16*blkname.length];
         Arrays.fill(stateByID, DynmapBlockState.AIR);
@@ -148,9 +153,24 @@ public abstract class BukkitVersionHelper {
             if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
                 DynmapBlockState basebs = new DynmapBlockState(null, 0, bn, "meta=0");
                 stateByID[i << 4] = basebs;
+                BukkitMaterial mat = blkmat[i];
                 for (int m = 1; m < 16; m++) {
                     DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, "meta=" + m);
                     stateByID[(i << 4) + m] = bs;
+                    if (mat != null) {
+                    	if (mat.name.equals("AIR")) {
+                        	bs.setAir();
+                    	}
+                    	if (mat.name.equals("LEAVES")) {
+                        	bs.setLeaves();
+                    	}
+                    	if (mat.name.equals("WOOD")) {
+                        	bs.setLog();
+                    	}
+                    	if (mat.isSolid) {
+                    		bs.setSolid();
+                    	}
+                    }                    
                 }
             }
         }

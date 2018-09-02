@@ -414,6 +414,11 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
         // TODO Auto-generated method stub
         return null;
     }
+    @Override
+    public BukkitMaterial[] getMaterialList() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /**
      * Get list of online players

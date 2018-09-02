@@ -25,6 +25,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Class<?> nmsmaterial;
     private Field blockbyid;
     private Field material;
+    private Method material_issolid;
+    private Method material_isliquid;
     private Method blockbyidfunc;   // 1.7+ method for getting block by id
     private Method getworldborder;  // 1.8+ method for getting world border
     private Class<?> nmsworldborder;
@@ -76,6 +78,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             }
         }
         material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);
+
+        // Get material methods
+        material_issolid = getMethod(nmsmaterial, new String[] { "isSolid" }, nulltypes);
+        material_isliquid = getMethod(nmsmaterial, new String[] { "isLiquid" }, nulltypes);
 
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
@@ -305,6 +311,48 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         }
         return new int[0];
     }
+    /**
+     * Get material map by block ID
+     */
+    @Override
+    public BukkitMaterial[] getMaterialList() {
+        try {
+            BukkitMaterial[] map = new BukkitMaterial[4096];
+            if (blockbyid != null) {
+                Object[] byid = (Object[])blockbyid.get(nmsblock);
+                for (int i = 0; i < map.length; i++) {
+                    if (byid[i] != null) {
+                        Object mat = (Object)material.get(byid[i]);
+                        if (mat != null) {
+                        	Boolean solid = (Boolean) material_issolid.invoke(mat);
+                        	Boolean liquid = (Boolean) material_isliquid.invoke(mat);
+                        	map[i] = new BukkitMaterial(mat.toString(), solid, liquid);
+                        }
+                    }
+                }
+            }
+            else if (blockbyidfunc != null) {
+                ArrayList<Object> mats = new ArrayList<Object>();
+                for (int i = 0; i < map.length; i++) {
+                    Object blk = blockbyidfunc.invoke(nmsblock, i);
+                    if (blk != null) {
+                        Object mat = (Object)material.get(blk);
+                        if (mat != null) {
+                        	Boolean solid = (Boolean) material_issolid.invoke(mat);
+                        	Boolean liquid = (Boolean) material_isliquid.invoke(mat);
+                        	map[i] = new BukkitMaterial(mat.toString(), solid, liquid);
+                        }
+                    }
+                }
+            }
+            return map;
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
+        }
+        return new BukkitMaterial[0];
+    }
+ 
     @Override
     public Polygon getWorldBorder(World world) {
         Polygon p = null;

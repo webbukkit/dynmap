@@ -178,6 +178,19 @@ public class DynmapPlugin
                     for (int m = 1; m < 16; m++) {
                         DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, "meta=" + m);
                         stateByID[(i << 4) + m] = bs;
+                        Material mat = b.getMaterial();
+                        if (mat.isSolid()) {
+                        	bs.setSolid();
+                        }
+                        if (mat == Material.air) {
+                        	bs.setAir();
+                        }
+                        if (mat == Material.wood) {
+                        	bs.setLog();
+                        }
+                        if (mat == Material.leaves) {
+                        	bs.setLeaves();
+                        }
                     }
                 }
             }

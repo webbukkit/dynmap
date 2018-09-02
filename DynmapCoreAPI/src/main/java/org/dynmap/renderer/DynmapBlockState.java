@@ -35,6 +35,7 @@ public class DynmapBlockState {
     private static int MATCH_GRASS = 1 << 4;
     private static int MATCH_WATERLOGGED = 1 << 5;
     private static int MATCH_LEAVES = 1 << 6;
+    private static int MATCH_SOLID = 1 << 7;
     
     // Map of base blocks by name
     private static HashMap<String, DynmapBlockState> blocksByName = new HashMap<String, DynmapBlockState>();
@@ -330,6 +331,18 @@ public class DynmapBlockState {
             return still_water;
         }
         return null;
+    }
+    /**
+     * Test if block is solid
+     */
+    public boolean isSolid() {
+    	return (matchflags & MATCH_SOLID) != 0;
+    }
+    /**
+     * Set to solid
+     */
+    public void setSolid() {
+    	matchflags |= MATCH_SOLID;
     }
     /**
      * To printable string
