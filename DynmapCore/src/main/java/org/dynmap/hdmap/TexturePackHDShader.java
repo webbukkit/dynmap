@@ -108,6 +108,7 @@ public class TexturePackHDShader implements HDShader {
         final private TexturePack scaledtp;
         final private HDLighting lighting;
         protected DynmapBlockState lastblk;
+        protected DynmapBlockState lastblkhit;
         final boolean do_biome_shading;
         final boolean do_better_grass;
         DynLongHashMap ctm_cache;
@@ -173,6 +174,7 @@ public class TexturePackHDShader implements HDShader {
             for(int i = 0; i < color.length; i++)
                 color[i].setTransparent();
             setLastBlockState(DynmapBlockState.AIR);
+            lastblkhit = DynmapBlockState.AIR;
         }
         
         /**
@@ -186,6 +188,7 @@ public class TexturePackHDShader implements HDShader {
             }
             
             if (blocktype.isAir()) {
+            	lastblkhit = blocktype;
                 return false;
             }
             
@@ -195,6 +198,7 @@ public class TexturePackHDShader implements HDShader {
             if (scaledtp != null) {
                 scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, ShaderState.this);
             }
+        	lastblkhit = blocktype;
 
             if (c.getAlpha() > 0) {
                 /* Scale brightness depending upon face */
@@ -317,6 +321,10 @@ public class TexturePackHDShader implements HDShader {
         @Override
         public void setLastBlockState(DynmapBlockState new_lastbs) {
             lastblk = new_lastbs;
+        }
+        // Return last blockc with surface hit
+        public DynmapBlockState getLastBlockHit() {
+        	return lastblkhit;
         }
     }
 
