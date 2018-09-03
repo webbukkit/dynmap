@@ -195,10 +195,10 @@ public class DynmapPlugin
                 }
             }
         }
-        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
-        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
-        	Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
-        }
+        //for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
+        //	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
+        //	Log.verboseinfo(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
+        //}
     }
 
     public static final int getBlockID(World w, int x, int y, int z) {

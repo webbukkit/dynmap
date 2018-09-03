@@ -176,28 +176,35 @@ public class DynmapPlugin
                     for (int m = 1; m < 16; m++) {
                         DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, "meta=" + m);
                         stateByID[(i << 4) + m] = bs;
-                        IBlockState blkstate = b.getStateFromMeta(m);
-                        Material mat = blkstate.getMaterial();
-                        if (mat.isSolid()) {
-                        	bs.setSolid();
+                        IBlockState blkstate = null;
+                        try {
+                            blkstate = b.getStateFromMeta(m);
+                        } catch (Exception x) {
+                            // Invalid meta
                         }
-                        if (mat == Material.AIR) {
-                        	bs.setAir();
-                        }
-                        if (mat == Material.WOOD) {
-                        	bs.setLog();
-                        }
-                        if (mat == Material.LEAVES) {
-                        	bs.setLeaves();
+                        if (blkstate != null) {
+                            Material mat = blkstate.getMaterial();
+                            if (mat.isSolid()) {
+                                bs.setSolid();
+                            }
+                            if (mat == Material.AIR) {
+                                bs.setAir();
+                            }
+                            if (mat == Material.WOOD) {
+                                bs.setLog();
+                            }
+                            if (mat == Material.LEAVES) {
+                                bs.setLeaves();
+                            }
                         }
                     }
                 }
             }
         }
-        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
-        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
-        	Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
-        }
+        //for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
+       // 	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
+       // 	Log.verboseinfo(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
+        //}
     }
 
     public static final int getBlockID(World w, int x, int y, int z) {
