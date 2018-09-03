@@ -1101,7 +1101,7 @@ block:id=repeater,data=12,data=14,data=28,data=30,data=44,data=46,data=60,data=6
 # Repeater (off) facing north
 block:id=repeater,data=13,data=15,data=29,data=31,data=45,data=47,data=61,data=63,top=0:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
 # Stained Glass (95)
-block:id=white_stained_glass,dallfaces=12000:white_stained_glass,stdrot=true,transparency=TRANSPARENT
+block:id=white_stained_glass,allfaces=12000:white_stained_glass,stdrot=true,transparency=TRANSPARENT
 block:id=orange_stained_glass,allfaces=12000:orange_stained_glass,stdrot=true,transparency=TRANSPARENT
 block:id=magenta_stained_glass,allfaces=12000:magenta_stained_glass,stdrot=true,transparency=TRANSPARENT
 block:id=light_blue_stained_glass,allfaces=12000:light_blue_stained_glass,stdrot=true,transparency=TRANSPARENT
