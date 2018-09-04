@@ -38,6 +38,7 @@ shadowJar {
 		include(dependency('com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:'))
         include(dependency('org.eclipse.jetty::'))
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
+        include(dependency(':DynmapCoreAPI'))
 	}
 	relocate('org.json.simple', 'org.dynmap.json.simple')
 	relocate('org.yaml.snakeyaml', 'org.dynmap.snakeyaml')

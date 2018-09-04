@@ -34,6 +34,9 @@ minecraft {
     version = "1.12.2-14.23.4.2705"
     mappings = "snapshot_20171031"
     runDir = 'run'
+    replaceIn "Version.java"
+    replace "@VERSION@", project.version + '-' + project.ext.buildNumber
+    replace "@BUILD_NUMBER@", project.ext.buildNumber
 }
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-1.12.2"
@@ -62,7 +65,6 @@ processResources
 shadowJar {
     dependencies {
         include(dependency(':DynmapCore'))
-        include(dependency(':DynmapCoreAPI'))
     }
     archiveName = "Dynmap-${parent.version}-forge-1.12.2.jar"
     destinationDir = file '../target'

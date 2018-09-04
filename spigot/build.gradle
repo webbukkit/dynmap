@@ -4,7 +4,7 @@ description = 'dynmap'
 dependencies {
   compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
     compile 'com.nijikokun.bukkit:Permissions:3.1.6'
-    compile project(path: ":dynmap-api", configuration: "shadow")
+    compile project(":dynmap-api")
     compile project(path: ":DynmapCore", configuration: "shadow")
     compile group: 'ru.tehkode', name: 'PermissionsEx', version:'1.19.1'
     compile group: 'de.bananaco', name: 'bPermissions', version:'2.9.1'

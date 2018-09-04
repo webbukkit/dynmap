@@ -16,7 +16,6 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-    compile project(path: ":DynmapCoreAPI", configuration: "shadow")
     compile project(path: ":DynmapCore", configuration: "shadow")
 }
 
@@ -34,6 +33,9 @@ minecraft {
     version = "1.8.9-11.15.1.1902-1.8.9"
     mappings = "stable_22"
     runDir = 'run'
+    replaceIn "Version.java"
+    replace "@VERSION@", project.version + '-' + project.ext.buildNumber
+    replace "@BUILD_NUMBER@", project.ext.buildNumber
 }
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-1.8.9"
@@ -62,7 +64,6 @@ processResources
 shadowJar {
     dependencies {
         include(dependency(':DynmapCore'))
-        include(dependency(':DynmapCoreAPI'))
     }
     archiveName = "Dynmap-${parent.version}-forge-1.8.9.jar"
     destinationDir = file '../target'
