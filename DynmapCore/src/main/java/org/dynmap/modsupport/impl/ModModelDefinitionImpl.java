@@ -247,6 +247,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
             // Loop through patch definitions
             for (int i = 0; i < blkPatch.size(); i++) {
                 PatchDefinition pd = blkPatch.get(i);
+                if (pd == null) continue;
                 String line = String.format(Locale.US, "patch:id=patch%d,Ox=%f,Oy=%f,Oz=%f,Ux=%f,Uy=%f,Uz=%f,Vx=%f,Vy=%f,Vz=%f,Umin=%f,Umax=%f,Vmin=%f,Vmax=%f,VmaxAtUMax=%f,VminAtUMax=%f",
                         i, pd.x0, pd.y0, pd.z0, pd.xu, pd.yu, pd.zu, pd.xv, pd.yv, pd.zv, pd.umin, pd.umax, pd.vmin, pd.vmax, pd.vmaxatumax, pd.vminatumax);
                 switch (pd.sidevis) {
