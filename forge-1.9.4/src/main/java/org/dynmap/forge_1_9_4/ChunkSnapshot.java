@@ -24,7 +24,7 @@ public class ChunkSnapshot
     private final byte[][] emitlight;
     private final boolean[] empty;
     private final int[] hmap; // Height map
-    private final byte[] biome;
+    private final int[] biome;
     private final long captureFulltime;
     private final int sectionCnt;
     private final long inhabitedTicks;
@@ -65,7 +65,7 @@ public class ChunkSnapshot
         this.x = x;
         this.z = z;
         this.captureFulltime = captime;
-        this.biome = new byte[COLUMNS_PER_CHUNK];
+        this.biome = new int[COLUMNS_PER_CHUNK];
         this.sectionCnt = worldheight / 16;
         /* Allocate arrays indexed by section */
         this.blockids = new short[this.sectionCnt][];
@@ -146,6 +146,19 @@ public class ChunkSnapshot
                     blkids[(j << 1) + 1] |= (b & 0xF0) << 4;
                 }
             }
+            if (sec.hasKey("Add2")) {    /* If additional data (NEID), add it */
+                byte[] msb = sec.getByteArray("Add2");
+                len = BLOCKS_PER_SECTION / 2;
+                if(len > msb.length) len = msb.length;
+                for (int j = 0; j < len; j++) {
+                    short b = (short)(msb[j] & 0xFF);
+                    if (b == 0) {
+                        continue;
+                    }
+                    blkids[j << 1] |= (b & 0x0F) << 12;
+                    blkids[(j << 1) + 1] |= (b & 0xF0) << 8;
+                }
+            }
             this.blockdata[secnum] = sec.getByteArray("Data");
             this.emitlight[secnum] = sec.getByteArray("BlockLight");
             if (sec.hasKey("SkyLight")) {
@@ -154,15 +167,22 @@ public class ChunkSnapshot
             this.empty[secnum] = false;
         }
         /* Get biome data */
+        this.biome = new int[COLUMNS_PER_CHUNK];
         if (nbt.hasKey("Biomes")) {
             byte[] b = nbt.getByteArray("Biomes");
-            if (b.length < COLUMNS_PER_CHUNK) {
-            	b = Arrays.copyOf(b, COLUMNS_PER_CHUNK);
+            if (b != null) {
+            	for (int i = 0; i < b.length; i++) {
+            		this.biome[i] = 255 & b[i];
+            	}
             }
-            this.biome = b;
-        }
-        else {
-            this.biome = new byte[COLUMNS_PER_CHUNK];
+            else {	// Check JEI biomes
+            	int[] bb = nbt.getIntArray("Biomes");
+            	if (bb != null) {
+                	for (int i = 0; i < bb.length; i++) {
+                		this.biome[i] = bb[i];
+                	}
+            	}
+            }
         }
     }
     
@@ -226,7 +246,7 @@ public class ChunkSnapshot
 
     public int getBiome(int x, int z)
     {
-        return 255 & biome[z << 4 | x];
+        return biome[z << 4 | x];
     }
 
     public final long getCaptureFullTime()
