@@ -2,7 +2,6 @@ package org.dynmap.modsupport.impl;
 
 import java.util.Arrays;
 
-import org.dynmap.DynmapCore;
 import org.dynmap.modsupport.BlockModel;
 
 public abstract class BlockModelImpl implements BlockModel {
@@ -26,7 +25,7 @@ public abstract class BlockModelImpl implements BlockModel {
      */
     @Override
     public void addBlockID(int blockID) {
-        if ((blockID > 0) && (blockID < DynmapCore.BLOCKTABLELEN)) {
+        if (blockID > 0) {
             for (int i = 0; i < ids.length; i++) {
                 if (ids[i] == blockID) {
                     return;

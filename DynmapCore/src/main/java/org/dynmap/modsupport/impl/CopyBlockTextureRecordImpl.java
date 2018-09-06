@@ -50,7 +50,7 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
      */
     @Override
     public void addBlockID(int blockID) {
-        if ((blockID > 0) && (blockID < DynmapCore.BLOCKTABLELEN)) {
+        if (blockID > 0) {
             for (int i = 0; i < ids.length; i++) {
                 if (ids[i] == blockID) {
                     return;
