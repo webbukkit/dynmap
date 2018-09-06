@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import scala.actors.threadpool.Arrays;
 
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks
@@ -156,7 +157,11 @@ public class ChunkSnapshot
         }
         /* Get biome data */
         if (nbt.hasKey("Biomes")) {
-            this.biome = nbt.getByteArray("Biomes");
+            byte[] b = nbt.getByteArray("Biomes");
+            if (b.length < COLUMNS_PER_CHUNK) {
+            	b = Arrays.copyOf(b, COLUMNS_PER_CHUNK);
+            }
+            this.biome = b;
         }
         else {
             this.biome = new byte[COLUMNS_PER_CHUNK];
