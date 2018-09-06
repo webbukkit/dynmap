@@ -23,6 +23,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Class<?> nmsblock;
     private Class<?> nmsblockarray;
     private Class<?> nmsmaterial;
+    private Class<?> longset;
     private Field blockbyid;
     private Field material;
     private Method material_issolid;
@@ -132,18 +133,18 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             if (longhashset != null) {
                 lhs_containskey = getMethod(longhashset, new String[] { "containsKey" }, new Class[] { int.class, int.class });
             }
-            else {
-            	longhashset = getOBCClassNoFail("org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.longs.LongSet");
-            	if (longhashset != null) {
-                    lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { long.class });
-                    cps_unloadqueue_isSet = true;
-            	}
-            }
         }
-
+    	longset = getOBCClassNoFail("org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.longs.LongSet");
+    	if (longhashset != null) {
+            lhs_containskey = getMethod(longhashset, new String[] { "contains" }, new Class[] { long.class });
+    	}
         cps_unloadqueue_isSet = false;
         if (longhashset != null) {
-            cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longhashset); 
+            cps_unloadqueue = getPrivateFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longhashset); 
+        }
+        if ((cps_unloadqueue == null) && (longset != null)) {
+            cps_unloadqueue = getPrivateFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, longset); 
+            cps_unloadqueue_isSet = true;
         }
         if(cps_unloadqueue == null) {
             cps_unloadqueue = getFieldNoFail(chunkprovserver, new String[] { "unloadQueue" }, Set.class); 
@@ -155,7 +156,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.Chunk */
         nmschunk = getNMSClass("net.minecraft.server.Chunk");
         nmsc_tileentities = getField(nmschunk, new String[] { "tileEntities" }, Map.class);
-        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v", "w", "A" }, long.class);
+        nmsc_inhabitedticks = getPrivateFieldNoFail(nmschunk, new String[] { "s", "q", "u", "v", "w", "A", "z" }, long.class);
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
