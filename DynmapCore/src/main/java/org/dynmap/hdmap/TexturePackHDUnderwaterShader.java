@@ -7,6 +7,7 @@ import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 
 public class TexturePackHDUnderwaterShader extends TexturePackHDShader {
+    private boolean hide_land = true;
     
     class UnderwaterShaderState extends TexturePackHDShader.ShaderState {
         private boolean ready;
@@ -19,7 +20,7 @@ public class TexturePackHDUnderwaterShader extends TexturePackHDShader {
         @Override
         public void reset(HDPerspectiveState ps) {
             super.reset(ps);
-            ready = false;
+            ready = (!hide_land); // Start ready if not hiding land
         }
         /**
          * Process next ray step - called for each block on route
@@ -30,12 +31,14 @@ public class TexturePackHDUnderwaterShader extends TexturePackHDShader {
     		if (bs.isWater() || bs.isWaterlogged()) {
     			ready = true;
     			this.lastblk = full_water;
+    			this.lastblkhit = full_water;
     		}
             return ready ? super.processBlock(ps) : false;
         }
     }
     public TexturePackHDUnderwaterShader(DynmapCore core, ConfigurationNode configuration) {
         super(core, configuration);
+        hide_land = configuration.getBoolean("hide-land", true);
     }
     @Override
     public HDShaderState getStateInstance(HDMap map, MapChunkCache cache, MapIterator mapiter, int scale) {

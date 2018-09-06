@@ -80,6 +80,12 @@ shaders:
   - class: org.dynmap.hdmap.TexturePackHDUnderwaterShader
     name: stdtexture-underwater
     texturepack: standard
+
+  # Standard texture underwater view shader (with land not hidden)
+  - class: org.dynmap.hdmap.TexturePackHDUnderwaterShader
+    name: stdtexture-underwater-keep-land
+    texturepack: standard
+    hide-land: false
     
   # Texture pack based shader for standard Minecraft textures, without biome-tinted grass/leaves
   - class: org.dynmap.hdmap.TexturePackHDShader
