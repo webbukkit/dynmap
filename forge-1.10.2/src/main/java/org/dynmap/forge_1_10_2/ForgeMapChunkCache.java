@@ -850,11 +850,6 @@ public class ForgeMapChunkCache extends MapChunkCache
             return DynmapBlockState.AIR;
         }
         @Override
-        public final int getBlockData(int x, int y, int z)
-        {
-            return 0;
-        }
-        @Override
         public final int getBlockSkyLight(int x, int y, int z)
         {
             if (y < 64)
