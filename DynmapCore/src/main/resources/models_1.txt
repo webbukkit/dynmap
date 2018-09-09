@@ -947,9 +947,9 @@ layer:3,4
 ********
 -******-
 --****--
-# Chest - single, facing west
-# Trap Chest - single, facing west
-customblock:id=chest,id=trapped_chest,class=org.dynmap.hdmap.renderer.ChestRenderer
+# Chest - single or double
+# Trap Chest - single or double
+customblock:id=chest,id=trapped_chest,class=org.dynmap.hdmap.renderer.ChestStateRenderer
 
 # Cake Block
 block:id=cake,scale=16
@@ -989,7 +989,7 @@ patchblock:id=tripwire_hook,data=3,data=7,data=11,data=15
 patchrotate:id=tripwire_hook,data=0,rot=270
 
 # Ender Chest - facing south
-customblock:id=ender_chest,class=org.dynmap.hdmap.renderer.ChestRenderer,doublechest=false
+customblock:id=ender_chest,class=org.dynmap.hdmap.renderer.ChestStateRenderer,doublechest=false
 
 # Beacon
 patchblock:id=beacon,patch0=BeaconGlassSide,patch1=BeaconGlassSide@90,patch2=BeaconGlassSide@180,patch3=BeaconGlassSide@270,patch4=BeaconGlassTop,patch5=BeaconGlassBottom,patch6=BeaconObsidianSide,patch7=BeaconObsidianSide@90,patch8=BeaconObsidianSide@180,patch9=BeaconObsidianSide@270,patch10=BeaconObsidianTop,patch11=BeaconLightSide,patch12=BeaconLightSide@90,patch13=BeaconLightSide@180,,patch14=BeaconLightSide@270,patch15=BeaconLightTop
