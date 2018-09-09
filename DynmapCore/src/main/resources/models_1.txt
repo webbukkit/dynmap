@@ -285,12 +285,14 @@ patchblock:id=wheat,id=carrots,id=potatoes,patch0=VertX075,patch1=VertX075@90,pa
 # Jungle button
 # Acacia button
 # Dark oak button
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=0,data=8,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=1,data=9,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=2,data=10,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=3,data=11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=4,data=12,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=5,data=13,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=16-19,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=20-23,xmin=0.375,xmax=0.625,ymin=0.875,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=14-15,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=12-13,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=10-11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=8-9,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=0-3,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=4-7,xmin=0.375,xmax=0.625,ymax=0.125,zmin=0.3125,zmax=0.6875
 
 # Rails - flat - east/west
 patchblock:id=rail,data=0,patch0=HorizY001ZTop
