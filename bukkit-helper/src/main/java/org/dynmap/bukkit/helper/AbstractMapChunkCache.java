@@ -129,17 +129,17 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
         public int getBlockSkyLight() {
             try {
                 return snap.getBlockSkyLight(bx, y, bz);
-            } catch (ArrayIndexOutOfBoundsException aioobx) {
-                return 15;
+            } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException x) {
             }
+            return 15;
         }
         @Override
         public final int getBlockEmittedLight() {
             try {
                 return snap.getBlockEmittedLight(bx, y, bz);
-            } catch (ArrayIndexOutOfBoundsException aioobx) {
-                return 0;
+            } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException x) {
             }
+            return 0;
         }
         private void biomePrep() {
             if(sameneighborbiomecnt != null)
