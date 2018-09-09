@@ -375,8 +375,17 @@ public class HDBlockModels {
                             blknames.add(getBlockName(modname,av[1]));
                         }
                         else if(av[0].equals("data")) {
-                            if(av[1].equals("*"))
+                            if(av[1].equals("*")) {
                                 databits.clear();
+                            }
+                            else if (av[1].indexOf('-') > 0) {
+                                String[] sp = av[1].split("-");
+                                int m0 = getIntValue(varvals, sp[0]);
+                                int m1 = getIntValue(varvals, sp[1]);
+                                for (int m = m0; m <= m1; m++) {
+                                    databits.set(m);
+                                }
+                            }
                             else
                                 databits.set(getIntValue(varvals,av[1]));
                         }
@@ -532,8 +541,17 @@ public class HDBlockModels {
                             blknames.add(getBlockName(modname,av[1]));
                         }
                         else if(av[0].equals("data")) {
-                            if(av[1].equals("*"))
+                            if(av[1].equals("*")) {
                                 databits.clear();
+                            }
+                            else if (av[1].indexOf('-') > 0) {
+                                String[] sp = av[1].split("-");
+                                int m0 = getIntValue(varvals, sp[0]);
+                                int m1 = getIntValue(varvals, sp[1]);
+                                for (int m = m0; m <= m1; m++) {
+                                    databits.set(m);
+                                }
+                            }
                             else
                                 databits.set(getIntValue(varvals,av[1]));
                         }
@@ -717,8 +735,17 @@ public class HDBlockModels {
                             blknames.add(getBlockName(modname,av[1]));
                         }
                         else if(av[0].equals("data")) {
-                            if(av[1].equals("*"))
+                            if(av[1].equals("*")) {
                                 databits.clear();
+                            }
+                            else if (av[1].indexOf('-') > 0) {
+                                String[] sp = av[1].split("-");
+                                int m0 = getIntValue(varvals, sp[0]);
+                                int m1 = getIntValue(varvals, sp[1]);
+                                for (int m = m0; m <= m1; m++) {
+                                    databits.set(m);
+                                }
+                            }
                             else
                                 databits.set(getIntValue(varvals,av[1]));
                         }
@@ -789,8 +816,17 @@ public class HDBlockModels {
                             blknames.add(getBlockName(modname,av[1]));
                         }
                         else if(av[0].equals("data")) {
-                            if(av[1].equals("*"))
+                            if(av[1].equals("*")) {
                                 databits.clear();
+                            }
+                            else if (av[1].indexOf('-') > 0) {
+                                String[] sp = av[1].split("-");
+                                int m0 = getIntValue(varvals, sp[0]);
+                                int m1 = getIntValue(varvals, sp[1]);
+                                for (int m = m0; m <= m1; m++) {
+                                    databits.set(m);
+                                }
+                            }
                             else
                                 databits.set(getIntValue(varvals,av[1]));
                         }
@@ -853,8 +889,17 @@ public class HDBlockModels {
                             blknames.add(getBlockName(modname, av[1]));
                         }
                         else if(av[0].equals("data")) {
-                            if(av[1].equals("*"))
+                            if(av[1].equals("*")) {
                                 databits.clear();
+                            }
+                            else if (av[1].indexOf('-') > 0) {
+                                String[] sp = av[1].split("-");
+                                int m0 = getIntValue(varvals, sp[0]);
+                                int m1 = getIntValue(varvals, sp[1]);
+                                for (int m = m0; m <= m1; m++) {
+                                    databits.set(m);
+                                }
+                            }
                             else
                                 databits.set(getIntValue(varvals,av[1]));
                         }
