@@ -14,11 +14,11 @@ import org.dynmap.renderer.RenderPatchFactory;
  * Simple renderer for handling single and double chests
  */
 public class ChestRenderer extends CustomRenderer {
-    private enum ChestData {
+    protected enum ChestData {
         SINGLE_WEST, SINGLE_SOUTH, SINGLE_EAST, SINGLE_NORTH, LEFT_WEST, LEFT_SOUTH, LEFT_EAST, LEFT_NORTH, RIGHT_WEST, RIGHT_SOUTH, RIGHT_EAST, RIGHT_NORTH
     };
     // Models, indexed by ChestData.ordinal()
-    private RenderPatch[][] models = new RenderPatch[ChestData.values().length][];
+    protected RenderPatch[][] models = new RenderPatch[ChestData.values().length][];
 
     private static final double OFF1 = 1.0 / 16.0;
     private static final double OFF14 = 14.0 / 16.0;
@@ -28,7 +28,7 @@ public class ChestRenderer extends CustomRenderer {
     private static final int[] LEFT_PATCHES = { 14, 6, 10, 11, 12, 8 };
     private static final int[] RIGHT_PATCHES = { 15, 7, 10, 11, 13, 9 };
 
-    private boolean double_chest = false;
+    protected boolean double_chest = false;
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))

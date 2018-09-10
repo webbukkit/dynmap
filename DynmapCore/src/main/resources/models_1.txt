@@ -262,17 +262,17 @@ customblock:id=oak_fence,id=spruce_fence,id=birch_fence,id=jungle_fence,id=acaci
 boxblock:id=oak_pressure_plate,id=spruce_pressure_plate,id=birch_pressure_plate,id=jungle_pressure_plate,id=acacia_pressure_plate,id=dark_oak_pressure_plate,id=stone_pressure_plate,id=light_weighted_pressure_plate,id=heavy_weighted_pressure_plate,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275
 
 # Trapdoor (closed)
-boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=12,data=13,data=14,data=15,data=28,data=29,data=30,data=31,data=44,data=45,data=46,data=47,data=60,data=61,data=62,data=63,ymax=0.1875
+boxblock:id=iron_trapdoor,id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=12-15,data=28-31,data=44-47,data=60-63,ymax=0.1875
 # Trapdoor (open: west attach)
-boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=32,data=33,data=34,data=35,data=40,data=41,data=42,data=43,zmin=0.8125
+boxblock:id=iron_trapdoor,id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=32-35,data=40-44,xmin=0.8125
 # Trapdoor (open: east attach)
-boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=48,data=49,data=50,data=51,data=56,data=57,data=58,data=59,zmax=0.1875
+boxblock:id=iron_trapdoor,id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=48-51,data=56-59,xmax=0.1875
 # Trapdoor (open: south attach)
-boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=16,data=17,data=18,data=19,data=24,data=25,data=26,data=27,xmin=0.8125
+boxblock:id=iron_trapdoor,id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=16-19,data=24-27,zmax=0.1875
 # Trapdoor (open: north attach)
-boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=0,data=1,data=2,data=3,data=8,data=9,data=10,data=11,xmax=0.1875
+boxblock:id=iron_trapdoor,id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=0-3,data=8-11,zmin=0.8125
 # Trapdoor (closed - top)
-boxblock:id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=4,data=5,data=6,data=7,data=20,data=21,data=22,data=23,data=36,data=37,data=38,data=39,data=52,data=53,data=54,data=55,ymin=0.8125
+boxblock:id=iron_trapdoor,id=oak_trapdoor,id=spruce_trapdoor,id=birch_trapdoor,id=jungle_trapdoor,id=acacia_trapdoor,id=dark_oak_trapdoor,data=4-7,data=20-23,data=36-39,data=52-55,ymin=0.8125
 
 # Crops
 # Carrot
@@ -285,12 +285,14 @@ patchblock:id=wheat,id=carrots,id=potatoes,patch0=VertX075,patch1=VertX075@90,pa
 # Jungle button
 # Acacia button
 # Dark oak button
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=0,data=8,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=1,data=9,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=2,data=10,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=3,data=11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=4,data=12,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=5,data=13,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=16-19,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=20-23,xmin=0.375,xmax=0.625,ymin=0.875,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=14-15,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=12-13,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=10-11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=8-9,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=0-3,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=4-7,xmin=0.375,xmax=0.625,ymax=0.125,zmin=0.3125,zmax=0.6875
 
 # Rails - flat - east/west
 patchblock:id=rail,data=0,patch0=HorizY001ZTop
@@ -945,9 +947,9 @@ layer:3,4
 ********
 -******-
 --****--
-# Chest - single, facing west
-# Trap Chest - single, facing west
-customblock:id=chest,id=trapped_chest,class=org.dynmap.hdmap.renderer.ChestRenderer
+# Chest - single or double
+# Trap Chest - single or double
+customblock:id=chest,id=trapped_chest,class=org.dynmap.hdmap.renderer.ChestStateRenderer
 
 # Cake Block
 block:id=cake,scale=16
@@ -987,7 +989,7 @@ patchblock:id=tripwire_hook,data=3,data=7,data=11,data=15
 patchrotate:id=tripwire_hook,data=0,rot=270
 
 # Ender Chest - facing south
-customblock:id=ender_chest,class=org.dynmap.hdmap.renderer.ChestRenderer,doublechest=false
+customblock:id=ender_chest,class=org.dynmap.hdmap.renderer.ChestStateRenderer,doublechest=false
 
 # Beacon
 patchblock:id=beacon,patch0=BeaconGlassSide,patch1=BeaconGlassSide@90,patch2=BeaconGlassSide@180,patch3=BeaconGlassSide@270,patch4=BeaconGlassTop,patch5=BeaconGlassBottom,patch6=BeaconObsidianSide,patch7=BeaconObsidianSide@90,patch8=BeaconObsidianSide@180,patch9=BeaconObsidianSide@270,patch10=BeaconObsidianTop,patch11=BeaconLightSide,patch12=BeaconLightSide@90,patch13=BeaconLightSide@180,,patch14=BeaconLightSide@270,patch15=BeaconLightTop
@@ -1193,14 +1195,6 @@ customblock:id=acacia_stairs,id=dark_oak_stairs,class=org.dynmap.hdmap.renderer.
 
 # (171) Carpet
 boxblock:id=black_carpet,id=red_carpet,id=green_carpet,id=brown_carpet,id=blue_carpet,id=purple_carpet,id=cyan_carpet,id=light_gray_carpet,id=gray_carpet,id=pink_carpet,id=lime_carpet,id=yellow_carpet,id=light_blue_carpet,id=magenta_carpet,id=orange_carpet,id=white_carpet,ymax=0.0625
-
-# Iron Trapdoor
-boxblock:id=iron_trapdoor,data=0,data=1,data=2,data=3,ymax=0.1875
-boxblock:id=iron_trapdoor,data=4,data=12,zmin=0.8125
-boxblock:id=iron_trapdoor,data=5,data=13,zmax=0.1875
-boxblock:id=iron_trapdoor,data=6,data=14,xmin=0.8125
-boxblock:id=iron_trapdoor,data=7,data=15,xmax=0.1875
-boxblock:id=iron_trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
 
 # Red Sandstone stairs
 customblock:id=red_sandstone_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
