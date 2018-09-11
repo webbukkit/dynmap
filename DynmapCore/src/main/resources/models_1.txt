@@ -999,13 +999,50 @@ patchblock:id=beacon,patch0=BeaconGlassSide,patch1=BeaconGlassSide@90,patch2=Bea
 customblock:id=cobblestone_wall,id=mossy_cobblestone_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
 
 # Flower pot
-patchblock:id=flower_pot,data=0,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt
-# Flower pot with flower
-patchblock:id=flower_pot,data=1,data=2,data=7,data=8,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
-# Flower pot with plant
-patchblock:id=flower_pot,data=3,data=4,data=5,data=6,data=10,data=11,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotPlant,patch8=FlowerPotPlant@90
+patchblock:id=flower_pot,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt
+
+# Flower pot with Oak Sapling
+patchblock:id=potted_oak_sapling,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with Spruce Sapling
+patchblock:id=potted_spruce_sapling,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with Birch Sapling
+patchblock:id=potted_birch_sapling,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with Jungle Sapling
+patchblock:id=potted_jungle_sapling,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with Acacia Sapling
+patchblock:id=potted_acacia_sapling,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with Dark Oak Sapling
+patchblock:id=potted_dark_oak_sapling,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with fern
+patchblock:id=potted_fern,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with dandelion
+patchblock:id=potted_dandelion,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with poppy
+patchblock:id=potted_poppy,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with blue orchid
+patchblock:id=potted_blue_orchid,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with allium
+patchblock:id=potted_allium,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with azure bluet
+patchblock:id=potted_azure_bluet,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with red tulip
+patchblock:id=potted_red_tulip,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with orange tulip
+patchblock:id=potted_orange_tulip,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with white tulip
+patchblock:id=potted_white_tulip,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with pink tulip
+patchblock:id=potted_pink_tulip,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with oxeye daisy
+patchblock:id=potted_oxeye_daisy,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with red mushroom
+patchblock:id=potted_red_mushroom,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with brown mushroom
+patchblock:id=potted_brown_mushroom,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with dead bush
+patchblock:id=potted_dead_bush,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
 # Flower pot with cactus
-patchblock:id=flower_pot,data=9,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotCactusSide,patch8=FlowerPotCactusSide@90,,patch9=FlowerPotCactusSide@180,,patch10=FlowerPotCactusSide@270,,patch11=FlowerPotCactusTop
+patchblock:id=potted_cactus,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotCactusSide,patch8=FlowerPotCactusSide@90,,patch9=FlowerPotCactusSide@180,,patch10=FlowerPotCactusSide@270,,patch11=FlowerPotCactusTop
 
 # Wall head (TODO: Fix renderer)
 customblock:id=skeleton_wall_skull,id=wither_skeleton_wall_skull,id=zombie_wall_head,id=player_wall_head,id=creeper_wall_head,id=dragon_wall_head,class=org.dynmap.hdmap.renderer.WallHeadRenderer
