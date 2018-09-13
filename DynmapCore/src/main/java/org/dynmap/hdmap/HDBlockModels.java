@@ -84,19 +84,19 @@ public class HDBlockModels {
     private static void remapModel(String bn, String newbn) {
         DynmapBlockState frombs = DynmapBlockState.getBaseStateByName(bn);
         DynmapBlockState tobs = DynmapBlockState.getBaseStateByName(bn);
-        int minstate = Math.min(frombs.getStateCount(),  tobs.getStateCount());
-        for (int bs = 0; bs < minstate; bs++) {
-            DynmapBlockState fb = frombs.getState(bs);
+        int fcnt = frombs.getStateCount();
+        for (int bs = 0; bs < tobs.getStateCount(); bs++) {
             DynmapBlockState tb = tobs.getState(bs);
-            HDBlockModel m = models_by_id_data.get(fb.globalStateIndex);
+            DynmapBlockState fs = tobs.getState(bs % fcnt);
+            HDBlockModel m = models_by_id_data.get(fs.globalStateIndex);
             if (m != null) {
                 models_by_id_data.put(tb.globalStateIndex, m);
             }
             else {
                 models_by_id_data.remove(tb.globalStateIndex);
             }
-            customModelsRequestingTileData.set(tb.globalStateIndex, customModelsRequestingTileData.get(fb.globalStateIndex));
-            changeIgnoredBlocks.set(tb.globalStateIndex, changeIgnoredBlocks.get(fb.globalStateIndex));
+            customModelsRequestingTileData.set(tb.globalStateIndex, customModelsRequestingTileData.get(fs.globalStateIndex));
+            changeIgnoredBlocks.set(tb.globalStateIndex, changeIgnoredBlocks.get(fs.globalStateIndex));
         }
     }        
     

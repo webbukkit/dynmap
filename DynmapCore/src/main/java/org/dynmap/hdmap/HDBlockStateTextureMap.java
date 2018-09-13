@@ -157,10 +157,10 @@ public class HDBlockStateTextureMap {
     public static void remapTexture(String dest, String src) {
         DynmapBlockState dblk = DynmapBlockState.getBaseStateByName(dest);
         DynmapBlockState sblk = DynmapBlockState.getBaseStateByName(src);
-        int mincnt = Math.min(dblk.getStateCount(), sblk.getStateCount());
-        for (int i = 0; i < mincnt; i++) {
+        int scnt = sblk.getStateCount();
+        for (int i = 0; i < dblk.getStateCount(); i++) {
             int didx = dblk.getState(i).globalStateIndex;
-            int sidx = sblk.getState(i).globalStateIndex;
+            int sidx = sblk.getState(i % scnt).globalStateIndex;
             texmaps[didx] = new HDBlockStateTextureMap(texmaps[sidx], null);
         }
     }
