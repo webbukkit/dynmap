@@ -43,6 +43,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.UserListBans;
 import net.minecraft.server.management.UserListIPBans;
+import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -486,6 +487,11 @@ public class DynmapPlugin
 
         public ForgeServer() {
         }
+
+        private GameProfile getProfileByName(String player) {
+            PlayerProfileCache cache = server.getPlayerProfileCache();
+            return cache.getGameProfileForUsername(player);
+        }
         
         @Override
         public int getBlockIDAt(String wname, int x, int y, int z) {
@@ -601,7 +607,7 @@ public class DynmapPlugin
         public boolean isPlayerBanned(String pid)
         {
             UserListBans bl = server.getPlayerList().getBannedPlayers();
-            return bl.isBanned(new GameProfile(null, pid));
+            return bl.isBanned(getProfileByName(pid));
         }
         
         @Override
@@ -765,7 +771,7 @@ public class DynmapPlugin
             if (scm == null) return Collections.emptySet();
             UserListBans bl = scm.getBannedPlayers();
             if (bl == null) return Collections.emptySet();
-            if(bl.isBanned(new GameProfile(null, player))) {
+            if(bl.isBanned(getProfileByName(player))) {
                 return Collections.emptySet();
             }
             Set<String> rslt = hasOfflinePermissions(player, perms);
@@ -784,7 +790,7 @@ public class DynmapPlugin
             if (scm == null) return false;
             UserListBans bl = scm.getBannedPlayers();
             if (bl == null) return false;
-            if(bl.isBanned(new GameProfile(null, player))) {
+            if(bl.isBanned(getProfileByName(player))) {
                 return false;
             }
             return hasOfflinePermission(player, perm);
