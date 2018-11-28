@@ -35,6 +35,7 @@ public class MySQLMapStorage extends MapStorage {
     private String database;
     private String hostname;
     private String prefix = "";
+    private String flags;
     private String tableTiles;
     private String tableMaps;
     private String tableFaces;
@@ -278,6 +279,7 @@ public class MySQLMapStorage extends MapStorage {
         userid = core.configuration.getString("storage/userid", "dynmap");
         password = core.configuration.getString("storage/password", "dynmap");
         prefix = core.configuration.getString("storage/prefix", "");
+        flags = core.configuration.getString("storage/flags", "?allowReconnect=true");
         tableTiles = prefix + "Tiles";
         tableMaps = prefix + "Maps";
         tableFaces = prefix + "Faces";
@@ -286,7 +288,7 @@ public class MySQLMapStorage extends MapStorage {
         tableStandaloneFiles = prefix + "StandaloneFiles";
         tableSchemaVersion = prefix + "SchemaVersion";
         
-        connectionString = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?allowReconnect=true";
+        connectionString = "jdbc:mysql://" + hostname + ":" + port + "/" + database + flags;
         Log.info("Opening MySQL database " + hostname + ":" + port + "/" + database + " as map store");
         try {
             Class.forName("com.mysql.jdbc.Driver");
