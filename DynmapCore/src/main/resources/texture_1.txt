@@ -1041,7 +1041,8 @@ block:id=redstone_wall_torch,data=1,data=3,data=5,data=7,patch0=0:redstone_torch
 # Stone button
 block:id=stone_button,allfaces=0:stone,stdrot=true,transparency=TRANSPARENT
 # Snow
-block:id=snow,allfaces=0:snow,stdrot=true,transparency=TRANSPARENT
+block:id=snow,meta=0-6,allfaces=0:snow,stdrot=true,transparency=TRANSPARENT
+block:id=snow,meta=7,allfaces=0:snow,stdrot=true
 # Ice
 block:id=ice,allfaces=12000:ice,stdrot=true,transparency=TRANSPARENT
 # Snow block
