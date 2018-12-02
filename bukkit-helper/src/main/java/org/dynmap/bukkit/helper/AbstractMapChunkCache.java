@@ -796,7 +796,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
                 wasLoaded = true;
             }
             try {
-                didload = w.loadChunk(chunk.x, chunk.z, false);
+                didload = loadChunkNoGenerate(w, chunk.x, chunk.z);
             } catch (Throwable t) { /* Catch chunk error from Bukkit */
                 Log.warning("Bukkit error loading chunk " + chunk.x + "," + chunk.z + " on " + w.getName());
                 if(!wasLoaded) {    /* If wasn't loaded, we loaded it if it now is */
@@ -1011,6 +1011,10 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
     @Override
     public DynmapWorld getWorld() {
         return dw;
+    }
+    
+    public boolean loadChunkNoGenerate(World w, int x, int z) {
+        return w.loadChunk(x, z, false);
     }
     
     static {
