@@ -175,7 +175,7 @@ ignore-updates:id=leaves,id=leaves2,data=*
 # Birch Wood stair
 # Jungle Wood stair
 # (156)	Quartz Stairs
-customblock:idoak_stairs,id=stone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+customblock:id=oak_stairs,id=stone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
 
 # Slab (stone, sandstone, wood, cobblestone)
 # Wood Slab
