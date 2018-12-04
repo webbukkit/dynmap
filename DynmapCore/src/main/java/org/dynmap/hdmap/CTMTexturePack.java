@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -30,14 +29,11 @@ public class CTMTexturePack {
     private String[] ctpfiles;
     private TexturePackLoader tpl;
     private CTMProps[][] bytilelist;
-    private CTMProps[][] byblocklist;
+    private CTMProps[][] bybaseblockstatelist;
     private BitSet mappedtiles;
     private BitSet mappedblocks;
-    private Map<String, Integer> blocknames;
-    private int[] blockmaterials;
     private String[] biomenames;
     
-    private String ctmpath;
     private String vanillatextures;
     
     static final int BOTTOM_FACE = 0; // 0, -1, 0
@@ -305,7 +301,16 @@ public class CTMTexturePack {
                 return parseInt(p, fld, def);
         }
         
-        private int[] getIDList(Properties properties, String key, String type, Map<String, Integer> blocknames) {
+        private void addBlockStateToIDSet(Set<Integer> list, DynmapBlockState bs) {
+    		list.add(bs.globalStateIndex);
+        }
+        private void addBaseBlockStateToIDSet(Set<Integer> list, DynmapBlockState bs) {
+        	bs = bs.baseState;
+        	for (int i = 0; i < bs.getStateCount(); i++) {
+        		list.add(bs.getStateByIndex(i).globalStateIndex);
+        	}
+        }
+        private int[] getIDList(Properties properties, String key, String type) {
             Set<Integer> list = new HashSet<Integer>();
             String property = properties.getProperty(key, "");
             for (String token : property.split("\\s+")) {
@@ -313,7 +318,13 @@ public class CTMTexturePack {
                 } else if (token.matches("\\d+")) {
                     try {
                         int id = Integer.parseInt(token);
-                        list.add(id);
+                        DynmapBlockState bs = DynmapBlockState.getStateByLegacyBlockID(id);
+                        if (bs == null) {
+                        	Log.info("Unknown Legacy block ID in CTM: " + token);
+                        }
+                        else {
+                        	addBaseBlockStateToIDSet(list, bs);
+                        }
                     } catch (NumberFormatException e) {
                         Log.info("Bad ID token: " + token);
                     }
@@ -321,9 +332,25 @@ public class CTMTexturePack {
                     if (token.indexOf(':') < 0) {   // No 'modid:'?
                         token = "minecraft:" + token;
                     }
-                    Integer id = blocknames.get(token);
-                    if (id != null) {
-                        list.add(id);
+                    String[] toks = token.split(":");
+                    DynmapBlockState bs;
+                    boolean addbase = false;
+                    // If blockname:statename
+                    if (toks.length > 2) {
+                    	bs = DynmapBlockState.getStateByNameAndState(toks[0] + ":" + toks[1], toks[2]);
+                    }
+                    else {
+                        bs = DynmapBlockState.getBaseStateByName(token);
+                        addbase = true;
+                    }
+                    if (bs.isAir()) {
+                    	Log.info("Unknown block ID in CTM: " + token);
+                    }
+                    else if (addbase) {
+                		addBaseBlockStateToIDSet(list, bs);
+                    }
+                    else {
+                		addBlockStateToIDSet(list, bs);
                     }
                 }
             }
@@ -331,7 +358,14 @@ public class CTMTexturePack {
                 Matcher m = Pattern.compile(type + "(\\d+)").matcher(name);
                 if (m.find()) {
                     try {
-                        list.add(Integer.parseInt(m.group(1)));
+                        int id = Integer.parseInt(m.group(1));
+                        DynmapBlockState bs = DynmapBlockState.getStateByLegacyBlockID(id);
+                        if (bs == null) {
+                        	Log.info("Unknown Legacy block ID from filename in CTM: " + name);
+                        }
+                        else {
+                        	addBlockStateToIDSet(list, bs);
+                        }
                     } catch (NumberFormatException e) {
                         Log.info("Bad block number: " + name);
                     }
@@ -530,7 +564,10 @@ public class CTMTexturePack {
                     }
                 }
                 if (id >= 0) {
-                    this.matchBlocks = new int[] { id };
+                	DynmapBlockState bs = DynmapBlockState.getStateByLegacyBlockID(id);
+                	if (bs != null) {
+                		this.matchBlocks = new int[] { bs.globalStateIndex };
+                	}
                 }
             }
         }
@@ -548,7 +585,7 @@ public class CTMTexturePack {
             if(last_dot > 0) {
                 this.name = this.name.substring(0, last_dot);
             }
-            this.matchBlocks = getIDList(p, "matchBlocks", "block", tp.blocknames); 
+            this.matchBlocks = getIDList(p, "matchBlocks", "block"); 
             getMatchTiles(p);
             getMethod(p);
             this.tiles = parseTileNames(p.getProperty("tiles"));
@@ -841,7 +878,7 @@ public class CTMTexturePack {
             }
             switch (connect) {
                 case BLOCK:
-                    return neighbor == ctx.blk;
+                    return neighbor.baseState == ctx.blk.baseState;
 
                 case TILE:
                     int txt = TexturePack.getTextureIDAt(ctx.mapiter, neighbor, ctx.laststep);
@@ -866,20 +903,21 @@ public class CTMTexturePack {
     public CTMTexturePack(TexturePackLoader tpl, TexturePack tp, DynmapCore core, boolean is_rp) {
         ArrayList<String> files = new ArrayList<String>();
         this.tpl = tpl;
-        blocknames = core.getBlockIDMap();
-        blockmaterials = core.getBlockMaterialMap();
         biomenames = core.getBiomeNames();
         Set<String> ent = tpl.getEntries();
+        String ctmpath;
+        String ctmpath2;
         if (is_rp) {
             ctmpath = "assets/minecraft/mcpatcher/ctm/";
+            ctmpath2 = "assets/minecraft/optifine/ctm/";
             vanillatextures = "assets/%1$s/textures/blocks/%2$s";
         }
         else {
-            ctmpath = "ctm/";
+            ctmpath = ctmpath2 = "ctm/";
             vanillatextures = "textures/blocks/%2$s";
         }
         for (String name : ent) {
-            if(name.startsWith(ctmpath) && name.endsWith(".properties")) {
+            if((name.startsWith(ctmpath) || name.startsWith(ctmpath2)) && name.endsWith(".properties")) {
                 files.add(name);
             }
         }
@@ -920,7 +958,7 @@ public class CTMTexturePack {
      */
     private void processFiles(DynmapCore core) {        
         bytilelist = new CTMProps[256][];
-        byblocklist = new CTMProps[256][];
+        bybaseblockstatelist = new CTMProps[256][];
         mappedtiles = new BitSet();
         mappedblocks = new BitSet();
 
@@ -946,7 +984,7 @@ public class CTMTexturePack {
                     if(ctmp.isValid(f)) {
                         ctmp.registerTiles(this.vanillatextures, f);
                         bytilelist = addToList(bytilelist, mappedtiles, ctmp.matchTileIcons, ctmp);
-                        byblocklist = addToList(byblocklist, mappedblocks, ctmp.matchBlocks, ctmp);
+                        bybaseblockstatelist = addToList(bybaseblockstatelist, mappedblocks, ctmp.matchBlocks, ctmp);
                     }
                 }
             } catch (IOException iox) {
@@ -957,6 +995,22 @@ public class CTMTexturePack {
                 }
             }
         }
+//        for (int i = 0; i < bybaseblockstatelist.length; i++) {
+//        	CTMProps[] p = bybaseblockstatelist[i];
+//        	if (p != null) {
+//        		DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
+//        		Log.info(bs.blockName + ":" + bs.stateName + "(" + i + "): legacyID=" + bs.legacyBlockID);
+//        		for (CTMProps pp : p) {
+//        			Log.info("  " + pp.name + ", faces=" + pp.faces + ",connect=" + pp.connect + ", meta=" + pp.metadata + ", method=" + pp.method);
+//        		}
+//        	}
+//        }
+//        for (int i = 0; i < mappedblocks.length(); i++) {
+//        	if (mappedblocks.get(i)) {
+//        		DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
+//        		Log.info("mapped:" + bs.blockName + ":" + bs.stateName + "(" + i + "): legacyID=" + bs.legacyBlockID);
+//        	}
+//        }
     }
 
     // Constants for rotateUV
@@ -1043,18 +1097,15 @@ public class CTMTexturePack {
         final boolean checkMaterialMatch(DynmapBlockState neighbor) {
             if (blk == neighbor)
                 return true;
-            else if ((blk.globalStateIndex < blockmaterials.length) && (neighbor.globalStateIndex < blockmaterials.length)) {
-                return blockmaterials[blk.globalStateIndex] == blockmaterials[neighbor.globalStateIndex];
-            }
-            else {
-                return false;
-            }
+            else 
+            	return blk.material.equals(neighbor.material);
         }
     }
     
     public int mapTexture(MapIterator mapiter, DynmapBlockState blk, BlockStep laststep, int textid, HDShaderState ss) {
         int newtext = -1;
-        if ((!this.mappedblocks.get(blk.globalStateIndex)) && ((textid < 0) || (!this.mappedtiles.get(textid)))) {
+        int gidx = blk.globalStateIndex;
+        if ((!this.mappedblocks.get(gidx)) && ((textid < 0) || (!this.mappedtiles.get(textid)))) {
             return textid;
         }
         // See if cached result
@@ -1075,8 +1126,8 @@ public class CTMTexturePack {
         if ((textid >= 0) && (textid < bytilelist.length)) {
             newtext = mapTextureByList(bytilelist[textid], ctx);
         }
-        if ((newtext < 0) && (blk.globalStateIndex < byblocklist.length)) {
-            newtext = mapTextureByList(byblocklist[blk.globalStateIndex], ctx);
+        if ((newtext < 0) && (gidx < bybaseblockstatelist.length)) {
+            newtext = mapTextureByList(bybaseblockstatelist[gidx], ctx);
         }
         /* If matched, check for second match */
         if (newtext >= 0) {

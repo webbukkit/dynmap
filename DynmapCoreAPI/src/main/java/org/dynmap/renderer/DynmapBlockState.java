@@ -20,10 +20,14 @@ public class DynmapBlockState {
     public final String stateName;
     // Overall state index (uniquely assigned autoincrement number for state: packed, zero based)
     public final int globalStateIndex;
+    // Legacy block ID (if defined - otherwise -1)
+    public final int legacyBlockID;
     // List of block states (only defined on base block), indexed by stateIndex (null if single state base block)
     private DynmapBlockState[] states;
     // Full name for state (base name, or base name[state name])
     private final String fullName;
+    // Material string
+    public final String material;
     // Next global state index
     private static int nextGlobalStateIndex = 0;
     // Match flags
@@ -41,6 +45,8 @@ public class DynmapBlockState {
     private static HashMap<String, DynmapBlockState> blocksByName = new HashMap<String, DynmapBlockState>();
     // Map of states by global state index
     private static HashMap<Integer, DynmapBlockState> blocksByIndex = new HashMap<Integer, DynmapBlockState>();
+    // Map of base states by legacy ID
+    private static HashMap<Integer, DynmapBlockState> blocksByLegacyID = new HashMap<Integer, DynmapBlockState>();
         
     // Well known block names (some versions might need to overwrite these)
     public static String AIR_BLOCK = "minecraft:air";
@@ -75,22 +81,37 @@ public class DynmapBlockState {
     private static HashSet<String> water_blocks = new HashSet<String>(Arrays.asList(WATER_BLOCK, FLOWING_WATER_BLOCK));
 
     // Well known base blocks - air
-    public static final DynmapBlockState AIR = new DynmapBlockState(null, 0, AIR_BLOCK, "");
+    public static final DynmapBlockState AIR = new DynmapBlockState(null, 0, AIR_BLOCK, "", "AIR", 0);
 
     private static DynmapBlockState still_water = null;
-    
+
     /**
      * Constructor for block state
      * @param base - base block state (null if first/only state for block)
      * @param stateidx - index of state (0-based relative to the base block state)
      * @param blkname - block name, in modid:blockname format (minecraft:blockname for vanilla)
      * @param statename - block state name: null if single state block, "attrib=value,..." for 1.13+, "meta=value" for 1.12-
+     * @param material - material name string
      */
-    public DynmapBlockState(DynmapBlockState base, int stateidx, String blkname, String statename) {
+    public DynmapBlockState(DynmapBlockState base, int stateidx, String blkname, String statename, String material) {
+    	this(base, stateidx, blkname, statename, material, -1);
+    }
+    /**
+     * Constructor for block state
+     * @param base - base block state (null if first/only state for block)
+     * @param stateidx - index of state (0-based relative to the base block state)
+     * @param blkname - block name, in modid:blockname format (minecraft:blockname for vanilla)
+     * @param statename - block state name: null if single state block, "attrib=value,..." for 1.13+, "meta=value" for 1.12-
+     * @param material - material name string
+     * @param legacyblkid - legacy block ID (if defined), otherwise -1
+     */
+    public DynmapBlockState(DynmapBlockState base, int stateidx, String blkname, String statename, String material, int legacyblkid) {
         globalStateIndex = (nextGlobalStateIndex++);    // Assign index
         if (base == null) base = this;
         baseState = base;
         stateIndex = stateidx;
+        legacyBlockID = legacyblkid;
+        this.material = material;
         if (blkname.indexOf(':') == -1) {   // No mod:, assume minecraft:
             blkname = "minecraft:" + blkname;
         }
@@ -114,6 +135,9 @@ public class DynmapBlockState {
         // If base block state, add to map
         if (base == this) { 
             blocksByName.put(blkname, this);
+            if (legacyBlockID >= 0) {
+            	blocksByLegacyID.put(legacyBlockID, this);
+            }
         }
         if (stateName.length() > 0) {
             fullName = blockName + "[" + stateName + "]";
@@ -178,6 +202,34 @@ public class DynmapBlockState {
     public static final DynmapBlockState getStateByGlobalIndex(int gidx) {
         DynmapBlockState bs = blocksByIndex.get(gidx);
         return (bs != null) ? bs : AIR;
+    }
+    /**
+     * Find block state by legacy ID
+     * @param legacyid - legacy ID
+     * @return block base state, or null if not found
+     */
+    public static final DynmapBlockState getStateByLegacyBlockID(int legacyid) {
+    	return blocksByLegacyID.get(legacyid);
+    }
+    /**
+     * Find block state by name and state name
+     * @param name - block name
+     * @param statename - state name
+     * @return base block state, or AIR if not found
+     */
+    public static final DynmapBlockState getStateByNameAndState(String name, String statename) {
+        DynmapBlockState blk = getBaseStateByName(name);
+        if (blk != null) {
+        	if (blk.states != null) {
+        		for (DynmapBlockState bb : blk.states) {
+        			if (bb.stateName.contains(statename)) {
+        				return bb;
+        			}
+        		}
+        	}
+        	blk = null;
+        }
+        return (blk != null) ? blk : AIR;
     }
     /**
      * Get current top of range of block state global indexes, plus 1

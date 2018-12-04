@@ -139,12 +139,6 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
 
     }
 
-    @Override
-    public String[] getBlockNames() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     private static final String[] bnames = {
        "Ocean",
        "Plains",
@@ -410,10 +404,11 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     }
 
     @Override
-    public int[] getBlockMaterialMap() {
+    public String[] getBlockNames() {
         // TODO Auto-generated method stub
         return null;
     }
+
     @Override
     public BukkitMaterial[] getMaterialList() {
         // TODO Auto-generated method stub
@@ -446,5 +441,10 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     public double getHealth(Player p) {
         return p.getHealth();
     }
+
+    @Override
+	public String getStateStringByCombinedId(int blkid, int meta) {
+		return "meta=" + meta;
+	}
 
 }

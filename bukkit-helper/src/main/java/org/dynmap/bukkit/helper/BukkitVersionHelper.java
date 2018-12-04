@@ -106,10 +106,6 @@ public abstract class BukkitVersionHelper {
      */
     public abstract String[] getBiomeNames();
     /**
-     * Get block material index list
-     */
-    public abstract int[] getBlockMaterialMap();
-    /**
      * Get list of online players
      */
     public abstract Player[] getOnlinePlayers();
@@ -151,11 +147,12 @@ public abstract class BukkitVersionHelper {
         	}
             // Only do defined names, and not "air"
             if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
-                DynmapBlockState basebs = new DynmapBlockState(null, 0, bn, "meta=0");
-                stateByID[i << 4] = basebs;
                 BukkitMaterial mat = blkmat[i];
-                for (int m = 1; m < 16; m++) {
-                    DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, "meta=" + m);
+                DynmapBlockState basebs = null;
+                for (int m = 0; m < 16; m++) {
+                	String sn = helper.getStateStringByCombinedId(i, m);
+                    DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, sn, mat.name, i);
+                    if (basebs == null) basebs = bs;
                     stateByID[(i << 4) + m] = bs;
                     if (mat != null) {
                     	if (mat.name.equals("AIR")) {
@@ -174,10 +171,10 @@ public abstract class BukkitVersionHelper {
                 }
             }
         }
-        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
-        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
-        	Log.verboseinfo(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
-        }
+        //for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
+        //	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
+        //	Log.verboseinfo(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
+        //}
     }
     /**
      * Create chunk cache for given chunks of given world
@@ -200,4 +197,5 @@ public abstract class BukkitVersionHelper {
 		return -1;
 	}
 
+	public abstract String getStateStringByCombinedId(int blkid, int meta);
 }

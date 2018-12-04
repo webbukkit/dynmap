@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -171,31 +172,43 @@ public class DynmapPlugin
             	String bn = ui.getResourceDomain() + ":" + ui.getResourcePath();
                 // Only do defined names, and not "air"
                 if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
-                    DynmapBlockState basebs = new DynmapBlockState(null, 0, bn, "meta=0");
-                    stateByID[i << 4] = basebs;
-                    for (int m = 1; m < 16; m++) {
-                        DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, "meta=" + m);
-                        stateByID[(i << 4) + m] = bs;
+                    DynmapBlockState basebs = null;
+                    for (int m = 0; m < 16; m++) {
                         IBlockState blkstate = null;
                         try {
                             blkstate = b.getStateFromMeta(m);
                         } catch (Exception x) {
                             // Invalid meta
                         }
+                        Material mat = Material.AIR;
+                        String statename = "meta=" + m;
                         if (blkstate != null) {
-                            Material mat = blkstate.getMaterial();
-                            if (mat.isSolid()) {
-                                bs.setSolid();
+                            mat = blkstate.getMaterial();
+                            String pstate = null;
+                            for(Entry<IProperty<?>, Comparable<?>> p : blkstate.getProperties().entrySet()) {
+                            	if (pstate == null)
+                            		pstate = "";
+                            	else 
+                            		pstate += ",";
+                            	pstate += p.getKey().getName() + "=" + p.getValue().toString();
                             }
-                            if (mat == Material.AIR) {
-                                bs.setAir();
-                            }
-                            if (mat == Material.WOOD) {
-                                bs.setLog();
-                            }
-                            if (mat == Material.LEAVES) {
-                                bs.setLeaves();
-                            }
+                            if (pstate != null)
+                            	statename = pstate;
+                        }
+                        DynmapBlockState bs = new DynmapBlockState(basebs, m, bn, statename, mat.toString(), i);
+                        if (basebs == null) basebs = bs;
+                        stateByID[(i << 4) + m] = bs;
+                        if (mat.isSolid()) {
+                            bs.setSolid();
+                        }
+                        if (mat == Material.AIR) {
+                            bs.setAir();
+                        }
+                        if (mat == Material.WOOD) {
+                            bs.setLog();
+                        }
+                        if (mat == Material.LEAVES) {
+                            bs.setLeaves();
                         }
                     }
                 }
@@ -1386,28 +1399,6 @@ public class DynmapPlugin
         return lst;
     }
 
-    private int[] getBlockMaterialMap() {
-        int[] map = new int[4096];
-        ArrayList<Material> mats = new ArrayList<Material>();
-        for (int i = 0; i < map.length; i++) {
-            Block b = getBlockByID(i);
-            if(b != null) {
-                Material mat = b.getBlockState().getBaseState().getMaterial();
-                if (mat != null) {
-                    map[i] = mats.indexOf(mat);
-                    if (map[i] < 0) {
-                        map[i] = mats.size();
-                        mats.add(mat);
-                    }
-                }
-                else {
-                    map[i] = -1;
-                }
-            }
-        }
-        return map;
-    }
-
     public void onEnable()
     {
         /* Get MC version */
@@ -1445,7 +1436,6 @@ public class DynmapPlugin
         ForgeMapChunkCache.init();
         core.setTriggerDefault(TRIGGER_DEFAULTS);
         core.setBiomeNames(getBiomeNames());
-        core.setBlockMaterialMap(getBlockMaterialMap());
 
         if(!core.initConfiguration(null))
         {

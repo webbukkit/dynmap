@@ -38,6 +38,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Method getbiomebyid;
     private Method getbiomefunc;
     private Method getidbybiome;
+    private Method getbycombinedid;
+    
     private boolean isBadUnload = false;
     
     public BukkitVersionHelperCB() {
@@ -79,7 +81,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             }
         }
         material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);
-
+        getbycombinedid = getMethod(nmsblock, new String[] { "getByCombinedId" }, new Class[] { int.class });
         // Get material methods
         material_issolid = getMethod(nmsmaterial, new String[] { "isSolid" }, nulltypes);
         material_isliquid = getMethod(nmsmaterial, new String[] { "isLiquid" }, nulltypes);
@@ -267,52 +269,6 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         return names;
     }
     /**
-     * Get block material index list
-     */
-    public int[] getBlockMaterialMap() {
-        try {
-            int[] map = new int[4096];
-            Arrays.fill(map, -1);
-            if (blockbyid != null) {
-                Object[] byid = (Object[])blockbyid.get(nmsblock);
-                ArrayList<Object> mats = new ArrayList<Object>();
-                for (int i = 0; i < map.length; i++) {
-                    if (byid[i] != null) {
-                        Object mat = (Object)material.get(byid[i]);
-                        if (mat != null) {
-                            map[i] = mats.indexOf(mat);
-                            if (map[i] < 0) {
-                                map[i] = mats.size();
-                                mats.add(mat);
-                            }
-                        }
-                    }
-                }
-            }
-            else if (blockbyidfunc != null) {
-                ArrayList<Object> mats = new ArrayList<Object>();
-                for (int i = 0; i < map.length; i++) {
-                    Object blk = blockbyidfunc.invoke(nmsblock, i);
-                    if (blk != null) {
-                        Object mat = (Object)material.get(blk);
-                        if (mat != null) {
-                            map[i] = mats.indexOf(mat);
-                            if (map[i] < 0) {
-                                map[i] = mats.size();
-                                mats.add(mat);
-                            }
-                        }
-                    }
-                }
-            }
-            return map;
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
-        }
-        return new int[0];
-    }
-    /**
      * Get material map by block ID
      */
     @Override
@@ -419,4 +375,26 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
      */
     @Override
     public boolean isUnloadChunkBroken() { return isBadUnload; }
+    
+    @Override
+	public String getStateStringByCombinedId(int blkid, int meta) {
+    	int id = blkid | (meta << 12);
+    	if (getbycombinedid != null) {
+            try {
+                Object iblockdata = getbycombinedid.invoke(nmsblock, id);
+                if (iblockdata != null) {
+                	String nm = iblockdata.toString();
+            		int off1 = nm.indexOf('[');
+            		if (off1 >= 0) {
+            			int off2 = nm.indexOf(']');
+            			return nm.substring(off1+1, off2);
+            		}
+                }
+            } catch (IllegalAccessException x) {
+            } catch (IllegalArgumentException x) {
+            } catch (InvocationTargetException x) {
+            }
+    	}
+    	return "meta=" + meta;
+    }
 }

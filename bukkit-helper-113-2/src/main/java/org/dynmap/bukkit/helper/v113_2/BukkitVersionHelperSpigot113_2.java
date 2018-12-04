@@ -126,20 +126,21 @@ public class BukkitVersionHelperSpigot113_2 extends BukkitVersionHelperCB {
     			int off2 = fname.indexOf(']');
     			sb = fname.substring(off1+1, off2);
     		}
-            DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb);
+    		Material mat = bd.getMaterial();
+            DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
             if ((!bd.s().e()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
             	bs.setWaterlogged();
             }
-            if (bd.getMaterial() == Material.AIR) {
+            if (mat == Material.AIR) {
             	bs.setAir();
             }
-    		if (bd.getMaterial() == Material.LEAVES) {
+    		if (mat == Material.LEAVES) {
     			bs.setLeaves();
     		}
     		if (bd.getBlock() instanceof BlockLogAbstract) {
     			bs.setLog();
     		}
-    		if (bd.getMaterial().isSolid()) {
+    		if (mat.isSolid()) {
     			bs.setSolid();
     		}
     		dataToState.put(bd,  bs);
