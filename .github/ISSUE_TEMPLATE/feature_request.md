@@ -4,8 +4,8 @@ about: Suggest an idea for this project
 
 ---
 
-<!-- Thank you for filing a feature request. Please be make sure to fill out the required information specified in the template. -->
-<!-- Do not delete the template, it contains useful required information and prevents your issues from being seen as an already requested feature -->
+<!-- Thank you for filing a feature request. Please make sure to fill out the required information specified in the template. -->
+<!-- Do not delete the template, it contains required information and prevents your issues from being seen as an already requested feature -->
 <!-->
 <!-- FEATURE REQUEST - Please check the fitting check-boxes.
 <!-- To tick the check-boxes replace the "[ ]" with "[x]". -->
