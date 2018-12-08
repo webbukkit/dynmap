@@ -104,6 +104,7 @@ public class DynmapMapCommands {
             sb.append(", extrazoomout=").append(w.getExtraZoomOutLevels()).append(", sendhealth=").append(w.sendhealth);
             sb.append(", sendposition=").append(w.sendposition);
             sb.append(", protected=").append(w.is_protected);
+            sb.append(", showborder=").append(w.showborder);
             if(w.tileupdatedelay > 0) {
                 sb.append(", tileupdatedelay=").append(w.tileupdatedelay);
             }
@@ -169,6 +170,15 @@ public class DynmapMapCommands {
                     return true;
                 }
                 w.sendhealth = tok[1].equals("true");
+                core.updateWorldConfig(w);
+                did_update = true;
+            }
+            else if(tok[0].equalsIgnoreCase("showborder")) {
+                if(w == null) {
+                    sender.sendMessage("Cannot set sendworldborder on disabled or undefined world");
+                    return true;
+                }
+                w.showborder = tok[1].equals("true");
                 core.updateWorldConfig(w);
                 did_update = true;
             }

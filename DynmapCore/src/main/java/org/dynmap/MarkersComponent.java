@@ -254,7 +254,7 @@ public class MarkersComponent extends ClientComponent {
             String borderid = "_worldborder_" + w.getName();
             AreaMarker am = ms.findAreaMarker(borderid);
             Polygon p = null;
-            if (showBorder) {
+            if (showBorder && w.showborder) {
                 p = w.getWorldBorder();
             }
             if ((p != null) && (p.size() > 1)) {

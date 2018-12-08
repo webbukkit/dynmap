@@ -37,6 +37,7 @@ public abstract class DynmapWorld {
     public int servertime;
     public boolean sendposition;
     public boolean sendhealth;
+    public boolean showborder;
     private int extrazoomoutlevels;  /* Number of additional zoom out levels to generate */
     private boolean cancelled;
     private final String wname;
@@ -326,6 +327,7 @@ public abstract class DynmapWorld {
         servertime = (int)(getTime() % 24000);
         sendposition = worldconfig.getBoolean("sendposition", true);
         sendhealth = worldconfig.getBoolean("sendhealth", true);
+        showborder = worldconfig.getBoolean("showborder", true);
         is_protected = worldconfig.getBoolean("protected", false);
         setExtraZoomOutLevels(worldconfig.getInteger("extrazoomout", 0));
         setTileUpdateDelay(worldconfig.getInteger("tileupdatedelay", -1));
@@ -419,6 +421,7 @@ public abstract class DynmapWorld {
         node.put("title", getTitle());
         node.put("enabled", is_enabled);
         node.put("protected", is_protected);
+        node.put("showborder", showborder);
         if(tileupdatedelay > 0) {
             node.put("tileupdatedelay",  tileupdatedelay);
         }
