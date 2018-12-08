@@ -56,10 +56,10 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 				if (player.health !== undefined && player.armor !== undefined) {
 					player.healthBar = $('<div/>')
 						.addClass('playerHealth')
-						.css('width', (player.health/2*5) + 'px');
+						.css('width', Math.ceil(player.health*2.5) + 'px');
 					player.armorBar = $('<div/>')
 						.addClass('playerArmor')
-						.css('width', (player.armor/2*5) + 'px');
+						.css('width', Math.ceil(player.armor*2.5) + 'px');
 
 					$('<div/>')
 						.addClass('playerHealthBackground')
@@ -97,8 +97,8 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			if (configuration.showplayerhealth) {
 				if (player.health !== undefined && player.armor !== undefined) {
 					player.healthContainer.css('display','block');
-					player.healthBar.css('width', (player.health/2*5) + 'px');
-					player.armorBar.css('width', (player.armor/2*5) + 'px');
+					player.healthBar.css('width', Math.ceil(player.health*2.5) + 'px');
+					player.armorBar.css('width', Math.ceil(player.armor*2.5) + 'px');
 				} else {
 					player.healthContainer.css('display','none');
 				}
