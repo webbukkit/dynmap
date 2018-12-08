@@ -56,10 +56,15 @@ import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -1631,26 +1636,27 @@ public class DynmapPlugin
     	}
     }
 
-    /**NOTYET - need rest of forge
     public class WorldTracker {
     	@SubscribeEvent
     	public void handleWorldLoad(WorldEvent.Load event) {
 			if(!core_enabled) return;
-			if(!(event.world instanceof WorldServer)) return;
-            final ForgeWorld w = getWorld(event.world);
+			World w = event.getWorld();
+			if(!(w instanceof WorldServer)) return;
+            final ForgeWorld fw = getWorld(w);
             // This event can be called from off server thread, so push processing there
             core.getServer().scheduleServerTask(new Runnable() {
             	public void run() {
-            		if(core.processWorldLoad(w))    // Have core process load first - fire event listeners if good load after
-            			core.listenerManager.processWorldEvent(EventType.WORLD_LOAD, w);
+            		if(core.processWorldLoad(fw))    // Have core process load first - fire event listeners if good load after
+            			core.listenerManager.processWorldEvent(EventType.WORLD_LOAD, fw);
             	}
             }, 0);
     	}
         @SubscribeEvent
     	public void handleWorldUnload(WorldEvent.Unload event) {
 			if(!core_enabled) return;
-            if(!(event.world instanceof WorldServer)) return;
-            final ForgeWorld fw = getWorld(event.world);
+			World w = event.getWorld();
+            if(!(w instanceof WorldServer)) return;
+            final ForgeWorld fw = getWorld(w);
             if(fw != null) {
                 // This event can be called from off server thread, so push processing there
                 core.getServer().scheduleServerTask(new Runnable() {
@@ -1666,14 +1672,16 @@ public class DynmapPlugin
                 if(wut != null) wut.world = null;
             }
         }
+        
         @SubscribeEvent
     	public void handleChunkLoad(ChunkEvent.Load event) {
 			if(!core_enabled) return;
 			if(!onchunkgenerate) return;
-            if(!(event.world instanceof WorldServer)) return;
+			World w = event.getWorld();
+            if(!(w instanceof WorldServer)) return;
 			Chunk c = event.getChunk();
-			if((c != null) && (c.lastSaveTime == 0)) {	// If new chunk?
-				ForgeWorld fw = getWorld(event.world, false);
+			if((c != null) && (!c.isTerrainPopulated())) {	// If new chunk?
+				ForgeWorld fw = getWorld(w, false);
 				if(fw == null) {
 					return;
 				}
@@ -1684,8 +1692,8 @@ public class DynmapPlugin
 						ymax = 16*(i+1);
 					}
 				}
-				int x = c.xPosition << 4;
-				int z = c.zPosition << 4;
+				int x = c.x << 4;
+				int z = c.z << 4;
 				if(ymax > 0) {
 					mapManager.touchVolume(fw.getName(), x, 0, z, x+15, ymax, z+16, "chunkgenerate");
 				}
@@ -1696,11 +1704,12 @@ public class DynmapPlugin
     	public void handleChunkPopulate(PopulateChunkEvent.Post event) {
 			if(!core_enabled) return;
 			if(!onchunkpopulate) return;
-            if(!(event.world instanceof WorldServer)) return;
-			Chunk c = event.chunkProvider.loadChunk(event.chunkX, event.chunkZ);
+			World w = event.getWorld();
+            if(!(w instanceof WorldServer)) return;
+            Chunk c = w.getChunkFromChunkCoords(event.getChunkX(), event.getChunkZ());
 			int ymin = 0, ymax = 0;
 			if(c != null) {
-                ForgeWorld fw = getWorld(event.world, false);
+                ForgeWorld fw = getWorld(event.getWorld(), false);
                 if (fw == null) return;
 
                 ExtendedBlockStorage[] sections = c.getBlockStorageArray();
@@ -1709,30 +1718,13 @@ public class DynmapPlugin
 						ymax = 16*(i+1);
 					}
 				}
-				int x = c.xPosition << 4;
-				int z = c.zPosition << 4;
+				int x = c.x << 4;
+				int z = c.z << 4;
 				if(ymax > 0)
 					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+16, "chunkpopulate");
 			}
-    	}
-        
-        @SubscribeEvent
-    	public void handleCommandEvent(CommandEvent event) {
-    		if(event.isCanceled()) return;
-    		if(event.command.getCommandName().equals("say")) {
-    			String s = "";
-    			for(String p : event.parameters) {
-    				s += p + " ";
-    			}
-    			s = s.trim();
-				ChatMessage cm = new ChatMessage();
-				cm.message = s;
-				cm.sender = null;
-				msgqueue.add(cm);
-    		}
-    	}
+    	}        
     }
-    */
     
     private boolean onblockchange = false;
     private boolean onlightingchange = false;
@@ -1803,19 +1795,15 @@ public class DynmapPlugin
         }
     }
     
-    /*NOTYET - need rest of forge
     private WorldTracker worldTracker = null;
-    */
     private HashMap<String, WorldUpdateTracker> updateTrackers = new HashMap<String, WorldUpdateTracker>();
     
     private void registerEvents()
     {
-        /*NOTYET - need rest of forge
     	if(worldTracker == null) {
     		worldTracker = new WorldTracker();
     		MinecraftForge.EVENT_BUS.register(worldTracker);
     	}
-    	*/
         // To trigger rendering.
         onblockchange = core.isTrigger("blockupdate");
         onlightingchange = core.isTrigger("lightingupdate");
