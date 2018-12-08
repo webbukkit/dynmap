@@ -28,6 +28,7 @@ public class MapStorageResourceHandler extends AbstractHandler {
 
     private DynmapCore core;
     private byte[] blankpng;
+    private long blankpnghash = 0x12345678;
     
     public MapStorageResourceHandler() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -91,8 +92,23 @@ public class MapStorageResourceHandler extends AbstractHandler {
             tr = tile.read();
             tile.releaseReadLock();
         }
+        response.setHeader("Cache-Control", "max-age=0,must-revalidate");
+        String etag;
+        if (tr == null) {
+        	etag = "\"" + blankpnghash + "\"";
+        }
+        else {
+        	etag = "\"" + tr.hashCode + "\"";
+        }
+        response.setHeader("ETag", etag);
+        String ifnullmatch = request.getHeader("If-None-Match");
+        if ((ifnullmatch != null) && ifnullmatch.equals(etag)) {
+            response.sendError(HttpStatus.NOT_MODIFIED_304);
+        	return;
+        }
         if (tr == null) {
             response.setContentType("image/png");
+            response.setIntHeader("Content-Length", blankpng.length);
             OutputStream os = response.getOutputStream();
             os.write(blankpng);
             return;
@@ -100,7 +116,6 @@ public class MapStorageResourceHandler extends AbstractHandler {
         // Got tile, package up for response
         response.setDateHeader("Last-Modified", tr.lastModified);
         response.setIntHeader("Content-Length", tr.image.length());
-        response.setHeader("ETag", "\"" + tr.hashCode + "\"");
         if (tr.format == ImageEncoding.PNG) {
             response.setContentType("image/png");
         }

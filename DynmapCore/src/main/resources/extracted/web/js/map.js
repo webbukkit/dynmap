@@ -740,20 +740,27 @@ DynMap.prototype = {
 
 		if(tile == null) {
 			var url = me.options.url.tiles;
-			if(url.indexOf('?') > 0)
-				tile = this.registeredTiles[tileName] = url + escape(me.world.name + '/' + tileName) + '&ts=' + me.inittime;
-			else
-				tile = this.registeredTiles[tileName] = url + me.world.name + '/' + tileName + '?' + me.inittime;
+			tile = this.registeredTiles[tileName] = url + escape(me.world.name + '/' + tileName);
 		}
 		return tile;
 	},
 	onTileUpdated: function(tileName,timestamp) {
 		var me = this;
+		var prev = this.registeredTiles[tileName];
+		var a_b = true;
+		if (prev && (prev.indexOf('upd=0') > 0))
+			a_b = false;
 		var url = me.options.url.tiles;
-		if(url.indexOf('?') > 0)
-			this.registeredTiles[tileName] = url + escape(me.world.name + '/' + tileName) + '&ts=' + timestamp;
+		if (a_b) {
+			if (url.indexOf('?') > 0) {
+				this.registeredTiles[tileName] = url + escape(me.world.name + '/' + tileName) + '&upd=0';
+			}
+			else {
+				this.registeredTiles[tileName] = url + escape(me.world.name + '/' + tileName) + '?upd=0';
+			}
+		}
 		else
-			this.registeredTiles[tileName] = url + me.world.name + '/' + tileName + '?' + timestamp;
+			this.registeredTiles[tileName] = url + me.world.name + '/' + tileName;
 		me.maptype.updateNamedTile(tileName);
 	},
 	addPlayer: function(update) {
