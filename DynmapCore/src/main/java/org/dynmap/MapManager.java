@@ -27,11 +27,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
+import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.debug.Debug;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.Polygon;
 import org.dynmap.utils.TileFlags;
 
 public class MapManager {
@@ -775,6 +777,7 @@ public class MapManager {
     }
     
     private class CheckWorldTimes implements Runnable {
+    	HashMap<String, Polygon> last_worldborder = new HashMap<String, Polygon>();
         public void run() {
             Future<Integer> f = core.getServer().callSyncMethod(new Callable<Integer>() {
                 public Integer call() throws Exception {
@@ -788,6 +791,15 @@ public class MapManager {
                             w.servertime = new_servertime;
                             if(wasday != isday) {
                                 pushUpdate(w, new Client.DayNight(isday));            
+                            }
+                            // Check world border
+                            Polygon wb = w.getWorldBorder();
+                            Polygon oldwb = last_worldborder.get(w.getName());
+                            if (((wb == null) && (oldwb == null)) ||
+                            		wb.equals(oldwb)) {	// No change
+                            }
+                            else { 
+                                core.listenerManager.processWorldEvent(EventType.WORLD_SPAWN_CHANGE, w);
                             }
                         }
                         /* Tick invalidated tiles processing */

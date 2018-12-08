@@ -15,8 +15,10 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
@@ -162,5 +164,23 @@ public class BukkitVersionHelperSpigot113 extends BukkitVersionHelperCB {
 	public int getBiomeBaseWaterMult(Object bb) {
 		return ((BiomeBase)bb).n();
 	}
+
+    @Override
+    public Polygon getWorldBorder(World world) {
+        Polygon p = null;
+        WorldBorder wb = world.getWorldBorder();
+        if (wb != null) {
+        	Location c = wb.getCenter();
+        	double size = wb.getSize();
+        	if ((size > 1) && (size < 1E7)) {
+        		p = new Polygon();
+        		p.addVertex(c.getX()-size, c.getZ()-size);
+        		p.addVertex(c.getX()+size, c.getZ()-size);
+        		p.addVertex(c.getX()+size, c.getZ()+size);
+        		p.addVertex(c.getX()-size, c.getZ()+size);
+        	}
+        }
+        return p;
+    }
 
 }
