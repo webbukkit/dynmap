@@ -5,7 +5,7 @@
   "description": "Dynamic, Google Maps style web maps for Minecraft Servers",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "http://www.minecraftforum.net/topic/1543523-dynmap-dynmap-web-maps-for-minecraft/",
+  "url": "https://forums.dynmap.us",
   "updateUrl": "",
   "authors": [
     "mikeprimm"
