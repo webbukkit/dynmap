@@ -173,6 +173,7 @@ public class BukkitVersionHelperSpigot113 extends BukkitVersionHelperCB {
         	Location c = wb.getCenter();
         	double size = wb.getSize();
         	if ((size > 1) && (size < 1E7)) {
+        	    size = size / 2;
         		p = new Polygon();
         		p.addVertex(c.getX()-size, c.getZ()-size);
         		p.addVertex(c.getX()+size, c.getZ()-size);
