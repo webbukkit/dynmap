@@ -975,9 +975,7 @@ public class DynmapPlugin
             }
             /* Check for idle worlds */
             if((cur_tick % 20) == 0) {
-                /*NOTYET - need rest of forge
                 doIdleOutOfWorlds();
-                */
             }
 		}
 
