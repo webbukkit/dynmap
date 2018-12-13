@@ -58,6 +58,42 @@ public class PlayerFaces {
         }
     }
     
+    private void copyLayersToTarget(BufferedImage srcimg, int layer1x, int layer1y, int layer2x, int layer2y, int w, int h, int[] dest, int destoff, int destscansize)
+    {
+    	int[] l1 = new int[w * h];
+    	int[] l2 = new int[w * h];
+    	// Read layer 1
+        srcimg.getRGB(layer1x, layer1y, w, h, l1, 0, w);
+        // Read layer 2
+        srcimg.getRGB(layer2x, layer2y, w, h, l2, 0, w);
+        // Apply layer1 to layer 1
+        boolean transp = false;
+        int v = l2[0];
+        for (int i = 0; i < (w*h); i++) {
+        	if ((l2[i] & 0xFF000000) == 0) {
+        		transp = true;
+        		break;
+        	}
+        	/* If any different values, render face too */
+        	else if (l2[i] != v) {
+        	    transp = true;
+        	    break;
+        	}
+        }
+        if(transp) {
+            for (int i = 0; i < (w*h); i++) {
+            	if ((l2[i] & 0xFF000000) != 0)
+            		l1[i] = l2[i];
+            }
+        }
+    	// Write to dest
+        for (int y = 0; y < h; y++) {
+        	for (int x = 0; x < w; x++) {
+        		dest[destoff + (y*destscansize + x)] = l1[(y*w)+x];
+        	}
+        }
+    }
+    
     private class LoadPlayerImages implements Runnable {
         public final String playername;
         public final String playerskinurl;
@@ -108,28 +144,8 @@ public class PlayerFaces {
             int[] faceaccessory = new int[64];  /* 8x8 of face accessory */
             /* Get buffered image for face at 8x8 */
             DynmapBufferedImage face8x8 = DynmapBufferedImage.allocateBufferedImage(8, 8);
-            img.getRGB(8, 8, 8, 8, face8x8.argb_buf, 0, 8); /* Read face from image */
-            img.getRGB(40, 8, 8, 8, faceaccessory, 0, 8); /* Read face accessory from image */
-            /* Apply accessory to face: see if anything is transparent (if so, apply accessory */
-            boolean transp = false;
-            int v = faceaccessory[0];
-            for(int i = 0; i < 64; i++) {
-            	if((faceaccessory[i] & 0xFF000000) == 0) {
-            		transp = true;
-            		break;
-            	}
-            	/* If any different values, render face too */
-            	else if(faceaccessory[i] != v) {
-            	    transp = true;
-            	    break;
-            	}
-            }
-            if(transp) {
-                for(int i = 0; i < 64; i++) {
-                	if((faceaccessory[i] & 0xFF000000) != 0)
-                		face8x8.argb_buf[i] = faceaccessory[i];
-                }
-            }
+            // Copy face and overlay to icon
+            copyLayersToTarget(img, 8, 8, 40, 8, 8, 8, face8x8.argb_buf, 0, 8);
             /* Write 8x8 file */
             if(refreshskins || (!has_8x8)) {
                 BufferOutputStream bos = ImageIOManager.imageIOEncode(face8x8.buf_img, ImageFormat.FORMAT_PNG);
@@ -179,14 +195,14 @@ public class PlayerFaces {
                         body32x32.argb_buf[i*32+j+12] = face8x8.argb_buf[i*8 + j];
                     }
                 }
-                /* Copy body at 12,8 to 20,20 */
-                img.getRGB(20, 20, 8, 12, body32x32.argb_buf, 8*32+12, 32); /* Read body from image */
-                /* Copy legs at 12,20 to 16,32 and 16,20 to 20,32 */
-                img.getRGB(4, 20, 4, 12, body32x32.argb_buf, 20*32+12, 32); /* Read right leg from image */
-                img.getRGB(4, 20, 4, 12, body32x32.argb_buf, 20*32+16, 32); /* Read left leg from image */
-                /* Copy arms at 8,8 to 12,20 and 20,8 to 24,20 */
-                img.getRGB(44, 20, 4, 12, body32x32.argb_buf, 8*32+8, 32); /* Read right leg from image */
-                img.getRGB(44, 20, 4, 12, body32x32.argb_buf, 8*32+20, 32); /* Read left leg from image */
+                /* Copy body at 20, 20 and chest at  to 20, 36 to 12,8 */
+                copyLayersToTarget(img, 20, 20, 20, 36, 8, 12, body32x32.argb_buf, 8*32+12, 32);
+                /* Copy legs at 4,20 and 4,366 to 20,12; 44,20 and 44,36 to 20,16 */
+                copyLayersToTarget(img, 4, 20, 4,36, 8, 12, body32x32.argb_buf, 20*32+12, 32);
+                copyLayersToTarget(img, 20, 52, 4, 52, 8, 12, body32x32.argb_buf, 20*32+16, 32);
+                /* Copy arms at 44, 20 and 8,8 to 12,20 and 20,8 to 24,20 */
+                copyLayersToTarget(img, 44, 20, 44, 36, 8, 12, body32x32.argb_buf, 8*32+8, 32);
+                copyLayersToTarget(img, 36, 52, 52, 52, 8, 12, body32x32.argb_buf, 8*32+20, 32);
                 
                 BufferOutputStream bos = ImageIOManager.imageIOEncode(body32x32.buf_img, ImageFormat.FORMAT_PNG);
                 if (bos != null) {
