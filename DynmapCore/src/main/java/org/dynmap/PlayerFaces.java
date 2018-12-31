@@ -137,7 +137,7 @@ public class PlayerFaces {
             if(img == null) {   /* No image to process?  Quit */
                 return;
             }
-            if((img.getWidth() < 64) || (img.getHeight() < 32)) {
+            if((img.getWidth() < 64) || (img.getHeight() < 64)) {
                 img.flush();
                 return;
             }
