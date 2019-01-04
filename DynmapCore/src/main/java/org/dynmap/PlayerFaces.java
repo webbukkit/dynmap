@@ -62,10 +62,13 @@ public class PlayerFaces {
     {
     	int[] l1 = new int[w * h];
     	int[] l2 = new int[w * h];
+    	int imgh = srcimg.getHeight();
     	// Read layer 1
-        srcimg.getRGB(layer1x, layer1y, w, h, l1, 0, w);
+    	if (imgh >= (layer1y+h))
+    		srcimg.getRGB(layer1x, layer1y, w, h, l1, 0, w);
         // Read layer 2
-        srcimg.getRGB(layer2x, layer2y, w, h, l2, 0, w);
+    	if (imgh >= (layer2y+h))
+    		srcimg.getRGB(layer2x, layer2y, w, h, l2, 0, w);
         // Apply layer1 to layer 1
         boolean transp = false;
         int v = l2[0];
@@ -137,7 +140,7 @@ public class PlayerFaces {
             if(img == null) {   /* No image to process?  Quit */
                 return;
             }
-            if((img.getWidth() < 64) || (img.getHeight() < 64)) {
+            if((img.getWidth() < 64) || (img.getHeight() < 32)) {
                 img.flush();
                 return;
             }
