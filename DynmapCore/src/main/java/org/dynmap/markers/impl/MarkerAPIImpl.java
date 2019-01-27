@@ -46,11 +46,13 @@ import org.dynmap.markers.PlayerSet;
 import org.dynmap.markers.PolyLineMarker;
 import org.dynmap.utils.BufferOutputStream;
 import org.dynmap.web.Json;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Implementation class for MarkerAPI - should not be called directly
  */
 public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
+    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private File markerpersist;
     private File markerpersist_old;
     private File markerdir; /* Local store for markers (internal) */
@@ -336,17 +338,22 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public void run() {
             if(stop)
                 return;
-            /* Write markers first - drives JSON updates too */
-            if(dirty_markers) {
-                doSaveMarkers();
-                dirty_markers = false;
-            }
-            /* Process any dirty worlds */
-            if(!dirty_worlds.isEmpty()) {
-                for(String world : dirty_worlds) {
-                    writeMarkersFile(world);
+            lock.readLock().lock();
+            try {
+                /* Write markers first - drives JSON updates too */
+                if(dirty_markers) {
+                    doSaveMarkers();
+                    dirty_markers = false;
                 }
-                dirty_worlds.clear();
+                /* Process any dirty worlds */
+                if(!dirty_worlds.isEmpty()) {
+                    for(String world : dirty_worlds) {
+                        writeMarkersFile(world);
+                    }
+                    dirty_worlds.clear();
+                }
+            } finally {
+                lock.readLock().unlock();
             }
             core.getServer().scheduleServerTask(this, 20);
         }
@@ -412,17 +419,26 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         plugin.events.removeListener("worldactivated", api);
 
         stop = true;
-        if(dirty_markers) {
-            doSaveMarkers();
-            dirty_markers = false;
+        lock.readLock().lock();
+        try {
+            if(dirty_markers) {
+                doSaveMarkers();
+                dirty_markers = false;
+            }
+        } finally {
+            lock.readLock().unlock();
         }
-        
-        for(MarkerIconImpl icn : markericons.values())
-            icn.cleanup();
-        markericons.clear();
-        for(MarkerSetImpl set : markersets.values())
-            set.cleanup();
-        markersets.clear();
+        lock.writeLock().lock();
+        try {
+            for(MarkerIconImpl icn : markericons.values())
+                icn.cleanup();
+            markericons.clear();
+            for(MarkerSetImpl set : markersets.values())
+                set.cleanup();
+            markersets.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     private MarkerIcon createBuiltinMarkerIcon(String id, String label) {
@@ -668,35 +684,39 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private boolean loadMarkers() {        
         ConfigurationNode conf = new ConfigurationNode(api.markerpersist);  /* Make configuration object */
         conf.load();    /* Load persistence */
-        /* Get icons */
-        
-        ConfigurationNode icons = conf.getNode("icons");
-        if(icons == null) return false;
-        for(String id : icons.keySet()) {
-            MarkerIconImpl ico = new MarkerIconImpl(id);
-            if(ico.loadPersistentData(icons.getNode(id))) {
-                markericons.put(id, ico);
-            }
-        }
-        /* Get marker sets */
-        ConfigurationNode sets = conf.getNode("sets");
-        if(sets != null) {
-            for(String id: sets.keySet()) {
-                MarkerSetImpl set = new MarkerSetImpl(id);
-                if(set.loadPersistentData(sets.getNode(id))) {
-                    markersets.put(id, set);
+        lock.writeLock().lock();
+        try {
+            /* Get icons */
+            ConfigurationNode icons = conf.getNode("icons");
+            if(icons == null) return false;
+            for(String id : icons.keySet()) {
+                MarkerIconImpl ico = new MarkerIconImpl(id);
+                if(ico.loadPersistentData(icons.getNode(id))) {
+                    markericons.put(id, ico);
                 }
             }
-        }
-        /* Get player sets */
-        ConfigurationNode psets = conf.getNode("playersets");
-        if(psets != null) {
-            for(String id: psets.keySet()) {
-                PlayerSetImpl set = new PlayerSetImpl(id);
-                if(set.loadPersistentData(sets.getNode(id))) {
-                    playersets.put(id, set);
+            /* Get marker sets */
+            ConfigurationNode sets = conf.getNode("sets");
+            if(sets != null) {
+                for(String id: sets.keySet()) {
+                    MarkerSetImpl set = new MarkerSetImpl(id);
+                    if(set.loadPersistentData(sets.getNode(id))) {
+                        markersets.put(id, set);
+                    }
                 }
             }
+            /* Get player sets */
+            ConfigurationNode psets = conf.getNode("playersets");
+            if(psets != null) {
+                for(String id: psets.keySet()) {
+                    PlayerSetImpl set = new PlayerSetImpl(id);
+                    if(set.loadPersistentData(sets.getNode(id))) {
+                        playersets.put(id, set);
+                    }
+                }
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
         
         return true;
@@ -1104,131 +1124,142 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         if (!commands.contains(c)) {
             return false;
         }
-        /* Process commands */
-        if(c.equals("add") && api.core.checkPlayerPermission(sender, "marker.add")) {
-            return processAddMarker(plugin, sender, cmd, commandLabel, args, player);
+        /* Process commands read commands */
+        api.lock.readLock().lock();
+        try {
+            /* List markers */
+            if(c.equals("list") && plugin.checkPlayerPermission(sender, "marker.list")) {
+                return processListMarker(plugin, sender, cmd, commandLabel, args);
+            }
+            /* List icons */
+            else if(c.equals("icons") && plugin.checkPlayerPermission(sender, "marker.icons")) {
+                return processListIcon(plugin, sender, cmd, commandLabel, args);
+            }
+            /* List sets */
+            else if(c.equals("listsets") && plugin.checkPlayerPermission(sender, "marker.listsets")) {
+                return processListSet(plugin, sender, cmd, commandLabel, args);
+            }
+            /* List areas */
+            else if(c.equals("listareas") && plugin.checkPlayerPermission(sender, "marker.listareas")) {
+                return processListArea(plugin, sender, cmd, commandLabel, args);
+            }
+            /* List poly-lines */
+            else if(c.equals("listlines") && plugin.checkPlayerPermission(sender, "marker.listlines")) {
+                return processListLine(plugin, sender, cmd, commandLabel, args);
+            }
+            /* List circles */
+            else if(c.equals("listcircles") && plugin.checkPlayerPermission(sender, "marker.listcircles")) {
+                return processListCircle(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Get label for given item - must have ID and type parameter */
+            else if(c.equals("getlabel") && plugin.checkPlayerPermission(sender, "marker.getlabel")) {
+                return processGetLabel(plugin, sender, cmd, commandLabel, args);
+            }
+        } finally {
+            api.lock.readLock().unlock();
         }
-        /* Update position of bookmark - must have ID parameter */
-        else if(c.equals("movehere") && plugin.checkPlayerPermission(sender, "marker.movehere")) {
-            return processMoveHere(plugin, sender, cmd, commandLabel, args, player);
-        }
-        /* Update other attributes of marker - must have ID parameter */
-        else if(c.equals("update") && plugin.checkPlayerPermission(sender, "marker.update")) {
-            return processUpdateMarker(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Delete marker - must have ID parameter */
-        else if(c.equals("delete") && plugin.checkPlayerPermission(sender, "marker.delete")) {
-            return processDeleteMarker(plugin, sender, cmd, commandLabel, args);
-        }
-        /* List markers */
-        else if(c.equals("list") && plugin.checkPlayerPermission(sender, "marker.list")) {
-            return processListMarker(plugin, sender, cmd, commandLabel, args);
-        }
-        /* List icons */
-        else if(c.equals("icons") && plugin.checkPlayerPermission(sender, "marker.icons")) {
-            return processListIcon(plugin, sender, cmd, commandLabel, args);
-        }
-        else if(c.equals("addset") && plugin.checkPlayerPermission(sender, "marker.addset")) {
-            return processAddSet(plugin, sender, cmd, commandLabel, args, player);
-        }
-        else if(c.equals("updateset") && plugin.checkPlayerPermission(sender, "marker.updateset")) {
-            return processUpdateSet(plugin, sender, cmd, commandLabel, args);
-        }
-        else if(c.equals("deleteset") && plugin.checkPlayerPermission(sender, "marker.deleteset")) {
-            return processDeleteSet(plugin, sender, cmd, commandLabel, args);
-        }
-        /* List sets */
-        else if(c.equals("listsets") && plugin.checkPlayerPermission(sender, "marker.listsets")) {
-            return processListSet(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Add new icon */
-        else if(c.equals("addicon") && plugin.checkPlayerPermission(sender, "marker.addicon")) {
-            return processAddIcon(plugin, sender, cmd, commandLabel, args);
-        }
-        else if(c.equals("updateicon") && plugin.checkPlayerPermission(sender, "marker.updateicon")) {
-            return processUpdateIcon(plugin, sender, cmd, commandLabel, args);
-        }
-        else if(c.equals("deleteicon") && plugin.checkPlayerPermission(sender, "marker.deleteicon")) {
-            return processDeleteIcon(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Add point to accumulator */
-        else if(c.equals("addcorner") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
-            return processAddCorner(plugin, sender, cmd, commandLabel, args, player);
-        }
-        else if(c.equals("clearcorners") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
-            return processClearCorners(plugin, sender, cmd, commandLabel, args, player);
-        }
-        else if(c.equals("addarea") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
-            return processAddArea(plugin, sender, cmd, commandLabel, args, player);
-        }
-        /* List areas */
-        else if(c.equals("listareas") && plugin.checkPlayerPermission(sender, "marker.listareas")) {
-            return processListArea(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Delete area - must have ID parameter */
-        else if(c.equals("deletearea") && plugin.checkPlayerPermission(sender, "marker.deletearea")) {
-            return processDeleteArea(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Update other attributes of area - must have ID parameter */
-        else if(c.equals("updatearea") && plugin.checkPlayerPermission(sender, "marker.updatearea")) {
-            return processUpdateArea(plugin, sender, cmd, commandLabel, args);
-        }
-        else if(c.equals("addline") && plugin.checkPlayerPermission(sender, "marker.addline")) {
-            return processAddLine(plugin, sender, cmd, commandLabel, args, player);
-        }
-        /* List poly-lines */
-        else if(c.equals("listlines") && plugin.checkPlayerPermission(sender, "marker.listlines")) {
-            return processListLine(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Delete poly-line - must have ID parameter */
-        else if(c.equals("deleteline") && plugin.checkPlayerPermission(sender, "marker.deleteline")) {
-            return processDeleteLine(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Update other attributes of poly-line - must have ID parameter */
-        else if(c.equals("updateline") && plugin.checkPlayerPermission(sender, "marker.updateline")) {
-            return processUpdateLine(plugin, sender, cmd, commandLabel, args);
-        }
-        else if(c.equals("addcircle") && plugin.checkPlayerPermission(sender, "marker.addcircle")) {
-            return processAddCircle(plugin, sender, cmd, commandLabel, args, player);
-        }
-        /* List circles */
-        else if(c.equals("listcircles") && plugin.checkPlayerPermission(sender, "marker.listcircles")) {
-            return processListCircle(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Delete circle - must have ID parameter */
-        else if(c.equals("deletecircle") && plugin.checkPlayerPermission(sender, "marker.deletecircle")) {
-            return processDeleteCircle(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Update other attributes of circle - must have ID parameter */
-        else if(c.equals("updatecircle") && plugin.checkPlayerPermission(sender, "marker.updatecircle")) {
-            return processUpdateCircle(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Get description for given item - must have ID and type parameter */
-        else if(c.equals("getdesc") && plugin.checkPlayerPermission(sender, "marker.getdesc")) {
-            return processGetDesc(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Reset description for given item - must have ID and type parameter */
-        else if(c.equals("resetdesc") && plugin.checkPlayerPermission(sender, "marker.resetdesc")) {
-            return processResetDesc(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Append to description for given item - must have ID and type parameter */
-        else if(c.equals("appenddesc") && plugin.checkPlayerPermission(sender, "marker.appenddesc")) {
-            return processAppendDesc(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Import description for given item from file - must have ID and type parameter */
-        else if(c.equals("importdesc") && plugin.checkPlayerPermission(sender, "marker.importdesc")) {
-            return processImportDesc(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Import description for given item from file - must have ID and type parameter */
-        else if(c.equals("importlabel") && plugin.checkPlayerPermission(sender, "marker.importlabel")) {
-            return processImportLabel(plugin, sender, cmd, commandLabel, args);
-        }
-        /* Get label for given item - must have ID and type parameter */
-        else if(c.equals("getlabel") && plugin.checkPlayerPermission(sender, "marker.getlabel")) {
-            return processGetLabel(plugin, sender, cmd, commandLabel, args);
-        }
-        else {
-            return false;
+        // Handle modify commands
+        api.lock.writeLock().lock();
+        try {
+            if(c.equals("add") && api.core.checkPlayerPermission(sender, "marker.add")) {
+                return processAddMarker(plugin, sender, cmd, commandLabel, args, player);
+            }
+            /* Update position of bookmark - must have ID parameter */
+            else if(c.equals("movehere") && plugin.checkPlayerPermission(sender, "marker.movehere")) {
+                return processMoveHere(plugin, sender, cmd, commandLabel, args, player);
+            }
+            /* Update other attributes of marker - must have ID parameter */
+            else if(c.equals("update") && plugin.checkPlayerPermission(sender, "marker.update")) {
+                return processUpdateMarker(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Delete marker - must have ID parameter */
+            else if(c.equals("delete") && plugin.checkPlayerPermission(sender, "marker.delete")) {
+                return processDeleteMarker(plugin, sender, cmd, commandLabel, args);
+            }
+            else if(c.equals("addset") && plugin.checkPlayerPermission(sender, "marker.addset")) {
+                return processAddSet(plugin, sender, cmd, commandLabel, args, player);
+            }
+            else if(c.equals("updateset") && plugin.checkPlayerPermission(sender, "marker.updateset")) {
+                return processUpdateSet(plugin, sender, cmd, commandLabel, args);
+            }
+            else if(c.equals("deleteset") && plugin.checkPlayerPermission(sender, "marker.deleteset")) {
+                return processDeleteSet(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Add new icon */
+            else if(c.equals("addicon") && plugin.checkPlayerPermission(sender, "marker.addicon")) {
+                return processAddIcon(plugin, sender, cmd, commandLabel, args);
+            }
+            else if(c.equals("updateicon") && plugin.checkPlayerPermission(sender, "marker.updateicon")) {
+                return processUpdateIcon(plugin, sender, cmd, commandLabel, args);
+            }
+            else if(c.equals("deleteicon") && plugin.checkPlayerPermission(sender, "marker.deleteicon")) {
+                return processDeleteIcon(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Add point to accumulator */
+            else if(c.equals("addcorner") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
+                return processAddCorner(plugin, sender, cmd, commandLabel, args, player);
+            }
+            else if(c.equals("clearcorners") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
+                return processClearCorners(plugin, sender, cmd, commandLabel, args, player);
+            }
+            else if(c.equals("addarea") && plugin.checkPlayerPermission(sender, "marker.addarea")) {
+                return processAddArea(plugin, sender, cmd, commandLabel, args, player);
+            }
+            /* Delete area - must have ID parameter */
+            else if(c.equals("deletearea") && plugin.checkPlayerPermission(sender, "marker.deletearea")) {
+                return processDeleteArea(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Update other attributes of area - must have ID parameter */
+            else if(c.equals("updatearea") && plugin.checkPlayerPermission(sender, "marker.updatearea")) {
+                return processUpdateArea(plugin, sender, cmd, commandLabel, args);
+            }
+            else if(c.equals("addline") && plugin.checkPlayerPermission(sender, "marker.addline")) {
+                return processAddLine(plugin, sender, cmd, commandLabel, args, player);
+            }
+            /* Delete poly-line - must have ID parameter */
+            else if(c.equals("deleteline") && plugin.checkPlayerPermission(sender, "marker.deleteline")) {
+                return processDeleteLine(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Update other attributes of poly-line - must have ID parameter */
+            else if(c.equals("updateline") && plugin.checkPlayerPermission(sender, "marker.updateline")) {
+                return processUpdateLine(plugin, sender, cmd, commandLabel, args);
+            }
+            else if(c.equals("addcircle") && plugin.checkPlayerPermission(sender, "marker.addcircle")) {
+                return processAddCircle(plugin, sender, cmd, commandLabel, args, player);
+            }
+            /* Delete circle - must have ID parameter */
+            else if(c.equals("deletecircle") && plugin.checkPlayerPermission(sender, "marker.deletecircle")) {
+                return processDeleteCircle(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Update other attributes of circle - must have ID parameter */
+            else if(c.equals("updatecircle") && plugin.checkPlayerPermission(sender, "marker.updatecircle")) {
+                return processUpdateCircle(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Get description for given item - must have ID and type parameter */
+            else if(c.equals("getdesc") && plugin.checkPlayerPermission(sender, "marker.getdesc")) {
+                return processGetDesc(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Reset description for given item - must have ID and type parameter */
+            else if(c.equals("resetdesc") && plugin.checkPlayerPermission(sender, "marker.resetdesc")) {
+                return processResetDesc(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Append to description for given item - must have ID and type parameter */
+            else if(c.equals("appenddesc") && plugin.checkPlayerPermission(sender, "marker.appenddesc")) {
+                return processAppendDesc(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Import description for given item from file - must have ID and type parameter */
+            else if(c.equals("importdesc") && plugin.checkPlayerPermission(sender, "marker.importdesc")) {
+                return processImportDesc(plugin, sender, cmd, commandLabel, args);
+            }
+            /* Import description for given item from file - must have ID and type parameter */
+            else if(c.equals("importlabel") && plugin.checkPlayerPermission(sender, "marker.importlabel")) {
+                return processImportLabel(plugin, sender, cmd, commandLabel, args);
+            }
+            else {
+                return false;
+            }
+        } finally {
+            api.lock.writeLock().unlock();
         }
     }
 
