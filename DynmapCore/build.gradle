@@ -5,7 +5,7 @@ dependencies {
     compile 'org.eclipse.jetty:jetty-server:8.1.21.v20160908'
     compile 'org.eclipse.jetty:jetty-servlet:8.1.21.v20160908'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
-    compile 'org.yaml:snakeyaml:1.9'
+    compile 'org.yaml:snakeyaml:1.23'
     compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
 }
 

@@ -45,6 +45,7 @@ public class ConfigurationNode implements Map<String, Object> {
             options.setIndent(4);
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             options.setPrettyFlow(true);
+            options.setVersion(DumperOptions.Version.V1_1);
 
             yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
         }
