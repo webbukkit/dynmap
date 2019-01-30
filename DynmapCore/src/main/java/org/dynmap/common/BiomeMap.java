@@ -90,6 +90,19 @@ public class BiomeMap {
         if (HDBlockModels.checkVersionRange(mcver, "1.9.0-")) {
             new BiomeMap(127, "THE_VOID");
         }
+        if (HDBlockModels.checkVersionRange(mcver, "1.13.0-")) {
+            new BiomeMap(40, "SMALL_END_ISLANDS");
+            new BiomeMap(41, "END_MIDLANDS");
+            new BiomeMap(42, "END_HIGHLANDS");
+            new BiomeMap(43, "END_BARRENS");
+            new BiomeMap(44, "WARM_OCEAN");
+            new BiomeMap(45, "LUKEWARM_OCEAN");
+            new BiomeMap(46, "COLD_OCEAN");
+            new BiomeMap(47, "DEEP_WARM_OCEAN");
+            new BiomeMap(48, "DEEP_LUKEWARM_OCEAN");
+            new BiomeMap(49, "DEEP_COLD_OCEAN");
+            new BiomeMap(50, "DEEP_FROZEN_OCEAN");
+        }
         loadDone = true;
     }
     
