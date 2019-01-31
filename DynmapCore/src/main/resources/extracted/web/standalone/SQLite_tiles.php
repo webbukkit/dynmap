@@ -97,7 +97,7 @@ if (isset($row[1])) {
    }
    header('ETag: \'' . $row[2] . '\'');
    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $row[3]/1000) . ' GMT'); 
-   echo $row[0];
+   echo rtrim($row[0], "\0");
 }
 else {
    header('Location: ../images/blank.png');
