@@ -163,12 +163,17 @@ public class DynmapPlugin
      * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
      */
     public void initializeBlockStates() {
-    	stateByID = new DynmapBlockState[4096*16];	// Simple meta+id map
+    	stateByID = new DynmapBlockState[512*16];	// Simple meta+id map
     	Arrays.fill(stateByID, DynmapBlockState.AIR); // Default to air
     	
-        for (int i = 0; i < 4096; i++) {
-            Block b = getBlockByID(i);
+    	for (Block b : Block.REGISTRY) {
             if (b == null) continue;
+            int i = Block.getIdFromBlock(b);
+    		if (i >= (stateByID.length >> 4)) {
+    			int plen = stateByID.length;
+    			stateByID = Arrays.copyOf(stateByID, (i+1) << 4);
+    			Arrays.fill(stateByID, plen, stateByID.length, DynmapBlockState.AIR);
+    		}
             ResourceLocation ui = null;
             try {
                 ui = Block.REGISTRY.getNameForObject(b);
