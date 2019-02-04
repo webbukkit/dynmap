@@ -78,7 +78,7 @@ else {
 
 $db = new SQLite3($dbfile, SQLITE3_OPEN_READONLY);
 
-$stmt = $db->prepare('SELECT Tiles.Image,Tiles.Format,Tiles.HashCode,Tiles.LastUpdate FROM Maps JOIN Tiles WHERE Maps.WorldID=:wid AND Maps.MapID=:mapid AND Maps.Variant=:var AND Maps.ID=Tiles.MapID AND Tiles.x=:x AND Tiles.y=:y and Tiles.zoom=:zoom');
+$stmt = $db->prepare('SELECT Tiles.Image,Tiles.Format,Tiles.HashCode,Tiles.LastUpdate,Tiles.ImageLen FROM Maps JOIN Tiles WHERE Maps.WorldID=:wid AND Maps.MapID=:mapid AND Maps.Variant=:var AND Maps.ID=Tiles.MapID AND Tiles.x=:x AND Tiles.y=:y and Tiles.zoom=:zoom');
 $stmt->bindValue(':wid', $world, SQLITE3_TEXT);
 $stmt->bindValue(':mapid', $prefix, SQLITE3_TEXT);
 $stmt->bindValue(':var', $variant, SQLITE3_TEXT);
@@ -97,7 +97,13 @@ if (isset($row[1])) {
    }
    header('ETag: \'' . $row[2] . '\'');
    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $row[3]/1000) . ' GMT'); 
-   echo rtrim($row[0], "\0");
+   if ($row[4] > 0) {
+      $v = substr($row[0], 0, $row[4]);
+   } else {
+      $v = rtrim($row[0], "\0");
+   }
+   header('Content-Length: ' . strlen($v));
+   echo $v;
 }
 else {
    header('Location: ../images/blank.png');

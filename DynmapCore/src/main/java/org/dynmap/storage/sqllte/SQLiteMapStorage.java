@@ -161,7 +161,7 @@ public class SQLiteMapStorage extends MapStorage {
                     stmt.setLong(2, System.currentTimeMillis());
                     stmt.setInt(3, map.getImageFormat().getEncoding().ordinal());
                     stmt.setBytes(4, encImage.buf);
-                    stmt.setInt(5, encImage.buf.length);
+                    stmt.setInt(5, encImage.len);
                     stmt.setInt(6, mapkey);
                     stmt.setInt(7, x);
                     stmt.setInt(8, y);
@@ -177,7 +177,7 @@ public class SQLiteMapStorage extends MapStorage {
                     stmt.setLong(6, System.currentTimeMillis());
                     stmt.setInt(7, map.getImageFormat().getEncoding().ordinal());
                     stmt.setBytes(8, encImage.buf);
-                    stmt.setInt(9, encImage.buf.length);
+                    stmt.setInt(9, encImage.len);
                 }
                 //stmt.executeUpdate();
                 doExecuteUpdate(stmt);
@@ -640,7 +640,7 @@ public class SQLiteMapStorage extends MapStorage {
             else if (exists) {
                 stmt = c.prepareStatement("UPDATE Faces SET Image=?,ImageLen=? WHERE PlayerName=? AND TypeID=?;");
                 stmt.setBytes(1, encImage.buf);
-                stmt.setInt(2, encImage.buf.length);
+                stmt.setInt(2, encImage.len);
                 stmt.setString(3, playername);
                 stmt.setInt(4, facetype.typeID);
             }
@@ -649,7 +649,7 @@ public class SQLiteMapStorage extends MapStorage {
                 stmt.setString(1, playername);
                 stmt.setInt(2, facetype.typeID);
                 stmt.setBytes(3, encImage.buf);
-                stmt.setInt(4, encImage.buf.length);
+                stmt.setInt(4, encImage.len);
             }
             //stmt.executeUpdate();
             doExecuteUpdate(stmt);
@@ -753,14 +753,14 @@ public class SQLiteMapStorage extends MapStorage {
             else if (exists) {
                 stmt = c.prepareStatement("UPDATE MarkerIcons SET Image=?,ImageLen=? WHERE IconName=?;");
                 stmt.setBytes(1, encImage.buf);
-                stmt.setInt(2, encImage.buf.length);
+                stmt.setInt(2, encImage.len);
                 stmt.setString(3, markerid);
             }
             else {
                 stmt = c.prepareStatement("INSERT INTO MarkerIcons (IconName,Image,ImageLen) VALUES (?,?,?);");
                 stmt.setString(1, markerid);
                 stmt.setBytes(2, encImage.buf);
-                stmt.setInt(3, encImage.buf.length);
+                stmt.setInt(3, encImage.len);
             }
             doExecuteUpdate(stmt);
             stmt.close();
