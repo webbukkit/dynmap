@@ -110,14 +110,20 @@ public class SQLiteMapStorage extends MapStorage {
                 c = getConnection();
                 Statement stmt = c.createStatement();
                 //ResultSet rs = stmt.executeQuery("SELECT HashCode,LastUpdate,Format,Image FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
-                ResultSet rs = doExecuteQuery(stmt, "SELECT HashCode,LastUpdate,Format,Image FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
+                ResultSet rs = doExecuteQuery(stmt, "SELECT HashCode,LastUpdate,Format,Image,ImageLen FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
                 if (rs.next()) {
                     rslt = new TileRead();
                     rslt.hashCode = rs.getLong("HashCode");
                     rslt.lastModified = rs.getLong("LastUpdate");
                     rslt.format = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
                     byte[] img = rs.getBytes("Image");
-                    rslt.image = new BufferInputStream(img);
+                    int len = rs.getInt("ImageLen");
+                    if (len == 0) {
+                    	len = img.length;
+                    	// Trim trailing zeros from padding by BLOB field
+                    	while((len > 0) && (img[len-1] == '\0')) len--;
+                    }
+                    rslt.image = new BufferInputStream(img, len);
                 }
                 rs.close();
                 stmt.close();
@@ -150,18 +156,19 @@ public class SQLiteMapStorage extends MapStorage {
                     stmt.setInt(4, zoom);
                 }
                 else if (exists) {
-                    stmt = c.prepareStatement("UPDATE Tiles SET HashCode=?, LastUpdate=?, Format=?, Image=? WHERE MapID=? AND x=? and y=? AND zoom=?;");
+                    stmt = c.prepareStatement("UPDATE Tiles SET HashCode=?, LastUpdate=?, Format=?, Image=?, ImageLen=? WHERE MapID=? AND x=? and y=? AND zoom=?;");
                     stmt.setLong(1, hash);
                     stmt.setLong(2, System.currentTimeMillis());
                     stmt.setInt(3, map.getImageFormat().getEncoding().ordinal());
                     stmt.setBytes(4, encImage.buf);
-                    stmt.setInt(5, mapkey);
-                    stmt.setInt(6, x);
-                    stmt.setInt(7, y);
-                    stmt.setInt(8, zoom);
+                    stmt.setInt(5, encImage.buf.length);
+                    stmt.setInt(6, mapkey);
+                    stmt.setInt(7, x);
+                    stmt.setInt(8, y);
+                    stmt.setInt(9, zoom);
                 }
                 else {
-                    stmt = c.prepareStatement("INSERT INTO Tiles (MapID,x,y,zoom,HashCode,LastUpdate,Format,Image) VALUES (?,?,?,?,?,?,?,?);");
+                    stmt = c.prepareStatement("INSERT INTO Tiles (MapID,x,y,zoom,HashCode,LastUpdate,Format,Image,ImageLen) VALUES (?,?,?,?,?,?,?,?,?);");
                     stmt.setInt(1, mapkey);
                     stmt.setInt(2, x);
                     stmt.setInt(3, y);
@@ -170,6 +177,7 @@ public class SQLiteMapStorage extends MapStorage {
                     stmt.setLong(6, System.currentTimeMillis());
                     stmt.setInt(7, map.getImageFormat().getEncoding().ordinal());
                     stmt.setBytes(8, encImage.buf);
+                    stmt.setInt(9, encImage.buf.length);
                 }
                 //stmt.executeUpdate();
                 doExecuteUpdate(stmt);
@@ -386,12 +394,28 @@ public class SQLiteMapStorage extends MapStorage {
             try {
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE Maps (ID INTEGER PRIMARY KEY AUTOINCREMENT, WorldID STRING NOT NULL, MapID STRING NOT NULL, Variant STRING NOT NULL)");
-                doUpdate(c, "CREATE TABLE Tiles (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode INT NOT NULL, LastUpdate INT NOT NULL, Format INT NOT NULL, Image BLOB, PRIMARY KEY(MapID, x, y, zoom))");
-                doUpdate(c, "CREATE TABLE Faces (PlayerName STRING NOT NULL, TypeID INT NOT NULL, Image BLOB, PRIMARY KEY(PlayerName, TypeID))");
-                doUpdate(c, "CREATE TABLE MarkerIcons (IconName STRING PRIMARY KEY NOT NULL, Image BLOB)");
+                doUpdate(c, "CREATE TABLE Tiles (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode INT NOT NULL, LastUpdate INT NOT NULL, Format INT NOT NULL, Image BLOB, ImageLen INT, PRIMARY KEY(MapID, x, y, zoom))");
+                doUpdate(c, "CREATE TABLE Faces (PlayerName STRING NOT NULL, TypeID INT NOT NULL, Image BLOB, ImageLen INT, PRIMARY KEY(PlayerName, TypeID))");
+                doUpdate(c, "CREATE TABLE MarkerIcons (IconName STRING PRIMARY KEY NOT NULL, Image BLOB, ImageLen INT)");
                 doUpdate(c, "CREATE TABLE MarkerFiles (FileName STRING PRIMARY KEY NOT NULL, Content CLOB)");
                 doUpdate(c, "CREATE TABLE SchemaVersion (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO SchemaVersion (level) VALUES (1)");
+                doUpdate(c, "INSERT INTO SchemaVersion (level) VALUES (2)");
+            } catch (SQLException x) {
+                Log.severe("Error creating tables - " + x.getMessage());
+                err = true;
+                return false;
+            } finally {
+                releaseConnection(c, err);
+                c = null;
+            }
+        }
+        else if (version == 1) {	// Add ImageLen columns
+            try {
+                c = getConnection();
+                doUpdate(c, "ALTER TABLE Tiles ADD ImageLen INT");
+                doUpdate(c, "ALTER TABLE Faces ADD ImageLen INT");
+                doUpdate(c, "ALTER TABLE MarkerIcons ADD ImageLen INT");
+                doUpdate(c, "UPDATE SchemaVersion SET level=2");
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -614,16 +638,18 @@ public class SQLiteMapStorage extends MapStorage {
                 stmt.setInt(2, facetype.typeID);
             }
             else if (exists) {
-                stmt = c.prepareStatement("UPDATE Faces SET Image=? WHERE PlayerName=? AND TypeID=?;");
+                stmt = c.prepareStatement("UPDATE Faces SET Image=?,ImageLen=? WHERE PlayerName=? AND TypeID=?;");
                 stmt.setBytes(1, encImage.buf);
-                stmt.setString(2, playername);
-                stmt.setInt(3, facetype.typeID);
+                stmt.setInt(2, encImage.buf.length);
+                stmt.setString(3, playername);
+                stmt.setInt(4, facetype.typeID);
             }
             else {
-                stmt = c.prepareStatement("INSERT INTO Faces (PlayerName,TypeID,Image) VALUES (?,?,?);");
+                stmt = c.prepareStatement("INSERT INTO Faces (PlayerName,TypeID,Image,ImageLen) VALUES (?,?,?,?);");
                 stmt.setString(1, playername);
                 stmt.setInt(2, facetype.typeID);
                 stmt.setBytes(3, encImage.buf);
+                stmt.setInt(4, encImage.buf.length);
             }
             //stmt.executeUpdate();
             doExecuteUpdate(stmt);
@@ -645,14 +671,20 @@ public class SQLiteMapStorage extends MapStorage {
         BufferInputStream image = null;
         try {
             c = getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM Faces WHERE PlayerName=? AND TypeID=?;");
+            PreparedStatement stmt = c.prepareStatement("SELECT Image,ImageLen FROM Faces WHERE PlayerName=? AND TypeID=?;");
             stmt.setString(1, playername);
             stmt.setInt(2, facetype.typeID);
             //ResultSet rs = stmt.executeQuery();
             ResultSet rs = doExecuteQuery(stmt);
             if (rs.next()) {
                 byte[] img = rs.getBytes("Image");
-                image = new BufferInputStream(img);
+                int len = rs.getInt("imageLen");
+                if (len == 0) {
+                	len = img.length;
+                	// Trim trailing zeros from padding by BLOB field
+                	while((len > 0) && (img[len-1] == '\0')) len--;
+                }
+                image = new BufferInputStream(img, len);
             }
             rs.close();
             stmt.close();
@@ -719,14 +751,16 @@ public class SQLiteMapStorage extends MapStorage {
                 doExecuteUpdate(stmt);
             }
             else if (exists) {
-                stmt = c.prepareStatement("UPDATE MarkerIcons SET Image=? WHERE IconName=?;");
+                stmt = c.prepareStatement("UPDATE MarkerIcons SET Image=?,ImageLen=? WHERE IconName=?;");
                 stmt.setBytes(1, encImage.buf);
-                stmt.setString(2, markerid);
+                stmt.setInt(2, encImage.buf.length);
+                stmt.setString(3, markerid);
             }
             else {
-                stmt = c.prepareStatement("INSERT INTO MarkerIcons (IconName,Image) VALUES (?,?);");
+                stmt = c.prepareStatement("INSERT INTO MarkerIcons (IconName,Image,ImageLen) VALUES (?,?,?);");
                 stmt.setString(1, markerid);
                 stmt.setBytes(2, encImage.buf);
+                stmt.setInt(3, encImage.buf.length);
             }
             doExecuteUpdate(stmt);
             stmt.close();
@@ -749,12 +783,18 @@ public class SQLiteMapStorage extends MapStorage {
         BufferInputStream image = null;
         try {
             c = getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM MarkerIcons WHERE IconName=?;");
+            PreparedStatement stmt = c.prepareStatement("SELECT Image,ImageLen FROM MarkerIcons WHERE IconName=?;");
             stmt.setString(1, markerid);
             //ResultSet rs = stmt.executeQuery();
             ResultSet rs = doExecuteQuery(stmt);
             if (rs.next()) {
                 byte[] img = rs.getBytes("Image");
+                int len = rs.getInt("ImageLen");
+                if (len == 0) {
+                	len = img.length;
+                	// Trim trailing zeros from padding by BLOB field
+                	while((len > 0) && (img[len-1] == '\0')) len--;
+                }
                 image = new BufferInputStream(img);
             }
             rs.close();
