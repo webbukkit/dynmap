@@ -1,0 +1,18 @@
+[
+{
+  "modid": "Dynmap",
+  "name": "Dynmap",
+  "description": "Dynamic, Google Maps style web maps for Minecraft Servers",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://forums.dynmap.us",
+  "updateUrl": "",
+  "authors": [
+    "mikeprimm"
+  ],
+  "credits": "Authored by mikeprimm",
+  "logoFile": "",
+  "screenshots": [ ],
+  "dependencies": []
+}
+]
