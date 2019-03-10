@@ -17,7 +17,7 @@ apply plugin: 'net.minecraftforge.gradle'
 dependencies {
     compile project(":DynmapCore")
     compile project(":DynmapCoreAPI")
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.63'
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.74'
 }
 
 sourceCompatibility = 1.8
@@ -44,7 +44,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                dynmap {
                     source sourceSets.main
                 }
             }
@@ -60,7 +60,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                dynmap {
                     source sourceSets.main
                 }
             }
@@ -71,7 +71,7 @@ minecraft {
     //replace "@BUILD_NUMBER@", project.ext.buildNumber
 }
 
-project.archivesBaseName = "${project.archivesBaseName}-forge-1.12.2"
+project.archivesBaseName = "${project.archivesBaseName}-forge-1.13.2"
 
 processResources
 {
@@ -115,7 +115,7 @@ shadowJar {
 	relocate('org.eclipse.jetty', 'org.dynmap.jetty')
 	relocate('org.owasp.html', 'org.dynmap.org.owasp.html')
 	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
-    archiveName = "Dynmap-${parent.version}-forge-1.12.2.jar"
+    archiveName = "Dynmap-${parent.version}-forge-1.13.2.jar"
     destinationDir = file '../target'
 }
 
