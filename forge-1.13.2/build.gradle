@@ -13,6 +13,7 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
 
 dependencies {
     compile project(":DynmapCore")
@@ -30,74 +31,38 @@ repositories {
         url = 'http://files.minecraftforge.net/maven'
     }
 }
+
 minecraft {
    mappings channel: 'snapshot', version: '20180921-1.13'
 
    runs {
-        client {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                dynmap {
-                    source sourceSets.main
-                }
-            }
-        }
-
         server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                dynmap {
-                    source sourceSets.main
-                }
-            }
+            workingDirectory project.file('run').canonicalPath
         }
     }
-    //replaceIn "Version.java"
-    //replace "@VERSION@", project.version + '-' + project.ext.buildNumber
-    //replace "@BUILD_NUMBER@", project.ext.buildNumber
+    replaceIn "Version.java"
+    replace "@VERSION@", project.version + '-' + project.ext.buildNumber
+    replace "@BUILD_NUMBER@", project.ext.buildNumber
 }
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-1.13.2"
 
 processResources
 {
+    inputs.property "version", project.version + '-' + project.ext.buildNumber
+    
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
+        include 'META-INF/mods.toml'
                 
         // replace version and mcversion
-        expand(
-        	version: project.version + '-' + project.ext.buildNumber,
-        	mcversion: "1.13.2"
-    	)
+        expand version: project.version + '-' + project.ext.buildNumber
     }
         
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        include 'META-INF/mods.toml'
     }
-    // Move access transformer to META-INF
-    rename '(.+_at.cfg)', 'META-INF/$1'
-}
-
-jar {
-   manifest {
-        attributes 'FMLAT': 'dynmap_at.cfg'
-   }
 }
 
 shadowJar {
@@ -124,10 +89,13 @@ shadowJar.doLast {
         ant.checksum file: task.archivePath
 }
 
-
-//reobf {
-//   mappings channel: 'snapshot', version: '20180921-1.13'
-//}
+afterEvaluate {
+reobf {
+    shadowJar {
+        mappings = createMcpToSrg.output
+    }
+}
+}
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
