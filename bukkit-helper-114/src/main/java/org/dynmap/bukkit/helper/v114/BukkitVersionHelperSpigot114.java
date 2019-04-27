@@ -53,6 +53,11 @@ public class BukkitVersionHelperSpigot114 extends BukkitVersionHelperCB {
     protected boolean isBlockIdNeeded() {
         return false;
     }
+    
+    @Override
+    protected boolean isBiomeBaseListNeeded() {
+    	return false;
+    }
 
     public BukkitVersionHelperSpigot114() {
 		datapalettearray =  getNMSClass("[Lnet.minecraft.server.DataPaletteBlock;");
@@ -94,6 +99,21 @@ public class BukkitVersionHelperSpigot114 extends BukkitVersionHelperCB {
     	}
         return names;
     }
+    
+    /**
+     * Get list of defined biomebase objects
+     */
+    @Override
+    public Object[] getBiomeBaseList() {
+    	if (biomelist == null) {
+    		biomelist = new Object[1024];
+            for (int i = 0; i < 1024; i++) {
+            	biomelist[i] = IRegistry.BIOME.fromId(i);
+            }
+        }
+        return biomelist;
+    }
+
     /** Get ID from biomebase */
     @Override
     public int getBiomeBaseID(Object bb) {

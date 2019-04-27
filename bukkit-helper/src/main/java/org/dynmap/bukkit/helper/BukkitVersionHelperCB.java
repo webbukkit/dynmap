@@ -90,7 +90,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
         biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
         biomebaselist = getPrivateFieldNoFail(biomebase, new String[] { "biomes" }, biomebasearray);
-        if (biomebaselist == null) {
+        if ((biomebaselist == null) && isBiomeBaseListNeeded()) {
             getbiomefunc = getMethodNoFail(biomebase, new String[] { "getBiome" }, new Class[] { int.class, biomebase });
             if (getbiomefunc == null) {
                 getbiomebyid = getMethod(biomebase, new String[] { "a" }, new Class[] { int.class} );
@@ -110,7 +110,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         else {
             biomebasehumifunc = getMethod(biomebase, new String[] { "getHumidity" }, nulltypes);
         }
-        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z", "aS", "aR" }, String.class);
+        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z", "aS", "aR", "f" }, String.class);
         biomebaseid = getFieldNoFail(biomebase, new String[] { "id" }, int.class);
         if (biomebaseid == null) {
             getidbybiome = getMethod(biomebase, new String[] { "a" }, new Class[] { biomebase } );
@@ -165,10 +165,18 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.WorldBorder */
         nmsworldborder = getNMSClassNoFail("net.minecraft.server.WorldBorder");
         if (nmsworldborder != null) {
-            worldborderminx = getMethod(nmsworldborder, new String[] { "b" }, nulltypes);
-            worldborderminz = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
-            worldbordermaxx = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
-            worldbordermaxz = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+            worldbordermaxz = getMethodNoFail(nmsworldborder, new String[] { "f" }, nulltypes);
+            if (worldbordermaxz == null) {
+            	worldborderminx = getMethod(nmsworldborder, new String[] { "b" }, nulltypes);
+            	worldborderminz = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
+            	worldbordermaxx = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
+            	worldbordermaxz = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+            }
+            else {
+            	worldborderminx = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
+            	worldborderminz = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
+            	worldbordermaxx = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+            }
         }
         
         /** nbt classes */
@@ -334,7 +342,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         }
         return p;
     }
-    private Object[] biomelist = null;
+    protected Object[] biomelist = null;
     /**
      * Get list of defined biomebase objects
      */

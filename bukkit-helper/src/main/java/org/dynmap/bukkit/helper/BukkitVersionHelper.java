@@ -25,6 +25,9 @@ public abstract class BukkitVersionHelper {
     protected boolean isBlockIdNeeded() {
         return true;
     }
+    protected boolean isBiomeBaseListNeeded() {
+    	return true;
+    }
 
     protected BukkitVersionHelper() {
         
