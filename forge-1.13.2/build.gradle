@@ -18,7 +18,7 @@ apply plugin: 'eclipse'
 dependencies {
     compile project(":DynmapCore")
     compile project(":DynmapCoreAPI")
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.74'
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.191'
 }
 
 sourceCompatibility = 1.8
@@ -33,16 +33,12 @@ repositories {
 }
 
 minecraft {
-   mappings channel: 'snapshot', version: '20180921-1.13'
-
+   mappings channel: 'snapshot', version: '20190415-1.13.2'
    runs {
         server {
             workingDirectory project.file('run').canonicalPath
         }
     }
-    replaceIn "Version.java"
-    replace "@VERSION@", project.version + '-' + project.ext.buildNumber
-    replace "@BUILD_NUMBER@", project.ext.buildNumber
 }
 
 project.archivesBaseName = "${project.archivesBaseName}-forge-1.13.2"

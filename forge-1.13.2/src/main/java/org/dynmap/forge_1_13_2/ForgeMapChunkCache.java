@@ -1163,7 +1163,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                 HashMap<String, Object> vmap = new HashMap<String, Object>();
                 for (Object t : tc.keySet()) {
                     String st = (String) t;
-                    INBTBase tg = tc.getTag(st);
+                    INBTBase tg = tc.get(st);
                     vmap.put(st, getNBTValue(tg));
                 }
                 val = vmap;
@@ -1257,7 +1257,7 @@ public class ForgeMapChunkCache extends MapChunkCache
             if(te_fields != null) {
                 vals.clear();
                 for(String id: te_fields) {
-                    INBTBase v = tc.getTag(id);  /* Get field */
+                    INBTBase v = tc.get(id);  /* Get field */
                     if(v != null) {
                         Object val = getNBTValue(v);
                         if(val != null) {
@@ -1312,7 +1312,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                 if (vis) {  // If visible 
                     NBTTagCompound nbt = new NBTTagCompound();
                     try {
-                        writechunktonbt.invoke(cps.chunkLoader, cps.provideChunk(chunk.x, chunk.z, false, false), w, nbt);
+                        writechunktonbt.invoke(cps.chunkLoader, cps.getChunk(chunk.x, chunk.z, false, false), w, nbt);
                     } catch (IllegalAccessException e) {
                     } catch (IllegalArgumentException e) {
                     } catch (InvocationTargetException e) {

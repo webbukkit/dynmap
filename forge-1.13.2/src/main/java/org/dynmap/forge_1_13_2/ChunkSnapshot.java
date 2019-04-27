@@ -124,7 +124,7 @@ public class ChunkSnapshot
         this.captureFulltime = 0;
         this.hmap = nbt.getIntArray("HeightMap");
         this.sectionCnt = worldheight / 16;
-        if (nbt.hasKey("InhabitedTime")) {
+        if (nbt.contains("InhabitedTime")) {
             this.inhabitedTicks = nbt.getLong("InhabitedTime");
         }
         else {
@@ -150,7 +150,7 @@ public class ChunkSnapshot
             this.section[secnum] = cursect;
             DynmapBlockState[] states = cursect.states;
             // JEI format
-            if (sec.hasKey("Palette")) {
+            if (sec.contains("Palette")) {
             	int[] p = sec.getIntArray("Palette");
                 // Palette is list of state values, where Blocks=bit 11-4 of index, Data=bit 3-0
             	byte[] msb_bytes = sec.getByteArray("Blocks");
@@ -179,7 +179,7 @@ public class ChunkSnapshot
             	}
             	// Get any additional ID data
             	byte[] addid = null;
-                if (sec.hasKey("Add")) {    /* If additional data, add it */
+                if (sec.contains("Add")) {    /* If additional data, add it */
                     addid = sec.getByteArray("Add");
                     if (addid.length < (BLOCKS_PER_SECTION / 2)) {
                         addid = Arrays.copyOf(addid, (BLOCKS_PER_SECTION / 2));
@@ -187,7 +187,7 @@ public class ChunkSnapshot
                 }
                 // Check for NEID additional additional ID data
                 byte[] addid2 = null;
-                if (sec.hasKey("Add2")) {    /* If additional data (NEID), add it */
+                if (sec.contains("Add2")) {    /* If additional data (NEID), add it */
                     addid2 = sec.getByteArray("Add2");
                     if (addid2.length < (BLOCKS_PER_SECTION / 2)) {
                         addid2 = Arrays.copyOf(addid2, (BLOCKS_PER_SECTION / 2));
@@ -195,7 +195,7 @@ public class ChunkSnapshot
                 }
                 // Get meta nibble data
                 byte[] bd = null;
-                if (sec.hasKey("Data")) {
+                if (sec.contains("Data")) {
                     bd = sec.getByteArray("Data");
                     if (bd.length < (BLOCKS_PER_SECTION / 2)) {
                         bd = Arrays.copyOf(bd, (BLOCKS_PER_SECTION / 2));
@@ -230,13 +230,13 @@ public class ChunkSnapshot
             	}
             }
             cursect.emitlight = sec.getByteArray("BlockLight");
-            if (sec.hasKey("SkyLight")) {
+            if (sec.contains("SkyLight")) {
                 cursect.skylight = sec.getByteArray("SkyLight");
             }
         }
         /* Get biome data */
         this.biome = new int[COLUMNS_PER_CHUNK];
-        if (nbt.hasKey("Biomes")) {
+        if (nbt.contains("Biomes")) {
             byte[] b = nbt.getByteArray("Biomes");
             if (b != null) {
             	for (int i = 0; i < b.length; i++) {
