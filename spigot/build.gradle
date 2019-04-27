@@ -24,6 +24,9 @@ dependencies {
     implementation(project(':bukkit-helper-113-2')) { 
         transitive = false
     }
+    implementation(project(':bukkit-helper-114')) { 
+        transitive = false
+    }
 }
 
 processResources {
@@ -51,6 +54,7 @@ shadowJar {
         include(dependency(':bukkit-helper-113'))
         include(dependency(':bukkit-helper-113-1'))
         include(dependency(':bukkit-helper-113-2'))
+        include(dependency(':bukkit-helper-114'))
 	}
 	relocate('org.bstats', 'org.dynmap.bstats')
     destinationDir = file '../target'
