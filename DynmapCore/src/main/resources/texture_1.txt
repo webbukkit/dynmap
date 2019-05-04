@@ -10,6 +10,12 @@ texturefile:id=chest,filename=assets/minecraft/textures/entity/chest/normal.png,
 texturefile:id=enderchest,filename=assets/minecraft/textures/entity/chest/ender.png,format=CHEST
 texturefile:id=bigchest,filename=assets/minecraft/textures/entity/chest/normal_double.png,format=BIGCHEST
 texturefile:id=sign,filename=assets/minecraft/textures/entity/sign.png,format=SIGN
+texturefile:id=oak_sign,filename=assets/minecraft/textures/entity/signs/oak.png,format=SIGN
+texturefile:id=birch_sign,filename=assets/minecraft/textures/entity/signs/birch.png,format=SIGN
+texturefile:id=spruce_sign,filename=assets/minecraft/textures/entity/signs/spruce.png,format=SIGN
+texturefile:id=acacia_sign,filename=assets/minecraft/textures/entity/signs/acacia.png,format=SIGN
+texturefile:id=jungle_sign,filename=assets/minecraft/textures/entity/signs/jungle.png,format=SIGN
+texturefile:id=dark_oak_sign,filename=assets/minecraft/textures/entity/signs/dark_oak.png,format=SIGN
 texturefile:id=skeleton,filename=assets/minecraft/textures/entity/skeleton/skeleton.png,format=SKIN
 texturefile:id=zombie,filename=assets/minecraft/textures/entity/zombie/zombie.png,format=SKIN
 texturefile:id=char,filename=assets/minecraft/textures/entity/steve.png,format=SKIN
@@ -985,8 +991,6 @@ block:id=furnace,data=2,top=0:furnace_top,west=0:furnace_front_on,south=0:furnac
 block:id=furnace,data=4,top=0:furnace_top,north=0:furnace_front_on,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
 # Burning Furnace (facing south)
 block:id=furnace,data=6,top=0:furnace_top,south=0:furnace_front_on,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
-# Signpost
-block:id=sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=sign
 # Oak Door
 block:id=oak_door,data=*,patch0=0:oak_door_top,patch1=0:oak_door_bottom,transparency=TRANSPARENT
 # Ladder
@@ -1008,8 +1012,6 @@ block:id=rail,data=2,data=3,patch0=0:rail,transparency=TRANSPARENT
 block:id=rail,data=6,data=7,data=8,data=9,patch0=0:rail_corner,transparency=TRANSPARENT
 # Cobblestone Stairs
 block:id=cobblestone_stairs,patch0-2=0:cobblestone,transparency=SEMITRANSPARENT
-# Wall sign
-block:id=wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=sign
 # Lever
 block:id=lever,patch0-4=0:cobblestone,patch5-8=0:lever,transparency=TRANSPARENT
 # Stone pressure plate
@@ -2156,3 +2158,23 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 
 # Dead horn coral
 [1.13.1-]block:id=dead_horn_coral,patch0-1=0:dead_horn_coral,transparency=TRANSPARENT
+
+# Signpost
+[-1.13.2]block:id=sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=sign
+# Wall sign
+[-1.13.2]block:id=wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=sign
+# Signpost
+[1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
+[1.14-]block:id=spruce_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=spruce_sign
+[1.14-]block:id=birch_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=birch_sign
+[1.14-]block:id=acacia_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=acacia_sign
+[1.14-]block:id=jungle_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=jungle_sign
+[1.14-]block:id=dark_oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=dark_oak_sign
+# Wall sign
+[1.14-]block:id=oak_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=oak_sign
+[1.14-]block:id=spruce_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=spruce_sign
+[1.14-]block:id=birch_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=birch_sign
+[1.14-]block:id=acacia_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=acacia_sign
+[1.14-]block:id=jungle_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=jungle_sign
+[1.14-]block:id=dark_oak_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=dark_oak_sign
+
