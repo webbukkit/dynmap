@@ -240,8 +240,12 @@ public class BukkitWorld extends DynmapWorld {
         }
         return cnt;
     }
+    private Polygon lastBorder;
     @Override
     public Polygon getWorldBorder() {
-        return BukkitVersionHelper.helper.getWorldBorder(world);
+    	if (world != null) {
+    		lastBorder = BukkitVersionHelper.helper.getWorldBorder(world);
+    	}
+    	return lastBorder;
     }
 }
