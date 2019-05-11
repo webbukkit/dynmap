@@ -46,7 +46,11 @@ public class MapStorageResourceHandler extends AbstractHandler {
         int soff = 0, eoff;
         // We're handling this request
         baseRequest.setHandled(true);
-
+        if(core.getLoginRequired()
+            && request.getSession(true).getAttribute(LoginServlet.USERID_ATTRIB) == null){
+            response.sendError(HttpStatus.UNAUTHORIZED_401);
+            return;
+        }
         if (path.charAt(0) == '/') soff = 1;
         eoff = path.indexOf('/', soff);
         if (soff < 0) {
