@@ -1,6 +1,7 @@
 package org.dynmap.bukkit.helper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -44,33 +45,46 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
 
 	private static boolean init = false;
 
-    private World w;
-    private DynmapWorld dw;
+    protected World w;
+    protected DynmapWorld dw;
     private int nsect;
-    private List<DynmapChunk> chunks;
-    private ListIterator<DynmapChunk> iterator;
-    private int x_min, x_max, z_min, z_max;
-    private int x_dim;
-    private boolean biome, biomeraw, highesty, blockdata;
-    private HiddenChunkStyle hidestyle = HiddenChunkStyle.FILL_AIR;
-    private List<VisibilityLimit> visible_limits = null;
-    private List<VisibilityLimit> hidden_limits = null;
-    private boolean isempty = true;
+    protected List<DynmapChunk> chunks;
+    protected ListIterator<DynmapChunk> iterator;
+    protected int x_min;
+
+	private int x_max;
+
+	protected int z_min;
+
+	private int z_max;
+    protected int x_dim;
+    protected boolean biome;
+
+	protected boolean biomeraw;
+
+	protected boolean highesty;
+
+	protected boolean blockdata;
+    protected HiddenChunkStyle hidestyle = HiddenChunkStyle.FILL_AIR;
+    protected List<VisibilityLimit> visible_limits = null;
+    protected List<VisibilityLimit> hidden_limits = null;
+    protected boolean isempty = true;
     private int snapcnt;
-    private Snapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    private DynIntHashMap[] snaptile;
+    protected Snapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
+    protected DynIntHashMap[] snaptile;
     private byte[][] sameneighborbiomecnt;
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
-    private long[] inhabitedTicks;  /* Index = (x-x_min) + ((z-z_min)*x_dim) */
+    protected long[] inhabitedTicks;  /* Index = (x-x_min) + ((z-z_min)*x_dim) */
     private static final BiomeMap[] nullBiomeMap = { BiomeMap.NULL };
         
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
     private static BiomeMap[] biome_to_bmap;
+    private static Biome[] biome_by_id;
 
-    private static final int getIndexInChunk(int cx, int cy, int cz) {
+    protected static final int getIndexInChunk(int cx, int cy, int cz) {
         return (cy << 8) | (cz << 4) | cx;
     }
 
@@ -672,9 +686,9 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
     }
     
     // Well known choices for hidden/empty chunks
-    private static final EmptyChunk EMPTY = new EmptyChunk();
-    private static final PlainChunk STONE = new PlainChunk(DynmapBlockState.STONE_BLOCK);
-    private static final PlainChunk OCEAN = new PlainChunk(DynmapBlockState.WATER_BLOCK);
+    protected static final EmptyChunk EMPTY = new EmptyChunk();
+    protected static final PlainChunk STONE = new PlainChunk(DynmapBlockState.STONE_BLOCK);
+    protected static final PlainChunk OCEAN = new PlainChunk(DynmapBlockState.WATER_BLOCK);
 
     /**
      * Construct empty cache
@@ -776,7 +790,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
                         ss = EMPTY;
                 }
                 else {
-                	ss = wrapChunkSnapshot(ssr.ss);
+                	ss = ssr.ss;
                 }
                 int idx = (chunk.x-x_min) + (chunk.z - z_min)*x_dim;
                 snaparray[idx] = ss;
@@ -857,7 +871,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
                     }
                     if(ss != null) {
                         ssr = new SnapshotRec();
-                        ssr.ss = css;
+                        ssr.ss = ss;
                         ssr.inhabitedTicks = inhabited_ticks;
                         ssr.tileData = tileData;
                         SnapshotCache.sscache.putSnapshot(dw.getName(), chunk.x, chunk.z, ssr, blockdata, biome, biomeraw, highesty);
@@ -1017,10 +1031,19 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
         return w.loadChunk(x, z, false);
     }
     
+    public static Biome getBiomeByID(int id) {
+    	if ((id >= 0) && (id < biome_by_id.length)) {
+    		return biome_by_id[id];
+    	}
+    	return Biome.PLAINS;
+    }
+    
     static {
         Biome[] b = Biome.values();
         BiomeMap[] bm = BiomeMap.values();
         biome_to_bmap = new BiomeMap[1024];
+        biome_by_id = new Biome[1024];
+        Arrays.fill(biome_by_id,  Biome.PLAINS);
         for(int i = 0; i < biome_to_bmap.length; i++) {
             biome_to_bmap[i] = BiomeMap.NULL;
         }
@@ -1029,6 +1052,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
             for(int j = 0; j < bm.length; j++) {
                 if(bm[j].toString().equals(bs)) {
                     biome_to_bmap[b[i].ordinal()] = bm[j];
+                    biome_by_id[j] = b[i];
                     break;
                 }
             }
