@@ -10,7 +10,6 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
-import org.dynmap.Log;
 import org.dynmap.bukkit.helper.AbstractMapChunkCache;
 import org.dynmap.bukkit.helper.SnapshotCache;
 import org.dynmap.bukkit.helper.SnapshotCache.SnapshotRec;
@@ -18,7 +17,9 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.VisibilityLimit;
 
+import net.minecraft.server.v1_14_R1.Chunk;
 import net.minecraft.server.v1_14_R1.ChunkCoordIntPair;
+import net.minecraft.server.v1_14_R1.ChunkRegionLoader;
 import net.minecraft.server.v1_14_R1.DataBits;
 import net.minecraft.server.v1_14_R1.NBTTagCompound;
 import net.minecraft.server.v1_14_R1.NBTTagList;
@@ -156,7 +157,7 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	            NBTTagCompound sec = sect.getCompound(i);
 	            int secnum = sec.getByte("Y");
 	            if (secnum >= this.sectionCnt) {
-	                Log.info("Section " + (int) secnum + " above world height " + worldheight);
+	                //Log.info("Section " + (int) secnum + " above world height " + worldheight);
 	                continue;
 	            }
 	            if (secnum < 0)
@@ -175,14 +176,14 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	            	for (int pi = 0; pi < plist.size(); pi++) {
 	            		NBTTagCompound tc = plist.getCompound(pi);
 	            		String pname = tc.getString("Name");
-            			String statestr = "";
-	            		if (tc.hasKey("Properties")) {
-	            			NBTTagCompound prop = tc.getCompound("Properties");
-	            			for (String pid : prop.getKeys()) {
-	            				if (statestr.length() > 0) statestr += ",";
-	            				statestr += pid + "=" + prop.get(pid).asString();
-	            			}
-	            			palette[pi] = DynmapBlockState.getStateByNameAndState(pname, statestr);
+                        if (tc.hasKey("Properties")) {
+                            StringBuilder statestr = new StringBuilder();
+                            NBTTagCompound prop = tc.getCompound("Properties");
+                            for (String pid : prop.getKeys()) {
+                                if (statestr.length() > 0) statestr.append(',');
+                                statestr.append(pid).append('=').append(prop.get(pid).asString());
+                            }
+	            			palette[pi] = DynmapBlockState.getStateByNameAndState(pname, statestr.toString());
 	            		}
 	            		if (palette[pi] == null) {
 	            			palette[pi] = DynmapBlockState.getBaseStateByName(pname);
@@ -287,28 +288,43 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 		}
 	}
 	
-	private NBTTagCompound loadChunkNBT(World w, int x, int z) {
-		CraftWorld cw = (CraftWorld) w;
-		ChunkCoordIntPair cc = new ChunkCoordIntPair(x, z);
-		NBTTagCompound nbt = null;
-		try {
-			nbt = cw.getHandle().getChunkProvider().playerChunkMap.read(cc);
-		} catch (IOException iox) {
-		}
-		if (nbt != null) {
-			nbt = nbt.getCompound("Level");
-		}
-		return nbt;
-	}	
-	
-	@Override
-	public Snapshot wrapChunkSnapshot(ChunkSnapshot css) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+    private NBTTagCompound fetchLoadedChunkNBT(World w, int x, int z) {
+        CraftWorld cw = (CraftWorld) w;
+        NBTTagCompound nbt = null;
+        if (cw.isChunkLoaded(x, z)) {
+            Chunk c = cw.getHandle().getChunkAt(x,  z);
+            if ((c != null) && c.loaded) {
+                nbt = ChunkRegionLoader.saveChunk(cw.getHandle(), c);
+            }
+        }
+        if (nbt != null) {
+            nbt = nbt.getCompound("Level");
+        }
+        return nbt;
+    }
+    
+    private NBTTagCompound loadChunkNBT(World w, int x, int z) {
+        CraftWorld cw = (CraftWorld) w;
+        NBTTagCompound nbt = null;
+        ChunkCoordIntPair cc = new ChunkCoordIntPair(x, z);
+        try {
+            nbt = cw.getHandle().getChunkProvider().playerChunkMap.read(cc);
+        } catch (IOException iox) {
+        }
+        if (nbt != null) {
+            nbt = nbt.getCompound("Level");
+        }
+        return nbt;
+    }   
+    
+    @Override
+    public Snapshot wrapChunkSnapshot(ChunkSnapshot css) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
     // Load chunk snapshots
-	@Override
+    @Override
     public int loadChunks(int max_to_load) {
         if(dw.isLoaded() == false)
             return 0;        
@@ -356,7 +372,7 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
                         ss = EMPTY;
                 }
                 else {
-                	ss = ssr.ss;
+                    ss = ssr.ss;
                 }
                 snaparray[idx] = ss;
                 snaptile[idx] = ssr.tileData;
@@ -365,12 +381,18 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
                 endChunkLoad(startTime, ChunkStats.CACHED_SNAPSHOT_HIT);
                 continue;
             }
-            // Load NTB for chunk, if it exists
-            NBTTagCompound nbt = loadChunkNBT(w, chunk.x, chunk.z);
+            // Fetch NTB for chunk if loaded
+            NBTTagCompound nbt = fetchLoadedChunkNBT(w, chunk.x, chunk.z); 
+            boolean did_load = false;
+            if (nbt == null) {
+                // Load NTB for chunk, if it exists
+                nbt = loadChunkNBT(w, chunk.x, chunk.z);
+                did_load = true;
+            }
             if (nbt != null) {
-            	NBTSnapshot nss = new NBTSnapshot(nbt, w.getMaxHeight());
-            	ss = nss;
-            	inhabited_ticks = nss.getInhabitedTicks();
+                NBTSnapshot nss = new NBTSnapshot(nbt, w.getMaxHeight());
+                ss = nss;
+                inhabited_ticks = nss.getInhabitedTicks();
                 if(!vis) {
                     if(hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN)
                         ss = STONE;
@@ -381,7 +403,7 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
                 }
             }
             else {
-            	ss = EMPTY;
+                ss = EMPTY;
             }
             ssr = new SnapshotRec();
             ssr.ss = ss;
@@ -391,10 +413,12 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
             snaparray[idx] = ss;
             snaptile[idx] = ssr.tileData;
             inhabitedTicks[idx] = inhabited_ticks;
-            if (ss == EMPTY)
+            if (nbt == null)
                 endChunkLoad(startTime, ChunkStats.UNGENERATED_CHUNKS);
+            else if (did_load)
+                endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
             else
-            	endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
+                endChunkLoad(startTime, ChunkStats.LOADED_CHUNKS);
             cnt++;
         }
         DynmapCore.setIgnoreChunkLoads(false);

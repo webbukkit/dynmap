@@ -18,6 +18,7 @@ public class DynmapBlockState {
     public final String blockName;
     // Block state string (attrib=value, attrib=value, etc for 1.13+, meta=value for 1.12 or earlier)
     public final String stateName;
+    public final String[] stateList;
     // Overall state index (uniquely assigned autoincrement number for state: packed, zero based)
     public final int globalStateIndex;
     // Legacy block ID (if defined - otherwise -1)
@@ -132,6 +133,7 @@ public class DynmapBlockState {
             }
             base.states[stateidx] = this;
         }
+        stateList = stateName.split(",");
         // If base block state, add to map
         if (base == this) { 
             blocksByName.put(blkname, this);
@@ -221,8 +223,23 @@ public class DynmapBlockState {
         DynmapBlockState blk = getBaseStateByName(name);
         if (blk != null) {
         	if (blk.states != null) {
+        	    String[] statelist = statename.split(",");
         		for (DynmapBlockState bb : blk.states) {
-        			if (bb.stateName.contains(statename)) {
+        		    boolean match = true;
+        		    for (int i = 0; i < statelist.length; i++) {
+        		        boolean valmatch = false;
+        		        for (int j = 0; j < bb.stateList.length; j++) {
+        		            if (statelist[i].equals(bb.stateList[j])) {
+        		                valmatch = true;
+        		                break;
+        		            }
+        		        }
+        		        if (!valmatch) {
+        		            match = false;
+        		            break;
+        		        }
+        		    }
+        			if (match) {
         				return bb;
         			}
         		}
