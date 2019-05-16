@@ -1,0 +1,16 @@
+{
+    "variants": {
+        "facing=down,open=false": { "model": "block/barrel", "x": 180 },
+        "facing=up,open=false": { "model": "block/barrel" },
+        "facing=north,open=false": { "model": "block/barrel", "x": 90 },
+        "facing=south,open=false": { "model": "block/barrel", "x": 90, "y": 180 },
+        "facing=west,open=false": { "model": "block/barrel", "x": 90, "y": 270 },
+        "facing=east,open=false": { "model": "block/barrel", "x": 90, "y": 90 },
+        "facing=down,open=true": { "model": "block/barrel_open", "x": 180 },
+        "facing=up,open=true": { "model": "block/barrel_open" },
+        "facing=north,open=true": { "model": "block/barrel_open", "x": 90 },
+        "facing=south,open=true": { "model": "block/barrel_open", "x": 90, "y": 180 },
+        "facing=west,open=true": { "model": "block/barrel_open", "x": 90, "y": 270 },
+        "facing=east,open=true": { "model": "block/barrel_open", "x": 90, "y": 90 }
+    }
+}

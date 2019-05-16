@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "block/jigsaw_top",
+        "down": "block/jigsaw_bottom",
+        "up": "block/jigsaw_top",
+        "north": "block/jigsaw_side",
+        "east": "block/jigsaw_side",
+        "south": "block/jigsaw_side",
+        "west": "block/jigsaw_side"
+    }
+}

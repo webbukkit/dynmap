@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "block/lectern" },
+        "facing=south": { "model": "block/lectern", "y": 180 },
+        "facing=west":  { "model": "block/lectern", "y": 270 },
+        "facing=east":  { "model": "block/lectern", "y": 90 }
+    }
+}

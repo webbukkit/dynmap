@@ -1,5 +1,8 @@
 {
     "parent": "builtin/entity",
+    "textures": {
+        "particle": "block/dark_oak_planks"
+    },
     "display": {
         "thirdperson_righthand": {
             "rotation": [ 0, 90, 0 ],
