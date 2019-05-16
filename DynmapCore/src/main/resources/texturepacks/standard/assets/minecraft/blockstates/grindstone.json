@@ -1,0 +1,16 @@
+{
+    "variants": {
+        "face=floor,facing=east":  { "model": "block/grindstone", "y": 90 },
+        "face=floor,facing=west":  { "model": "block/grindstone", "y": 270 },
+        "face=floor,facing=south": { "model": "block/grindstone", "y": 180 },
+        "face=floor,facing=north": { "model": "block/grindstone" },
+        "face=wall,facing=east":  { "model": "block/grindstone", "x": 90, "y": 90 },
+        "face=wall,facing=west":  { "model": "block/grindstone", "x": 90, "y": 270 },
+        "face=wall,facing=south": { "model": "block/grindstone", "x": 90, "y": 180 },
+        "face=wall,facing=north": { "model": "block/grindstone", "x": 90 },
+        "face=ceiling,facing=east":  { "model": "block/grindstone", "x": 180, "y": 270 },
+        "face=ceiling,facing=west":  { "model": "block/grindstone", "x": 180, "y": 90 },
+        "face=ceiling,facing=south": { "model": "block/grindstone", "x": 180 },
+        "face=ceiling,facing=north": { "model": "block/grindstone", "x": 180, "y": 180 }
+    }
+}

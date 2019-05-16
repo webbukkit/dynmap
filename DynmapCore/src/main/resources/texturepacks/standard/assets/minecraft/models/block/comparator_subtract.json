@@ -2,7 +2,7 @@
     "ambientocclusion": false,
     "textures": {
         "particle": "block/comparator",
-        "slab": "block/stone_slab_top",
+        "slab": "block/smooth_stone",
         "top": "block/comparator",
         "unlit": "block/redstone_torch_off",
         "lit": "block/redstone_torch"

@@ -2,7 +2,7 @@
     "ambientocclusion": false,
     "textures": {
         "particle": "block/repeater_on",
-        "slab": "block/stone_slab_top",
+        "slab": "block/smooth_stone",
         "top": "block/repeater_on",
         "lit": "block/redstone_torch",
         "lock": "block/bedrock"
