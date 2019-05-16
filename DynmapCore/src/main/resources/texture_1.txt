@@ -2163,6 +2163,13 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [-1.13.2]block:id=sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=sign
 # Wall sign
 [-1.13.2]block:id=wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=sign
+
+
+[1.14-]texture:id=cornflower
+[1.14-]texture:id=wither_rose
+[1.14-]texture:id=lily_of_the_valley
+[1.14-]texture:id=smooth_stone_slab_side
+[1.14-]texture:id=smooth_stone_slab_top
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
 [1.14-]block:id=spruce_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=spruce_sign
@@ -2177,4 +2184,24 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]block:id=acacia_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=acacia_sign
 [1.14-]block:id=jungle_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=jungle_sign
 [1.14-]block:id=dark_oak_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=dark_oak_sign
-
+# Cornflower
+[1.14-]block:id=cornflower,patch0-1=0:cornflower,transparency=TRANSPARENT
+# Wither Rose
+[1.14-]block:id=wither_rose,patch0-1=0:wither_rose,transparency=TRANSPARENT
+# Lily of the valley
+[1.14-]block:id=lily_of_the_valley,patch0-1=0:lily_of_the_valley,transparency=TRANSPARENT
+# Potted cornflower
+[1.14-]block:id=potted_cornflower,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:cornflower,transparency=TRANSPARENT
+# Potted wither rose
+[1.14-]block:id=potted_wither_rose,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:wither_rose,transparency=TRANSPARENT
+# Potted lily of the valley
+[1.14-]block:id=potted_lily_of_the_valley,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:lily_of_the_valley,transparency=TRANSPARENT
+# Smooth Stone slab
+[1.14-]block:id=smooth_stone_slab,data=0,data=1,data=2,data=3,allsides=0:smooth_stone_slab_side,topbottom=0:smooth_stone_slab_top,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=smooth_stone_slab,data=4,data=5,allsides=0:smooth_stone_slab_side,topbottom=0:smooth_stone_slab_top,stdrot=true
+# Cut sandston slab
+[1.14-]block:id=cut_sandstone_slab,data=0,data=1,data=2,data=3,allsides=0:cut_sandstone,topbottom=0:sandstone_top,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=cut_sandstone_slab,data=4,data=5,allsides=0:cut_sandstone,topbottom=0:sandstone_top,stdrot=true
+# Cut red sandston slab
+[1.14-]block:id=cut_red_sandstone_slab,data=0,data=1,data=2,data=3,allsides=0:cut_red_sandstone,topbottom=0:red_sandstone_top,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=cut_red_sandstone_slab,data=4,data=5,allsides=0:cut_red_sandstone,topbottom=0:red_sandstone_top,stdrot=true
