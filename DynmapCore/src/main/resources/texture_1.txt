@@ -2241,4 +2241,30 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]block:id=polished_andesite_stairs,patch0-2=0:polished_andesite,transparency=SEMITRANSPARENT
 # Diorite stairs
 [1.14-]block:id=diorite_stairs,patch0-2=0:diorite,transparency=SEMITRANSPARENT
-
+# Polished granite slab
+[1.14-]block:id=polished_granite_slab,data=0,data=1,data=2,data=3,allsides=0:polished_granite,topbottom=0:polished_granite,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=polished_granite_slab,data=4,data=5,allsides=0:polished_granite,topbottom=0:polished_granite,stdrot=true
+# Smooth red sandstone slab
+[1.14-]block:id=smooth_red_sandstone_slab,data=0,data=1,data=2,data=3,allsides=0:red_sandstone_top,topbottom=0:red_sandstone_top,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=smooth_red_sandstone_slab,data=4,data=5,allsides=0:red_sandstone_top,topbottom=0:red_sandstone_top,stdrot=true
+# Mossy stone brick slab
+[1.14-]block:id=mossy_stone_brick_slab,data=0,data=1,data=2,data=3,allsides=0:mossy_stone_bricks,topbottom=0:mossy_stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=mossy_stone_brick_slab,data=4,data=5,allsides=0:mossy_stone_bricks,topbottom=0:mossy_stone_bricks,stdrot=true
+# Polished diorite slab
+[1.14-]block:id=polished_diorite_slab,data=0,data=1,data=2,data=3,allsides=0:polished_diorite,topbottom=0:polished_diorite,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=polished_diorite_slab,data=4,data=5,allsides=0:polished_diorite,topbottom=0:polished_diorite,stdrot=true
+# Mossy cobblestone slab
+[1.14-]block:id=mossy_cobblestone_slab,data=0,data=1,data=2,data=3,allsides=0:mossy_cobblestone,topbottom=0:mossy_cobblestone,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=mossy_cobblestone_slab,data=4,data=5,allsides=0:mossy_cobblestone,topbottom=0:mossy_cobblestone,stdrot=true
+# End stone brick slab
+[1.14-]block:id=end_stone_brick_slab,data=0,data=1,data=2,data=3,allsides=0:end_stone_bricks,topbottom=0:end_stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=end_stone_brick_slab,data=4,data=5,allsides=0:end_stone_bricks,topbottom=0:end_stone_bricks,stdrot=true
+# Smooth sandstone slab
+[1.14-]block:id=smooth_sandstone_slab,data=0,data=1,data=2,data=3,allsides=0:sandstone_top,topbottom=0:sandstone_top,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=smooth_sandstone_slab,data=4,data=5,allsides=0:sandstone_top,topbottom=0:sandstone_top,stdrot=true
+# Smooth quartz slab
+[1.14-]block:id=smooth_quartz_slab,data=0,data=1,data=2,data=3,allsides=0:quartz_block_bottom,topbottom=0:quartz_block_bottom,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=smooth_quartz_slab,data=4,data=5,allsides=0:quartz_block_bottom,topbottom=0:quartz_block_bottom,stdrot=true
+# Granite slab
+[1.14-]block:id=granite_slab,data=0,data=1,data=2,data=3,allsides=0:granite,topbottom=0:granite,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=granite_slab,data=4,data=5,allsides=0:granite,topbottom=0:granite,stdrot=true
