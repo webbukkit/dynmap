@@ -2169,7 +2169,9 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=wither_rose
 [1.14-]texture:id=lily_of_the_valley
 [1.14-]texture:id=smooth_stone_slab_side
-[1.14-]texture:id=smooth_stone_slab_top
+[1.14-]texture:id=smooth_stone
+[1.14-]texture:id=bamboo_stage0
+[1.14-]texture:id=bamboo_stalk
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
 [1.14-]block:id=spruce_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=spruce_sign
@@ -2197,11 +2199,46 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Potted lily of the valley
 [1.14-]block:id=potted_lily_of_the_valley,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:lily_of_the_valley,transparency=TRANSPARENT
 # Smooth Stone slab
-[1.14-]block:id=smooth_stone_slab,data=0,data=1,data=2,data=3,allsides=0:smooth_stone_slab_side,topbottom=0:smooth_stone_slab_top,stdrot=true,transparency=SEMITRANSPARENT
-[1.14-]block:id=smooth_stone_slab,data=4,data=5,allsides=0:smooth_stone_slab_side,topbottom=0:smooth_stone_slab_top,stdrot=true
+[1.14-]block:id=smooth_stone_slab,data=0,data=1,data=2,data=3,allsides=0:smooth_stone_slab_side,topbottom=0:smooth_stone,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=smooth_stone_slab,data=4,data=5,allsides=0:smooth_stone_slab_side,topbottom=0:smooth_stone,stdrot=true
 # Cut sandston slab
 [1.14-]block:id=cut_sandstone_slab,data=0,data=1,data=2,data=3,allsides=0:cut_sandstone,topbottom=0:sandstone_top,stdrot=true,transparency=SEMITRANSPARENT
 [1.14-]block:id=cut_sandstone_slab,data=4,data=5,allsides=0:cut_sandstone,topbottom=0:sandstone_top,stdrot=true
 # Cut red sandston slab
 [1.14-]block:id=cut_red_sandstone_slab,data=0,data=1,data=2,data=3,allsides=0:cut_red_sandstone,topbottom=0:red_sandstone_top,stdrot=true,transparency=SEMITRANSPARENT
 [1.14-]block:id=cut_red_sandstone_slab,data=4,data=5,allsides=0:cut_red_sandstone,topbottom=0:red_sandstone_top,stdrot=true
+# Bamboo Sapling
+[1.14-]block:id=bamboo_sapling,patch0-1=0:bamboo_stage0,transparency=TRANSPARENT
+# Bamboo
+[1.14-]block:id=bamboo,data=0-11,patch0-5=0:bamboo_stalk,transparency=TRANSPARENT
+# Potted bamboo
+[1.14-]block:id=potted_bamboo,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:bamboo_stage0,transparency=TRANSPARENT
+# Polished Granite Stairs
+[1.14-]block:id=polished_granite_stairs,patch0-2=0:polished_granite,transparency=SEMITRANSPARENT
+# Smooth red sandstone stairs
+[1.14-]block:id=smooth_red_sandstone_stairs,patch0-2=0:red_sandstone_top,transparency=SEMITRANSPARENT
+# Mossy stone brick stairs
+[1.14-]block:id=mossy_stone_brick_stairs,patch0-2=0:mossy_stone_bricks,transparency=SEMITRANSPARENT
+# Polished diorite stairs
+[1.14-]block:id=polished_diorite_stairs,patch0-2=0:polished_diorite,transparency=SEMITRANSPARENT
+# Mossy cobblestone stairs
+[1.14-]block:id=mossy_cobblestone_stairs,patch0-2=0:mossy_cobblestone,transparency=SEMITRANSPARENT
+# End stone brick stairs
+[1.14-]block:id=end_stone_brick_stairs,patch0-2=0:end_stone_bricks,transparency=SEMITRANSPARENT
+# Stone stairs
+[1.14-]block:id=stone_stairs,patch0-2=0:stone,transparency=SEMITRANSPARENT
+# Smooth sandstone stairs
+[1.14-]block:id=smooth_sandstone_stairs,patch0-2=0:sandstone_top,transparency=SEMITRANSPARENT
+# Smooth quartz stairs
+[1.14-]block:id=smooth_quartz_stairs,patch0-2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
+# Granite stairs
+[1.14-]block:id=granite_stairs,patch0-2=0:granite,transparency=SEMITRANSPARENT
+# Andesite stairs
+[1.14-]block:id=andesite_stairs,patch0-2=0:andesite,transparency=SEMITRANSPARENT
+# Red nether brick stairs
+[1.14-]block:id=red_nether_brick_stairs,patch0-2=0:red_nether_bricks,transparency=SEMITRANSPARENT
+# Polished andesite stairs
+[1.14-]block:id=polished_andesite_stairs,patch0-2=0:polished_andesite,transparency=SEMITRANSPARENT
+# Diorite stairs
+[1.14-]block:id=diorite_stairs,patch0-2=0:diorite,transparency=SEMITRANSPARENT
+

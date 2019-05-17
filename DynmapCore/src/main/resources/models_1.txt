@@ -1422,7 +1422,8 @@ patchblock:id=bubble_column
 # Cornflower
 # Wither rose
 # Lily of the valley
-[1.14-]patchblock:id=cornflower,id=wither_rose,id=lily_of_the_valley,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+# Bamboo Sapling
+[1.14-]patchblock:id=cornflower,id=wither_rose,id=lily_of_the_valley,id=bamboo_sapling,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
 # Potted cornflower
 [1.14-]patchblock:id=potted_cornflower,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
@@ -1434,4 +1435,25 @@ patchblock:id=bubble_column
 # Cut sandstone slab
 [1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,data=0,data=1,ymin=0.5
 [1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,data=2,data=3,ymax=0.5
+# Bamboo
+[1.14-]boxblock:id=bamboo,data=0-5,xmin=0.4275,xmax=0.5625,zmin=0.4275,zmax=0.5625
+[1.14-]boxblock:id=bamboo,data=6-11,xmin=0.38,xmax=0.62,zmin=0.38,zmax=0.62
+# Potted Bamboo
+[1.14-]patchblock:id=potted_bamboo,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Polished granite stairs
+# Smooth Red sandstone stairs
+# Mossy stone brick stairs
+# Polished diorite stairs
+# Mossy cobblestone stairs
+# End stone brick stairs
+# Stone stairs
+# Smooth sandstone stairs
+# Smooth quartz stairs
+# Granite stairs
+# Andesite stairs
+# Red nether brick stairs
+# Polished andesite stairs
+# Diorite stairs
+[1.14-]customblock:id=polished_granite_stairs,id=smooth_red_sandstone_stairs,id=mossy_stone_brick_stairs,id=polished_diorite_stairs,id=mossy_cobblestone_stairs,id=end_stone_brick_stairs,id=stone_stairs,id=smooth_sandstone_stairs,id=smooth_quartz_stairs,id=granite_stairs,id=andesite_stairs,id=red_nether_brick_stairs,id=polished_andesite_stairs,id=diorite_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
+
 
