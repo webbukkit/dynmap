@@ -2268,3 +2268,15 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Granite slab
 [1.14-]block:id=granite_slab,data=0,data=1,data=2,data=3,allsides=0:granite,topbottom=0:granite,stdrot=true,transparency=SEMITRANSPARENT
 [1.14-]block:id=granite_slab,data=4,data=5,allsides=0:granite,topbottom=0:granite,stdrot=true
+# Andesite slab
+[1.14-]block:id=andesite_slab,data=0,data=1,data=2,data=3,allsides=0:andesite,topbottom=0:andesite,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=andesite_slab,data=4,data=5,allsides=0:andesite,topbottom=0:andesite,stdrot=true
+# Red nether brick slab
+[1.14-]block:id=red_nether_brick_slab,data=0,data=1,data=2,data=3,allsides=0:red_nether_bricks,topbottom=0:red_nether_bricks,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=red_nether_brick_slab,data=4,data=5,allsides=0:red_nether_bricks,topbottom=0:red_nether_bricks,stdrot=true
+# Polished andesite slab
+[1.14-]block:id=polished_andesite_slab,data=0,data=1,data=2,data=3,allsides=0:polished_andesite,topbottom=0:polished_andesite,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=polished_andesite_slab,data=4,data=5,allsides=0:polished_andesite,topbottom=0:polished_andesite,stdrot=true
+# Diorite slab
+[1.14-]block:id=diorite_slab,data=0,data=1,data=2,data=3,allsides=0:diorite,topbottom=0:diorite,stdrot=true,transparency=SEMITRANSPARENT
+[1.14-]block:id=diorite_slab,data=4,data=5,allsides=0:diorite,topbottom=0:diorite,stdrot=true

@@ -1464,6 +1464,10 @@ patchblock:id=bubble_column
 # Smooth sandstone slab
 # Smooth quartz slab
 # Granite slab
-[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quarts_slab,id=granite_slab,data=0,data=1,ymin=0.5
-[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quarts_slab,id=granite_slab,data=2,data=3,ymax=0.5
+# Andesite slab
+# Red nether brick slab
+# Polished andesite slab
+# Diorite slab
+[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quarts_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=0,data=1,ymin=0.5
+[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quarts_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=2,data=3,ymax=0.5
 
