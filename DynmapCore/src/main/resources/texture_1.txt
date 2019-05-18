@@ -2172,6 +2172,10 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=smooth_stone
 [1.14-]texture:id=bamboo_stage0
 [1.14-]texture:id=bamboo_stalk
+[1.14-]texture:id=scaffolding_top
+[1.14-]texture:id=scaffolding_side
+[1.14-]texture:id=scaffolding_bottom
+
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
 [1.14-]block:id=spruce_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=spruce_sign
@@ -2280,3 +2284,29 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Diorite slab
 [1.14-]block:id=diorite_slab,data=0,data=1,data=2,data=3,allsides=0:diorite,topbottom=0:diorite,stdrot=true,transparency=SEMITRANSPARENT
 [1.14-]block:id=diorite_slab,data=4,data=5,allsides=0:diorite,topbottom=0:diorite,stdrot=true
+# Brick wall
+[1.14-]block:id=brick_wall,patch0-2=0:bricks,transparency=TRANSPARENT
+# Prismarine wall
+[1.14-]block:id=prismarine_wall,patch0-2=0:prismarine,transparency=TRANSPARENT
+# Red sandstone wall
+[1.14-]block:id=red_sandstone_wall,patch0-2=0:red_sandstone,transparency=TRANSPARENT
+# Mossy stone brick wall
+[1.14-]block:id=mossy_stone_brick_wall,patch0-2=0:mossy_stone_bricks,transparency=TRANSPARENT
+# Granite wall
+[1.14-]block:id=granite_wall,patch0-2=0:granite,transparency=TRANSPARENT
+# Stone brick wall
+[1.14-]block:id=stone_brick_wall,patch0-2=0:stone_bricks,transparency=TRANSPARENT
+# Nether brick wall
+[1.14-]block:id=nether_brick_wall,patch0-2=0:nether_bricks,transparency=TRANSPARENT
+# Andesite wall
+[1.14-]block:id=andesite_wall,patch0-2=0:andesite,transparency=TRANSPARENT
+# Red nether brick wall
+[1.14-]block:id=red_nether_brick_wall,patch0-2=0:red_nether_bricks,transparency=TRANSPARENT
+# Sandstone wall
+[1.14-]block:id=sandstone_wall,patch0-2=0:sandstone,transparency=TRANSPARENT
+# End stone brick wall
+[1.14-]block:id=end_stone_brick_wall,patch0-2=0:end_stone_bricks,transparency=TRANSPARENT
+# Diorite wall
+[1.14-]block:id=diorite_wall,patch0-2=0:diorite,transparency=TRANSPARENT
+# Scaffolding
+[1.14-]block:id=scaffolding,patch0=0:scaffolding_top,patch1=0:scaffolding_side,patch2=0:scaffolding_bottom,transparency=TRANSPARENT

@@ -1468,6 +1468,19 @@ patchblock:id=bubble_column
 # Red nether brick slab
 # Polished andesite slab
 # Diorite slab
-[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quarts_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=0,data=1,ymin=0.5
-[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quarts_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=2,data=3,ymax=0.5
-
+[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quartz_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=0,data=1,ymin=0.5
+[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quartz_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=2,data=3,ymax=0.5
+# Brick wall
+# Prismarine wall
+# Red sandstone wall
+# Mossy stone brick wall
+# Granite wall
+# Stone brick wall
+# Nether brick wall
+# Red nether brick wall
+# Sandstone wall
+# End stone brick wall
+# Diorite wall
+[1.14-]customblock:id=brick_wall,id=prismarine_wall,id=red_sandstone_wall,id=mossy_stone_brick_wall,id=granite_wall,id=stone_brick_wall,id=nether_brick_wall,id=andesite_wall,id=red_nether_brick_wall,id=sandstone_wall,id=end_stone_brick_wall,id=diorite_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
+# Scaffolding
+[1.14-]boxlist:id=scaffolding,box=0:1:0.99:1:0:1:0/0/-1/-1/-1/-1,box=0:0.125:0:1:0:0.125:2/-1/1/1/1/1,box=0:0.125:0:1:0.875:1:2/-1/1/1/1/1,box=0.875:1:0:1:0.875:1:2/-1/1/1/1/1,box=0.875:1:0:1:0:0.125:2/-1/1/1/1/1,box=0.125:0.875:0.875:1:0:0.125:2/-1/1/1/1/1,box=0.125:0.875:0.875:1:0.875:1:2/-1/1/1/1/1,box=0.875:1:0.875:1:0.125:0.875:2/-1/1/1/1/1,box=0:0.125:0.875:1:0.125:0.875:2/-1/1/1/1/1

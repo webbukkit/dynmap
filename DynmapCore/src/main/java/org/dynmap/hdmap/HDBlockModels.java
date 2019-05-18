@@ -315,6 +315,10 @@ public class HDBlockModels {
     // Patch index ordering, corresponding to BlockStep ordinal order
     public static final int boxPatchList[] = { 1, 4, 0, 3, 2, 5 };
 
+    private static class BoxLimits {
+        double xmin = 0.0, xmax = 1.0, ymin = 0.0, ymax = 1.0, zmin = 0.0, zmax = 1.0;
+        int[] patches = new int[6]; // Default all to patch0
+    }
     /**
      * Load models from file
      * @param core 
@@ -873,6 +877,87 @@ public class HDBlockModels {
                     }
                     else {
                         Log.severe("Box block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                    }
+                }
+                // Shortcut for defining a patchblock that is a simple rectangular prism, with sidex corresponding to full block sides
+                else if(line.startsWith("boxlist:")) {
+                    ArrayList<String> blknames = new ArrayList<String>();
+                    databits.clear();
+                    line = line.substring(8);
+                    String[] args = line.split(",");
+                    ArrayList<BoxLimits> boxes = new ArrayList<BoxLimits>();
+                    for(String a : args) {
+                        String[] av = a.split("=");
+                        if(av.length < 2) continue;
+                        if(av[0].equals("id")) {
+                            blknames.add(getBlockName(modname,av[1]));
+                        }
+                        else if(av[0].equals("data")) {
+                            if(av[1].equals("*")) {
+                                databits.clear();
+                            }
+                            else if (av[1].indexOf('-') > 0) {
+                                String[] sp = av[1].split("-");
+                                int m0 = getIntValue(varvals, sp[0]);
+                                int m1 = getIntValue(varvals, sp[1]);
+                                for (int m = m0; m <= m1; m++) {
+                                    databits.set(m);
+                                }
+                            }
+                            else
+                                databits.set(getIntValue(varvals,av[1]));
+                        }
+                        else if(av[0].equals("box")) {
+                        	String[] prms = av[1].split(":");
+                        	BoxLimits box = new BoxLimits();
+                        	if (prms.length > 0)
+                        		box.xmin = Double.parseDouble(prms[0]);
+                        	if (prms.length > 1)
+                        		box.xmax = Double.parseDouble(prms[1]);
+                        	if (prms.length > 2)
+                        		box.ymin = Double.parseDouble(prms[2]);
+                        	if (prms.length > 3)
+                        		box.ymax = Double.parseDouble(prms[3]);
+                        	if (prms.length > 4)
+                        		box.zmin = Double.parseDouble(prms[4]);
+                        	if (prms.length > 5)
+                        		box.zmax = Double.parseDouble(prms[5]);
+                        	if (prms.length > 6) {
+                        		String[] pl = prms[6].split("/");
+                        		for (int p = 0; (p < 6) && (p < pl.length); p++) {
+                        			box.patches[p] = Integer.parseInt(pl[p]);
+                        		}
+                        	}
+                        	boxes.add(box);
+                        }
+                    }
+                    /* If we have everything, build block */
+                    pmodlist.clear();
+                    if (blknames.size() > 0) {
+                        ArrayList<RenderPatch> pd = new ArrayList<RenderPatch>();
+                        
+                        for (BoxLimits bl : boxes) {
+                            CustomRenderer.addBox(pdf, pd, bl.xmin, bl.xmax, bl.ymin, bl.ymax, bl.zmin, bl.zmax, bl.patches);
+                        }
+                        PatchDefinition[] patcharray = new PatchDefinition[pd.size()];
+                        for (int i = 0; i < patcharray.length; i++) {
+                            patcharray[i] = (PatchDefinition) pd.get(i);
+                        }
+                        if(patcharray.length > max_patches)
+                            max_patches = patcharray.length;
+                        for(String nm : blknames) {
+                            DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
+                            if (bs.isNotAir()) {
+                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
+                                cnt++;
+                            }
+                            else {
+                            	Log.severe("Invalid boxlist block name " + nm + " at line " + rdr.getLineNumber());
+                            }
+                        }
+                    }
+                    else {
+                        Log.severe("Box list block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
                     }
                 }
                 else if(line.startsWith("customblock:")) {
