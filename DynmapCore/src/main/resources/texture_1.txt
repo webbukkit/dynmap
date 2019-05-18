@@ -2185,6 +2185,10 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=loom_side
 [1.14-]texture:id=loom_top
 [1.14-]texture:id=loom_front
+[1.14-]texture:id=barrel_bottom
+[1.14-]texture:id=barrel_side
+[1.14-]texture:id=barrel_top
+[1.14-]texture:id=barrel_top_open
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
@@ -2326,5 +2330,7 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]block:id=jigsaw,patch0=0:jigsaw_bottom,patch1=0:jigsaw_top,patch2=0:jigsaw_side
 # Loom
 [1.14-]block:id=loom,patch0=0:loom_bottom,patch1=0:loom_top,patch2=0:loom_front,patch3=0:loom_side
-
+# Barrel
+[1.14-]block:id=barrel,data=0,data=2,data=4,data=6,data=8,data=10,patch0=0:barrel_bottom,patch1=0:barrel_top_open,patch2=0:barrel_side
+[1.14-]block:id=barrel,data=1,data=3,data=5,data=7,data=9,data=11,patch0=0:barrel_bottom,patch1=0:barrel_top,patch2=0:barrel_side
 [1.14-]boxlist:id=[1.14-]block:id=composter

@@ -1506,3 +1506,15 @@ patchblock:id=bubble_column
 [1.14-]patchrotate:id=loom,data=0,roty=270
 [1.14-]patchblock:id=loom,data=3
 [1.14-]patchrotate:id=loom,data=0,roty=90
+# Barrel
+[1.14-]boxlist:id=barrel,data=8,data=9,box=0:1:0:1:0:1:0/1/2/2/2/2
+[1.14-]patchblock:id=barrel,data=0,data=1
+[1.14-]patchrotate:id=barrel,data=8,rotx=90
+[1.14-]patchblock:id=barrel,data=2,data=3
+[1.14-]patchrotate:id=barrel,data=8,rotx=90,roty=90
+[1.14-]patchblock:id=barrel,data=4,data=5
+[1.14-]patchrotate:id=barrel,data=8,rotx=90,roty=180
+[1.14-]patchblock:id=barrel,data=6,data=7
+[1.14-]patchrotate:id=barrel,data=8,rotx=90,roty=270
+[1.14-]patchblock:id=barrel,data=10,data=11
+[1.14-]patchrotate:id=barrel,data=8,rotx=180
