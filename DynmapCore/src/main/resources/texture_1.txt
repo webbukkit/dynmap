@@ -2175,6 +2175,16 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=scaffolding_top
 [1.14-]texture:id=scaffolding_side
 [1.14-]texture:id=scaffolding_bottom
+[1.14-]texture:id=composter_top
+[1.14-]texture:id=composter_side
+[1.14-]texture:id=composter_bottom
+[1.14-]texture:id=jigsaw_bottom
+[1.14-]texture:id=jigsaw_side
+[1.14-]texture:id=jigsaw_top
+[1.14-]texture:id=loom_bottom
+[1.14-]texture:id=loom_side
+[1.14-]texture:id=loom_top
+[1.14-]texture:id=loom_front
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
@@ -2310,3 +2320,11 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]block:id=diorite_wall,patch0-2=0:diorite,transparency=TRANSPARENT
 # Scaffolding
 [1.14-]block:id=scaffolding,patch0=0:scaffolding_top,patch1=0:scaffolding_side,patch2=0:scaffolding_bottom,transparency=TRANSPARENT
+# Composter
+[1.14-]block:id=composter,patch0=0:composter_top,patch1=0:composter_bottom,patch2=0:composter_side,patch3=0:composter_bottom,transparency=TRANSPARENT
+# Jigsaw
+[1.14-]block:id=jigsaw,patch0=0:jigsaw_bottom,patch1=0:jigsaw_top,patch2=0:jigsaw_side
+# Loom
+[1.14-]block:id=loom,patch0=0:loom_bottom,patch1=0:loom_top,patch2=0:loom_front,patch3=0:loom_side
+
+[1.14-]boxlist:id=[1.14-]block:id=composter
