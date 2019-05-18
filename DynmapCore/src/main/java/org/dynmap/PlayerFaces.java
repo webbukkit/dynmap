@@ -201,11 +201,11 @@ public class PlayerFaces {
                 /* Copy body at 20, 20 and chest at  to 20, 36 to 12,8 */
                 copyLayersToTarget(img, 20, 20, 20, 36, 8, 12, body32x32.argb_buf, 8*32+12, 32);
                 /* Copy legs at 4,20 and 4,366 to 20,12; 44,20 and 44,36 to 20,16 */
-                copyLayersToTarget(img, 4, 20, 4,36, 8, 12, body32x32.argb_buf, 20*32+12, 32);
-                copyLayersToTarget(img, 20, 52, 4, 52, 8, 12, body32x32.argb_buf, 20*32+16, 32);
+                copyLayersToTarget(img, 4, 20, 4, 36, 4, 12, body32x32.argb_buf, 20*32+12, 32);
+                copyLayersToTarget(img, 20, 52, 4, 52, 4, 12, body32x32.argb_buf, 20*32+16, 32);
                 /* Copy arms at 44, 20 and 8,8 to 12,20 and 20,8 to 24,20 */
-                copyLayersToTarget(img, 44, 20, 44, 36, 8, 12, body32x32.argb_buf, 8*32+8, 32);
-                copyLayersToTarget(img, 36, 52, 52, 52, 8, 12, body32x32.argb_buf, 8*32+20, 32);
+                copyLayersToTarget(img, 44, 20, 44, 36, 4, 12, body32x32.argb_buf, 8*32+8, 32);
+                copyLayersToTarget(img, 36, 52, 52, 52, 4, 12, body32x32.argb_buf, 8*32+20, 32);
                 
                 BufferOutputStream bos = ImageIOManager.imageIOEncode(body32x32.buf_img, ImageFormat.FORMAT_PNG);
                 if (bos != null) {
