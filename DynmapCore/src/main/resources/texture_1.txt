@@ -2194,6 +2194,11 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=smoker_top
 [1.14-]texture:id=smoker_front_on
 [1.14-]texture:id=smoker_front
+[1.14-]texture:id=blast_furnace_bottom
+[1.14-]texture:id=blast_furnace_side
+[1.14-]texture:id=blast_furnace_top
+[1.14-]texture:id=blast_furnace_front_on
+[1.14-]texture:id=blast_furnace_front
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
@@ -2341,5 +2346,8 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Smoker
 [1.14-]block:id=smoker,data=0,data=2,data=4,data=6,patch0=0:smoker_bottom,patch1=0:smoker_top,patch2=0:smoker_front_on,patch3=0:smoker_side
 [1.14-]block:id=smoker,data=1,data=3,data=5,data=7,patch0=0:smoker_bottom,patch1=0:smoker_top,patch2=0:smoker_front,patch3=0:smoker_side
+# Blast furnace
+[1.14-]block:id=blast_furnace,data=0,data=2,data=4,data=6,patch0=0:blast_furnace_bottom,patch1=0:blast_furnace_top,patch2=0:blast_furnace_front_on,patch3=0:blast_furnace_side
+[1.14-]block:id=blast_furnace,data=1,data=3,data=5,data=7,patch0=0:blast_furnace_bottom,patch1=0:blast_furnace_top,patch2=0:blast_furnace_front,patch3=0:blast_furnace_side
 
 [1.14-]boxlist:id=[1.14-]block:id=composter

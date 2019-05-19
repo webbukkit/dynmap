@@ -1519,10 +1519,11 @@ patchblock:id=bubble_column
 [1.14-]patchblock:id=barrel,data=10,data=11
 [1.14-]patchrotate:id=barrel,data=8,rotx=180
 # Smoker
-[1.14-]boxlist:id=smoker,data=0,data=1,box=0:1:0:1:0:1:0/1/3/3/2/3
-[1.14-]patchblock:id=smoker,data=2,data=3
+# Blast furnace
+[1.14-]boxlist:id=smoker,id=blast_furnace,data=0,data=1,box=0:1:0:1:0:1:0/1/3/3/2/3
+[1.14-]patchblock:id=smoker,id=blast_furnace,data=2,data=3
 [1.14-]patchrotate:id=smoker,data=0,roty=180
-[1.14-]patchblock:id=smoker,data=4,data=5
+[1.14-]patchblock:id=smoker,id=blast_furnace,data=4,data=5
 [1.14-]patchrotate:id=smoker,data=0,roty=270
-[1.14-]patchblock:id=smoker,data=6,data=7
+[1.14-]patchblock:id=smoker,id=blast_furnace,data=6,data=7
 [1.14-]patchrotate:id=smoker,data=0,roty=90
