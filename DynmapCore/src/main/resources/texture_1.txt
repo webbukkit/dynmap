@@ -2189,6 +2189,11 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=barrel_side
 [1.14-]texture:id=barrel_top
 [1.14-]texture:id=barrel_top_open
+[1.14-]texture:id=smoker_bottom
+[1.14-]texture:id=smoker_side
+[1.14-]texture:id=smoker_top
+[1.14-]texture:id=smoker_front_on
+[1.14-]texture:id=smoker_front
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
@@ -2333,4 +2338,8 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Barrel
 [1.14-]block:id=barrel,data=0,data=2,data=4,data=6,data=8,data=10,patch0=0:barrel_bottom,patch1=0:barrel_top_open,patch2=0:barrel_side
 [1.14-]block:id=barrel,data=1,data=3,data=5,data=7,data=9,data=11,patch0=0:barrel_bottom,patch1=0:barrel_top,patch2=0:barrel_side
+# Smoker
+[1.14-]block:id=smoker,data=0,data=2,data=4,data=6,patch0=0:smoker_bottom,patch1=0:smoker_top,patch2=0:smoker_front_on,patch3=0:smoker_side
+[1.14-]block:id=smoker,data=1,data=3,data=5,data=7,patch0=0:smoker_bottom,patch1=0:smoker_top,patch2=0:smoker_front,patch3=0:smoker_side
+
 [1.14-]boxlist:id=[1.14-]block:id=composter
