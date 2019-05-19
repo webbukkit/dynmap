@@ -1423,7 +1423,8 @@ patchblock:id=bubble_column
 # Wither rose
 # Lily of the valley
 # Bamboo Sapling
-[1.14-]patchblock:id=cornflower,id=wither_rose,id=lily_of_the_valley,id=bamboo_sapling,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+# Sweet berry bush
+[1.14-]patchblock:id=cornflower,id=wither_rose,id=lily_of_the_valley,id=bamboo_sapling,id=sweet_berry_bush,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
 # Potted cornflower
 [1.14-]patchblock:id=potted_cornflower,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
