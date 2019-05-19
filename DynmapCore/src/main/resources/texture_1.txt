@@ -2199,6 +2199,14 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=blast_furnace_top
 [1.14-]texture:id=blast_furnace_front_on
 [1.14-]texture:id=blast_furnace_front
+[1.14-]texture:id=cartography_table_top
+[1.14-]texture:id=cartography_table_side1
+[1.14-]texture:id=cartography_table_side2
+[1.14-]texture:id=cartography_table_side3
+[1.14-]texture:id=fletching_table_top
+[1.14-]texture:id=fletching_table_front
+[1.14-]texture:id=fletching_table_side
+
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
@@ -2349,5 +2357,7 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Blast furnace
 [1.14-]block:id=blast_furnace,data=0,data=2,data=4,data=6,patch0=0:blast_furnace_bottom,patch1=0:blast_furnace_top,patch2=0:blast_furnace_front_on,patch3=0:blast_furnace_side
 [1.14-]block:id=blast_furnace,data=1,data=3,data=5,data=7,patch0=0:blast_furnace_bottom,patch1=0:blast_furnace_top,patch2=0:blast_furnace_front,patch3=0:blast_furnace_side
-
-[1.14-]boxlist:id=[1.14-]block:id=composter
+# Cartography Table
+[1.14-]block:id=cartography_table,top=0:cartography_table_top,bottom=0:dark_oak_planks,east=0:cartography_table_side3,west=0:cartography_table_side1,north=0:cartography_table_side2,south=0:cartography_table_side3,stdrot=true
+# Fletching Table
+[1.14-]block:id=fletching_table,top=0:fletching_table_top,bottom=0:birch_planks,east=0:fletching_table_front,west=0:fletching_table_front,north=0:fletching_table_side,south=0:fletching_table_side,stdrot=true
