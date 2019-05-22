@@ -2175,6 +2175,47 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=scaffolding_top
 [1.14-]texture:id=scaffolding_side
 [1.14-]texture:id=scaffolding_bottom
+[1.14-]texture:id=composter_top
+[1.14-]texture:id=composter_side
+[1.14-]texture:id=composter_bottom
+[1.14-]texture:id=jigsaw_bottom
+[1.14-]texture:id=jigsaw_side
+[1.14-]texture:id=jigsaw_top
+[1.14-]texture:id=loom_bottom
+[1.14-]texture:id=loom_side
+[1.14-]texture:id=loom_top
+[1.14-]texture:id=loom_front
+[1.14-]texture:id=barrel_bottom
+[1.14-]texture:id=barrel_side
+[1.14-]texture:id=barrel_top
+[1.14-]texture:id=barrel_top_open
+[1.14-]texture:id=smoker_bottom
+[1.14-]texture:id=smoker_side
+[1.14-]texture:id=smoker_top
+[1.14-]texture:id=smoker_front_on
+[1.14-]texture:id=smoker_front
+[1.14-]texture:id=blast_furnace_side
+[1.14-]texture:id=blast_furnace_top
+[1.14-]texture:id=blast_furnace_front_on
+[1.14-]texture:id=blast_furnace_front
+[1.14-]texture:id=cartography_table_top
+[1.14-]texture:id=cartography_table_side1
+[1.14-]texture:id=cartography_table_side2
+[1.14-]texture:id=cartography_table_side3
+[1.14-]texture:id=fletching_table_top
+[1.14-]texture:id=fletching_table_front
+[1.14-]texture:id=fletching_table_side
+[1.14-]texture:id=sweet_berry_bush_stage0
+[1.14-]texture:id=sweet_berry_bush_stage1
+[1.14-]texture:id=sweet_berry_bush_stage2
+[1.14-]texture:id=sweet_berry_bush_stage3
+[1.14-]texture:id=grindstone_pivot
+[1.14-]texture:id=grindstone_round
+[1.14-]texture:id=grindstone_side
+[1.14-]texture:id=lectern_base
+[1.14-]texture:id=lectern_front
+[1.14-]texture:id=lectern_sides
+[1.14-]texture:id=lectern_top
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
@@ -2310,3 +2351,31 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]block:id=diorite_wall,patch0-2=0:diorite,transparency=TRANSPARENT
 # Scaffolding
 [1.14-]block:id=scaffolding,patch0=0:scaffolding_top,patch1=0:scaffolding_side,patch2=0:scaffolding_bottom,transparency=TRANSPARENT
+# Composter
+[1.14-]block:id=composter,patch0=0:composter_top,patch1=0:composter_bottom,patch2=0:composter_side,patch3=0:composter_bottom,transparency=TRANSPARENT
+# Jigsaw
+[1.14-]block:id=jigsaw,patch0=0:jigsaw_bottom,patch1=0:jigsaw_top,patch2=0:jigsaw_side
+# Loom
+[1.14-]block:id=loom,patch0=0:loom_bottom,patch1=0:loom_top,patch2=0:loom_front,patch3=0:loom_side
+# Barrel
+[1.14-]block:id=barrel,data=0,data=2,data=4,data=6,data=8,data=10,patch0=0:barrel_bottom,patch1=0:barrel_top_open,patch2=0:barrel_side
+[1.14-]block:id=barrel,data=1,data=3,data=5,data=7,data=9,data=11,patch0=0:barrel_bottom,patch1=0:barrel_top,patch2=0:barrel_side
+# Smoker
+[1.14-]block:id=smoker,data=0,data=2,data=4,data=6,patch0=0:smoker_bottom,patch1=0:smoker_top,patch2=0:smoker_front_on,patch3=0:smoker_side
+[1.14-]block:id=smoker,data=1,data=3,data=5,data=7,patch0=0:smoker_bottom,patch1=0:smoker_top,patch2=0:smoker_front,patch3=0:smoker_side
+# Blast furnace
+[1.14-]block:id=blast_furnace,data=0,data=2,data=4,data=6,patch0=0:blast_furnace_top,patch1=0:blast_furnace_top,patch2=0:blast_furnace_front_on,patch3=0:blast_furnace_side
+[1.14-]block:id=blast_furnace,data=1,data=3,data=5,data=7,patch0=0:blast_furnace_top,patch1=0:blast_furnace_top,patch2=0:blast_furnace_front,patch3=0:blast_furnace_side
+# Cartography Table
+[1.14-]block:id=cartography_table,top=0:cartography_table_top,bottom=0:dark_oak_planks,east=0:cartography_table_side3,west=0:cartography_table_side1,north=0:cartography_table_side2,south=0:cartography_table_side3,stdrot=true
+# Fletching Table
+[1.14-]block:id=fletching_table,top=0:fletching_table_top,bottom=0:birch_planks,east=0:fletching_table_front,west=0:fletching_table_front,north=0:fletching_table_side,south=0:fletching_table_side,stdrot=true
+# Sweet berry bush
+[1.14-]block:id=sweet_berry_bush,data=0,patch0-1=0:sweet_berry_bush_stage0,transparency=TRANSPARENT
+[1.14-]block:id=sweet_berry_bush,data=1,patch0-1=0:sweet_berry_bush_stage1,transparency=TRANSPARENT
+[1.14-]block:id=sweet_berry_bush,data=2,patch0-1=0:sweet_berry_bush_stage2,transparency=TRANSPARENT
+[1.14-]block:id=sweet_berry_bush,data=3,patch0-1=0:sweet_berry_bush_stage3,transparency=TRANSPARENT
+# Grindstone
+[1.14-]block:id=grindstone,patch0=0:grindstone_pivot,patch1=0:grindstone_round,patch2=0:grindstone_side,patch4=0:dark_oak_log,transparency=TRANSPARENT
+# Lectern
+[1.14-]block:id=lectern,patch0=0:oak_planks,patch1=0:lectern_base,patch2=0:lectern_front,patch3=0:lectern_sides,patch4=0:lectern_top,transparency=TRANSPARENT
