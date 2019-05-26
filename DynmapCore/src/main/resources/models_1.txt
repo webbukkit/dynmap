@@ -1560,3 +1560,6 @@ patchblock:id=bubble_column
 [1.14-]patchrotate:id=lectern,data=0,roty=270
 [1.14-]patchblock:id=lectern,data=12,data=13,data=14,data=15
 [1.14-]patchrotate:id=lectern,data=0,roty=90
+# Lantern
+[1.14-]boxlist:id=lantern,data=0,box=0.3125:0.6875:0.0625:0.5:0.3125:0.6875,box=0.375:0.625:0.5:0.625:0.375:0.625,box=0.4065:0.5937:0.6875:0.9375:0.5:0.51,box=0.5:0.51:0.625:1:0.4065:0.5937
+[1.14-]boxlist:id=lantern,data=1,box=0.3125:0.6875:0:0.4375:0.3125:0.6875,box=0.375:0.625:0.4375:0.5625:0.375:0.625,box=0.4065:0.5937:0.5625:0.6875:0.5:0.51,box=0.5:0.51:0.5625:0.6875:0.4065:0.5937
