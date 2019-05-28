@@ -966,7 +966,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         else {
             dsender = new BukkitCommandSender(sender);
         }
-        return core.processCommand(dsender, cmd.getName(), commandLabel, args);
+        if (core != null)
+        	return core.processCommand(dsender, cmd.getName(), commandLabel, args);
+        else
+        	return false;
     }
 
     

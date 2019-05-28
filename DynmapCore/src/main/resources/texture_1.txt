@@ -2216,6 +2216,15 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]texture:id=lectern_front
 [1.14-]texture:id=lectern_sides
 [1.14-]texture:id=lectern_top
+[1.14-]texturefile:id=lantern,filename=assets/minecraft/textures/block/lantern.png,format=CUSTOM,tile0=0:0/6:10/5:3,xcount=1,ycount=3
+[1.14-]texture:id=smithing_table_front
+[1.14-]texture:id=smithing_table_side
+[1.14-]texture:id=smithing_table_top
+[1.14-]texture:id=smithing_table_bottom
+[1.14-]texture:id=stonecutter_bottom
+[1.14-]texture:id=stonecutter_top
+[1.14-]texture:id=stonecutter_side
+[1.14-]texture:id=stonecutter_saw
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
@@ -2379,3 +2388,10 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]block:id=grindstone,patch0=0:grindstone_pivot,patch1=0:grindstone_round,patch2=0:grindstone_side,patch4=0:dark_oak_log,transparency=TRANSPARENT
 # Lectern
 [1.14-]block:id=lectern,patch0=0:oak_planks,patch1=0:lectern_base,patch2=0:lectern_front,patch3=0:lectern_sides,patch4=0:lectern_top,transparency=TRANSPARENT
+# Lantern
+[1.14-]block:id=lantern,patch0=0:lantern,transparency=TRANSPARENT
+# Smithing table
+[1.14-]block:id=smithing_table,top=0:smithing_table_top,bottom=0:smithing_table_bottom,north=0:smithing_table_side,south=0:smithing_table_side,east=0:smithing_table_front,west=0:smithing_table_front,stdrot=true
+# Stonecutter
+[1.14-]block:id=stonecutter,patch0=0:stonecutter_bottom,patch1=0:stonecutter_top,patch2=0:stonecutter_side,patch3=0:stonecutter_saw,transparency=TRANSPARENT
+
