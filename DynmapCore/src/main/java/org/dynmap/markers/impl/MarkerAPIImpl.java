@@ -407,7 +407,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         return api;
     }
     
-    private void scheduleWriteJob() {
+    public void scheduleWriteJob() {
         core.getServer().scheduleServerTask(new DoFileWrites(), 20);
     }
     

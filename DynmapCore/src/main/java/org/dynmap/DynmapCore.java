@@ -140,7 +140,7 @@ public class DynmapCore implements DynmapCommonAPI {
     public boolean is_reload = false;
     public static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
 
-    private MarkerAPIImpl   markerapi;
+    public MarkerAPIImpl   markerapi;
     
     private File dataDirectory;
     private File tilesDirectory;
