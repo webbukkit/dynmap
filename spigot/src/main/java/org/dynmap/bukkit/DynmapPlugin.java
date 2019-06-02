@@ -791,9 +791,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     @Override
     public void onEnable() {
         if(core != null){
-            if(core.markerapi != null){
+            if(core.getMarkerAPI() != null){
                 getLogger().info("Starting Scheduled Write Job (markerAPI).");
-                core.markerapi.scheduleWriteJob();
+                core.restartMarkerSaveJob();
             }
         }
         if (helper == null) {

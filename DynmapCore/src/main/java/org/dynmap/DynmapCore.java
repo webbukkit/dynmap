@@ -140,7 +140,7 @@ public class DynmapCore implements DynmapCommonAPI {
     public boolean is_reload = false;
     public static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
 
-    public MarkerAPIImpl   markerapi;
+    private MarkerAPIImpl   markerapi;
     
     private File dataDirectory;
     private File tilesDirectory;
@@ -159,7 +159,9 @@ public class DynmapCore implements DynmapCommonAPI {
         server = null;
         markerapi = null;
     }
-    
+    public void restartMarkerSaveJob(){
+        this.markerapi.scheduleWriteJob();
+    }
     // Set plugin jar file
     public void setPluginJarFile(File f) {
         jarfile = f;
