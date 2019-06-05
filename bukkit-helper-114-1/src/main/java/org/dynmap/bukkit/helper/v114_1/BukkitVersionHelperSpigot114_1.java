@@ -168,7 +168,7 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
 	 */
     @Override
 	public int getBiomeBaseWaterMult(Object bb) {
-		return ((BiomeBase)bb).n();
+		return ((BiomeBase)bb).m();
 	}
 
     @Override
