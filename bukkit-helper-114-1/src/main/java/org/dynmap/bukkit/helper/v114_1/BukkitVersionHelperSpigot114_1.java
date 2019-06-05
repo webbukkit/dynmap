@@ -171,6 +171,18 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
 		return ((BiomeBase)bb).m();
 	}
 
+    /** Get temperature from biomebase */
+    @Override
+    public float getBiomeBaseTemperature(Object bb) {
+    	return ((BiomeBase)bb).getTemperature();
+    }
+
+    /** Get humidity from biomebase */
+    @Override
+    public float getBiomeBaseHumidity(Object bb) {
+    	return ((BiomeBase)bb).getHumidity();    	
+    }
+    
     @Override
     public Polygon getWorldBorder(World world) {
         Polygon p = null;
