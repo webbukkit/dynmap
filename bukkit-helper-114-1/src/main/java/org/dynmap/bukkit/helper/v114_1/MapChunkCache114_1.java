@@ -214,21 +214,12 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	        /* Get biome data */
 	        this.biome = new int[COLUMNS_PER_CHUNK];
 	        if (nbt.hasKey("Biomes")) {
-	            byte[] b = nbt.getByteArray("Biomes");
-	            if (b != null) {
-	            	for (int i = 0; i < b.length; i++) {
-	            		int bv = 255 & b[i];
-	            		this.biome[i] = (bv == 255) ? 0 : bv;
-	            	}
-	            }
-	            else {	// Check JEI biomes
-	            	int[] bb = nbt.getIntArray("Biomes");
-	            	if (bb != null) {
-	                	for (int i = 0; i < bb.length; i++) {
-	                		int bv = bb[i];
-	                		this.biome[i] = (bv < 0) ? 0 : bv;
-	                	}
-	            	}
+            	int[] bb = nbt.getIntArray("Biomes");
+            	if (bb != null) {
+                	for (int i = 0; i < bb.length; i++) {
+                		int bv = bb[i];
+                		this.biome[i] = (bv < 0) ? 0 : bv;
+                	}
 	            }
 	        }
 	    }
@@ -279,7 +270,7 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 
 		@Override
 		public Biome getBiome(int x, int z) {
-	        return AbstractMapChunkCache.getBiomeByID(z << 4 | x);
+	        return AbstractMapChunkCache.getBiomeByID(biome[z << 4 | x]);
 		}
 
 		@Override

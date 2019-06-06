@@ -746,6 +746,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         BiomeMap.loadWellKnownByVersion(mcver);
         /* Find array of biomes in biomebase */
         Object[] biomelist = helper.getBiomeBaseList();
+        Log.verboseinfo("biomelist length = " + biomelist.length);
         /* Loop through list, skipping well known biomes */
         for(int i = 0; i < biomelist.length; i++) {
             Object bb = biomelist[i];
@@ -753,6 +754,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 float tmp = helper.getBiomeBaseTemperature(bb);
                 float hum = helper.getBiomeBaseHumidity(bb);
                 int watermult = helper.getBiomeBaseWaterMult(bb);
+                Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
+                
                 BiomeMap bmap = BiomeMap.byBiomeID(i);
                 if (bmap.isDefault()) {
                     String id =  helper.getBiomeBaseIDString(bb);
