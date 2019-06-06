@@ -1,6 +1,7 @@
 package org.dynmap.bukkit.helper.v114_1;
 
 import org.bukkit.block.Biome;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 
 import java.io.IOException;
@@ -304,6 +305,12 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
         }
         if (nbt != null) {
             nbt = nbt.getCompound("Level");
+            if (nbt != null) {
+            	String stat = nbt.getString("Status");
+            	if ((stat == null) || (stat.equals("full") == false)) {
+            		nbt = null;
+            	}
+            }
         }
         return nbt;
     }   

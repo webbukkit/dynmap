@@ -304,6 +304,12 @@ public class MapChunkCache114 extends AbstractMapChunkCache {
 		}
 		if (nbt != null) {
 		    nbt = nbt.getCompound("Level");
+            if (nbt != null) {
+            	String stat = nbt.getString("Status");
+            	if ((stat == null) || (stat.equals("full") == false)) {
+            		nbt = null;
+            	}
+            }
 		}
 		return nbt;
 	}	
