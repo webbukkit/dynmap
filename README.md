@@ -13,11 +13,11 @@ Components allow you to add/remove functionality to make Dynmap suit your needs.
  - Map viewers can chat to players in-game.
  - Current Minecraft time is visible on the map.
  - Current Minecraft weather is visible on the map.
- - WorldGuard, Residence, Towny and Factions regions that can be visible on the map (through corresponding Dynmap-* plugins)
+ - WorldGuard, Residence, Towny and Factions regions that can be visible on the map (through corresponding Dynmap-\* plugins)
  - Overall highly configurable and customizable.
 
 # Installation:
-Copy dynmap-*.jar into your plugins directory. If you are upgrading, delete the previous dynmap-*.jar - you do NOT need to delete the plugins/dynmap directory or its contents.
+Copy dynmap-\*.jar into your plugins directory. If you are upgrading, delete the previous dynmap-\*.jar - you do NOT need to delete the plugins/dynmap directory or its contents.
 
 If you are running a separate webserver (like Apache) you may need to copy the files from 'plugins/dynmap/web/' to a directory in your http-root and follow this guide. When upgrading, make sure you also upgrade the copied files.
 
