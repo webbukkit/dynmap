@@ -159,7 +159,9 @@ public class DynmapCore implements DynmapCommonAPI {
         server = null;
         markerapi = null;
     }
-    
+    public void restartMarkerSaveJob(){
+        this.markerapi.scheduleWriteJob();
+    }
     // Set plugin jar file
     public void setPluginJarFile(File f) {
         jarfile = f;

@@ -796,6 +796,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     
     @Override
     public void onEnable() {
+        if(core != null){
+            if(core.getMarkerAPI() != null){
+                getLogger().info("Starting Scheduled Write Job (markerAPI).");
+                core.restartMarkerSaveJob();
+            }
+        }
         if (helper == null) {
             Log.info("Dynmap is disabled (unsupported platform)");
             return;
