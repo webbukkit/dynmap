@@ -89,6 +89,8 @@ public class BukkitVersionHelperSpigot114 extends BukkitVersionHelperCB {
     		biomelist = new Object[1024];
             for (int i = 0; i < 1024; i++) {
             	biomelist[i] = IRegistry.BIOME.fromId(i);
+            	if (biomelist[i] != null)
+            		Log.info("biome[" + i + "]=" + biomelist[i].toString());
             }
         }
         return biomelist;

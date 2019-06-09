@@ -103,6 +103,10 @@ public class BiomeMap {
             new BiomeMap(49, "DEEP_COLD_OCEAN");
             new BiomeMap(50, "DEEP_FROZEN_OCEAN");
         }
+        if (HDBlockModels.checkVersionRange(mcver, "1.14.0-")) {
+            new BiomeMap(168, "BAMBOO_JUNGLE");
+            new BiomeMap(169, "BAMBOO_JUNGLE_HILLS");
+        }
         loadDone = true;
     }
     

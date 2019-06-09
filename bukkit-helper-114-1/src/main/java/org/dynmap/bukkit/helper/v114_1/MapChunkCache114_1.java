@@ -12,6 +12,7 @@ import org.bukkit.World;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.bukkit.helper.AbstractMapChunkCache;
+import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.bukkit.helper.SnapshotCache;
 import org.dynmap.bukkit.helper.SnapshotCache.SnapshotRec;
 import org.dynmap.renderer.DynmapBlockState;
@@ -41,6 +42,7 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	    private final Section[] section;
 	    private final int[] hmap; // Height map
 	    private final int[] biome;
+	    private final Object[] biomebase;
 	    private final long captureFulltime;
 	    private final int sectionCnt;
 	    private final long inhabitedTicks;
@@ -119,6 +121,7 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	        this.z = z;
 	        this.captureFulltime = captime;
 	        this.biome = new int[COLUMNS_PER_CHUNK];
+	        this.biomebase = new Object[COLUMNS_PER_CHUNK];
 	        this.sectionCnt = worldheight / 16;
 	        /* Allocate arrays indexed by section */
 	        this.section = new Section[this.sectionCnt];
@@ -214,12 +217,16 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	        }
 	        /* Get biome data */
 	        this.biome = new int[COLUMNS_PER_CHUNK];
+	        this.biomebase = new Object[COLUMNS_PER_CHUNK];
+	        Object[] bbl = BukkitVersionHelper.helper.getBiomeBaseList();
 	        if (nbt.hasKey("Biomes")) {
             	int[] bb = nbt.getIntArray("Biomes");
             	if (bb != null) {
                 	for (int i = 0; i < bb.length; i++) {
                 		int bv = bb[i];
-                		this.biome[i] = (bv < 0) ? 0 : bv;
+                		if (bv < 0) bv = 0;
+                		this.biome[i] = bv;
+                		this.biomebase[i] = bbl[bv];
                 	}
 	            }
 	        }
@@ -276,7 +283,7 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 
 		@Override
 		public Object[] getBiomeBaseFromSnapshot() {
-			return null;
+			return this.biomebase;
 		}
 	}
 	
