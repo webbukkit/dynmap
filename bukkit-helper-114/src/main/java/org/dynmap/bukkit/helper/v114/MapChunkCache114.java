@@ -297,6 +297,12 @@ public class MapChunkCache114 extends AbstractMapChunkCache {
         }
         if (nbt != null) {
             nbt = nbt.getCompound("Level");
+            if (nbt != null) {
+                String stat = nbt.getString("Status");
+                if ((stat == null) || (stat.equals("full") == false)) {
+                    nbt = null;
+                }
+            }
         }
         return nbt;
 	}
@@ -313,9 +319,16 @@ public class MapChunkCache114 extends AbstractMapChunkCache {
 		    nbt = nbt.getCompound("Level");
             if (nbt != null) {
             	String stat = nbt.getString("Status");
-            	if ((stat == null) || (stat.equals("full") == false)) {
-            		nbt = null;
-            	}
+                if ((stat == null) || (stat.equals("full") == false)) {
+                    nbt = null;
+                    if ((stat == null) || stat.equals("") && DynmapCore.migrateChunks()) {
+                        Chunk c = cw.getHandle().getChunkAt(x, z);
+                        if (c != null) {
+                            nbt = fetchLoadedChunkNBT(w, x, z);
+                            cw.getHandle().unloadChunk(c);
+                        }
+                    }
+                }
             }
 		}
 		return nbt;

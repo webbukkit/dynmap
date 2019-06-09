@@ -1624,4 +1624,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     Polygon getWorldBorder(World w) {
         return helper.getWorldBorder(w);
     }
+    
+    public static boolean migrateChunks() {
+        if ((plugin != null) && (plugin.core != null)) {
+            return plugin.core.migrateChunks();
+        }
+        return false;
+    }
 }

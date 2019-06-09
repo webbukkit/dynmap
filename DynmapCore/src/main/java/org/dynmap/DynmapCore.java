@@ -120,6 +120,7 @@ public class DynmapCore implements DynmapCommonAPI {
     private List<String> sortPermissionNodes;
     private int perTickLimit = 50;   // 50 ms
     private boolean dumpMissing = false;
+    private static boolean migrate_chunks = false;
         
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
@@ -202,6 +203,10 @@ public class DynmapCore implements DynmapCommonAPI {
         
     public final void setBiomeNames(String[] names) {
         biomenames = names;
+    }
+    
+    public static final boolean migrateChunks() {
+        return migrate_chunks;
     }
 
     public final String getBiomeName(int biomeid) {
@@ -446,6 +451,10 @@ public class DynmapCore implements DynmapCommonAPI {
         if (perTickLimit < 5) perTickLimit = 5;
         
         dumpMissing = configuration.getBoolean("dump-missing-blocks", false);
+        
+        migrate_chunks = configuration.getBoolean("migrate-chunks",  false);
+        if (migrate_chunks)
+            Log.info("EXPERIMENTAL: chunk migration enabled");
         
         /* Load preupdate/postupdate commands */
         ImageIOManager.preUpdateCommand = configuration.getString("custom-commands/image-updates/preupdatecommand", "");

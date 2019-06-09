@@ -463,3 +463,10 @@ verbose: false
 #  - class: org.dynmap.debug.LogDebugger
 # Debug: dump blocks missing render data
 dump-missing-blocks: false
+
+# Have dynmap migrate old chunks to the new format for the current MC version (specifically, for migrating pre-1.13 chunks to 1.13 or 1.14).  This is needed
+# in order to render chunks on an upgraded server (due to various bugs/limitations in CB/spigot 1.13+).  This setting is NOT suggested to be enabled full time,
+# but only long enough to do a fullrender of a migrated world - it should be turned back off once worlds are migrated).  It is EXPERIMENTAL, so be sure to backup
+# your worlds before running with this setting enabled (set to true)
+#
+#migrate-chunks: true

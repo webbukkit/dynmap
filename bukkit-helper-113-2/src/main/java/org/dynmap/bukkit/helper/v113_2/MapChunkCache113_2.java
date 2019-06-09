@@ -3,11 +3,13 @@ package org.dynmap.bukkit.helper.v113_2;
 import org.bukkit.block.Biome;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
+import org.dynmap.DynmapCore;
 import org.dynmap.bukkit.helper.AbstractMapChunkCache;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.renderer.DynmapBlockState;
 
 import net.minecraft.server.v1_13_R2.DataPaletteBlock;
+import net.minecraft.server.v1_13_R2.Chunk;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -68,7 +70,7 @@ public class MapChunkCache113_2 extends AbstractMapChunkCache {
     public boolean loadChunkNoGenerate(World w, int x, int z) {
 		boolean rslt = w.loadChunk(x,  z, false);
 		// Workaround for Spigot 1.13.2 bug - check if generated and do load-with-generate if so to drive migration of old chunks
-		if (!rslt) {
+		if ((!rslt) && DynmapCore.migrateChunks()) {
 			boolean generated = true;
 			// Check one in each direction: see if all are generated
 			for (int xx = x-3; xx <= x+3; xx++) {
