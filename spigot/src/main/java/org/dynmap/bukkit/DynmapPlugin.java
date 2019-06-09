@@ -250,13 +250,16 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             else
                 return null;
         }
+        private boolean noservername = false;
         @Override
         public String getServerName() {
         	try {
-        		return getServer().getServerName();
+        		if (!noservername)
+        			return getServer().getServerName();
         	} catch (NoSuchMethodError x) {	// Missing in 1.14 spigot - no idea why removed...
-        		return getServer().getName();
+        		noservername = true;
         	}
+    		return getServer().getMotd();
         }
         @Override
         public boolean isPlayerBanned(String pid) {
