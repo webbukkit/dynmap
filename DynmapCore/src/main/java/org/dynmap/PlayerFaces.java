@@ -110,6 +110,7 @@ public class PlayerFaces {
             boolean has_32x32 = storage.hasPlayerFaceImage(playername, FaceType.FACE_32X32);
             boolean has_body = storage.hasPlayerFaceImage(playername, FaceType.BODY_32X32);
             boolean missing_any = !(has_8x8 && has_16x16 && has_32x32 && has_body);
+            boolean is_64x32_skin = false;
             
             BufferedImage img = null;
             try {
@@ -143,6 +144,9 @@ public class PlayerFaces {
             if((img.getWidth() < 64) || (img.getHeight() < 32)) {
                 img.flush();
                 return;
+            }
+            else if(img.getHeight() == 32) {
+                is_64x32_skin = true;
             }
             int[] faceaccessory = new int[64];  /* 8x8 of face accessory */
             /* Get buffered image for face at 8x8 */
@@ -198,14 +202,26 @@ public class PlayerFaces {
                         body32x32.argb_buf[i*32+j+12] = face8x8.argb_buf[i*8 + j];
                     }
                 }
-                /* Copy body at 20, 20 and chest at  to 20, 36 to 12,8 */
+                /* Copy body at 20,20 and chest at 20,36 to 8,12 */
                 copyLayersToTarget(img, 20, 20, 20, 36, 8, 12, body32x32.argb_buf, 8*32+12, 32);
-                /* Copy legs at 4,20 and 4,366 to 20,12; 44,20 and 44,36 to 20,16 */
-                copyLayersToTarget(img, 4, 20, 4,36, 8, 12, body32x32.argb_buf, 20*32+12, 32);
-                copyLayersToTarget(img, 20, 52, 4, 52, 8, 12, body32x32.argb_buf, 20*32+16, 32);
-                /* Copy arms at 44, 20 and 8,8 to 12,20 and 20,8 to 24,20 */
-                copyLayersToTarget(img, 44, 20, 44, 36, 8, 12, body32x32.argb_buf, 8*32+8, 32);
-                copyLayersToTarget(img, 36, 52, 52, 52, 8, 12, body32x32.argb_buf, 8*32+20, 32);
+                /* Copy right leg at 4,20 and 4,36 to 20,12 */
+                copyLayersToTarget(img, 4, 20, 4, 36, 4, 12, body32x32.argb_buf, 20*32+12, 32);
+                /* Copy left leg at 4,20 if old format or 20,52 and 4,53 to 20,16 */
+                if(is_64x32_skin) {
+                    img.getRGB(4, 20, 4, 12, body32x32.argb_buf, 20*32+16, 32);
+                }
+                else {
+                    copyLayersToTarget(img, 20, 52, 4, 52, 4, 12, body32x32.argb_buf, 20 * 32 + 16, 32);
+                }
+                /* Copy right arm at 44,20 and 44,36 to 8,8 */
+                copyLayersToTarget(img, 44, 20, 44, 36, 4, 12, body32x32.argb_buf, 8*32+8, 32);
+                /* Copy left arm at 44,20 if old format or 36,52 and 52,52 to 8,20 */
+                if(is_64x32_skin) {
+                    img.getRGB(44, 20, 4, 12, body32x32.argb_buf, 8*32+20, 32);
+                }
+                else {
+                    copyLayersToTarget(img, 36, 52, 52, 52, 4, 12, body32x32.argb_buf, 8 * 32 + 20, 32);
+                }
                 
                 BufferOutputStream bos = ImageIOManager.imageIOEncode(body32x32.buf_img, ImageFormat.FORMAT_PNG);
                 if (bos != null) {
