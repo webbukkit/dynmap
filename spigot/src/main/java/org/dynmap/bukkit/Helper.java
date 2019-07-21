@@ -35,7 +35,8 @@ public class Helper {
                 Log.info("Loading Glowstone support");
                 BukkitVersionHelper.helper = new BukkitVersionHelperGlowstone();
             }
-            else if (v.contains("(MC: 1.14.1)") || v.contains("(MC: 1.14.2)") || v.contains("(MC: 1.14.3)")) {
+            else if (v.contains("(MC: 1.14.1)") || v.contains("(MC: 1.14.2)") ||
+                v.contains("(MC: 1.14.3)") ||  v.contains("(MC: 1.14.4)")) {
                 BukkitVersionHelper.helper = new BukkitVersionHelperSpigot114_1();
             }
             else if (v.contains("(MC: 1.14)")) {
