@@ -21,15 +21,15 @@ import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 
 class MarkerSetImpl implements MarkerSet {
-    private HashMap<String, MarkerImpl> markers = new HashMap<String, MarkerImpl>();
-    private HashMap<String, AreaMarkerImpl> areamarkers = new HashMap<String, AreaMarkerImpl>();
-    private HashMap<String, PolyLineMarkerImpl> linemarkers = new HashMap<String, PolyLineMarkerImpl>();
-    private HashMap<String, CircleMarkerImpl> circlemarkers = new HashMap<String, CircleMarkerImpl>();
+    private ConcurrentHashMap<String, MarkerImpl> markers = new ConcurrentHashMap<String, MarkerImpl>();
+    private ConcurrentHashMap<String, AreaMarkerImpl> areamarkers = new ConcurrentHashMap<String, AreaMarkerImpl>();
+    private ConcurrentHashMap<String, PolyLineMarkerImpl> linemarkers = new ConcurrentHashMap<String, PolyLineMarkerImpl>();
+    private ConcurrentHashMap<String, CircleMarkerImpl> circlemarkers = new ConcurrentHashMap<String, CircleMarkerImpl>();
     private ConcurrentHashMap<String, AreaMarkerImpl> boostingareamarkers = null;
     private ConcurrentHashMap<String, CircleMarkerImpl> boostingcirclemarkers = null;
     private String setid;
     private String label;
-    private HashMap<String, MarkerIconImpl> allowedicons = null;
+    private ConcurrentHashMap<String, MarkerIconImpl> allowedicons = null;
     private boolean hide_by_def;
     private boolean ispersistent;
     private int prio = 0;
@@ -51,7 +51,7 @@ class MarkerSetImpl implements MarkerSet {
         else
             label = id;
         if(iconlimit != null) {
-            allowedicons = new HashMap<String, MarkerIconImpl>();
+            allowedicons = new ConcurrentHashMap<String, MarkerIconImpl>();
             for(MarkerIcon ico : iconlimit) {
                 if(ico instanceof MarkerIconImpl) {
                     allowedicons.put(ico.getMarkerIconID(), (MarkerIconImpl)ico);
