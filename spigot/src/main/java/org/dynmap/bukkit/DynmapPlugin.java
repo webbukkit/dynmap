@@ -28,6 +28,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -212,6 +213,22 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             }
             return -1;
         }
+		
+		@Override
+		public int isSignAt(String wname, int x, int y, int z) {
+			World w = getServer().getWorld(wname);
+            if((w != null) && w.isChunkLoaded(x >> 4, z >> 4)) {
+                Block b = w.getBlockAt(x, y, z);
+				BlockState s = b.getState();
+				
+				if (s instanceof Sign) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+            return -1;
+		}
 
         @Override
         public void scheduleServerTask(Runnable run, long delay) {
