@@ -180,6 +180,15 @@ public class DynmapBlockState {
         DynmapBlockState blk = blocksByName.get(name);
         if ((blk == null) && (name.indexOf(':') == -1)) {
             blk = blocksByName.get("minecraft:" + name);
+            if (blk == null) {	// If still null, see if legacy ID number
+            	try {
+            		int v = Integer.parseInt(name);
+            		if (v >= 0) {
+            			blk = blocksByLegacyID.get(v);
+            		}
+            	} catch (NumberFormatException nfx) {
+            	}
+            }
         }
         return (blk != null) ? blk : AIR;
     }
