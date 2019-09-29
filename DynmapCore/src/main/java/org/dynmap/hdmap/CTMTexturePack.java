@@ -343,8 +343,8 @@ public class CTMTexturePack {
                         bs = DynmapBlockState.getBaseStateByName(token);
                         addbase = true;
                     }
-                    if (bs.isAir()) {
-                    	Log.info("Unknown block ID in CTM: " + token);
+                	if (bs == DynmapBlockState.AIR) {
+                		Log.info("Unknown block ID in CTM: " + token);
                     }
                     else if (addbase) {
                 		addBaseBlockStateToIDSet(list, bs);
