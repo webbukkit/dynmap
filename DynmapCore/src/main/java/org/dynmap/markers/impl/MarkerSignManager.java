@@ -19,10 +19,7 @@ public class MarkerSignManager {
     private static MarkerSignManager mgr = null;
     private static DynmapCore plugin = null;
     private static String defSignSet = null;
-    
-    private static final int SIGNPOST_ID = 63;
-    private static final int WALLSIGN_ID = 68;
-        
+          
     private static class SignRec {
         String wname;
         int x, y, z;
@@ -143,14 +140,13 @@ public class MarkerSignManager {
             for(Iterator<Entry<String, SignRec>> iter = sign_cache.entrySet().iterator(); iter.hasNext(); ) {
                 Entry<String, SignRec> ent = iter.next();
                 SignRec r = ent.getValue();
-                /* If deleted marker, remote */
+                /* If deleted marker, remove */
                 if(r.m.getMarkerSet() == null) {
                     iter.remove();
                 }
                 else {
-                    /* Get block ID */
-                    int blkid = plugin.getServer().getBlockIDAt(r.wname, r.x, r.y, r.z);
-                    if((blkid >= 0) && (blkid != WALLSIGN_ID) && (blkid != SIGNPOST_ID)) {
+                    if(plugin.getServer().isSignAt(r.wname, r.x, r.y, r.z) == 0) {
+                        System.out.println("Removing from cache sign " + r.m.getLabel());
                         r.m.deleteMarker();
                         iter.remove();
                     }                    
