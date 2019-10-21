@@ -25,6 +25,8 @@ import org.dynmap.PlayerFaces.FaceType;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.MapStorageTile;
 import org.dynmap.storage.MapStorageTileEnumCB;
+import org.dynmap.storage.MapStorageBaseTileEnumCB;
+import org.dynmap.storage.MapStorageTileSearchEndCB;
 import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
 
@@ -610,7 +612,7 @@ public class MySQLMapStorage extends MapStorage {
 
     @Override
     public void enumMapTiles(DynmapWorld world, MapType map,
-            MapStorageTileEnumCB cb) {
+                             MapStorageTileEnumCB cb) {
         List<MapType> mtlist;
 
         if (map != null) {
@@ -622,15 +624,36 @@ public class MySQLMapStorage extends MapStorage {
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
             for (ImageVariant var : vars) {
-                processEnumMapTiles(world, mt, var, cb);
+                processEnumMapTiles(world, mt, var, cb, null, null);
             }
         }
     }
-    private void processEnumMapTiles(DynmapWorld world, MapType map, ImageVariant var, MapStorageTileEnumCB cb) {
+    @Override
+    public void enumMapBaseTiles(DynmapWorld world, MapType map, MapStorageBaseTileEnumCB cbBase, MapStorageTileSearchEndCB cbEnd) {
+        List<MapType> mtlist;
+
+        if (map != null) {
+            mtlist = Collections.singletonList(map);
+        }
+        else {  // Else, add all directories under world directory (for maps)
+            mtlist = new ArrayList<MapType>(world.maps);
+        }
+        for (MapType mt : mtlist) {
+            ImageVariant[] vars = mt.getVariants();
+            for (ImageVariant var : vars) {
+                processEnumMapTiles(world, mt, var, null, cbBase, cbEnd);
+            }
+        }
+    }
+    private void processEnumMapTiles(DynmapWorld world, MapType map, ImageVariant var, MapStorageTileEnumCB cb, MapStorageBaseTileEnumCB cbBase, MapStorageTileSearchEndCB cbEnd) {
         Connection c = null;
         boolean err = false;
         Integer mapkey = getMapKey(world, map, var);
-        if (mapkey == null) return;
+        if (mapkey == null) {
+            if(cbEnd != null)
+                cbEnd.searchEnded();
+            return;
+        }
         try {
             c = getConnection();
             // Query tiles for given mapkey
@@ -638,9 +661,15 @@ public class MySQLMapStorage extends MapStorage {
             ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM " + tableTiles + " WHERE MapID=" + mapkey + ";");
             while (rs.next()) {
                 StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
-                cb.tileFound(st, MapType.ImageEncoding.fromOrd(rs.getInt("Format")));
+                final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
+                if(cb != null)
+                    cb.tileFound(st, encoding);
+                if(cbBase != null && st.zoom == 0)
+                    cbBase.tileFound(st, encoding);
                 st.cleanup();
             }
+            if(cbEnd != null)
+                cbEnd.searchEnded();
             rs.close();
             stmt.close();
         } catch (SQLException x) {

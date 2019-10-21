@@ -87,6 +87,15 @@ public abstract class MapStorage {
     public abstract void enumMapTiles(DynmapWorld world, MapType map, MapStorageTileEnumCB cb);
 
     /**
+     * Enumerate existing map tiles, matching given constraints, with zoom at 0
+     * @param world - specific world
+     * @param map - specific map (if non-null)
+     * @param cbBase - callback to receive matching tiles
+     * @param cbEnd - callback to receive end-of-search event
+     */
+    public abstract void enumMapBaseTiles(DynmapWorld world, MapType map, MapStorageBaseTileEnumCB cbBase, MapStorageTileSearchEndCB cbEnd);
+
+    /**
      * Purge existing map tiles, matching given constraints
      * @param world - specific world
      * @param map - specific map (if non-null)
