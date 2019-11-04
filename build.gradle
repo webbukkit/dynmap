@@ -13,7 +13,7 @@ allprojects  {
      maven { url "http://repo.mikeprimm.com" }
      maven { url "http://repo.maven.apache.org/maven2" }
      maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
-     maven { url "http://repo.bstats.org/content/repositories/releases/" }
+     maven { url "https://repo.codemc.org/repository/maven-public/" }
   }
 
   apply plugin: 'java'
