@@ -3,7 +3,7 @@ main: org.dynmap.bukkit.DynmapPlugin
 version: "${version}-${buildnumber}"
 authors: [mikeprimm]
 website: "https://forums.dynmap.us"
-softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit, GroupManager, LuckPerm ]
+softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit, GroupManager, LuckPerms ]
 commands:
   dynmap:
     description: Controls Dynmap.
