@@ -375,6 +375,7 @@ DynMap.prototype = {
 				componentstoload--;
 				if (componentstoload == 0) {
 					// Actually start updating once all components are loaded.
+					me.update();
 					setTimeout(function() { me.update(); }, me.options.updaterate);
 				}
 			});
