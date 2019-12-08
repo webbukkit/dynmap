@@ -15,7 +15,7 @@ public class StairBlockModelImpl extends BlockModelImpl implements StairBlockMod
     public String getLine() {
         String ids = this.getIDsAndMeta();
         if (ids == null) return null;
-        return String.format("customblock:%s,class=org.dynmap.hdmap.renderer.StairBlockRenderer", ids);
+        return String.format("customblock:%s,class=org.dynmap.hdmap.renderer.CopyStairBlockRenderer", ids);
     }
 
 }
