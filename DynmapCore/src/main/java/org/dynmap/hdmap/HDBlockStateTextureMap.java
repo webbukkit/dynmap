@@ -97,7 +97,7 @@ public class HDBlockStateTextureMap {
                         if ((this.blockset != null) && (this.blockset.equals("core") == false)) {
                             HDBlockModels.resetIfNotBlockSet(bs, this.blockset);
                         }
-                        copyToStateIndex(bs, this);
+                        copyToStateIndex(bs, this, null);
                     }
                 }
                 else {  // Else, loop over all state IDs for given block
@@ -110,7 +110,7 @@ public class HDBlockStateTextureMap {
                         if ((this.blockset != null) && (this.blockset.equals("core") == false)) {
                             HDBlockModels.resetIfNotBlockSet(bs, this.blockset);
                         }
-                        copyToStateIndex(bs, this);
+                        copyToStateIndex(bs, this, null);
                     }
                 }
             }
@@ -144,9 +144,11 @@ public class HDBlockStateTextureMap {
         return m;
     }
     // Copy given block state to given state index
-    public static void copyToStateIndex(DynmapBlockState blk, HDBlockStateTextureMap map) {
+    public static void copyToStateIndex(DynmapBlockState blk, HDBlockStateTextureMap map, TexturePack.BlockTransparency trans) {
     	resize(blk.globalStateIndex);
-    	TexturePack.BlockTransparency trans = map.trans;
+    	if (trans == null) {
+    		trans = map.trans;
+    	}
         // Force waterloogged blocks to use SEMITRANSPARENT (same as water)
         if ((trans == TexturePack.BlockTransparency.TRANSPARENT) && blk.isWaterlogged()) {
             trans = TexturePack.BlockTransparency.SEMITRANSPARENT;

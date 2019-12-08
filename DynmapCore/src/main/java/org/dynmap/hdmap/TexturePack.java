@@ -2222,13 +2222,13 @@ public class TexturePack {
                                 if (stateids == null) {
                                     for (int sid = 0; sid < dblk.getStateCount(); sid++) {
                                         DynmapBlockState dblk2 = dblk.getState(sid);
-                                        HDBlockStateTextureMap.copyToStateIndex(dblk2, map);
+                                        HDBlockStateTextureMap.copyToStateIndex(dblk2, map, trans);
                                     }
                                 }
                                 else {
                                     for (int stateid = stateids.nextSetBit(0); stateid >= 0; stateid = stateids.nextSetBit(stateid+1)) {
                                         DynmapBlockState dblk2 = dblk.getState(stateid);
-                                        HDBlockStateTextureMap.copyToStateIndex(dblk2, map);
+                                        HDBlockStateTextureMap.copyToStateIndex(dblk2, map, trans);
                                     }
                                 }
                             }
