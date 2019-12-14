@@ -289,7 +289,7 @@ public class MariaDBMapStorage extends MapStorage {
         connectionString = "jdbc:mariadb://" + hostname + ":" + port + "/" + database + "?allowReconnect=true";
         Log.info("Opening MariaDB database " + hostname + ":" + port + "/" + database + " as map store");
         try {
-            Class.forName("com.mariadb.jdbc.Driver");
+            Class.forName("org.mariadb.jdbc.Driver");
             // Initialize/update tables, if needed
             if(!initializeTables()) {
                 return false;
