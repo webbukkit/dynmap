@@ -223,17 +223,25 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	        BiomeBase[] bbl = (BiomeBase[])BukkitVersionHelper.helper.getBiomeBaseList();
 	        if (nbt.hasKey("Biomes")) {
             	int[] bb = nbt.getIntArray("Biomes");
-            	if (bb != null) {
+            	if (bb != null && bb.length <= 256) {
                 	for (int i = 0; i < bb.length; i++) {
                 		int bv = bb[i];
                 		if (bv < 0) bv = 0;
                 		this.biomebase[i] = bbl[bv];
 					}
+				}
+				else if (bb != null && bb.length > 256) {
 					biomestorage = new BiomeStorage(cc, ((CraftWorld)w).getHandle().getChunkProvider().getChunkGenerator().getWorldChunkManager(), bb);
-	            }
+					for(int iz = 0; iz < 16; iz++) {
+						for(int ix = 0; ix < 16; ix++) {
+							this.biomebase[iz << 4 | ix] = biomestorage.getBiome(ix >> 2, 0, iz >> 2);
+						}
+					}
+				}
+				
 			}
 			if(biomestorage == null) {
-				biomestorage = new BiomeStorage(this.biomebase);
+				biomestorage = new BiomeStorage(cc, ((CraftWorld)w).getHandle().getChunkProvider().getChunkGenerator().getWorldChunkManager());
 			}
 			this.biomestorage = biomestorage;
 	    }
