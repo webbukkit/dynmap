@@ -1194,7 +1194,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         onblockfromto = core.isTrigger("blockfromto");
         onblockphysics = core.isTrigger("blockphysics");
         onpiston = core.isTrigger("pistonmoved");
-        onblockfade = core.isTrigger("blockfaded");
         onblockredstone = core.isTrigger("blockredstone");
         
         if(onplace) {
