@@ -19,7 +19,7 @@ public class MarkerSignManager {
     private static MarkerSignManager mgr = null;
     private static DynmapCore plugin = null;
     private static String defSignSet = null;
-    
+
     private static class SignRec {
         String wname;
         int x, y, z;
@@ -147,7 +147,7 @@ public class MarkerSignManager {
                     iter.remove();
                 }
                 else {
-                    if(plugin.getServer().isSignAt(r.wname, r.x, r.y, r.z) == 0) {						
+                    if(plugin.getServer().isSignAt(r.wname, r.x, r.y, r.z) == 0) {
                         r.m.deleteMarker();
                         iter.remove();
                     }

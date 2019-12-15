@@ -231,6 +231,22 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 		}
 
         @Override
+        public int isSignAt(String wname, int x, int y, int z) {
+            World w = getServer().getWorld(wname);
+            if((w != null) && w.isChunkLoaded(x >> 4, z >> 4)) {
+                Block b = w.getBlockAt(x, y, z);
+                BlockState s = b.getState();
+
+                if (s instanceof Sign) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+            return -1;
+        }
+
+        @Override
         public void scheduleServerTask(Runnable run, long delay) {
             getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, run, delay);
         }
