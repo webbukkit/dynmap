@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,6 +33,10 @@ import org.dynmap.debug.Debug;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.storage.MapStorage;
+import org.dynmap.storage.MapStorageBaseTileEnumCB;
+import org.dynmap.storage.MapStorageTileSearchEndCB;
+import org.dynmap.storage.MapStorageTile;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.TileFlags;
@@ -67,7 +72,7 @@ public class MapManager {
     private boolean tpspauseupdaterenders = false;
     private boolean tpspausefullrenders = false;
     private boolean tpspausezoomout = false;
-    
+
     private boolean did_start = false;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
@@ -233,6 +238,7 @@ public class MapManager {
         LinkedList<MapTile> renderQueue = null;
         MapTile tile0 = null;
         int rendercnt = 0;
+        int skipcnt = 0;
         DynmapCommandSender sender;
         String player;
         long timeaccum;
@@ -246,21 +252,51 @@ public class MapManager {
         boolean shutdown = false;
         boolean pausedforworld = false;
         boolean updaterender = false;
+        boolean resume = false;
         boolean quiet = false;
         String mapname;
         AtomicLong total_render_ns = new AtomicLong(0L);
         AtomicInteger rendercalls = new AtomicInteger(0);
         long lastPendingSaveTS = 0; // Timestamp of last pending state save (msec)
+        HashSet<String> storedTileIds = new HashSet<>();
 
         /* Full world, all maps render */
-        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, DynmapCommandSender sender, String mapname, boolean updaterender) {
+        FullWorldRenderState(DynmapWorld dworld, DynmapLocation l, DynmapCommandSender sender, String mapname, boolean updaterender, boolean resume) {
             this(dworld, l, sender, mapname, -1);
             if(updaterender) {
                 rendertype = RENDERTYPE_UPDATERENDER;
                 this.updaterender = true;
             }
-            else
+            else {
                 rendertype = RENDERTYPE_FULLRENDER;
+            }
+            this.resume = resume;
+
+            final CountDownLatch latch = new CountDownLatch(1);
+
+            if (resume) { // if resume render
+                final MapStorage ms = world.getMapStorage();
+                ms.enumMapBaseTiles(world, map, new MapStorageBaseTileEnumCB() {
+                    @Override
+                    public void tileFound(MapStorageTile tile, MapType.ImageEncoding enc) {
+                        String tileId = String.format("%s_%s_%d_%d", tile.world.getName(), tile.map.getName(), tile.x, tile.y);
+                        //sender.sendMessage("Tile found: " + tileId);
+                        storedTileIds.add(tileId);
+                    }
+                }, new MapStorageTileSearchEndCB() {
+                    @Override
+                    public void searchEnded() {
+                        latch.countDown();
+                    }
+                });
+
+                try {
+                    latch.await(10, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    sender.sendMessage(e.toString());
+                }
+            }
         }
         
         /* Full world, all maps render, with optional render radius */
@@ -481,13 +517,22 @@ public class MapManager {
                         if(rndcalls == 0) rndcalls = 1;
                         double rendtime = total_render_ns.doubleValue() * 0.000001 / rndcalls;
                         if(activemapcnt > 1) {
-                            sendMessage(String.format("%s of maps [%s] of '%s' completed - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
-                                rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
+                            if (skipcnt > 1)
+                                sendMessage(String.format("%s of maps [%s] of '%s' completed - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render) (%d tiles skipped)",
+                                    rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime, skipcnt));
+                            else
+                                sendMessage(String.format("%s of maps [%s] of '%s' completed - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
+                                    rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
                         }
                         else {
-                            sendMessage(String.format("%s of map '%s' of '%s' completed - %d tiles rendered (%.2f msec/map-tile, %.2f msec per render)",
-                                rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
+                            if (skipcnt > 1)
+                                sendMessage(String.format("%s of map '%s' of '%s' completed - %d tiles rendered (%.2f msec/map-tile, %.2f msec per render) (%d tiles skipped)",
+                                    rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime, skipcnt));
+                            else
+                                sendMessage(String.format("%s of map '%s' of '%s' completed - %d tiles rendered (%.2f msec/map-tile, %.2f msec per render)",
+                                    rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
                         }
+                        skipcnt = 0;
                         /* Now, if fullrender, use the render bitmap to purge obsolete tiles */
                         if(rendertype.equals(RENDERTYPE_FULLRENDER)) {
                             if(activemapcnt == 1) {
@@ -698,19 +743,37 @@ public class MapManager {
                 chunks_read[cs.ordinal()].addAndGet(cache.getChunksLoaded(cs));
                 chunks_read_times[cs.ordinal()].addAndGet(cache.getTotalRuntimeNanos(cs));
             }
+
+            boolean skipTile = false;
+            if (resume) {
+                String tileId = String.format("%s_%s_%d_%d", tile.world.getName(), map.getName(), tile.tileOrdinalX(), tile.tileOrdinalY());
+                skipTile = storedTileIds.contains(tileId);
+            }
+
             if(tile0 != null) {    /* Single tile? */
-                if(cache.isEmpty() == false)
-                    tile.render(cache, null);
+                if(cache.isEmpty() == false) {
+                    if (skipTile) {
+                        skipcnt++;
+                    } else {
+                        tile.render(cache, null);
+                    }
+                }
             }
             else {
         		/* Remove tile from tile queue, since we're processing it already */
             	tileQueue.remove(tile);
                 /* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
                 if (cache.isEmpty() == false) {
-                    long rt0 = System.nanoTime();
-                    boolean upd = tile.render(cache, mapname);
-                    total_render_ns.addAndGet(System.nanoTime()-rt0);
-                    rendercalls.incrementAndGet();
+                    boolean upd;
+                    if (skipTile) {
+                        upd = false;
+                        skipcnt++;
+                    } else {
+                        long rt0 = System.nanoTime();
+                        upd = tile.render(cache, mapname);
+                        total_render_ns.addAndGet(System.nanoTime()-rt0);
+                        rendercalls.incrementAndGet();
+                    }
                     synchronized(lock) {
                         rendered.setFlag(tile.tileOrdinalX(), tile.tileOrdinalY(), true);
                         if(upd || (!updaterender)) {    /* If updated or not an update render */
@@ -733,12 +796,22 @@ public class MapManager {
                             if (rndcalls == 0) rndcalls = 1;
                             double rendtime = total_render_ns.doubleValue() * 0.000001 / rndcalls;
                             double msecpertile = (double)timeaccum / (double)rendercnt / (double)activemapcnt;
-                            if(activemapcnt > 1) 
-                                sendMessage(String.format("%s of maps [%s] of '%s' in progress - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
-                                        rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
-                            else
-                                sendMessage(String.format("%s of map '%s' of '%s' in progress - %d tiles rendered (%.2f msec/tile, %.2f msec per render)",
-                                        rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
+                            if(activemapcnt > 1) {
+                                if (skipcnt > 1)
+                                    sendMessage(String.format("%s of maps [%s] of '%s' in progress - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render) (%d tiles skipped)",
+                                            rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime, skipcnt));
+                                else
+                                    sendMessage(String.format("%s of maps [%s] of '%s' in progress - %d tiles rendered each (%.2f msec/map-tile, %.2f msec per render)",
+                                            rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
+                            } else {
+                                if (skipcnt > 1)
+                                    sendMessage(String.format("%s of map '%s' of '%s' in progress - %d tiles rendered (%.2f msec/tile, %.2f msec per render) (%d tiles skipped)",
+                                            rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime, skipcnt));
+                                else
+                                    sendMessage(String.format("%s of map '%s' of '%s' in progress - %d tiles rendered (%.2f msec/tile, %.2f msec per render)",
+                                            rendertype, activemaps, world.getName(), rendercnt, msecpertile, rendtime));
+                            }
+                            skipcnt = 0;
                         }
                     }
                 }
@@ -751,6 +824,7 @@ public class MapManager {
         
         public void cancelRender() {
         	cancelled = true;
+        	storedTileIds.clear();
         }
 
         public void shutdownRender() {
@@ -968,7 +1042,7 @@ public class MapManager {
         tileQueue.start();
     }
 
-    void renderFullWorld(DynmapLocation l, DynmapCommandSender sender, String mapname, boolean update) {
+    void renderFullWorld(DynmapLocation l, DynmapCommandSender sender, String mapname, boolean update, boolean resume) {
         DynmapWorld world = getWorld(l.world);
         if (world == null) {
             sender.sendMessage("Could not render: world '" + l.world + "' not defined in configuration.");
@@ -982,7 +1056,7 @@ public class MapManager {
                 sender.sendMessage(rndr.rendertype + " of world '" + wname + "' already active.");
                 return;
             }
-            rndr = new FullWorldRenderState(world,l,sender, mapname, update);    /* Make new activation record */
+            rndr = new FullWorldRenderState(world,l,sender, mapname, update, resume);    /* Make new activation record */
             active_renders.put(wname, rndr);    /* Add to active table */
         }
         /* Schedule first tile to be worked */
@@ -990,6 +1064,8 @@ public class MapManager {
 
         if(update)
             sender.sendMessage("Update render starting on world '" + wname + "'...");
+        else if (resume)
+            sender.sendMessage("Full render resuming on world '" + wname + "'...");
         else
             sender.sendMessage("Full render starting on world '" + wname + "'...");
     }

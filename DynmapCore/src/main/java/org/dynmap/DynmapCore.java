@@ -1046,7 +1046,9 @@ public class DynmapCore implements DynmapCommonAPI {
         new CommandInfo("dynmap", "render", "Renders the tile at your location."),
         new CommandInfo("dynmap", "fullrender", "Render all maps for entire world from your location."),
         new CommandInfo("dynmap", "fullrender", "<world>", "Render all maps for world <world>."),
-        new CommandInfo("dynmap", "fullrender", "<world>:<map>", "Render map <map> of world'<world>."),
+        new CommandInfo("dynmap", "fullrender", "<world>:<map>", "Render map <map> of world <world>."),
+        new CommandInfo("dynmap", "fullrender", "resume <world>", "Resume render of all maps for world <world>. Skip already rendered tiles."),
+        new CommandInfo("dynmap", "fullrender", "resume <world>:<map>", "Resume render of map <map> of world <world>. Skip already rendered tiles."),
         new CommandInfo("dynmap", "radiusrender", "<radius>", "Render at least <radius> block radius from your location on all maps."),
         new CommandInfo("dynmap", "radiusrender", "<radius> <mapname>", "Render at least <radius> block radius from your location on map <mapname>."),
         new CommandInfo("dynmap", "radiusrender", "<world> <x> <z> <radius>", "Render at least <radius> block radius from location <x>,<z> on world <world>."),
@@ -1319,7 +1321,7 @@ public class DynmapCore implements DynmapCommonAPI {
                         loc = new DynmapLocation(w.getName(), x, 64, z);
                 }
                 if(loc != null)
-                    mapManager.renderFullWorld(loc, sender, mapname, true);
+                    mapManager.renderFullWorld(loc, sender, mapname, true, false);
             } else if (c.equals("hide")) {
                 if (args.length == 1) {
                     if(player != null && checkPlayerPermission(sender,"hide.self")) {
@@ -1347,7 +1349,12 @@ public class DynmapCore implements DynmapCommonAPI {
             } else if (c.equals("fullrender") && checkPlayerPermission(sender,"fullrender")) {
                 String map = null;
                 if (args.length > 1) {
+                    boolean resume = false;
                     for (int i = 1; i < args.length; i++) {
+                        if (args[i].equalsIgnoreCase("resume")) {
+                             resume = true;
+                             continue;
+                        }
                         int dot = args[i].indexOf(":");
                         DynmapWorld w;
                         String wname = args[i];
@@ -1362,7 +1369,7 @@ public class DynmapCore implements DynmapCommonAPI {
                                 loc = w.center;
                             else
                                 loc = w.getSpawnLocation();
-                            mapManager.renderFullWorld(loc,sender, map, false);
+                            mapManager.renderFullWorld(loc,sender, map, false, resume);
                         }
                         else
                             sender.sendMessage("World '" + wname + "' not defined/loaded");
@@ -1372,7 +1379,7 @@ public class DynmapCore implements DynmapCommonAPI {
                     if(args.length > 1)
                         map = args[1];
                     if(loc != null)
-                        mapManager.renderFullWorld(loc, sender, map, false);
+                        mapManager.renderFullWorld(loc, sender, map, false, false);
                 } else {
                     sender.sendMessage("World name is required");
                 }
