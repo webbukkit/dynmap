@@ -2404,3 +2404,29 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.14-]block:id=campfire,patch0=0:campfire_log,patch1=0:campfire_log_lit,patch2=0:campfire_fire,transparency=TRANSPARENT
 # Bell
 [1.14-]block:id=bell,patch0=0:dark_oak_planks,patch1=0:stone,patch2=0:bell_top,patch3=0:bell_bottom,patch4=0:bell_side,transparency=TRANSPARENT
+
+# 1.15 resources
+[1.15-]texture:id=bee_nest_bottom
+[1.15-]texture:id=bee_nest_top
+[1.15-]texture:id=bee_nest_front
+[1.15-]texture:id=bee_nest_front_honey
+[1.15-]texture:id=bee_nest_side
+[1.15-]texture:id=beehive_end
+[1.15-]texture:id=beehive_front
+[1.15-]texture:id=beehive_front_honey
+[1.15-]texture:id=beehive_side
+[1.15-]texture:id=honey_block_top
+[1.15-]texture:id=honey_block_bottom
+[1.15-]texture:id=honey_block_side
+[1.15-]texture:id=honeycomb_block
+
+# Beenest (facing N, S, W, E)
+[1.15-]block:id=bee_nest,data=0-4,data=6-10,data=12-16,data=18-22,patch0=0:bee_nest_top,patch1=0:bee_nest_bottom,patch2=0:bee_nest_front,patch3=0:bee_nest_side
+[1.15-]block:id=bee_nest,data=5,data=11,data=17,data=23,patch0=0:bee_nest_top,patch1=0:bee_nest_bottom,patch2=0:bee_nest_front_honey,patch3=0:bee_nest_side
+# Beehive (facing N, S, W, E)
+[1.15-]block:id=beehive,data=0-4,data=6-10,data=12-16,data=18-22,patch0=0:beehive_end,patch1=0:beehive_end,patch2=0:beehive_front,patch3=0:beehive_side
+[1.15-]block:id=beehive,data=5,data=11,data=17,data=23,patch0=0:beehive_end,patch1=0:beehive_end,patch2=0:beehive_front_honey,patch3=0:beehive_side
+# Honey block
+[1.15-]block:id=honey_block,patch0=0:honey_block_top,patch1=0:honey_block_bottom,patch2=0:honey_block_side,transparency=TRANSPARENT
+# Honeycomb block
+[1.15-]block:id=honeycomb_block,allfaces=0:honeycomb_block,stdrot=true
