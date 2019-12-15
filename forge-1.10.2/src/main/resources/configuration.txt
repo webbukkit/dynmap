@@ -140,7 +140,7 @@ components:
     messagettl: 5
     # Optional: set number of lines in scrollable message history: if set, messagettl is not used to age out messages
     #scrollback: 100
-    # Optiona; set maximum number of lines visible for chatbox
+    # Optional: set maximum number of lines visible for chatbox
     #visiblelines: 10
     # Optional: send push button
     sendbutton: false

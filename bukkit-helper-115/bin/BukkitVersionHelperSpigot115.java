@@ -86,7 +86,7 @@ public class BukkitVersionHelperSpigot115 extends BukkitVersionHelperCB {
     @Override
     public Object[] getBiomeBaseList() {
     	if (biomelist == null) {
-    		biomelist = new BiomeBase[1024];
+    		biomelist = new Object[1024];
             for (int i = 0; i < 1024; i++) {
             	biomelist[i] = IRegistry.BIOME.fromId(i);
             }
@@ -168,21 +168,9 @@ public class BukkitVersionHelperSpigot115 extends BukkitVersionHelperCB {
 	 */
     @Override
 	public int getBiomeBaseWaterMult(Object bb) {
-		return ((BiomeBase)bb).o();
+		return ((BiomeBase)bb).p();
 	}
 
-    /** Get temperature from biomebase */
-    @Override
-    public float getBiomeBaseTemperature(Object bb) {
-    	return ((BiomeBase)bb).getTemperature();
-    }
-
-    /** Get humidity from biomebase */
-    @Override
-    public float getBiomeBaseHumidity(Object bb) {
-    	return ((BiomeBase)bb).getHumidity();    	
-    }
-    
     @Override
     public Polygon getWorldBorder(World world) {
         Polygon p = null;

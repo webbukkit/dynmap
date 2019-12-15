@@ -1,6 +1,8 @@
 package org.dynmap.bukkit.helper.v115;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Biome;
+import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 
 import java.io.IOException;
@@ -18,13 +20,10 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.VisibilityLimit;
 
-import net.minecraft.server.v1_15_R1.BiomeBase;
-import net.minecraft.server.v1_15_R1.BiomeStorage;
 import net.minecraft.server.v1_15_R1.Chunk;
 import net.minecraft.server.v1_15_R1.ChunkCoordIntPair;
 import net.minecraft.server.v1_15_R1.ChunkRegionLoader;
 import net.minecraft.server.v1_15_R1.DataBits;
-import net.minecraft.server.v1_15_R1.IRegistry;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import net.minecraft.server.v1_15_R1.NBTTagList;
 
@@ -43,13 +42,14 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	    private final int x, z;
 	    private final Section[] section;
 	    private final int[] hmap; // Height map
-	    private final BiomeStorage biomestorage;
-	    private final BiomeBase[] biomebase;
+	    private final int[] biome;
+	    private final Object[] biomebase;
 	    private final long captureFulltime;
 	    private final int sectionCnt;
 	    private final long inhabitedTicks;
 
 	    private static final int BLOCKS_PER_SECTION = 16 * 16 * 16;
+	    private static final int COLUMNS_PER_CHUNK = 16 * 16 * 4;
 	    private static final byte[] emptyData = new byte[BLOCKS_PER_SECTION / 2];
 	    private static final byte[] fullData = new byte[BLOCKS_PER_SECTION / 2];
 
@@ -121,8 +121,8 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	        this.x = x;
 	        this.z = z;
 	        this.captureFulltime = captime;
-			this.biomebase = new BiomeBase[BiomeStorage.a];
-			this.biomestorage = new BiomeStorage(this.biomebase);
+	        this.biome = new int[COLUMNS_PER_CHUNK];
+	        this.biomebase = new Object[COLUMNS_PER_CHUNK];
 	        this.sectionCnt = worldheight / 16;
 	        /* Allocate arrays indexed by section */
 	        this.section = new Section[this.sectionCnt];
@@ -138,10 +138,9 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	        this.inhabitedTicks = inhabitedTime;
 	    }
 
-	    public NBTSnapshot(World w, NBTTagCompound nbt, int worldheight) {
+	    public NBTSnapshot(NBTTagCompound nbt, int worldheight) {
 	        this.x = nbt.getInt("xPos");
-			this.z = nbt.getInt("zPos");
-			ChunkCoordIntPair cc = new ChunkCoordIntPair(this.x, this.z);
+	        this.z = nbt.getInt("zPos");
 	        this.captureFulltime = 0;
 	        this.hmap = nbt.getIntArray("HeightMap");
 	        this.sectionCnt = worldheight / 16;
@@ -218,32 +217,20 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	            }
 	        }
 	        /* Get biome data */
-	        BiomeStorage biomestorage = null;
-	        this.biomebase = new BiomeBase[BiomeStorage.a];
-	        BiomeBase[] bbl = (BiomeBase[])BukkitVersionHelper.helper.getBiomeBaseList();
+	        this.biome = new int[COLUMNS_PER_CHUNK];
+	        this.biomebase = new Object[COLUMNS_PER_CHUNK];
+	        Object[] bbl = BukkitVersionHelper.helper.getBiomeBaseList();
 	        if (nbt.hasKey("Biomes")) {
             	int[] bb = nbt.getIntArray("Biomes");
-            	if (bb != null && bb.length <= 256) {
+            	if (bb != null) {
                 	for (int i = 0; i < bb.length; i++) {
                 		int bv = bb[i];
                 		if (bv < 0) bv = 0;
+                		this.biome[i] = bv;
                 		this.biomebase[i] = bbl[bv];
-					}
-				}
-				else if (bb != null && bb.length > 256) {
-					biomestorage = new BiomeStorage(cc, ((CraftWorld)w).getHandle().getChunkProvider().getChunkGenerator().getWorldChunkManager(), bb);
-					for(int iz = 0; iz < 16; iz++) {
-						for(int ix = 0; ix < 16; ix++) {
-							this.biomebase[iz << 4 | ix] = biomestorage.getBiome(ix >> 2, 0, iz >> 2);
-						}
-					}
-				}
-				
-			}
-			if(biomestorage == null) {
-				biomestorage = new BiomeStorage(cc, ((CraftWorld)w).getHandle().getChunkProvider().getChunkGenerator().getWorldChunkManager());
-			}
-			this.biomestorage = biomestorage;
+                	}
+	            }
+	        }
 	    }
 	    
 	    public int getX()
@@ -292,9 +279,7 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 
 		@Override
 		public Biome getBiome(int x, int z) {
-			BiomeBase bb = this.biomestorage.getBiome(x, 64, z);
-			int biomeId = IRegistry.BIOME.a(bb);
-	        return AbstractMapChunkCache.getBiomeByID(biomeId);
+	        return AbstractMapChunkCache.getBiomeByID(biome[z << 4 | x]);
 		}
 
 		@Override
@@ -424,7 +409,7 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
                 did_load = true;
             }
             if (nbt != null) {
-                NBTSnapshot nss = new NBTSnapshot(w, nbt, w.getMaxHeight());
+                NBTSnapshot nss = new NBTSnapshot(nbt, w.getMaxHeight());
                 ss = nss;
                 inhabited_ticks = nss.getInhabitedTicks();
                 if(!vis) {
