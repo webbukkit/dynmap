@@ -49,7 +49,8 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	    private final long inhabitedTicks;
 
 	    private static final int BLOCKS_PER_SECTION = 16 * 16 * 16;
-	    private static final int COLUMNS_PER_CHUNK = 16 * 16 * 4;
+	    private static final int COLUMNS_PER_CHUNK = 16 * 16;
+        private static final int V1_15_BIOME_PER_CHUNK = 4 * 4 * 64;
 	    private static final byte[] emptyData = new byte[BLOCKS_PER_SECTION / 2];
 	    private static final byte[] fullData = new byte[BLOCKS_PER_SECTION / 2];
 
@@ -223,12 +224,25 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	        if (nbt.hasKey("Biomes")) {
             	int[] bb = nbt.getIntArray("Biomes");
             	if (bb != null) {
-                	for (int i = 0; i < bb.length; i++) {
-                		int bv = bb[i];
-                		if (bv < 0) bv = 0;
-                		this.biome[i] = bv;
-                		this.biomebase[i] = bbl[bv];
-                	}
+            	    // If v1.15+ format
+            	    if (bb.length > COLUMNS_PER_CHUNK) {
+            	        // For now, just pad the grid with the first 16
+                        for (int i = 0; i < COLUMNS_PER_CHUNK; i++) {
+                            int off = ((i >> 4) & 0xC) + ((i >> 2) & 0x3);
+                            int bv = bb[off + 64];   // Offset to y=64
+                            if (bv < 0) bv = 0;
+                            this.biome[i] = bv;
+                            this.biomebase[i] = bbl[bv];
+                        }
+            	    }
+            	    else { // Else, older chunks
+            	        for (int i = 0; i < bb.length; i++) {
+            	            int bv = bb[i];
+            	            if (bv < 0) bv = 0;
+            	            this.biome[i] = bv;
+            	            this.biomebase[i] = bbl[bv];
+            	        }
+            	    }
 	            }
 	        }
 	    }
