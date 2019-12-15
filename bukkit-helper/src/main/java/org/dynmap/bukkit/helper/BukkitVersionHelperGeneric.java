@@ -47,6 +47,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     private Method cw_gethandle;
 
     /** BiomeBase related helpers */
+    protected Class<?> biomestorage;
+    protected Field biomestoragebase;
     protected Class<?> biomebase;
     protected Class<?> biomebasearray;
     protected Field biomebaselist;
@@ -131,7 +133,12 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         /* CraftChunkSnapshot */
         craftchunksnapshot = getOBCClass("org.bukkit.craftbukkit.CraftChunkSnapshot");
         biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
-        ccss_biome = getPrivateField(craftchunksnapshot, new String[] { "biome" }, biomebasearray);
+        ccss_biome = getPrivateFieldNoFail(craftchunksnapshot, new String[] { "biome" }, biomebasearray);
+        if(ccss_biome == null) {
+            biomestorage = getNMSClass("net.minecraft.server.BiomeStorage");
+            biomestoragebase = getPrivateField(biomestorage, new String[] { "f" }, biomebasearray);
+            ccss_biome = getPrivateField(craftchunksnapshot, new String[] { "biome" }, biomestorage);
+        }
         /* CraftChunk */
         craftchunk = getOBCClass("org.bukkit.craftbukkit.CraftChunk");
         cc_gethandle = getMethod(craftchunk, new String[] { "getHandle" }, new Class[0]);
@@ -321,7 +328,11 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
      * Get list of defined biomebase objects
      */
     public Object[] getBiomeBaseList() {
-        return (Object[]) getFieldValue(biomebase, biomebaselist, new Object[0]);
+        Object baselist = getFieldValue(biomebase, biomebaselist, new Object[0]);
+        if(biomestoragebase != null)
+            baselist = getFieldValue(baselist, biomestoragebase, new Object[0]);
+
+        return (Object[])baselist;
     }
     /** Get temperature from biomebase */
     public float getBiomeBaseTemperature(Object bb) {
