@@ -536,20 +536,6 @@ public class DynmapPlugin
 		}
 
         @Override
-        public int isSignAt(String wname, int x, int y, int z) {
-            int blkid = this.getBlockIDAt(wname, x, y, z);
-
-            if (blkid == -1)
-                return -1;
-
-            if((blkid == WALLSIGN_ID) || (blkid == SIGNPOST_ID)) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
         public void scheduleServerTask(Runnable run, long delay)
         {
             TaskRecord tr = new TaskRecord();

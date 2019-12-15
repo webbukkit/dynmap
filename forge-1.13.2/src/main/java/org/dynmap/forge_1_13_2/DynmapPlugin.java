@@ -160,9 +160,6 @@ public class DynmapPlugin
     private static final int SIGNPOST_ID = 63;
     private static final int WALLSIGN_ID = 68;
 
-    private static final int SIGNPOST_ID = 63;
-    private static final int WALLSIGN_ID = 68;
-
     private static final String[] TRIGGER_DEFAULTS = { "blockupdate", "chunkpopulate", "chunkgenerate" };
 
     private static final Pattern patternControlCode = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
@@ -520,11 +517,6 @@ public class DynmapPlugin
             return -1;
         }
 		
-		@Override
-		public int isSignAt(String wname, int x, int y, int z) {
-			return -1;
-		}
-
         @Override
         public int isSignAt(String wname, int x, int y, int z) {
             return -1;
