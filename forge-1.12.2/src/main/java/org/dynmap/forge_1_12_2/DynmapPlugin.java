@@ -528,7 +528,7 @@ public class DynmapPlugin
 		
 		@Override
 		public int isSignAt(String wname, int x, int y, int z) {
-			int blkid = plugin.getServer().getBlockIDAt(r.wname, r.x, r.y, r.z);
+			int blkid = getBlockIDAt(wname, x, y, z);
 			
 			if (blkid == -1)
 				return -1;
