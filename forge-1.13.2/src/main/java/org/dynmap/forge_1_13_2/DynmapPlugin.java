@@ -156,6 +156,9 @@ public class DynmapPlugin
     private boolean isMCPC = false;
     private boolean useSaveFolder = true;
     private Field displayName = null; // MCPC+ display name
+	
+    private static final int SIGNPOST_ID = 63;
+    private static final int WALLSIGN_ID = 68;
 
     private static final String[] TRIGGER_DEFAULTS = { "blockupdate", "chunkpopulate", "chunkgenerate" };
 
@@ -513,6 +516,11 @@ public class DynmapPlugin
         public int getBlockIDAt(String wname, int x, int y, int z) {
             return -1;
         }
+		
+		@Override
+		public int isSignAt(String wname, int x, int y, int z) {
+			return -1;
+		}
 
         @Override
         public void scheduleServerTask(Runnable run, long delay)

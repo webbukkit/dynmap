@@ -178,6 +178,17 @@ public abstract class DynmapServerInterface {
      * @return block ID, or -1 if chunk at given coordinate isn't loaded
      */
     public abstract int getBlockIDAt(String wname, int x, int y, int z);
+	
+    /**
+     * Checks if a sign is at a given coordinate in a given world (if chunk is loaded)
+     * @param wname - world name
+     * @param x - X coordinate
+     * @param y - Y coordinate
+     * @param z - Z coordinate
+     * @return 1 if a sign is at the location, 0 if it's not, -1 if the chunk isn't loaded
+     */
+	public abstract int isSignAt(String wname, int x, int y, int z);
+	
     /**
      * Get current TPS for server (20.0 is nominal)
      * @return ticks per second
