@@ -1,6 +1,7 @@
 name: dynmap
 main: org.dynmap.bukkit.DynmapPlugin
 version: "${version}-${buildnumber}"
+api-version: "1.13"
 authors: [mikeprimm]
 website: "https://forums.dynmap.us"
 softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit, GroupManager, LuckPerms ]
