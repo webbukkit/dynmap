@@ -1,4 +1,4 @@
-package org.dynmap.storage.mariadb;
+package org.dynmap.storage.postgresql;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,13 +28,14 @@ import org.dynmap.storage.MapStorageTileEnumCB;
 import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
 
-public class MariaDBMapStorage extends MapStorage {
+public class PostgreSQLMapStorage extends MapStorage {
     private String connectionString;
     private String userid;
     private String password;
     private String database;
     private String hostname;
     private String prefix = "";
+    private String flags;
     private String tableTiles;
     private String tableMaps;
     private String tableFaces;
@@ -48,7 +49,9 @@ public class MariaDBMapStorage extends MapStorage {
     private Connection[] cpool = new Connection[POOLSIZE];
     private int cpoolCount = 0;
     private static final Charset UTF8 = Charset.forName("UTF-8");
-        
+
+    private HashMap<String, Integer> mapKey = new HashMap<String, Integer>();
+
     public class StorageTile extends MapStorageTile {
         private Integer mapkey;
         private String uri;
@@ -200,22 +203,22 @@ public class MariaDBMapStorage extends MapStorage {
 
         @Override
         public boolean getWriteLock() {
-            return MariaDBMapStorage.this.getWriteLock(uri);
+            return PostgreSQLMapStorage.this.getWriteLock(uri);
         }
 
         @Override
         public void releaseWriteLock() {
-            MariaDBMapStorage.this.releaseWriteLock(uri);
+            PostgreSQLMapStorage.this.releaseWriteLock(uri);
         }
 
         @Override
         public boolean getReadLock(long timeout) {
-            return MariaDBMapStorage.this.getReadLock(uri, timeout);
+            return PostgreSQLMapStorage.this.getReadLock(uri, timeout);
         }
 
         @Override
         public void releaseReadLock() {
-            MariaDBMapStorage.this.releaseReadLock(uri);
+            PostgreSQLMapStorage.this.releaseReadLock(uri);
         }
 
         @Override
@@ -263,8 +266,8 @@ public class MariaDBMapStorage extends MapStorage {
             return uri.hashCode();
         }
     }
-    
-    public MariaDBMapStorage() {
+
+    public PostgreSQLMapStorage(){
     }
 
     @Override
@@ -274,10 +277,11 @@ public class MariaDBMapStorage extends MapStorage {
         }
         database = core.configuration.getString("storage/database", "dynmap");
         hostname = core.configuration.getString("storage/hostname", "localhost");
-        port = core.configuration.getInteger("storage/port", 3306);
+        port = core.configuration.getInteger("storage/port", 5432);
         userid = core.configuration.getString("storage/userid", "dynmap");
         password = core.configuration.getString("storage/password", "dynmap");
         prefix = core.configuration.getString("storage/prefix", "");
+        flags = core.configuration.getString("storage/flags", "?allowReconnect=true");
         tableTiles = prefix + "Tiles";
         tableMaps = prefix + "Maps";
         tableFaces = prefix + "Faces";
@@ -286,25 +290,24 @@ public class MariaDBMapStorage extends MapStorage {
         tableStandaloneFiles = prefix + "StandaloneFiles";
         tableSchemaVersion = prefix + "SchemaVersion";
         
-        connectionString = "jdbc:mariadb://" + hostname + ":" + port + "/" + database + "?allowReconnect=true";
-        Log.info("Opening MariaDB database " + hostname + ":" + port + "/" + database + " as map store");
+        connectionString = "jdbc:postgresql://" + hostname + ":" + port + "/" + database + flags;
+        Log.info("Opening PostgreSQL database " + hostname + ":" + port + "/" + database + " as map store");
         try {
-            Class.forName("org.mariadb.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             // Initialize/update tables, if needed
             if(!initializeTables()) {
                 return false;
             }
         } catch (ClassNotFoundException cnfx) {
-            Log.severe("MariaDB-JDBC classes not found - MariaDB data source not usable");
+            Log.severe("PostgreSQL-JDBC classes not found - PostgreSQL data source not usable");
             return false; 
         }
         return writeConfigPHP(core);
     }
-
     private boolean writeConfigPHP(DynmapCore core) {
         FileWriter fw = null;
         try {
-            fw = new FileWriter(new File(baseStandaloneDir, "MySQL_config.php"));
+            fw = new FileWriter(new File(baseStandaloneDir, "PostgreSQL_config.php"));
             fw.write("<?php\n$dbname = \'");
             fw.write(WebAuthManager.esc(database));
             fw.write("\';\n");
@@ -327,7 +330,7 @@ public class MariaDBMapStorage extends MapStorage {
             fw.write(core.isLoginSupportEnabled()?"true;\n":"false;\n");
             fw.write("?>\n");
         } catch (IOException iox) {
-            Log.severe("Error writing MySQL_config.php", iox);
+            Log.severe("Error writing PostgreSQL_config.php", iox);
             return false; 
         } finally {
             if (fw != null) {
@@ -336,6 +339,7 @@ public class MariaDBMapStorage extends MapStorage {
         }
         return true;
     }
+
     private int getSchemaVersion() {
         int ver = 0;
         boolean err = false;
@@ -356,15 +360,13 @@ public class MariaDBMapStorage extends MapStorage {
         }
         return ver;
     }
-    
+
     private void doUpdate(Connection c, String sql) throws SQLException {
         Statement stmt = c.createStatement();
         stmt.executeUpdate(sql);
         stmt.close();
     }
-    
-    private HashMap<String, Integer> mapKey = new HashMap<String, Integer>();
-    
+
     private void doLoadMaps() {
         Connection c = null;
         boolean err = false;
@@ -395,7 +397,7 @@ public class MariaDBMapStorage extends MapStorage {
             c = null;
         }
     }
-    
+
     private Integer getMapKey(DynmapWorld w, MapType mt, ImageVariant var) {
         String id = w.getName() + ":" + mt.getPrefix() + ":" + var.toString();
         synchronized(mapKey) {
@@ -437,7 +439,7 @@ public class MariaDBMapStorage extends MapStorage {
             return k;
         }
     }
-    
+
     private boolean initializeTables() {
         Connection c = null;
         boolean err = false;
@@ -446,12 +448,12 @@ public class MariaDBMapStorage extends MapStorage {
         if (version == 0) {
             try {
                 c = getConnection();
-                doUpdate(c, "CREATE TABLE " + tableMaps + " (ID INTEGER PRIMARY KEY AUTO_INCREMENT, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
-                doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image BLOB, PRIMARY KEY(MapID, x, y, zoom))");
-                doUpdate(c, "CREATE TABLE " + tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image BLOB, PRIMARY KEY(PlayerName, TypeID))");
-                doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BLOB)");
-                doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
-                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
+                doUpdate(c, "CREATE TABLE " + tableMaps + " (ID SERIAL PRIMARY KEY, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
+                doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image BYTEA, PRIMARY KEY(MapID, x, y, zoom))");
+                doUpdate(c, "CREATE TABLE " + tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image BYTEA, PRIMARY KEY(PlayerName, TypeID))");
+                doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BYTEA)");
+                doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content BYTEA)");
+                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content TEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
                 doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (3)");
             } catch (SQLException x) {
@@ -466,7 +468,7 @@ public class MariaDBMapStorage extends MapStorage {
         else if (version == 1) {
             try {
                 c = getConnection();
-                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
+                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content TEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "ALTER TABLE " + tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 1;");
             } catch (SQLException x) {
@@ -483,7 +485,7 @@ public class MariaDBMapStorage extends MapStorage {
                 c = getConnection();
                 doUpdate(c, "DELETE FROM " + tableStandaloneFiles + ";");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " DROP COLUMN Content;");
-                doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " ADD COLUMN Content MEDIUMTEXT;");
+                doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " ADD COLUMN Content TEXT;");
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 2;");
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
@@ -499,7 +501,7 @@ public class MariaDBMapStorage extends MapStorage {
         
         return true;
     }
-    
+
     private Connection getConnection() throws SQLException {
         Connection c = null;
         synchronized (cpool) {
@@ -529,11 +531,10 @@ public class MariaDBMapStorage extends MapStorage {
         }
         return c;
     }
-    
     private static Connection configureConnection(Connection conn) throws SQLException {
         return conn;
     }
-    
+
     private void releaseConnection(Connection c, boolean err) {
         if (c == null) return;
         synchronized (cpool) {
@@ -624,6 +625,7 @@ public class MariaDBMapStorage extends MapStorage {
             }
         }
     }
+
     private void processEnumMapTiles(DynmapWorld world, MapType map, ImageVariant var, MapStorageTileEnumCB cb) {
         Connection c = null;
         boolean err = false;
@@ -666,6 +668,7 @@ public class MariaDBMapStorage extends MapStorage {
             }
         }
     }
+
     private void processPurgeMapTiles(DynmapWorld world, MapType map, ImageVariant var) {
         Connection c = null;
         boolean err = false;
@@ -857,7 +860,6 @@ public class MariaDBMapStorage extends MapStorage {
         boolean err = false;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        
         try {
             c = getConnection();
             boolean exists = false;
@@ -927,27 +929,27 @@ public class MariaDBMapStorage extends MapStorage {
 
     @Override
     public String getMarkersURI(boolean login_enabled) {
-        return "standalone/MySQL_markers.php?marker=";
+        return "standalone/PostgreSQL_markers.php?marker=";
    }
 
     @Override
     public String getTilesURI(boolean login_enabled) {
-        return "standalone/MySQL_tiles.php?tile=";
+        return "standalone/PostgreSQL_tiles.php?tile=";
     }
 
     @Override
     public String getConfigurationJSONURI(boolean login_enabled) {
-        return "standalone/MySQL_configuration.php"; // ?serverid={serverid}";
+        return "standalone/PostgreSQL_configuration.php"; // ?serverid={serverid}";
     }
     
     @Override
     public String getUpdateJSONURI(boolean login_enabled) {
-        return "standalone/MySQL_update.php?world={world}&ts={timestamp}"; // &serverid={serverid}";
+        return "standalone/PostgreSQL_update.php?world={world}&ts={timestamp}"; // &serverid={serverid}";
     }
 
     @Override
     public String getSendMessageURI() {
-        return "standalone/MySQL_sendmessage.php";
+        return "standalone/PostgreSQL_sendmessage.php";
     }
 
     @Override
@@ -982,7 +984,6 @@ public class MariaDBMapStorage extends MapStorage {
         boolean err = false;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        
         try {
             c = getConnection();
             boolean exists = false;
@@ -1038,15 +1039,14 @@ public class MariaDBMapStorage extends MapStorage {
     }
     @Override
     public String getStandaloneLoginURI() {
-        return "standalone/MySQL_login.php";
+        return "standalone/PostgreSQL_login.php";
     }
     @Override
     public String getStandaloneRegisterURI() {
-        return "standalone/MySQL_register.php";
+        return "standalone/PostgreSQL_register.php";
     }
     @Override
     public void setLoginEnabled(DynmapCore core) {
         writeConfigPHP(core);
     }
-
 }

@@ -145,6 +145,9 @@ public class DynmapPlugin
     private boolean isMCPC = false;
     private boolean useSaveFolder = true;
     private Field displayName = null; // MCPC+ display name
+	
+    private static final int SIGNPOST_ID = 63;
+    private static final int WALLSIGN_ID = 68;
 
     private static final int SIGNPOST_ID = 63;
     private static final int WALLSIGN_ID = 68;
@@ -525,6 +528,20 @@ public class DynmapPlugin
         	}
             return -1;
         }
+		
+		@Override
+		public int isSignAt(String wname, int x, int y, int z) {
+			int blkid = plugin.getServer().getBlockIDAt(r.wname, r.x, r.y, r.z);
+			
+			if (blkid == -1)
+				return -1;
+			
+            if((blkid == WALLSIGN_ID) || (blkid == SIGNPOST_ID)) {
+				return 1;
+            } else {
+            	return 0;
+            }
+		}
 
         @Override
         public int isSignAt(String wname, int x, int y, int z) {

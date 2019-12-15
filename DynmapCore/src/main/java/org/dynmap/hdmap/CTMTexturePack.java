@@ -343,8 +343,8 @@ public class CTMTexturePack {
                         bs = DynmapBlockState.getBaseStateByName(token);
                         addbase = true;
                     }
-                    if (bs.isAir()) {
-                    	Log.info("Unknown block ID in CTM: " + token);
+                	if (bs == DynmapBlockState.AIR) {
+                		Log.info("Unknown block ID in CTM: " + token);
                     }
                     else if (addbase) {
                 		addBaseBlockStateToIDSet(list, bs);
@@ -486,7 +486,7 @@ public class CTMTexturePack {
                 this.matchTiles = null;
             }
             else {
-                String[] tok = tokenize(v, " ");
+                String[] tok = tokenize(v.toLowerCase(), " ");
                 for (int i = 0; i < tok.length; i++) {
                     String t = tok[i];
                     if (t.endsWith(".png")) {   /* Strip off PNG */
@@ -505,7 +505,7 @@ public class CTMTexturePack {
                 return null;
             }
             else {
-                v = v.trim();
+                v = v.trim().toLowerCase();
                 if (v.length() == 0) {
                     return null;
                 }

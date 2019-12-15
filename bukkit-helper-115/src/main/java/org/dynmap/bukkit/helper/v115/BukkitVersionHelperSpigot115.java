@@ -1,4 +1,4 @@
-package org.dynmap.bukkit.helper.v114_1;
+package org.dynmap.bukkit.helper.v115;
 
 import java.lang.reflect.Field;
 
@@ -14,23 +14,23 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.bukkit.helper.BukkitVersionHelperCB;
 import org.dynmap.bukkit.helper.BukkitWorld;
-import org.dynmap.bukkit.helper.v114_1.MapChunkCache114_1;
+import org.dynmap.bukkit.helper.v115.MapChunkCache115;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 
-import net.minecraft.server.v1_14_R1.BiomeBase;
-import net.minecraft.server.v1_14_R1.Block;
-import net.minecraft.server.v1_14_R1.BlockFluids;
-import net.minecraft.server.v1_14_R1.BlockLogAbstract;
-import net.minecraft.server.v1_14_R1.IBlockData;
-import net.minecraft.server.v1_14_R1.IRegistry;
-import net.minecraft.server.v1_14_R1.Material;
+import net.minecraft.server.v1_15_R1.BiomeBase;
+import net.minecraft.server.v1_15_R1.Block;
+import net.minecraft.server.v1_15_R1.BlockFluids;
+import net.minecraft.server.v1_15_R1.BlockLogAbstract;
+import net.minecraft.server.v1_15_R1.IBlockData;
+import net.minecraft.server.v1_15_R1.IRegistry;
+import net.minecraft.server.v1_15_R1.Material;
 
 /**
  * Helper for isolation of bukkit version specific issues
  */
-public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
+public class BukkitVersionHelperSpigot115 extends BukkitVersionHelperCB {
     
     /** CraftChunkSnapshot */
     protected Class<?> datapalettearray;
@@ -46,7 +46,7 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
     	return false;
     }
 
-    public BukkitVersionHelperSpigot114_1() {
+    public BukkitVersionHelperSpigot115() {
 		datapalettearray =  getNMSClass("[Lnet.minecraft.server.DataPaletteBlock;");
     	blockid_field = getPrivateField(craftchunksnapshot, new String[] { "blockids" }, datapalettearray);
     }
@@ -130,7 +130,7 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
     		}
     		Material mat = bd.getMaterial();
             DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
-            if ((!bd.p().isEmpty()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
+            if ((!bd.getFluid().isEmpty()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
             	bs.setWaterlogged();
             }
             if (mat == Material.AIR) {
@@ -158,7 +158,7 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache114_1 c = new MapChunkCache114_1();
+        MapChunkCache115 c = new MapChunkCache115();
         c.setChunks(dw, chunks);
         return c;
     }
@@ -168,9 +168,21 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
 	 */
     @Override
 	public int getBiomeBaseWaterMult(Object bb) {
-		return ((BiomeBase)bb).n();
+		return ((BiomeBase)bb).o();
 	}
 
+    /** Get temperature from biomebase */
+    @Override
+    public float getBiomeBaseTemperature(Object bb) {
+    	return ((BiomeBase)bb).getTemperature();
+    }
+
+    /** Get humidity from biomebase */
+    @Override
+    public float getBiomeBaseHumidity(Object bb) {
+    	return ((BiomeBase)bb).getHumidity();    	
+    }
+    
     @Override
     public Polygon getWorldBorder(World world) {
         Polygon p = null;
