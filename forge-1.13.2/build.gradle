@@ -33,7 +33,7 @@ repositories {
 }
 
 minecraft {
-   mappings channel: 'snapshot', version: '20190530-1.13.2'
+   mappings channel: 'snapshot', version: '20190215-1.13.1'
    runs {
         server {
             workingDirectory project.file('run').canonicalPath
