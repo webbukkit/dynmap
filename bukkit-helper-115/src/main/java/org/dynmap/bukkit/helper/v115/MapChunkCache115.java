@@ -88,7 +88,7 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	        public StdSection() {
 	            states = new DynmapBlockState[BLOCKS_PER_SECTION];
 	            Arrays.fill(states,  DynmapBlockState.AIR);
-	            skylight = emptyData;
+	            skylight = fullData;
 	            emitlight = emptyData;
 	        }
 	        @Override
