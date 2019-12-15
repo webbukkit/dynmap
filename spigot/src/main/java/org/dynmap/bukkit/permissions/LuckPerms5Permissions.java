@@ -6,9 +6,12 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.api.caching.PermissionData;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
+import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.cacheddata.CachedDataManager;
+import net.luckperms.api.query.QueryOptions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -16,26 +19,26 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.dynmap.Log;
 
-public class LuckPermsPermissions implements PermissionProvider {
+public class LuckPerms5Permissions implements PermissionProvider {
     String name;
-    LuckPermsApi luckPerms;
+    LuckPerms luckPerms;
 
-    public static LuckPermsPermissions create(Server server, String name) {
+    public static LuckPerms5Permissions create(Server server, String name) {
         try {
-            Class.forName("me.lucko.luckperms.api.LuckPermsApi");    /* See if class exists */
+            Class.forName("net.luckperms.api.LuckPerms");    /* See if class exists */
         } catch (ClassNotFoundException cnfx) {
             return null;
         }
         if (!server.getPluginManager().isPluginEnabled("LuckPerms"))
             return null;
-        LuckPermsApi luckPerms = server.getServicesManager().load(LuckPermsApi.class);
+        LuckPerms luckPerms = server.getServicesManager().load(LuckPerms.class);
         if (luckPerms == null)
             return null;
-        Log.info("Using LuckPerms " + luckPerms.getPlatformInfo().getVersion() + " for access control");
-        return new LuckPermsPermissions(name, luckPerms);
+        Log.info("Using LuckPerms " + luckPerms.getPluginMetadata().getVersion() + " for access control");
+        return new LuckPerms5Permissions(name, luckPerms);
     }
 
-    public LuckPermsPermissions(String name, LuckPermsApi luckPerms) {
+    public LuckPerms5Permissions(String name, LuckPerms luckPerms) {
         this.name = name;
         this.luckPerms = luckPerms;
     }
@@ -48,10 +51,10 @@ public class LuckPermsPermissions implements PermissionProvider {
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
         Set<String> result = new HashSet<>();
-        PermissionData user = getUser(player);
+        CachedPermissionData user = getUser(player);
         if (user != null) {
             for (String p : perms) {
-                if (user.getPermissionValue(name + "." + p).asBoolean())
+                if (user.checkPermission(name + "." + p).asBoolean())
                     result.add(p);
             }
         }
@@ -60,34 +63,39 @@ public class LuckPermsPermissions implements PermissionProvider {
 
     @Override
     public boolean hasOfflinePermission(String player, String perm) {
-        PermissionData user = getUser(player);
+        CachedPermissionData user = getUser(player);
         if (user == null)
             return false;
-        return user.getPermissionValue(name + "." + perm).asBoolean();
+        return user.checkPermission(name + "." + perm).asBoolean();
     }
 
-    private PermissionData getUser(String username) {
+    private CachedPermissionData getUser(String username) {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
         UUID uuid;
 
         if (offlinePlayer != null && offlinePlayer.getUniqueId() != null)
             uuid = offlinePlayer.getUniqueId();
         else
-            uuid = joinFuture(luckPerms.getStorage().getUUID(username));
+            uuid = joinFuture(luckPerms.getUserManager().lookupUniqueId(username));
 
         if (uuid == null)
             return null;
 
-        User user = luckPerms.getUser(uuid);
+        User user = luckPerms.getUserManager().getUser(uuid);
         if (user == null) {
-            joinFuture(luckPerms.getStorage().loadUser(uuid));
-            user = luckPerms.getUser(uuid);
+            joinFuture(luckPerms.getUserManager().loadUser(uuid));
+            user = luckPerms.getUserManager().getUser(uuid);
         }
 
         if (user == null)
             return null;
 
-        return user.getCachedData().getPermissionData(luckPerms.getContextManager().getStaticContexts());
+        CachedDataManager data = user.getCachedData();
+        return luckPerms
+            .getContextManager()
+            .getQueryOptions(user)
+            .map(queryOptions -> data.getPermissionData(queryOptions))
+            .orElse(null);
     }
 
     private static <T> T joinFuture(Future<T> future) {

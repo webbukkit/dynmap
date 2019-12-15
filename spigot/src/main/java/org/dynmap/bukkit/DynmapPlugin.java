@@ -91,6 +91,7 @@ import org.dynmap.bukkit.permissions.GroupManagerPermissions;
 import org.dynmap.bukkit.permissions.PermissionProvider;
 import org.dynmap.bukkit.permissions.bPermPermissions;
 import org.dynmap.bukkit.permissions.LuckPermsPermissions;
+import org.dynmap.bukkit.permissions.LuckPerms5Permissions;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
@@ -863,6 +864,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             permissions = GroupManagerPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = LuckPermsPermissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = LuckPerms5Permissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap", perdefs);
         if (permissions == null)
