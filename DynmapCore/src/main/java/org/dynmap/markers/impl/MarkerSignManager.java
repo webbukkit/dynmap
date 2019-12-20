@@ -28,7 +28,7 @@ public class MarkerSignManager {
     
     private static class SignListener implements DynmapListenerManager.SignChangeEventListener, Runnable {
         @Override
-        public void signChangeEvent(int blkid, String wname, int x, int y, int z, String[] lines, DynmapPlayer p) {
+        public void signChangeEvent(String material, String wname, int x, int y, int z, String[] lines, DynmapPlayer p) {
             if(mgr == null)
                 return;			
 			

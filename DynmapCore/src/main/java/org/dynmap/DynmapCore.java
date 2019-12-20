@@ -84,7 +84,7 @@ public class DynmapCore implements DynmapCommonAPI {
      */
     public static abstract class EnableCoreCallbacks {
         /**
-         * Called during enableCore to report that confniguration.txt is loaded
+         * Called during enableCore to report that configuration.txt is loaded
          */
         public abstract void configurationLoaded();
     }
@@ -2400,10 +2400,10 @@ public class DynmapCore implements DynmapCommonAPI {
     }
 
     @Override
-    public void processSignChange(int blkid, String world, int x, int y, int z,
+    public void processSignChange(String material, String world, int x, int y, int z,
             String[] lines, String playerid) {
         DynmapPlayer dp = server.getPlayer(playerid);
-        listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, blkid, world, x, y, z, lines, dp);
+        listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, material, world, x, y, z, lines, dp);
     }
     
     public MapStorage getDefaultMapStorage() {

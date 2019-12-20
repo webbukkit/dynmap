@@ -30,10 +30,10 @@ public class DynmapListenerManager {
         public void chatEvent(DynmapPlayer p, String msg);
     }
     public interface BlockEventListener extends EventListener {
-        public void blockEvent(int blkid, String w, int x, int y, int z);
+        public void blockEvent(String material, String w, int x, int y, int z);
     }
     public interface SignChangeEventListener extends EventListener {
-        public void signChangeEvent(int blkid, String w, int x, int y, int z, String[] lines, DynmapPlayer p);
+        public void signChangeEvent(String material, String w, int x, int y, int z, String[] lines, DynmapPlayer p);
     }
     public enum EventType {
         WORLD_LOAD,
@@ -105,7 +105,7 @@ public class DynmapListenerManager {
             }
         }
     }
-    public void processBlockEvent(EventType type, int blkid, String world, int x, int y, int z)
+    public void processBlockEvent(EventType type, String material, String world, int x, int y, int z)
     {
         ArrayList<EventListener> lst = listeners.get(type);
         if(lst == null) return;
@@ -114,14 +114,14 @@ public class DynmapListenerManager {
             EventListener el = lst.get(i);
             if(el instanceof BlockEventListener) {
                 try {
-                    ((BlockEventListener)el).blockEvent(blkid, world, x, y, z);
+                    ((BlockEventListener)el).blockEvent(material, world, x, y, z);
                 } catch (Throwable t) {
-                    Log.warning("processBlockEvent(" + type + "," + blkid + "," + world + "," + x + "," + y + "," + z + ") - exception", t);
+                    Log.warning("processBlockEvent(" + type + "," + material + "," + world + "," + x + "," + y + "," + z + ") - exception", t);
                 }
             }
         }
     }
-    public void processSignChangeEvent(EventType type, int blkid, String world, int x, int y, int z, String[] lines, DynmapPlayer p)
+    public void processSignChangeEvent(EventType type, String material, String world, int x, int y, int z, String[] lines, DynmapPlayer p)
     {
         ArrayList<EventListener> lst = listeners.get(type);
         if(lst == null) return;
@@ -130,9 +130,9 @@ public class DynmapListenerManager {
             EventListener el = lst.get(i);
             if(el instanceof SignChangeEventListener) {
                 try {
-                    ((SignChangeEventListener)el).signChangeEvent(blkid, world, x, y, z, lines, p);
+                    ((SignChangeEventListener)el).signChangeEvent(material, world, x, y, z, lines, p);
                 } catch (Throwable t) {
-                    Log.warning("processSignChangeEvent(" + type + "," + blkid + "," + world + "," + x + "," + y + "," + z + ") - exception", t);
+                    Log.warning("processSignChangeEvent(" + type + "," + material + "," + world + "," + x + "," + y + "," + z + ") - exception", t);
                 }
             }
         }

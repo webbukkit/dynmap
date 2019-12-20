@@ -135,7 +135,7 @@ public interface DynmapCommonAPI {
     public boolean testIfPlayerInfoProtected();
     /**
      * Process sign change
-     * @param blkid - block ID
+     * @param material - block's Material enum value as a string
      * @param world - world name
      * @param x - x coord
      * @param y - y coord
@@ -143,5 +143,5 @@ public interface DynmapCommonAPI {
      * @param lines - sign lines (input and output)
      * @param playerid - player ID
      */
-    public void processSignChange(int blkid, String world, int x, int y, int z, String[] lines, String playerid);
+    public void processSignChange(String material, String world, int x, int y, int z, String[] lines, String playerid);
 }

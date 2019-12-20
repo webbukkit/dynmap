@@ -2603,7 +2603,7 @@ public class TexturePack {
      * @param ps - perspective state
      * @param mapiter - map iterator
      * @param rslt - color result (returned with value)
-     * @param blkid - block ID
+     * @param blk - block state
      * @param lastblocktype - last block ID
      * @param ss - shader state
      */
