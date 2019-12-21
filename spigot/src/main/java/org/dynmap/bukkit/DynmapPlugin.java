@@ -100,6 +100,7 @@ import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.modsupport.ModSupportImpl;
+import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
@@ -351,7 +352,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                             Block b = evt.getBlock();
                             if(b == null) return;   /* Work around for stupid mods.... */
                             Location l = b.getLocation();
-                            core.listenerManager.processBlockEvent(EventType.BLOCK_BREAK, b.getType().getId(),
+                            core.listenerManager.processBlockEvent(EventType.BLOCK_BREAK, b.getType().name(),
                                 getWorld(l.getWorld()).getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ());
                         }
                     }, DynmapPlugin.this);
@@ -366,7 +367,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                             DynmapPlayer dp = null;
                             Player p = evt.getPlayer();
                             if(p != null) dp = new BukkitPlayer(p);
-                            core.listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, b.getType().getId(),
+                            core.listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, b.getType().name(),
                                 getWorld(l.getWorld()).getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), lines, dp);
                         }
                     }, DynmapPlugin.this);
@@ -1631,9 +1632,9 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }));
     }
     @Override
-    public void processSignChange(int blkid, String world, int x, int y, int z,
+    public void processSignChange(String material, String world, int x, int y, int z,
             String[] lines, String playerid) {
-        core.processSignChange(blkid, world, x, y, z, lines, playerid);
+        core.processSignChange(material, world, x, y, z, lines, playerid);
     }
     
     Polygon getWorldBorder(World w) {
