@@ -11,6 +11,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+import java.lang.Class;
+
 public class FileResourceHandler extends ResourceHandler {
     private static String getNormalizedPath(String p) {
         p = p.replace('\\', '/');
@@ -44,9 +48,10 @@ public class FileResourceHandler extends ResourceHandler {
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Resource resource;
-        target = getNormalizedPath(target);
+        String normalizedTarget = getNormalizedPath(target);
+        
         try {
-            resource = getResource(target);
+        	resource = getResource(normalizedTarget);
         } catch(MalformedURLException ex) {
             return;
         }
@@ -57,6 +62,20 @@ public class FileResourceHandler extends ResourceHandler {
         if (file == null) {
             return;
         }
-        super.handle(target, baseRequest, request, response);
+    	if(!target.equals(normalizedTarget)){
+    		baseRequest.setRequestURI(normalizedTarget);
+    		baseRequest.setPathInfo(normalizedTarget);
+    		try{
+    			Class<?> requestClass = request.getClass();
+    			Field field = requestClass.getDeclaredField("_pathInfo");
+    			field.setAccessible(true);
+    			field.set(request, normalizedTarget);
+    		} catch (Exception ignore) {
+    			//It's unsafe to continue since these lines will be triggered by only malicious requests.
+    			ignore.printStackTrace();
+    			return;
+    		}
+    	}
+    	super.handle(normalizedTarget, baseRequest, request, response);
     }
 }
