@@ -62,7 +62,6 @@ public class PatchDefinition implements RenderPatch {
      * Construct patch, based on rotation of existing patch clockwise by N
      * 90 degree steps
      * @param orig
-     * @param rotate_cnt
      */
     PatchDefinition(PatchDefinition orig, int rotatex, int rotatey, int rotatez, int textureindex) {
         Vector3D vec = new Vector3D(orig.x0, orig.y0, orig.z0);
@@ -251,16 +250,14 @@ public class PatchDefinition implements RenderPatch {
             return true;
         if(o instanceof PatchDefinition) {
             PatchDefinition p = (PatchDefinition)o;
-            if((hc == p.hc) && (textureindex == p.textureindex) && 
+            return (hc == p.hc) && (textureindex == p.textureindex) &&
                     (x0 == p.x0) && (y0 == p.y0) && (z0 == p.z0) &&
                     (xu == p.xu) && (yu == p.yu) && (zu == p.zu) &&
-                    (xv == p.xv) && (yv == p.yv) && (zv == p.zv) && 
+                    (xv == p.xv) && (yv == p.yv) && (zv == p.zv) &&
                     (umin == p.umin) && (umax == p.umax) &&
                     (vmin == p.vmin) && (vmax == p.vmax) &&
-                    (vmaxatumax == p.vmaxatumax) && 
-                    (vminatumax == p.vminatumax) && (sidevis == p.sidevis)) {
-                return true;
-            }
+                    (vmaxatumax == p.vmaxatumax) &&
+                    (vminatumax == p.vminatumax) && (sidevis == p.sidevis);
         }
         return false;
     }

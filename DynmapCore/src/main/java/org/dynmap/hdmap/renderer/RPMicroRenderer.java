@@ -1,34 +1,34 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Map;
-
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Map;
+
 public class RPMicroRenderer extends CustomRenderer {
-    private static final String[] tileFields = { "cvs", "cvm" };
+    private static final String[] tileFields = {"cvs", "cvm"};
     /* Defined texture indexes
-    * 0 = Cobblestone (cobblestone:0)
-    * 1 = Stone (stone:0)
-    * 2 = Wood planks (Oak) (planks:0)
-    * 3 = Sandstone (sandStone:0)
-    * 4 = Mossy Stone (cobblestoneMossy:0)
-    * 5 = Brick (brick:0)
-    * 6 = Obsidian (obsidian:0)
-    * 7 = Glass (glass:0)
-    * 8 = Dirt (dirt:0)
-    * 9 = Clay (blockClay:0)
-    * 10 = Bookshelf (bookShelf:0)
-    * 11 = Netherrack (87:0)
-    * 12 = Wood (Oak) (wood:0)
-    * 13 = Wood (Spruce) (wood:1)
-    * 14 = Wood (Birch) (wood:2)
-    * 15 = Soul Sand (slowSand:0)
+     * 0 = Cobblestone (cobblestone:0)
+     * 1 = Stone (stone:0)
+     * 2 = Wood planks (Oak) (planks:0)
+     * 3 = Sandstone (sandStone:0)
+     * 4 = Mossy Stone (cobblestoneMossy:0)
+     * 5 = Brick (brick:0)
+     * 6 = Obsidian (obsidian:0)
+     * 7 = Glass (glass:0)
+     * 8 = Dirt (dirt:0)
+     * 9 = Clay (blockClay:0)
+     * 10 = Bookshelf (bookShelf:0)
+     * 11 = Netherrack (87:0)
+     * 12 = Wood (Oak) (wood:0)
+     * 13 = Wood (Spruce) (wood:1)
+     * 14 = Wood (Birch) (wood:2)
+     * 15 = Soul Sand (slowSand:0)
     * 16 = Polished Stone (stairSingle:0)
     * 17 = Iron (blockSteel:0)
     * 18 = Gold (blockGold:0)
@@ -87,27 +87,27 @@ public class RPMicroRenderer extends CustomRenderer {
     private static final int NUM_TEXTURES = 70;
 
     /* Texture index = material index in RP */
-    private static final int materialTextureMap[][] = {
-        { 0 }, // 0 = Cobblestone (cobblestone:0)
-        { 1 }, // 1 = Stone (stone:0)
-        { 2 }, // 2 = Wood planks (Oak) (planks:0)
-        { 59, 60, 3, 3, 3, 3 }, // 3 = Sandstone (sandStone:0)
-        { 4 }, // 4 = Mossy Stone (cobblestoneMossy:0)
-        { 5 }, // 5 = Brick (brick:0)
-        { 6 }, // 6 = Obsidian (obsidian:0)
-        { 7 }, // 7 = Glass (glass:0)
-        { 8 }, // 8 = Dirt (dirt:0)
-        { 9 }, // 9 = Clay (blockClay:0)
-        { 2, 2, 10, 10, 10, 10 }, // 10 = Bookshelf (bookShelf:0)        
-        { 11 }, // 11 = Netherrack (87:0)
-        { 61, 61, 12, 12, 12, 12 }, // 12 = Wood (Oak) (wood:0)
-        { 61, 61, 13, 13, 13, 13 }, // 13 = Wood (Spruce) (wood:1)
-        { 61, 61, 14, 14, 14, 14 }, // 14 = Wood (Birch) (wood:2)
-        { 15 }, // 15 = Soul Sand (slowSand:0)
-        { 62, 62, 16, 16, 16, 16 }, // 16 = Polished Stone (stairSingle:0)
-        { 17 }, // 17 = Iron (blockSteel:0)
-        { 18 }, // 18 = Gold (blockGold:0)
-        { 19 }, // 19 = Diamond (blockDiamond:0)
+    private static final int[][] materialTextureMap = {
+            {0}, // 0 = Cobblestone (cobblestone:0)
+            {1}, // 1 = Stone (stone:0)
+            {2}, // 2 = Wood planks (Oak) (planks:0)
+            {59, 60, 3, 3, 3, 3}, // 3 = Sandstone (sandStone:0)
+            {4}, // 4 = Mossy Stone (cobblestoneMossy:0)
+            {5}, // 5 = Brick (brick:0)
+            {6}, // 6 = Obsidian (obsidian:0)
+            {7}, // 7 = Glass (glass:0)
+            {8}, // 8 = Dirt (dirt:0)
+            {9}, // 9 = Clay (blockClay:0)
+            {2, 2, 10, 10, 10, 10}, // 10 = Bookshelf (bookShelf:0)
+            {11}, // 11 = Netherrack (87:0)
+            {61, 61, 12, 12, 12, 12}, // 12 = Wood (Oak) (wood:0)
+            {61, 61, 13, 13, 13, 13}, // 13 = Wood (Spruce) (wood:1)
+            {61, 61, 14, 14, 14, 14}, // 14 = Wood (Birch) (wood:2)
+            {15}, // 15 = Soul Sand (slowSand:0)
+            {62, 62, 16, 16, 16, 16}, // 16 = Polished Stone (stairSingle:0)
+            {17}, // 17 = Iron (blockSteel:0)
+            {18}, // 18 = Gold (blockGold:0)
+            {19}, // 19 = Diamond (blockDiamond:0)
         { 20 }, // 20 = Lapis Lazuli (blockLapis:0)
         { 21 }, // 21 = Snow (blockSnow:0)
         { 63, 63, 22, 22, 22, 22 }, // 22 = Pumpkin (pumpkin:0)       
@@ -184,7 +184,7 @@ public class RPMicroRenderer extends CustomRenderer {
         byte[] covervals = new byte[2*29];
         Object v = ctx.getBlockTileEntityField("cvm");
         if(v instanceof Integer) {
-            covermask = ((Integer)v).intValue();
+            covermask = (Integer) v;
         }
         v = ctx.getBlockTileEntityField("cvs");
         if(v instanceof byte[]) {
@@ -196,14 +196,14 @@ public class RPMicroRenderer extends CustomRenderer {
 //        }
 //        Log.info(s);
         /* Build patch list */
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         for(int i = 0, off = 0; i < 29; i++) {
             if ((covermask & (1 << i)) != 0) {
                 addPatchesFor(ctx.getPatchFactory(), list, i, covervals[off], covervals[off+1]);
                 off += 2;
             }
         }
-        return list.toArray(new RenderPatch[list.size()]);
+        return list.toArray(new RenderPatch[0]);
     }
     
     private static final double[] thick_0_5 = { 0.125, 0.25, 0.5, 0.125, 0.25, 0.5, 0.375, 0.625, 0.75, 0.875, 0.375, 0.625, 0.75, 0.875 };

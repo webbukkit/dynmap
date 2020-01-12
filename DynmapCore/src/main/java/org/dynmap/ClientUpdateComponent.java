@@ -1,12 +1,13 @@
 package org.dynmap;
 
-import static org.dynmap.JSONUtils.a;
-import static org.dynmap.JSONUtils.s;
-
-import java.util.List;
 import org.dynmap.common.DynmapPlayer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.List;
+
+import static org.dynmap.JSONUtils.a;
+import static org.dynmap.JSONUtils.s;
 
 public class ClientUpdateComponent extends Component {
     private int hideifshadow;
@@ -19,7 +20,7 @@ public class ClientUpdateComponent extends Component {
     
     public ClientUpdateComponent(final DynmapCore core, ConfigurationNode configuration) {
         super(core, configuration);
-        
+
         hideNames = configuration.getBoolean("hidenames", false);
         hideifshadow = configuration.getInteger("hideifshadow", 15);
         hideifunder = configuration.getInteger("hideifundercover", 15);
@@ -27,15 +28,10 @@ public class ClientUpdateComponent extends Component {
         hideifinvisiblepotion = configuration.getBoolean("hide-if-invisiblity-potion", true);
         is_protected = configuration.getBoolean("protected-player-info", false);
         usePlayerColors = configuration.getBoolean("use-name-colors", false);
-        if(is_protected)
+        if (is_protected)
             core.player_info_protected = true;
-        
-        core.events.addListener("buildclientupdate", new Event.Listener<ClientUpdateEvent>() {
-            @Override
-            public void triggered(ClientUpdateEvent e) {
-                buildClientUpdate(e);
-            }
-        });
+
+        core.events.addListener("buildclientupdate", this::buildClientUpdate);
     }
     
     protected void buildClientUpdate(ClientUpdateEvent e) {
@@ -86,13 +82,12 @@ public class ClientUpdateComponent extends Component {
                 }
             }
             if((!hide) && (hideifunder < 15)) {
-                if(pw.canGetSkyLightLevel()) { /* If we can get real sky level */
-                    if(pw.getSkyLightLevel((int)pl.x, (int)pl.y, (int)pl.z) <= hideifunder) {
+                if (pw.canGetSkyLightLevel()) { /* If we can get real sky level */
+                    if (pw.getSkyLightLevel((int) pl.x, (int) pl.y, (int) pl.z) <= hideifunder) {
                         hide = true;
                     }
-                }
-                else if(pw.isNether() == false) {   /* Not nether */
-                    if(pw.getHighestBlockYAt((int)pl.x, (int)pl.z) > pl.y) {
+                } else if (!pw.isNether()) {   /* Not nether */
+                    if (pw.getHighestBlockYAt((int) pl.x, (int) pl.z) > pl.y) {
                         hide = true;
                     }
                 }
@@ -169,7 +164,7 @@ public class ClientUpdateComponent extends Component {
 
         s(u, "updates", new JSONArray());
         for(Object update : core.mapManager.getWorldUpdates(worldName, since)) {
-            a(u, "updates", (Client.Update)update);
+            a(u, "updates", update);
         }
     }
 

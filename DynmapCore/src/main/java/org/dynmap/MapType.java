@@ -1,12 +1,12 @@
 package org.dynmap;
 
+import org.dynmap.utils.TileFlags;
+import org.json.simple.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.dynmap.utils.TileFlags;
-import org.json.simple.JSONObject;
 
 public abstract class MapType {
     private boolean is_protected;
@@ -46,9 +46,9 @@ public abstract class MapType {
         }
         public static ImageEncoding fromExt(String x) {
             ImageEncoding[] v = values();
-            for (int i = 0; i < v.length; i++) {
-                if (v[i].ext.equalsIgnoreCase(x)) {
-                    return v[i];
+            for (ImageEncoding imageEncoding : v) {
+                if (imageEncoding.ext.equalsIgnoreCase(x)) {
+                    return imageEncoding;
                 }
             }
             return null;
@@ -67,35 +67,51 @@ public abstract class MapType {
         String id;
         float qual;
         ImageEncoding enc;
-        
+
         ImageFormat(String id, float quality, ImageEncoding enc) {
             this.id = id;
             this.qual = quality;
             this.enc = enc;
         }
-        public String getID() { return id; }
-        public String getFileExt() { return enc.getFileExt(); }
-        public float getQuality() { return qual; }
-        public ImageEncoding getEncoding() { return enc; }
+
+        public String getID() {
+            return id;
+        }
+
+        public String getFileExt() {
+            return enc.getFileExt();
+        }
+
+        public float getQuality() {
+            return qual;
+        }
+
+        public ImageEncoding getEncoding() {
+            return enc;
+        }
 
         public static ImageFormat fromID(String imgfmt) {
-            for(ImageFormat i_f : MapType.ImageFormat.values()) {
-                if(i_f.getID().equals(imgfmt)) {
+            for (ImageFormat i_f : MapType.ImageFormat.values()) {
+                if (i_f.getID().equals(imgfmt)) {
                     return i_f;
                 }
             }
             return null;
         }
-    };
-    
+    }
+
     public static class ZoomInfo {
         public String prefix;
-        public int  background_argb;
-        public ZoomInfo(String pre, int bg) { prefix = pre; background_argb = bg; }
+        public int background_argb;
+
+        public ZoomInfo(String pre, int bg) {
+            prefix = pre;
+            background_argb = bg;
+        }
     }
 
     public abstract void addMapTiles(List<MapTile> list, DynmapWorld w, int tx, int ty);
-    
+
     public abstract List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int x, int y, int z);
 
     public abstract List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int minx, int miny, int minz, int maxx, int maxy, int maxz);
@@ -109,7 +125,7 @@ public abstract class MapType {
 
     public List<MapTile> getTiles(DynmapWorld w, int x, int y, int z) {
         List<TileFlags.TileCoord> coords = this.getTileCoords(w, x, y, z);
-        ArrayList<MapTile> tiles = new ArrayList<MapTile>();
+        ArrayList<MapTile> tiles = new ArrayList<>();
         for(TileFlags.TileCoord c : coords) {
             this.addMapTiles(tiles, w, c.x, c.y);
         }
@@ -142,25 +158,24 @@ public abstract class MapType {
     public void purgeOldTiles(DynmapWorld world, TileFlags rendered) { }
  
     public interface FileCallback {
-        public void fileFound(File f, File parent, boolean day);
+        void fileFound(File f, File parent, boolean day);
     }
     
     protected void walkMapTree(File root, FileCallback cb, boolean day) {
-        LinkedList<File> dirs = new LinkedList<File>();
+        LinkedList<File> dirs = new LinkedList<>();
         String ext = "." + getImageFormat().getFileExt();
         dirs.add(root);
-        while(dirs.isEmpty() == false) {
+        while (!dirs.isEmpty()) {
             File dir = dirs.pop();
             String[] lst = dir.list();
-            if(lst == null) continue;
-            for(String fn : lst) {
-                if(fn.equals(".") || fn.equals(".."))
+            if (lst == null) continue;
+            for (String fn : lst) {
+                if (fn.equals(".") || fn.equals(".."))
                     continue;
                 File f = new File(dir, fn);
-                if(f.isDirectory()) {   /* If directory, add to list to process */
+                if (f.isDirectory()) {   /* If directory, add to list to process */
                     dirs.add(f);
-                }
-                else if(fn.endsWith(ext)) {  /* Else, if matches suffix */
+                } else if (fn.endsWith(ext)) {  /* Else, if matches suffix */
                     cb.fileFound(f, dir, day);
                 }
             }

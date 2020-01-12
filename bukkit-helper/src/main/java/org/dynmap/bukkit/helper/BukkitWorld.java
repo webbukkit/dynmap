@@ -1,12 +1,7 @@
 package org.dynmap.bukkit.helper;
-/**
- * Bukkit specific implementation of DynmapWorld
+/*
+  Bukkit specific implementation of DynmapWorld
  */
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Arrays;
-import java.util.List;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -20,12 +15,18 @@ import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.TileFlags;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Arrays;
+import java.util.List;
+
 public class BukkitWorld extends DynmapWorld {
     private World world;
     private World.Environment env;
     private boolean skylight;
     private DynmapLocation spawnloc = new DynmapLocation();
-    
+
     public BukkitWorld(World w) {
         this(w.getName(), w.getMaxHeight(), w.getSeaLevel(), w.getEnvironment());
         setWorldLoaded(w);
@@ -38,18 +39,12 @@ public class BukkitWorld extends DynmapWorld {
         skylight = (env == World.Environment.NORMAL);
         new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
         // Generate non-default environment lighting table
-        switch (env) {
-            case NETHER:
-                {
-                    float f = 0.1F;
-                    for (int i = 0; i <= 15; ++i) {
-                        float f1 = 1.0F - (float)i / 15.0F;
-                        this.setBrightnessTableEntry(i,  (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f);
-                    }
-                }
-                break;
-            default:
-                break;
+        if (env == World.Environment.NETHER) {
+            float f = 0.1F;
+            for (int i = 0; i <= 15; ++i) {
+                float f1 = 1.0F - (float) i / 15.0F;
+                this.setBrightnessTableEntry(i, (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f);
+            }
         }
     }
     /**
@@ -218,13 +213,14 @@ public class BukkitWorld extends DynmapWorld {
                     z = Integer.parseInt(parts[2]);
                     rfile = new RandomAccessFile(rf, "r");
                     rfile.read(hdr, 0, hdr.length);
-                } catch (IOException iox) {
-                    Arrays.fill(hdr,  (byte)0);
-                } catch (NumberFormatException nfx) {
-                    Arrays.fill(hdr,  (byte)0);
+                } catch (IOException | NumberFormatException iox) {
+                    Arrays.fill(hdr, (byte) 0);
                 } finally {
-                    if(rfile != null) {
-                        try { rfile.close(); } catch (IOException iox) {}
+                    if (rfile != null) {
+                        try {
+                            rfile.close();
+                        } catch (IOException ignored) {
+                        }
                     }
                 }
                 for (int i = 0; i < 1024; i++) {

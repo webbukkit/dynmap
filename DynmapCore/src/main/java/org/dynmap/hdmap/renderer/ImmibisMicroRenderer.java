@@ -1,18 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Map;
-
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
 
+import java.util.*;
+
 public class ImmibisMicroRenderer extends CustomRenderer {
-    private static final String[] tileFields = { "ICMP" };
+    private static final String[] tileFields = {"ICMP"};
     /* Defined texture indexes
      * 1 = stone
      * 2 = grass
@@ -107,27 +103,27 @@ public class ImmibisMicroRenderer extends CustomRenderer {
     private static final int NUM_TEXTURES = 102;
 
     /* Texture index = material index in RP */
-    private static final int materialTextureMap[][] = {
-        { 0 }, // 0 = ?
-        { 0 }, // 1 = Stone (stone:0)
-        { 0 }, // 2 = N/A
-        { 1 }, // 3 = dirt
-        { 2 }, // 4 = cobblestone
-        { 3 }, // 5 = planks:0
-        { 4 }, // 6 = planks:1
-        { 5 }, // 7 = planks:2
-        { 6 }, // 8 = planks:3
-        { 7 }, // 9 = bedrock
-        { 8 }, // 10 = sand
-        { 9 }, // 11 = gravel
-        { 10 }, // 12 = oreGold
-        { 11 }, // 13 = oreIron
-        { 12 }, // 14 = oreCoal
-        { 13, 13, 14, 14, 14, 14 }, // 15 = wood:0
-        { 13, 13, 15, 15, 15, 15 }, // 16 = wood:1
-        { 13, 13, 16, 16, 16, 16 }, // 17 = wood:2
-        { 13, 13, 17, 17, 17, 17 }, // 18 = wood:3
-        { 0 }, // 19 = N/A
+    private static final int[][] materialTextureMap = {
+            {0}, // 0 = ?
+            {0}, // 1 = Stone (stone:0)
+            {0}, // 2 = N/A
+            {1}, // 3 = dirt
+            {2}, // 4 = cobblestone
+            {3}, // 5 = planks:0
+            {4}, // 6 = planks:1
+            {5}, // 7 = planks:2
+            {6}, // 8 = planks:3
+            {7}, // 9 = bedrock
+            {8}, // 10 = sand
+            {9}, // 11 = gravel
+            {10}, // 12 = oreGold
+            {11}, // 13 = oreIron
+            {12}, // 14 = oreCoal
+            {13, 13, 14, 14, 14, 14}, // 15 = wood:0
+            {13, 13, 15, 15, 15, 15}, // 16 = wood:1
+            {13, 13, 16, 16, 16, 16}, // 17 = wood:2
+            {13, 13, 17, 17, 17, 17}, // 18 = wood:3
+            {0}, // 19 = N/A
         { 0 }, // 20 = N/A
         { 0 }, // 21 = N/A
         { 0 }, // 22 = N/A
@@ -224,26 +220,27 @@ public class ImmibisMicroRenderer extends CustomRenderer {
         Object v = ctx.getBlockTileEntityField("ICMP");
 
         /* Build patch list */
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
-        if ((v != null) && (v instanceof List)) {
+        ArrayList<RenderPatch> list = new ArrayList<>();
+        if ((v instanceof List)) {
             List<?> lv = (List<?>) v;
             for (Object lval : lv) {
                 if (lval instanceof Map) {
-                    Map<?, ?> mv = (Map<?,?>) lval;
-                    Integer type = (Integer)mv.get("type");
-                    Byte pos = (Byte)mv.get("pos");
+                    Map<?, ?> mv = (Map<?, ?>) lval;
+                    Integer type = (Integer) mv.get("type");
+                    Byte pos = (Byte) mv.get("pos");
                     if ((type != null) && (pos != null)) {
                         addPatchesFor(ctx.getPatchFactory(), list, type, pos);
                     }
                 }
             }
         }
-        return list.toArray(new RenderPatch[list.size()]);
+        return list.toArray(new RenderPatch[0]);
     }
     
     private boolean isHollow(int shape, int thickness) {
         return (shape == 3);
     }
+
     private double getThickness(int shape, int thickness) {
         return (0.125 * thickness);
     }
@@ -253,29 +250,29 @@ public class ImmibisMicroRenderer extends CustomRenderer {
         NEGATIVE,
         POSITIVE,
         SPAN
-    };
-    
-    private static final AxisPos axes_by_pos[][] = {
-        { AxisPos.CENTER, AxisPos.CENTER, AxisPos.CENTER }, // Centre
-        { AxisPos.NEGATIVE, AxisPos.SPAN, AxisPos.SPAN }, // FaceNX
-        { AxisPos.POSITIVE, AxisPos.SPAN, AxisPos.SPAN }, // FacePX
-        { AxisPos.SPAN, AxisPos.NEGATIVE, AxisPos.SPAN }, // FaceNY
-        { AxisPos.SPAN, AxisPos.POSITIVE, AxisPos.SPAN }, // FacePY
-        { AxisPos.SPAN, AxisPos.SPAN, AxisPos.NEGATIVE }, // FaceNZ
-        { AxisPos.SPAN, AxisPos.SPAN, AxisPos.POSITIVE }, // FacePZ
-        { AxisPos.NEGATIVE, AxisPos.NEGATIVE, AxisPos.SPAN }, // EdgeNXNY
-        { AxisPos.NEGATIVE, AxisPos.POSITIVE, AxisPos.SPAN }, // EdgeNXPY
-        { AxisPos.POSITIVE, AxisPos.NEGATIVE, AxisPos.SPAN }, // EdgePXNY
-        { AxisPos.POSITIVE, AxisPos.POSITIVE, AxisPos.SPAN }, // EdgePXPY
-        { AxisPos.NEGATIVE, AxisPos.SPAN, AxisPos.NEGATIVE }, // EdgeNXNZ
-        { AxisPos.NEGATIVE, AxisPos.SPAN, AxisPos.POSITIVE }, // EdgeNXPZ
-        { AxisPos.POSITIVE, AxisPos.SPAN, AxisPos.NEGATIVE }, // EdgePXNZ
-        { AxisPos.POSITIVE, AxisPos.SPAN, AxisPos.POSITIVE }, // EdgePXPZ
-        { AxisPos.SPAN, AxisPos.NEGATIVE, AxisPos.NEGATIVE }, // EdgeNYNZ
-        { AxisPos.SPAN, AxisPos.NEGATIVE, AxisPos.POSITIVE }, // EdgeNYPZ
-        { AxisPos.SPAN, AxisPos.POSITIVE, AxisPos.NEGATIVE }, // EdgePYNZ
-        { AxisPos.SPAN, AxisPos.POSITIVE, AxisPos.POSITIVE }, // EdgePYPZ
-        { AxisPos.NEGATIVE, AxisPos.NEGATIVE, AxisPos.NEGATIVE }, // CornerNXNYNZ
+    }
+
+    private static final AxisPos[][] axes_by_pos = {
+            {AxisPos.CENTER, AxisPos.CENTER, AxisPos.CENTER}, // Centre
+            {AxisPos.NEGATIVE, AxisPos.SPAN, AxisPos.SPAN}, // FaceNX
+            {AxisPos.POSITIVE, AxisPos.SPAN, AxisPos.SPAN}, // FacePX
+            {AxisPos.SPAN, AxisPos.NEGATIVE, AxisPos.SPAN}, // FaceNY
+            {AxisPos.SPAN, AxisPos.POSITIVE, AxisPos.SPAN}, // FacePY
+            {AxisPos.SPAN, AxisPos.SPAN, AxisPos.NEGATIVE}, // FaceNZ
+            {AxisPos.SPAN, AxisPos.SPAN, AxisPos.POSITIVE}, // FacePZ
+            {AxisPos.NEGATIVE, AxisPos.NEGATIVE, AxisPos.SPAN}, // EdgeNXNY
+            {AxisPos.NEGATIVE, AxisPos.POSITIVE, AxisPos.SPAN}, // EdgeNXPY
+            {AxisPos.POSITIVE, AxisPos.NEGATIVE, AxisPos.SPAN}, // EdgePXNY
+            {AxisPos.POSITIVE, AxisPos.POSITIVE, AxisPos.SPAN}, // EdgePXPY
+            {AxisPos.NEGATIVE, AxisPos.SPAN, AxisPos.NEGATIVE}, // EdgeNXNZ
+            {AxisPos.NEGATIVE, AxisPos.SPAN, AxisPos.POSITIVE}, // EdgeNXPZ
+            {AxisPos.POSITIVE, AxisPos.SPAN, AxisPos.NEGATIVE}, // EdgePXNZ
+            {AxisPos.POSITIVE, AxisPos.SPAN, AxisPos.POSITIVE}, // EdgePXPZ
+            {AxisPos.SPAN, AxisPos.NEGATIVE, AxisPos.NEGATIVE}, // EdgeNYNZ
+            {AxisPos.SPAN, AxisPos.NEGATIVE, AxisPos.POSITIVE}, // EdgeNYPZ
+            {AxisPos.SPAN, AxisPos.POSITIVE, AxisPos.NEGATIVE}, // EdgePYNZ
+            {AxisPos.SPAN, AxisPos.POSITIVE, AxisPos.POSITIVE}, // EdgePYPZ
+            {AxisPos.NEGATIVE, AxisPos.NEGATIVE, AxisPos.NEGATIVE}, // CornerNXNYNZ
         { AxisPos.NEGATIVE, AxisPos.NEGATIVE, AxisPos.POSITIVE }, // CornerNXNYPZ
         { AxisPos.NEGATIVE, AxisPos.POSITIVE, AxisPos.NEGATIVE }, // CornerNXPYNZ
         { AxisPos.NEGATIVE, AxisPos.POSITIVE, AxisPos.POSITIVE }, // CornerNXPYPZ

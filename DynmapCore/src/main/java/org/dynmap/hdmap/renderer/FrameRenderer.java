@@ -1,21 +1,13 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.dynmap.Log;
-import org.dynmap.renderer.CustomRenderer;
-import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.renderer.MapDataContext;
-import org.dynmap.renderer.RenderPatch;
-import org.dynmap.renderer.RenderPatchFactory;
+import org.dynmap.renderer.*;
+
+import java.util.*;
 
 public class FrameRenderer extends CustomRenderer {
     // Map of block ID sets for linking blocks
-    private static Map<String, BitSet> linked_ids_by_set = new HashMap<String, BitSet>();
+    private static Map<String, BitSet> linked_ids_by_set = new HashMap<>();
     // Set of linked blocks
     private BitSet linked_ids;
     // Diameter of frame/wore (1.0 = full block)
@@ -95,17 +87,17 @@ public class FrameRenderer extends CustomRenderer {
             txtOffset = 0;
             String txt_off = custparm.get("textureOffset");
             if(txt_off != null) {
-                txtOffset = Integer.valueOf(txt_off);
+                txtOffset = Integer.parseInt(txt_off);
             }
             idx_attrib = idx;
             String txt_def = custparm.get("textureDefault");
             if(txt_def != null) {
-                txtDefIndex = Integer.valueOf(txt_def);
+                txtDefIndex = Integer.parseInt(txt_def);
             }
             
             map_id = custparm.get("textureMap");
             if(map_id == null) {    /* If no map, indexes are explicit */
-                ArrayList<Integer> map = new ArrayList<Integer>();
+                ArrayList<Integer> map = new ArrayList<>();
                 for(int id = 0; ; id++) {
                     String v = custparm.get("index" + id);
                     if(v == null) break;
@@ -113,7 +105,7 @@ public class FrameRenderer extends CustomRenderer {
                 }
                 txtIndex = new int[map.size()];
                 for(int id = 0; id < txtIndex.length; id++) {
-                    txtIndex[id] = map.get(id).intValue() + txtOffset;
+                    txtIndex[id] = map.get(id) + txtOffset;
                 }
                 txtCount = txtIndex.length;
             }
@@ -146,18 +138,18 @@ public class FrameRenderer extends CustomRenderer {
     }
 
     private RenderPatch[] buildModel(RenderPatchFactory rpf, int idx, int txt_idx) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
-        int[] sides = { txt_idx,txt_idx,txt_idx,txt_idx,txt_idx,txt_idx };
-        
+        ArrayList<RenderPatch> list = new ArrayList<>();
+        int[] sides = {txt_idx, txt_idx, txt_idx, txt_idx, txt_idx, txt_idx};
+
         /* If we have an X axis match */
-        if((idx & 0x3) != 0) {
-            addBox(rpf, list, 
-                ((idx & 1) != 0)?0.0:(0.5-diameter/2.0),
-                ((idx & 2) != 0)?1.0:(0.5+diameter/2.0),
-                (0.5 - diameter/2.0),
-                (0.5 + diameter/2.0),
-                (0.5 - diameter/2.0),
-                (0.5 + diameter/2.0),
+        if ((idx & 0x3) != 0) {
+            addBox(rpf, list,
+                    ((idx & 1) != 0) ? 0.0 : (0.5 - diameter / 2.0),
+                    ((idx & 2) != 0) ? 1.0 : (0.5 + diameter / 2.0),
+                    (0.5 - diameter / 2.0),
+                    (0.5 + diameter / 2.0),
+                    (0.5 - diameter / 2.0),
+                    (0.5 + diameter / 2.0),
                 sides);
         }
         /* If we have an Y axis match */
@@ -172,18 +164,18 @@ public class FrameRenderer extends CustomRenderer {
                 sides);
         }
         /* If we have an Z axis match, or no links */
-        if(((idx & 0x30) != 0) || (idx == 0)) {
-            addBox(rpf, list, 
-                (0.5 - diameter/2.0),
-                (0.5 + diameter/2.0),
-                (0.5 - diameter/2.0),
-                (0.5 + diameter/2.0),
-                ((idx & 0x10) != 0)?0.0:(0.5-diameter/2.0),
-                ((idx & 0x20) != 0)?1.0:(0.5+diameter/2.0),
-                sides);
+        if (((idx & 0x30) != 0) || (idx == 0)) {
+            addBox(rpf, list,
+                    (0.5 - diameter / 2.0),
+                    (0.5 + diameter / 2.0),
+                    (0.5 - diameter / 2.0),
+                    (0.5 + diameter / 2.0),
+                    ((idx & 0x10) != 0) ? 0.0 : (0.5 - diameter / 2.0),
+                    ((idx & 0x20) != 0) ? 1.0 : (0.5 + diameter / 2.0),
+                    sides);
         }
-        
-        return list.toArray(new RenderPatch[list.size()]);
+
+        return list.toArray(new RenderPatch[0]);
     }
 
     private static final int[] x_off = { -1, 1, 0, 0, 0, 0 };

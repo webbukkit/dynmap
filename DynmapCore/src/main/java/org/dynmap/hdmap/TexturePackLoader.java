@@ -1,5 +1,9 @@
 package org.dynmap.hdmap;
 
+import org.dynmap.DynmapCore;
+import org.dynmap.Log;
+import org.dynmap.common.DynmapServerInterface;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,31 +15,27 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.dynmap.DynmapCore;
-import org.dynmap.Log;
-import org.dynmap.common.DynmapServerInterface;
-
 public class TexturePackLoader {
     private ZipFile zf;
     private File tpdir;
     private DynmapServerInterface dsi;
     private static final String RESOURCEPATH = "texturepacks/standard";
-    
+
     private static class ModSource {
         ZipFile zf;
         File directory;
     }
-    private HashMap<String, ModSource> src_by_mod = new HashMap<String, ModSource>();
-    
-    public TexturePackLoader(File tp, DynmapCore core) {        
+
+    private HashMap<String, ModSource> src_by_mod = new HashMap<>();
+
+    public TexturePackLoader(File tp, DynmapCore core) {
         if (tp.isFile() && tp.canRead()) {
             try {
                 zf = new ZipFile(tp);
             } catch (IOException e) {
                 Log.severe("Error opening texture pack - " + tp.getPath());
             }
-        }
-        else if (tp.isDirectory() && tp.canRead()) {
+        } else if (tp.isDirectory() && tp.canRead()) {
             tpdir = tp;
         }
         else {
@@ -63,14 +63,13 @@ public class TexturePackLoader {
                 if ((ze != null) && (!ze.isDirectory())) {
                     return zf.getInputStream(ze);
                 }
-            }
-            else if (tpdir != null) {
+            } else if (tpdir != null) {
                 File f = new File(tpdir, rname);
                 if (f.isFile() && f.canRead()) {
                     return new FileInputStream(f);
                 }
             }
-        } catch (IOException iox) {
+        } catch (IOException ignored) {
         }
         // Fall through - load as resource from mod, if possible, or from jar
         InputStream is = dsi.openResource(modname, rname);
@@ -86,7 +85,7 @@ public class TexturePackLoader {
                     if (f.isFile()) {
                         try {
                             ms.zf = new ZipFile(f);
-                        } catch (IOException e) {
+                        } catch (IOException ignored) {
                         }
                     }
                     else {
@@ -101,14 +100,13 @@ public class TexturePackLoader {
                     if ((ze != null) && (!ze.isDirectory())) {
                         is = ms.zf.getInputStream(ze);
                     }
-                }
-                else if (ms.directory != null) {
+                } else if (ms.directory != null) {
                     File f = new File(ms.directory, rname);
                     if (f.isFile() && f.canRead()) {
                         is = new FileInputStream(f);
                     }
                 }
-            } catch (IOException iox) {
+            } catch (IOException ignored) {
             }
         }
         if (is == null) {
@@ -122,12 +120,18 @@ public class TexturePackLoader {
     }
     public void close() {
         if(zf != null) {
-            try { zf.close(); } catch (IOException iox) {}
+            try {
+                zf.close();
+            } catch (IOException ignored) {
+            }
             zf = null;
         }
         for (ModSource ms : src_by_mod.values()) {
             if (ms.zf != null) {
-                try { ms.zf.close(); } catch (IOException iox) {}
+                try {
+                    ms.zf.close();
+                } catch (IOException ignored) {
+                }
             }
         }
         src_by_mod.clear();
@@ -136,11 +140,11 @@ public class TexturePackLoader {
         try {
             if (is != null)
                 is.close();
-        } catch (IOException iox) {
+        } catch (IOException ignored) {
         }
     }
     public Set<String> getEntries() {
-        HashSet<String> rslt = new HashSet<String>();
+        HashSet<String> rslt = new HashSet<>();
         if (zf != null) {
             Enumeration<? extends ZipEntry> lst = zf.entries();
             while(lst.hasMoreElements()) {

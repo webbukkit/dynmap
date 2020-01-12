@@ -1,19 +1,19 @@
 package org.dynmap.servlet;
 
-import static org.dynmap.JSONUtils.s;
-
 import org.dynmap.DynmapCore;
 import org.json.simple.JSONObject;
 
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static org.dynmap.JSONUtils.s;
 
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -22,8 +22,8 @@ public class LoginServlet extends HttpServlet {
     public static final String USERID_ATTRIB = "userid";
     public static final String LOGIN_PAGE = "../login.html";
     public static final String LOGIN_POST = "/up/login";
-    private Charset cs_utf8 = Charset.forName("UTF-8");
-    
+    private Charset cs_utf8 = StandardCharsets.UTF_8;
+
     public LoginServlet(DynmapCore core) {
         this.core = core;
     }
@@ -32,8 +32,8 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doPost(req, resp);
     }
-    
-    private void sendResponse(HttpServletResponse resp, String rslt) throws ServletException, IOException {
+
+    private void sendResponse(HttpServletResponse resp, String rslt) throws IOException {
         JSONObject json = new JSONObject();
         s(json, "result", rslt);
         byte[] b = json.toJSONString().getBytes(cs_utf8);
@@ -78,15 +78,13 @@ public class LoginServlet extends HttpServlet {
             String pwd = req.getParameter("j_password");
             String vpwd = req.getParameter("j_verify_password");
             String passcode = req.getParameter("j_passcode");
-            if((pwd == null) || (vpwd == null) || (pwd.equals(vpwd) == false)) {
+            if ((pwd == null) || (vpwd == null) || (!pwd.equals(vpwd))) {
                 resp.sendRedirect(LOGIN_PAGE + "?error=verifyfailed");
                 sendResponse(resp, "verifyfailed");
-            }
-            else if(core.registerLogin(uid, pwd, passcode)) {    /* Good registration? */
+            } else if (core.registerLogin(uid, pwd, passcode)) {    /* Good registration? */
                 sess.setAttribute(USERID_ATTRIB, uid);
                 sendResponse(resp, "success");
-            }
-            else {
+            } else {
                 sendResponse(resp, "registerfailed");
             }
         }

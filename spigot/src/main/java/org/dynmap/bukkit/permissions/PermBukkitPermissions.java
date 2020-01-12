@@ -1,12 +1,11 @@
 package org.dynmap.bukkit.permissions;
 
-import java.util.Map;
-
+import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.Log;
 
-import com.platymuus.bukkit.permissions.PermissionsPlugin;
+import java.util.Map;
 
 public class PermBukkitPermissions extends BukkitPermissions {
     PermissionsPlugin plugin;
@@ -18,7 +17,7 @@ public class PermBukkitPermissions extends BukkitPermissions {
             return null;
         
         server.getPluginManager().enablePlugin(permissionsPlugin);
-        if(permissionsPlugin.isEnabled() == false)
+        if (!permissionsPlugin.isEnabled())
             return null;
         
         Log.info("Using PermissionsBukkit " + permissionsPlugin.getDescription().getVersion() + " for access control");

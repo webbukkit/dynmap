@@ -1,23 +1,12 @@
 package org.dynmap.modsupport.impl;
 
+import org.dynmap.modsupport.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.dynmap.modsupport.BigChestTextureFile;
-import org.dynmap.modsupport.BiomeTextureFile;
-import org.dynmap.modsupport.BlockTextureRecord;
-import org.dynmap.modsupport.ChestTextureFile;
-import org.dynmap.modsupport.CopyBlockTextureRecord;
-import org.dynmap.modsupport.CustomTextureFile;
-import org.dynmap.modsupport.GridTextureFile;
-import org.dynmap.modsupport.ModModelDefinition;
-import org.dynmap.modsupport.ModTextureDefinition;
-import org.dynmap.modsupport.SignTextureFile;
-import org.dynmap.modsupport.ShulkerTextureFile;
-import org.dynmap.modsupport.SkinTextureFile;
 
 /**
  * Implementation of mod texture definition
@@ -27,18 +16,18 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
     private final String modver;
     private ModModelDefinitionImpl modDef = null;
     private String texturePath;
-    private HashMap<String, TextureFileImpl> txtFileByID = new HashMap<String, TextureFileImpl>();
-    private ArrayList<BlockTextureRecordImpl> blkTextureRec = new ArrayList<BlockTextureRecordImpl>();
-    private ArrayList<CopyBlockTextureRecordImpl> blkCopyTextureRec = new ArrayList<CopyBlockTextureRecordImpl>();
+    private HashMap<String, TextureFileImpl> txtFileByID = new HashMap<>();
+    private ArrayList<BlockTextureRecordImpl> blkTextureRec = new ArrayList<>();
+    private ArrayList<CopyBlockTextureRecordImpl> blkCopyTextureRec = new ArrayList<>();
     private boolean published = false;
-    
+
     public ModTextureDefinitionImpl(String modid, String modver) {
         this.modid = modid;
         this.modver = modver;
         // Default texture path
         this.texturePath = "assets/" + modid.toLowerCase() + "/textures/blocks/";
     }
-    
+
     /**
      * Get mod ID
      * @return mod ID
@@ -84,7 +73,7 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
     @Override
     public void setTexturePath(String txtpath) {
         this.texturePath = txtpath;
-        if (this.texturePath.endsWith("/") == false) {
+        if (!this.texturePath.endsWith("/")) {
             this.texturePath += "/";
         }
         if (this.texturePath.startsWith("/")) {
@@ -265,9 +254,7 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
     
     public void writeToFile(File destdir) throws IOException {
         File f = new File(destdir, this.modid + "-texture.txt");
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(f);
+        try (FileWriter fw = new FileWriter(f)) {
             // Write modname line
             String s = "modname:" + this.modid;
             fw.write(s + "\n\n");
@@ -291,10 +278,6 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
                 if (line != null) {
                     fw.write(line + "\n");
                 }
-            }
-        } finally {
-            if (fw != null) {
-                fw.close(); 
             }
         }
     }

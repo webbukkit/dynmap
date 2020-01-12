@@ -1,7 +1,5 @@
 package org.dynmap.servlet;
 
-import static org.dynmap.JSONUtils.s;
-
 import org.dynmap.DynmapCore;
 import org.dynmap.Event;
 import org.dynmap.Log;
@@ -10,38 +8,35 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.logging.Logger;
+
+import static org.dynmap.JSONUtils.s;
 
 @SuppressWarnings("serial")
 public class SendMessageServlet extends HttpServlet {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
     private static final JSONParser parser = new JSONParser();
-    public Event<Message> onMessageReceived = new Event<Message>();
-    private Charset cs_utf8 = Charset.forName("UTF-8");
+    public Event<Message> onMessageReceived = new Event<>();
+    private Charset cs_utf8 = StandardCharsets.UTF_8;
     public int maximumMessageInterval = 1000;
     public boolean hideip = false;
     public boolean trustclientname = false;
-    
+
     public String spamMessage = "\"You may only chat once every %interval% seconds.\"";
-    private HashMap<String, WebUser> disallowedUsers = new HashMap<String, WebUser>();
-    private LinkedList<WebUser> disallowedUserQueue = new LinkedList<WebUser>();
-    private Object disallowedUsersLock = new Object();
-    private HashMap<String,String> useralias = new HashMap<String,String>();
+    private HashMap<String, WebUser> disallowedUsers = new HashMap<>();
+    private LinkedList<WebUser> disallowedUserQueue = new LinkedList<>();
+    private final Object disallowedUsersLock = new Object();
+    private HashMap<String, String> useralias = new HashMap<>();
     private int aliasindex = 1;
     public boolean use_player_login_ip = false;
     public boolean require_player_login_ip = false;
@@ -50,32 +45,30 @@ public class SendMessageServlet extends HttpServlet {
     public boolean chat_perms = false;
     public int lengthlimit = 256;
     public DynmapCore core;
-    public HashSet<String> proxyaddress = new HashSet<String>();
+    public HashSet<String> proxyaddress = new HashSet<>();
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         byte[] bytes;
         String error = "none";
         HttpSession sess = request.getSession(true);
         String userID = (String) sess.getAttribute(LoginServlet.USERID_ATTRIB);
-        if(userID == null) userID = LoginServlet.USERID_GUEST;
+        if (userID == null) userID = LoginServlet.USERID_GUEST;
         boolean chat_requires_login = core.getLoginRequired() || require_login;
-        if(chat_requires_login && userID.equals(LoginServlet.USERID_GUEST)) {
+        if (chat_requires_login && userID.equals(LoginServlet.USERID_GUEST)) {
             error = "login-required";
-        }
-        else if(chat_requires_login && (!userID.equals(LoginServlet.USERID_GUEST)) && chat_perms && 
+        } else if (chat_requires_login && (!userID.equals(LoginServlet.USERID_GUEST)) && chat_perms &&
                 (!core.checkPermission(userID, "webchat"))) {
             Log.info("Rejected web chat by " + userID + ": not permitted");
             error = "not-permitted";
-        }
-        else {
+        } else {
             boolean ok = true;
-            
+
             InputStreamReader reader = new InputStreamReader(request.getInputStream(), cs_utf8);
 
             JSONObject o = null;
             try {
-                o = (JSONObject)parser.parse(reader);
+                o = (JSONObject) parser.parse(reader);
             } catch (ParseException e) {
                 error = "bad-format";
                 ok = false;
@@ -91,25 +84,30 @@ public class SendMessageServlet extends HttpServlet {
                 boolean isip = true;
                 if ((message.name == null) || message.name.equals("")) {
                     /* If from trusted proxy, check for client */
-                    String rmtaddr = request.getRemoteAddr(); 
+                    String rmtaddr = request.getRemoteAddr();
                     if (this.proxyaddress.contains(rmtaddr)) {
                         /* If proxied client address, get original IP */
                         if (request.getHeader("X-Forwarded-For") != null) {
                             /* If trusted proxies were chained, we get next client address till non-trusted proxy met */
                             String[] proxyAddrs = request.getHeader("X-Forwarded-For").split(", ");
-                            for(int i = proxyAddrs.length - 1; i >= 0; i--){
+                            for (int i = proxyAddrs.length - 1; i >= 0; i--) {
                                 if (!this.proxyaddress.contains(proxyAddrs[i])) {
                                     /* use remaining addresses as name (maybe we can use the last or the first non-trusted one?) */
                                     message.name = proxyAddrs[0]; // 0 .. i
-                                    for(int j = 1; j <= i; j++) message.name += ", " + proxyAddrs[j];
+                                    StringBuilder nameBuilder = new StringBuilder();
+                                    nameBuilder.append(message.name);
+                                    for (int j = 1; j <= i; j++) {
+                                        nameBuilder.append(", ");
+                                        nameBuilder.append(proxyAddrs[j]);
+                                    }
+                                    message.name = nameBuilder.toString();
                                     break;
                                 }
                             }
                         } else {
                             message.name = String.valueOf(o.get("name"));
                         }
-                    }
-                    else
+                    } else
                         message.name = request.getRemoteAddr();
                 }
                 if (use_player_login_ip) {
@@ -147,12 +145,11 @@ public class SendMessageServlet extends HttpServlet {
                         message.name = n;
                     }
                 }
-            }
-            else {
+            } else {
                 message.name = userID;
             }
             message.message = String.valueOf(o.get("message"));
-            if((lengthlimit > 0) && (message.message.length() > lengthlimit)) {
+            if ((lengthlimit > 0) && (message.message.length() > lengthlimit)) {
                 message.message = message.message.substring(0, lengthlimit);
             }
 
@@ -185,13 +182,13 @@ public class SendMessageServlet extends HttpServlet {
                     ok = false;
                 }
             }
-            if(ok)
+            if (ok)
                 onMessageReceived.trigger(message);
         }
         JSONObject json = new JSONObject();
         s(json, "error", error);
         bytes = json.toJSONString().getBytes(cs_utf8);
-        
+
         String dateStr = new Date().toString();
         response.addHeader(HttpField.Date, dateStr);
         response.addHeader(HttpField.ContentType, "text/plain; charset=utf-8");
@@ -202,9 +199,10 @@ public class SendMessageServlet extends HttpServlet {
     }
 
     public static class Message {
-        public String name;
+        public java.lang.String name;
         public String message;
     }
+
     public static class WebUser {
         public long nextMessageTime;
         public String name;

@@ -1,14 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Map;
-
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Map;
 
 public class FenceWallBlockStateRenderer extends CustomRenderer {
     private static final int TEXTURE_SIDES = 0;
@@ -16,7 +16,7 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
     private static final int TEXTURE_BOTTOM = 2;
     private boolean check_yplus;
 
-    private static final int SIDE_XP = 0x1;	// East
+    private static final int SIDE_XP = 0x1;    // East
     private static final int SIDE_XN = 0x2; // West
     private static final int SIDE_X = SIDE_XN | SIDE_XP;
     private static final int SIDE_ZP = 0x4; // South
@@ -55,7 +55,7 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
     }
     
     private void buildFenceMeshes(RenderPatchFactory rpf) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         for(int dat = 0; dat < 16; dat++) {
             /* Add center post */
             addBox(rpf, list, 0.375, 0.625, 0.0, 1.0, 0.375, 0.625);
@@ -87,13 +87,13 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
                     addBox(rpf, list, 0.4375, 0.5625, 0.75, 0.9275, 0.0, 1.0);
                     break;
             }
-            meshes[dat] = list.toArray(new RenderPatch[list.size()]);
+            meshes[dat] = list.toArray(new RenderPatch[0]);
             list.clear();
         }
     }
 
     private void buildWallMeshes(RenderPatchFactory rpf) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         for(int dat = 0; dat < 32; dat++) {
             boolean need_post = ((dat & 0xF) == 0) || ((dat & 0x10) == 0x10);
             switch(dat & SIDE_X) {
@@ -125,28 +125,27 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
             if(need_post) {
                 addBox(rpf, list, 0.25, 0.75, 0.0, 1.0, 0.25, 0.75);
             }
-            meshes[dat] = list.toArray(new RenderPatch[list.size()]);
+            meshes[dat] = list.toArray(new RenderPatch[0]);
             list.clear();
         }
     }
     
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
-    	int idx = ctx.getBlockType().stateIndex;
-    	int off = 0;
-        if(check_yplus) {	// Wall?
-        	if ((idx & 0x20) == 0) off += SIDE_XP;	// East connected
-        	if ((idx & 0x10) == 0) off += SIDE_ZN;	// North connected
-        	if ((idx & 0x08) == 0) off += SIDE_ZP;	// South connected
-        	if ((idx & 0x04) == 0) off += SIDE_YP;	// Up connected
-        	if ((idx & 0x01) == 0) off += SIDE_XN;	// West connected
+        int idx = ctx.getBlockType().stateIndex;
+        int off = 0;
+        // West connected
+        if (check_yplus) {    // Wall?
+            if ((idx & 0x20) == 0) off += SIDE_XP;    // East connected
+            if ((idx & 0x10) == 0) off += SIDE_ZN;    // North connected
+            if ((idx & 0x08) == 0) off += SIDE_ZP;    // South connected
+            if ((idx & 0x04) == 0) off += SIDE_YP;    // Up connected
+        } else {    // Fence
+            if ((idx & 0x10) == 0) off += SIDE_XP;    // East connected
+            if ((idx & 0x08) == 0) off += SIDE_ZN;    // North connected
+            if ((idx & 0x04) == 0) off += SIDE_ZP;    // South connected
         }
-        else {	// Fence
-        	if ((idx & 0x10) == 0) off += SIDE_XP;	// East connected
-        	if ((idx & 0x08) == 0) off += SIDE_ZN;	// North connected
-        	if ((idx & 0x04) == 0) off += SIDE_ZP;	// South connected
-        	if ((idx & 0x01) == 0) off += SIDE_XN;	// West connected
-        }
+        if ((idx & 0x01) == 0) off += SIDE_XN;    // West connected
         return meshes[off];
     }    
 }

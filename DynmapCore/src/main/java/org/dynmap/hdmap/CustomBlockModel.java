@@ -1,30 +1,29 @@
 package org.dynmap.hdmap;
 
-import java.util.BitSet;
-import java.util.Map;
-
 import org.dynmap.Log;
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 
+import java.util.BitSet;
+import java.util.Map;
+
 public class CustomBlockModel extends HDBlockModel {
     public CustomRenderer render;
 
-    public CustomBlockModel(DynmapBlockState bstate, BitSet databits, String classname, Map<String,String> classparm, String blockset) {
+    public CustomBlockModel(DynmapBlockState bstate, BitSet databits, String classname, Map<String, String> classparm, String blockset) {
         super(bstate, databits, blockset);
         try {
             Class<?> cls = Class.forName(classname);   /* Get class */
             render = (CustomRenderer) cls.newInstance();
-            if(render.initializeRenderer(HDBlockModels.pdf, bstate.blockName, databits, classparm) == false) {
+            if (!render.initializeRenderer(HDBlockModels.pdf, bstate.blockName, databits, classparm)) {
                 Log.severe("Error loading custom renderer - " + classname);
                 render = null;
-            }
-            else {
-                if(render.getTileEntityFieldsNeeded() != null) {
+            } else {
+                if (render.getTileEntityFieldsNeeded() != null) {
                     DynmapBlockState bbs = bstate.baseState;
-                    for(int i = 0; i < bbs.getStateCount(); i++) {
+                    for (int i = 0; i < bbs.getStateCount(); i++) {
                         if (databits.isEmpty() || databits.get(i)) {
                             DynmapBlockState bs = bbs.getState(i);
                             HDBlockModels.customModelsRequestingTileData.set(bs.globalStateIndex);

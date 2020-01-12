@@ -9,11 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.lang.Class;
+import java.net.MalformedURLException;
 
 public class FileResourceHandler extends ResourceHandler {
     private static String getNormalizedPath(String p) {
@@ -33,16 +30,16 @@ public class FileResourceHandler extends ResourceHandler {
                 j++;
             }
         }
-        String path = "";
+        StringBuilder path = new StringBuilder();
         for(i = 0; i < j; i++) {
             if(tok[i] != null) {
-                path = path + "/" + tok[i];
+                path.append("/").append(tok[i]);
             }
         }
         if (path.length() == 0) {
-            path = "/";
+            path = new StringBuilder("/");
         }
-        return path;
+        return path.toString();
     }
 
     @Override

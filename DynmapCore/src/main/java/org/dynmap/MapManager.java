@@ -1,54 +1,34 @@
 package org.dynmap;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.dynmap.common.DynmapCommandSender;
-import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.DynmapPlayer;
 import org.dynmap.debug.Debug;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.MapStorageBaseTileEnumCB;
-import org.dynmap.storage.MapStorageTileSearchEndCB;
 import org.dynmap.storage.MapStorageTile;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.TileFlags;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class MapManager {
     public AsynchronousQueue<MapTile> tileQueue;
 
     private static final int DEFAULT_CHUNKS_PER_TICK = 200;
     private static final int DEFAULT_ZOOMOUT_PERIOD = 60;
-    public List<DynmapWorld> worlds = new CopyOnWriteArrayList<DynmapWorld>();
-    private List<String> disabled_worlds = new ArrayList<String>();
-    public Map<String, DynmapWorld> worldsLookup = new HashMap<String, DynmapWorld>();
+    public List<DynmapWorld> worlds = new CopyOnWriteArrayList<>();
+    private List<String> disabled_worlds = new ArrayList<>();
+    public Map<String, DynmapWorld> worldsLookup = new HashMap<>();
     private DynmapCore core;
     private long timeslice_int = 0; /* In milliseconds */
     private int max_chunk_loads_per_tick = DEFAULT_CHUNKS_PER_TICK;
@@ -61,7 +41,7 @@ public class MapManager {
     private boolean hideores = false;
     private boolean useBrightnessTable = false;
     private boolean usenormalpriority = false;
-    private HashMap<String, String> blockalias = new HashMap<String, String>();
+    private HashMap<String, String> blockalias = new HashMap<>();
     
     private boolean pausefullrenders = false;
 
@@ -74,22 +54,22 @@ public class MapManager {
     private boolean tpspausezoomout = false;
 
     private boolean did_start = false;
-    
-    private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
+
+    private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;    /* Zoom-out tile processing period, in seconds */
     /* Which fullrenders are active */
-    private HashMap<String, FullWorldRenderState> active_renders = new HashMap<String, FullWorldRenderState>();
+    private HashMap<String, FullWorldRenderState> active_renders = new HashMap<>();
 
     /* Chunk load performance numbers */
     AtomicInteger chunk_caches_created = new AtomicInteger(0);
-    AtomicInteger chunks_read[];
-    AtomicLong chunks_read_times[];
-    
+    AtomicInteger[] chunks_read;
+    AtomicLong[] chunks_read_times;
+
     /* lock for our data structures */
     public static final Object lock = new Object();
 
     public static MapManager mapman;    /* Our singleton */
     public HDMapManager hdmapman;
-    
+
     /* Thread pool for processing renders */
     private DynmapScheduledThreadPoolExecutor render_pool;
     private static final int POOL_SIZE = 3;    
@@ -105,33 +85,34 @@ public class MapManager {
         }
         @Override
         public boolean equals(Object o) {
-            if(this == o) return true;
-            TouchEvent te = (TouchEvent)o;
-            if((x != te.x) || (y != te.y) || (z != te.z) || (world.equals(te.world) == false))
-                return false;
-            return true;
-        }        
+            if (this == o) return true;
+            TouchEvent te = (TouchEvent) o;
+            return (x == te.x) && (y == te.y) && (z == te.z) && (world.equals(te.world));
+        }
     }
+
     private static class TouchVolumeEvent {
         int xmin, ymin, zmin;
         int xmax, ymax, zmax;
         String world;
         String reason;
     }
-    private ConcurrentHashMap<TouchEvent, Object> touch_events = new ConcurrentHashMap<TouchEvent, Object>();
-    private LinkedList<TouchVolumeEvent> touch_volume_events = new LinkedList<TouchVolumeEvent>();
-    private Object touch_lock = new Object();
-    
-    private HashMap<String, MapStats> mapstats = new HashMap<String, MapStats>();
-    
+
+    private ConcurrentHashMap<TouchEvent, Object> touch_events = new ConcurrentHashMap<>();
+    private LinkedList<TouchVolumeEvent> touch_volume_events = new LinkedList<>();
+    private final Object touch_lock = new Object();
+
+    private HashMap<String, MapStats> mapstats = new HashMap<>();
+
     private static class MapStats {
         int loggedcnt;
         int renderedcnt;
         int updatedcnt;
         int transparentcnt;
     }
+
     /* synchronized using 'lock' */
-    private HashMap<String, TriggerStats> trigstats = new HashMap<String, TriggerStats>();
+    private HashMap<String, TriggerStats> trigstats = new HashMap<>();
     
     
     private static class TriggerStats {
@@ -161,10 +142,10 @@ public class MapManager {
 
     private static class OurThreadFactory implements ThreadFactory {
         @Override
-        public Thread newThread(Runnable r) {
+        public Thread newThread(@NotNull Runnable r) {
             Thread t = new Thread(r);
             t.setDaemon(true);
-            if(!mapman.usenormalpriority)
+            if (!mapman.usenormalpriority)
                 t.setPriority(Thread.MIN_PRIORITY);
             t.setName("Dynmap Render Thread");
             return t;
@@ -198,13 +179,15 @@ public class MapManager {
                             r.run();
                         } catch (Exception x) {
                             Log.severe("Exception during render job: " + r);
-                            x.printStackTrace();                        
+                            x.printStackTrace();
                         }
                     }
                 });
             } catch (RejectedExecutionException rxe) {  /* Pool shutdown - nominal for reload or unload */
-            }    
+            }
         }
+
+        @NotNull
         @Override
         public ScheduledFuture<?> schedule(final Runnable command, long delay, TimeUnit unit) {
             try {
@@ -214,7 +197,7 @@ public class MapManager {
                             command.run();
                         } catch (Exception x) {
                             Log.severe("Exception during render job: " + command);
-                            x.printStackTrace();                        
+                            x.printStackTrace();
                         }
                     }
                 }, delay, unit);
@@ -242,7 +225,7 @@ public class MapManager {
         DynmapCommandSender sender;
         String player;
         long timeaccum;
-        HashSet<MapType> renderedmaps = new HashSet<MapType>();
+        HashSet<MapType> renderedmaps = new HashSet<>();
         String activemaps;
         int activemapcnt;
         /* Min and max limits for chunk coords (for radius limit) */
@@ -283,12 +266,7 @@ public class MapManager {
                         //sender.sendMessage("Tile found: " + tileId);
                         storedTileIds.add(tileId);
                     }
-                }, new MapStorageTileSearchEndCB() {
-                    @Override
-                    public void searchEnded() {
-                        latch.countDown();
-                    }
-                });
+                }, latch::countDown);
 
                 try {
                     latch.await(10, TimeUnit.SECONDS);
@@ -305,7 +283,7 @@ public class MapManager {
             loc = l;
             found = new TileFlags();
             rendered = new TileFlags();
-            renderQueue = new LinkedList<MapTile>();
+            renderQueue = new LinkedList<>();
             this.sender = sender;
             if(sender instanceof DynmapPlayer)
                 this.player = ((DynmapPlayer)sender).getName();
@@ -347,7 +325,7 @@ public class MapManager {
             if(map_index >= 0) {
                 String m = n.getString("map","");
                 map = world.maps.get(map_index);
-                if((map == null) || (map.getName().equals(m) == false)) {
+                if ((map == null) || (!map.getName().equals(m))) {
                     throw new Exception();
                 }
             }
@@ -363,7 +341,7 @@ public class MapManager {
             sl = n.getStrings("rendered", null);
             if(sl != null)
                 rendered.load(sl);
-            renderQueue = new LinkedList<MapTile>();
+            renderQueue = new LinkedList<>();
             List<ConfigurationNode> tl = n.getNodes("queue");
             if(tl != null) {
                 for(ConfigurationNode cn : tl) {
@@ -375,7 +353,7 @@ public class MapManager {
             }
             rendercnt = n.getInteger("count", 0);
             timeaccum = n.getInteger("timeaccum", 0);
-            renderedmaps = new HashSet<MapType>();
+            renderedmaps = new HashSet<>();
             sl = n.getStrings("renderedmaps", null);
             if(sl != null) {
                 for(String s : sl) {
@@ -408,7 +386,7 @@ public class MapManager {
         }
         
         public HashMap<String,Object> saveState() {
-            HashMap<String,Object> v = new HashMap<String,Object>();
+            HashMap<String, Object> v = new HashMap<>();
             
             v.put("world", world.getName());
             v.put("locX", loc.x);
@@ -424,7 +402,7 @@ public class MapManager {
             }
             v.put("found", found.save());
             v.put("rendered", rendered.save());
-            LinkedList<ConfigurationNode> queue = new LinkedList<ConfigurationNode>();
+            LinkedList<ConfigurationNode> queue = new LinkedList<>();
             for(MapTile tq : renderQueue) {
                 ConfigurationNode n = tq.saveTile();
                 if(n != null)
@@ -433,7 +411,7 @@ public class MapManager {
             v.put("queue", queue);
             v.put("count", rendercnt);
             v.put("timeaccum", timeaccum);
-            LinkedList<String> rmaps = new LinkedList<String>();
+            LinkedList<String> rmaps = new LinkedList<>();
             for(MapType mt : renderedmaps) {
                 rmaps.add(mt.getName());
             }
@@ -489,23 +467,21 @@ public class MapManager {
             	return;
             }
             if(tile0 == null) {    /* Not single tile render */
-                if (saverestorepending && world.isLoaded() && (savependingperiod > 0) && ((lastPendingSaveTS + (1000 *savependingperiod))  < System.currentTimeMillis())) {
+                if (saverestorepending && world.isLoaded() && (savependingperiod > 0) && ((lastPendingSaveTS + (1000 * savependingperiod)) < System.currentTimeMillis())) {
                     savePending(this.world, true);    // Save the pending data for the given world
                     lastPendingSaveTS = System.currentTimeMillis();
                 }
-                if(pausefullrenders || tpspausefullrenders) {    /* Update renders are paused? */
-                    scheduleDelayedJob(this, 20*5); /* Delay 5 seconds and retry */
+                if (pausefullrenders || tpspausefullrenders) {    /* Update renders are paused? */
+                    scheduleDelayedJob(this, 20 * 5); /* Delay 5 seconds and retry */
                     return;
-                }
-                else if(world.isLoaded() == false) {    /* Update renders are paused? */
-                    if(!pausedforworld) {
+                } else if (!world.isLoaded()) {    /* Update renders are paused? */
+                    if (!pausedforworld) {
                         pausedforworld = true;
                         Log.info("Paused " + rendertype + " for world '" + world.getName() + "' - world unloaded");
                     }
-                    scheduleDelayedJob(this, 20*5); /* Delay 5 seconds and retry */
+                    scheduleDelayedJob(this, 20 * 5); /* Delay 5 seconds and retry */
                     return;
-                }
-                else if(pausedforworld) {
+                } else if (pausedforworld) {
                     pausedforworld = false;
                     Log.info("Unpaused " + rendertype + " for world '" + world.getName() + "' - world reloaded");
                 }
@@ -562,7 +538,7 @@ public class MapManager {
                             }
                         }
                         else {
-                            if(renderedmaps.contains(world.maps.get(map_index)) == false)
+                            if (!renderedmaps.contains(world.maps.get(map_index)))
                                 break;
                         }
                     }
@@ -582,12 +558,14 @@ public class MapManager {
                     }
                     else {
                         activemapcnt = 0;
+                        StringBuilder AMBuilder = new StringBuilder();
                         for(String n : activemaplist) {
-                            if(activemaps.length() > 0)
-                                activemaps += ",";
-                            activemaps += n;
+                            if (activemapcnt > 0)
+                                AMBuilder.append(",");
+                            AMBuilder.append(n);
                             activemapcnt++;
                         }
+                        activemaps += AMBuilder.toString();
                     }
                     /* Mark all the concurrently rendering maps rendered */
                     renderedmaps.addAll(map.getMapsSharingRender(world));
@@ -621,7 +599,7 @@ public class MapManager {
                     }
                 }
                 if(parallelrendercnt > 1) { /* Doing parallel renders? */
-                    tileset = new ArrayList<MapTile>();
+                    tileset = new ArrayList<>();
                     for(int i = 0; i < parallelrendercnt; i++) {
                         tile = renderQueue.pollFirst();
                         if(tile != null)
@@ -644,7 +622,7 @@ public class MapManager {
             
             if(tileset != null) {
                 long save_timeaccum = timeaccum;
-                List<Future<Boolean>> rslt = new ArrayList<Future<Boolean>>();
+                List<Future<Boolean>> rslt = new ArrayList<>();
                 final int cnt = tileset.size();
                 for(int i = 1; i < cnt; i++) {   /* Do all but first on other threads */
                     final MapTile mt = tileset.get(i);
@@ -669,12 +647,10 @@ public class MapManager {
                     boolean rsltflag = false;
                     try {
                         rsltflag = rslt.get(i).get();
-                    } catch (CancellationException cx) {
+                    } catch (CancellationException | InterruptedException cx) {
                         rsltflag = false;
                     } catch (ExecutionException xx) {
                         Log.severe("Execution exception while processing tile: ", xx.getCause());
-                        rsltflag = false;
-                    } catch (InterruptedException ix) {
                         rsltflag = false;
                     }
                     notdone = notdone && rsltflag;
@@ -732,10 +708,7 @@ public class MapManager {
                                                       tile.isRawBiomeDataNeeded());
             if(cache == null) {
                 /* If world unloaded, don't cancel */
-                if(world.isLoaded() == false) {
-                    return true;
-                }
-                return false; /* Cancelled/aborted */
+                return !world.isLoaded();/* Cancelled/aborted */
             }
             /* Update stats */
             chunk_caches_created.incrementAndGet();
@@ -751,7 +724,7 @@ public class MapManager {
             }
 
             if(tile0 != null) {    /* Single tile? */
-                if(cache.isEmpty() == false) {
+                if (!cache.isEmpty()) {
                     if (skipTile) {
                         skipcnt++;
                     } else {
@@ -763,7 +736,7 @@ public class MapManager {
         		/* Remove tile from tile queue, since we're processing it already */
             	tileQueue.remove(tile);
                 /* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
-                if (cache.isEmpty() == false) {
+                if (!cache.isEmpty()) {
                     boolean upd;
                     if (skipTile) {
                         upd = false;
@@ -771,7 +744,7 @@ public class MapManager {
                     } else {
                         long rt0 = System.nanoTime();
                         upd = tile.render(cache, mapname);
-                        total_render_ns.addAndGet(System.nanoTime()-rt0);
+                        total_render_ns.addAndGet(System.nanoTime() - rt0);
                         rendercalls.incrementAndGet();
                     }
                     synchronized(lock) {
@@ -841,30 +814,31 @@ public class MapManager {
         }
     }
 
-    private class ProcessOBJExport implements Runnable {
+    private static class ProcessOBJExport implements Runnable {
         private OBJExport exp;
         private DynmapCommandSender sender;
-        
+
         public void run() {
             exp.processExport(sender);
         }
     }
-    
+
     private class CheckWorldTimes implements Runnable {
-    	HashMap<String, Polygon> last_worldborder = new HashMap<String, Polygon>();
+        HashMap<String, Polygon> last_worldborder = new HashMap<>();
+
         public void run() {
             Future<Integer> f = core.getServer().callSyncMethod(new Callable<Integer>() {
-                public Integer call() throws Exception {
+                public Integer call() {
                     long now_nsec = System.nanoTime();
-                    for(DynmapWorld w : worlds) {
-                        if(w.isLoaded()) {
-                            int new_servertime = (int)(w.getTime() % 24000);
+                    for (DynmapWorld w : worlds) {
+                        if (w.isLoaded()) {
+                            int new_servertime = (int) (w.getTime() % 24000);
                             /* Check if we went from night to day */
                             boolean wasday = w.servertime >= 0 && w.servertime < 13700;
                             boolean isday = new_servertime >= 0 && new_servertime < 13700;
                             w.servertime = new_servertime;
-                            if(wasday != isday) {
-                                pushUpdate(w, new Client.DayNight(isday));            
+                            if (wasday != isday) {
+                                pushUpdate(w, new Client.DayNight(isday));
                             }
                             // Check world border
                             Polygon wb = w.getWorldBorder();
@@ -904,7 +878,7 @@ public class MapManager {
         public void run() {
             if (!tpspausezoomout) {
                 Debug.debug("DoZoomOutProcessing started");
-                ArrayList<DynmapWorld> wl = new ArrayList<DynmapWorld>(worlds);
+                ArrayList<DynmapWorld> wl = new ArrayList<>(worlds);
                 for(DynmapWorld w : wl) {
                     w.freshenZoomOutFiles();
                 }
@@ -932,7 +906,7 @@ public class MapManager {
     }
     
     private void addNextTilesToUpdate(int cnt) {
-        ArrayList<MapTile> tiles = new ArrayList<MapTile>();
+        ArrayList<MapTile> tiles = new ArrayList<>();
         TileFlags.TileCoord coord = new TileFlags.TileCoord();
         while(cnt > 0) {
             tiles.clear();
@@ -957,7 +931,7 @@ public class MapManager {
     public MapManager(DynmapCore core, ConfigurationNode configuration) {
         this.core = core;
         mapman = this;
-        
+
         chunks_read = new AtomicInteger[MapChunkCache.ChunkStats.values().length];
         chunks_read_times = new AtomicLong[MapChunkCache.ChunkStats.values().length];
         for (int i = 0; i < MapChunkCache.ChunkStats.values().length; i++) {
@@ -968,8 +942,8 @@ public class MapManager {
         /* Get block hiding data, if any */
         hideores = configuration.getBoolean("hideores", false);
         useBrightnessTable = configuration.getBoolean("use-brightness-table", false);
-        
-        blockalias = new HashMap<String, String>();
+
+        blockalias = new HashMap<>();
         if (hideores) {
             setBlockAlias(DynmapBlockState.GOLD_ORE_BLOCK, DynmapBlockState.STONE_BLOCK); // Gold ore
             setBlockAlias(DynmapBlockState.IRON_ORE_BLOCK, DynmapBlockState.STONE_BLOCK);  // Iron ore
@@ -986,7 +960,7 @@ public class MapManager {
             for (String id : ba.keySet()) {
                 String srcname = id.trim();
                 String newname = ba.getString(id, srcname);
-                if (srcname != newname) {
+                if (!Objects.equals(srcname, newname)) {
                     setBlockAlias(srcname, newname);
                 }
             }
@@ -1005,7 +979,7 @@ public class MapManager {
         if(progressinterval < 100) progressinterval = 100;
         saverestorepending = configuration.getBoolean("saverestorepending", true);
         tileupdatedelay = configuration.getInteger("tileupdatedelay", 30);
-        
+
         tpslimit_updaterenders = configuration.getDouble("update-min-tps", 18.0);
         if (tpslimit_updaterenders > 19.5) tpslimit_updaterenders = 19.5;
         tpslimit_fullrenders = configuration.getDouble("fullrender-min-tps", 18.0);
@@ -1015,21 +989,21 @@ public class MapManager {
         // Load the save pending job period
         savependingperiod = configuration.getInteger("save-pending-period", 900);
         if ((savependingperiod > 0) && (savependingperiod < 60)) savependingperiod = 60;
-        
-        this.tileQueue = new AsynchronousQueue<MapTile>(
+
+        this.tileQueue = new AsynchronousQueue<>(
                 new Handler<MapTile>() {
-                @Override
-                public void handle(MapTile t) {
-                    FullWorldRenderState job = new FullWorldRenderState(t);
-                    if(!scheduleDelayedJob(job, 0))
-                        job.cleanup();
-                }
-            }, 
-            (int) (configuration.getDouble("renderinterval", 0.5) * 1000),
-            configuration.getInteger("renderacceleratethreshold", 30),
-            (int)(configuration.getDouble("renderaccelerateinterval", 0.2) * 1000), 
-            configuration.getInteger("tiles-rendered-at-once", (Runtime.getRuntime().availableProcessors()+1)/2),
-            usenormalpriority);
+                    @Override
+                    public void handle(MapTile t) {
+                        FullWorldRenderState job = new FullWorldRenderState(t);
+                        if (!scheduleDelayedJob(job, 0))
+                            job.cleanup();
+                    }
+                },
+                (int) (configuration.getDouble("renderinterval", 0.5) * 1000),
+                configuration.getInteger("renderacceleratethreshold", 30),
+                (int) (configuration.getDouble("renderaccelerateinterval", 0.2) * 1000),
+                configuration.getInteger("tiles-rendered-at-once", (Runtime.getRuntime().availableProcessors() + 1) / 2),
+                usenormalpriority);
 
         /* On dedicated thread, so default to no delays */
         timeslice_int = (long)(configuration.getDouble("timesliceinterval", 0.0) * 1000);
@@ -1220,7 +1194,7 @@ public class MapManager {
             Log.info("World '" + worldname + "' disabled");
             disabled_worlds.add(worldname);   /* Add to disabled world list */
             DynmapWorld oldw = worldsLookup.remove(worldname);
-            if(oldw != null)
+            if (oldw != null)
                 worlds.remove(oldw);
             return false;
         }
@@ -1228,24 +1202,23 @@ public class MapManager {
         disabled_worlds.remove(worldname);
         // TODO: Make this less... weird...
         // Insert the world on the same spot as in the configuration.
-        HashMap<String, Integer> indexLookup = new HashMap<String, Integer>();
-        List<Map<String,Object>> nodes = core.world_config.getMapList("worlds");
+        HashMap<String, Integer> indexLookup = new HashMap<>();
+        List<Map<String, Object>> nodes = core.world_config.getMapList("worlds");
         for (int i = 0; i < nodes.size(); i++) {
-            Map<String,Object> node = nodes.get(i);
-            indexLookup.put((String)node.get("name"), i);
+            Map<String, Object> node = nodes.get(i);
+            indexLookup.put((String) node.get("name"), i);
         }
         Integer worldIndex = indexLookup.get(worldname);
-        if(worldIndex == null) {
-        	worlds.add(dynmapWorld);	/* Put at end if no world section */
-        }
-        else {
-        	int insertIndex;
+        if (worldIndex == null) {
+            worlds.add(dynmapWorld);    /* Put at end if no world section */
+        } else {
+            int insertIndex;
         	for(insertIndex = 0; insertIndex < worlds.size(); insertIndex++) {
-        		Integer nextWorldIndex = indexLookup.get(worlds.get(insertIndex).getName());
-        		if (nextWorldIndex == null || worldIndex < nextWorldIndex.intValue()) {
-        			break;
-       			}
-        	}
+                Integer nextWorldIndex = indexLookup.get(worlds.get(insertIndex).getName());
+                if (nextWorldIndex == null || worldIndex < nextWorldIndex) {
+                    break;
+                }
+            }
         	worlds.add(insertIndex, dynmapWorld);
         }
         worldsLookup.put(worldname, dynmapWorld);
@@ -1352,7 +1325,7 @@ public class MapManager {
         List<MapTile> mt = tileQueue.popAll();
         File f = new File(core.getDataFolder(), w.getName() + ".pending");
         ConfigurationNode saved = new ConfigurationNode();
-        ArrayList<ConfigurationNode> savedtiles = new ArrayList<ConfigurationNode>();
+        ArrayList<ConfigurationNode> savedtiles = new ArrayList<>();
         for(MapTile tile : mt) {
             if(tile.getDynmapWorld() != w) {
                 tileQueue.push(tile);
@@ -1371,7 +1344,7 @@ public class MapManager {
             saved.put("tiles", savedtiles);
         }
         /* Save invalidated tiles */
-        HashMap<String, Object> invalid = new HashMap<String,Object>();
+        HashMap<String, Object> invalid = new HashMap<>();
         for(MapTypeState mts : w.mapstate) {
             invalid.put(mts.type.getPrefix(), mts.save());
             cnt += mts.getInvCount();
@@ -1383,7 +1356,7 @@ public class MapManager {
             }
         }
         /* Save invalidated zoom out tiles pending */
-        HashMap<String, List<List<String>>> invzooms = new HashMap<String,List<List<String>>>();
+        HashMap<String, List<List<String>>> invzooms = new HashMap<>();
         for(MapTypeState mts : w.mapstate) {
             List<List<String>> szo = mts.saveZoomOut();
             if (szo != null) {
@@ -1485,7 +1458,7 @@ public class MapManager {
         render_pool.shutdown();
         try {
             render_pool.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (InterruptedException ix) {
+        } catch (InterruptedException ignored) {
         }
         mapman = null;
         hdmapman = null;
@@ -1494,8 +1467,8 @@ public class MapManager {
 
     public void pushUpdate(Client.Update update) {
         int sz = worlds.size();
-        for(int i = 0; i < sz; i++) {
-            worlds.get(i).updates.pushUpdate(update);
+        for (DynmapWorld world : worlds) {
+            world.updates.pushUpdate(update);
         }
     }
 
@@ -1556,8 +1529,8 @@ public class MapManager {
             }
         }
         synchronized(lock) {
-            for(String k: new TreeSet<String>(mapstats.keySet())) {
-                if((prefix != null) && !k.startsWith(prefix))
+            for (String k : new TreeSet<>(mapstats.keySet())) {
+                if ((prefix != null) && !k.startsWith(prefix))
                     continue;
                 MapStats ms = mapstats.get(k);
                 sender.sendMessage(String.format("  %s: processed=%d, rendered=%d, updated=%d, transparent=%d",
@@ -1571,10 +1544,10 @@ public class MapManager {
         sender.sendMessage(String.format("  TOTALS: processed=%d, rendered=%d, updated=%d, transparent=%d",
                 tot.loggedcnt, tot.renderedcnt, tot.updatedcnt, tot.transparentcnt));
         sender.sendMessage(String.format("  Triggered update queue size: %d + %d", tileQueue.size(), invcnt));
-        String act = "";
-        for(String wn : active_renders.keySet())
-        	act += wn + " ";
-        sender.sendMessage(String.format("  Active render jobs: %s", act));
+        StringBuilder act = new StringBuilder();
+        for (String wn : active_renders.keySet())
+            act.append(wn).append(" ");
+        sender.sendMessage(String.format("  Active render jobs: %s", act.toString()));
         /* Chunk load stats */
         sender.sendMessage("Chunk Loading Statistics:");
         sender.sendMessage(String.format("  Cache hit rate: %.2f%%", core.getServer().getCacheHitRate()));
@@ -1592,7 +1565,7 @@ public class MapManager {
     public void printTriggerStats(DynmapCommandSender sender) {
         sender.sendMessage("Render Trigger Statistics:");
         synchronized(lock) {
-            for(String k: new TreeSet<String>(trigstats.keySet())) {
+            for (String k : new TreeSet<>(trigstats.keySet())) {
                 TriggerStats ts = trigstats.get(k);
                 sender.sendMessage("  " + k + ": calls=" + ts.callsmade + ", calls-adding-tiles=" + ts.callswithtiles + ", tiles-added=" + ts.tilesqueued);
             }
@@ -1712,16 +1685,16 @@ public class MapManager {
         ArrayList<TouchEvent> te = null;
         ArrayList<TouchVolumeEvent> tve = null;
 
-        if(touch_events.isEmpty() == false) {
-            te = new ArrayList<TouchEvent>(touch_events.keySet());
-            for(int i = 0; i < te.size(); i++) {
-                touch_events.remove(te.get(i));
+        if (!touch_events.isEmpty()) {
+            te = new ArrayList<>(touch_events.keySet());
+            for (TouchEvent touchEvent : te) {
+                touch_events.remove(touchEvent);
             }
         }
 
-        synchronized(touch_lock) {
-            if(touch_volume_events.isEmpty() == false) {
-                tve = new ArrayList<TouchVolumeEvent>(touch_volume_events);
+        synchronized (touch_lock) {
+            if (!touch_volume_events.isEmpty()) {
+                tve = new ArrayList<>(touch_volume_events);
                 touch_volume_events.clear();
             }
         }
@@ -1729,15 +1702,15 @@ public class MapManager {
         String wname = "";
 
         /* If any touch events, process them */
-        if(te != null) {
-            for(TouchEvent evt : te) {
+        if (te != null) {
+            for (TouchEvent evt : te) {
                 int invalidates = 0;
                 /* If different world, look it up */
-                if(evt.world.equals(wname) == false) {
+                if (!evt.world.equals(wname)) {
                     wname = evt.world;
                     world = getWorld(wname);
                 }
-                if(world == null) continue;
+                if (world == null) continue;
                 for (MapTypeState mts : world.mapstate) {
                     List<TileFlags.TileCoord> tiles = mts.type.getTileCoords(world, evt.x, evt.y, evt.z);
                     invalidates += mts.invalidateTiles(tiles);
@@ -1764,11 +1737,11 @@ public class MapManager {
         if(tve != null) {
             for(TouchVolumeEvent evt : tve) {
                 /* If different world, look it up */
-                if(evt.world.equals(wname) == false) {
+                if (!evt.world.equals(wname)) {
                     wname = evt.world;
                     world = getWorld(wname);
                 }
-                if(world == null) continue;
+                if (world == null) continue;
                 int invalidates = 0;
                 for (MapTypeState mts : world.mapstate) {
                     List<TileFlags.TileCoord> tiles = mts.type.getTileCoords(world, evt.xmin, evt.ymin, evt.zmin, evt.xmax, evt.ymax, evt.zmax);

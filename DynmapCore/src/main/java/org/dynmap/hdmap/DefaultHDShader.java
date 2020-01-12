@@ -1,14 +1,6 @@
 package org.dynmap.hdmap;
 
-import static org.dynmap.JSONUtils.s;
-
-import java.io.IOException;
-
-import org.dynmap.Color;
-import org.dynmap.ColorScheme;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapCore;
-import org.dynmap.MapManager;
+import org.dynmap.*;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
@@ -19,14 +11,20 @@ import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
+
+import static org.dynmap.JSONUtils.s;
+
 public class DefaultHDShader implements HDShader {
     private String name;
     protected ColorScheme colorScheme;
 
     protected boolean transparency; /* Is transparency support active? */
+
     public enum BiomeColorOption {
         NONE, BIOME, TEMPERATURE, RAINFALL
     }
+
     protected BiomeColorOption biomecolored = BiomeColorOption.NONE; /* Use biome for coloring */
     
     public DefaultHDShader(DynmapCore core, ConfigurationNode configuration) {
@@ -34,17 +32,19 @@ public class DefaultHDShader implements HDShader {
         colorScheme = ColorScheme.getScheme(core, configuration.getString("colorscheme", "default"));
         transparency = configuration.getBoolean("transparency", true);  /* Default on */
         String biomeopt = configuration.getString("biomecolored", "none");
-        if(biomeopt.equals("biome")) {
-            biomecolored = BiomeColorOption.BIOME;
-        }
-        else if(biomeopt.equals("temperature")) {
-            biomecolored = BiomeColorOption.TEMPERATURE;
-        }
-        else if(biomeopt.equals("rainfall")) {
-            biomecolored = BiomeColorOption.RAINFALL;
-        }
-        else {
-            biomecolored = BiomeColorOption.NONE;
+        switch (biomeopt) {
+            case "biome":
+                biomecolored = BiomeColorOption.BIOME;
+                break;
+            case "temperature":
+                biomecolored = BiomeColorOption.TEMPERATURE;
+                break;
+            case "rainfall":
+                biomecolored = BiomeColorOption.RAINFALL;
+                break;
+            default:
+                biomecolored = BiomeColorOption.NONE;
+                break;
         }
     }
     
@@ -84,10 +84,10 @@ public class DefaultHDShader implements HDShader {
     }
     
     private class OurShaderState implements HDShaderState {
-        private Color color[];
+        private Color[] color;
         protected MapIterator mapiter;
         protected HDMap map;
-        private Color tmpcolor[];
+        private Color[] tmpcolor;
         private int pixelodd;
         private HDLighting lighting;
         final int[] lightingTable;
@@ -134,8 +134,7 @@ public class DefaultHDShader implements HDShader {
          * Reset renderer state for new ray
          */
         public void reset(HDPerspectiveState ps) {
-            for(int i = 0; i < color.length; i++) 
-                color[i].setTransparent();
+            for (Color value : color) value.setTransparent();
             pixelodd = (ps.getPixelX() & 0x3) + (ps.getPixelY()<<1);
         }
         
@@ -189,8 +188,7 @@ public class DefaultHDShader implements HDShader {
                     lighting.applyLighting(ps, this, c, tmpcolor);
                     /* If we got alpha from subblock model, use it instead */
                     if(subalpha >= 0) {
-                        for(int j = 0; j < tmpcolor.length; j++)
-                           tmpcolor[j].setAlpha(Math.max(subalpha,tmpcolor[j].getAlpha()));
+                        for (Color value : tmpcolor) value.setAlpha(Math.max(subalpha, value.getAlpha()));
                     }
                     /* Blend color with accumulated color (weighted by alpha) */
                     if(!transparency) {  /* No transparency support */

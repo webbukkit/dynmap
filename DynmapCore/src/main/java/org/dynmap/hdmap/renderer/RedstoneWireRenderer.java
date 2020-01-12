@@ -1,20 +1,16 @@
 package org.dynmap.hdmap.renderer;
 
+import org.dynmap.renderer.*;
+import org.dynmap.renderer.RenderPatchFactory.SideVisible;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
 
-import org.dynmap.renderer.CustomRenderer;
-import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.renderer.MapDataContext;
-import org.dynmap.renderer.RenderPatch;
-import org.dynmap.renderer.RenderPatchFactory;
-import org.dynmap.renderer.RenderPatchFactory.SideVisible;
-
 public class RedstoneWireRenderer extends CustomRenderer {
     private static final int TEXTURE_REDSTONE_STRAIGHT = 0;
     private static final int TEXTURE_REDSTONE_CROSS = 1;
-    private DynmapBlockState blkbs;;
+    private DynmapBlockState blkbs;
 
     // Patches for bottom - indexed by connection graph (bit0=N,bit1=S,bit2=E,bit3=W)
     private RenderPatch[] bottom_patches = new RenderPatch[16];
@@ -69,22 +65,20 @@ public class RedstoneWireRenderer extends CustomRenderer {
         return 2;
     }
 
-    private static final int x_off[] = { -1, 1, 0, 0 };
-    private static final int z_off[] = { 0, 0, -1, 1 };
-    
+    private static final int[] x_off = {-1, 1, 0, 0};
+    private static final int[] z_off = {0, 0, -1, 1};
+
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext mapDataCtx) {
         int idx = 0;
         /* Check in each direction for wire */
-        for(int i = 0; i < x_off.length; i++) {
+        for (int i = 0; i < x_off.length; i++) {
             /* Look up */
-            if(mapDataCtx.getBlockTypeAt(x_off[i],  1, z_off[i]).matchingBaseState(blkbs)) {
+            if (mapDataCtx.getBlockTypeAt(x_off[i], 1, z_off[i]).matchingBaseState(blkbs)) {
                 idx |= (1 << i) | (16 << i);
-            }
-            else if(mapDataCtx.getBlockTypeAt(x_off[i],  0, z_off[i]).matchingBaseState(blkbs)) {
+            } else if (mapDataCtx.getBlockTypeAt(x_off[i], 0, z_off[i]).matchingBaseState(blkbs)) {
                 idx |= (1 << i);
-            }
-            else if(mapDataCtx.getBlockTypeAt(x_off[i],  -1, z_off[i]).matchingBaseState(blkbs)) {
+            } else if (mapDataCtx.getBlockTypeAt(x_off[i], -1, z_off[i]).matchingBaseState(blkbs)) {
                 idx |= (1 << i);
             }
         }
@@ -102,7 +96,7 @@ public class RedstoneWireRenderer extends CustomRenderer {
     }
     
     private RenderPatch[] buildMesh(int idx) {
-        ArrayList<RenderPatch> lst = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> lst = new ArrayList<>();
         lst.add(bottom_patches[idx & 0xF]);
         /* Add any needed sides */
         for(int i = 0; i < 4; i++) {
@@ -110,6 +104,6 @@ public class RedstoneWireRenderer extends CustomRenderer {
                 lst.add(side_patches[i]);
             }
         }
-        return lst.toArray(new RenderPatch[lst.size()]);
+        return lst.toArray(new RenderPatch[0]);
     }
 }

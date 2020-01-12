@@ -1,14 +1,5 @@
 package org.dynmap.forge_1_8_9;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
-import org.dynmap.DynmapCommonAPI; 
-import org.dynmap.DynmapCommonAPIListener;
-import org.dynmap.Log;
-import org.dynmap.forge_1_8_9.DynmapPlugin.OurLog;
-
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -18,14 +9,17 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
+import org.dynmap.DynmapCommonAPI;
+import org.dynmap.DynmapCommonAPIListener;
+import org.dynmap.Log;
+import org.dynmap.forge_1_8_9.DynmapPlugin.OurLog;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 @Mod(modid = "Dynmap", name = "Dynmap", version = Version.VER)
 public class DynmapMod
@@ -42,24 +36,25 @@ public class DynmapMod
     public static File jarfile;
     public static boolean useforcedchunks;
 
-    public class APICallback extends DynmapCommonAPIListener {
+    public static class APICallback extends DynmapCommonAPIListener {
         @Override
         public void apiListenerAdded() {
-            if(plugin == null) {
+            if (plugin == null) {
                 plugin = proxy.startServer();
             }
         }
+
         @Override
         public void apiEnabled(DynmapCommonAPI api) {
         }
-    } 
-    
-    public class LoadingCallback implements net.minecraftforge.common.ForgeChunkManager.LoadingCallback {
+    }
+
+    public static class LoadingCallback implements net.minecraftforge.common.ForgeChunkManager.LoadingCallback {
         @Override
         public void ticketsLoaded(List<Ticket> tickets, World world) {
-            if(tickets.size() > 0) {
+            if (tickets.size() > 0) {
                 DynmapPlugin.setBusy(world, tickets.get(0));
-                for(int i = 1; i < tickets.size(); i++) {
+                for (int i = 1; i < tickets.size(); i++) {
                     ForgeChunkManager.releaseTicket(tickets.get(i));
                 }
             }
@@ -109,7 +104,7 @@ public class DynmapMod
         MinecraftServer ms = MinecraftServer.getServer();
         isMCPC = (ms != null) && (ms.getServerModName().contains("mcpc"));
         if (isMCPC) {
-            DynmapCommonAPIListener.register(new APICallback()); 
+            DynmapCommonAPIListener.register(new APICallback());
         }
     }
 
@@ -121,7 +116,7 @@ public class DynmapMod
     public void serverStarted(FMLServerStartedEvent event)
     {
         if (!isMCPC) {
-            DynmapCommonAPIListener.register(new APICallback()); 
+            DynmapCommonAPIListener.register(new APICallback());
         }
         if(plugin == null)
             plugin = proxy.startServer();

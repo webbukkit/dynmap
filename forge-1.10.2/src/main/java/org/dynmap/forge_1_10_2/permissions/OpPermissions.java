@@ -1,27 +1,25 @@
 package org.dynmap.forge_1_10_2.permissions;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-
 import org.dynmap.Log;
 import org.dynmap.forge_1_10_2.DynmapPlugin;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class OpPermissions implements PermissionProvider {
-    public HashSet<String> usrCommands = new HashSet<String>();
+    public HashSet<String> usrCommands = new HashSet<>();
 
     public OpPermissions(String[] usrCommands) {
-        for (String usrCommand : usrCommands) {
-            this.usrCommands.add(usrCommand);
-        }
+        this.usrCommands.addAll(Arrays.asList(usrCommands));
         Log.info("Using ops.txt for access control");
     }
 
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
-        HashSet<String> rslt = new HashSet<String>();
+        HashSet<String> rslt = new HashSet<>();
         if(DynmapPlugin.plugin.isOp(player)) {
             rslt.addAll(perms);
         }

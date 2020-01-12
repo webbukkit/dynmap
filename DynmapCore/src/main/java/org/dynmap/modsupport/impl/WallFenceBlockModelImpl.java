@@ -1,17 +1,18 @@
 package org.dynmap.modsupport.impl;
 
-import java.util.Arrays;
-
 import org.dynmap.modsupport.WallFenceBlockModel;
+
+import java.util.Arrays;
 
 public class WallFenceBlockModelImpl extends BlockModelImpl implements WallFenceBlockModel {
     private final FenceType type;
     private int[] linked = new int[0];
-    
+
     public WallFenceBlockModelImpl(int blkid, ModModelDefinitionImpl mdf, FenceType type) {
         super(blkid, mdf);
         this.type = type;
     }
+
     public WallFenceBlockModelImpl(String blkname, ModModelDefinitionImpl mdf, FenceType type) {
         super(blkname, mdf);
         this.type = type;
@@ -39,12 +40,12 @@ public class WallFenceBlockModelImpl extends BlockModelImpl implements WallFence
         String ids = this.getIDsAndMeta();
         if (ids == null) return null;
 
-        String line = String.format("customblock:%s,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=%s", 
-            ids, (type == FenceType.FENCE)?"fence":"wall");
+        StringBuilder line = new StringBuilder(String.format("customblock:%s,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=%s",
+                ids, (type == FenceType.FENCE) ? "fence" : "wall"));
         for (int i = 0; i < linked.length; i++) {
-            line += "link" + i + "=" + linked[i];
+            line.append("link").append(i).append("=").append(linked[i]);
         }
-        return line;
+        return line.toString();
     }
 
 

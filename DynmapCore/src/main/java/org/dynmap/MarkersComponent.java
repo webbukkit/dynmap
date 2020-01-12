@@ -1,21 +1,17 @@
 package org.dynmap;
 
+import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.DynmapListenerManager.PlayerEventListener;
+import org.dynmap.common.DynmapListenerManager.WorldEventListener;
+import org.dynmap.common.DynmapPlayer;
+import org.dynmap.markers.*;
+import org.dynmap.markers.impl.MarkerSignManager;
+import org.dynmap.utils.Polygon;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.dynmap.common.DynmapListenerManager.EventType;
-import org.dynmap.common.DynmapListenerManager.WorldEventListener;
-import org.dynmap.common.DynmapListenerManager.PlayerEventListener;
-import org.dynmap.common.DynmapPlayer;
-import org.dynmap.markers.AreaMarker;
-import org.dynmap.markers.Marker;
-import org.dynmap.markers.MarkerAPI;
-import org.dynmap.markers.MarkerIcon;
-import org.dynmap.markers.MarkerSet;
-import org.dynmap.markers.impl.MarkerSignManager;
-import org.dynmap.utils.Polygon;
 
 /**
  * Markers component - ties in the component system, both on the server and client
@@ -33,7 +29,7 @@ public class MarkersComponent extends ClientComponent {
     private long maxofflineage;
     private boolean showSpawn;
     private boolean showBorder;
-    private HashMap<String, Long> offline_times = new HashMap<String, Long>();
+    private HashMap<String, Long> offline_times = new HashMap<>();
     private static final String OFFLINE_PLAYERS_SETID = "offline_players";
     private static final String PLAYER_SPAWN_BED_SETID = "spawn_beds";
     
@@ -112,7 +108,7 @@ public class MarkersComponent extends ClientComponent {
                 core.getServer().scheduleServerTask(new Runnable() {
                     public void run() {
                         long ts = System.currentTimeMillis();
-                        ArrayList<String> deleted = new ArrayList<String>();
+                        ArrayList<String> deleted = new ArrayList<>();
                         for(Map.Entry<String,Long> me : offline_times.entrySet()) {
                             if(ts > me.getValue()) {
                                 deleted.add(me.getKey());
@@ -178,17 +174,12 @@ public class MarkersComponent extends ClientComponent {
             spawnbedformat = configuration.getString("spawnbedformat", "%name%'s bed");
             
             /* Add listener for players coming and going */
-            core.listenerManager.addListener(EventType.PLAYER_JOIN, new PlayerEventListener() {
-                @Override
-                public void playerEvent(DynmapPlayer p) {                    
-                    updatePlayer(p);
-                }
-            });
+            core.listenerManager.addListener(EventType.PLAYER_JOIN, (PlayerEventListener) this::updatePlayer);
             core.listenerManager.addListener(EventType.PLAYER_QUIT, new PlayerEventListener() {
                 @Override
-                public void playerEvent(DynmapPlayer p) {                    
-                    Marker m = spawnbedset.findMarker(p.getName()+"_bed");
-                    if(m != null) {
+                public void playerEvent(DynmapPlayer p) {
+                    Marker m = spawnbedset.findMarker(p.getName() + "_bed");
+                    if (m != null) {
                         m.deleteMarker();
                     }
                 }

@@ -1,51 +1,47 @@
 package org.dynmap.modsupport.impl;
 
+import org.dynmap.hdmap.TexturePack;
+import org.dynmap.modsupport.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.dynmap.hdmap.TexturePack;
-import org.dynmap.modsupport.BlockSide;
-import org.dynmap.modsupport.BlockTextureRecord;
-import org.dynmap.modsupport.TextureFile;
-import org.dynmap.modsupport.TextureModifier;
-import org.dynmap.modsupport.TransparencyMode;
 
 public class BlockTextureRecordImpl implements BlockTextureRecord {
     private int[] ids = new int[0];
     private String[] names = new String[0];
     private int metaMask = -1;
     private TransparencyMode transmode = TransparencyMode.OPAQUE;
-    
+
     private static class TexturePatch {
         private String txtFileID;
         private int txtIndex;
         private TextureModifier txtMod;
     }
-    
-    private ArrayList<TexturePatch> txtPatches = new ArrayList<TexturePatch>();
+
+    private ArrayList<TexturePatch> txtPatches = new ArrayList<>();
     private TexturePatch blockColor = null;
-    
+
     private static final int[] patchBySideOrdinal = {
-        1<<1,     // FACE_0
-        1<<4,     // FACE_1
-        1<<2,     // FACE_2
-        1<<5,     // FACE_3
-        1<<0,     // FACE_4
-        1<<3,     // FACE_5
-        1<<1,     // BOTTOM
-        1<<4,     // TOP
-        1<<2,     // NORTH
-        1<<5,     // SOUTH
-        1<<0,     // WEST
-        1<<3,     // EAST
-        1<<1,     // Y_MINUS
-        1<<4,     // Y_PLUS
-        1<<2,     // Z_MINUS
-        1<<5,     // Z_PLUS
-        1<<0,     // X_MINUS
-        1<<3,     // X_PLUS
-        (1<<2) | (1<<5) | (1<<0) | (1<<3),   // ALLSIDES
-        (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) // ALLFACES
+            1 << 1,     // FACE_0
+            1 << 4,     // FACE_1
+            1 << 2,     // FACE_2
+            1 << 5,     // FACE_3
+            1,     // FACE_4
+            1 << 3,     // FACE_5
+            1 << 1,     // BOTTOM
+            1 << 4,     // TOP
+            1 << 2,     // NORTH
+            1 << 5,     // SOUTH
+            1,     // WEST
+            1 << 3,     // EAST
+            1 << 1,     // Y_MINUS
+            1 << 4,     // Y_PLUS
+            1 << 2,     // Z_MINUS
+            1 << 5,     // Z_PLUS
+            1,     // X_MINUS
+            1 << 3,     // X_PLUS
+            (1 << 2) | (1 << 5) | (1) | (1 << 3),   // ALLSIDES
+            (1) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 5) // ALLFACES
     };
     
     public static final int COLORMOD_GRASSTONED = 1;
@@ -71,27 +67,27 @@ public class BlockTextureRecordImpl implements BlockTextureRecord {
     public static final int COLORMOD_MULTTONED_CLEARINSIDE = 21; // MULTTONED + CLEARINSIDE
     public static final int COLORMOD_FOLIAGEMULTTONED = 22; // FOLIAGETONED + colorMult or custColorMult
 
-    private static final int modValueByModifierOrd[] = {
-        0,                                  // NONE
-        TexturePack.COLORMOD_GRASSTONED,    // GRASSTONED
-        TexturePack.COLORMOD_FOLIAGETONED,  // FOLIAGETONED
-        TexturePack.COLORMOD_WATERTONED,    // WATERTONED
-        TexturePack.COLORMOD_ROT90,         // ROT90
-        TexturePack.COLORMOD_ROT180,        // ROT180
-        TexturePack.COLORMOD_ROT270,        // ROT270
-        TexturePack.COLORMOD_FLIPHORIZ,     // FLIPHORIZ
-        TexturePack.COLORMOD_SHIFTDOWNHALF, // SHIFTDOWNHALF
-        TexturePack.COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ, // SHIFTDOWNHALFANDFLIPHORIZ
-        TexturePack.COLORMOD_INCLINEDTORCH, // INCLINEDTORCH
-        TexturePack.COLORMOD_GRASSSIDE,     // GRASSSIDE
-        TexturePack.COLORMOD_CLEARINSIDE,   // CLEARINSIDE
-        TexturePack.COLORMOD_PINETONED,     // PINETONED
-        TexturePack.COLORMOD_BIRCHTONED,    // BIRCHTONED
-        TexturePack.COLORMOD_LILYTONED,     // LILYTONED
-        TexturePack.COLORMOD_MULTTONED,     // MULTTONED
-        TexturePack.COLORMOD_GRASSTONED270, // GRASSTONED270
-        TexturePack.COLORMOD_FOLIAGETONED270,   // FOLIAGETONED270
-        TexturePack.COLORMOD_WATERTONED270, // WATERTONED270
+    private static final int[] modValueByModifierOrd = {
+            0,                                  // NONE
+            TexturePack.COLORMOD_GRASSTONED,    // GRASSTONED
+            TexturePack.COLORMOD_FOLIAGETONED,  // FOLIAGETONED
+            TexturePack.COLORMOD_WATERTONED,    // WATERTONED
+            TexturePack.COLORMOD_ROT90,         // ROT90
+            TexturePack.COLORMOD_ROT180,        // ROT180
+            TexturePack.COLORMOD_ROT270,        // ROT270
+            TexturePack.COLORMOD_FLIPHORIZ,     // FLIPHORIZ
+            TexturePack.COLORMOD_SHIFTDOWNHALF, // SHIFTDOWNHALF
+            TexturePack.COLORMOD_SHIFTDOWNHALFANDFLIPHORIZ, // SHIFTDOWNHALFANDFLIPHORIZ
+            TexturePack.COLORMOD_INCLINEDTORCH, // INCLINEDTORCH
+            TexturePack.COLORMOD_GRASSSIDE,     // GRASSSIDE
+            TexturePack.COLORMOD_CLEARINSIDE,   // CLEARINSIDE
+            TexturePack.COLORMOD_PINETONED,     // PINETONED
+            TexturePack.COLORMOD_BIRCHTONED,    // BIRCHTONED
+            TexturePack.COLORMOD_LILYTONED,     // LILYTONED
+            TexturePack.COLORMOD_MULTTONED,     // MULTTONED
+            TexturePack.COLORMOD_GRASSTONED270, // GRASSTONED270
+            TexturePack.COLORMOD_FOLIAGETONED270,   // FOLIAGETONED270
+            TexturePack.COLORMOD_WATERTONED270, // WATERTONED270
         TexturePack.COLORMOD_MULTTONED_CLEARINSIDE, // MULTTONED_CLEARINSIDE
         TexturePack.COLORMOD_FOLIAGEMULTTONED   // FOLIAGEMULTTONED
     };
@@ -117,13 +113,13 @@ public class BlockTextureRecordImpl implements BlockTextureRecord {
     @Override
     public void addBlockID(int blockID) {
         if (blockID > 0) {
-            for (int i = 0; i < ids.length; i++) {
-                if (ids[i] == blockID) {
+            for (int id : ids) {
+                if (id == blockID) {
                     return;
                 }
             }
-            ids = Arrays.copyOf(ids, ids.length+1);
-            ids[ids.length-1] = blockID;
+            ids = Arrays.copyOf(ids, ids.length + 1);
+            ids[ids.length - 1] = blockID;
         }
     }
 
@@ -133,13 +129,13 @@ public class BlockTextureRecordImpl implements BlockTextureRecord {
      */
     @Override
     public void addBlockName(String blockname) {
-        for (int i = 0; i < names.length; i++) {
-            if (names[i].equals(blockname)) {
+        for (String name : names) {
+            if (name.equals(blockname)) {
                 return;
             }
         }
-        names = Arrays.copyOf(names, names.length+1);
-        names[names.length-1] = blockname;
+        names = Arrays.copyOf(names, names.length + 1);
+        names[names.length - 1] = blockname;
     }
 
     /**
@@ -483,34 +479,34 @@ public class BlockTextureRecordImpl implements BlockTextureRecord {
         if ((ids.length == 0) && (names.length == 0)) {
             return null;
         }
-        String s = "block:";
+        StringBuilder s = new StringBuilder("block:");
         int idcnt = 0;
         // Add ids
         for (int i = 0; i < ids.length; i++) {
             if (i == 0) {
-                s += "id=" + ids[i];
+                s.append("id=").append(ids[i]);
             }
             else {
-                s += ",id=" + ids[i];
+                s.append(",id=").append(ids[i]);
             }
             idcnt++;
         }
         // Add names
-        for (int i = 0; i < names.length; i++) {
+        for (String name : names) {
             if (idcnt > 0) {
-                s += ",";
+                s.append(",");
             }
-            s += "id=%" + names[i];
+            s.append("id=%").append(name);
             idcnt++;
         }
         // Add meta
         if (this.metaMask == METAMASK_ALL) {
-            s += ",data=*";
+            s.append(",data=*");
         }
         else {
             for (int i = 0; i < 16; i++) {
                 if ((metaMask & (1 << i)) != 0) {
-                    s += ",data=" + i;
+                    s.append(",data=").append(i);
                 }
             }
         }
@@ -518,24 +514,24 @@ public class BlockTextureRecordImpl implements BlockTextureRecord {
             TexturePatch tp = txtPatches.get(i);
             if (tp == null) continue;
             int idx = (modValueByModifierOrd[tp.txtMod.ordinal()] * 1000) + tp.txtIndex;
-            s += ",patch" + i + "=" + idx + ":" + tp.txtFileID;
+            s.append(",patch").append(i).append("=").append(idx).append(":").append(tp.txtFileID);
         }
         if (blockColor != null) {
-            s += ",blockcolor=" + blockColor.txtFileID;
+            s.append(",blockcolor=").append(blockColor.txtFileID);
         }
         switch (this.transmode) {
             case TRANSPARENT:
-                s += ",transparency=TRANSPARENT";
+                s.append(",transparency=TRANSPARENT");
                 break;
             case SEMITRANSPARENT:
-                s += ",transparency=SEMITRANSPARENT";
+                s.append(",transparency=SEMITRANSPARENT");
                 break;
             default:
                 break;
         }
         // Use normal rotation
-        s += ",stdrot=true";
-        
-        return s;
+        s.append(",stdrot=true");
+
+        return s.toString();
     }
 }

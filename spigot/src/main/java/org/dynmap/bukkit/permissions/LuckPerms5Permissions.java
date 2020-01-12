@@ -1,23 +1,20 @@
 package org.dynmap.bukkit.permissions;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.model.user.UserManager;
-import net.luckperms.api.cacheddata.CachedPermissionData;
 import net.luckperms.api.cacheddata.CachedDataManager;
-import net.luckperms.api.query.QueryOptions;
-
+import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.dynmap.Log;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class LuckPerms5Permissions implements PermissionProvider {
     String name;
@@ -70,7 +67,7 @@ public class LuckPerms5Permissions implements PermissionProvider {
     }
 
     private CachedPermissionData getUser(String username) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
+        @SuppressWarnings("deprecation") OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
         UUID uuid;
 
         if (offlinePlayer != null && offlinePlayer.getUniqueId() != null)
@@ -92,9 +89,9 @@ public class LuckPerms5Permissions implements PermissionProvider {
 
         CachedDataManager data = user.getCachedData();
         return luckPerms
-            .getContextManager()
-            .getQueryOptions(user)
-            .map(queryOptions -> data.getPermissionData(queryOptions))
+                .getContextManager()
+                .getQueryOptions(user)
+                .map(data::getPermissionData)
             .orElse(null);
     }
 

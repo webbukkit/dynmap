@@ -1,12 +1,13 @@
 package org.dynmap;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.dynmap.servlet.ClientUpdateServlet;
 import org.dynmap.servlet.SendMessageServlet;
 import org.json.simple.JSONObject;
-import static org.dynmap.JSONUtils.*;
+
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.dynmap.JSONUtils.s;
 
 public class InternalClientUpdateComponent extends ClientUpdateComponent {
     protected long jsonInterval;
@@ -14,7 +15,7 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
     protected long lastTimestamp = 0;
     protected long lastChatTimestamp = 0;
     private long last_confighash;
-    private ConcurrentHashMap<String, JSONObject> updates = new ConcurrentHashMap<String, JSONObject>();
+    private ConcurrentHashMap<String, JSONObject> updates = new ConcurrentHashMap<>();
     private JSONObject clientConfiguration = null;
     private static InternalClientUpdateComponent singleton;
     

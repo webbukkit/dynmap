@@ -1,15 +1,13 @@
 package org.dynmap.bukkit.helper.v113_2;
 
-import org.bukkit.block.Biome;
+import net.minecraft.server.v1_13_R2.DataPaletteBlock;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.dynmap.DynmapCore;
 import org.dynmap.bukkit.helper.AbstractMapChunkCache;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.renderer.DynmapBlockState;
-
-import net.minecraft.server.v1_13_R2.DataPaletteBlock;
-import net.minecraft.server.v1_13_R2.Chunk;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -75,7 +73,7 @@ public class MapChunkCache113_2 extends AbstractMapChunkCache {
 			// Check one in each direction: see if all are generated
 			for (int xx = x-3; xx <= x+3; xx++) {
 				for (int zz = z-3; zz <= z+3; zz++) {
-					if (w.isChunkGenerated(xx, zz) == false) {
+					if (!w.isChunkGenerated(xx, zz)) {
 						generated = false;
 						break;
 					}

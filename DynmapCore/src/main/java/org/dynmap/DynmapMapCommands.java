@@ -1,12 +1,5 @@
 package org.dynmap;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.hdmap.HDLighting;
@@ -14,13 +7,15 @@ import org.dynmap.hdmap.HDMap;
 import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.hdmap.HDShader;
 
+import java.util.*;
+
 /**
  * Handler for world and map edit commands (via /dmap)
  */
 public class DynmapMapCommands {
 
     private boolean checkIfActive(DynmapCore core, DynmapCommandSender sender) {
-        if((!core.getPauseFullRadiusRenders()) || (!core.getPauseUpdateRenders())) {
+        if ((!core.getPauseFullRadiusRenders()) || (!core.getPauseUpdateRenders())) {
             sender.sendMessage("Cannot edit map data while rendering active - run '/dynmap pause all' to pause rendering");
             return true;
         }
@@ -84,13 +79,13 @@ public class DynmapMapCommands {
             return true;
         Set<String> wnames = null;
         if(args.length > 1) {
-            wnames = new HashSet<String>();
+            wnames = new HashSet<>();
             for(int i = 1; i < args.length; i++)
                 wnames.add(DynmapWorld.normalizeWorldName(args[i]));
         }
         /* Get active worlds */
         for(DynmapWorld w : core.getMapManager().getWorlds()) {
-            if((wnames != null) && (wnames.contains(w.getName()) == false)) {
+            if ((wnames != null) && (!wnames.contains(w.getName()))) {
                 continue;
             }
             StringBuilder sb = new StringBuilder();
@@ -112,7 +107,7 @@ public class DynmapMapCommands {
         }
         /* Get disabled worlds */
         for(String wn : core.getMapManager().getDisabledWorlds()) {
-            if((wnames != null) && (wnames.contains(wn) == false)) {
+            if ((wnames != null) && (!wnames.contains(wn))) {
                 continue;
             }
             sender.sendMessage("world " + wn + ": isenabled=false");
@@ -198,8 +193,9 @@ public class DynmapMapCommands {
                 }
                 int exo = -1;
                 try {
-                    exo = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {}
+                    exo = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
+                }
                 if((exo < 0) || (exo > 32)) {
                     sender.sendMessage("Invalid value for extrazoomout: " + tok[1]);
                     return true;
@@ -213,8 +209,9 @@ public class DynmapMapCommands {
                 }
                 int tud = -1;
                 try {
-                    tud = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {}
+                    tud = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
+                }
                 did_update |= core.setWorldTileUpdateDelay(wname, tud);
             }
             else if(tok[0].equalsIgnoreCase("center")) {    /* Center */
@@ -228,26 +225,25 @@ public class DynmapMapCommands {
                     String[] toks = tok[1].split("/");
                     if(toks.length == 3) {
                         double x = 0, y = 0, z = 0;
-                        x = Double.valueOf(toks[0]);
-                        y = Double.valueOf(toks[1]);
-                        z = Double.valueOf(toks[2]);
+                        x = Double.parseDouble(toks[0]);
+                        y = Double.parseDouble(toks[1]);
+                        z = Double.parseDouble(toks[2]);
                         loc = new DynmapLocation(wname, x, y, z);
-                       good = true;
-                    }
-                    else if(tok[1].equalsIgnoreCase("default")) {
                         good = true;
                     }
-                    else if(tok[1].equalsIgnoreCase("here")) {
-                        if(sender instanceof DynmapPlayer) {
-                            loc = ((DynmapPlayer)sender).getLocation();
+                    else if (tok[1].equalsIgnoreCase("default")) {
+                        good = true;
+                    } else if (tok[1].equalsIgnoreCase("here")) {
+                        if (sender instanceof DynmapPlayer) {
+                            loc = ((DynmapPlayer) sender).getLocation();
                             good = true;
-                        }
-                        else {
+                        } else {
                             sender.sendMessage("Setting center to 'here' requires player");
                             return true;
                         }
                     }
-                } catch (NumberFormatException nfx) {}
+                } catch (NumberFormatException ignored) {
+                }
                 if(!good) {
                     sender.sendMessage("Center value must be formatted x/y/z or be set to 'default' or 'here'");
                     return true;
@@ -261,8 +257,9 @@ public class DynmapMapCommands {
                 }
                 int order = -1;
                 try {
-                    order = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {}
+                    order = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
+                }
                 if(order < 1) {
                     sender.sendMessage("Order value must be number from 1 to number of worlds");
                     return true;
@@ -335,7 +332,7 @@ public class DynmapMapCommands {
                 sender.sendMessage("Cannot delete maps from disabled or unloaded world: " + wname);
                 return true;
             }
-            List<MapType> maps = new ArrayList<MapType>(w.maps);
+            List<MapType> maps = new ArrayList<>(w.maps);
             boolean done = false;
             for(int idx = 0; (!done) && (idx < maps.size()); idx++) {
                 MapType mt = maps.get(idx);
@@ -462,7 +459,7 @@ public class DynmapMapCommands {
                 for(MapType map : w.maps){
                     if(map == mt) continue;
                     if(map instanceof HDMap) {
-                        if(((HDMap)map).getPrefix().equals(tok[1])) {
+                        if (map.getPrefix().equals(tok[1])) {
                             sender.sendMessage("Prefix " + tok[1] + " already in use");
                             return true;
                         }
@@ -479,8 +476,8 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("mapzoomin")) {
                 int mzi = -1;
                 try {
-                    mzi = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {
+                    mzi = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
                 }
                 if((mzi < 0) || (mzi > 32)) {
                     sender.sendMessage("Invalid mapzoomin value: " + tok[1]);
@@ -491,8 +488,8 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("mapzoomout")) {
                 int mzi = -1;
                 try {
-                    mzi = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {
+                    mzi = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
                 }
                 if((mzi < 0) || (mzi > 32)) {
                     sender.sendMessage("Invalid mapzoomout value: " + tok[1]);
@@ -503,8 +500,8 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("boostzoom")) {
                 int mzi = -1;
                 try {
-                    mzi = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {
+                    mzi = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
                 }
                 if((mzi < 0) || (mzi > 3)) {
                     sender.sendMessage("Invalid boostzoom value: " + tok[1]);
@@ -515,8 +512,8 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("tileupdatedelay")) {
                 int tud = -1;
                 try {
-                    tud = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {
+                    tud = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
                 }
                 did_update |= mt.setTileUpdateDelay(tud);
             }
@@ -560,8 +557,8 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("order")) {
                 int idx = -1;
                 try {
-                    idx = Integer.valueOf(tok[1]);
-                } catch (NumberFormatException nfx) {
+                    idx = Integer.parseInt(tok[1]);
+                } catch (NumberFormatException ignored) {
                 }
                 if(idx < 1) {
                     sender.sendMessage("Invalid order position: " + tok[1]);
@@ -636,7 +633,7 @@ public class DynmapMapCommands {
         if(!core.checkPlayerPermission(sender, "dmap.blklist"))
             return true;
         Map<String, Integer> map = core.getServer().getBlockUniqueIDMap();
-        TreeSet<String> keys = new TreeSet<String>(map.keySet());
+        TreeSet<String> keys = new TreeSet<>(map.keySet());
         for (String k : keys) {
             sender.sendMessage(k + ": " + map.get(k));
         }

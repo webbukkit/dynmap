@@ -1,12 +1,12 @@
 package org.dynmap.forge_1_12_2;
 
+import org.dynmap.DynmapCore;
+import org.dynmap.Log;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import org.dynmap.DynmapCore;
-import org.dynmap.Log;
 
 public class VersionCheck {
     private static final String VERSION_URL = "http://mikeprimm.com/dynmap/releases.php";
@@ -27,10 +27,11 @@ public class VersionCheck {
         String[] split = s.split("\\.");
         int v = 0;
         try {
-            for(int i = 0; (i < split.length) && (i < 3); i++) {
-                v += Integer.parseInt(split[i]) << (8 * (2 - i)); 
+            for (int i = 0; (i < split.length) && (i < 3); i++) {
+                v += Integer.parseInt(split[i]) << (8 * (2 - i));
             }
-        } catch (NumberFormatException nfx) {}
+        } catch (NumberFormatException ignored) {
+        }
         return v;
     }
     

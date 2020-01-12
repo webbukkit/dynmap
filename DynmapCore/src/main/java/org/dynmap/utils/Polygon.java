@@ -11,7 +11,7 @@ public class Polygon {
         }
     }
     
-    private ArrayList<Point2D> v = new ArrayList<Point2D>();
+    private ArrayList<Point2D> v = new ArrayList<>();
     
     public void addVertex(Point2D p) {
         v.add(p);
@@ -31,18 +31,18 @@ public class Polygon {
        
     // Sutherland-Hodgman polygon clipping:
     public Polygon clip(double xmin, double ymin, double xmax, double ymax) {
-        ArrayList<Point2D> newpoly = new ArrayList<Point2D>(v); // Make copy
-        ArrayList<Point2D> poly = new ArrayList<Point2D>();
+        ArrayList<Point2D> newpoly = new ArrayList<>(v); // Make copy
+        ArrayList<Point2D> poly = new ArrayList<>();
         ArrayList<Point2D> wrkpoly;
         int n;
         Point2D a, b;
         boolean aIns, bIns; // whether A or B is on the same side as the rectangle
-        
+
         // Clip against x == xmax:
         n = newpoly.size();
         if (n > 0) {
             // Local through line segments - clip 
-            b = newpoly.get(n-1);
+            b = newpoly.get(n - 1);
             for (int i=0; i<n; i++) {
                 a = b; 
                 b = newpoly.get(i);

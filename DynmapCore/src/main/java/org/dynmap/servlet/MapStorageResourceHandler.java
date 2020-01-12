@@ -17,12 +17,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 public class MapStorageResourceHandler extends AbstractHandler {
 
@@ -36,7 +35,7 @@ public class MapStorageResourceHandler extends AbstractHandler {
         try {
             ImageIO.write(blank, "png", baos);
             blankpng = baos.toByteArray();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         
     }
@@ -122,8 +121,7 @@ public class MapStorageResourceHandler extends AbstractHandler {
         response.setIntHeader("Content-Length", tr.image.length());
         if (tr.format == ImageEncoding.PNG) {
             response.setContentType("image/png");
-        }
-        else {
+        } else {
             response.setContentType("image/jpeg");
         }
         ServletOutputStream out = response.getOutputStream();
@@ -132,8 +130,8 @@ public class MapStorageResourceHandler extends AbstractHandler {
 
     }
 
-    private void handleFace(HttpServletResponse response, String uri) throws IOException, ServletException {
-        String[] suri = uri.split("[/\\.]");
+    private void handleFace(HttpServletResponse response, String uri) throws IOException {
+        String[] suri = uri.split("[/.]");
         if (suri.length < 3) {  // 3 parts : face ID, player name, png
             response.sendError(HttpStatus.NOT_FOUND_404);
             return;
@@ -160,7 +158,7 @@ public class MapStorageResourceHandler extends AbstractHandler {
         out.flush();
     }
 
-    private void handleMarkers(HttpServletResponse response, String uri) throws IOException, ServletException {
+    private void handleMarkers(HttpServletResponse response, String uri) throws IOException {
         String[] suri = uri.split("/");
         // If json file in last part
         if ((suri.length == 1) && suri[0].startsWith("marker_") && suri[0].endsWith(".json")) {

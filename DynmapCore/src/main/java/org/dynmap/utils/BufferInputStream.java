@@ -1,5 +1,7 @@
 package org.dynmap.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -56,14 +58,13 @@ public class BufferInputStream extends InputStream {
             return -1;
         }
     }
-    
+
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(@NotNull byte[] b, int off, int len) throws IOException {
         if (b == null) {
             throw new IOException("No data");
-        }
-        else if ((off < 0) || (len < 0)) {
-            throw new IOException ("Offset out of bounds");
+        } else if ((off < 0) || (len < 0)) {
+            throw new IOException("Offset out of bounds");
         }
         if (this.off >= this.len) {
             return -1;

@@ -1,15 +1,11 @@
 package org.dynmap.hdmap.renderer;
 
+import org.dynmap.renderer.*;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
-
-import org.dynmap.renderer.CustomRenderer;
-import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.renderer.MapDataContext;
-import org.dynmap.renderer.RenderPatch;
-import org.dynmap.renderer.RenderPatchFactory;
 
 public class TFCWoodRenderer extends CustomRenderer {
     private DynmapBlockState blkbs;    
@@ -48,7 +44,7 @@ public class TFCWoodRenderer extends CustomRenderer {
     }
 
     private void buildMeshes(RenderPatchFactory rpf) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         for(int dat = 0; dat < 32; dat++) {
             int dat2 = dat;
             if((dat & SIDE_YN) == 0) {  /* Nothing below, always X-Y */
@@ -79,7 +75,7 @@ public class TFCWoodRenderer extends CustomRenderer {
                     addBox(rpf, list, 0.375, 0.625, 0.375, 0.625, 0.0, 1.0);
                     break;
             }
-            meshes[dat] = list.toArray(new RenderPatch[list.size()]);
+            meshes[dat] = list.toArray(new RenderPatch[0]);
             list.clear();
         }
     }
@@ -95,10 +91,10 @@ public class TFCWoodRenderer extends CustomRenderer {
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
         /* Build connection map - check each axis */
         int connect = 0;
-        for(int i = 0; i < sides.length; i++) {
-            DynmapBlockState blk = ctx.getBlockTypeAt(sides[i][0], sides[i][1], sides[i][2]);
+        for (int[] side : sides) {
+            DynmapBlockState blk = ctx.getBlockTypeAt(side[0], side[1], side[2]);
             if (blkbs.matchingBaseState(blk)) {
-                connect |= sides[i][3];
+                connect |= side[3];
             }
         }
         DynmapBlockState id = ctx.getBlockTypeAt(0, -1, 0);

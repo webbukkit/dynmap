@@ -121,9 +121,9 @@ public class BiomeMap {
     }
 
     private static boolean isUniqueID(String id) {
-        for(int i = 0; i < biome_by_index.length; i++) {
-            if(biome_by_index[i] == null) continue;
-            if(biome_by_index[i].id.equals(id))
+        for (BiomeMap biomeByIndex : biome_by_index) {
+            if (biomeByIndex == null) continue;
+            if (biomeByIndex.id.equals(id))
                 return false;
         }
         return true;
@@ -138,7 +138,7 @@ public class BiomeMap {
         // Handle null biome
         if (id == null) { id = "biome_" + idx; }
         id = id.toUpperCase().replace(' ', '_');
-        if(isUniqueID(id) == false) {
+        if (!isUniqueID(id)) {
             id = id + "_" + idx;
         }
         this.id = id;
@@ -148,29 +148,30 @@ public class BiomeMap {
             biome_by_index[idx] = this;
         }
     }
+
     public BiomeMap(int idx, String id) {
         this(idx, id, 0.5, 0.5, 0xFFFFFF, 0, 0);
     }
-    
+
     public BiomeMap(int idx, String id, double tmp, double rain) {
         this(idx, id, tmp, rain, 0xFFFFFF, 0, 0);
     }
-    
-    private final int biomeLookup(int width) {
-        int w = width-1;
-        int t = (int)((1.0-tmp)*w);
-        int h = (int)((1.0 - (tmp*rain))*w);
-        return width*h + t;
+
+    private int biomeLookup(@SuppressWarnings("SameParameterValue") int width) {
+        int w = width - 1;
+        int t = (int) ((1.0 - tmp) * w);
+        int h = (int) ((1.0 - (tmp * rain)) * w);
+        return width * h + t;
     }
 
     public final int biomeLookup() {
         return this.biomeindex256;
     }
-    
+
     public final int getModifiedGrassMultiplier(int rawgrassmult) {
-        if(grassmult == 0)
+        if (grassmult == 0)
             return rawgrassmult;
-        else if(grassmult > 0xFFFFFF)
+        else if (grassmult > 0xFFFFFF)
             return grassmult & 0xFFFFFF;
         else
             return ((rawgrassmult & 0xfefefe) + grassmult) / 2;
@@ -184,34 +185,43 @@ public class BiomeMap {
         else
             return ((rawfoliagemult & 0xfefefe) + foliagemult) / 2;
     }
+
     public final int getWaterColorMult() {
         return watercolormult;
     }
+
     public final int ordinal() {
         return index;
     }
-    public static final BiomeMap byBiomeID(int idx) {
+
+    public static BiomeMap byBiomeID(int idx) {
         idx++;
-        if((idx >= 0) && (idx < biome_by_index.length))
+        if ((idx >= 0) && (idx < biome_by_index.length))
             return biome_by_index[idx];
         else
             return NULL;
     }
+
     public int getBiomeID() {
         return index - 1;   // Index of biome in MC biome table
     }
+
     public final String toString() {
         return id;
     }
-    public static final BiomeMap[] values() {
+
+    public static BiomeMap[] values() {
         return biome_by_index;
     }
+
     public void setWaterColorMultiplier(int watercolormult) {
         this.watercolormult = watercolormult;
     }
+
     public void setGrassColorMultiplier(int grassmult) {
         this.grassmult = grassmult;
     }
+
     public void setFoliageColorMultiplier(int foliagemult) {
         this.foliagemult = foliagemult;
     }

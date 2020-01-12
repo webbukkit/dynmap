@@ -1,11 +1,5 @@
 package org.dynmap.markers.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.MapManager;
@@ -14,6 +8,12 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 import org.dynmap.utils.Vector3D;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 class AreaMarkerImpl implements AreaMarker {
     private String markerid;
@@ -35,22 +35,25 @@ class AreaMarkerImpl implements AreaMarker {
     private boolean boostflag = false;
     private int minzoom;
     private int maxzoom;
-    
+
     private static class Coord {
         double x, z;
+
         Coord(double x, double z) {
-            this.x = x; this.z = z;
+            this.x = x;
+            this.z = z;
         }
     }
+
     private static class BoundingBox {
         double xmin, xmax;
         double ymin, ymax;
-        double xp[];
-        double yp[];
+        double[] xp;
+        double[] yp;
     }
     private Map<String, BoundingBox> bb_cache = null;
-    
-    /** 
+
+    /**
      * Create area marker
      * @param id - marker ID
      * @param lbl - label
@@ -61,15 +64,15 @@ class AreaMarkerImpl implements AreaMarker {
      * @param persistent - true if persistent
      * @param set - marker set
      */
-    AreaMarkerImpl(String id, String lbl, boolean markup, String world, double x[], double z[], boolean persistent, MarkerSetImpl set) {
+    AreaMarkerImpl(String id, String lbl, boolean markup, String world, double[] x, double[] z, boolean persistent, MarkerSetImpl set) {
         markerid = id;
-        if(lbl != null)
+        if (lbl != null)
             label = lbl;
         else
             label = id;
         this.markup = markup;
-        this.corners = new ArrayList<Coord>();
-        for(int i = 0; i < x.length; i++) {
+        this.corners = new ArrayList<>();
+        for (int i = 0; i < x.length; i++) {
             this.corners.add(new Coord(x[i], z[i]));
         }
         this.world = world;
@@ -77,9 +80,9 @@ class AreaMarkerImpl implements AreaMarker {
         this.desc = null;
         ispersistent = persistent;
         markerset = set;
-        if(MapManager.mapman != null) {
+        if (MapManager.mapman != null) {
             DynmapWorld w = MapManager.mapman.getWorld(world);
-            if(w != null) {
+            if (w != null) {
                 ytop = ybottom = w.sealevel+1;    /* Default to world sealevel */
             }
         }
@@ -97,7 +100,7 @@ class AreaMarkerImpl implements AreaMarker {
         label = id;
         markup = false;
         desc = null;
-        corners = new ArrayList<Coord>();
+        corners = new ArrayList<>();
         world = normalized_world = "world";
         this.minzoom = -1;
         this.maxzoom = -1;
@@ -191,23 +194,23 @@ class AreaMarkerImpl implements AreaMarker {
      * @return node
      */
     Map<String, Object> getPersistentData() {
-        if(!ispersistent)   /* Nothing if not persistent */
+        if (!ispersistent)   /* Nothing if not persistent */
             return null;
-        HashMap<String, Object> node = new HashMap<String, Object>();
+        HashMap<String, Object> node = new HashMap<>();
         node.put("label", label);
         node.put("markup", markup);
-        List<Double> xx = new ArrayList<Double>();
-        List<Double> zz = new ArrayList<Double>();
-        for(int i = 0; i < corners.size(); i++) {
-            xx.add(corners.get(i).x);
-            zz.add(corners.get(i).z);
+        List<Double> xx = new ArrayList<>();
+        List<Double> zz = new ArrayList<>();
+        for (Coord corner : corners) {
+            xx.add(corner.x);
+            zz.add(corner.z);
         }
         node.put("x", xx);
-        node.put("ytop", Double.valueOf(ytop));
-        node.put("ybottom", Double.valueOf(ybottom));
+        node.put("ytop", ytop);
+        node.put("ybottom", ybottom);
         node.put("z", zz);
         node.put("world", world);
-        if(desc != null)
+        if (desc != null)
             node.put("desc", desc);
         node.put("strokeWeight", lineweight);
         node.put("strokeOpacity", lineopacity);
@@ -239,11 +242,11 @@ class AreaMarkerImpl implements AreaMarker {
     }
     @Override
     public void setDescription(String desc) {
-        if(markerset == null) return;
-        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+        if (markerset == null) return;
+        if ((this.desc == null) || (!this.desc.equals(desc))) {
             this.desc = desc;
             MarkerAPIImpl.areaMarkerUpdated(this, MarkerUpdate.UPDATED);
-            if(ispersistent)
+            if (ispersistent)
                 MarkerAPIImpl.saveMarkers();
         }
     }
@@ -417,7 +420,7 @@ class AreaMarkerImpl implements AreaMarker {
     final boolean testTileForBoostMarkers(DynmapWorld w, HDPerspective perspective, final double tile_x, final double tile_y, final double tile_dim) {
         Map<String, BoundingBox> bbc = bb_cache;
         if(bbc == null) {
-            bbc = new ConcurrentHashMap<String, BoundingBox>();
+            bbc = new ConcurrentHashMap<>();
         }
         BoundingBox bb = bbc.get(perspective.getName());
         if (bb == null) { // No cached bounding box, so generate it
@@ -433,7 +436,7 @@ class AreaMarkerImpl implements AreaMarker {
                 int cnt = crn.size();
                 if (cnt == 2) { // Special case
                     cnt = 4;
-                    crn = new ArrayList<Coord>();
+                    crn = new ArrayList<>();
                     Coord c0 = corners.get(0);
                     Coord c1 = corners.get(1);
                     crn.add(c0);

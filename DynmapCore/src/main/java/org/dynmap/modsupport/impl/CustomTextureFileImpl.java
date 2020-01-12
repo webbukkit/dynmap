@@ -1,12 +1,12 @@
 package org.dynmap.modsupport.impl;
 
-import java.util.ArrayList;
-
 import org.dynmap.modsupport.CustomTextureFile;
 import org.dynmap.modsupport.TextureFileType;
 
+import java.util.ArrayList;
+
 public class CustomTextureFileImpl extends TextureFileImpl implements CustomTextureFile {
-    
+
     private static class CustomPatch {
         int xpos;
         int ypos;
@@ -14,10 +14,10 @@ public class CustomTextureFileImpl extends TextureFileImpl implements CustomText
         int ydim;
         int xdest;
         int ydest;
-    };
-    
-    private ArrayList<CustomPatch> patches = new ArrayList<CustomPatch>();
-    
+    }
+
+    private ArrayList<CustomPatch> patches = new ArrayList<>();
+
     public CustomTextureFileImpl(String id, String filename, int xcount, int ycount) {
         super(id, filename, TextureFileType.GRID, xcount, ycount);
     }
@@ -68,17 +68,17 @@ public class CustomTextureFileImpl extends TextureFileImpl implements CustomText
     }
     
     public String getLine() {
-        String s = super.getLine();
-        s += ",format=CUSTOM";
+        StringBuilder s = new StringBuilder(super.getLine());
+        s.append(",format=CUSTOM");
         for (int i = 0; i < patches.size(); i++) {
             CustomPatch cp = patches.get(i);
             if (cp == null) continue;
-            s += "tile" + i + "=" + cp.xpos + ":" + cp.ypos + "/" + cp.xdim + ":" + cp.ydim;
+            s.append("tile").append(i).append("=").append(cp.xpos).append(":").append(cp.ypos).append("/").append(cp.xdim).append(":").append(cp.ydim);
             if ((cp.xdest != 0) || (cp.ydest != 0)) {
-                s += "/" + cp.xdest + ":" + cp.ydest;
+                s.append("/").append(cp.xdest).append(":").append(cp.ydest);
             }
         }
-        return s;
+        return s.toString();
     }
 
 }

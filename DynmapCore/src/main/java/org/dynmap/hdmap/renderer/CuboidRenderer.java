@@ -1,15 +1,15 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Map;
-
 import org.dynmap.Log;
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
 import org.dynmap.renderer.RenderPatchFactory.SideVisible;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Map;
 
 /**
  * Renderer for allowing creation of a set of one or more cuboid or crossed-patch blocks, with independent textures for each
@@ -20,19 +20,24 @@ public class CuboidRenderer extends CustomRenderer {
     private RenderPatch[] model;
     private int textureCount;
 
-    private static final int[] crossedPatchDefault = { 0 };
-    private static final int[] cuboidPatchDefault = { 0, 1, 2, 3, 4, 5 };
-    
-    private static final double clamp(double f) {
-        if (f < 0.0) { f = 0.0; }
-        if (f > 1.0) { f = 1.0; }
+    private static final int[] crossedPatchDefault = {0};
+    private static final int[] cuboidPatchDefault = {0, 1, 2, 3, 4, 5};
+
+    private static double clamp(double f) {
+        if (f < 0.0) {
+            f = 0.0;
+        }
+        if (f > 1.0) {
+            f = 1.0;
+        }
         return f;
     }
+
     @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
-        if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String, String> custparm) {
+        if (!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         // Loop through parameters
         for (String key : custparm.keySet()) {
             String v = custparm.get(key);
@@ -85,7 +90,7 @@ public class CuboidRenderer extends CustomRenderer {
                 }
             }
         }
-        model = list.toArray(new RenderPatch[list.size()]);
+        model = list.toArray(new RenderPatch[0]);
         
         return true;
     }

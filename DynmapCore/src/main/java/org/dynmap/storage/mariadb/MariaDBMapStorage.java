@@ -1,34 +1,22 @@
 package org.dynmap.storage.mariadb;
 
+import org.dynmap.*;
+import org.dynmap.MapType.ImageVariant;
+import org.dynmap.PlayerFaces.FaceType;
+import org.dynmap.storage.*;
+import org.dynmap.utils.BufferInputStream;
+import org.dynmap.utils.BufferOutputStream;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import org.dynmap.DynmapCore;
-import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
-import org.dynmap.MapType;
-import org.dynmap.WebAuthManager;
-import org.dynmap.MapType.ImageVariant;
-import org.dynmap.PlayerFaces.FaceType;
-import org.dynmap.storage.MapStorage;
-import org.dynmap.storage.MapStorageTile;
-import org.dynmap.storage.MapStorageTileEnumCB;
-import org.dynmap.storage.MapStorageBaseTileEnumCB;
-import org.dynmap.storage.MapStorageTileSearchEndCB;
-import org.dynmap.utils.BufferInputStream;
-import org.dynmap.utils.BufferOutputStream;
 
 public class MariaDBMapStorage extends MapStorage {
     private String connectionString;
@@ -47,9 +35,9 @@ public class MariaDBMapStorage extends MapStorage {
 
     private int port;
     private static final int POOLSIZE = 5;
-    private Connection[] cpool = new Connection[POOLSIZE];
+    private final Connection[] cpool = new Connection[POOLSIZE];
     private int cpoolCount = 0;
-    private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final Charset UTF8 = StandardCharsets.UTF_8;
         
     public class StorageTile extends MapStorageTile {
         private Integer mapkey;
@@ -304,37 +292,31 @@ public class MariaDBMapStorage extends MapStorage {
     }
 
     private boolean writeConfigPHP(DynmapCore core) {
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(new File(baseStandaloneDir, "MySQL_config.php"));
-            fw.write("<?php\n$dbname = \'");
+        try (FileWriter fw = new FileWriter(new File(baseStandaloneDir, "MySQL_config.php"))) {
+            fw.write("<?php\n$dbname = '");
             fw.write(WebAuthManager.esc(database));
-            fw.write("\';\n");
-            fw.write("$dbhost = \'");
+            fw.write("';\n");
+            fw.write("$dbhost = '");
             fw.write(WebAuthManager.esc(hostname));
-            fw.write("\';\n");
+            fw.write("';\n");
             fw.write("$dbport = ");
             fw.write(Integer.toString(port));
             fw.write(";\n");
-            fw.write("$dbuserid = \'");
+            fw.write("$dbuserid = '");
             fw.write(WebAuthManager.esc(userid));
-            fw.write("\';\n");
-            fw.write("$dbpassword = \'");
+            fw.write("';\n");
+            fw.write("$dbpassword = '");
             fw.write(WebAuthManager.esc(password));
-            fw.write("\';\n");
-            fw.write("$dbprefix = \'");
+            fw.write("';\n");
+            fw.write("$dbprefix = '");
             fw.write(WebAuthManager.esc(prefix));
-            fw.write("\';\n");
+            fw.write("';\n");
             fw.write("$loginenabled = ");
-            fw.write(core.isLoginSupportEnabled()?"true;\n":"false;\n");
+            fw.write(core.isLoginSupportEnabled() ? "true;\n" : "false;\n");
             fw.write("?>\n");
         } catch (IOException iox) {
             Log.severe("Error writing MySQL_config.php", iox);
-            return false; 
-        } finally {
-            if (fw != null) {
-                try { fw.close(); } catch (IOException x) {}
-            }
+            return false;
         }
         return true;
     }
@@ -354,23 +336,25 @@ public class MariaDBMapStorage extends MapStorage {
         } catch (SQLException x) {
             err = true;
         } finally {
-            if (c != null) { releaseConnection(c, err); }
+            if (c != null) {
+                releaseConnection(c, err);
+            }
         }
         return ver;
     }
-    
+
     private void doUpdate(Connection c, String sql) throws SQLException {
         Statement stmt = c.createStatement();
         stmt.executeUpdate(sql);
         stmt.close();
     }
-    
-    private HashMap<String, Integer> mapKey = new HashMap<String, Integer>();
-    
+
+    private final HashMap<String, Integer> mapKey = new HashMap<>();
+
     private void doLoadMaps() {
         Connection c = null;
         boolean err = false;
-        
+
         mapKey.clear();
         // Read the maps table - cache results
         try {
@@ -531,15 +515,15 @@ public class MariaDBMapStorage extends MapStorage {
         }
         return c;
     }
-    
-    private static Connection configureConnection(Connection conn) throws SQLException {
+
+    private static Connection configureConnection(Connection conn) {
         return conn;
     }
-    
+
     private void releaseConnection(Connection c, boolean err) {
         if (c == null) return;
         synchronized (cpool) {
-            if (!err)  {  // Find slot to keep it in pool
+            if (!err) {  // Find slot to keep it in pool
                 for (int i = 0; i < POOLSIZE; i++) {
                     if (cpool[i] == null) {
                         cpool[i] = c;
@@ -550,7 +534,10 @@ public class MariaDBMapStorage extends MapStorage {
                 }
             }
             if (c != null) {  // If broken, just toss it
-                try { c.close(); } catch (SQLException x) {}
+                try {
+                    c.close();
+                } catch (SQLException ignored) {
+                }
                 cpoolCount--;   // And reduce count
                 cpool.notifyAll();
             }
@@ -585,8 +572,8 @@ public class MariaDBMapStorage extends MapStorage {
             return null;
         }
         // Now, take the last section and parse out coordinates and zoom
-        String fname = suri[suri.length-1];
-        String[] coord = fname.split("[_\\.]");
+        String fname = suri[suri.length - 1];
+        String[] coord = fname.split("[_.]");
         if (coord.length < 3) { // 3 or 4
             return null;
         }
@@ -617,7 +604,7 @@ public class MariaDBMapStorage extends MapStorage {
             mtlist = Collections.singletonList(map);
         }
         else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
@@ -634,7 +621,7 @@ public class MariaDBMapStorage extends MapStorage {
             mtlist = Collections.singletonList(map);
         }
         else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
@@ -686,7 +673,7 @@ public class MariaDBMapStorage extends MapStorage {
             mtlist = Collections.singletonList(map);
         }
         else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
@@ -848,8 +835,18 @@ public class MariaDBMapStorage extends MapStorage {
             Log.severe("Marker write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
             releaseConnection(c, err);
         }
         return !err;
@@ -922,8 +919,18 @@ public class MariaDBMapStorage extends MapStorage {
             Log.severe("Marker file write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
             releaseConnection(c, err);
         }
         return !err;
@@ -1051,8 +1058,18 @@ public class MariaDBMapStorage extends MapStorage {
             Log.severe("Standalone file write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
             releaseConnection(c, err);
         }
         return !err;

@@ -1,20 +1,5 @@
 package org.dynmap;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.dynmap.storage.MapStorage;
 import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
@@ -24,9 +9,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import static org.dynmap.JSONUtils.*;
-
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+
+import static org.dynmap.JSONUtils.s;
 
 public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected long jsonInterval;
@@ -42,7 +32,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     private boolean req_login;
     private boolean chat_perms;
     private int lengthlimit;
-    private HashMap<String,String> useralias = new HashMap<String,String>();
+    private HashMap<String, String> useralias = new HashMap<>();
     private int aliasindex = 1;
     private long last_confighash;
     private MessageDigest md;
@@ -66,10 +56,9 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             while(true) {
                 FileToWrite f = null;
                 synchronized(lock) {
-                    if(files_to_write.isEmpty() == false) {
+                    if (!files_to_write.isEmpty()) {
                         f = files_to_write.removeFirst();
-                    }
-                    else {
+                    } else {
                         pending = null;
                         return;
                     }
@@ -81,7 +70,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                         buf.write("<?php /*\n".getBytes(cs_utf8));
                     }
                     buf.write(f.content);
-                    if(f.phpwrapper) {
+                    if (f.phpwrapper) {
                         buf.write("\n*/ ?>\n".getBytes(cs_utf8));
                     }
                 }
@@ -91,16 +80,17 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             }
         }
     }
-    private Object lock = new Object();
+
+    private final Object lock = new Object();
     private FileProcessor pending;
-    private LinkedList<FileToWrite> files_to_write = new LinkedList<FileToWrite>();
+    private LinkedList<FileToWrite> files_to_write = new LinkedList<>();
 
     private void enqueueFileWrite(String filename, byte[] content, boolean phpwrap) {
         FileToWrite ftw = new FileToWrite();
         ftw.filename = filename;
         ftw.content = content;
         ftw.phpwrapper = phpwrap;
-        synchronized(lock) {
+        synchronized (lock) {
             boolean didadd = false;
             if(pending == null) {
                 didadd = true;
@@ -108,17 +98,18 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             }
             files_to_write.remove(ftw);
             files_to_write.add(ftw);
-            if(didadd) {
+            if (didadd) {
                 MapManager.scheduleDelayedJob(new FileProcessor(), 0);
             }
         }
     }
-    
-    private static Charset cs_utf8 = Charset.forName("UTF-8");
+
+    private static Charset cs_utf8 = StandardCharsets.UTF_8;
+
     public JsonFileClientUpdateComponent(final DynmapCore core, final ConfigurationNode configuration) {
         super(core, configuration);
         final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
-        jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
+        jsonInterval = (long) (configuration.getFloat("writeinterval", 1) * 1000);
         hidewebchatip = configuration.getBoolean("hidewebchatip", false);
         useplayerloginip = configuration.getBoolean("use-player-login-ip", true);
         requireplayerloginip = configuration.getBoolean("require-player-login-ip", false);
@@ -276,7 +267,8 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             if(fos != null) {
                 try {
                     fos.close();
-                } catch (IOException x) {}
+                } catch (IOException ignored) {
+                }
                 fos = null;
             }
         }
@@ -303,11 +295,10 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     
     @SuppressWarnings("unchecked")
     protected void writeUpdates() {
-        if(core.mapManager == null) return;
+        if (core.mapManager == null) return;
         //Handles Updates
-        ArrayList<DynmapWorld> wlist = new ArrayList<DynmapWorld>(core.mapManager.getWorlds());	// Grab copy of world list
-        for (int windx = 0; windx < wlist.size(); windx++) {
-        	DynmapWorld dynmapWorld = wlist.get(windx);
+        ArrayList<DynmapWorld> wlist = new ArrayList<>(core.mapManager.getWorlds());    // Grab copy of world list
+        for (DynmapWorld dynmapWorld : wlist) {
             JSONObject update = new JSONObject();
             update.put("timestamp", currentTimestamp);
             ClientUpdateEvent clientUpdate = new ClientUpdateEvent(currentTimestamp - 30000, dynmapWorld, update);
@@ -316,10 +307,9 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 
             String outputFile;
             boolean dowrap = storage.wrapStandaloneJSON(core.isLoginSupportEnabled());
-            if(dowrap) {
+            if (dowrap) {
                 outputFile = "updates_" + dynmapWorld.getName() + ".php";
-            }
-            else {
+            } else {
                 outputFile = "dynmap_" + dynmapWorld.getName() + ".json";
             }
             byte[] content = Json.stringifyJson(update).getBytes(cs_utf8);
@@ -385,8 +375,8 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 if(inputFileReader != null) {
                     try {
                         inputFileReader.close();
-                    } catch (IOException iox) {
-                        
+                    } catch (IOException ignored) {
+
                     }
                     inputFileReader = null;
                 }
@@ -481,12 +471,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         }
     }
     protected void handleRegister() {
-        if(core.pendingRegisters() == false)
+        if (!core.pendingRegisters())
             return;
         BufferInputStream bis = storage.getStandaloneFile("dynmap_reg.php");
         if (bis != null) {
             BufferedReader br = null;
-            ArrayList<String> lines = new ArrayList<String>();
+            ArrayList<String> lines = new ArrayList<>();
             try {
                 br = new BufferedReader(new InputStreamReader(bis));
                 String line;
@@ -502,14 +492,14 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 if (br != null) {
                     try {
                         br.close();
-                    } catch (IOException x) {
+                    } catch (IOException ignored) {
                     }
                     br = null;
                 }
             }
-            for(int i = 0; i < lines.size(); i++) {
-                String[] vals = lines.get(i).split("=");
-                if(vals.length == 3) {
+            for (String line : lines) {
+                String[] vals = line.split("=");
+                if (vals.length == 3) {
                     core.processCompletedRegister(vals[0].trim(), vals[1].trim(), vals[2].trim());
                 }
             }

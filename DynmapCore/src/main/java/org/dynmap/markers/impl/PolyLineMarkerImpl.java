@@ -1,15 +1,15 @@
 package org.dynmap.markers.impl;
 
+import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapWorld;
+import org.dynmap.markers.MarkerSet;
+import org.dynmap.markers.PolyLineMarker;
+import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapWorld;
-import org.dynmap.markers.PolyLineMarker;
-import org.dynmap.markers.MarkerSet;
-import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 
 class PolyLineMarkerImpl implements PolyLineMarker {
     private String markerid;
@@ -46,15 +46,15 @@ class PolyLineMarkerImpl implements PolyLineMarker {
      * @param persistent - true if persistent
      * @param set - marker set
      */
-    PolyLineMarkerImpl(String id, String lbl, boolean markup, String world, double x[], double[] y, double z[], boolean persistent, MarkerSetImpl set) {
+    PolyLineMarkerImpl(String id, String lbl, boolean markup, String world, double[] x, double[] y, double[] z, boolean persistent, MarkerSetImpl set) {
         markerid = id;
-        if(lbl != null)
+        if (lbl != null)
             label = lbl;
         else
             label = id;
         this.markup = markup;
-        this.corners = new ArrayList<Coord>();
-        for(int i = 0; i < x.length; i++) {
+        this.corners = new ArrayList<>();
+        for (int i = 0; i < x.length; i++) {
             this.corners.add(new Coord(x[i], y[i], z[i]));
         }
         this.world = world;
@@ -76,7 +76,7 @@ class PolyLineMarkerImpl implements PolyLineMarker {
         label = id;
         markup = false;
         desc = null;
-        corners = new ArrayList<Coord>();
+        corners = new ArrayList<>();
         this.minzoom = -1;
         this.maxzoom = -1;
         world = normalized_world = "world";
@@ -165,16 +165,15 @@ class PolyLineMarkerImpl implements PolyLineMarker {
      * @return node
      */
     Map<String, Object> getPersistentData() {
-        if(!ispersistent)   /* Nothing if not persistent */
+        if (!ispersistent)   /* Nothing if not persistent */
             return null;
-        HashMap<String, Object> node = new HashMap<String, Object>();
+        HashMap<String, Object> node = new HashMap<>();
         node.put("label", label);
         node.put("markup", markup);
-        List<Double> xx = new ArrayList<Double>();
-        List<Double> yy = new ArrayList<Double>();
-        List<Double> zz = new ArrayList<Double>();
-        for(int i = 0; i < corners.size(); i++) {
-            Coord c = corners.get(i);
+        List<Double> xx = new ArrayList<>();
+        List<Double> yy = new ArrayList<>();
+        List<Double> zz = new ArrayList<>();
+        for (Coord c : corners) {
             xx.add(c.x);
             yy.add(c.y);
             zz.add(c.z);
@@ -183,7 +182,7 @@ class PolyLineMarkerImpl implements PolyLineMarker {
         node.put("y", yy);
         node.put("z", zz);
         node.put("world", world);
-        if(desc != null)
+        if (desc != null)
             node.put("desc", desc);
         node.put("strokeWeight", lineweight);
         node.put("strokeOpacity", lineopacity);
@@ -211,11 +210,11 @@ class PolyLineMarkerImpl implements PolyLineMarker {
     }
     @Override
     public void setDescription(String desc) {
-        if(markerset == null) return;
-        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+        if (markerset == null) return;
+        if ((this.desc == null) || (!this.desc.equals(desc))) {
             this.desc = desc;
             MarkerAPIImpl.polyLineMarkerUpdated(this, MarkerUpdate.UPDATED);
-            if(ispersistent)
+            if (ispersistent)
                 MarkerAPIImpl.saveMarkers();
         }
     }

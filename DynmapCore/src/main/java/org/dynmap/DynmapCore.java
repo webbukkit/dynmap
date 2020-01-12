@@ -416,6 +416,7 @@ public class DynmapCore implements DynmapCommonAPI {
         return true;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean enableCore() {
         /* Update extracted files, if needed */
         updateExtractedFiles();

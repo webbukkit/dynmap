@@ -1,31 +1,23 @@
 package org.dynmap.bukkit.helper.v114;
 
-import java.lang.reflect.Field;
-
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
+import net.minecraft.server.v1_14_R1.Material;
+import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.*;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.bukkit.helper.BukkitVersionHelperCB;
 import org.dynmap.bukkit.helper.BukkitWorld;
-import org.dynmap.bukkit.helper.v114.MapChunkCache114;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 
-import net.minecraft.server.v1_14_R1.BiomeBase;
-import net.minecraft.server.v1_14_R1.Block;
-import net.minecraft.server.v1_14_R1.BlockFluids;
-import net.minecraft.server.v1_14_R1.BlockLogAbstract;
-import net.minecraft.server.v1_14_R1.IBlockData;
-import net.minecraft.server.v1_14_R1.IRegistry;
-import net.minecraft.server.v1_14_R1.Material;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
 
 /**
  * Helper for isolation of bukkit version specific issues
@@ -53,13 +45,12 @@ public class BukkitVersionHelperSpigot114 extends BukkitVersionHelperCB {
     
     @Override
     public Object[] getBlockIDFieldFromSnapshot(ChunkSnapshot css) {
-    	try {
+		try {
 			return (Object[]) blockid_field.get(css);
-		} catch (IllegalArgumentException e) {
-		} catch (IllegalAccessException e) {
+		} catch (IllegalArgumentException | IllegalAccessException ignored) {
 		}
-    	return null;
-    }
+		return null;
+	}
     @Override
     public void unloadChunkNoSave(World w, Chunk c, int cx, int cz) {
         w.unloadChunk(cx, cz, false);
@@ -109,45 +100,45 @@ public class BukkitVersionHelperSpigot114 extends BukkitVersionHelperCB {
      */
     @Override
     public void initializeBlockStates() {
-    	dataToState = new IdentityHashMap<IBlockData, DynmapBlockState>();
-    	HashMap<String, DynmapBlockState> lastBlockState = new HashMap<String, DynmapBlockState>();
-    	
-    	int cnt = Block.REGISTRY_ID.a();
-    	// Loop through block data states
-    	for (int i = 0; i < cnt; i++) {
-    		IBlockData bd = Block.getByCombinedId(i);
-    		String bname = IRegistry.BLOCK.getKey(bd.getBlock()).toString();
-    		DynmapBlockState lastbs = lastBlockState.get(bname);	// See if we have seen this one
-    		int idx = 0;
-    		if (lastbs != null) {	// Yes
-    			idx = lastbs.getStateCount();	// Get number of states so far, since this is next
-    		}
-    		// Build state name
-    		String sb = "";
-    		String fname = bd.toString();
-    		int off1 = fname.indexOf('[');
-    		if (off1 >= 0) {
-    			int off2 = fname.indexOf(']');
-    			sb = fname.substring(off1+1, off2);
-    		}
-    		Material mat = bd.getMaterial();
-            DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
-            if ((!bd.p().isEmpty()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
-            	bs.setWaterlogged();
-            }
-            if (mat == Material.AIR) {
-            	bs.setAir();
-            }
-    		if (mat == Material.LEAVES) {
-    			bs.setLeaves();
-    		}
-    		if (bd.getBlock() instanceof BlockLogAbstract) {
-    			bs.setLog();
-    		}
-    		if (mat.isSolid()) {
-    			bs.setSolid();
-    		}
-    		dataToState.put(bd,  bs);
+		dataToState = new IdentityHashMap<>();
+		HashMap<String, DynmapBlockState> lastBlockState = new HashMap<>();
+
+		int cnt = Block.REGISTRY_ID.a();
+		// Loop through block data states
+		for (int i = 0; i < cnt; i++) {
+			IBlockData bd = Block.getByCombinedId(i);
+			String bname = IRegistry.BLOCK.getKey(bd.getBlock()).toString();
+			DynmapBlockState lastbs = lastBlockState.get(bname);    // See if we have seen this one
+			int idx = 0;
+			if (lastbs != null) {    // Yes
+				idx = lastbs.getStateCount();    // Get number of states so far, since this is next
+			}
+			// Build state name
+			String sb = "";
+			String fname = bd.toString();
+			int off1 = fname.indexOf('[');
+			if (off1 >= 0) {
+				int off2 = fname.indexOf(']');
+				sb = fname.substring(off1 + 1, off2);
+			}
+			Material mat = bd.getMaterial();
+			DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
+			if ((!bd.p().isEmpty()) && (!(bd.getBlock() instanceof BlockFluids))) {    // Test if fluid type for block is not empty
+				bs.setWaterlogged();
+			}
+			if (mat == Material.AIR) {
+				bs.setAir();
+			}
+			if (mat == Material.LEAVES) {
+				bs.setLeaves();
+			}
+			if (bd.getBlock() instanceof BlockLogAbstract) {
+				bs.setLog();
+			}
+			if (mat.isSolid()) {
+				bs.setSolid();
+			}
+			dataToState.put(bd, bs);
     		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
     		Log.verboseinfo(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());
     	}

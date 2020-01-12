@@ -1,16 +1,15 @@
 package org.dynmap.servlet;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class MainServlet extends HttpServlet {
@@ -22,27 +21,27 @@ public class MainServlet extends HttpServlet {
             this.value = value;
         }
     }
-    
+
     private static class Registration {
         public String pattern;
         public HttpServlet servlet;
-        
+
         public Registration(String pattern, HttpServlet servlet) {
             this.pattern = pattern;
             this.servlet = servlet;
         }
     }
-    
-    List<Registration> registrations = new LinkedList<Registration>();
-    public List<Header> customHeaders = new LinkedList<Header>();
-    
+
+    List<Registration> registrations = new LinkedList<>();
+    public List<Header> customHeaders = new LinkedList<>();
+
     public void addServlet(String pattern, HttpServlet servlet) {
         registrations.add(new Registration(pattern, servlet));
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HashMap<String, Object> properties = new HashMap<String, Object>();
+        HashMap<String, Object> properties = new HashMap<>();
         String path = req.getPathInfo();
         
         for(Header header : customHeaders) {
@@ -60,7 +59,7 @@ public class MainServlet extends HttpServlet {
                     bestMatch = r;
                     bestMatchPart = matchingPart;
                     bestProperties = properties;
-                    properties = new HashMap<String, Object>();
+                    properties = new HashMap<>();
                 }
             }
         }
@@ -120,23 +119,25 @@ public class MainServlet extends HttpServlet {
     }
     
     private int indexOfAny(String s, char[] cs, int startIndex) {
-        for(int i = startIndex; i < s.length(); i++) {
+        for (int i = startIndex; i < s.length(); i++) {
             char c = s.charAt(i);
-            for(int j = 0; j < cs.length; j++) {
-                if (c == cs[j]) {
+            for (char value : cs) {
+                if (c == value) {
                     return i;
                 }
             }
         }
         return -1;
     }
-    
-    class RequestWrapper extends HttpServletRequestWrapper {
+
+    static class RequestWrapper extends HttpServletRequestWrapper {
         String pathInfo;
+
         public RequestWrapper(HttpServletRequest request, String pathInfo) {
             super(request);
             this.pathInfo = pathInfo;
         }
+
         @Override
         public String getPathInfo() {
             return pathInfo;

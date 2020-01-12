@@ -1,27 +1,26 @@
 package org.dynmap.bukkit.helper;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapChunk;
-import org.dynmap.Log;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Helper for isolation of bukkit version specific issues
  */
 public abstract class BukkitVersionHelper {
     public static BukkitVersionHelper helper = null;
-    
+
     public static DynmapBlockState[] stateByID;
-    
+
     protected boolean isBlockIdNeeded() {
         return true;
     }
@@ -64,10 +63,7 @@ public abstract class BukkitVersionHelper {
      * Read raw biome ID from snapshot
      */
     public abstract Object[] getBiomeBaseFromSnapshot(ChunkSnapshot css);
-    /**
-     * Test if normal chunk snapshot
-     */
-//    public abstract boolean isCraftChunkSnapshot(ChunkSnapshot css);
+    //    public abstract boolean isCraftChunkSnapshot(ChunkSnapshot css);
     /**
      * Get inhabited ticks count from chunk
      */

@@ -1,9 +1,5 @@
 package org.dynmap.markers.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.hdmap.HDPerspective;
@@ -11,6 +7,10 @@ import org.dynmap.markers.CircleMarker;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 import org.dynmap.utils.Vector3D;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 class CircleMarkerImpl implements CircleMarker {
     private String markerid;
@@ -38,8 +38,8 @@ class CircleMarkerImpl implements CircleMarker {
     private static class BoundingBox {
         double xmin, xmax;
         double ymin, ymax;
-        double xp[];
-        double yp[];
+        double[] xp;
+        double[] yp;
     }
     private Map<String, BoundingBox> bb_cache = null;
 
@@ -177,7 +177,7 @@ class CircleMarkerImpl implements CircleMarker {
     Map<String, Object> getPersistentData() {
         if(!ispersistent)   /* Nothing if not persistent */
             return null;
-        HashMap<String, Object> node = new HashMap<String, Object>();
+        HashMap<String, Object> node = new HashMap<>();
         node.put("label", label);
         node.put("markup", markup);
         node.put("x", x);
@@ -218,10 +218,10 @@ class CircleMarkerImpl implements CircleMarker {
     }
     @Override
     public void setDescription(String desc) {
-        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+        if ((this.desc == null) || (!this.desc.equals(desc))) {
             this.desc = desc;
             MarkerAPIImpl.circleMarkerUpdated(this, MarkerUpdate.UPDATED);
-            if(ispersistent)
+            if (ispersistent)
                 MarkerAPIImpl.saveMarkers();
         }
     }
@@ -358,7 +358,7 @@ class CircleMarkerImpl implements CircleMarker {
     final boolean testTileForBoostMarkers(DynmapWorld w, HDPerspective perspective, double tile_x, double tile_y, double tile_dim) {
         Map<String, BoundingBox> bbc = bb_cache;
         if(bbc == null) {
-            bbc = new ConcurrentHashMap<String, BoundingBox>();
+            bbc = new ConcurrentHashMap<>();
         }
         BoundingBox bb = bbc.get(perspective.getName());
         if (bb == null) { // No cached bounding box, so generate it

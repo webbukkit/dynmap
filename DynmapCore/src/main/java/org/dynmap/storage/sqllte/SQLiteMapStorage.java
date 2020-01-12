@@ -1,40 +1,28 @@
 package org.dynmap.storage.sqllte;
 
+import org.dynmap.*;
+import org.dynmap.MapType.ImageVariant;
+import org.dynmap.PlayerFaces.FaceType;
+import org.dynmap.storage.*;
+import org.dynmap.utils.BufferInputStream;
+import org.dynmap.utils.BufferOutputStream;
+
 import java.io.File;
 import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.dynmap.DynmapCore;
-import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
-import org.dynmap.MapType;
-import org.dynmap.WebAuthManager;
-import org.dynmap.MapType.ImageVariant;
-import org.dynmap.PlayerFaces.FaceType;
-import org.dynmap.storage.MapStorage;
-import org.dynmap.storage.MapStorageTile;
-import org.dynmap.storage.MapStorageTileEnumCB;
-import org.dynmap.storage.MapStorageBaseTileEnumCB;
-import org.dynmap.storage.MapStorageTileSearchEndCB;
-import org.dynmap.utils.BufferInputStream;
-import org.dynmap.utils.BufferOutputStream;
-
 public class SQLiteMapStorage extends MapStorage {
     private String connectionString;
     private String databaseFile;
     private static final int POOLSIZE = 5;
-    private Connection[] cpool = new Connection[POOLSIZE];
+    private final Connection[] cpool = new Connection[POOLSIZE];
     private int cpoolCount = 0;
-    private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final Charset UTF8 = StandardCharsets.UTF_8;
         
     public class StorageTile extends MapStorageTile {
         private Integer mapkey;
@@ -306,20 +294,20 @@ public class SQLiteMapStorage extends MapStorage {
         }
         return ver;
     }
-    
+
     private void doUpdate(Connection c, String sql) throws SQLException {
         Statement stmt = c.createStatement();
         //stmt.executeUpdate(sql);
         doExecuteUpdate(stmt, sql);
         stmt.close();
     }
-    
-    private HashMap<String, Integer> mapKey = new HashMap<String, Integer>();
-    
+
+    private final HashMap<String, Integer> mapKey = new HashMap<>();
+
     private void doLoadMaps() {
         Connection c = null;
         boolean err = false;
-        
+
         mapKey.clear();
         // Read the maps table - cache results
         try {
@@ -483,7 +471,10 @@ public class SQLiteMapStorage extends MapStorage {
                 }
             }
             if (c != null) {  // If broken, just toss it
-                try { c.close(); } catch (SQLException x) {}
+                try {
+                    c.close();
+                } catch (SQLException ignored) {
+                }
                 cpoolCount--;   // And reduce count
                 cpool.notifyAll();
             }
@@ -518,8 +509,8 @@ public class SQLiteMapStorage extends MapStorage {
             return null;
         }
         // Now, take the last section and parse out coordinates and zoom
-        String fname = suri[suri.length-1];
-        String[] coord = fname.split("[_\\.]");
+        String fname = suri[suri.length - 1];
+        String[] coord = fname.split("[_.]");
         if (coord.length < 3) { // 3 or 4
             return null;
         }
@@ -550,7 +541,7 @@ public class SQLiteMapStorage extends MapStorage {
             mtlist = Collections.singletonList(map);
         }
         else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
@@ -568,7 +559,7 @@ public class SQLiteMapStorage extends MapStorage {
             mtlist = Collections.singletonList(map);
         }
         else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
@@ -622,7 +613,7 @@ public class SQLiteMapStorage extends MapStorage {
             mtlist = Collections.singletonList(map);
         }
         else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
@@ -800,8 +791,18 @@ public class SQLiteMapStorage extends MapStorage {
             Log.severe("Marker write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
             releaseConnection(c, err);
         }
         return !err;
@@ -881,8 +882,18 @@ public class SQLiteMapStorage extends MapStorage {
             Log.severe("Marker file write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
             releaseConnection(c, err);
         }
         return !err;
@@ -926,9 +937,9 @@ public class SQLiteMapStorage extends MapStorage {
     
     @Override
     public void addPaths(StringBuilder sb, DynmapCore core) {
-        sb.append("$dbfile = \'");
+        sb.append("$dbfile = '");
         sb.append(WebAuthManager.esc(databaseFile));
-        sb.append("\';\n");
+        sb.append("';\n");
         
         // Need to call base to add webpath
         super.addPaths(sb, core);

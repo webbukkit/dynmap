@@ -1,24 +1,25 @@
 package org.dynmap.forge_1_8_9;
 
-import java.util.Arrays;
-
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import org.dynmap.Log;
 import org.dynmap.renderer.DynmapBlockState;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import java.util.Arrays;
 
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks
  * Purpose is to allow clean, efficient copy of a chunk data to be made, and then handed off for processing in another thread (e.g. map rendering)
  */
-public class ChunkSnapshot
-{
-    private static interface Section {
-        public DynmapBlockState getBlockType(int x, int y, int z);
-        public int getBlockSkyLight(int x, int y, int z);
-        public int getBlockEmittedLight(int x, int y, int z);
-        public boolean isEmpty();
+public class ChunkSnapshot {
+    private interface Section {
+        DynmapBlockState getBlockType(int x, int y, int z);
+
+        int getBlockSkyLight(int x, int y, int z);
+
+        int getBlockEmittedLight(int x, int y, int z);
+
+        boolean isEmpty();
     }
 
     private final int x, z;
@@ -248,9 +249,9 @@ public class ChunkSnapshot
             	int[] bb = nbt.getIntArray("Biomes");
             	if (bb != null) {
                 	for (int i = 0; i < bb.length; i++) {
-                		int bv = bb[i];
-                		this.biome[i] = (bv < 0) ? 0 : bv;
-                	}
+                        int bv = bb[i];
+                        this.biome[i] = Math.max(bv, 0);
+                    }
             	}
             }
         }

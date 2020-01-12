@@ -1,23 +1,20 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Map;
-import java.util.Random;
-
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
 
-public class TFCLooseRockRenderer extends CustomRenderer {
-    
-    @Override
-    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
-        if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
-            return false;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Map;
+import java.util.Random;
 
-        return true;
+public class TFCLooseRockRenderer extends CustomRenderer {
+
+    @Override
+    public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String, String> custparm) {
+        return super.initializeRenderer(rpf, blkname, blockdatamask, custparm);
     }
 
     @Override
@@ -28,7 +25,7 @@ public class TFCLooseRockRenderer extends CustomRenderer {
     private int[] patches = { 0, 0, 0, 0, 0, 0 };
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         /* Generate seed from coordinates */
         int seed = (ctx.getX() * ctx.getZ()) + ctx.getY();
         Random R = new Random(seed);

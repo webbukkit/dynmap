@@ -1,17 +1,13 @@
 package org.dynmap.bukkit.helper;
 
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     private Method rawbiome;
@@ -20,13 +16,11 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     public BukkitVersionHelperGlowstone() {
         try {
             Class<?> c = Class.forName("net.glowstone.chunk.GlowChunkSnapshot");
-            rawbiome = c.getMethod("getRawBiomes", new Class[0]);
+            rawbiome = c.getMethod("getRawBiomes");
 
-            /** Server */
-            server_getonlineplayers = Server.class.getMethod("getOnlinePlayers", new Class[0]);
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (ClassNotFoundException e) {
+            /* Server */
+            server_getonlineplayers = Server.class.getMethod("getOnlinePlayers");
+        } catch (SecurityException | ClassNotFoundException | NoSuchMethodException ignored) {
         }
         if ((rawbiome == null) && (server_getonlineplayers == null)) {
             throw new IllegalArgumentException("Error initializing dynmap - Glowstone version incompatible!");
@@ -75,17 +69,15 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
 
     @Override
     public Object[] getBiomeBaseFromSnapshot(ChunkSnapshot css) {
-        Integer b[] = new Integer[256];
+        Integer[] b = new Integer[256];
         byte[] rb = null;
         try {
             rb = (byte[]) rawbiome.invoke(css, new Object[0]);
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ignored) {
         }
         if (rb != null) {
             for (int i = 0; i < 256; i++) {
-                b[i] = Integer.valueOf(255 & (int)rb[i]);
+                b[i] = 255 & (int) rb[i];
             }
         }
         return b;
@@ -421,18 +413,15 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
     public Player[] getOnlinePlayers() {
         Object players;
         try {
-            players = server_getonlineplayers.invoke(Bukkit.getServer(), new Object[0]);
+            players = server_getonlineplayers.invoke(Bukkit.getServer());
             if (players instanceof Player[]) {  /* Pre 1.7.10 */
                 return (Player[]) players;
-            }
-            else {
+            } else {
                 @SuppressWarnings("unchecked")
                 Collection<? extends Player> p = (Collection<? extends Player>) players;
                 return p.toArray(new Player[0]);
             }
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ignored) {
         }
         return new Player[0];
     }

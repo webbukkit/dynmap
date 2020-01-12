@@ -1,10 +1,5 @@
 package org.dynmap.markers.impl;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.dynmap.DynmapCore;
 import org.dynmap.common.DynmapChatColor;
 import org.dynmap.common.DynmapListenerManager;
@@ -13,6 +8,11 @@ import org.dynmap.common.DynmapPlayer;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class MarkerSignManager {
 
@@ -41,7 +41,7 @@ public class MarkerSignManager {
                 String id = getSignMarkerID(wname, x, y, z);  /* Get marker ID */
                 String set = defSignSet;
                 String icon = MarkerIcon.SIGN;
-                String label = "";
+                StringBuilder label = new StringBuilder();
                 lines[0] = ""; /* Blank out [dynmap] */
                 for(int i = 1; i < 4; i++) {    /* Check other lines for icon: or set: */
                     String v = plugin.getServer().stripChatColor(lines[i]);
@@ -55,9 +55,9 @@ public class MarkerSignManager {
                     }
                     else if(v.length() > 0) {
                         if(label.length() > 0) {
-                            label = label + "<br/>";
+                            label.append("<br/>");
                         }
-                        label = label + escapeMarkup(v);
+                        label.append(escapeMarkup(v));
                     }
                 }
                 /* Get the set and see if the marker is already defined */
@@ -76,18 +76,18 @@ public class MarkerSignManager {
                 Marker marker = ms.findMarker(id);
                 /* If exists, update it */
                 if(marker != null) {
-                    marker.setLabel(label, true);
+                    marker.setLabel(label.toString(), true);
                     marker.setMarkerIcon(mi);
                 }
                 else {  /* Make new marker */
-                    marker = ms.createMarker(id, label, true, wname, (double)x + 0.5, (double)y + 0.5, (double)z + 0.5,
-                                             mi, true);
-                    if(marker == null) {
-                        if(p != null) p.sendMessage("Bad marker - [dynmap] sign invalid");
+                    marker = ms.createMarker(id, label.toString(), true, wname, (double) x + 0.5, (double) y + 0.5, (double) z + 0.5,
+                            mi, true);
+                    if (marker == null) {
+                        if (p != null) p.sendMessage("Bad marker - [dynmap] sign invalid");
                         lines[0] = DynmapChatColor.RED + "<Bad Marker>";
                         return;
                     }
-                    if(sign_cache != null) {
+                    if (sign_cache != null) {
                         SignRec r = new SignRec();
                         r.wname = wname;
                         r.x = x;
@@ -105,7 +105,7 @@ public class MarkerSignManager {
             if(mgr == null)
                 return;
             if(sign_cache == null) {    /* Initialize sign cache */
-                sign_cache = new HashMap<String, SignRec>();
+                sign_cache = new HashMap<>();
                 Set<MarkerSet> sets = MarkerAPIImpl.api.getMarkerSets();
                 for(MarkerSet ms : sets) {
                     for(Marker m : ms.getMarkers()) {
@@ -115,25 +115,25 @@ public class MarkerSignManager {
                                 SignRec rec = new SignRec();
                                 /* Parse out the coordinates and world name */
                                 int off = id.lastIndexOf('_');
-                                if(off > 0) {
-                                    rec.z = Integer.parseInt(id.substring(off+1));
-                                    id = id.substring(0,  off);
+                                if (off > 0) {
+                                    rec.z = Integer.parseInt(id.substring(off + 1));
+                                    id = id.substring(0, off);
                                 }
                                 off = id.lastIndexOf('_');
-                                if(off > 0) {
-                                    rec.y = Integer.parseInt(id.substring(off+1));
-                                    id = id.substring(0,  off);
+                                if (off > 0) {
+                                    rec.y = Integer.parseInt(id.substring(off + 1));
+                                    id = id.substring(0, off);
                                 }
                                 off = id.lastIndexOf('_');
-                                if(off > 0) {
-                                    rec.x = Integer.parseInt(id.substring(off+1));
-                                    id = id.substring(0,  off);
+                                if (off > 0) {
+                                    rec.x = Integer.parseInt(id.substring(off + 1));
+                                    id = id.substring(0, off);
                                 }
                                 rec.wname = id.substring(6);
                                 rec.m = m;
                                 sign_cache.put(m.getMarkerID(), rec);
                             }
-                        } catch (NumberFormatException nfx) {
+                        } catch (NumberFormatException ignored) {
                         }
                     }
                 }

@@ -1,15 +1,11 @@
 package org.dynmap.hdmap.renderer;
 
+import org.dynmap.renderer.*;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
-
-import org.dynmap.renderer.CustomRenderer;
-import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.renderer.MapDataContext;
-import org.dynmap.renderer.RenderPatch;
-import org.dynmap.renderer.RenderPatchFactory;
 
 public class StairBlockRenderer extends CustomRenderer {
     private static final int TEXTURE_SIDES = 0;
@@ -87,7 +83,7 @@ public class StairBlockRenderer extends CustomRenderer {
     }
     
     private RenderPatch[] buildStepMeshes(RenderPatchFactory rpf, int dat) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         /* If inverted, add half top */
         if((dat & 0x4) != 0) {
             addBox(rpf, list, 0, 1, 0.5, 1, 0, 1);
@@ -109,11 +105,11 @@ public class StairBlockRenderer extends CustomRenderer {
                 addBox(rpf, list, 0, 1, 0, 1, 0, 0.5);
                 break;
         }
-        return list.toArray(new RenderPatch[list.size()]);
+        return list.toArray(new RenderPatch[0]);
     }
 
     private RenderPatch[] buildCornerStepMeshes(RenderPatchFactory rpf, int dat) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         /* If inverted, add half top */
         if((dat & 0x4) != 0) {
             addBox(rpf, list, 0, 1, 0.5, 1, 0, 1);
@@ -135,11 +131,11 @@ public class StairBlockRenderer extends CustomRenderer {
                 addBox(rpf, list, 0.5, 1, 0, 1, 0.5, 1);
                 break;
         }
-        return list.toArray(new RenderPatch[list.size()]);
+        return list.toArray(new RenderPatch[0]);
     }
 
     private RenderPatch[] buildIntCornerStepMeshes(RenderPatchFactory rpf, int dat) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         /* If inverted, add half top */
         if((dat & 0x4) != 0) {
             addBox(rpf, list, 0, 1, 0.5, 1, 0, 1);
@@ -165,7 +161,7 @@ public class StairBlockRenderer extends CustomRenderer {
                 addBox(rpf, list, 0.5, 1, 0, 1, 0.5, 1);
                 break;
         }
-        return list.toArray(new RenderPatch[list.size()]);
+        return list.toArray(new RenderPatch[0]);
     }
 
     //  Steps
@@ -183,25 +179,24 @@ public class StairBlockRenderer extends CustomRenderer {
     // 1 = open to NW
     // 2 = open to SE
     // 3 = open to NE
-    private static final int off_x[] = { 1, -1, 0, 0, 1, -1, 0, 0 };
-    private static final int off_z[] = { 0, 0, 1, -1, 0, 0, 1, -1 };
-    private static final int match1[] = { 2, 3, 0, 1, 6, 7, 4, 5 };
-    private static final int corner1[] = { 3, 1, 3, 1, 7, 5, 7, 5 };
-    private static final int icorner1[] = { 1, 2, 1, 2, 5, 6, 5, 6 };
-    private static final int match2[] = { 3, 2, 1, 0, 7, 6, 5, 4 };
-    private static final int corner2[] = { 0, 2, 2, 0, 4, 6, 6, 4 };
-    private static final int icorner2[] = { 0, 3, 3, 0, 4, 7, 7, 4 };
-    
+    private static final int[] off_x = {1, -1, 0, 0, 1, -1, 0, 0};
+    private static final int[] off_z = {0, 0, 1, -1, 0, 0, 1, -1};
+    private static final int[] match1 = {2, 3, 0, 1, 6, 7, 4, 5};
+    private static final int[] corner1 = {3, 1, 3, 1, 7, 5, 7, 5};
+    private static final int[] icorner1 = {1, 2, 1, 2, 5, 6, 5, 6};
+    private static final int[] match2 = {3, 2, 1, 0, 7, 6, 5, 4};
+    private static final int[] corner2 = {0, 2, 2, 0, 4, 6, 6, 4};
+    private static final int[] icorner2 = {0, 3, 3, 0, 4, 7, 7, 4};
+
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
         RenderPatch[] rp = getBaseRenderPatchList(ctx);
-        if(textindex != null) {
+        if (textindex != null) {
             int idx = 0;
             Object o = ctx.getBlockTileEntityField(textindex);
-            if(o instanceof Number) {
-                idx = ((Number)o).intValue();
-            }
-            else if (o instanceof String) {
+            if (o instanceof Number) {
+                idx = ((Number) o).intValue();
+            } else if (o instanceof String) {
                 String os = (String) o;
                 for (int i = 0; i < texturemap.length; i++) {
                     if (os.equals(texturemap[i])) {

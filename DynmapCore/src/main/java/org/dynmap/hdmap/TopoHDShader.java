@@ -1,33 +1,29 @@
 package org.dynmap.hdmap;
 
-import static org.dynmap.JSONUtils.s;
+import org.dynmap.*;
+import org.dynmap.common.DynmapCommandSender;
+import org.dynmap.exporter.OBJExport;
+import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.utils.BlockStep;
+import org.dynmap.utils.DynLongHashMap;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
+import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 
-import org.dynmap.Color;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapCore;
-import org.dynmap.Log;
-import org.dynmap.MapManager;
-import org.dynmap.common.DynmapCommandSender;
-import org.dynmap.exporter.OBJExport;
-import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.utils.DynLongHashMap;
-import org.dynmap.utils.MapChunkCache;
-import org.dynmap.utils.MapIterator;
-import org.dynmap.utils.BlockStep;
-import org.json.simple.JSONObject;
+import static org.dynmap.JSONUtils.s;
 
 public class TopoHDShader implements HDShader {
     private final String name;
     private final Color linecolor;  /* Color for topo lines */
-    private final Color fillcolor[];  /* Color for nontopo surfaces */
+    private final Color[] fillcolor;  /* Color for nontopo surfaces */
     private final Color watercolor;
     private BitSet hiddenids;
     private final int linespacing;
-    
+
     private Color readColor(String id, ConfigurationNode cfg) {
         String lclr = cfg.getString(id, null);
         if((lclr != null) && (lclr.startsWith("#"))) {
@@ -129,10 +125,10 @@ public class TopoHDShader implements HDShader {
     public String getName() {
         return name;
     }
-    
+
     private class OurShaderState implements HDShaderState {
-        private Color color[];
-        private Color tmpcolor[];
+        private Color[] color;
+        private Color[] tmpcolor;
         private Color c;
         protected MapIterator mapiter;
         protected HDMap map;
@@ -141,7 +137,7 @@ public class TopoHDShader implements HDShader {
         private int heightshift;    /* Divide to keep in 0-127 range of colors */
         private boolean inWater;
         final int[] lightingTable;
-        
+
         private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache, int scale) {
             this.mapiter = mapiter;
             this.map = map;
@@ -191,22 +187,22 @@ public class TopoHDShader implements HDShader {
         public HDLighting getLighting() {
             return lighting;
         }
-        
+
         /**
          * Reset renderer state for new ray
          */
         public void reset(HDPerspectiveState ps) {
-            for(int i = 0; i < color.length; i++)
-                color[i].setTransparent();
+            for (Color value : color) value.setTransparent();
             inWater = false;
         }
-        
-        private final boolean isHidden(DynmapBlockState blk) {
+
+        private boolean isHidden(DynmapBlockState blk) {
             return hiddenids.get(blk.globalStateIndex);
         }
-        
+
         /**
          * Process next ray step - called for each block on route
+         *
          * @return true if ray is done, false if ray needs to continue
          */
         public boolean processBlock(HDPerspectiveState ps) {
@@ -286,8 +282,7 @@ public class TopoHDShader implements HDShader {
                               (tmpcolor[i].getGreen()*alpha2 + color[i].getGreen()*alpha) / talpha,
                               (tmpcolor[i].getBlue()*alpha2 + color[i].getBlue()*alpha) / talpha, talpha);
                 else
-                    for(int i = 0; i < color.length; i++)
-                        color[i].setTransparent();
+                    for (Color value : color) value.setTransparent();
                     
                 return (talpha >= 254);   /* If only one short, no meaningful contribution left */
             }

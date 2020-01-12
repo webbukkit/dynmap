@@ -1,5 +1,12 @@
 package org.dynmap.modsupport.impl;
 
+import org.dynmap.hdmap.HDBlockModels;
+import org.dynmap.modsupport.*;
+import org.dynmap.modsupport.WallFenceBlockModel.FenceType;
+import org.dynmap.renderer.RenderPatchFactory.SideVisible;
+import org.dynmap.utils.PatchDefinition;
+import org.dynmap.utils.PatchDefinitionFactory;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,36 +14,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-import org.dynmap.hdmap.HDBlockModels;
-import org.dynmap.modsupport.BoxBlockModel;
-import org.dynmap.modsupport.CuboidBlockModel;
-import org.dynmap.modsupport.DoorBlockModel;
-import org.dynmap.modsupport.ModModelDefinition;
-import org.dynmap.modsupport.ModTextureDefinition;
-import org.dynmap.modsupport.PaneBlockModel;
-import org.dynmap.modsupport.PatchBlockModel;
-import org.dynmap.modsupport.PlantBlockModel;
-import org.dynmap.modsupport.StairBlockModel;
-import org.dynmap.modsupport.VolumetricBlockModel;
-import org.dynmap.modsupport.WallFenceBlockModel;
-import org.dynmap.modsupport.WallFenceBlockModel.FenceType;
-import org.dynmap.renderer.RenderPatchFactory.SideVisible;
-import org.dynmap.utils.PatchDefinition;
-import org.dynmap.utils.PatchDefinitionFactory;
-
 public class ModModelDefinitionImpl implements ModModelDefinition {
     private final ModTextureDefinitionImpl txtDef;
     private boolean published = false;
-    private ArrayList<BlockModelImpl> blkModel = new ArrayList<BlockModelImpl>();
-    private ArrayList<PatchDefinition> blkPatch = new ArrayList<PatchDefinition>();
-    private HashMap<String, PatchDefinition> blkPatchMap = new HashMap<String, PatchDefinition>();
+    private ArrayList<BlockModelImpl> blkModel = new ArrayList<>();
+    private ArrayList<PatchDefinition> blkPatch = new ArrayList<>();
+    private HashMap<String, PatchDefinition> blkPatchMap = new HashMap<>();
     private PatchDefinitionFactory pdf;
-    
+
     public ModModelDefinitionImpl(ModTextureDefinitionImpl txtDef) {
         this.txtDef = txtDef;
         this.pdf = HDBlockModels.getPatchDefinitionFactory();
     }
-    
+
     @Override
     public String getModID() {
         return txtDef.getModID();
@@ -238,9 +228,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
             return;
         }
         File f = new File(destdir, this.txtDef.getModID() + "-models.txt");
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(f);
+        try (FileWriter fw = new FileWriter(f)) {
             // Write modname line
             String s = "modname:" + this.txtDef.getModID();
             fw.write(s + "\n\n");
@@ -274,10 +262,6 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
                     fw.write(line + "\n");
                 }
             }
-        } finally {
-            if (fw != null) {
-                fw.close(); 
-            }
-        }        
+        }
     }
 }

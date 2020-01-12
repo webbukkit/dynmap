@@ -1,21 +1,17 @@
 package org.dynmap.hdmap;
 
-import org.dynmap.Color;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapCore;
-import org.dynmap.DynmapWorld;
-import org.dynmap.MapManager;
-import org.dynmap.utils.LightLevels;
+import org.dynmap.*;
 import org.dynmap.utils.BlockStep;
+import org.dynmap.utils.LightLevels;
 
 public class ShadowHDLighting extends DefaultHDLighting {
 
-    protected final int   defLightingTable[];  /* index=skylight level, value = 256 * scaling value */
-    protected final int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
+    protected final int[] defLightingTable;  /* index=skylight level, value = 256 * scaling value */
+    protected final int[] lightscale;   /* scale skylight level (light = lightscale[skylight] */
     protected final boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
     protected final boolean smooth;
     protected final boolean useWorldBrightnessTable;
-    
+
     public ShadowHDLighting(DynmapCore core, ConfigurationNode configuration) {
         super(core, configuration);
         double shadowweight = configuration.getDouble("shadowstrength", 0.0);
@@ -193,24 +189,24 @@ public class ShadowHDLighting extends DefaultHDLighting {
                     cscale = shadowscale[ll0];
                 }
             }
-            if(cscale < 256) {
+            if (cscale < 256) {
                 Color c = outcolor[1];
-                c.setRGBA((c.getRed() * cscale) >> 8, (c.getGreen() * cscale) >> 8, 
-                    (c.getBlue() * cscale) >> 8, c.getAlpha());
+                c.setRGBA((c.getRed() * cscale) >> 8, (c.getGreen() * cscale) >> 8,
+                        (c.getBlue() * cscale) >> 8, c.getAlpha());
             }
         }
     }
-    
-    private final int getLightLevel(final LightLevels ll, boolean useambient) {
+
+    private int getLightLevel(final LightLevels ll, boolean useambient) {
         int lightlevel;
         /* If ambient light, adjust base lighting for it */
-        if(useambient)
+        if (useambient)
             lightlevel = lightscale[ll.sky];
         else
             lightlevel = ll.sky;
         /* If we're below max, see if emitted light helps */
-        if(lightlevel < 15) {
-            lightlevel = Math.max(ll.emitted, lightlevel);                                
+        if (lightlevel < 15) {
+            lightlevel = Math.max(ll.emitted, lightlevel);
         }
         return lightlevel;
     }
@@ -264,11 +260,11 @@ public class ShadowHDLighting extends DefaultHDLighting {
         }
     }
 
-    private final void shadowColor(Color c, int lightlevel, int[] shadowscale) {
+    private void shadowColor(Color c, int lightlevel, int[] shadowscale) {
         int scale = shadowscale[lightlevel];
-        if(scale < 256)
-            c.setRGBA((c.getRed() * scale) >> 8, (c.getGreen() * scale) >> 8, 
-                (c.getBlue() * scale) >> 8, c.getAlpha());
+        if (scale < 256)
+            c.setRGBA((c.getRed() * scale) >> 8, (c.getGreen() * scale) >> 8,
+                    (c.getBlue() * scale) >> 8, c.getAlpha());
     }
 
 

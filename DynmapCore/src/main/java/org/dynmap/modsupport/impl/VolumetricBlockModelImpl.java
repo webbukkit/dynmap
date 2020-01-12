@@ -43,26 +43,25 @@ public class VolumetricBlockModelImpl extends BlockModelImpl implements Volumetr
     public String getLine() {
         String ids = this.getIDsAndMeta();
         if (ids == null) return null;
-        String line = String.format("block:%s,scale=%d\n", ids, grid.length);
+        StringBuilder line = new StringBuilder(String.format("block:%s,scale=%d\n", ids, grid.length));
         for (int y = 0; y < grid.length; y++) {
-            String l = "layer: " + y + "\n";
+            StringBuilder l = new StringBuilder("layer: " + y + "\n");
             boolean empty = true;
             for (int z = 0; z < grid.length; z++) {
-                for (int x = 0; x < grid.length; x++) {
-                    if (grid[x][y][z]) {
+                for (boolean[][] booleans : grid) {
+                    if (booleans[y][z]) {
                         empty = false;
-                        l += '*';
-                    }
-                    else {
-                        l += '-';
+                        l.append('*');
+                    } else {
+                        l.append('-');
                     }
                 }
-                l += "\n";
+                l.append("\n");
             }
             if (!empty) {
-                line += l;
+                line.append(l);
             }
         }
-        return line;
+        return line.toString();
     }
 }

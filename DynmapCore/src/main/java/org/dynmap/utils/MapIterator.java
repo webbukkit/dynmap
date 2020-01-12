@@ -23,49 +23,65 @@ public interface MapIterator extends MapDataContext {
     int getBlockSkyLight();
     /**
      * Get emitted light level at current coordinate
+     *
      * @return emitted light level
      */
     int getBlockEmittedLight();
+
     /**
      * Get biome at coordinates
+     *
      * @return biome
      */
-    public BiomeMap getBiome();
+    BiomeMap getBiome();
+
     /**
      * Get smoothed grass color multiplier
+     *
      * @param colormap - color map
      * @return smoothed multiplier
      */
-    public int getSmoothGrassColorMultiplier(int[] colormap);
+    int getSmoothGrassColorMultiplier(int[] colormap);
+
     /**
      * Get smoothed foliage color multiplier
+     *
      * @param colormap - color map
      * @return smoothed multiplier
      */
-    public int getSmoothFoliageColorMultiplier(int[] colormap);
+    int getSmoothFoliageColorMultiplier(int[] colormap);
+
     /**
      * get smoothed water color multiplier
+     *
      * @return smoothed multiplier
      */
-    public int getSmoothWaterColorMultiplier();
+    int getSmoothWaterColorMultiplier();
+
     /**
      * get smoothed water color multiplier
+     *
      * @param colormap - color map
      * @return smoothed multiplier
      */
-    public int getSmoothWaterColorMultiplier(int[] colormap);
+    int getSmoothWaterColorMultiplier(int[] colormap);
+
     /**
      * Get smoothed color multiplier, given normal and swamp color map
-     * @param colormap - color map
+     *
+     * @param colormap      - color map
      * @param swampcolormap - swamp-specific color map
      * @return smoothed multiplier
      */
-    public int getSmoothColorMultiplier(int[] colormap, int[] swampcolormap);
+    int getSmoothColorMultiplier(int[] colormap, int[] swampcolormap);
+
     /**
      * Step current position in given direction
+     *
      * @param step - direction to step
      */
     void stepPosition(BlockStep step);
+
     /**
      * Step current position in opposite of given direction
      * @param step - direction to unstep

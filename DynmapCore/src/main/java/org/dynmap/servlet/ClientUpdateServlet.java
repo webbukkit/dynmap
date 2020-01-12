@@ -1,21 +1,5 @@
 package org.dynmap.servlet;
 
-import static org.dynmap.JSONUtils.s;
-import static org.dynmap.JSONUtils.g;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.ListIterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.dynmap.Client;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
@@ -24,33 +8,47 @@ import org.dynmap.web.HttpField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.dynmap.JSONUtils.g;
+import static org.dynmap.JSONUtils.s;
+
 @SuppressWarnings("serial")
 public class ClientUpdateServlet extends HttpServlet {
     private DynmapCore core;
-    private Charset cs_utf8 = Charset.forName("UTF-8");
-    
+    private Charset cs_utf8 = StandardCharsets.UTF_8;
+
     public ClientUpdateServlet(DynmapCore plugin) {
         this.core = plugin;
     }
 
     Pattern updatePathPattern = Pattern.compile("/([^/]+)/([0-9]*)");
+
     @SuppressWarnings("unchecked")
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         byte[] bytes;
         HttpSession sess = req.getSession(true);
         String user = (String) sess.getAttribute(LoginServlet.USERID_ATTRIB);
-        if(user == null) user = LoginServlet.USERID_GUEST;
+        if (user == null) user = LoginServlet.USERID_GUEST;
         boolean guest = user.equals(LoginServlet.USERID_GUEST);
-        if(core.getLoginRequired() && guest) {
+        if (core.getLoginRequired() && guest) {
             JSONObject json = new JSONObject();
             s(json, "error", "login-required");
             bytes = json.toJSONString().getBytes(cs_utf8);
-        }
-        else {
+        } else {
             String path = req.getPathInfo();
             Matcher match = updatePathPattern.matcher(path);
-        
+
             if (!match.matches()) {
                 resp.sendError(404, "World not found");
                 return;
@@ -71,7 +69,7 @@ public class ClientUpdateServlet extends HttpServlet {
 
             try {
                 since = Long.parseLong(timeKey);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
             }
 
             JSONObject u = new JSONObject();
@@ -93,19 +91,17 @@ public class ClientUpdateServlet extends HttpServlet {
                 JSONArray newplayers = new JSONArray();
                 u.put("players",  newplayers);
                 if(players != null) {
-                    for(ListIterator<JSONObject> iter = players.listIterator(); iter.hasNext();) {
-                        JSONObject p = iter.next();
+                    for (JSONObject p : (Iterable<JSONObject>) players) {
                         JSONObject newp = new JSONObject();
                         newp.putAll(p);
                         newplayers.add(newp);
                         boolean hide;
-                        if(!guest) {
-                            hide = !core.testIfPlayerVisibleToPlayer(user, (String)newp.get("name"));
-                        }
-                        else {
+                        if (!guest) {
+                            hide = !core.testIfPlayerVisibleToPlayer(user, (String) newp.get("name"));
+                        } else {
                             hide = true;
                         }
-                        if(hide) {
+                        if (hide) {
                             s(newp, "world", "-some-other-bogus-world-");
                             s(newp, "x", 0.0);
                             s(newp, "y", 64.0);
@@ -120,9 +116,8 @@ public class ClientUpdateServlet extends HttpServlet {
             JSONArray newupdates = new JSONArray();
             u.put("updates", newupdates);
             if(updates != null) {
-                for(ListIterator<Client.Update> iter = updates.listIterator(); iter.hasNext();) {
-                    Client.Update update = iter.next();
-                    if(update.timestamp >= since) {
+                for (Client.Update update : (Iterable<Client.Update>) updates) {
+                    if (update.timestamp >= since) {
                         newupdates.add(update);
                     }
                 }

@@ -1,11 +1,6 @@
 package org.dynmap.utils;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
+import java.awt.image.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,15 +10,16 @@ public class DynmapBufferedImage {
     public int[] argb_buf;
     public int width;
     public int height;
-    
+
     /* BufferedImage cache - we use the same things a lot... */
-    private static Object lock = new Object();
-    private static HashMap<Long, LinkedList<DynmapBufferedImage>> imgcache = 
-        new HashMap<Long, LinkedList<DynmapBufferedImage>>(); /* Indexed by resolution - X<<32+Y */
+    private static final Object lock = new Object();
+    private static HashMap<Long, LinkedList<DynmapBufferedImage>> imgcache =
+            new HashMap<>(); /* Indexed by resolution - X<<32+Y */
     private static final int CACHE_LIMIT = 10;
 
     /**
      * Allocate buffered image from pool, if possible
+     *
      * @param x - x dimension
      * @param y - y dimension
      * @return buffer from pool
@@ -58,13 +54,9 @@ public class DynmapBufferedImage {
         img.buf_img.flush();
         img.buf_img = null; /* Toss bufferedimage - seems to hold on to other memory */
         synchronized(lock) {
-            long k = (img.width<<16) + img.height;
-            LinkedList<DynmapBufferedImage> ll = imgcache.get(k);
-            if(ll == null) {
-                ll = new LinkedList<DynmapBufferedImage>();
-                imgcache.put(k, ll);
-            }
-            if(ll.size() < CACHE_LIMIT) {
+            long k = (img.width << 16) + img.height;
+            LinkedList<DynmapBufferedImage> ll = imgcache.computeIfAbsent(k, k1 -> new LinkedList<>());
+            if (ll.size() < CACHE_LIMIT) {
                 ll.add(img);
                 img = null;
             }

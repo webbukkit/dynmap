@@ -1,14 +1,7 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Map;
-
-import org.dynmap.renderer.CustomRenderer;
-import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
-import org.dynmap.renderer.RenderPatchFactory;
 
 /**
  * Simple renderer for handling single and double chests (1.13+)
@@ -16,7 +9,7 @@ import org.dynmap.renderer.RenderPatchFactory;
 public class ChestStateRenderer extends ChestRenderer {
     protected enum ChestData {
         SINGLE_WEST, SINGLE_SOUTH, SINGLE_EAST, SINGLE_NORTH, LEFT_WEST, LEFT_SOUTH, LEFT_EAST, LEFT_NORTH, RIGHT_WEST, RIGHT_SOUTH, RIGHT_EAST, RIGHT_NORTH
-    };
+    }
 
     private ChestData[] byIndex = { 
             ChestData.SINGLE_NORTH, ChestData.RIGHT_NORTH, ChestData.LEFT_NORTH, 

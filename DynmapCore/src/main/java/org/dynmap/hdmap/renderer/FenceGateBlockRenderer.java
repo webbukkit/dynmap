@@ -1,14 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Map;
-
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Map;
 
 public class FenceGateBlockRenderer extends CustomRenderer {
     private static final int TEXTURE_SIDES = 0;
@@ -17,7 +17,7 @@ public class FenceGateBlockRenderer extends CustomRenderer {
 
     // Meshes, indexed by connection combination (bit 2=open(1)/close(0), bit 0-1=0(south),1(west),2(north),3(east))
     protected RenderPatch[][] meshes = new RenderPatch[8][];
-    
+
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
@@ -38,7 +38,7 @@ public class FenceGateBlockRenderer extends CustomRenderer {
     }
     
     private void buildMeshes(RenderPatchFactory rpf) {
-        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        ArrayList<RenderPatch> list = new ArrayList<>();
         for(int dat = 0; dat < 8; dat++) {
             // Add posts
             if ((dat & 1) == 0) {
@@ -85,8 +85,7 @@ public class FenceGateBlockRenderer extends CustomRenderer {
                     addBox(rpf, list, 0.5625, 0.8125, 0.375, 0.5625, 0.875, 1.0);
                     addBox(rpf, list, 0.5625, 0.8125, 0.75, 0.9375, 0.0, 0.125);
                     addBox(rpf, list, 0.5625, 0.8125, 0.75, 0.9375, 0.875, 1.0);
-                }
-                else {
+                } else {
                     addBox(rpf, list, 0.0625, 0.1875, 0.375, 0.9375, 0.0, 0.125);
                     addBox(rpf, list, 0.0625, 0.1875, 0.375, 0.9375, 0.875, 1.0);
                     addBox(rpf, list, 0.1875, 0.4375, 0.375, 0.5625, 0.0, 0.125);
@@ -95,9 +94,9 @@ public class FenceGateBlockRenderer extends CustomRenderer {
                     addBox(rpf, list, 0.1875, 0.4375, 0.75, 0.9375, 0.875, 1.0);
                 }
             }
-            
-            meshes[dat] = list.toArray(new RenderPatch[list.size()]);
-            
+
+            meshes[dat] = list.toArray(new RenderPatch[0]);
+
             list.clear();
         }
     }

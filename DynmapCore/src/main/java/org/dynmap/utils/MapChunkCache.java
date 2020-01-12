@@ -7,28 +7,34 @@ public abstract class MapChunkCache {
         FILL_AIR,
         FILL_STONE_PLAIN,
         FILL_OCEAN
-    };
+    }
+
     public enum ChunkStats {
         CACHED_SNAPSHOT_HIT("Cached"),          // Stats for cached snapshot hits
         LOADED_CHUNKS("Already Loaded"),        // Stats for snapshotting already loaded chunks
         UNLOADED_CHUNKS("Load Required"),     // Stats for chunks requiring load/unload
         UNGENERATED_CHUNKS("Not Generated");    // Stats for chunks requested that did not exist
         private final String label;
+
         ChunkStats(String lbl) {
             label = lbl;
         }
-        public String getLabel() { return label; }
-    };
-    
-    private long timeTotal[] = new long[ChunkStats.values().length];
-    private int cntTotal[] = new int[ChunkStats.values().length];
+
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    private long[] timeTotal = new long[ChunkStats.values().length];
+    private int[] cntTotal = new int[ChunkStats.values().length];
 
     /**
      * Set chunk data type needed
-     * @param blockdata - need block type and data for chunk
-     * @param biome - need biome data
+     *
+     * @param blockdata     - need block type and data for chunk
+     * @param biome         - need biome data
      * @param highestblocky - need highest-block-y data
-     * @param rawbiome - need raw biome temp/rain data
+     * @param rawbiome      - need raw biome temp/rain data
      * @return true if all data types can be retrieved, false if not
      */
     public abstract boolean setChunkDataTypes(boolean blockdata, boolean biome, boolean highestblocky, boolean rawbiome);

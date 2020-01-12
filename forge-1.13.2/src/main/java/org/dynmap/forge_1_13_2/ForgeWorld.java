@@ -1,28 +1,27 @@
 package org.dynmap.forge_1_13_2;
-/**
- * Forge specific implementation of DynmapWorld
+/*
+  Forge specific implementation of DynmapWorld
  */
-import java.util.List;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumLightType;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.EndDimension;
 import net.minecraft.world.dimension.NetherDimension;
 import net.minecraft.world.gen.Heightmap.Type;
-import net.minecraft.world.EnumLightType;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.border.WorldBorder;
-
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 
-public class ForgeWorld extends DynmapWorld
-{
+import java.util.List;
+
+public class ForgeWorld extends DynmapWorld {
     private IWorld world;
     private final boolean skylight;
     private final boolean isnether;
@@ -88,7 +87,7 @@ public class ForgeWorld extends DynmapWorld
     }
     public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle)
     {
-        super(name, (height > maxWorldHeight)?maxWorldHeight:height, sealevel);
+        super(name, Math.min(height, maxWorldHeight), sealevel);
         world = null;
         setTitle(deftitle);
         isnether = nether;
