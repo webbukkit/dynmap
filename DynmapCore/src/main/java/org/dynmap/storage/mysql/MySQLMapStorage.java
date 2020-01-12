@@ -1,43 +1,36 @@
 package org.dynmap.storage.mysql;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.dynmap.*;
+import org.dynmap.MapType.ImageVariant;
+import org.dynmap.PlayerFaces.FaceType;
+import org.dynmap.storage.*;
+import org.dynmap.utils.BufferInputStream;
+import org.dynmap.utils.BufferOutputStream;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.dynmap.DynmapCore;
-import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
-import org.dynmap.MapType;
-import org.dynmap.WebAuthManager;
-import org.dynmap.MapType.ImageVariant;
-import org.dynmap.PlayerFaces.FaceType;
-import org.dynmap.storage.MapStorage;
-import org.dynmap.storage.MapStorageTile;
-import org.dynmap.storage.MapStorageTileEnumCB;
-import org.dynmap.storage.MapStorageBaseTileEnumCB;
-import org.dynmap.storage.MapStorageTileSearchEndCB;
-import org.dynmap.utils.BufferInputStream;
-import org.dynmap.utils.BufferOutputStream;
-
 public class MySQLMapStorage extends MapStorage {
-    private String connectionString;
+    private static final int POOLSIZE = 8;
+    private static final Charset UTF8 = StandardCharsets.UTF_8;
+    private final HashMap<String, Integer> mapKey = new HashMap<>();
+    private HikariDataSource datasource;
     private String userid;
     private String password;
     private String database;
     private String hostname;
     private String prefix = "";
-    private String flags;
     private String tableTiles;
     private String tableMaps;
     private String tableFaces;
@@ -45,228 +38,8 @@ public class MySQLMapStorage extends MapStorage {
     private String tableMarkerFiles;
     private String tableStandaloneFiles;
     private String tableSchemaVersion;
-
     private int port;
-    private static final int POOLSIZE = 5;
-    private Connection[] cpool = new Connection[POOLSIZE];
-    private int cpoolCount = 0;
-    private static final Charset UTF8 = Charset.forName("UTF-8");
-        
-    public class StorageTile extends MapStorageTile {
-        private Integer mapkey;
-        private String uri;
-        protected StorageTile(DynmapWorld world, MapType map, int x, int y,
-                int zoom, ImageVariant var) {
-            super(world, map, x, y, zoom, var);
-            
-            mapkey = getMapKey(world, map, var);
 
-            if (zoom > 0) {
-                uri = map.getPrefix() + var.variantSuffix + "/"+ (x >> 5) + "_" + (y >> 5) + "/" + "zzzzzzzzzzzzzzzz".substring(0, zoom) + "_" + x + "_" + y + "." + map.getImageFormat().getFileExt();
-            }
-            else {
-                uri = map.getPrefix() + var.variantSuffix + "/"+ (x >> 5) + "_" + (y >> 5) + "/" + x + "_" + y + "." + map.getImageFormat().getFileExt();
-            }
-        }
-
-        @Override
-        public boolean exists() {
-            if (mapkey == null) return false;
-            boolean rslt = false;
-            Connection c = null;
-            boolean err = false;
-            try {
-                c = getConnection();
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT HashCode FROM " + tableTiles + " WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
-                rslt = rs.next();
-                rs.close();
-                stmt.close();
-            } catch (SQLException x) {
-                Log.severe("Tile exists error - " + x.getMessage());
-                err = true;
-            } finally {
-                releaseConnection(c, err);
-            }
-            return rslt;
-        }
-
-        @Override
-        public boolean matchesHashCode(long hash) {
-            if (mapkey == null) return false;
-            boolean rslt = false;
-            Connection c = null;
-            boolean err = false;
-            try {
-                c = getConnection();
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT HashCode FROM " + tableTiles + " WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
-                if (rs.next()) {
-                    long v = rs.getLong("HashCode");
-                    rslt = (v == hash);
-                }
-                rs.close();
-                stmt.close();
-            } catch (SQLException x) {
-                Log.severe("Tile matches hash error - " + x.getMessage());
-                err = true;
-            } finally {
-                releaseConnection(c, err);
-            }
-            return rslt;
-        }
-
-        @Override
-        public TileRead read() {
-            if (mapkey == null) return null;
-            TileRead rslt = null;
-            Connection c = null;
-            boolean err = false;
-            try {
-                c = getConnection();
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT HashCode,LastUpdate,Format,Image FROM " + tableTiles + " WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
-                if (rs.next()) {
-                    rslt = new TileRead();
-                    rslt.hashCode = rs.getLong("HashCode");
-                    rslt.lastModified = rs.getLong("LastUpdate");
-                    rslt.format = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
-                    byte[] img = rs.getBytes("Image");
-                    rslt.image = new BufferInputStream(img);
-                }
-                rs.close();
-                stmt.close();
-            } catch (SQLException x) {
-                Log.severe("Tile read error - " + x.getMessage());
-                err = true;
-            } finally {
-                releaseConnection(c, err);
-            }
-            return rslt;
-        }
-
-        @Override
-        public boolean write(long hash, BufferOutputStream encImage) {
-            if (mapkey == null) return false;
-            Connection c = null;
-            boolean err = false;
-            boolean exists = exists();
-            // If delete, and doesn't exist, quit
-            if ((encImage == null) && (!exists)) return false;
-            
-            try {
-                c = getConnection();
-                PreparedStatement stmt;
-                if (encImage == null) { // If delete
-                    stmt = c.prepareStatement("DELETE FROM " + tableTiles + " WHERE MapID=? AND x=? and y=? AND zoom=?;");
-                    stmt.setInt(1, mapkey);
-                    stmt.setInt(2, x);
-                    stmt.setInt(3, y);
-                    stmt.setInt(4, zoom);
-                }
-                else if (exists) {
-                    stmt = c.prepareStatement("UPDATE " + tableTiles + " SET HashCode=?, LastUpdate=?, Format=?, Image=? WHERE MapID=? AND x=? and y=? AND zoom=?;");
-                    stmt.setLong(1, hash);
-                    stmt.setLong(2, System.currentTimeMillis());
-                    stmt.setInt(3, map.getImageFormat().getEncoding().ordinal());
-                    stmt.setBinaryStream(4, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
-                    stmt.setInt(5, mapkey);
-                    stmt.setInt(6, x);
-                    stmt.setInt(7, y);
-                    stmt.setInt(8, zoom);
-                }
-                else {
-                    stmt = c.prepareStatement("INSERT INTO " + tableTiles + " (MapID,x,y,zoom,HashCode,LastUpdate,Format,Image) VALUES (?,?,?,?,?,?,?,?);");
-                    stmt.setInt(1, mapkey);
-                    stmt.setInt(2, x);
-                    stmt.setInt(3, y);
-                    stmt.setInt(4, zoom);
-                    stmt.setLong(5, hash);
-                    stmt.setLong(6, System.currentTimeMillis());
-                    stmt.setInt(7, map.getImageFormat().getEncoding().ordinal());
-                    stmt.setBinaryStream(8, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
-               }
-                stmt.executeUpdate();
-                stmt.close();
-                // Signal update for zoom out
-                if (zoom == 0) {
-                    world.enqueueZoomOutUpdate(this);
-                }
-            } catch (SQLException x) {
-                Log.severe("Tile write error - " + x.getMessage());
-                err = true;
-            } finally {
-                releaseConnection(c, err);
-            }
-            return !err;
-        }
-
-        @Override
-        public boolean getWriteLock() {
-            return MySQLMapStorage.this.getWriteLock(uri);
-        }
-
-        @Override
-        public void releaseWriteLock() {
-            MySQLMapStorage.this.releaseWriteLock(uri);
-        }
-
-        @Override
-        public boolean getReadLock(long timeout) {
-            return MySQLMapStorage.this.getReadLock(uri, timeout);
-        }
-
-        @Override
-        public void releaseReadLock() {
-            MySQLMapStorage.this.releaseReadLock(uri);
-        }
-
-        @Override
-        public void cleanup() {
-        }
-
-        @Override
-        public String getURI() {
-            return uri;
-        }
-
-        @Override
-        public void enqueueZoomOutUpdate() {
-            world.enqueueZoomOutUpdate(this);
-        }
-
-        @Override
-        public MapStorageTile getZoomOutTile() {
-            int xx, yy;
-            int step = 1 << zoom;
-            if(x >= 0)
-                xx = x - (x % (2*step));
-            else
-                xx = x + (x % (2*step));
-            yy = -y;
-            if(yy >= 0)
-                yy = yy - (yy % (2*step));
-            else
-                yy = yy + (yy % (2*step));
-            yy = -yy;
-            return new StorageTile(world, map, xx, yy, zoom+1, var);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof StorageTile) {
-                StorageTile st = (StorageTile) o;
-                return uri.equals(st.uri);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return uri.hashCode();
-        }
-    }
-    
     public MySQLMapStorage() {
     }
 
@@ -275,293 +48,257 @@ public class MySQLMapStorage extends MapStorage {
         if (!super.init(core)) {
             return false;
         }
-        database = core.configuration.getString("storage/database", "dynmap");
-        hostname = core.configuration.getString("storage/hostname", "localhost");
-        port = core.configuration.getInteger("storage/port", 3306);
-        userid = core.configuration.getString("storage/userid", "dynmap");
-        password = core.configuration.getString("storage/password", "dynmap");
-        prefix = core.configuration.getString("storage/prefix", "");
-        flags = core.configuration.getString("storage/flags", "?allowReconnect=true");
-        tableTiles = prefix + "Tiles";
-        tableMaps = prefix + "Maps";
-        tableFaces = prefix + "Faces";
-        tableMarkerIcons = prefix + "MarkerIcons";
-        tableMarkerFiles = prefix + "MarkerFiles";
-        tableStandaloneFiles = prefix + "StandaloneFiles";
-        tableSchemaVersion = prefix + "SchemaVersion";
-        
-        connectionString = "jdbc:mysql://" + hostname + ":" + port + "/" + database + flags;
-        Log.info("Opening MySQL database " + hostname + ":" + port + "/" + database + " as map store");
+        this.database = core.configuration.getString("storage/database", "dynmap");
+        this.hostname = core.configuration.getString("storage/hostname", "localhost");
+        this.port = core.configuration.getInteger("storage/port", 3306);
+        this.userid = core.configuration.getString("storage/userid", "dynmap");
+        this.password = core.configuration.getString("storage/password", "dynmap");
+        this.prefix = core.configuration.getString("storage/prefix", "");
+        String flags = core.configuration.getString("storage/flags", "?allowReconnect=true");
+        this.tableTiles = this.prefix + "Tiles";
+        this.tableMaps = this.prefix + "Maps";
+        this.tableFaces = this.prefix + "Faces";
+        this.tableMarkerIcons = this.prefix + "MarkerIcons";
+        this.tableMarkerFiles = this.prefix + "MarkerFiles";
+        this.tableStandaloneFiles = this.prefix + "StandaloneFiles";
+        this.tableSchemaVersion = this.prefix + "SchemaVersion";
+
+        String connectionString = "jdbc:mysql://" + this.hostname + ":" + this.port + "/" + this.database + flags;
+        Log.info("Opening MySQL database " + this.hostname + ":" + this.port + "/" + this.database + " as map store");
         try {
             Class.forName("com.mysql.jdbc.Driver");
             // Initialize/update tables, if needed
-            if(!initializeTables()) {
+            if (!this.initializeTables()) {
                 return false;
             }
         } catch (ClassNotFoundException cnfx) {
             Log.severe("MySQL-JDBC classes not found - MySQL data source not usable");
-            return false; 
+            return false;
         }
-        return writeConfigPHP(core);
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(connectionString);
+        config.setUsername(this.userid);
+        config.setPassword(this.password);
+        config.setMaximumPoolSize(POOLSIZE);
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        datasource = new HikariDataSource(config);
+
+
+        return this.writeConfigPHP(core);
+    }
+
+    public boolean shutdown() {
+        if (this.datasource != null) {
+            datasource.close();
+            return true;
+        }
+        return false;
     }
 
     private boolean writeConfigPHP(DynmapCore core) {
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(new File(baseStandaloneDir, "MySQL_config.php"));
-            fw.write("<?php\n$dbname = \'");
-            fw.write(WebAuthManager.esc(database));
-            fw.write("\';\n");
-            fw.write("$dbhost = \'");
-            fw.write(WebAuthManager.esc(hostname));
-            fw.write("\';\n");
+        try (FileWriter fw = new FileWriter(new File(this.baseStandaloneDir, "MySQL_config.php"))) {
+            fw.write("<?php\n$dbname = '");
+            fw.write(WebAuthManager.esc(this.database));
+            fw.write("';\n");
+            fw.write("$dbhost = '");
+            fw.write(WebAuthManager.esc(this.hostname));
+            fw.write("';\n");
             fw.write("$dbport = ");
-            fw.write(Integer.toString(port));
+            fw.write(Integer.toString(this.port));
             fw.write(";\n");
-            fw.write("$dbuserid = \'");
-            fw.write(WebAuthManager.esc(userid));
-            fw.write("\';\n");
-            fw.write("$dbpassword = \'");
-            fw.write(WebAuthManager.esc(password));
-            fw.write("\';\n");
-            fw.write("$dbprefix = \'");
-            fw.write(WebAuthManager.esc(prefix));
-            fw.write("\';\n");
+            fw.write("$dbuserid = '");
+            fw.write(WebAuthManager.esc(this.userid));
+            fw.write("';\n");
+            fw.write("$dbpassword = '");
+            fw.write(WebAuthManager.esc(this.password));
+            fw.write("';\n");
+            fw.write("$dbprefix = '");
+            fw.write(WebAuthManager.esc(this.prefix));
+            fw.write("';\n");
             fw.write("$loginenabled = ");
-            fw.write(core.isLoginSupportEnabled()?"true;\n":"false;\n");
+            fw.write(core.isLoginSupportEnabled() ? "true;\n" : "false;\n");
             fw.write("?>\n");
         } catch (IOException iox) {
             Log.severe("Error writing MySQL_config.php", iox);
-            return false; 
-        } finally {
-            if (fw != null) {
-                try { fw.close(); } catch (IOException x) {}
-            }
+            return false;
         }
         return true;
     }
+
     private int getSchemaVersion() {
         int ver = 0;
-        boolean err = false;
         Connection c = null;
         try {
-            c = getConnection();    // Get connection (create DB if needed)
+            c = this.getConnection();    // Get connection (create DB if needed)
             Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery( "SELECT level FROM " + tableSchemaVersion + ";");
+            ResultSet rs = stmt.executeQuery("SELECT level FROM " + this.tableSchemaVersion + ";");
             if (rs.next()) {
                 ver = rs.getInt("level");
             }
             rs.close();
             stmt.close();
-        } catch (SQLException x) {
-            err = true;
+        } catch (SQLException ignored) {
         } finally {
-            if (c != null) { releaseConnection(c, err); }
+            if (c != null) {
+                this.releaseConnection(c);
+            }
         }
         return ver;
     }
-    
+
     private void doUpdate(Connection c, String sql) throws SQLException {
         Statement stmt = c.createStatement();
         stmt.executeUpdate(sql);
         stmt.close();
     }
-    
-    private HashMap<String, Integer> mapKey = new HashMap<String, Integer>();
-    
+
     private void doLoadMaps() {
         Connection c = null;
-        boolean err = false;
-        
-        mapKey.clear();
+
+        this.mapKey.clear();
         // Read the maps table - cache results
         try {
-            c = getConnection();
+            c = this.getConnection();
             Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * from " + tableMaps + ";");
+            ResultSet rs = stmt.executeQuery("SELECT * from " + this.tableMaps + ";");
             while (rs.next()) {
                 int key = rs.getInt("ID");
                 String worldID = rs.getString("WorldID");
                 String mapID = rs.getString("MapID");
                 String variant = rs.getString("Variant");
                 long serverid = rs.getLong("ServerID");
-                if (serverid == serverID) { // One of ours
-                    mapKey.put(worldID + ":" + mapID + ":" + variant, key);
+                if (serverid == this.serverID) { // One of ours
+                    this.mapKey.put(worldID + ":" + mapID + ":" + variant, key);
                 }
             }
             rs.close();
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Error loading map table - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
-            c = null;
+            assert c != null;
+            this.releaseConnection(c);
         }
     }
-    
-    private Integer getMapKey(DynmapWorld w, MapType mt, ImageVariant var) {
+
+    private Integer getMapKey(@NotNull DynmapWorld w, @NotNull MapType mt, @NotNull ImageVariant var) {
         String id = w.getName() + ":" + mt.getPrefix() + ":" + var.toString();
-        synchronized(mapKey) {
-            Integer k = mapKey.get(id);
+        synchronized (this.mapKey) {
+            Integer k = this.mapKey.get(id);
             if (k == null) {    // No hit: new value so we need to add it to table
                 Connection c = null;
-                boolean err = false;
                 try {
-                    c = getConnection();
+                    c = this.getConnection();
                     // Insert row
-                    PreparedStatement stmt = c.prepareStatement("INSERT INTO " + tableMaps + " (WorldID,MapID,Variant,ServerID) VALUES (?, ?, ?, ?);");
+                    PreparedStatement stmt = c.prepareStatement("INSERT INTO " + this.tableMaps + " (WorldID,MapID,Variant,ServerID) VALUES (?, ?, ?, ?);");
                     stmt.setString(1, w.getName());
                     stmt.setString(2, mt.getPrefix());
                     stmt.setString(3, var.toString());
-                    stmt.setLong(4, serverID);
+                    stmt.setLong(4, this.serverID);
                     stmt.executeUpdate();
                     stmt.close();
                     //  Query key assigned
-                    stmt = c.prepareStatement("SELECT ID FROM " + tableMaps + " WHERE WorldID = ? AND MapID = ? AND Variant = ? AND ServerID = ?;");
+                    stmt = c.prepareStatement("SELECT ID FROM " + this.tableMaps + " WHERE WorldID = ? AND MapID = ? AND Variant = ? AND ServerID = ?;");
                     stmt.setString(1, w.getName());
                     stmt.setString(2, mt.getPrefix());
                     stmt.setString(3, var.toString());
-                    stmt.setLong(4, serverID);
+                    stmt.setLong(4, this.serverID);
                     ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
                         k = rs.getInt("ID");
-                        mapKey.put(id, k);
+                        this.mapKey.put(id, k);
                     }
                     rs.close();
                     stmt.close();
                 } catch (SQLException x) {
                     Log.severe("Error updating Maps table - " + x.getMessage());
-                    err = true;
                 } finally {
-                    releaseConnection(c, err);
+                    assert c != null;
+                    this.releaseConnection(c);
                 }
             }
 
             return k;
         }
     }
-    
+
     private boolean initializeTables() {
         Connection c = null;
-        boolean err = false;
-        int version = getSchemaVersion();   // Get the existing schema version for the DB (if any)
+        int version = this.getSchemaVersion();   // Get the existing schema version for the DB (if any)
         // If new, add our tables
         if (version == 0) {
             try {
-                c = getConnection();
-                doUpdate(c, "CREATE TABLE " + tableMaps + " (ID INTEGER PRIMARY KEY AUTO_INCREMENT, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
-                doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image BLOB, PRIMARY KEY(MapID, x, y, zoom))");
-                doUpdate(c, "CREATE TABLE " + tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image BLOB, PRIMARY KEY(PlayerName, TypeID))");
-                doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BLOB)");
-                doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
-                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
-                doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (3)");
+                c = this.getConnection();
+                this.doUpdate(c, "CREATE TABLE " + this.tableMaps + " (ID INTEGER PRIMARY KEY AUTO_INCREMENT, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
+                this.doUpdate(c, "CREATE TABLE " + this.tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image BLOB, PRIMARY KEY(MapID, x, y, zoom))");
+                this.doUpdate(c, "CREATE TABLE " + this.tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image BLOB, PRIMARY KEY(PlayerName, TypeID))");
+                this.doUpdate(c, "CREATE TABLE " + this.tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BLOB)");
+                this.doUpdate(c, "CREATE TABLE " + this.tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
+                this.doUpdate(c, "CREATE TABLE " + this.tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
+                this.doUpdate(c, "CREATE TABLE " + this.tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
+                this.doUpdate(c, "INSERT INTO " + this.tableSchemaVersion + " (level) VALUES (3)");
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
-                err = true;
                 return false;
             } finally {
-                releaseConnection(c, err);
-                c = null;
+                assert c != null;
+                this.releaseConnection(c);
             }
-        }
-        else if (version == 1) {
+        } else if (version == 1) {
             try {
-                c = getConnection();
-                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
-                doUpdate(c, "ALTER TABLE " + tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
-                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 1;");
+                c = this.getConnection();
+                this.doUpdate(c, "CREATE TABLE " + this.tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
+                this.doUpdate(c, "ALTER TABLE " + this.tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
+                this.doUpdate(c, "UPDATE " + this.tableSchemaVersion + " SET level=3 WHERE level = 1;");
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
-                err = true;
                 return false;
             } finally {
-                releaseConnection(c, err);
-                c = null;
+                assert c != null;
+                this.releaseConnection(c);
             }
-        }
-        else if (version == 2) {
+        } else if (version == 2) {
             try {
-                c = getConnection();
-                doUpdate(c, "DELETE FROM " + tableStandaloneFiles + ";");
-                doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " DROP COLUMN Content;");
-                doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " ADD COLUMN Content MEDIUMTEXT;");
-                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 2;");
+                c = this.getConnection();
+                this.doUpdate(c, "DELETE FROM " + this.tableStandaloneFiles + ";");
+                this.doUpdate(c, "ALTER TABLE " + this.tableStandaloneFiles + " DROP COLUMN Content;");
+                this.doUpdate(c, "ALTER TABLE " + this.tableStandaloneFiles + " ADD COLUMN Content MEDIUMTEXT;");
+                this.doUpdate(c, "UPDATE " + this.tableSchemaVersion + " SET level=3 WHERE level = 2;");
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
-                err = true;
                 return false;
             } finally {
-                releaseConnection(c, err);
-                c = null;
+                assert c != null;
+                this.releaseConnection(c);
             }
         }
         // Load maps table - cache results
-        doLoadMaps();
-        
+        this.doLoadMaps();
+
         return true;
     }
-    
+
+    @NotNull
     private Connection getConnection() throws SQLException {
-        Connection c = null;
-        synchronized (cpool) {
-            while (c == null) {
-                for (int i = 0; i < cpool.length; i++) {    // See if available connection
-                    if (cpool[i] != null) { // Found one
-                        c = cpool[i];
-                        cpool[i] = null;
-                        break;
-                    }
-                }
-                if (c == null) {
-                    if (cpoolCount < POOLSIZE) {  // Still more we can have
-                        c = DriverManager.getConnection(connectionString, userid, password);
-                        configureConnection(c);
-                        cpoolCount++;
-                    }
-                    else {
-                        try {
-                            cpool.wait();
-                        } catch (InterruptedException e) {
-                            throw new SQLException("Interruped");
-                        }
-                    }
-                }
-            }
-        }
-        return c;
+        Connection connection = datasource.getConnection();
+        if (connection == null) throw new NullPointerException();
+        return connection;
     }
-    
-    private static Connection configureConnection(Connection conn) throws SQLException {
-        return conn;
-    }
-    
-    private void releaseConnection(Connection c, boolean err) {
-        if (c == null) return;
-        synchronized (cpool) {
-            if (!err)  {  // Find slot to keep it in pool
-                for (int i = 0; i < POOLSIZE; i++) {
-                    if (cpool[i] == null) {
-                        cpool[i] = c;
-                        c = null; // Mark it recovered (no close needed
-                        cpool.notifyAll();
-                        break;
-                    }
-                }
-            }
-            if (c != null) {  // If broken, just toss it
-                try { c.close(); } catch (SQLException x) {}
-                cpoolCount--;   // And reduce count
-                cpool.notifyAll();
-            }
+
+    private void releaseConnection(@NotNull Connection c) {
+        try {
+            c.close();
+        } catch (SQLException ignored) {
         }
     }
 
     @Override
     public MapStorageTile getTile(DynmapWorld world, MapType map, int x, int y,
-            int zoom, ImageVariant var) {
+                                  int zoom, ImageVariant var) {
         return new StorageTile(world, map, x, y, zoom, var);
     }
 
@@ -587,8 +324,8 @@ public class MySQLMapStorage extends MapStorage {
             return null;
         }
         // Now, take the last section and parse out coordinates and zoom
-        String fname = suri[suri.length-1];
-        String[] coord = fname.split("[_\\.]");
+        String fname = suri[suri.length - 1];
+        String[] coord = fname.split("[_.]");
         if (coord.length < 3) { // 3 or 4
             return null;
         }
@@ -599,12 +336,11 @@ public class MySQLMapStorage extends MapStorage {
                 zoom = coord[0].length();
                 x = Integer.parseInt(coord[1]);
                 y = Integer.parseInt(coord[2]);
-            }
-            else {
+            } else {
                 x = Integer.parseInt(coord[0]);
                 y = Integer.parseInt(coord[1]);
             }
-            return getTile(world, mt, x, y, zoom, imgvar);
+            return this.getTile(world, mt, x, y, zoom, imgvar);
         } catch (NumberFormatException nfx) {
             return null;
         }
@@ -617,66 +353,65 @@ public class MySQLMapStorage extends MapStorage {
 
         if (map != null) {
             mtlist = Collections.singletonList(map);
-        }
-        else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+        } else {  // Else, add all directories under world directory (for maps)
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
             for (ImageVariant var : vars) {
-                processEnumMapTiles(world, mt, var, cb, null, null);
+                this.processEnumMapTiles(world, mt, var, cb, null, null);
             }
         }
     }
+
     @Override
     public void enumMapBaseTiles(DynmapWorld world, MapType map, MapStorageBaseTileEnumCB cbBase, MapStorageTileSearchEndCB cbEnd) {
         List<MapType> mtlist;
 
         if (map != null) {
             mtlist = Collections.singletonList(map);
-        }
-        else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+        } else {  // Else, add all directories under world directory (for maps)
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
             for (ImageVariant var : vars) {
-                processEnumMapTiles(world, mt, var, null, cbBase, cbEnd);
+                this.processEnumMapTiles(world, mt, var, null, cbBase, cbEnd);
             }
         }
     }
+
     private void processEnumMapTiles(DynmapWorld world, MapType map, ImageVariant var, MapStorageTileEnumCB cb, MapStorageBaseTileEnumCB cbBase, MapStorageTileSearchEndCB cbEnd) {
         Connection c = null;
-        boolean err = false;
-        Integer mapkey = getMapKey(world, map, var);
+        Integer mapkey = this.getMapKey(world, map, var);
         if (mapkey == null) {
-            if(cbEnd != null)
+            if (cbEnd != null)
                 cbEnd.searchEnded();
             return;
         }
         try {
-            c = getConnection();
+            c = this.getConnection();
             // Query tiles for given mapkey
             Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM " + tableTiles + " WHERE MapID=" + mapkey + ";");
+            ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM " + this.tableTiles + " WHERE MapID=" + mapkey + ";");
             while (rs.next()) {
                 StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
                 final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
-                if(cb != null)
+                if (cb != null)
                     cb.tileFound(st, encoding);
-                if(cbBase != null && st.zoom == 0)
+                if (cbBase != null && st.zoom == 0)
                     cbBase.tileFound(st, encoding);
                 st.cleanup();
             }
-            if(cbEnd != null)
+            if (cbEnd != null)
                 cbEnd.searchEnded();
             rs.close();
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Tile enum error - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
     }
 
@@ -686,61 +421,58 @@ public class MySQLMapStorage extends MapStorage {
 
         if (map != null) {
             mtlist = Collections.singletonList(map);
-        }
-        else {  // Else, add all directories under world directory (for maps)
-            mtlist = new ArrayList<MapType>(world.maps);
+        } else {  // Else, add all directories under world directory (for maps)
+            mtlist = new ArrayList<>(world.maps);
         }
         for (MapType mt : mtlist) {
             ImageVariant[] vars = mt.getVariants();
             for (ImageVariant var : vars) {
-                processPurgeMapTiles(world, mt, var);
+                this.processPurgeMapTiles(world, mt, var);
             }
         }
     }
+
     private void processPurgeMapTiles(DynmapWorld world, MapType map, ImageVariant var) {
         Connection c = null;
-        boolean err = false;
-        Integer mapkey = getMapKey(world, map, var);
+        Integer mapkey = this.getMapKey(world, map, var);
         if (mapkey == null) return;
         try {
-            c = getConnection();
+            c = this.getConnection();
             // Query tiles for given mapkey
             Statement stmt = c.createStatement();
-            stmt.executeUpdate("DELETE FROM " + tableTiles + " WHERE MapID=" + mapkey + ";");
+            stmt.executeUpdate("DELETE FROM " + this.tableTiles + " WHERE MapID=" + mapkey + ";");
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Tile purge error - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
     }
 
     @Override
     public boolean setPlayerFaceImage(String playername, FaceType facetype,
-            BufferOutputStream encImage) {
+                                      BufferOutputStream encImage) {
         Connection c = null;
         boolean err = false;
-        boolean exists = hasPlayerFaceImage(playername, facetype);
+        boolean exists = this.hasPlayerFaceImage(playername, facetype);
         // If delete, and doesn't exist, quit
         if ((encImage == null) && (!exists)) return false;
-        
+
         try {
-            c = getConnection();
+            c = this.getConnection();
             PreparedStatement stmt;
             if (encImage == null) { // If delete
-                stmt = c.prepareStatement("DELETE FROM " + tableFaces + " WHERE PlayerName=? AND TypeIDx=?;");
+                stmt = c.prepareStatement("DELETE FROM " + this.tableFaces + " WHERE PlayerName=? AND TypeIDx=?;");
                 stmt.setString(1, playername);
                 stmt.setInt(2, facetype.typeID);
-            }
-            else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + tableFaces + " SET Image=? WHERE PlayerName=? AND TypeID=?;");
+            } else if (exists) {
+                stmt = c.prepareStatement("UPDATE " + this.tableFaces + " SET Image=? WHERE PlayerName=? AND TypeID=?;");
                 stmt.setBinaryStream(1, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
                 stmt.setString(2, playername);
                 stmt.setInt(3, facetype.typeID);
-            }
-            else {
-                stmt = c.prepareStatement("INSERT INTO " + tableFaces + " (PlayerName,TypeID,Image) VALUES (?,?,?);");
+            } else {
+                stmt = c.prepareStatement("INSERT INTO " + this.tableFaces + " (PlayerName,TypeID,Image) VALUES (?,?,?);");
                 stmt.setString(1, playername);
                 stmt.setInt(2, facetype.typeID);
                 stmt.setBinaryStream(3, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
@@ -751,20 +483,20 @@ public class MySQLMapStorage extends MapStorage {
             Log.severe("Face write error - " + x.getMessage());
             err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
         return !err;
     }
 
     @Override
     public BufferInputStream getPlayerFaceImage(String playername,
-            FaceType facetype) {
+                                                FaceType facetype) {
         Connection c = null;
-        boolean err = false;
         BufferInputStream image = null;
         try {
-            c = getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM " + tableFaces + " WHERE PlayerName=? AND TypeID=?;");
+            c = this.getConnection();
+            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM " + this.tableFaces + " WHERE PlayerName=? AND TypeID=?;");
             stmt.setString(1, playername);
             stmt.setInt(2, facetype.typeID);
             ResultSet rs = stmt.executeQuery();
@@ -776,9 +508,9 @@ public class MySQLMapStorage extends MapStorage {
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Face read error - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
         return image;
     }
@@ -786,11 +518,10 @@ public class MySQLMapStorage extends MapStorage {
     @Override
     public boolean hasPlayerFaceImage(String playername, FaceType facetype) {
         Connection c = null;
-        boolean err = false;
         boolean exists = false;
         try {
-            c = getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT TypeID FROM " + tableFaces + " WHERE PlayerName=? AND TypeID=?;");
+            c = this.getConnection();
+            PreparedStatement stmt = c.prepareStatement("SELECT TypeID FROM " + this.tableFaces + " WHERE PlayerName=? AND TypeID=?;");
             stmt.setString(1, playername);
             stmt.setInt(2, facetype.typeID);
             ResultSet rs = stmt.executeQuery();
@@ -801,9 +532,9 @@ public class MySQLMapStorage extends MapStorage {
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Face exists error - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
         return exists;
     }
@@ -814,11 +545,11 @@ public class MySQLMapStorage extends MapStorage {
         boolean err = false;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        
+
         try {
-            c = getConnection();
+            c = this.getConnection();
             boolean exists = false;
-            stmt = c.prepareStatement("SELECT IconName FROM " + tableMarkerIcons + " WHERE IconName=?;");
+            stmt = c.prepareStatement("SELECT IconName FROM " + this.tableMarkerIcons + " WHERE IconName=?;");
             stmt.setString(1, markerid);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -831,17 +562,15 @@ public class MySQLMapStorage extends MapStorage {
             if (encImage == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
-                stmt = c.prepareStatement("DELETE FROM " + tableMarkerIcons + " WHERE IconName=?;");
+                stmt = c.prepareStatement("DELETE FROM " + this.tableMarkerIcons + " WHERE IconName=?;");
                 stmt.setString(1, markerid);
                 stmt.executeUpdate();
-            }
-            else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + tableMarkerIcons + " SET Image=? WHERE IconName=?;");
+            } else if (exists) {
+                stmt = c.prepareStatement("UPDATE " + this.tableMarkerIcons + " SET Image=? WHERE IconName=?;");
                 stmt.setBinaryStream(1, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
                 stmt.setString(2, markerid);
-            }
-            else {
-                stmt = c.prepareStatement("INSERT INTO " + tableMarkerIcons + " (IconName,Image) VALUES (?,?);");
+            } else {
+                stmt = c.prepareStatement("INSERT INTO " + this.tableMarkerIcons + " (IconName,Image) VALUES (?,?);");
                 stmt.setString(1, markerid);
                 stmt.setBinaryStream(2, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
             }
@@ -850,9 +579,20 @@ public class MySQLMapStorage extends MapStorage {
             Log.severe("Marker write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
-            releaseConnection(c, err);
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            assert c != null;
+            this.releaseConnection(c);
         }
         return !err;
     }
@@ -860,11 +600,10 @@ public class MySQLMapStorage extends MapStorage {
     @Override
     public BufferInputStream getMarkerImage(String markerid) {
         Connection c = null;
-        boolean err = false;
         BufferInputStream image = null;
         try {
-            c = getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM " + tableMarkerIcons + " WHERE IconName=?;");
+            c = this.getConnection();
+            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM " + this.tableMarkerIcons + " WHERE IconName=?;");
             stmt.setString(1, markerid);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -875,9 +614,9 @@ public class MySQLMapStorage extends MapStorage {
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Marker read error - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
         return image;
     }
@@ -889,9 +628,9 @@ public class MySQLMapStorage extends MapStorage {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            c = getConnection();
+            c = this.getConnection();
             boolean exists = false;
-            stmt = c.prepareStatement("SELECT FileName FROM " + tableMarkerFiles + " WHERE FileName=?;");
+            stmt = c.prepareStatement("SELECT FileName FROM " + this.tableMarkerFiles + " WHERE FileName=?;");
             stmt.setString(1, world);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -904,17 +643,15 @@ public class MySQLMapStorage extends MapStorage {
             if (content == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
-                stmt = c.prepareStatement("DELETE FROM " + tableMarkerFiles + " WHERE FileName=?;");
+                stmt = c.prepareStatement("DELETE FROM " + this.tableMarkerFiles + " WHERE FileName=?;");
                 stmt.setString(1, world);
                 stmt.executeUpdate();
-            }
-            else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + tableMarkerFiles + " SET Content=? WHERE FileName=?;");
+            } else if (exists) {
+                stmt = c.prepareStatement("UPDATE " + this.tableMarkerFiles + " SET Content=? WHERE FileName=?;");
                 stmt.setBytes(1, content.getBytes(UTF8));
                 stmt.setString(2, world);
-            }
-            else {
-                stmt = c.prepareStatement("INSERT INTO " + tableMarkerFiles + " (FileName,Content) VALUES (?,?);");
+            } else {
+                stmt = c.prepareStatement("INSERT INTO " + this.tableMarkerFiles + " (FileName,Content) VALUES (?,?);");
                 stmt.setString(1, world);
                 stmt.setBytes(2, content.getBytes(UTF8));
             }
@@ -923,9 +660,20 @@ public class MySQLMapStorage extends MapStorage {
             Log.severe("Marker file write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
-            releaseConnection(c, err);
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            assert c != null;
+            this.releaseConnection(c);
         }
         return !err;
     }
@@ -933,11 +681,10 @@ public class MySQLMapStorage extends MapStorage {
     @Override
     public String getMarkerFile(String world) {
         Connection c = null;
-        boolean err = false;
         String content = null;
         try {
-            c = getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Content FROM " + tableMarkerFiles + " WHERE FileName=?;");
+            c = this.getConnection();
+            PreparedStatement stmt = c.prepareStatement("SELECT Content FROM " + this.tableMarkerFiles + " WHERE FileName=?;");
             stmt.setString(1, world);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -948,9 +695,9 @@ public class MySQLMapStorage extends MapStorage {
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Marker file read error - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
         return content;
     }
@@ -958,7 +705,7 @@ public class MySQLMapStorage extends MapStorage {
     @Override
     public String getMarkersURI(boolean login_enabled) {
         return "standalone/MySQL_markers.php?marker=";
-   }
+    }
 
     @Override
     public String getTilesURI(boolean login_enabled) {
@@ -969,7 +716,7 @@ public class MySQLMapStorage extends MapStorage {
     public String getConfigurationJSONURI(boolean login_enabled) {
         return "standalone/MySQL_configuration.php"; // ?serverid={serverid}";
     }
-    
+
     @Override
     public String getUpdateJSONURI(boolean login_enabled) {
         return "standalone/MySQL_update.php?world={world}&ts={timestamp}"; // &serverid={serverid}";
@@ -983,13 +730,12 @@ public class MySQLMapStorage extends MapStorage {
     @Override
     public BufferInputStream getStandaloneFile(String fileid) {
         Connection c = null;
-        boolean err = false;
         BufferInputStream content = null;
         try {
-            c = getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Content FROM " + tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
+            c = this.getConnection();
+            PreparedStatement stmt = c.prepareStatement("SELECT Content FROM " + this.tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
             stmt.setString(1, fileid);
-            stmt.setLong(2, serverID);
+            stmt.setLong(2, this.serverID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 byte[] img = rs.getBytes("Content");
@@ -999,9 +745,9 @@ public class MySQLMapStorage extends MapStorage {
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Standalone file read error - " + x.getMessage());
-            err = true;
         } finally {
-            releaseConnection(c, err);
+            assert c != null;
+            this.releaseConnection(c);
         }
         return content;
     }
@@ -1013,11 +759,11 @@ public class MySQLMapStorage extends MapStorage {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            c = getConnection();
+            c = this.getConnection();
             boolean exists = false;
-            stmt = c.prepareStatement("SELECT FileName FROM " + tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
+            stmt = c.prepareStatement("SELECT FileName FROM " + this.tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
             stmt.setString(1, fileid);
-            stmt.setLong(2, serverID);
+            stmt.setLong(2, this.serverID);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 exists = true;
@@ -1029,21 +775,19 @@ public class MySQLMapStorage extends MapStorage {
             if (content == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return true;
-                stmt = c.prepareStatement("DELETE FROM " + tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
+                stmt = c.prepareStatement("DELETE FROM " + this.tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
                 stmt.setString(1, fileid);
-                stmt.setLong(2, serverID);
+                stmt.setLong(2, this.serverID);
                 stmt.executeUpdate();
-            }
-            else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + tableStandaloneFiles + " SET Content=? WHERE FileName=? AND ServerID=?;");
+            } else if (exists) {
+                stmt = c.prepareStatement("UPDATE " + this.tableStandaloneFiles + " SET Content=? WHERE FileName=? AND ServerID=?;");
                 stmt.setBinaryStream(1, new BufferInputStream(content.buf, content.len), content.len);
                 stmt.setString(2, fileid);
-                stmt.setLong(3, serverID);
-            }
-            else {
-                stmt = c.prepareStatement("INSERT INTO " + tableStandaloneFiles + " (FileName,ServerID,Content) VALUES (?,?,?);");
+                stmt.setLong(3, this.serverID);
+            } else {
+                stmt = c.prepareStatement("INSERT INTO " + this.tableStandaloneFiles + " (FileName,ServerID,Content) VALUES (?,?,?);");
                 stmt.setString(1, fileid);
-                stmt.setLong(2, serverID);
+                stmt.setLong(2, this.serverID);
                 stmt.setBinaryStream(3, new BufferInputStream(content.buf, content.len), content.len);
             }
             stmt.executeUpdate();
@@ -1051,31 +795,258 @@ public class MySQLMapStorage extends MapStorage {
             Log.severe("Standalone file write error - " + x.getMessage());
             err = true;
         } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
-            if (stmt != null) { try { stmt.close(); } catch (SQLException sx) {} }
-            releaseConnection(c, err);
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException ignored) {
+                }
+            }
+            assert c != null;
+            this.releaseConnection(c);
         }
         return !err;
     }
+
     @Override
     public boolean wrapStandaloneJSON(boolean login_enabled) {
         return false;
     }
+
     @Override
     public boolean wrapStandalonePHP() {
         return false;
     }
+
     @Override
     public String getStandaloneLoginURI() {
         return "standalone/MySQL_login.php";
     }
+
     @Override
     public String getStandaloneRegisterURI() {
         return "standalone/MySQL_register.php";
     }
+
     @Override
     public void setLoginEnabled(DynmapCore core) {
-        writeConfigPHP(core);
+        this.writeConfigPHP(core);
+    }
+
+    public class StorageTile extends MapStorageTile {
+        private Integer mapkey;
+        private String uri;
+
+        protected StorageTile(DynmapWorld world, MapType map, int x, int y,
+                              int zoom, ImageVariant var) {
+            super(world, map, x, y, zoom, var);
+
+            this.mapkey = MySQLMapStorage.this.getMapKey(world, map, var);
+
+            if (zoom > 0) {
+                this.uri = map.getPrefix() + var.variantSuffix + "/" + (x >> 5) + "_" + (y >> 5) + "/" + "zzzzzzzzzzzzzzzz".substring(0, zoom) + "_" + x + "_" + y + "." + map.getImageFormat().getFileExt();
+            } else {
+                this.uri = map.getPrefix() + var.variantSuffix + "/" + (x >> 5) + "_" + (y >> 5) + "/" + x + "_" + y + "." + map.getImageFormat().getFileExt();
+            }
+        }
+
+        @Override
+        public boolean exists() {
+            if (this.mapkey == null) return false;
+            boolean rslt = false;
+            Connection c = null;
+            try {
+                c = MySQLMapStorage.this.getConnection();
+                Statement stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT HashCode FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=" + this.mapkey + " AND x=" + this.x + " AND y=" + this.y + " AND zoom=" + this.zoom + ";");
+                rslt = rs.next();
+                rs.close();
+                stmt.close();
+            } catch (SQLException x) {
+                Log.severe("Tile exists error - " + x.getMessage());
+            } finally {
+                assert c != null;
+                MySQLMapStorage.this.releaseConnection(c);
+            }
+            return rslt;
+        }
+
+        @Override
+        public boolean matchesHashCode(long hash) {
+            if (this.mapkey == null) return false;
+            boolean rslt = false;
+            Connection c = null;
+            try {
+                c = MySQLMapStorage.this.getConnection();
+                Statement stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT HashCode FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=" + this.mapkey + " AND x=" + this.x + " AND y=" + this.y + " AND zoom=" + this.zoom + ";");
+                if (rs.next()) {
+                    long v = rs.getLong("HashCode");
+                    rslt = (v == hash);
+                }
+                rs.close();
+                stmt.close();
+            } catch (SQLException x) {
+                Log.severe("Tile matches hash error - " + x.getMessage());
+            } finally {
+                assert c != null;
+                MySQLMapStorage.this.releaseConnection(c);
+            }
+            return rslt;
+        }
+
+        @Override
+        public TileRead read() {
+            if (this.mapkey == null) return null;
+            TileRead rslt = null;
+            Connection c = null;
+            try {
+                c = MySQLMapStorage.this.getConnection();
+                Statement stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT HashCode,LastUpdate,Format,Image FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=" + this.mapkey + " AND x=" + this.x + " AND y=" + this.y + " AND zoom=" + this.zoom + ";");
+                if (rs.next()) {
+                    rslt = new TileRead();
+                    rslt.hashCode = rs.getLong("HashCode");
+                    rslt.lastModified = rs.getLong("LastUpdate");
+                    rslt.format = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
+                    byte[] img = rs.getBytes("Image");
+                    rslt.image = new BufferInputStream(img);
+                }
+                rs.close();
+                stmt.close();
+            } catch (SQLException x) {
+                Log.severe("Tile read error - " + x.getMessage());
+            } finally {
+                assert c != null;
+                MySQLMapStorage.this.releaseConnection(c);
+            }
+            return rslt;
+        }
+
+        @Override
+        public boolean write(long hash, BufferOutputStream encImage) {
+            if (this.mapkey == null) return false;
+            Connection c = null;
+            boolean err = false;
+            boolean exists = this.exists();
+            // If delete, and doesn't exist, quit
+            if ((encImage == null) && (!exists)) return false;
+
+            try {
+                c = MySQLMapStorage.this.getConnection();
+                PreparedStatement stmt;
+                if (encImage == null) { // If delete
+                    stmt = c.prepareStatement("DELETE FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=? AND x=? and y=? AND zoom=?;");
+                    stmt.setInt(1, this.mapkey);
+                    stmt.setInt(2, this.x);
+                    stmt.setInt(3, this.y);
+                    stmt.setInt(4, this.zoom);
+                } else if (exists) {
+                    stmt = c.prepareStatement("UPDATE " + MySQLMapStorage.this.tableTiles + " SET HashCode=?, LastUpdate=?, Format=?, Image=? WHERE MapID=? AND x=? and y=? AND zoom=?;");
+                    stmt.setLong(1, hash);
+                    stmt.setLong(2, System.currentTimeMillis());
+                    stmt.setInt(3, this.map.getImageFormat().getEncoding().ordinal());
+                    stmt.setBinaryStream(4, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
+                    stmt.setInt(5, this.mapkey);
+                    stmt.setInt(6, this.x);
+                    stmt.setInt(7, this.y);
+                    stmt.setInt(8, this.zoom);
+                } else {
+                    stmt = c.prepareStatement("INSERT INTO " + MySQLMapStorage.this.tableTiles + " (MapID,x,y,zoom,HashCode,LastUpdate,Format,Image) VALUES (?,?,?,?,?,?,?,?);");
+                    stmt.setInt(1, this.mapkey);
+                    stmt.setInt(2, this.x);
+                    stmt.setInt(3, this.y);
+                    stmt.setInt(4, this.zoom);
+                    stmt.setLong(5, hash);
+                    stmt.setLong(6, System.currentTimeMillis());
+                    stmt.setInt(7, this.map.getImageFormat().getEncoding().ordinal());
+                    stmt.setBinaryStream(8, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
+                }
+                stmt.executeUpdate();
+                stmt.close();
+                // Signal update for zoom out
+                if (this.zoom == 0) {
+                    this.world.enqueueZoomOutUpdate(this);
+                }
+            } catch (SQLException x) {
+                Log.severe("Tile write error - " + x.getMessage());
+                err = true;
+            } finally {
+                assert c != null;
+                MySQLMapStorage.this.releaseConnection(c);
+            }
+            return !err;
+        }
+
+        @Override
+        public boolean getWriteLock() {
+            return MySQLMapStorage.this.getWriteLock(this.uri);
+        }
+
+        @Override
+        public void releaseWriteLock() {
+            MySQLMapStorage.this.releaseWriteLock(this.uri);
+        }
+
+        @Override
+        public boolean getReadLock(long timeout) {
+            return MySQLMapStorage.this.getReadLock(this.uri, timeout);
+        }
+
+        @Override
+        public void releaseReadLock() {
+            MySQLMapStorage.this.releaseReadLock(this.uri);
+        }
+
+        @Override
+        public void cleanup() {
+        }
+
+        @Override
+        public String getURI() {
+            return this.uri;
+        }
+
+        @Override
+        public void enqueueZoomOutUpdate() {
+            this.world.enqueueZoomOutUpdate(this);
+        }
+
+        @Override
+        public MapStorageTile getZoomOutTile() {
+            int xx, yy;
+            int step = 1 << this.zoom;
+            if (this.x >= 0)
+                xx = this.x - (this.x % (2 * step));
+            else
+                xx = this.x + (this.x % (2 * step));
+            yy = -this.y;
+            if (yy >= 0)
+                yy = yy - (yy % (2 * step));
+            else
+                yy = yy + (yy % (2 * step));
+            yy = -yy;
+            return new StorageTile(this.world, this.map, xx, yy, this.zoom + 1, this.var);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof StorageTile) {
+                StorageTile st = (StorageTile) o;
+                return this.uri.equals(st.uri);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.uri.hashCode();
+        }
     }
 
 }

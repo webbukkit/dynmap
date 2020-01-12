@@ -3,6 +3,10 @@
 .project
 .settings
 
+# IDEA stuff
+.idea
+*.iml
+
 # netbeans
 /nbproject
 

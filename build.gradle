@@ -49,3 +49,7 @@ clean {
 
 task setupCIWorkspace {
 }
+
+dependencies {
+    implementation 'org.jetbrains:annotations:15.0'
+}

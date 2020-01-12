@@ -7,6 +7,8 @@ dependencies {
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'org.yaml:snakeyaml:1.23'
     compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
+    implementation 'org.jetbrains:annotations:15.0'
+    compile 'com.zaxxer:HikariCP:3.4.2'
 }
 
 processResources {
@@ -39,16 +41,19 @@ shadowJar {
         include(dependency('org.eclipse.jetty::'))
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
         include(dependency(':DynmapCoreAPI'))
+        include(dependency('org.jetbrains:annotations:15.0'))
+        include(dependency('com.zaxxer:HikariCP:2.4.13'))
 	}
 	relocate('org.json.simple', 'org.dynmap.json.simple')
 	relocate('org.yaml.snakeyaml', 'org.dynmap.snakeyaml')
 	relocate('org.eclipse.jetty', 'org.dynmap.jetty')
 	relocate('org.owasp.html', 'org.dynmap.org.owasp.html')
 	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
+    relocate('com.zaxxer.hikari', 'org.dynmap.hikari')
     destinationDir = file '../target'
     classifier = ''
 }
 
 artifacts {
-    archives shadowJar
+    archives shadowJar as Object
 }

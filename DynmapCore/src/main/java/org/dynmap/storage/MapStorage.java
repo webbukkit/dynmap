@@ -1,37 +1,32 @@
 package org.dynmap.storage;
 
+import org.dynmap.*;
+import org.dynmap.utils.BufferInputStream;
+import org.dynmap.utils.BufferOutputStream;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.zip.CRC32;
 
-import org.dynmap.DynmapCore;
-import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
-import org.dynmap.MapType;
-import org.dynmap.PlayerFaces;
-import org.dynmap.WebAuthManager;
-import org.dynmap.utils.BufferInputStream;
-import org.dynmap.utils.BufferOutputStream;
-
 /**
  * Generic interface for map data storage (image tiles, and associated hash codes)
  */
 public abstract class MapStorage {
-    private static Object lock = new Object();
-    private static HashMap<String, Integer> filelocks = new HashMap<String, Integer>();
-    private static final Integer WRITELOCK = new Integer(-1);
+    private static final Object lock = new Object();
+    private static final HashMap<String, Integer> filelocks = new HashMap<>();
+    private static final Integer WRITELOCK = -1;
     protected File baseStandaloneDir;
 
     protected long serverID;
-    
+
     protected MapStorage() {
         this.serverID = 0;
     }
-    
+
     // Proper modulo - versus the bogus Java behavior of negative modulo for negative numerators
-    protected static final int modulo(int x, int y) {
+    protected static int modulo(int x, int y) {
         return ((x % y) + y) % y;
     }
 
@@ -47,15 +42,25 @@ public abstract class MapStorage {
         }
         return true;
     }
-    
+
+    /**
+     * Shutdown
+     *
+     * @return true if success
+     */
+    public boolean shutdown() {
+        return true;
+    }
+
     /**
      * Set server ID for map storage instance
+     *
      * @param serverID - server ID (default is zero)
      */
     public void setServerID(long serverID) {
         this.serverID = serverID;
     }
-    
+
     /**
      * Get tile reference for given tile
      *
@@ -182,7 +187,6 @@ public abstract class MapStorage {
         }
         if (accum > 0) {    // Remainder?
             crc32.update(crcworkbuf, 0, accum);
-            accum = 0;
         }
         return crc32.getValue();
     }
@@ -242,9 +246,9 @@ public abstract class MapStorage {
         String p = wpath.getAbsolutePath();
         if(!p.endsWith("/"))
             p += "/";
-        sb.append("$webpath = \'");
+        sb.append("$webpath = '");
         sb.append(WebAuthManager.esc(p));
-        sb.append("\';\n");
+        sb.append("';\n");
     }
 
     private static final int RETRY_LIMIT = 4;
@@ -265,8 +269,8 @@ public abstract class MapStorage {
         getWriteLock(fileid);
         while (!done) {
             try {
-                if (fnew.exists()) {
-                    fnew.delete();
+                if (fnew.exists() && !fnew.delete()) {
+                    throw new IOException();
                 }
                 if (content != null) {
                     fos = new RandomAccessFile(fnew, "rw");
@@ -276,7 +280,10 @@ public abstract class MapStorage {
                 done = true;
             } catch (IOException ioe) {
                 if(retrycnt < RETRY_LIMIT) {
-                    try { Thread.sleep(20 * (1 << retrycnt)); } catch (InterruptedException ix) {}
+                    try {
+                        Thread.sleep(20 * (1 << retrycnt));
+                    } catch (InterruptedException ignored) {
+                    }
                     retrycnt++;
                 }
                 else {
@@ -287,16 +294,18 @@ public abstract class MapStorage {
                 if(fos != null) {
                     try {
                         fos.close();
-                    } catch (IOException iox) {
+                    } catch (IOException ignored) {
                     }
                     fos = null;
                 }
                 if(good) {
-                    f.renameTo(fold);
-                    if (content != null) {
-                        fnew.renameTo(f);
+                    try {
+                        if (!f.renameTo(fold) && content != null && !fnew.renameTo(f) && !fold.delete())
+                            throw new IOException();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    fold.delete();
+
                 }
             }
         }
@@ -317,7 +326,7 @@ public abstract class MapStorage {
         File f = new File(baseStandaloneDir, fileid);
         if (getReadLock(fileid, 5000)) {
             int retrycnt = 0;
-            if (f.exists() == false) 
+            if (!f.exists())
                 done = true;
             while (!done) {
                 byte[] b = new byte[(int) f.length()];
@@ -328,7 +337,10 @@ public abstract class MapStorage {
                     bis = new BufferInputStream(b);
                 } catch (IOException ioe) {
                     if(retrycnt < RETRY_LIMIT) {
-                        try { Thread.sleep(20 * (1 << retrycnt)); } catch (InterruptedException ix) {}
+                        try {
+                            Thread.sleep(20 * (1 << retrycnt));
+                        } catch (InterruptedException ignored) {
+                        }
                         retrycnt++;
                     }
                     else {
@@ -339,7 +351,7 @@ public abstract class MapStorage {
                     if(fos != null) {
                         try {
                             fos.close();
-                        } catch (IOException iox) {
+                        } catch (IOException ignored) {
                         }
                         fos = null;
                     }
@@ -396,11 +408,11 @@ public abstract class MapStorage {
             while(!got_lock) {
                 Integer lockcnt = filelocks.get(baseFilename);    /* Get lock count */
                 if(lockcnt == null) {
-                    filelocks.put(baseFilename, Integer.valueOf(1));  /* First lock */
+                    filelocks.put(baseFilename, 1);  /* First lock */
                     got_lock = true;
                 }
                 else if(!lockcnt.equals(WRITELOCK)) {   /* Other read locks */
-                    filelocks.put(baseFilename, Integer.valueOf(lockcnt+1));
+                    filelocks.put(baseFilename, lockcnt + 1);
                     got_lock = true;
                 }
                 else {  /* Write lock in place */
@@ -434,7 +446,7 @@ public abstract class MapStorage {
             else if(lockcnt.equals(WRITELOCK))
                 Log.severe("releaseReadLock(" + baseFilename + ") on write-locked file");
             else if(lockcnt > 1) {
-                filelocks.put(baseFilename, Integer.valueOf(lockcnt-1));
+                filelocks.put(baseFilename, lockcnt - 1);
             }
             else {
                 filelocks.remove(baseFilename);   /* Remove lock */
