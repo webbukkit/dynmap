@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MySQLMapStorage extends MapStorage {
-    private static final int POOLSIZE = 8;
     private static final Charset UTF8 = StandardCharsets.UTF_8;
     private final HashMap<String, Integer> mapKey = new HashMap<>();
     private HikariDataSource datasource;
@@ -39,6 +38,7 @@ public class MySQLMapStorage extends MapStorage {
     private String tableStandaloneFiles;
     private String tableSchemaVersion;
     private int port;
+    private int poolSize;
 
     public MySQLMapStorage() {
     }
@@ -55,6 +55,7 @@ public class MySQLMapStorage extends MapStorage {
         this.password = core.configuration.getString("storage/password", "dynmap");
         this.prefix = core.configuration.getString("storage/prefix", "");
         String flags = core.configuration.getString("storage/flags", "?allowReconnect=true");
+        this.poolSize = core.configuration.getInteger("storage/poolSize", 8);
         this.tableTiles = this.prefix + "Tiles";
         this.tableMaps = this.prefix + "Maps";
         this.tableFaces = this.prefix + "Faces";
@@ -80,7 +81,7 @@ public class MySQLMapStorage extends MapStorage {
         config.setJdbcUrl(connectionString);
         config.setUsername(this.userid);
         config.setPassword(this.password);
-        config.setMaximumPoolSize(POOLSIZE);
+        config.setMaximumPoolSize(this.poolSize);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
