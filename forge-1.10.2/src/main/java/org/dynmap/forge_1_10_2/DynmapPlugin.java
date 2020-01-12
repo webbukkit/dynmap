@@ -1,39 +1,16 @@
 package org.dynmap.forge_1_10_2;
 
-import java.io.File;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.CommandHandler;
-import net.minecraft.command.ICommandManager;
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -71,48 +48,35 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapChunk;
-import org.dynmap.DynmapCommonAPIListener;
-import org.dynmap.DynmapCore;
-import org.dynmap.DynmapLocation;
-import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
-import org.dynmap.MapManager;
-import org.dynmap.PlayerList;
+import org.dynmap.*;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
+import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
-import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.debug.Debug;
-import org.dynmap.forge_1_10_2.DmapCommand;
-import org.dynmap.forge_1_10_2.DmarkerCommand;
-import org.dynmap.forge_1_10_2.DynmapCommand;
-import org.dynmap.forge_1_10_2.DynmapMod;
 import org.dynmap.forge_1_10_2.permissions.FilePermissions;
 import org.dynmap.forge_1_10_2.permissions.OpPermissions;
 import org.dynmap.forge_1_10_2.permissions.PermissionProvider;
-import org.dynmap.forge_1_10_2.ForgeWorld;
-import org.dynmap.forge_1_10_2.DynmapPlugin.WorldUpdateTracker;
 import org.dynmap.permissions.PermissionsHandler;
 import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.DynmapLogger;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.VisibilityLimit;
 
-import com.google.common.collect.Iterables;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
+import java.util.regex.Pattern;
 
 public class DynmapPlugin
 { 
@@ -912,7 +876,7 @@ public class DynmapPlugin
             long elapsed = cur_tick_starttime - lasttick;
             lasttick = cur_tick_starttime;
             avgticklen = ((avgticklen * 99) / 100) + (elapsed / 100);
-            tps = (double)1E9 / (double)avgticklen;
+            tps = 1E9 / (double) avgticklen;
             // Tick core
             if (core != null) {
                 core.serverTick(tps);
@@ -1474,8 +1438,7 @@ public class DynmapPlugin
     public void onStart() {
     	initializeBlockStates();
         /* Enable core */
-        if (!core.enableCore(null))
-        {
+        if (!core.enableCore()) {
             return;
         }
         core_enabled = true;

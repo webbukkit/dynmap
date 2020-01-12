@@ -1,20 +1,20 @@
 package org.dynmap.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PatchDefinitionFactory implements RenderPatchFactory {
-    private HashMap<PatchDefinition,PatchDefinition> patches = new HashMap<PatchDefinition,PatchDefinition>();
-    private Object lock = new Object();
+    private HashMap<PatchDefinition, PatchDefinition> patches = new HashMap<>();
+    private final Object lock = new Object();
     private PatchDefinition lookup = new PatchDefinition();
     private Map<String, PatchDefinition> namemap = null;
 
     public PatchDefinitionFactory() {
-        
+
     }
 
     public void setPatchNameMape(Map<String, PatchDefinition> nmap) {
@@ -50,7 +50,7 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
         synchronized(lock) {
             lookup.update(x0, y0, z0, xu, yu, zu, xv, yv, zv, umin,
                     umax, vmin, vmax, sidevis, textureids, vminatumax, vmaxatumax);
-            if(lookup.validate() == false)
+            if (!lookup.validate())
                 return null;
             PatchDefinition pd2 = patches.get(lookup);  /* See if in cache already */
             if(pd2 == null) {
@@ -71,7 +71,7 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
     public PatchDefinition getPatch(PatchDefinition patch, int xrot, int yrot,
             int zrot, int textureindex) {
         PatchDefinition pd = new PatchDefinition(patch, xrot, yrot, zrot, textureindex);
-        if(pd.validate() == false)
+        if (!pd.validate())
             return null;
         synchronized(lock) {
             PatchDefinition pd2 = patches.get(pd);  /* See if in cache already */
@@ -110,7 +110,7 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
                 int off = patchid.lastIndexOf('#');
                 if(off > 0) {
                     try {
-                        txt_idx = Integer.valueOf(patchid.substring(off+1));
+                        txt_idx = Integer.parseInt(patchid.substring(off + 1));
                     } catch (NumberFormatException nfx) {
                         return null;
                     }
