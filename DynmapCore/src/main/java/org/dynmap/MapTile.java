@@ -1,10 +1,10 @@
 package org.dynmap;
 
-import org.dynmap.utils.MapChunkCache;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import org.dynmap.utils.MapChunkCache;
 
 public abstract class MapTile {
     protected DynmapWorld world;
@@ -51,8 +51,12 @@ public abstract class MapTile {
         try {
             Class<?> cls = Class.forName(cn);
             Constructor<?> con = cls.getConstructor(DynmapWorld.class, String.class);
-            return (MapTile) con.newInstance(w, dat);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+            return (MapTile)con.newInstance(w, dat);
+        } catch (ClassNotFoundException cnfx) {
+        } catch (NoSuchMethodException nsmx) {
+        } catch (InvocationTargetException itx) {
+        } catch (IllegalAccessException iax) {
+        } catch (InstantiationException ix) {
         }
         return null;
     }

@@ -1,8 +1,8 @@
 package org.dynmap.modsupport.impl;
 
-import org.dynmap.modsupport.BlockModel;
-
 import java.util.Arrays;
+
+import org.dynmap.modsupport.BlockModel;
 
 public abstract class BlockModelImpl implements BlockModel {
     private int[] ids = new int[0];
@@ -26,13 +26,13 @@ public abstract class BlockModelImpl implements BlockModel {
     @Override
     public void addBlockID(int blockID) {
         if (blockID > 0) {
-            for (int id : ids) {
-                if (id == blockID) {
+            for (int i = 0; i < ids.length; i++) {
+                if (ids[i] == blockID) {
                     return;
                 }
             }
-            ids = Arrays.copyOf(ids, ids.length + 1);
-            ids[ids.length - 1] = blockID;
+            ids = Arrays.copyOf(ids, ids.length+1);
+            ids[ids.length-1] = blockID;
         }
     }
 
@@ -42,13 +42,13 @@ public abstract class BlockModelImpl implements BlockModel {
      */
     @Override
     public void addBlockName(String blockname) {
-        for (String name : names) {
-            if (name.equals(blockname)) {
+        for (int i = 0; i < names.length; i++) {
+            if (names[i].equals(blockname)) {
                 return;
             }
         }
-        names = Arrays.copyOf(names, names.length + 1);
-        names[names.length - 1] = blockname;
+        names = Arrays.copyOf(names, names.length+1);
+        names[names.length-1] = blockname;
     }
 
     /**
@@ -101,34 +101,35 @@ public abstract class BlockModelImpl implements BlockModel {
         if ((ids.length == 0) && (names.length == 0)) {
             return null;
         }
-        StringBuilder s = new StringBuilder();
+        String s = "";
         // Add ids
         for (int i = 0; i < ids.length; i++) {
             if (i == 0) {
-                s.append("id=").append(ids[i]);
+                s += "id=" + ids[i];
             }
             else {
-                s.append(",id=").append(ids[i]);
+                s += ",id=" + ids[i];
             }
         }
         // Add names
-        for (String name : names) {
+        for (int i = 0; i < names.length; i++) {
             if (s.length() > 0) {
-                s.append(",");
+                s += ",";
             }
-            s.append("id=%").append(name);
+            s += "id=%" + names[i];
         }
         // Add meta
         if (this.metaMask == METAMASK_ALL) {
-            s.append(",data=*");
-        } else {
+            s += ",data=*";
+        }
+        else {
             for (int i = 0; i < 16; i++) {
                 if ((metaMask & (1 << i)) != 0) {
-                    s.append(",data=").append(i);
+                    s += ",data=" + i;
                 }
             }
         }
-
-        return s.toString();
+        
+        return s;
     }
 }

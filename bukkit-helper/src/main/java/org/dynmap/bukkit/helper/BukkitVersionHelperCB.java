@@ -1,5 +1,13 @@
 package org.dynmap.bukkit.helper;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
@@ -7,13 +15,6 @@ import org.bukkit.World;
 import org.dynmap.Log;
 import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.utils.Polygon;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Helper for isolation of bukkit version specific issues
@@ -161,23 +162,24 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         if (nmsc_inhabitedticks == null) {
             Log.info("inhabitedTicks field not found - inhabited shader not functional");
         }
-        /* n.m.s.WorldBorder */
+        /** n.m.s.WorldBorder */
         nmsworldborder = getNMSClassNoFail("net.minecraft.server.WorldBorder");
         if (nmsworldborder != null) {
             worldbordermaxz = getMethodNoFail(nmsworldborder, new String[] { "f" }, nulltypes);
             if (worldbordermaxz == null) {
-                worldborderminx = getMethod(nmsworldborder, new String[]{"b"}, nulltypes);
-                worldborderminz = getMethod(nmsworldborder, new String[]{"c"}, nulltypes);
-                worldbordermaxx = getMethod(nmsworldborder, new String[]{"d"}, nulltypes);
-                worldbordermaxz = getMethod(nmsworldborder, new String[]{"e"}, nulltypes);
-            } else {
-                worldborderminx = getMethod(nmsworldborder, new String[]{"c"}, nulltypes);
-                worldborderminz = getMethod(nmsworldborder, new String[]{"d"}, nulltypes);
-                worldbordermaxx = getMethod(nmsworldborder, new String[]{"e"}, nulltypes);
+            	worldborderminx = getMethod(nmsworldborder, new String[] { "b" }, nulltypes);
+            	worldborderminz = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
+            	worldbordermaxx = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
+            	worldbordermaxz = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+            }
+            else {
+            	worldborderminx = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
+            	worldborderminz = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
+            	worldbordermaxx = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
             }
         }
-
-        /* nbt classes */
+        
+        /** nbt classes */
         nbttagcompound = getNMSClass("net.minecraft.server.NBTTagCompound");
         nbttagbyte = getNMSClass("net.minecraft.server.NBTTagByte");
         nbttagshort = getNMSClass("net.minecraft.server.NBTTagShort");
@@ -199,7 +201,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         nbttagstring_val = getPrivateField(nbttagstring, new String[] { "data" }, String.class);
         nbttagintarray_val = getPrivateField(nbttagintarray, new String[] { "data" }, int[].class);
 
-        /* Tile entity */
+        /** Tile entity */
         nms_tileentity = getNMSClass("net.minecraft.server.TileEntity");
         nmst_readnbt = getMethod(nms_tileentity, new String[] { "b", "save" }, new Class[] { nbttagcompound });
         nmst_getposition = getMethodNoFail(nms_tileentity, new String[] { "getPosition" }, new Class[0]); // Try 1.8 method
@@ -233,14 +235,15 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     public String[] getBlockNames() {
         try {
             String[] names = new String[4096];
-            if (blockbyid != null) {
-                Object[] byid = (Object[]) blockbyid.get(nmsblock);
+            if (blockbyid != null)  {
+                Object[] byid = (Object[])blockbyid.get(nmsblock);
                 for (int i = 0; i < names.length; i++) {
                     if (byid[i] != null) {
                         names[i] = stripBlockString(byid[i].toString());
                     }
                 }
-            } else {
+            }
+            else {
                 for (int i = 0; i < names.length; i++) {
                     Object blk = blockbyidfunc.invoke(nmsblock, i);
                     if (blk != null) {
@@ -249,7 +252,9 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                 }
             }
             return names;
-        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException ignored) {
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
         }
         return new String[0];
     }
@@ -282,7 +287,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                 Object[] byid = (Object[])blockbyid.get(nmsblock);
                 for (int i = 0; i < map.length; i++) {
                     if (byid[i] != null) {
-                        Object mat = material.get(byid[i]);
+                        Object mat = (Object)material.get(byid[i]);
                         if (mat != null) {
                         	Boolean solid = (Boolean) material_issolid.invoke(mat);
                         	Boolean liquid = (Boolean) material_isliquid.invoke(mat);
@@ -292,21 +297,23 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                 }
             }
             else if (blockbyidfunc != null) {
-                ArrayList<Object> mats = new ArrayList<>();
+                ArrayList<Object> mats = new ArrayList<Object>();
                 for (int i = 0; i < map.length; i++) {
                     Object blk = blockbyidfunc.invoke(nmsblock, i);
                     if (blk != null) {
-                        Object mat = material.get(blk);
+                        Object mat = (Object)material.get(blk);
                         if (mat != null) {
-                            Boolean solid = (Boolean) material_issolid.invoke(mat);
-                            Boolean liquid = (Boolean) material_isliquid.invoke(mat);
-                            map[i] = new BukkitMaterial(mat.toString(), solid, liquid);
+                        	Boolean solid = (Boolean) material_issolid.invoke(mat);
+                        	Boolean liquid = (Boolean) material_isliquid.invoke(mat);
+                        	map[i] = new BukkitMaterial(mat.toString(), solid, liquid);
                         }
                     }
                 }
             }
             return map;
-        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ignored) {
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
         }
         return new BukkitMaterial[0];
     }
@@ -349,7 +356,9 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                             biomelist[i] = getbiomefunc.invoke(biomebase, i, null);
                         else
                             biomelist[i] = getbiomebyid.invoke(biomebase, i);
-                    } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException ignored) {
+                    } catch (IllegalAccessException x) {
+                    } catch (IllegalArgumentException x) {
+                    } catch (InvocationTargetException x) {
                     }
                 }
             }
@@ -361,8 +370,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     public int getBiomeBaseID(Object bb) {
         if (getidbybiome != null) {
             try {
-                return (Integer) getidbybiome.invoke(biomebase, bb);
-            } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException ignored) {
+                return (Integer) getidbybiome.invoke(biomebase,  bb);
+            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException e) {
+            } catch (InvocationTargetException e) {
             }
         }
         return super.getBiomeBaseID(bb);
@@ -380,16 +391,18 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
             try {
                 Object iblockdata = getbycombinedid.invoke(nmsblock, id);
                 if (iblockdata != null) {
-                    String nm = iblockdata.toString();
-                    int off1 = nm.indexOf('[');
-                    if (off1 >= 0) {
-                        int off2 = nm.indexOf(']');
-                        return nm.substring(off1 + 1, off2);
-                    }
+                	String nm = iblockdata.toString();
+            		int off1 = nm.indexOf('[');
+            		if (off1 >= 0) {
+            			int off2 = nm.indexOf(']');
+            			return nm.substring(off1+1, off2);
+            		}
                 }
-            } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException ignored) {
+            } catch (IllegalAccessException x) {
+            } catch (IllegalArgumentException x) {
+            } catch (InvocationTargetException x) {
             }
-        }
+    	}
     	return "meta=" + meta;
     }
 }

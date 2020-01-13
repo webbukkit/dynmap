@@ -20,7 +20,8 @@ public class DefaultHDLighting implements HDLighting {
     
     /* Apply lighting to given pixel colors (1 outcolor if normal, 2 if night/day) */
     public void    applyLighting(HDPerspectiveState ps, HDShaderState ss, Color incolor, Color[] outcolor) {
-        for (Color color : outcolor) color.setColor(incolor);
+        for(int i = 0; i < outcolor.length; i++)
+            outcolor[i].setColor(incolor);
     }
     
     /* Test if Biome Data is needed for this renderer */

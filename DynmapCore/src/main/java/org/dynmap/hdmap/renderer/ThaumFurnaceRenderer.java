@@ -1,10 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
-import org.dynmap.renderer.*;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
+
+import org.dynmap.renderer.CustomRenderer;
+import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.renderer.MapDataContext;
+import org.dynmap.renderer.RenderPatch;
+import org.dynmap.renderer.RenderPatchFactory;
 
 public class ThaumFurnaceRenderer extends CustomRenderer {
     private DynmapBlockState blkbs;
@@ -102,7 +106,7 @@ public class ThaumFurnaceRenderer extends CustomRenderer {
                     case 2:
                         return 1 + (lvl*3) + add;
                     case 3:
-                        return (lvl * 3) + add;
+                        return 0 + (lvl*3) + add;
                 }
             case 3:
                 switch (meta) {
@@ -111,7 +115,7 @@ public class ThaumFurnaceRenderer extends CustomRenderer {
                             return TXTIDX_SPECIAL_7;
                         return TXTIDX_SPECIAL_6;
                     case 7:
-                        return (lvl * 3) + add;
+                        return 0 + (lvl*3) + add;
                     case 8:
                         return 1 + (lvl*3) + add;
                     case 9:
@@ -124,7 +128,7 @@ public class ThaumFurnaceRenderer extends CustomRenderer {
                             return TXTIDX_SPECIAL_7;
                         return TXTIDX_SPECIAL_6;
                     case 1:
-                        return (lvl * 3) + add;
+                        return 0 + (lvl*3) + add;
                     case 4:
                         return 1 + (lvl*3) + add;
                     case 7:
@@ -141,7 +145,7 @@ public class ThaumFurnaceRenderer extends CustomRenderer {
                     case 6:
                         return 1 + (lvl*3) + add;
                     case 9:
-                        return (lvl * 3) + add;
+                        return 0 + (lvl*3) + add;
                 }
         }
         return add == 0 ? TXTIDX_SPECIAL_7 : TXTIDX_SPECIAL_6;
@@ -169,14 +173,15 @@ public class ThaumFurnaceRenderer extends CustomRenderer {
     
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
-        ArrayList<RenderPatch> list = new ArrayList<>();
-        int[] txtids = new int[6];
+        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        int txtids[] = new int[6];
         if (ctx.getBlockType().stateIndex == 0) {
-            for (int i = 0; i < 6; i++) {
+            for(int i = 0; i < 6; i++) {
                 txtids[i] = TXTIDX_LAVA;
             }
-        } else {
-            for (int i = 0; i < 6; i++) {
+        }
+        else {
+            for(int i = 0; i < 6; i++) {
                 txtids[i] = calcTexture(ctx, i);
             }
         }

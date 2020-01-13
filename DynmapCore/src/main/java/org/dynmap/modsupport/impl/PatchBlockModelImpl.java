@@ -1,17 +1,16 @@
 package org.dynmap.modsupport.impl;
 
+import java.util.ArrayList;
+
 import org.dynmap.modsupport.PatchBlockModel;
 import org.dynmap.renderer.RenderPatchFactory.SideVisible;
 
-import java.util.ArrayList;
-
 public class PatchBlockModelImpl extends BlockModelImpl implements PatchBlockModel {
-    private ArrayList<String> patches = new ArrayList<>();
-
+    private ArrayList<String> patches = new ArrayList<String>();
+    
     public PatchBlockModelImpl(int blkid, ModModelDefinitionImpl mdf) {
         super(blkid, mdf);
     }
-
     public PatchBlockModelImpl(String blkname, ModModelDefinitionImpl mdf) {
         super(blkname, mdf);
     }
@@ -53,7 +52,7 @@ public class PatchBlockModelImpl extends BlockModelImpl implements PatchBlockMod
             double zu, double xv, double yv, double zv, double umin,
             double umax, double vmin, double vmax, double uplusvmax,
             SideVisible sidevis) {
-        return addPatch(x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vmin, vmax, Math.min((uplusvmax - umax), vmax), sidevis);
+        return addPatch(x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vmin, vmax, ((uplusvmax - umax) < vmax) ? uplusvmax - umax : vmax, sidevis);
     }
 
     @Override
@@ -79,10 +78,10 @@ public class PatchBlockModelImpl extends BlockModelImpl implements PatchBlockMod
     public String getLine() {
         String ids = this.getIDsAndMeta();
         if (ids == null) return null;
-        StringBuilder line = new StringBuilder(String.format("patchblock:%s", ids));
+        String line = String.format("patchblock:%s", ids);
         for (int i = 0; i < patches.size(); i++) {
-            line.append(",patch").append(i).append("=").append(patches.get(i));
+            line += ",patch" + i + "=" + patches.get(i);
         }
-        return line.toString();
+        return line;
     }
 }

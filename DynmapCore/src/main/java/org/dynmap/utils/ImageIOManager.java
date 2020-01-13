@@ -1,27 +1,31 @@
 package org.dynmap.utils;
-
-import org.dynmap.Log;
-import org.dynmap.MapType.ImageFormat;
-import org.dynmap.debug.Debug;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.awt.image.BufferedImage;
+import java.awt.image.DirectColorModel;
+import java.awt.image.WritableRaster;
+import java.io.IOException;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-import java.awt.image.BufferedImage;
-import java.awt.image.DirectColorModel;
-import java.awt.image.WritableRaster;
-import java.io.*;
-import java.util.Iterator;
-import java.util.LinkedList;
+
+import org.dynmap.Log;
+import org.dynmap.MapType.ImageFormat;
+import org.dynmap.debug.Debug;
 /**
  * Implements soft-locks for prevent concurrency issues with file updates
  */
 public class ImageIOManager {
     public static String preUpdateCommand = null;
     public static String postUpdateCommand = null;
-    private static final Object imageioLock = new Object();
+    private static Object imageioLock = new Object();
     
     public static BufferOutputStream imageIOEncode(BufferedImage img, ImageFormat fmt) {
         BufferOutputStream bos = new BufferOutputStream();
@@ -72,17 +76,15 @@ public class ImageIOManager {
         }
         return bos;
     }
-
+    
     private static final int MAX_WRITE_RETRIES = 6;
-
-    private static LinkedList<BufferOutputStream> baoslist = new LinkedList<>();
-    private static final Object baos_lock = new Object();
-
+    
+    private static LinkedList<BufferOutputStream> baoslist = new LinkedList<BufferOutputStream>();
+    private static Object baos_lock = new Object();
     /**
      * Wrapper for IOImage.write - implements retries for busy files
-     *
-     * @param img   - buffered image to write
-     * @param fmt   - format to use for file
+     * @param img - buffered image to write
+     * @param fmt - format to use for file
      * @param fname - filename
      * @throws IOException if error writing file
      */
@@ -212,29 +214,23 @@ public class ImageIOManager {
                 fis.close();
                 fis = null;
                 BufferInputStream bais = new BufferInputStream(b);
-                synchronized (imageioLock) {
+                synchronized(imageioLock) {
                     ImageIO.setUseCache(false); /* Don't use file cache - too small to be worth it */
                     img = ImageIO.read(bais);
                 }
                 bais.close();
                 done = true;    /* Done if no I/O error - retries don't fix format errors */
-            } catch (IOException ignored) {
+            } catch (IOException iox) {
             } finally {
-                if (fis != null) {
-                    try {
-                        fis.close();
-                    } catch (IOException ignored) {
-                    }
+                if(fis != null) {
+                    try { fis.close(); } catch (IOException io) {}
                     fis = null;
                 }
             }
             if(!done) {
                 if(retrycnt < MAX_WRITE_RETRIES) {
                     Debug.debug("Image file " + fname.getPath() + " - unable to write - retry #" + retrycnt);
-                    try {
-                        Thread.sleep(50 << retrycnt);
-                    } catch (InterruptedException ignored) {
-                    }
+                    try { Thread.sleep(50 << retrycnt); } catch (InterruptedException ix) { }
                     retrycnt++;
                 }
                 else {

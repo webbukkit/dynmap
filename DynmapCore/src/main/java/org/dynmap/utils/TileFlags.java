@@ -1,58 +1,62 @@
 package org.dynmap.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.dynmap.Log;
-
-import java.util.*;
-
 /**
  * scalable flags primitive - used for keeping track of potentially huge number of tiles
- * <p>
+ * 
  * Represents a flag for each tile, with 2D coordinates based on 0,0 origin.  Flags are grouped
  * 64 x 64, represented by an array of 64 longs.  Each set is stored in a hashmap, keyed by a long
  * computed by ((x/64)&lt;&lt;32)+(y/64).
+ * 
  */
 public class TileFlags {
-	private HashMap<Long, long[]> chunkmap = new HashMap<>();
+	private HashMap<Long, long[]> chunkmap = new HashMap<Long, long[]>(); 
 	private long last_key = Long.MAX_VALUE;
 	private long[] last_row;
 	private int count; // Number of 1 values
-
+	
 	public TileFlags() {
 	}
-
+	
 	public List<String> save() {
-		ArrayList<String> v = new ArrayList<>();
-		StringBuilder sb = new StringBuilder();
-		for (Map.Entry<Long, long[]> ent : chunkmap.entrySet()) {
-			long v1 = ent.getKey();
-			sb.append(String.format("%x/%x", ((v1 >> 32) & 0xFFFFFFFFL), (v1 & 0xFFFFFFFFL)));
-			long[] val = ent.getValue();
-			for (long vv : val) {
-				sb.append(String.format(":%x/%x", ((vv >> 32) & 0xFFFFFFFFL), (vv & 0xFFFFFFFFL)));
-			}
-			v.add(sb.toString());
-			sb.setLength(0);
-		}
-		return v;
+	    ArrayList<String> v = new ArrayList<String>();
+	    StringBuilder sb = new StringBuilder();
+	    for(Map.Entry<Long, long[]> ent : chunkmap.entrySet()) {
+	        long v1 = ent.getKey().longValue();
+	        sb.append(String.format("%x/%x", ((v1>>32)&0xFFFFFFFFL), (v1 & 0xFFFFFFFFL) ));
+	        long[] val = ent.getValue();
+	        for(long vv : val) {
+	            sb.append(String.format(":%x/%x", ((vv>>32) & 0xFFFFFFFFL), (vv & 0xFFFFFFFFL)));
+	        }
+	        v.add(sb.toString());
+	        sb.setLength(0);
+	    }
+	    return v;
 	}
-
+	
 	public void load(List<String> vals) {
-		clear();
-		for (String v : vals) {
-			String[] tok = v.split(":");
-			long[] row = new long[64];
-			try {
-				String[] ss = tok[0].split("/");
-				long rowaddr = (Long.parseLong(ss[0], 16) << 32) | Long.parseLong(ss[1], 16);
-				for (int i = 0; (i < 64) && (i < (tok.length - 1)); i++) {
-					ss = tok[i + 1].split("/");
-					row[i] = (Long.parseLong(ss[0], 16) << 32) | Long.parseLong(ss[1], 16);
-					count += Long.bitCount(row[i]);
-				}
-				chunkmap.put(rowaddr, row);
-			} catch (NumberFormatException nfx) {
-				Log.info("parse error - " + nfx);
-			}
+	    clear();
+	    for(String v : vals) {
+	        String[] tok = v.split(":");
+	        long[] row = new long[64];
+	        try {
+	            String ss[] = tok[0].split("/");
+	            long rowaddr = (Long.parseLong(ss[0], 16)<<32) | Long.parseLong(ss[1],16);
+	            for(int i = 0; (i < 64) && (i < (tok.length-1)); i++) {
+	                ss = tok[i+1].split("/");
+	                row[i] = (Long.parseLong(ss[0], 16)<<32) | Long.parseLong(ss[1],16);
+	                count += Long.bitCount(row[i]);
+	            }
+	            chunkmap.put(rowaddr, row);
+	        } catch (NumberFormatException nfx) {
+	            Log.info("parse error - " + nfx);
+	        }
 	    }
 	}
 	
@@ -105,23 +109,23 @@ public class TileFlags {
 			if(row != null) {
 			    prev = (row[idx] & mask) != 0;
 			    if(prev) {
-					row[idx] &= ~(mask);
-					count--;
-					if (row[idx] == 0L) { // All zero in element?
-						boolean nonzero = false;
-						for (long l : row) {
-							if (l != 0L) {
-								nonzero = true;
-								break;
-							}
-						}
-						if (!nonzero) {
-							chunkmap.remove(k);
-							last_row = null;
-							last_key = Long.MAX_VALUE;
-						}
-					}
-				}
+			        row[idx] &= ~(mask);
+	                count--;
+	                if(row[idx] == 0L) { // All zero in element?
+	                    boolean nonzero = false;
+	                    for(int i = 0; i < row.length; i++) {
+	                        if(row[i] != 0L) {
+	                            nonzero = true;
+	                            break;
+	                        }
+	                    }
+	                    if(!nonzero) {
+	                        chunkmap.remove(k);
+	                        last_row = null;
+	                        last_key = Long.MAX_VALUE;
+	                    }
+	                }
+			    }
 			}
 		}
 		return prev;

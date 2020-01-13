@@ -8,17 +8,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class Event<T> {
-    private List<Listener<T>> listeners = new LinkedList<>();
-    private final Object lock = new Object();
+    private List<Listener<T>> listeners = new LinkedList<Listener<T>>();
+    private Object lock = new Object();
 
     public void addListener(Listener<T> l) {
-        synchronized (lock) {
+        synchronized(lock) {
             listeners.add(l);
         }
     }
 
     public void removeListener(Listener<T> l) {
-        synchronized (lock) {
+        synchronized(lock) {
             listeners.remove(l);
         }
     }
@@ -27,7 +27,7 @@ public class Event<T> {
     public void trigger(T t) {
         ArrayList<Listener<T>> iterlist;
         synchronized(lock) {
-            iterlist = new ArrayList<>(listeners);
+            iterlist = new ArrayList<Listener<T>>(listeners);
         }
         for (Listener<T> l : iterlist) {
             l.triggered(t);
@@ -38,20 +38,20 @@ public class Event<T> {
     public boolean triggerSync(DynmapCore core, final T t) {
         Future<T> future = core.getServer().callSyncMethod(new Callable<T>() {
             @Override
-            public T call() {
+            public T call() throws Exception {
                 trigger(t);
                 return t;
             }            
         });
         boolean success = false;
         try {
-            if (future != null) {
+            if(future != null) {
                 future.get();
                 success = true;
             }
         } catch (ExecutionException ix) {
             Log.severe("Exception in triggerSync", ix.getCause());
-        } catch (InterruptedException ignored) {
+        } catch (InterruptedException ix) {
         }
         return success;
     }

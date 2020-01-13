@@ -60,25 +60,25 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public static DynmapPlugin plugin;
     public PluginManager pm;
     private Metrics metrics;
-    private BukkitEnableCoreCallback enableCoreCB = new BukkitEnableCoreCallback();
-    private Method isModLoaded;
+    private BukkitEnableCoreCallback enabCoreCB = new BukkitEnableCoreCallback();
+    private Method ismodloaded;
     private Method instance;
-    private Method getIndexedModList;
-    private Method getVersion;
-    private HashMap<String, BukkitWorld> world_by_name = new HashMap<>();
-    private HashSet<String> modsUsed = new HashSet<String>();
+    private Method getindexedmodlist;
+    private Method getversion;
+    private HashMap<String, BukkitWorld> world_by_name = new HashMap<String, BukkitWorld>();
+    private HashSet<String> modsused = new HashSet<String>();
     // TPS calculator
     private double tps;
-    private long lastTick;
+    private long lasttick;
     private long perTickLimit;
     private long cur_tick_starttime;
-    private long averageTickLength = 50000000;
+    private long avgticklen = 50000000;
 
     private int chunks_in_cur_tick = 0;
     private long cur_tick;
     private long prev_tick;
 
-    private HashMap<String, Integer> sortWeights = new HashMap<>();
+    private HashMap<String, Integer> sortWeights = new HashMap<String, Integer>();
     /* Lookup cache */
     private World last_world;
     private BukkitWorld last_bworld;
@@ -134,18 +134,19 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     }
 
     private LinkedList<BlockToCheck> blocks_to_check = null;
-    private LinkedList<BlockToCheck> blocks_to_check_accum = new LinkedList<>();
+    private LinkedList<BlockToCheck> blocks_to_check_accum = new LinkedList<BlockToCheck>();
 
     public DynmapPlugin() {
         plugin = this;
         try {
             Class<?> c = Class.forName("cpw.mods.fml.common.Loader");
-            isModLoaded = c.getMethod("isModLoaded", String.class);
+            ismodloaded = c.getMethod("isModLoaded", String.class);
             instance = c.getMethod("instance");
-            getIndexedModList = c.getMethod("getIndexedModList");
+            getindexedmodlist = c.getMethod("getIndexedModList");
             c = Class.forName("cpw.mods.fml.common.ModContainer");
-            getVersion = c.getMethod("getVersion");
-        } catch (NoSuchMethodException | ClassNotFoundException ignored) {
+            getversion = c.getMethod("getVersion");
+        } catch (NoSuchMethodException nsmx) {
+        } catch (ClassNotFoundException e) {
         }
     }
     
@@ -231,7 +232,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             @SuppressWarnings("deprecation") OfflinePlayer p = getServer().getOfflinePlayer(pid);
             return (p != null) && p.isBanned();
         }
-
         @Override
         public boolean isServerThread() {
             return Bukkit.getServer().isPrimaryThread();
@@ -241,14 +241,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public String stripChatColor(String s) {
             return ChatColor.stripColor(s);
         }
-
-        private Set<EventType> registered = new HashSet<>();
-
+        private Set<EventType> registered = new HashSet<EventType>();
         @Override
         public boolean requestEventNotification(EventType type) {
-            if (registered.contains(type))
+            if(registered.contains(type))
                 return true;
-            switch (type) {
+            switch(type) {
                 case WORLD_LOAD:
                 case WORLD_UNLOAD:
                     /* Already called for normal world activation/deactivation */
@@ -368,10 +366,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public Set<String> checkPlayerPermissions(String player, Set<String> perms) {
             OfflinePlayer p = getServer().getOfflinePlayer(player);
             if(p.isBanned())
-                return new HashSet<>();
+                return new HashSet<String>();
             Set<String> rslt = permissions.hasOfflinePermissions(player, perms);
             if (rslt == null) {
-                rslt = new HashSet<>();
+                rslt = new HashSet<String>();
                 if(p.isOp()) {
                     rslt.addAll(perms);
                 }
@@ -383,7 +381,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             OfflinePlayer p = getServer().getOfflinePlayer(player);
             if(p.isBanned())
                 return false;
-            return permissions.hasOfflinePermission(player, perm);
+            boolean rslt = permissions.hasOfflinePermission(player, perm);
+            return rslt;
         }
         /**
          * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
@@ -419,14 +418,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
             while(!cc.isDoneLoading()) {
                 Future<Boolean> f = core.getServer().callSyncMethod(new Callable<Boolean>() {
-                    public Boolean call() {
+                    public Boolean call() throws Exception {
                         boolean exhausted = true;
-
+                        
                         if (prev_tick != cur_tick) {
                             prev_tick = cur_tick;
                             cur_tick_starttime = System.nanoTime();
-                        }
-                        if (chunks_in_cur_tick > 0) {
+                        }                            
+                        if(chunks_in_cur_tick > 0) {
                             boolean done = false;
                             while (!done) {
                                 int cnt = chunks_in_cur_tick;
@@ -454,11 +453,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     Log.severe(ix);
                     return null;
                 }
-                if ((delay != null) && delay) {
-                    try {
-                        Thread.sleep(25);
-                    } catch (InterruptedException ignored) {
-                    }
+                if((delay != null) && delay.booleanValue()) {
+                    try { Thread.sleep(25); } catch (InterruptedException ix) {}
                 }
             }
             /* If cancelled due to world unload return nothing */
@@ -476,31 +472,35 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         @Override
         public boolean isModLoaded(String name) {
-            if (isModLoaded != null) {
+            if(ismodloaded != null) {
                 try {
-                    Object rslt = isModLoaded.invoke(null, name);
-                    if (rslt instanceof Boolean) {
-                        if ((Boolean) rslt) {
-                            modsUsed.add(name);
+                    Object rslt =ismodloaded.invoke(null,  name);
+                    if(rslt instanceof Boolean) {
+                        if(((Boolean)rslt).booleanValue()) {
+                            modsused.add(name);
                             return true;
                         }
                     }
-                } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ignored) {
+                } catch (IllegalArgumentException iax) {
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
                 }
             }
             return false;
         }
         @Override
         public String getModVersion(String name) {
-            if ((instance != null) && (getIndexedModList != null) && (getVersion != null)) {
+            if((instance != null) && (getindexedmodlist != null) && (getversion != null)) {
                 try {
                     Object inst = instance.invoke(null);
-                    Map<?, ?> modmap = (Map<?, ?>) getIndexedModList.invoke(inst);
+                    Map<?,?> modmap = (Map<?,?>) getindexedmodlist.invoke(inst);
                     Object mod = modmap.get(name);
                     if (mod != null) {
-                        return (String) getVersion.invoke(mod);
+                        return (String) getversion.invoke(mod);
                     }
-                } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ignored) {
+                } catch (IllegalArgumentException iax) {
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
                 }
             }
             return null;
@@ -520,7 +520,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public Map<Integer, String> getBlockIDMap() {
             String[] bsn = helper.getBlockNames();
-            HashMap<Integer, String> map = new HashMap<>();
+            HashMap<Integer, String> map = new HashMap<Integer, String>();
             for (int i = 0; i < bsn.length; i++) {
                 if (bsn[i] != null) {
                 	if (bsn[i].indexOf(':') < 0)
@@ -791,7 +791,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         registerPlayerLoginListener();
 
         /* Build default permissions from our plugin */
-        Map<String, Boolean> perdefs = new HashMap<>();
+        Map<String, Boolean> perdefs = new HashMap<String, Boolean>();
         List<Permission> pd = plugin.getDescription().getPermissions();
         for(Permission p : pd) {
             perdefs.put(p.getName(), p.getDefault() == PermissionDefault.TRUE);
@@ -831,7 +831,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         core.setBiomeNames(helper.getBiomeNames());
         
         /* Load configuration */
-        if (!core.initConfiguration(enableCoreCB)) {
+        if(!core.initConfiguration(enabCoreCB)) {
             this.setEnabled(false);
             return;
         }
@@ -853,11 +853,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             doEnable();
         }
         // Start tps calculation
-        lastTick = System.nanoTime();
+        lasttick = System.nanoTime();
         tps = 20.0;
         perTickLimit = core.getMaxTickUseMS() * 1000000;
 
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, this::processTick, 1, 1);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            public void run() {
+                processTick();
+            }
+        }, 1, 1);
     }
     
     private boolean readyToEnable() {
@@ -914,15 +918,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     
     private void processTick() {
         long now = System.nanoTime();
-        long elapsed = now - lastTick;
-        lastTick = now;
-        averageTickLength = ((averageTickLength * 99) / 100) + (elapsed / 100);
-        tps = 1E9 / (double) averageTickLength;
+        long elapsed = now - lasttick;
+        lasttick = now;
+        avgticklen = ((avgticklen * 99) / 100) + (elapsed / 100);
+        tps = 1E9 / (double) avgticklen;
         if (mapManager != null) {
             chunks_in_cur_tick = mapManager.getMaxChunkLoadsPerTick();
         }
         cur_tick++;
-
+        
         // Tick core
         if (core != null) {
             core.serverTick(tps);
@@ -1106,7 +1110,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public void startIfNeeded() {
             if ((blocks_to_check == null) && (!blocks_to_check_accum.isEmpty())) { /* More pending? */
                 blocks_to_check = blocks_to_check_accum;
-                blocks_to_check_accum = new LinkedList<>();
+                blocks_to_check_accum = new LinkedList<BlockToCheck>();
                 getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, this, 10);
             }
         }
@@ -1538,7 +1542,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             hashMap.put("internal_web_server", core.configuration.getBoolean("disable-webserver", false) ? 0 : 1);
             hashMap.put("login_security", core.configuration.getBoolean("login-enabled", false) ? 1 : 0);
             hashMap.put("player_info_protected", core.player_info_protected ? 1 : 0);
-            for (String mod : modsUsed)
+            for (String mod : modsused)
                 hashMap.put(mod + "_blocks", 1);
             return hashMap;
         }));

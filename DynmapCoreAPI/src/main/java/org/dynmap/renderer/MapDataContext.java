@@ -9,56 +9,45 @@ package org.dynmap.renderer;
 public interface MapDataContext {
     /**
      * Get render patch factory - for allocating patches
-     *
      * @return render patch factory
      */
-    RenderPatchFactory getPatchFactory();
-
+    public RenderPatchFactory getPatchFactory();
     /**
      * Get block type ID of requested block
      */
-    DynmapBlockState getBlockType();
-
+    public DynmapBlockState getBlockType();
     /**
      * Get Tile Entity field value for requested block
-     *
      * @param fieldId - field ID
      * @return value, or null of not found or available
      */
-    Object getBlockTileEntityField(String fieldId);
-
+    public Object getBlockTileEntityField(String fieldId);
     /**
      * Get block type ID of block at relative offset from requested block
-     *
      * @param xoff - offset on X axis
      * @param yoff - offset on Y axis
      * @param zoff - offset on Z axis
      */
-    DynmapBlockState getBlockTypeAt(int xoff, int yoff, int zoff);
-
+    public DynmapBlockState getBlockTypeAt(int xoff, int yoff, int zoff);
     /**
      * Get Tile Entity field value of block at relative offset from requested block
-     *
      * @param fieldId - field ID
-     * @param xoff    - offset on X axis
-     * @param yoff    - offset on Y axis
-     * @param zoff    - offset on Z axis
+     * @param xoff - offset on X axis
+     * @param yoff - offset on Y axis
+     * @param zoff - offset on Z axis
      * @return value, or null of not found or available
      */
-    Object getBlockTileEntityFieldAt(String fieldId, int xoff, int yoff, int zoff);
-
+    public Object getBlockTileEntityFieldAt(String fieldId, int xoff, int yoff, int zoff);
     /**
      * Get current X coordinate
      */
-    int getX();
-
+    public int getX();
     /**
      * Get current Y coordinate
      */
-    int getY();
-
+    public int getY();
     /**
      * Get current Z coordinate
      */
-    int getZ();
+    public int getZ();
 }

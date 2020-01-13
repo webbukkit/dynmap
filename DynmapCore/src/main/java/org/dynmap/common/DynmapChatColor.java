@@ -21,10 +21,9 @@ public enum DynmapChatColor {
 
     private final String str;
 
-    DynmapChatColor(final int code) {
+    private DynmapChatColor(final int code) {
         this.str = String.format("\u00A7%x", code);
     }
-
     @Override
     public String toString() {
         return str;

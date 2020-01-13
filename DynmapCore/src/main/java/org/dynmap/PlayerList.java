@@ -1,19 +1,29 @@
 package org.dynmap;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 
-import java.io.*;
-import java.util.*;
-
 public class PlayerList {
     private DynmapServerInterface server;
-    private HashSet<String> hiddenPlayerNames = new HashSet<>();
+    private HashSet<String> hiddenPlayerNames = new HashSet<String>();
     private File hiddenPlayersFile;
     private ConfigurationNode configuration;
     private DynmapPlayer[] online;
-    private HashMap<String, Set<String>> invisibility_asserts = new HashMap<>();
-    private HashMap<String, Set<String>> visibility_asserts = new HashMap<>();
+    private HashMap<String, Set<String>> invisibility_asserts = new HashMap<String, Set<String>>();
+    private HashMap<String, Set<String>> visibility_asserts = new HashMap<String, Set<String>>();
 
     public PlayerList(DynmapServerInterface server, File hiddenPlayersFile, ConfigurationNode configuration) {
         this.server = server;
@@ -47,6 +57,7 @@ public class PlayerList {
             }
             scanner.close();
         } catch (FileNotFoundException e) {
+            return;
         }
     }
 
@@ -70,7 +81,11 @@ public class PlayerList {
     public void assertVisiblilty(String playerName, boolean visible, String plugin_id) {
         playerName = playerName.toLowerCase();
         if(visible) {
-            Set<String> ids = visibility_asserts.computeIfAbsent(playerName, k -> new HashSet<>());
+            Set<String> ids = visibility_asserts.get(playerName);
+            if(ids == null) {
+                ids = new HashSet<String>();
+                visibility_asserts.put(playerName, ids);
+            }
             ids.add(plugin_id);
         }
         else {
@@ -87,7 +102,11 @@ public class PlayerList {
     public void assertInvisiblilty(String playerName, boolean invisible, String plugin_id) {
         playerName = playerName.toLowerCase();
         if(invisible) {
-            Set<String> ids = invisibility_asserts.computeIfAbsent(playerName, k -> new HashSet<>());
+            Set<String> ids = invisibility_asserts.get(playerName);
+            if(ids == null) {
+                ids = new HashSet<String>();
+                invisibility_asserts.put(playerName, ids);
+            }
             ids.add(plugin_id);
         }
         else {
@@ -102,18 +121,20 @@ public class PlayerList {
     }
     
     public List<DynmapPlayer> getVisiblePlayers(String worldName) {
-        ArrayList<DynmapPlayer> visiblePlayers = new ArrayList<>();
+        ArrayList<DynmapPlayer> visiblePlayers = new ArrayList<DynmapPlayer>();
         DynmapPlayer[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
-        for (DynmapPlayer p : onlinePlayers) {
-            if (p == null) continue;
-            if ((worldName != null) && (!p.getWorld().equals(worldName))) continue;
+        for (int i = 0; i < onlinePlayers.length; i++) {
+            DynmapPlayer p = onlinePlayers[i];
+            if(p == null) continue;
+            if((worldName != null) && (p.getWorld().equals(worldName) == false)) continue;
             String pname = p.getName().toLowerCase();
-            if (useWhitelist == hiddenPlayerNames.contains(pname)) {
-                if (!invisibility_asserts.containsKey(pname)) {
+            if (!(useWhitelist ^ hiddenPlayerNames.contains(pname))) {
+                if(!invisibility_asserts.containsKey(pname)) {
                     visiblePlayers.add(p);
                 }
-            } else if (visibility_asserts.containsKey(pname)) {
+            }
+            else if(visibility_asserts.containsKey(pname)) {
                 visiblePlayers.add(p);
             }
         }
@@ -125,17 +146,19 @@ public class PlayerList {
     }
     
     public List<DynmapPlayer> getHiddenPlayers() {
-        ArrayList<DynmapPlayer> hidden = new ArrayList<>();
+        ArrayList<DynmapPlayer> hidden = new ArrayList<DynmapPlayer>();
         DynmapPlayer[] onlinePlayers = online;    /* Use copied list - we don't call from server thread */
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
-        for (DynmapPlayer p : onlinePlayers) {
-            if (p == null) continue;
+        for (int i = 0; i < onlinePlayers.length; i++) {
+            DynmapPlayer p = onlinePlayers[i];
+            if(p == null) continue;
             String pname = p.getName().toLowerCase();
-            if (useWhitelist == hiddenPlayerNames.contains(pname)) {
-                if (invisibility_asserts.containsKey(pname)) {
+            if (!(useWhitelist ^ hiddenPlayerNames.contains(pname))) {
+                if(invisibility_asserts.containsKey(pname)) {
                     hidden.add(p);
                 }
-            } else if (!visibility_asserts.containsKey(pname)) {
+            }
+            else if(!visibility_asserts.containsKey(pname)) {
                 hidden.add(p);
             }
         }
@@ -145,7 +168,7 @@ public class PlayerList {
     public boolean isVisiblePlayer(String p) {
         p = p.toLowerCase();
         boolean useWhitelist = configuration.getBoolean("display-whitelist", false);
-        return (useWhitelist == hiddenPlayerNames.contains(p)) && (!invisibility_asserts.containsKey(p));
+        return (!(useWhitelist ^ hiddenPlayerNames.contains(p))) && (!invisibility_asserts.containsKey(p));
     }
 
     /**

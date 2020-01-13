@@ -1,16 +1,16 @@
 package org.dynmap.bukkit.permissions;
 
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
-import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.Log;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
+import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 
 public class GroupManagerPermissions implements PermissionProvider {
     String name;
@@ -22,7 +22,7 @@ public class GroupManagerPermissions implements PermissionProvider {
         if (permissionsPlugin == null)
             return null;
         server.getPluginManager().enablePlugin(permissionsPlugin);
-        if (!permissionsPlugin.isEnabled())
+        if(permissionsPlugin.isEnabled() == false)
             return null;
         Log.info("Using GroupManager " + permissionsPlugin.getDescription().getVersion() + " for access control");
         return new GroupManagerPermissions(name, permissionsPlugin);
@@ -37,12 +37,13 @@ public class GroupManagerPermissions implements PermissionProvider {
     @Override
     public boolean has(CommandSender sender, String permission) {        
         Player player = sender instanceof Player ? (Player) sender : null;
-        return (player == null) || gm.getWorldsHolder().getDefaultWorld().getPermissionsHandler().permission(player, name + "." + permission);
+        boolean rslt = (player != null) ? gm.getWorldsHolder().getDefaultWorld().getPermissionsHandler().permission(player, name + "." + permission) : true;
+        return rslt;
     }
     
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
-        HashSet<String> hasperms = new HashSet<>();
+        HashSet<String> hasperms = new HashSet<String>();
         AnjoPermissionsHandler apm = gm.getWorldsHolder().getDefaultWorld().getPermissionsHandler();
         if (apm != null) {
             for (String pp : perms) {

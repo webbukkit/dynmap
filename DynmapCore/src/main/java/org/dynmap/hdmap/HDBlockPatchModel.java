@@ -1,15 +1,14 @@
 package org.dynmap.hdmap;
 
+import java.util.BitSet;
+
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.PatchDefinition;
-
-import java.util.BitSet;
 
 public class HDBlockPatchModel extends HDBlockModel {
     /* Patch model specific attributes */
     private PatchDefinition[] patches;
     private final int max_texture;
-
     /**
      * Block definition - positions correspond to Bukkit coordinates (+X is south, +Y is up, +Z is west)
      * (for patch models)
@@ -22,9 +21,9 @@ public class HDBlockPatchModel extends HDBlockModel {
         super(bs, databits, blockset);
         this.patches = patches;
         int max = 0;
-        for (PatchDefinition patch : patches) {
-            if ((patch != null) && (patch.textureindex > max))
-                max = patch.textureindex;
+        for(int i = 0; i < patches.length; i++) {
+            if((patches[i] != null) && (patches[i].textureindex > max))
+                max = patches[i].textureindex;
         }
         this.max_texture = max + 1;
     }

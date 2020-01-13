@@ -1,7 +1,6 @@
 package org.dynmap.utils;
 
-import org.jetbrains.annotations.NotNull;
-
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
@@ -19,17 +18,17 @@ public class BufferOutputStream extends OutputStream {
     public void reset() {
         len = 0;
     }
-
+            
     @Override
-    public final void write(int v) {
-        if (len >= buf.length) {
+    public final void write(int v) throws IOException {
+        if (len >= buf.length){
             buf = Arrays.copyOf(buf, buf.length + CHUNK_SIZE);
         }
         buf[len++] = (byte) v;
     }
-
+    
     @Override
-    public final void write(@NotNull byte[] b, int off, int wlen) {
+    public final void write(byte[] b, int off, int wlen) {
         if (wlen > 0) {
             if ((len + wlen - 1) >= buf.length) {
                 int nlen = len + wlen + CHUNK_SIZE - 1;
@@ -42,7 +41,7 @@ public class BufferOutputStream extends OutputStream {
     }
 
     @Override
-    public final void write(@NotNull byte[] b) {
+    public final void write(byte[] b) {
         write(b, 0, b.length);
     }
 }

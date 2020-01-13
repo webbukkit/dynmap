@@ -23,10 +23,7 @@ public class HDScaledBlockModels {
                 if(smod != null) {
                     boolean keep = false;
                     for(int i = 0; (!keep) && (i < smod.length); i++) {
-                        if (smod[i] == 0) {
-                            keep = true;
-                            break;
-                        }
+                        if(smod[i] == 0) keep = true;
                     }
                     if(keep) {
                         blockmodels[gidx] = smod;

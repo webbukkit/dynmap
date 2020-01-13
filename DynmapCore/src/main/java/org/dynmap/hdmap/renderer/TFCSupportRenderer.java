@@ -1,11 +1,15 @@
 package org.dynmap.hdmap.renderer;
 
-import org.dynmap.renderer.*;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+
+import org.dynmap.renderer.CustomRenderer;
+import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.renderer.MapDataContext;
+import org.dynmap.renderer.RenderPatch;
+import org.dynmap.renderer.RenderPatchFactory;
 
 public class TFCSupportRenderer extends CustomRenderer {
     private boolean isVert;
@@ -61,7 +65,7 @@ public class TFCSupportRenderer extends CustomRenderer {
     }
 
     private void buildMeshes(RenderPatchFactory rpf) {
-        ArrayList<RenderPatch> list = new ArrayList<>();
+        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
         for(int dat = 0; dat < 32; dat++) {
             switch(dat & SIDE_X) {
                 case SIDE_XP: // Just X+
@@ -92,7 +96,7 @@ public class TFCSupportRenderer extends CustomRenderer {
             else {
                 addBox(rpf, list, 0.25, 0.75, 0.5, 1.0, 0.25, 0.75);
             }
-            meshes[dat] = list.toArray(new RenderPatch[0]);
+            meshes[dat] = list.toArray(new RenderPatch[list.size()]);
             list.clear();
         }
     }
@@ -108,11 +112,11 @@ public class TFCSupportRenderer extends CustomRenderer {
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
         /* Build connection map - check each axis */
         int connect = 0;
-        for (int[] side : sides) {
-            DynmapBlockState blk = ctx.getBlockTypeAt(side[0], side[1], side[2]);
+        for (int i = 0; i < sides.length; i++) {
+            DynmapBlockState blk = ctx.getBlockTypeAt(sides[i][0], sides[i][1], sides[i][2]);
             if (blk.isAir()) continue;
             if (vertid.get(blk.globalStateIndex) || horizid.get(blk.globalStateIndex)) {
-                connect |= side[3];
+                connect |= sides[i][3];
             }
         }
         if (!isVert) {   /* Link horizontal to verticals below */

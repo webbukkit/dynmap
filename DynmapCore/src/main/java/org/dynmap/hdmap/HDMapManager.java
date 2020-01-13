@@ -1,28 +1,33 @@
 package org.dynmap.hdmap;
 
-import org.dynmap.*;
-import org.dynmap.utils.MapChunkCache;
-import org.dynmap.utils.MapIterator;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class HDMapManager {
-    public HashMap<String, HDShader> shaders = new HashMap<>();
-    public HashMap<String, HDPerspective> perspectives = new HashMap<>();
-    public HashMap<String, HDLighting> lightings = new HashMap<>();
-    public HashSet<HDMap> maps = new HashSet<>();
-    public HashMap<String, ArrayList<HDMap>> maps_by_world_perspective = new HashMap<>();
+import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
+import org.dynmap.DynmapWorld;
+import org.dynmap.Log;
+import org.dynmap.MapManager;
+import org.dynmap.MapType;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
 
+public class HDMapManager {
+    public HashMap<String, HDShader> shaders = new HashMap<String, HDShader>();
+    public HashMap<String, HDPerspective> perspectives = new HashMap<String, HDPerspective>();
+    public HashMap<String, HDLighting> lightings = new HashMap<String, HDLighting>();
+    public HashSet<HDMap> maps = new HashSet<HDMap>();
+    public HashMap<String, ArrayList<HDMap>> maps_by_world_perspective = new HashMap<String, ArrayList<HDMap>>();
+ 
     public void loadHDShaders(DynmapCore core) {
         Log.verboseinfo("Loading shaders...");
         /* Update mappings, if needed */
         TexturePack.handleBlockAlias();
 
         File f = new File(core.getDataFolder(), "shaders.txt");
-        if (!core.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
+        if(!core.updateUsingDefaultResource("/shaders.txt", f, "shaders")) {
             return;
         }
         ConfigurationNode shadercfg = new ConfigurationNode(f);
@@ -117,7 +122,7 @@ public class HDMapManager {
         if(w == null) {
             return new HDShaderState[0];
         }
-        ArrayList<HDShaderState> shaders = new ArrayList<>();
+        ArrayList<HDShaderState> shaders = new ArrayList<HDShaderState>();
         for(MapType map : w.maps) {
             if(map instanceof HDMap) {
                 HDMap hdmap = (HDMap)map;
@@ -129,7 +134,7 @@ public class HDMapManager {
                 }
             }
         }
-        return shaders.toArray(new HDShaderState[0]);
+        return shaders.toArray(new HDShaderState[shaders.size()]);
     }
     
     private static final int BIOMEDATAFLAG = 0;
@@ -144,22 +149,22 @@ public class HDMapManager {
     public boolean isHightestBlockYDataNeeded(HDMapTile t) {
         return getCachedFlags(t)[HIGHESTZFLAG];
     }
-
-    public boolean isRawBiomeDataNeeded(HDMapTile t) {
+    
+    public boolean isRawBiomeDataNeeded(HDMapTile t) { 
         return getCachedFlags(t)[RAWBIOMEFLAG];
     }
-
+    
     public boolean isBlockTypeDataNeeded(HDMapTile t) {
         return getCachedFlags(t)[BLOCKTYPEFLAG];
     }
-
-    private HashMap<String, boolean[]> cached_data_flags_by_world_perspective = new HashMap<>();
-
+    
+    private HashMap<String, boolean[]> cached_data_flags_by_world_perspective = new HashMap<String, boolean[]>();
+    
     private boolean[] getCachedFlags(HDMapTile t) {
         String w = t.getDynmapWorld().getName();
         String k = w + "/" + t.perspective.getName();
         boolean[] flags = cached_data_flags_by_world_perspective.get(k);
-        if (flags != null)
+        if(flags != null)
             return flags;
         flags = new boolean[4];
         cached_data_flags_by_world_perspective.put(k, flags);

@@ -33,7 +33,7 @@ public class TexturePackHDUnderwaterShader extends TexturePackHDShader {
     			this.lastblk = full_water;
     			this.lastblkhit = full_water;
     		}
-            return ready && super.processBlock(ps);
+            return ready ? super.processBlock(ps) : false;
         }
     }
     public TexturePackHDUnderwaterShader(DynmapCore core, ConfigurationNode configuration) {

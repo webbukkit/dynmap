@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class UpdateQueue {
     public Object lock = new Object();
-    private HashMap<UpdateRec, UpdateRec> updateSet = new HashMap<>();
+    private HashMap<UpdateRec,UpdateRec> updateSet = new HashMap<UpdateRec,UpdateRec>();
     private UpdateRec orderedlist = null;   /* Oldest to youngest */
     private static final long maxUpdateAge = 120000;
     private static final long ageOutPeriod = 5000;
@@ -86,7 +86,7 @@ public class UpdateQueue {
         }
     }
 
-    private ArrayList<Client.Update> tmpupdates = new ArrayList<>();
+    private ArrayList<Client.Update> tmpupdates = new ArrayList<Client.Update>();
 
     public Client.Update[] getUpdatedObjects(long since) {
         Client.Update[] updates;

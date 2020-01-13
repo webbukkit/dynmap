@@ -1,13 +1,13 @@
 package org.dynmap;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import static org.dynmap.JSONUtils.a;
+import static org.dynmap.JSONUtils.s;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.dynmap.JSONUtils.a;
-import static org.dynmap.JSONUtils.s;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 public class ClientComponent extends Component {
     private boolean disabled;
     
@@ -25,41 +25,41 @@ public class ClientComponent extends Component {
     protected void disableComponent() {
         disabled = true;
     }
-
+    
     protected void buildClientConfiguration(JSONObject root) {
         JSONObject o = createClientConfiguration();
         a(root, "components", o);
     }
-
+    
     protected JSONObject createClientConfiguration() {
         JSONObject o = convertMap(configuration);
         o.remove("class");
         return o;
     }
-
-    protected static JSONObject convertMap(Map<String, ?> m) {
+    
+    protected static final JSONObject convertMap(Map<String, ?> m) {
         JSONObject o = new JSONObject();
-        for (Map.Entry<String, ?> entry : m.entrySet()) {
+        for(Map.Entry<String, ?> entry : m.entrySet()) {
             s(o, entry.getKey(), convert(entry.getValue()));
         }
         return o;
     }
-
+    
     @SuppressWarnings("unchecked")
-    protected static JSONArray convertList(List<?> l) {
+    protected static final JSONArray convertList(List<?> l) {
         JSONArray o = new JSONArray();
-        for (Object entry : l) {
+        for(Object entry : l) {
             o.add(convert(entry));
         }
         return o;
     }
-
+    
     @SuppressWarnings("unchecked")
-    protected static Object convert(Object o) {
+    protected static final Object convert(Object o) {
         if (o instanceof Map<?, ?>) {
-            return convertMap((Map<String, ?>) o);
+            return convertMap((Map<String, ?>)o);
         } else if (o instanceof List<?>) {
-            return convertList((List<?>) o);
+            return convertList((List<?>)o);
         }
         return o;
     }

@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 public class FilterHandler extends AbstractHandler {
     private Handler handler;
-    private LinkedList<FilterHolder> filters = new LinkedList<>();
+    private LinkedList<FilterHolder> filters = new LinkedList<FilterHolder>();
 
     public FilterHandler() {
     }

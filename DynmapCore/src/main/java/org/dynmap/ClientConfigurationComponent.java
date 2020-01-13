@@ -1,15 +1,14 @@
 package org.dynmap;
 
-import org.dynmap.Event.Listener;
-import org.json.simple.JSONObject;
-
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
+import org.dynmap.Event.Listener;
+import org.json.simple.JSONObject;
 
 public class ClientConfigurationComponent extends Component {
     public ClientConfigurationComponent(final DynmapCore core, ConfigurationNode configuration) {
         super(core, configuration);
-        core.events.addListener("buildclientconfiguration", new Listener<JSONObject>() {
+        core.events.<JSONObject>addListener("buildclientconfiguration", new Listener<JSONObject>() {
             @Override
             public void triggered(JSONObject t) {
                 ConfigurationNode c = core.configuration;

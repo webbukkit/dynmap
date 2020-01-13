@@ -1,16 +1,17 @@
 package org.dynmap.forge_1_11_2.permissions;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.Log;
-import org.dynmap.forge_1_11_2.DynmapPlugin;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+
+import org.dynmap.ConfigurationNode;
+import org.dynmap.Log;
+import org.dynmap.forge_1_11_2.DynmapPlugin;
 
 public class FilePermissions implements PermissionProvider {
     private HashMap<String, Set<String>> perms;
@@ -29,12 +30,12 @@ public class FilePermissions implements PermissionProvider {
     }
     
     private FilePermissions(ConfigurationNode cfg) {
-        perms = new HashMap<>();
+        perms = new HashMap<String,Set<String>>();
         for(String k : cfg.keySet()) {
             List<String> p = cfg.getStrings(k, null);
             if(p != null) {
                 k = k.toLowerCase();
-                HashSet<String> pset = new HashSet<>();
+                HashSet<String> pset = new HashSet<String>();
                 for(String perm : p) {
                     pset.add(perm.toLowerCase());
                 }
@@ -51,12 +52,15 @@ public class FilePermissions implements PermissionProvider {
         if((ps != null) && (ps.contains(perm))) {
             return true;
         }
-        return defperms.contains(perm);
+        if(defperms.contains(perm)) {
+            return true;
+        }
+        return false;
     }
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
         player = player.toLowerCase();
-        HashSet<String> rslt = new HashSet<>();
+        HashSet<String> rslt = new HashSet<String>();
         if(DynmapPlugin.plugin.isOp(player)) {
             rslt.addAll(perms);
         }
@@ -83,14 +87,14 @@ public class FilePermissions implements PermissionProvider {
     @Override
     public boolean has(ICommandSender sender, String permission) {
         if(sender instanceof EntityPlayer) {
-            return hasPerm(sender.getName().toLowerCase(), permission);
+            return hasPerm(((EntityPlayer) sender).getName().toLowerCase(), permission);
         }
         return true;
     }
     @Override
     public boolean hasPermissionNode(ICommandSender sender, String permission) {
         if(sender instanceof EntityPlayer) {
-            String player = sender.getName().toLowerCase();
+            String player = ((EntityPlayer) sender).getName().toLowerCase();
             return DynmapPlugin.plugin.isOp(player);
         }
         return false;

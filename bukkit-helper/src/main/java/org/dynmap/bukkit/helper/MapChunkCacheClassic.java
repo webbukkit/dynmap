@@ -1,8 +1,29 @@
 package org.dynmap.bukkit.helper;
 
-import org.bukkit.ChunkSnapshot;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import org.bukkit.World;
+import org.bukkit.Chunk;
 import org.bukkit.block.Biome;
+import org.bukkit.ChunkSnapshot;
+import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCore;
+import org.dynmap.DynmapWorld;
+import org.dynmap.Log;
+import org.dynmap.bukkit.helper.AbstractMapChunkCache.Snapshot;
+import org.dynmap.bukkit.helper.SnapshotCache.SnapshotRec;
+import org.dynmap.common.BiomeMap;
+import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.renderer.RenderPatchFactory;
+import org.dynmap.utils.DynIntHashMap;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.BlockStep;
+import org.dynmap.utils.VisibilityLimit;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread

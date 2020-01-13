@@ -1,16 +1,17 @@
 package org.dynmap.bukkit.permissions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.Log;
+
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class PEXPermissions implements PermissionProvider {
     String name;
@@ -21,7 +22,7 @@ public class PEXPermissions implements PermissionProvider {
         if (permissionsPlugin == null)
             return null;
         server.getPluginManager().enablePlugin(permissionsPlugin);
-        if (!permissionsPlugin.isEnabled())
+        if(permissionsPlugin.isEnabled() == false)
             return null;
         //Broken in new dev builds, apparently
         //if(PermissionsEx.isAvailable() == false)
@@ -38,12 +39,12 @@ public class PEXPermissions implements PermissionProvider {
     @Override
     public boolean has(CommandSender sender, String permission) {
         Player player = sender instanceof Player ? (Player) sender : null;
-        return (player == null) || pm.has(player, name + "." + permission);
+        return (player != null) ? pm.has(player, name + "." + permission) : true;
     }
     
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
-        HashSet<String> hasperms = new HashSet<>();
+        HashSet<String> hasperms = new HashSet<String>();
         PermissionUser pu = pm.getUser(player);
         if(pu != null) {
             for (String pp : perms) {

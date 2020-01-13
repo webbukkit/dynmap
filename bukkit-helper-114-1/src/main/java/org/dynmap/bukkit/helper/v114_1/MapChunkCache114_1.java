@@ -1,10 +1,13 @@
 package org.dynmap.bukkit.helper.v114_1;
 
-import net.minecraft.server.v1_14_R1.*;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.bukkit.ChunkSnapshot;
+import org.bukkit.World;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.bukkit.helper.AbstractMapChunkCache;
@@ -15,8 +18,12 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.VisibilityLimit;
 
-import java.io.IOException;
-import java.util.Arrays;
+import net.minecraft.server.v1_14_R1.Chunk;
+import net.minecraft.server.v1_14_R1.ChunkCoordIntPair;
+import net.minecraft.server.v1_14_R1.ChunkRegionLoader;
+import net.minecraft.server.v1_14_R1.DataBits;
+import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import net.minecraft.server.v1_14_R1.NBTTagList;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -24,33 +31,30 @@ import java.util.Arrays;
 public class MapChunkCache114_1 extends AbstractMapChunkCache {
 
 	public static class NBTSnapshot implements Snapshot {
-		private interface Section {
-			DynmapBlockState getBlockType(int x, int y, int z);
+	    private static interface Section {
+	        public DynmapBlockState getBlockType(int x, int y, int z);
+	        public int getBlockSkyLight(int x, int y, int z);
+	        public int getBlockEmittedLight(int x, int y, int z);
+	        public boolean isEmpty();
+	    }
+	    private final int x, z;
+	    private final Section[] section;
+	    private final int[] hmap; // Height map
+	    private final int[] biome;
+	    private final Object[] biomebase;
+	    private final long captureFulltime;
+	    private final int sectionCnt;
+	    private final long inhabitedTicks;
 
-			int getBlockSkyLight(int x, int y, int z);
+	    private static final int BLOCKS_PER_SECTION = 16 * 16 * 16;
+	    private static final int COLUMNS_PER_CHUNK = 16 * 16;
+	    private static final byte[] emptyData = new byte[BLOCKS_PER_SECTION / 2];
+	    private static final byte[] fullData = new byte[BLOCKS_PER_SECTION / 2];
 
-			int getBlockEmittedLight(int x, int y, int z);
-
-			boolean isEmpty();
-		}
-
-		private final int x, z;
-		private final Section[] section;
-		private final int[] hmap; // Height map
-		private final int[] biome;
-		private final Object[] biomebase;
-		private final long captureFulltime;
-		private final int sectionCnt;
-		private final long inhabitedTicks;
-
-		private static final int BLOCKS_PER_SECTION = 16 * 16 * 16;
-		private static final int COLUMNS_PER_CHUNK = 16 * 16;
-		private static final byte[] emptyData = new byte[BLOCKS_PER_SECTION / 2];
-		private static final byte[] fullData = new byte[BLOCKS_PER_SECTION / 2];
-
-		static {
-			Arrays.fill(fullData, (byte) 0xFF);
-		}
+	    static
+	    {
+	        Arrays.fill(fullData, (byte)0xFF);
+	    }
 
 	    private static class EmptySection implements Section {
 	        @Override
@@ -294,38 +298,38 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
         if (nbt != null) {
             nbt = nbt.getCompound("Level");
             if (nbt != null) {
-				String stat = nbt.getString("Status");
-				if ((stat == null) || (!stat.equals("full"))) {
-					nbt = null;
-				}
-			}
+                String stat = nbt.getString("Status");
+                if ((stat == null) || (stat.equals("full") == false)) {
+                    nbt = null;
+                }
+            }
         }
         return nbt;
     }
     
     private NBTTagCompound loadChunkNBT(World w, int x, int z) {
-		CraftWorld cw = (CraftWorld) w;
-		NBTTagCompound nbt = null;
-		ChunkCoordIntPair cc = new ChunkCoordIntPair(x, z);
-		try {
-			nbt = cw.getHandle().getChunkProvider().playerChunkMap.read(cc);
-		} catch (IOException ignored) {
-		}
-		if (nbt != null) {
-			nbt = nbt.getCompound("Level");
-			if (nbt != null) {
-				String stat = nbt.getString("Status");
-				if ((stat == null) || (!stat.equals("full"))) {
-					nbt = null;
-					if ((stat == null) || stat.equals("") && DynmapCore.migrateChunks()) {
-						Chunk c = cw.getHandle().getChunkAt(x, z);
-						if (c != null) {
-							nbt = fetchLoadedChunkNBT(w, x, z);
-							cw.getHandle().unloadChunk(c);
-						}
-					}
-				}
-			}
+        CraftWorld cw = (CraftWorld) w;
+        NBTTagCompound nbt = null;
+        ChunkCoordIntPair cc = new ChunkCoordIntPair(x, z);
+        try {
+            nbt = cw.getHandle().getChunkProvider().playerChunkMap.read(cc);
+        } catch (IOException iox) {
+        }
+        if (nbt != null) {
+            nbt = nbt.getCompound("Level");
+            if (nbt != null) {
+            	String stat = nbt.getString("Status");
+            	if ((stat == null) || (stat.equals("full") == false)) {
+                    nbt = null;
+                    if ((stat == null) || stat.equals("") && DynmapCore.migrateChunks()) {
+                        Chunk c = cw.getHandle().getChunkAt(x, z);
+                        if (c != null) {
+                            nbt = fetchLoadedChunkNBT(w, x, z);
+                            cw.getHandle().unloadChunk(c);
+                        }
+                    }
+            	}
+            }
         }
         return nbt;
     }   
@@ -339,18 +343,18 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
     // Load chunk snapshots
     @Override
     public int loadChunks(int max_to_load) {
-		if (!dw.isLoaded())
-			return 0;
-		int cnt = 0;
-		if (iterator == null)
-			iterator = chunks.listIterator();
+        if(dw.isLoaded() == false)
+            return 0;        
+        int cnt = 0;
+        if(iterator == null)
+            iterator = chunks.listIterator();
 
-		DynmapCore.setIgnoreChunkLoads(true);
-		// Load the required chunks.
-		while ((cnt < max_to_load) && iterator.hasNext()) {
-			long startTime = System.nanoTime();
-			DynmapChunk chunk = iterator.next();
-			boolean vis = true;
+        DynmapCore.setIgnoreChunkLoads(true);
+        // Load the required chunks.
+        while((cnt < max_to_load) && iterator.hasNext()) {
+            long startTime = System.nanoTime();
+            DynmapChunk chunk = iterator.next();
+            boolean vis = true;
             if(visible_limits != null) {
                 vis = false;
                 for(VisibilityLimit limit : visible_limits) {
@@ -426,27 +430,27 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
             snaparray[idx] = ss;
             snaptile[idx] = ssr.tileData;
             inhabitedTicks[idx] = inhabited_ticks;
-			if (nbt == null)
-				endChunkLoad(startTime, ChunkStats.UNGENERATED_CHUNKS);
-			else if (did_load)
-				endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
-			else
-				endChunkLoad(startTime, ChunkStats.LOADED_CHUNKS);
-			cnt++;
-		}
-		DynmapCore.setIgnoreChunkLoads(false);
+            if (nbt == null)
+                endChunkLoad(startTime, ChunkStats.UNGENERATED_CHUNKS);
+            else if (did_load)
+                endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
+            else
+                endChunkLoad(startTime, ChunkStats.LOADED_CHUNKS);
+            cnt++;
+        }
+        DynmapCore.setIgnoreChunkLoads(false);
 
-		if (!iterator.hasNext()) {   /* If we're done */
-			isempty = true;
-			/* Fill missing chunks with empty dummy chunk */
-			for (int i = 0; i < snaparray.length; i++) {
-				if (snaparray[i] == null)
-					snaparray[i] = EMPTY;
-				else if (snaparray[i] != EMPTY)
-					isempty = false;
-			}
-		}
+        if(iterator.hasNext() == false) {   /* If we're done */
+            isempty = true;
+            /* Fill missing chunks with empty dummy chunk */
+            for(int i = 0; i < snaparray.length; i++) {
+                if(snaparray[i] == null)
+                    snaparray[i] = EMPTY;
+                else if(snaparray[i] != EMPTY)
+                    isempty = false;
+            }
+        }
 
-		return cnt;
-	}
+        return cnt;
+    }
 }

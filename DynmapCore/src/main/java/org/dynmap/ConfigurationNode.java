@@ -1,28 +1,41 @@
 package org.dynmap;
 
-import org.jetbrains.annotations.NotNull;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.nodes.*;
+import org.yaml.snakeyaml.nodes.CollectionNode;
+import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.SequenceNode;
+import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
-
-import java.io.*;
-import java.lang.reflect.Constructor;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 public class ConfigurationNode implements Map<String, Object> {
     public Map<String, Object> entries;
     private File f;
     private Yaml yaml;
-
+    
     public ConfigurationNode() {
-        entries = new LinkedHashMap<>();
+        entries = new LinkedHashMap<String, Object>();
     }
 
     private void initparse() {
@@ -40,7 +53,7 @@ public class ConfigurationNode implements Map<String, Object> {
 
     public ConfigurationNode(File f) {
         this.f = f;
-        entries = new LinkedHashMap<>();
+        entries = new LinkedHashMap<String, Object>();
     }
     
     public ConfigurationNode(Map<String, Object> map) {
@@ -57,10 +70,10 @@ public class ConfigurationNode implements Map<String, Object> {
     @SuppressWarnings("unchecked")
     public boolean load(InputStream in) {
         initparse();
-
+        
         Object o = yaml.load(new UnicodeReader(in));
-        if ((o instanceof Map))
-            entries = (Map<String, Object>) o;
+        if((o != null) && (o instanceof Map))
+            entries = (Map<String, Object>)o;
         return (entries != null);
     }
     
@@ -68,17 +81,24 @@ public class ConfigurationNode implements Map<String, Object> {
     public boolean load() {
         initparse();
 
-        try (FileInputStream fis = new FileInputStream(f)) {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(f);
             Object o = yaml.load(new UnicodeReader(fis));
-            if ((o != null) && (o instanceof Map))
-                entries = (Map<String, Object>) o;
+            if((o != null) && (o instanceof Map))
+                entries = (Map<String, Object>)o;
             fis.close();
-        } catch (YAMLException e) {
-            Log.severe("Error parsing " + f.getPath() + ". Use http://yamllint.com to debug the YAML syntax.");
+        }
+        catch (YAMLException e) {
+            Log.severe("Error parsing " + f.getPath() + ". Use http://yamllint.com to debug the YAML syntax." );
             throw e;
-        } catch (IOException iox) {
+        } catch(IOException iox) {
             Log.severe("Error reading " + f.getPath());
             return false;
+        } finally {
+            if(fis != null) {
+                try { fis.close(); } catch (IOException x) {}
+            }
         }
         return (entries != null);
     }
@@ -100,17 +120,16 @@ public class ConfigurationNode implements Map<String, Object> {
 
         try {
             stream = new FileOutputStream(file);
-            OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
+            OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
             yaml.dump(entries, writer);
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException e) {
         } finally {
             try {
                 if (stream != null) {
                     stream.close();
                 }
-            } catch (IOException ignored) {
-            }
+            } catch (IOException e) {}
         }
         return false;
     }
@@ -186,7 +205,7 @@ public class ConfigurationNode implements Map<String, Object> {
         if (!(o instanceof List<?>)) {
             return def;
         }
-        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<String> strings = new ArrayList<String>();
         for(Object i : (List<?>)o) {
             strings.add(i.toString());
         }
@@ -203,18 +222,19 @@ public class ConfigurationNode implements Map<String, Object> {
     @SuppressWarnings("unchecked")
     public <T> List<T> getList(String path) {
         try {
-            return (List<T>) getObject(path, null);
+            List<T> list = (List<T>)getObject(path, null);
+            return list;
         } catch (ClassCastException e) {
             try {
                 T o = (T)getObject(path, null);
                 if (o == null) {
-                    return new ArrayList<>();
+                    return new ArrayList<T>();
                 }
-                ArrayList<T> al = new ArrayList<>();
+                ArrayList<T> al = new ArrayList<T>();
                 al.add(o);
                 return al;
             } catch (ClassCastException e2) {
-                return new ArrayList<>();
+                return new ArrayList<T>();
             }
         }
     }
@@ -235,16 +255,16 @@ public class ConfigurationNode implements Map<String, Object> {
     public List<ConfigurationNode> getNodes(String path) {
         List<Object> o = getList(path);
 
-        if (o == null)
-            return new ArrayList<>();
-
-        ArrayList<ConfigurationNode> nodes = new ArrayList<>();
-        for (Object i : o) {
+        if(o == null)
+            return new ArrayList<ConfigurationNode>();
+        
+        ArrayList<ConfigurationNode> nodes = new ArrayList<ConfigurationNode>();
+        for(Object i : (List<?>)o) {
             if (i instanceof Map<?, ?>) {
                 Map<String, Object> map;
                 try {
-                    map = (Map<String, Object>) i;
-                } catch (ClassCastException e) {
+                    map = (Map<String, Object>)i;
+                } catch(ClassCastException e) {
                     continue;
                 }
                 nodes.add(new ConfigurationNode(map));
@@ -252,37 +272,39 @@ public class ConfigurationNode implements Map<String, Object> {
         }
         return nodes;
     }
-
+    
     public void extend(Map<String, Object> other) {
         if (other != null)
             extendMap(this, other);
     }
-
-    private static Object copyValue(Object v) {
-        if (v instanceof Map) {
+    
+    private final static Object copyValue(Object v) {
+        if(v instanceof Map) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> mv = (Map<String, Object>) v;
-            LinkedHashMap<String, Object> newv = new LinkedHashMap<>();
-            for (Map.Entry<String, Object> me : mv.entrySet()) {
+            Map<String, Object> mv = (Map<String, Object>)v;
+            LinkedHashMap<String, Object> newv = new LinkedHashMap<String,Object>();
+            for(Map.Entry<String, Object> me : mv.entrySet()) {
                 newv.put(me.getKey(), copyValue(me.getValue()));
             }
             return newv;
-        } else if (v instanceof List) {
+        }
+        else if(v instanceof List) {
             @SuppressWarnings("unchecked")
-            List<Object> lv = (List<Object>) v;
-            ArrayList<Object> newv = new ArrayList<>();
-            for (Object o : lv) {
-                newv.add(copyValue(o));
+            List<Object> lv = (List<Object>)v;
+            ArrayList<Object> newv = new ArrayList<Object>();
+            for(int i = 0; i < lv.size(); i++) {
+                newv.add(copyValue(lv.get(i)));
             }
             return newv;
-        } else {
+        }
+        else {
             return v;
         }
     }
 
-    private static void extendMap(Map<String, Object> left, Map<String, Object> right) {
+    private final static void extendMap(Map<String, Object> left, Map<String, Object> right) {
         ConfigurationNode original = new ConfigurationNode(left);
-        for (Map.Entry<String, Object> entry : right.entrySet()) {
+        for(Map.Entry<String, Object> entry : right.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             original.put(key, copyValue(value));
@@ -293,17 +315,17 @@ public class ConfigurationNode implements Map<String, Object> {
         String typeName = getString("class");
         try {
             Class<?> mapTypeClass = Class.forName(typeName);
-
-            Class<?>[] constructorParameterWithConfiguration = new Class<?>[constructorParameters.length + 1];
-            System.arraycopy(constructorParameters, 0, constructorParameterWithConfiguration, 0, constructorParameters.length);
-            constructorParameterWithConfiguration[constructorParameterWithConfiguration.length - 1] = ConfigurationNode.class;
-
-            Object[] constructorArgumentsWithConfiguration = new Object[constructorArguments.length + 1];
-            System.arraycopy(constructorArguments, 0, constructorArgumentsWithConfiguration, 0, constructorArguments.length);
-            constructorArgumentsWithConfiguration[constructorArgumentsWithConfiguration.length - 1] = this;
+        
+            Class<?>[] constructorParameterWithConfiguration = new Class<?>[constructorParameters.length+1];
+            for(int i = 0; i < constructorParameters.length; i++) { constructorParameterWithConfiguration[i] = constructorParameters[i]; }
+            constructorParameterWithConfiguration[constructorParameterWithConfiguration.length-1] = ConfigurationNode.class;
+            
+            Object[] constructorArgumentsWithConfiguration = new Object[constructorArguments.length+1];
+            for(int i = 0; i < constructorArguments.length; i++) { constructorArgumentsWithConfiguration[i] = constructorArguments[i]; }
+            constructorArgumentsWithConfiguration[constructorArgumentsWithConfiguration.length-1] = this;
             Constructor<?> constructor = mapTypeClass.getConstructor(constructorParameterWithConfiguration);
             @SuppressWarnings("unchecked")
-            T t = (T) constructor.newInstance(constructorArgumentsWithConfiguration);
+            T t = (T)constructor.newInstance(constructorArgumentsWithConfiguration);
             return t;
         } catch (Exception e) {
             // TODO: Remove reference to MapManager.
@@ -315,9 +337,9 @@ public class ConfigurationNode implements Map<String, Object> {
     
     public <T> List<T> createInstances(String path, Class<?>[] constructorParameters, Object[] constructorArguments) {
         List<ConfigurationNode> nodes = getNodes(path);
-        List<T> instances = new ArrayList<>();
+        List<T> instances = new ArrayList<T>();
         for(ConfigurationNode node : nodes) {
-            T instance = node.createInstance(constructorParameters, constructorArguments);
+            T instance = node.<T>createInstance(constructorParameters, constructorArguments);
             if (instance != null) {
                 instances.add(instance);
             }
@@ -361,7 +383,7 @@ public class ConfigurationNode implements Map<String, Object> {
     }
 
     @Override
-    public void putAll(@NotNull Map<? extends String, ?> m) {
+    public void putAll(Map<? extends String, ? extends Object> m) {
         entries.putAll(m);
     }
 
@@ -370,25 +392,22 @@ public class ConfigurationNode implements Map<String, Object> {
         entries.clear();
     }
 
-    @NotNull
     @Override
     public Set<String> keySet() {
         return entries.keySet();
     }
 
-    @NotNull
     @Override
     public Collection<Object> values() {
         return entries.values();
     }
 
-    @NotNull
     @Override
     public Set<java.util.Map.Entry<String, Object>> entrySet() {
         return entries.entrySet();
     }
-
-    private static class EmptyNullRepresenter extends Representer {
+    
+    private class EmptyNullRepresenter extends Representer {
 
         public EmptyNullRepresenter() {
             super();

@@ -1,7 +1,6 @@
 package org.dynmap.utils;
 
 import java.util.ConcurrentModificationException;
-import java.util.Objects;
 
 /**
  * This is a copy of java.util.HashMap which uses longs as keys
@@ -117,7 +116,7 @@ public class DynLongHashMap
     /**
      * The hash table data.
      */
-    transient Entry[] table;
+    transient Entry table[];
 
     /**
      * The total number of mappings in the hash table.
@@ -243,7 +242,7 @@ public class DynLongHashMap
      * for this key.
      */
     Entry getEntry(long key) {
-        Entry[] tab = table;
+        Entry tab[] = table;
         int hash = (int) key;
         int index = (hash & 0x7FFFFFFF) % tab.length;
 
@@ -263,7 +262,7 @@ public class DynLongHashMap
      *         specified value.
      */
     public boolean containsValue(Object value) {
-        Entry[] tab = table;
+        Entry tab[] = table;
 
         if (value==null) {
             for (int i = tab.length ; i-- > 0 ;)
@@ -293,7 +292,7 @@ public class DynLongHashMap
      *         <tt>null</tt> with the specified key.
      */
     public Object put(long key, Object value) {
-        Entry[] tab = table;
+        Entry tab[] = table;
         int hash = (int) key;
         int index = (hash & 0x7FFFFFFF) % tab.length;
 
@@ -340,7 +339,7 @@ public class DynLongHashMap
      * for this key.
      */
     Entry removeEntryForKey(long key) {
-        Entry[] tab = table;
+        Entry tab[] = table;
         int hash = (int) key;
         int index = (hash & 0x7FFFFFFF) % tab.length;
 
@@ -389,7 +388,7 @@ public class DynLongHashMap
      * Removes all mappings from this map.
      */
     public void clear() {
-        Entry[] tab = table;
+        Entry tab[] = table;
         modCount++;
         for (int index = tab.length; --index >= 0; )
             tab[index] = null;
@@ -402,10 +401,10 @@ public class DynLongHashMap
      * number of keys in this map exceeds its capacity and load factor.
      */
     void rehash() {
-        Entry[] oldTable = table;
+        Entry oldTable[] = table;
         int oldCapacity = oldTable.length;
         int newCapacity = oldCapacity * 2 + 1;
-        Entry[] newTable = new Entry[newCapacity];
+        Entry newTable[] = new Entry[newCapacity];
 
         modCount++;
         threshold = (int)(newCapacity * loadFactor);
@@ -424,7 +423,7 @@ public class DynLongHashMap
     }
 
     static boolean eq(Object o1, Object o2) {
-        return (Objects.equals(o1, o2));
+        return (o1==null ? o2==null : o1.equals(o2));
     }
 
     Entry newEntry(int hash, long key, Object value, Entry next) {

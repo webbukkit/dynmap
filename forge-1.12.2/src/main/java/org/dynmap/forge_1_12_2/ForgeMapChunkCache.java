@@ -1,6 +1,29 @@
 package org.dynmap.forge_1_12_2;
 
-import net.minecraft.nbt.*;
+import java.io.DataInputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagByteArray;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagFloat;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagIntArray;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagLong;
+import net.minecraft.nbt.NBTTagShort;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -11,6 +34,7 @@ import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.chunk.storage.RegionFileCache;
 import net.minecraft.world.gen.ChunkProviderServer;
+
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
@@ -20,13 +44,11 @@ import org.dynmap.forge_1_12_2.SnapshotCache.SnapshotRec;
 import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.RenderPatchFactory;
-import org.dynmap.utils.*;
-
-import java.io.DataInputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
+import org.dynmap.utils.DynIntHashMap;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
+import org.dynmap.utils.BlockStep;
+import org.dynmap.utils.VisibilityLimit;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -67,13 +89,13 @@ public class ForgeMapChunkCache extends MapChunkCache
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
     private Set<?> queue = null;
 
-    private static final BlockStep[] unstep = {BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
+    private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
             BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS
-    };
+                                              };
 
     private static BiomeMap[] biome_to_bmap;
 
-    private static int getIndexInChunk(int cx, int cy, int cz) {
+    private static final int getIndexInChunk(int cx, int cy, int cz) {
         return (cy << 8) | (cz << 4) | cx;
     }
 
@@ -680,14 +702,14 @@ public class ForgeMapChunkCache extends MapChunkCache
         @Override
         public Object getBlockTileEntityField(String fieldId) {
             try {
-                int idx = getIndexInChunk(bx, y, bz);
-                Object[] vals = (Object[]) snaptile[chunkindex].get(idx);
+                int idx = getIndexInChunk(bx,y,bz);
+                Object[] vals = (Object[])snaptile[chunkindex].get(idx);
                 for (int i = 0; i < vals.length; i += 2) {
                     if (vals[i].equals(fieldId)) {
-                        return vals[i + 1];
+                        return vals[i+1];
                     }
                 }
-            } catch (Exception ignored) {
+            } catch (Exception x) {
             }
             return null;
         }
@@ -860,59 +882,63 @@ public class ForgeMapChunkCache extends MapChunkCache
 
 
     public static void init() {
-        if (!init) {
-            Field[] f = ChunkProviderServer.class.getDeclaredFields();
+    	if (!init)
+    	{
+    		Field[] f = ChunkProviderServer.class.getDeclaredFields();
+    		
+    		for(int i = 0; i < f.length; i++) {
+    			if((unloadqueue == null) && f[i].getType().isAssignableFrom(java.util.Set.class)) {
+    	    		unloadqueue = f[i];
+    				//Log.info("Found unloadqueue - " + f[i].getName());
+    				unloadqueue.setAccessible(true);
+    			}
+    			else if((currentchunkloader == null) && f[i].getType().isAssignableFrom(IChunkLoader.class)) {
+    				currentchunkloader = f[i];
+    				//Log.info("Found currentchunkprovider - " + f[i].getName());
+    				currentchunkloader.setAccessible(true);
+    			}
+    		}
+    		
+    		f = WorldServer.class.getDeclaredFields();
+    		for(int i = 0; i < f.length; i++) {
+    			if((updateEntityTick == null) && f[i].getType().isAssignableFrom(int.class)) {
+    				updateEntityTick = f[i];
+    				//Log.info("Found updateEntityTick - " + f[i].getName());
+    				updateEntityTick.setAccessible(true);
+    			}
+    		}
 
-            for (Field item : f) {
-                if ((unloadqueue == null) && item.getType().isAssignableFrom(Set.class)) {
-                    unloadqueue = item;
-                    //Log.info("Found unloadqueue - " + f[i].getName());
-                    unloadqueue.setAccessible(true);
-                } else if ((currentchunkloader == null) && item.getType().isAssignableFrom(IChunkLoader.class)) {
-                    currentchunkloader = item;
-                    //Log.info("Found currentchunkprovider - " + f[i].getName());
-                    currentchunkloader.setAccessible(true);
-                }
-            }
+    		f = AnvilChunkLoader.class.getDeclaredFields();
+    		for(int i = 0; i < f.length; i++) {
+    		    if((chunksToRemove == null) && (f[i].getType().equals(Map.class))) {
+    		        chunksToRemove = f[i];
+    		        chunksToRemove.setAccessible(true);
+    		    }
+    		    else if((pendingAnvilChunksCoordinates == null) && (f[i].getType().equals(Set.class))) {
+    		        pendingAnvilChunksCoordinates = f[i];
+    		        pendingAnvilChunksCoordinates.setAccessible(true);
+    		    }
+    		}
+    		// Get writeChunkToNBT method
+    	    Method[] ma = AnvilChunkLoader.class.getDeclaredMethods();
+    	    for (Method m : ma) {
+    	        Class<?>[] p = m.getParameterTypes();
+    	        if ((p.length == 3) && (p[0].equals(Chunk.class)) && (p[1].equals(World.class)) && (p[2].equals(NBTTagCompound.class))) {
+    	            writechunktonbt = m;
+    	            m.setAccessible(true);
+    	            break;
+    	        }
+    	    }
+    		
+            if ((unloadqueue == null) || (currentchunkloader == null) || (writechunktonbt == null))
+            {
+    			Log.severe("ERROR: cannot find unload queue or chunk provider field - dynmap cannot load chunks");
+    		}
+			if (updateEntityTick == null) {
+				Log.severe("ERROR: cannot find updateEntityTick - dynmap cannot drive entity cleanup when no players are active");
+			}
 
-            f = WorldServer.class.getDeclaredFields();
-            for (Field value : f) {
-                if ((updateEntityTick == null) && value.getType().isAssignableFrom(int.class)) {
-                    updateEntityTick = value;
-                    //Log.info("Found updateEntityTick - " + f[i].getName());
-                    updateEntityTick.setAccessible(true);
-                }
-            }
-
-            f = AnvilChunkLoader.class.getDeclaredFields();
-            for (Field field : f) {
-                if ((chunksToRemove == null) && (field.getType().equals(Map.class))) {
-                    chunksToRemove = field;
-                    chunksToRemove.setAccessible(true);
-                } else if ((pendingAnvilChunksCoordinates == null) && (field.getType().equals(Set.class))) {
-                    pendingAnvilChunksCoordinates = field;
-                    pendingAnvilChunksCoordinates.setAccessible(true);
-                }
-            }
-            // Get writeChunkToNBT method
-            Method[] ma = AnvilChunkLoader.class.getDeclaredMethods();
-            for (Method m : ma) {
-                Class<?>[] p = m.getParameterTypes();
-                if ((p.length == 3) && (p[0].equals(Chunk.class)) && (p[1].equals(World.class)) && (p[2].equals(NBTTagCompound.class))) {
-                    writechunktonbt = m;
-                    m.setAccessible(true);
-                    break;
-                }
-            }
-
-            if ((unloadqueue == null) || (currentchunkloader == null) || (writechunktonbt == null)) {
-                Log.severe("ERROR: cannot find unload queue or chunk provider field - dynmap cannot load chunks");
-            }
-            if (updateEntityTick == null) {
-                Log.severe("ERROR: cannot find updateEntityTick - dynmap cannot drive entity cleanup when no players are active");
-            }
-
-            init = true;
+    		init = true;
     	}
     }
 
@@ -942,7 +968,7 @@ public class ForgeMapChunkCache extends MapChunkCache
         	}
         }
         else {
-            chunks = new ArrayList<>();
+        	chunks = new ArrayList<DynmapChunk>();
         }
         nsect = dw.worldheight >> 4;
         this.chunks = chunks;
@@ -991,12 +1017,19 @@ public class ForgeMapChunkCache extends MapChunkCache
         snaparray = new ChunkSnapshot[snapcnt];
         snaptile = new DynIntHashMap[snapcnt];
         isSectionNotEmpty = new boolean[snapcnt][];
-
-        try {
-            if ((unloadqueue != null) && (cps != null)) {
-                queue = (Set<?>) unloadqueue.get(cps);
+        
+        try
+        {
+            if ((unloadqueue != null) && (cps != null))
+            {
+                queue = (Set<?>)unloadqueue.get(cps);
             }
-        } catch (IllegalArgumentException | IllegalAccessException ignored) {
+        }
+        catch (IllegalArgumentException iax)
+        {
+        }
+        catch (IllegalAccessException e)
+        {
         }
 
     }
@@ -1072,22 +1105,22 @@ public class ForgeMapChunkCache extends MapChunkCache
         Object val = null;
         switch(v.getId()) {
             case 1: // Byte
-                val = ((NBTTagByte) v).getByte();
+                val = Byte.valueOf(((NBTTagByte)v).getByte());
                 break;
             case 2: // Short
-                val = ((NBTTagShort) v).getShort();
+                val = Short.valueOf(((NBTTagShort)v).getShort());
                 break;
             case 3: // Int
-                val = ((NBTTagInt) v).getInt();
+                val = Integer.valueOf(((NBTTagInt)v).getInt());
                 break;
             case 4: // Long
-                val = ((NBTTagLong) v).getLong();
+                val = Long.valueOf(((NBTTagLong)v).getLong());
                 break;
             case 5: // Float
-                val = ((NBTTagFloat) v).getFloat();
+                val = Float.valueOf(((NBTTagFloat)v).getFloat());
                 break;
             case 6: // Double
-                val = ((NBTTagDouble) v).getDouble();
+                val = Double.valueOf(((NBTTagDouble)v).getDouble());
                 break;
             case 7: // Byte[]
                 val = ((NBTTagByteArray)v).getByteArray();
@@ -1097,7 +1130,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                 break;
             case 9: // List
                 NBTTagList tl = (NBTTagList) v;
-                ArrayList<Object> vlist = new ArrayList<>();
+                ArrayList<Object> vlist = new ArrayList<Object>();
                 int type = tl.getTagType();
                 for (int i = 0; i < tl.tagCount(); i++) {
                     switch (type) {
@@ -1127,7 +1160,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                 break;
             case 10: // Map
                 NBTTagCompound tc = (NBTTagCompound) v;
-                HashMap<String, Object> vmap = new HashMap<>();
+                HashMap<String, Object> vmap = new HashMap<String, Object>();
                 for (Object t : tc.getKeySet()) {
                     String st = (String) t;
                     NBTBase tg = tc.getTag(st);
@@ -1198,7 +1231,7 @@ public class ForgeMapChunkCache extends MapChunkCache
         if (queue != null)
         {
             long coord = ChunkPos.asLong(chunk.x, chunk.z);
-            isunloadpending = queue.contains(coord);
+            isunloadpending = queue.contains(Long.valueOf(coord));
         }
         return isunloadpending;
     }
@@ -1211,7 +1244,7 @@ public class ForgeMapChunkCache extends MapChunkCache
         NBTTagList tiles = nbt.getTagList("TileEntities", 10);
         if(tiles == null) tiles = new NBTTagList();
         /* Get tile entity data */
-        List<Object> vals = new ArrayList<>();
+        List<Object> vals = new ArrayList<Object>();
         for(int tid = 0; tid < tiles.tagCount(); tid++) {
             NBTTagCompound tc = tiles.getCompoundTagAt(tid);
             int tx = tc.getInteger("x");
@@ -1234,7 +1267,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                     }
                 }
                 if(vals.size() > 0) {
-                    Object[] vlist = vals.toArray(new Object[0]);
+                    Object[] vlist = vals.toArray(new Object[vals.size()]);
                     tileData.put(getIndexInChunk(cx, ty, cz), vlist);
                 }
             }
@@ -1258,12 +1291,13 @@ public class ForgeMapChunkCache extends MapChunkCache
             unloadChunks();
             return 0;
         }
-        for (DynmapChunk dynmapChunk : chunks) {
+        ListIterator<DynmapChunk> iter = chunks.listIterator();
+        while (iter.hasNext()) {
             long startTime = System.nanoTime();
-            DynmapChunk chunk = dynmapChunk;
-            int chunkindex = (chunk.x - x_min) + (chunk.z - z_min) * x_dim;
+            DynmapChunk chunk = iter.next();
+            int chunkindex = (chunk.x-x_min) + (chunk.z - z_min)*x_dim;
             if (snaparray[chunkindex] != null) continue;    // Skip if already processed
-
+            
             boolean vis = isChunkVisible(chunk);
 
             /* Check if cached chunk snapshot found */
@@ -1279,17 +1313,22 @@ public class ForgeMapChunkCache extends MapChunkCache
                     NBTTagCompound nbt = new NBTTagCompound();
                     try {
                         writechunktonbt.invoke(cps.chunkLoader, cps.loadChunk(chunk.x, chunk.z), w, nbt);
-                    } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException ignored) {
-                    }
+                    } catch (IllegalAccessException e) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (InvocationTargetException e) {
+                    }                
                     SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
                     ss = ssr.ss;
                     tileData = ssr.tileData;
-                } else {
+                }
+                else {
                     if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
                         ss = STONE;
-                    } else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
+                    }
+                    else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
                         ss = OCEAN;
-                    } else {
+                    }
+                    else {
                         ss = EMPTY;
                     }
                     tileData = new DynIntHashMap();
@@ -1382,14 +1421,19 @@ public class ForgeMapChunkCache extends MapChunkCache
 
         DynmapCore.setIgnoreChunkLoads(false);
 
-        if (!iterator.hasNext())    /* If we're done */ {
+        if (iterator.hasNext() == false)    /* If we're done */
+        {
             isempty = true;
 
             /* Fill missing chunks with empty dummy chunk */
-            for (int i = 0; i < snaparray.length; i++) {
-                if (snaparray[i] == null) {
+            for (int i = 0; i < snaparray.length; i++)
+            {
+                if (snaparray[i] == null)
+                {
                     snaparray[i] = EMPTY;
-                } else if (snaparray[i] != EMPTY) {
+                }
+                else if (snaparray[i] != EMPTY)
+                {
                     isempty = false;
                 }
             }
@@ -1425,7 +1469,10 @@ public class ForgeMapChunkCache extends MapChunkCache
     {
         if (snaparray != null)
         {
-            Arrays.fill(snaparray, null);
+            for (int i = 0; i < snaparray.length; i++)
+            {
+                snaparray[i] = null;
+            }
 
             snaparray = null;
         }
@@ -1438,7 +1485,8 @@ public class ForgeMapChunkCache extends MapChunkCache
         {
             for (int i = 0; i < nsect; i++)
             {
-                if (!snaparray[idx].isSectionEmpty(i)) {
+                if (snaparray[idx].isSectionEmpty(i) == false)
+                {
                     isSectionNotEmpty[idx][i] = true;
                 }
             }
@@ -1482,7 +1530,7 @@ public class ForgeMapChunkCache extends MapChunkCache
      */
     public void setVisibleRange(VisibilityLimit lim) {
         if(visible_limits == null)
-            visible_limits = new ArrayList<>();
+            visible_limits = new ArrayList<VisibilityLimit>();
         visible_limits.add(lim);
     }
     /**
@@ -1492,7 +1540,7 @@ public class ForgeMapChunkCache extends MapChunkCache
      */
     public void setHiddenRange(VisibilityLimit lim) {
         if(hidden_limits == null)
-            hidden_limits = new ArrayList<>();
+            hidden_limits = new ArrayList<VisibilityLimit>();
         hidden_limits.add(lim);
     }
     @Override
@@ -1510,21 +1558,28 @@ public class ForgeMapChunkCache extends MapChunkCache
         return dw;
     }
 
-    static {
-        Biome[] b = DynmapPlugin.getBiomeList();
+    static
+    {
+        Biome b[] = DynmapPlugin.getBiomeList();
         BiomeMap[] bm = BiomeMap.values();
         biome_to_bmap = new BiomeMap[256];
 
-        Arrays.fill(biome_to_bmap, BiomeMap.NULL);
+        for (int i = 0; i < biome_to_bmap.length; i++)
+        {
+            biome_to_bmap[i] = BiomeMap.NULL;
+        }
 
-        for (int i = 0; i < b.length; i++) {
-            if (b[i] == null) continue;
-
+        for (int i = 0; i < b.length; i++)
+        {
+        	if(b[i] == null) continue;
+        	
             String bs = b[i].biomeName;
 
-            for (BiomeMap biomeMap : bm) {
-                if (biomeMap.toString().equals(bs)) {
-                    biome_to_bmap[i] = biomeMap;
+            for (int j = 0; j < bm.length; j++)
+            {
+                if (bm[j].toString().equals(bs))
+                {
+                    biome_to_bmap[i] = bm[j];
                     break;
                 }
             }

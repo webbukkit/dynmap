@@ -1,14 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Map;
+
 import org.dynmap.Log;
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Map;
 
 /**
  * This renderer is used to define a model using a set of 1 or more patches (patch0=x, patch1=x - same syntax as patchblock),
@@ -34,25 +34,25 @@ public class RotatedPatchRenderer extends CustomRenderer {
 
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
-        if (!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
+        if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
-        ArrayList<RenderPatch> patches = new ArrayList<>();
-        ArrayList<int[]> rotations = new ArrayList<>();
+        ArrayList<RenderPatch> patches = new ArrayList<RenderPatch>();
+        ArrayList<int[]> rotations = new ArrayList<int[]>();
         /* See if index attribute defined */
         idx_attrib = custparm.get("index");
         /* Now, traverse parameters */
-        for (String k : custparm.keySet()) {
+        for(String k : custparm.keySet()) {
             String v = custparm.get(k);
             /* If it is a patch definition */
-            if (k.startsWith("patch")) {
+            if(k.startsWith("patch")) {
                 try {
                     int id = Integer.parseInt(k.substring(5));
                     RenderPatch p = rpf.getNamedPatch(custparm.get(k), id);
-                    if (p == null) {
+                    if(p == null) {
                         Log.warning("Invalid patch definition: " + v);
                         return false;
                     }
-                    if (p.getTextureIndex() > maxTextureIndex) {
+                    if(p.getTextureIndex() > maxTextureIndex) {
                         maxTextureIndex = p.getTextureIndex();
                     }
                     while(patches.size() <= id) {
@@ -102,7 +102,7 @@ public class RotatedPatchRenderer extends CustomRenderer {
             }
         }
         /* Save patch list as base model */
-        basemodel = patches.toArray(new RenderPatch[0]);
+        basemodel = patches.toArray(new RenderPatch[patches.size()]);
         /* Now build rotated models for all the defined rotations */
         models = new RenderPatch[rotations.size()][];
         for(int i = 0; i < rotations.size(); i++) {

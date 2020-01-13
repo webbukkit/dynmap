@@ -1,20 +1,25 @@
 package org.dynmap.forge_1_8_9;
-/*
-  Forge specific implementation of DynmapWorld
+/**
+ * Forge specific implementation of DynmapWorld
  */
+import java.util.List;
 
 import net.minecraft.util.BlockPos;
-import net.minecraft.world.*;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
+import net.minecraft.world.WorldProviderEnd;
+import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.border.WorldBorder;
+
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 
-import java.util.List;
-
-public class ForgeWorld extends DynmapWorld {
+public class ForgeWorld extends DynmapWorld
+{
     private World world;
     private final boolean skylight;
     private final boolean isnether;
@@ -80,7 +85,7 @@ public class ForgeWorld extends DynmapWorld {
     }
     public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle)
     {
-        super(name, Math.min(height, maxWorldHeight), sealevel);
+        super(name, (height > maxWorldHeight)?maxWorldHeight:height, sealevel);
         world = null;
         setTitle(deftitle);
         isnether = nether;

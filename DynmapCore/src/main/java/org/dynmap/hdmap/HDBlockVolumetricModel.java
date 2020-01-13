@@ -1,13 +1,13 @@
 package org.dynmap.hdmap;
 
-import org.dynmap.renderer.DynmapBlockState;
-
 import java.util.BitSet;
 import java.util.HashMap;
 
+import org.dynmap.renderer.DynmapBlockState;
+
 public class HDBlockVolumetricModel extends HDBlockModel {
     /* Volumetric model specific attributes */
-    private long[] blockflags;
+    private long blockflags[];
     private int nativeres;
     private HashMap<Integer, short[]> scaledblocks;
     /**
@@ -59,17 +59,15 @@ public class HDBlockVolumetricModel extends HDBlockModel {
      * @return array of alpha values (0-255), corresponding to resXresXres subcubes of block
      */
     public short[] getScaledMap(int res) {
-        if (scaledblocks == null) {
-            scaledblocks = new HashMap<>();
-        }
-        short[] map = scaledblocks.get(res);
-        if (map == null) {
-            map = new short[res * res * res];
-            if (res == nativeres) {
-                for (int i = 0; i < blockflags.length; i++) {
-                    for (int j = 0; j < nativeres; j++) {
-                        if ((blockflags[i] & (1 << j)) != 0)
-                            map[res * i + j] = 255;
+        if(scaledblocks == null) { scaledblocks = new HashMap<Integer, short[]>(); }
+        short[] map = scaledblocks.get(Integer.valueOf(res));
+        if(map == null) {
+            map = new short[res*res*res];
+            if(res == nativeres) {
+                for(int i = 0; i < blockflags.length; i++) {
+                    for(int j = 0; j < nativeres; j++) {
+                        if((blockflags[i] & (1 << j)) != 0)
+                            map[res*i+j] = 255;
                     }
                 }
             }
@@ -77,25 +75,26 @@ public class HDBlockVolumetricModel extends HDBlockModel {
              * on each axis:  need to calculate crossovers for each, and iterate through smaller
              * blocks to accumulate contributions
              */
-            else if (res > nativeres) {
-                int[] weights = new int[res];
-                int[] offsets = new int[res];
+            else if(res > nativeres) {
+                int weights[] = new int[res];
+                int offsets[] = new int[res];
                 /* LCM of resolutions is used as length of line (res * nativeres)
                  * Each native block is (res) long, each scaled block is (nativeres) long
                  * Each scaled block overlaps 1 or 2 native blocks: starting with native block 'offsets[]' with
                  * 'weights[]' of its (res) width in the first, and the rest in the second
                  */
-                for (int v = 0, idx = 0; v < res * nativeres; v += nativeres, idx++) {
-                    offsets[idx] = (v / res); /* Get index of the first native block we draw from */
-                    if ((v + nativeres - 1) / res == offsets[idx]) {   /* If scaled block ends in same native block */
+                for(int v = 0, idx = 0; v < res*nativeres; v += nativeres, idx++) {
+                    offsets[idx] = (v/res); /* Get index of the first native block we draw from */
+                    if((v+nativeres-1)/res == offsets[idx]) {   /* If scaled block ends in same native block */
                         weights[idx] = nativeres;
-                    } else {  /* Else, see how much is in first one */
+                    }
+                    else {  /* Else, see how much is in first one */
                         weights[idx] = (offsets[idx] + res) - v;
-                        weights[idx] = (offsets[idx] * res + res) - v;
+                        weights[idx] = (offsets[idx]*res + res) - v;
                     }
                 }
                 /* Now, use weights and indices to fill in scaled map */
-                for (int y = 0, off = 0; y < res; y++) {
+                for(int y = 0, off = 0; y < res; y++) {
                     int ind_y = offsets[y];
                     int wgt_y = weights[y];
                     for(int z = 0; z < res; z++) {
@@ -128,24 +127,25 @@ public class HDBlockVolumetricModel extends HDBlockModel {
                 }
             }
             else {  /* nativeres > res */
-                int[] weights = new int[nativeres];
-                int[] offsets = new int[nativeres];
+                int weights[] = new int[nativeres];
+                int offsets[] = new int[nativeres];
                 /* LCM of resolutions is used as length of line (res * nativeres)
                  * Each native block is (res) long, each scaled block is (nativeres) long
                  * Each native block overlaps 1 or 2 scaled blocks: starting with scaled block 'offsets[]' with
                  * 'weights[]' of its (res) width in the first, and the rest in the second
                  */
-                for (int v = 0, idx = 0; v < res * nativeres; v += res, idx++) {
-                    offsets[idx] = (v / nativeres); /* Get index of the first scaled block we draw to */
-                    if ((v + res - 1) / nativeres == offsets[idx]) {   /* If native block ends in same scaled block */
+                for(int v = 0, idx = 0; v < res*nativeres; v += res, idx++) {
+                    offsets[idx] = (v/nativeres); /* Get index of the first scaled block we draw to */
+                    if((v+res-1)/nativeres == offsets[idx]) {   /* If native block ends in same scaled block */
                         weights[idx] = res;
-                    } else {  /* Else, see how much is in first one */
-                        weights[idx] = (offsets[idx] * nativeres + nativeres) - v;
+                    }
+                    else {  /* Else, see how much is in first one */
+                        weights[idx] = (offsets[idx]*nativeres + nativeres) - v;
                     }
                 }
                 /* Now, use weights and indices to fill in scaled map */
-                long[] accum = new long[map.length];
-                for (int y = 0; y < nativeres; y++) {
+                long accum[] = new long[map.length];
+                for(int y = 0; y < nativeres; y++) {
                     int ind_y = offsets[y];
                     int wgt_y = weights[y];
                     for(int z = 0; z < nativeres; z++) {
@@ -179,7 +179,7 @@ public class HDBlockVolumetricModel extends HDBlockModel {
                     if(map[i] < 0) map[i] = 0;
                 }
             }
-            scaledblocks.put(res, map);
+            scaledblocks.put(Integer.valueOf(res), map);
         }
         return map;
     }

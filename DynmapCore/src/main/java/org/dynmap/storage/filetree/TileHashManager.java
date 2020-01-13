@@ -1,13 +1,12 @@
 package org.dynmap.storage.filetree;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.util.Arrays;
+import java.io.IOException;
 
 import org.dynmap.Log;
 import org.dynmap.utils.LRULinkedHashMap;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Arrays;
 
 /**
  * Image hash code manager - used to reduce compression and notification of updated tiles that do not actually yield new content
@@ -63,7 +62,7 @@ public class TileHashManager {
                     fd = new RandomAccessFile(f, "rw");
                 } catch (FileNotFoundException nfnx) {
                     File pf = f.getParentFile();
-                    if (!pf.exists()) {
+                    if (pf.exists() == false) {
                         pf.mkdirs();
                     }
                     fd = new RandomAccessFile(f, "rw");
@@ -74,10 +73,7 @@ public class TileHashManager {
                 Log.severe("Error writing hash file - " + getHashFile(tiledir).getPath() + " - " + iox.getMessage());
             } finally {
                 if(fd != null) {
-                    try {
-                        fd.close();
-                    } catch (IOException ignored) {
-                    }
+                    try { fd.close(); } catch (IOException iox) {}
                     fd = null;
                 }
             }
@@ -92,13 +88,10 @@ public class TileHashManager {
                 fd.seek(0);
                 fd.read(crcbuf);
                 success = true;
-            } catch (IOException ignored) {
+            } catch (IOException iox) {
             } finally {
-                if (fd != null) {
-                    try {
-                        fd.close();
-                    } catch (IOException ignored) {
-                    }
+                if(fd != null) {
+                    try { fd.close(); } catch (IOException iox) {}
                     fd = null;
                 }
             }
@@ -115,27 +108,26 @@ public class TileHashManager {
                 crc = (crc << 8) + (0xFF & (int)crcbuf[off+i]);
             return crc;
         }
-
         /* Set CRC */
         public void setCRC(int tx, int ty, byte[] crcbuf, long crc) {
             int off = (128 * (ty & 0x1F)) + (4 * (tx & 0x1F));
-            for (int i = 0; i < 4; i++)
-                crcbuf[off + i] = (byte) ((crc >> ((3 - i) * 8)) & 0xFF);
+            for(int i = 0; i < 4; i++)
+                crcbuf[off+i] = (byte)((crc >> ((3-i)*8)) & 0xFF);
         }
     }
-
+    
     private static final int MAX_CACHED_TILEHASHFILES = 25;
-    private final Object lock = new Object();
-    private LRULinkedHashMap<TileHashFile, byte[]> tilehash = new LRULinkedHashMap<>(MAX_CACHED_TILEHASHFILES);
-
+    private Object lock = new Object();
+    private LRULinkedHashMap<TileHashFile, byte[]> tilehash = new LRULinkedHashMap<TileHashFile, byte[]>(MAX_CACHED_TILEHASHFILES);
+    
     public TileHashManager(File tileroot, boolean enabled) {
         tiledir = tileroot;
         this.enabled = enabled;
     }
-
+    
     /* Read cached hashcode for given tile */
     public long getImageHashCode(String key, int tx, int ty) {
-        if (!enabled) {
+        if(!enabled) {
             return -1;  /* Return value that never matches */
         }
         TileHashFile thf = new TileHashFile(key, tx >> 5, ty >> 5);

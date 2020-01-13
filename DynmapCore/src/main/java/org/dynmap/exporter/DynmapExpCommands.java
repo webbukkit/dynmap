@@ -1,5 +1,8 @@
 package org.dynmap.exporter;
 
+import java.io.File;
+import java.util.HashMap;
+
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -8,14 +11,11 @@ import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.hdmap.HDShader;
 
-import java.io.File;
-import java.util.HashMap;
-
 /**
  * Handler for export commands (/dynmapexp)
  */
 public class DynmapExpCommands {
-    private HashMap<String, ExportContext> sessions = new HashMap<>();
+    private HashMap<String, ExportContext> sessions = new HashMap<String, ExportContext>();
 
     private static class ExportContext {
         public String shader = "stdtexture";
@@ -106,57 +106,57 @@ public class DynmapExpCommands {
         }
         for (int i = 1; i < (args.length-1); i += 2) {
             try {
-                switch (args[i]) {
-                    case "x0":
-                        ctx.xmin = Integer.parseInt(args[i + 1]);
-                        break;
-                    case "x1":
-                        ctx.xmax = Integer.parseInt(args[i + 1]);
-                        break;
-                    case "y0":
-                        ctx.ymin = Integer.parseInt(args[i + 1]);
-                        break;
-                    case "y1":
-                        ctx.ymax = Integer.parseInt(args[i + 1]);
-                        break;
-                    case "z0":
-                        ctx.zmin = Integer.parseInt(args[i + 1]);
-                        break;
-                    case "z1":
-                        ctx.zmax = Integer.parseInt(args[i + 1]);
-                        break;
-                    case "world":
-                        DynmapWorld w = core.getWorld(args[i + 1]);
-                        if (w != null) {
-                            ctx.world = args[i + 1];
-                        } else {
-                            sender.sendMessage("Invalid world '" + args[i + 1] + "'");
-                            return true;
-                        }
-                        break;
-                    case "shader":
-                        HDShader s = MapManager.mapman.hdmapman.shaders.get(args[i + 1]);
-                        if (s == null) {
-                            sender.sendMessage("Unknown shader '" + args[i + 1] + "'");
-                            return true;
-                        }
-                        ctx.shader = args[i + 1];
-                        break;
-                    case "byChunk":
-                        ctx.groupByChunk = args[i + 1].equalsIgnoreCase("true");
-                        break;
-                    case "byBlockID":
-                        ctx.groupByBlockID = args[i + 1].equalsIgnoreCase("true");
-                        break;
-                    case "byBlockIDData":
-                        ctx.groupByBlockIDData = args[i + 1].equalsIgnoreCase("true");
-                        break;
-                    case "byTexture":
-                        ctx.groupByTexture = args[i + 1].equalsIgnoreCase("true");
-                        break;
-                    default:   // Unknown setting
-                        sender.sendMessage("Unknown setting '" + args[i] + "'");
+                if (args[i].equals("x0")) {
+                    ctx.xmin = Integer.parseInt(args[i+1]);
+                }
+                else if (args[i].equals("x1")) {
+                    ctx.xmax = Integer.parseInt(args[i+1]);
+                }
+                else if (args[i].equals("y0")) {
+                    ctx.ymin = Integer.parseInt(args[i+1]);
+                }
+                else if (args[i].equals("y1")) {
+                    ctx.ymax = Integer.parseInt(args[i+1]);
+                }
+                else if (args[i].equals("z0")) {
+                    ctx.zmin = Integer.parseInt(args[i+1]);
+                }
+                else if (args[i].equals("z1")) {
+                    ctx.zmax = Integer.parseInt(args[i+1]);
+                }
+                else if (args[i].equals("world")) {
+                    DynmapWorld w = core.getWorld(args[i+1]);
+                    if (w != null) {
+                        ctx.world = args[i+1];
+                    }
+                    else {
+                        sender.sendMessage("Invalid world '" + args[i+1] + "'");
                         return true;
+                    }
+                }
+                else if (args[i].equals("shader")) {
+                    HDShader s = MapManager.mapman.hdmapman.shaders.get(args[i+1]);
+                    if (s == null) {
+                        sender.sendMessage("Unknown shader '" + args[i+1] + "'");
+                        return true;
+                    }
+                    ctx.shader = args[i+1];
+                }
+                else if (args[i].equals("byChunk")) {
+                    ctx.groupByChunk = args[i+1].equalsIgnoreCase("true");
+                }
+                else if (args[i].equals("byBlockID")) {
+                    ctx.groupByBlockID = args[i+1].equalsIgnoreCase("true");
+                }
+                else if (args[i].equals("byBlockIDData")) {
+                    ctx.groupByBlockIDData = args[i+1].equalsIgnoreCase("true");
+                }
+                else if (args[i].equals("byTexture")) {
+                    ctx.groupByTexture = args[i+1].equalsIgnoreCase("true");
+                }
+                else {  // Unknown setting
+                    sender.sendMessage("Unknown setting '" + args[i] + "'");
+                    return true;
                 }
             } catch (NumberFormatException nfx) {
                 sender.sendMessage("Invalid value for '" + args[i] + "' - " + args[i+1]);
@@ -167,7 +167,7 @@ public class DynmapExpCommands {
     }
 
     private boolean handleRadius(DynmapCommandSender sender, String[] args, ExportContext ctx, DynmapCore core) {
-        if (!(sender instanceof DynmapPlayer)) {    // Not a player
+        if ((sender instanceof DynmapPlayer) == false) {    // Not a player
             sender.sendMessage("Only usable by player");
             return true;
         }
@@ -205,7 +205,7 @@ public class DynmapExpCommands {
     }
 
     private boolean handlePosN(DynmapCommandSender sender, String[] args, ExportContext ctx, DynmapCore core, int n) {
-        if (!(sender instanceof DynmapPlayer)) {    // Not a player
+        if ((sender instanceof DynmapPlayer) == false) {    // Not a player
             sender.sendMessage("Only usable by player");
             return true;
         }

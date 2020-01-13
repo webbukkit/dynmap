@@ -1,14 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Map;
+
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
 import org.dynmap.renderer.RenderPatchFactory.SideVisible;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Map;
 
 /**
  * Standard door renderer : two textures (top, bottom)
@@ -16,7 +16,7 @@ import java.util.Map;
 public class DoorRenderer extends CustomRenderer {
     public static final int TXT_TOP = 0;
     public static final int TXT_BOTTOM = 1;
-
+    
     // Indexed by combined meta
     protected RenderPatch[][] models = new RenderPatch[32][];
 
@@ -26,7 +26,7 @@ public class DoorRenderer extends CustomRenderer {
             return false;
         int[] txt = new int[6];
         for (int combined_meta = 0; combined_meta < 32; combined_meta++) {
-            ArrayList<RenderPatch> list = new ArrayList<>();
+            ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
             /* Get textures for each side */
             for (int side = 0; side < 6; side++) {
                 txt[side] = sideAndMetaToTexture(combined_meta, side);

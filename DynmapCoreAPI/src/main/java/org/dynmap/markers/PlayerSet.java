@@ -10,70 +10,54 @@ import java.util.Set;
 public interface PlayerSet {
     /**
      * Get player set ID
-     *
      * @return set ID
      */
-    String getSetID();
-
+    public String getSetID();
     /**
      * Get player in set
-     *
      * @return set of player IDs
      */
-    Set<String> getPlayers();
-
+    public Set<String> getPlayers();
     /**
      * Set players in set (replace existing list)
-     *
      * @param players - set of players
      */
-    void setPlayers(Set<String> players);
-
+    public void setPlayers(Set<String> players);
     /**
      * Add player to set
-     *
      * @param player - player ID
      */
-    void addPlayer(String player);
-
+    public void addPlayer(String player);
     /**
      * Delete player from set
-     *
      * @param player - player ID
      */
-    void removePlayer(String player);
-
+    public void removePlayer(String player);
     /**
      * Test if player is in set
-     *
      * @param player - player ID
      * @return true if in set, false if not
      */
-    boolean isPlayerInSet(String player);
-
+    public boolean isPlayerInSet(String player);
     /**
      * Delete player set
      */
-    void deleteSet();
-
+    public void deleteSet();
     /**
      * Test if set is symmetric (players in set can see other players in set)
-     *
+     * 
      * @return true if players in set can see other players in set (independent of privileges)
      */
-    boolean isSymmetricSet();
-
+    public boolean isSymmetricSet();
     /**
-     * Set the symmetric access for the set
-     *
+     * Set the symmetric access for the set 
      * @param symmetric - true=players in set can see players in set, false=privilege is always required
      */
-    void setSymmetricSet(boolean symmetric);
-
+    public void setSymmetricSet(boolean symmetric);
     /**
      * Test if set is persistent (stored across restarts)
-     *
+     * 
      * @return true if persistent, false if transient
      */
-    boolean isPersistentSet();
+    public boolean isPersistentSet();
 }

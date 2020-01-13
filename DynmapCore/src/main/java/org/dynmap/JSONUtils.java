@@ -3,10 +3,8 @@ package org.dynmap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.Arrays;
-
 public class JSONUtils {
-
+    
     // Gets a value at the specified path.
     public static Object g(JSONObject o, String path) {
         int index = path.indexOf('/');
@@ -20,7 +18,7 @@ public class JSONUtils {
             if (oo == null) {
                 return null;
             } else /*if (oo instanceof JSONObject)*/ {
-                subobject = o;
+                subobject = (JSONObject)o;
             }
             return g(subobject, subpath);
         }
@@ -66,7 +64,9 @@ public class JSONUtils {
     @SuppressWarnings("unchecked")
     public static JSONArray l(Object... items) {
         JSONArray arr = new JSONArray();
-        arr.addAll(Arrays.asList(items));
+        for(Object item : items) {
+            arr.add(item);
+        }
         return arr;
     }
 }

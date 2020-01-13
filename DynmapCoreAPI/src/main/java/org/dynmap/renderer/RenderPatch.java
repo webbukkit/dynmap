@@ -6,5 +6,5 @@ package org.dynmap.renderer;
  * and will be reused when possible.
  */
 public interface RenderPatch {
-    int getTextureIndex();
+    public int getTextureIndex();
 }

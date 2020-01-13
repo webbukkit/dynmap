@@ -13,7 +13,7 @@ public class CustomHeaderFilter implements Filter {
     }
     
     @Override
-    public void init(FilterConfig filterConfig) {
+    public void init(FilterConfig filterConfig) throws ServletException {
     }
 
     @Override

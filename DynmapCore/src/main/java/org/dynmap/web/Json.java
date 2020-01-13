@@ -87,9 +87,9 @@ public class Json {
             List<?> l = (List<?>) o;
             s.append("[");
             int count = 0;
-            for (Object value : l) {
+            for (int i = 0; i < l.size(); i++) {
                 if (count++ > 0) s.append(",");
-                appendJson(value, s);
+                appendJson(l.get(i), s);
             }
             s.append("]");
         } else if (o.getClass().isArray()) {
@@ -112,8 +112,10 @@ public class Json {
                 String fieldName = field.getName();
                 Object fieldValue;
                 try {
-                    fieldValue = field.get(o);
-                } catch (IllegalArgumentException | IllegalAccessException e) {
+                     fieldValue = field.get(o);
+                } catch (IllegalArgumentException e) {
+                    continue;
+                } catch (IllegalAccessException e) {
                     continue;
                 }
 

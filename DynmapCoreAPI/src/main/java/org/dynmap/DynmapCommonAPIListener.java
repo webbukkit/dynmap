@@ -8,14 +8,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * DynmapCommonAPIListener.register() method and unregister using 
  * DynmapCommonAPIListener.unregister()
  */
-@SuppressWarnings("EmptyMethod")
 public abstract class DynmapCommonAPIListener {
     /**
      * Called when API becomes enabled, or during call to register listener if API is already enabled
      * 
      * @param api - API interface (note: may be platform specific subclass, such as bukkit-specific API)
      */
-    @SuppressWarnings("EmptyMethod")
     public abstract void apiEnabled(DynmapCommonAPI api);
     /**
      * Called when API becomes disabled/obsolete
@@ -39,19 +37,18 @@ public abstract class DynmapCommonAPIListener {
     public boolean webChatEvent(String source, String name, String message) {
         return true;
     }
-
+    
     private static DynmapCommonAPI dynmapapi = null;
-
-    private static CopyOnWriteArrayList<DynmapCommonAPIListener> listeners = new CopyOnWriteArrayList<>();
-
+    
+    private static CopyOnWriteArrayList<DynmapCommonAPIListener> listeners = new CopyOnWriteArrayList<DynmapCommonAPIListener>();
     /**
      * Register listener instance
-     *
+     * 
      * @param listener - listener to register
      */
     public static void register(DynmapCommonAPIListener listener) {
         listeners.add(listener);
-        if (dynmapapi != null) {
+        if(dynmapapi != null) {
             listener.apiEnabled(dynmapapi);
         }
         else {

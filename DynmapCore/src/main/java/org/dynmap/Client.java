@@ -1,14 +1,14 @@
 package org.dynmap;
 
-import org.dynmap.common.DynmapChatColor;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Random;
+
 import org.json.simple.JSONAware;
 import org.json.simple.JSONStreamAware;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Random;
+import org.dynmap.common.DynmapChatColor;
 
 public class Client {
     
@@ -143,7 +143,10 @@ public class Client {
         }
         @Override
         public boolean equals(Object o) {
-            return o instanceof DayNight;
+            if(o instanceof DayNight) {
+                return true;
+            }
+            return false;
         }
         @Override
         public int hashCode() {
@@ -175,27 +178,27 @@ public class Client {
         return sanitizeHTML(s);
     }
     private static String[][] codes = {
-            {"0", "<span style='color:#000000'>"},
-            {"1", "<span style='color:#0000AA'>"},
-            {"2", "<span style='color:#00AA00'>"},
-            {"3", "<span style='color:#00AAAA'>"},
-            {"4", "<span style='color:#AA0000'>"},
-            {"5", "<span style='color:#AA00AA'>"},
-            {"6", "<span style='color:#FFAA00'>"},
-            {"7", "<span style='color:#AAAAAA'>"},
-            {"8", "<span style='color:#555555'>"},
-            {"9", "<span style='color:#5555FF'>"},
-            {"a", "<span style='color:#55FF55'>"},
-            {"b", "<span style='color:#55FFFF'>"},
-            {"c", "<span style='color:#FF5555'>"},
-            {"d", "<span style='color:#FF55FF'>"},
-            {"e", "<span style='color:#FFFF55'>"},
-            {"f", "<span style='color:#FFFFFF'>"},
-            {"l", "<span style='font-weight:bold'>"},
-            {"m", "<span style='text-decoration:line-through'>"},
-            {"n", "<span style='text-decoration:underline'>"},
-            {"o", "<span style='font-style:italic'>"},
-            {"r", "<span style='font-style:normal,text-decoration:none,font-weight:normal'>"}
+        { "0", "<span style=\'color:#000000\'>" },
+        { "1", "<span style=\'color:#0000AA\'>" },
+        { "2", "<span style=\'color:#00AA00\'>" },
+        { "3", "<span style=\'color:#00AAAA\'>" },
+        { "4", "<span style=\'color:#AA0000\'>" },
+        { "5", "<span style=\'color:#AA00AA\'>" },
+        { "6", "<span style=\'color:#FFAA00\'>" },
+        { "7", "<span style=\'color:#AAAAAA\'>" },
+        { "8", "<span style=\'color:#555555\'>" },
+        { "9", "<span style=\'color:#5555FF\'>" },
+        { "a", "<span style=\'color:#55FF55\'>" },
+        { "b", "<span style=\'color:#55FFFF\'>" },
+        { "c", "<span style=\'color:#FF5555\'>" },
+        { "d", "<span style=\'color:#FF55FF\'>" },
+        { "e", "<span style=\'color:#FFFF55\'>" },
+        { "f", "<span style=\'color:#FFFFFF\'>" },
+        { "l", "<span style=\'font-weight:bold\'>" },
+        { "m", "<span style=\'text-decoration:line-through\'>" },
+        { "n", "<span style=\'text-decoration:underline\'>" },
+        { "o", "<span style=\'font-style:italic\'>" },
+        { "r", "<span style=\'font-style:normal,text-decoration:none,font-weight:normal\'>" }
     };
     private static Random rnd = new Random();
     private static String rndchars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -212,12 +215,13 @@ public class Client {
                 c = s.charAt(i);
                 if (c == 'k') { // Magic text?
                     magic = true;
-                } else if (c == 'r') { // reset
+                }
+                else if (c == 'r') { // reset
                     magic = false;
                 }
-                for (String[] code : codes) {
-                    if (code[0].charAt(0) == c) {   // Matching code?
-                        sb.append(code[1]); // Substitute
+                for (int j = 0; j < codes.length; j++) {
+                    if (codes[j][0].charAt(0) == c) {   // Matching code?
+                        sb.append(codes[j][1]); // Substitute
                         spancnt++;
                         break;
                     }
@@ -232,12 +236,13 @@ public class Client {
                 else {
                     if (c == 'k') { // Magic text?
                         magic = true;
-                    } else if (c == 'r') { // reset
+                    }
+                    else if (c == 'r') { // reset
                         magic = false;
                     }
-                    for (String[] code : codes) {
-                        if (code[0].charAt(0) == c) {   // Matching code?
-                            sb.append(code[1]); // Substitute
+                    for (int j = 0; j < codes.length; j++) {
+                        if (codes[j][0].charAt(0) == c) {   // Matching code?
+                            sb.append(codes[j][1]); // Substitute
                             spancnt++;
                             break;
                         }

@@ -1,9 +1,10 @@
 package org.dynmap.modsupport.impl;
 
+import java.util.Arrays;
+
+import org.dynmap.DynmapCore;
 import org.dynmap.modsupport.CopyBlockTextureRecord;
 import org.dynmap.modsupport.TransparencyMode;
-
-import java.util.Arrays;
 
 public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
     private int[] ids = new int[0];
@@ -50,13 +51,13 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
     @Override
     public void addBlockID(int blockID) {
         if (blockID > 0) {
-            for (int id : ids) {
-                if (id == blockID) {
+            for (int i = 0; i < ids.length; i++) {
+                if (ids[i] == blockID) {
                     return;
                 }
             }
-            ids = Arrays.copyOf(ids, ids.length + 1);
-            ids[ids.length - 1] = blockID;
+            ids = Arrays.copyOf(ids, ids.length+1);
+            ids[ids.length-1] = blockID;
         }
     }
 
@@ -66,13 +67,13 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
      */
     @Override
     public void addBlockName(String blockname) {
-        for (String name : names) {
-            if (name.equals(blockname)) {
+        for (int i = 0; i < names.length; i++) {
+            if (names[i].equals(blockname)) {
                 return;
             }
         }
-        names = Arrays.copyOf(names, names.length + 1);
-        names[names.length - 1] = blockname;
+        names = Arrays.copyOf(names, names.length+1);
+        names[names.length-1] = blockname;
     }
 
     /**
@@ -123,53 +124,53 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
         if ((ids.length == 0) && (names.length == 0)) {
             return null;
         }
-        StringBuilder s = new StringBuilder("copyblock:");
+        String s = "copyblock:";
         int idcnt = 0;
         // Add ids
         for (int i = 0; i < ids.length; i++) {
             if (i == 0) {
-                s.append("id=").append(ids[i]);
+                s += "id=" + ids[i];
             }
             else {
-                s.append(",id=").append(ids[i]);
+                s += ",id=" + ids[i];
             }
             idcnt++;
         }
-        for (String name : names) {
+        for (int i = 0; i < names.length; i++) {
             if (idcnt > 0) {
-                s.append(",");
+                s += ",";
             }
-            s.append("id=%").append(name);
+            s += "id=%" + names[i];
             idcnt++;
         }
         // Add meta
         if (this.metaMask == METAMASK_ALL) {
-            s.append(",data=*");
+            s += ",data=*";
         }
         else {
             for (int i = 0; i < 16; i++) {
                 if ((metaMask & (1 << i)) != 0) {
-                    s.append(",data=").append(i);
+                    s += ",data=" + i;
                 }
             }
         }
         if (srcname != null) {
-            s.append(",srcid=%").append(srcname).append(",srcmeta=").append(srcmeta);
+            s += ",srcid=%" + srcname + ",srcmeta=" + srcmeta;
         }
         else {
-            s.append(",srcid=").append(srcid).append(",srcmeta=").append(srcmeta);
+            s += ",srcid=" + srcid + ",srcmeta=" + srcmeta;
         }
         switch (this.mode) {
             case TRANSPARENT:
-                s.append(",transparency=TRANSPARENT");
+                s += ",transparency=TRANSPARENT";
                 break;
             case SEMITRANSPARENT:
-                s.append(",transparency=SEMITRANSPARENT");
+                s += ",transparency=SEMITRANSPARENT";
                 break;
             default:
                 break;
         }
-        return s.toString();
+        return s;
     }
 
     @Override

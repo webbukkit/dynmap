@@ -1,24 +1,29 @@
 package org.dynmap.bukkit.permissions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.dynmap.Log;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 public class OpPermissions implements PermissionProvider {
-    public HashSet<String> opCommands = new HashSet<>();
+    public HashSet<String> opCommands = new HashSet<String>();
 
     public OpPermissions(String[] opCommands) {
-        this.opCommands.addAll(Arrays.asList(opCommands));
+        for (String opCommand : opCommands) {
+            this.opCommands.add(opCommand);
+        }
         Log.info("Using ops.txt for access control");
     }
 
     @Override
     public boolean has(CommandSender sender, String permission) {
-        return (!(sender instanceof Player)) || (!opCommands.contains(permission) || sender.isOp());
+        return (sender instanceof Player)
+            ? opCommands.contains(permission)
+                ? ((Player) sender).isOp()
+                : true
+            : true;
     }
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {

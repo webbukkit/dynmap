@@ -1,15 +1,15 @@
 package org.dynmap.markers.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 class MarkerImpl implements Marker {
     private String markerid;
@@ -128,7 +128,7 @@ class MarkerImpl implements Marker {
         }
         /* Check if icons restricted for this set */
         Set<MarkerIcon> icns = markerset.getAllowedMarkerIcons();
-        if ((icns != null) && (!icns.contains(icon))) {
+        if((icns != null) && (icns.contains(icon) == false)) {
             return false;
         }
         this.icon = (MarkerIconImpl)icon;
@@ -169,14 +169,14 @@ class MarkerImpl implements Marker {
      * @return node
      */
     Map<String, Object> getPersistentData() {
-        if (!ispersistent)   /* Nothing if not persistent */
+        if(!ispersistent)   /* Nothing if not persistent */
             return null;
-        HashMap<String, Object> node = new HashMap<>();
+        HashMap<String, Object> node = new HashMap<String, Object>();
         node.put("label", label);
         node.put("markup", markup);
-        node.put("x", x);
-        node.put("y", y);
-        node.put("z", z);
+        node.put("x", Double.valueOf(x));
+        node.put("y", Double.valueOf(y));
+        node.put("z", Double.valueOf(z));
         node.put("world", world);
         node.put("icon", icon.getMarkerIconID());
         if (this.minzoom >= 0) {
@@ -185,7 +185,7 @@ class MarkerImpl implements Marker {
         if (this.maxzoom >= 0) {
             node.put("maxzoom", maxzoom);
         }
-        if (desc != null)
+        if(desc != null)
             node.put("desc", desc);
 
         return node;
@@ -227,11 +227,11 @@ class MarkerImpl implements Marker {
     }
     @Override
     public void setDescription(String desc) {
-        if (markerset == null) return;
-        if ((this.desc == null) || (!this.desc.equals(desc))) {
+        if(markerset == null) return;
+        if((this.desc == null) || (this.desc.equals(desc) == false)) {
             this.desc = desc;
             MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);
-            if (ispersistent)
+            if(ispersistent)
                 MarkerAPIImpl.saveMarkers();
         }
     }

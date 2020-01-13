@@ -1,6 +1,16 @@
 package org.dynmap.hdmap;
 
-import org.dynmap.*;
+import static org.dynmap.JSONUtils.s;
+
+import java.io.IOException;
+import java.util.BitSet;
+import java.util.List;
+
+import org.dynmap.Color;
+import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
+import org.dynmap.Log;
+import org.dynmap.MapManager;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.renderer.DynmapBlockState;
@@ -9,12 +19,6 @@ import org.dynmap.utils.DynLongHashMap;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
-
-import java.io.IOException;
-import java.util.BitSet;
-import java.util.List;
-
-import static org.dynmap.JSONUtils.s;
 
 public class TexturePackHDShader implements HDShader {
     private final String tpname;
@@ -38,20 +42,21 @@ public class TexturePackHDShader implements HDShader {
         if(hidden != null) {
             hiddenids = new BitSet();
             for(Object o : hidden) {
-                if (o instanceof Integer) {
-                    int v = ((Integer) o);
+                if(o instanceof Integer) {
+                    int v = ((Integer)o);
                     hiddenids.set(v);
                 }
             }
-        } else {
+        }
+        else {
             hiddenids = null;
         }
     }
-
-    private TexturePack getTexturePack() {
+    
+    private final TexturePack getTexturePack() {
         if (!did_tp_load) {
             tp = TexturePack.getTexturePack(this.core, this.tpname);
-            if (tp == null) {
+            if(tp == null) {
                 Log.severe("Error: shader '" + name + "' cannot load texture pack '" + tpname + "'");
             }
             did_tp_load = true;
@@ -93,10 +98,10 @@ public class TexturePackHDShader implements HDShader {
     public String getName() {
         return name;
     }
-
+    
     class ShaderState implements HDShaderState {
-        final private Color[] color;
-        final private Color[] tmpcolor;
+        final private Color color[];
+        final private Color tmpcolor[];
         final private Color c;
         final protected MapIterator mapiter;
         final protected HDMap map;
@@ -166,7 +171,8 @@ public class TexturePackHDShader implements HDShader {
          */
         @Override
         public void reset(HDPerspectiveState ps) {
-            for (Color value : color) value.setTransparent();
+            for(int i = 0; i < color.length; i++)
+                color[i].setTransparent();
             setLastBlockState(DynmapBlockState.AIR);
             lastblkhit = DynmapBlockState.AIR;
         }
@@ -247,9 +253,9 @@ public class TexturePackHDShader implements HDShader {
                     int xx = mapiter.getX() % gridscale;
                     int zz = mapiter.getZ() % gridscale;
                     if(((xx == 0) && ((zz & 2) == 0)) || ((zz == 0) && ((xx & 2) == 0))) {
-                        for (Color value : tmpcolor) {
-                            int v = value.getARGB();
-                            value.setARGB((v & 0xFF000000) | ((v & 0xFEFEFE) >> 1) | 0x808080);
+                        for(int i = 0; i < tmpcolor.length; i++) {
+                            int v = tmpcolor[i].getARGB();
+                            tmpcolor[i].setARGB((v & 0xFF000000) | ((v & 0xFEFEFE) >> 1) | 0x808080);
                         }
                     }
                 }
@@ -270,7 +276,8 @@ public class TexturePackHDShader implements HDShader {
                                   (tmpcolor[i].getGreen()*alpha2 + color[i].getGreen()*alpha) / talpha,
                                   (tmpcolor[i].getBlue()*alpha2 + color[i].getBlue()*alpha) / talpha, talpha);
                     else
-                        for (Color value : color) value.setTransparent();
+                    	for(int i = 0; i < color.length; i++)
+                    		color[i].setTransparent();
                     	
                     return (talpha >= 254);   /* If only one short, no meaningful contribution left */
                 }

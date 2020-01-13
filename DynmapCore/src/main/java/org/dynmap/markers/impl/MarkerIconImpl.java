@@ -1,11 +1,11 @@
 package org.dynmap.markers.impl;
 
-import org.dynmap.ConfigurationNode;
-import org.dynmap.markers.MarkerIcon;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.dynmap.ConfigurationNode;
+import org.dynmap.markers.MarkerIcon;
 
 class MarkerIconImpl implements MarkerIcon {
     private String iconid;
@@ -44,8 +44,8 @@ class MarkerIconImpl implements MarkerIcon {
 
     @Override
     public void setMarkerIconLabel(String lbl) {
-        if (lbl == null) lbl = iconid;
-        if (!label.equals(lbl)) {
+        if(lbl == null) lbl = iconid;
+        if(label.equals(lbl) == false) {
             label = lbl;
             MarkerAPIImpl.saveMarkers();
         }
@@ -72,10 +72,10 @@ class MarkerIconImpl implements MarkerIcon {
      * @return node
      */
     Map<String, Object> getPersistentData() {
-        if (is_builtin)
+        if(is_builtin)
             return null;
-
-        HashMap<String, Object> node = new HashMap<>();
+        
+        HashMap<String, Object> node = new HashMap<String, Object>();
         node.put("label", label);
 
         return node;

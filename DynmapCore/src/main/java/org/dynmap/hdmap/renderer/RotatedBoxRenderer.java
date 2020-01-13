@@ -1,14 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Map;
+
 import org.dynmap.Log;
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Map;
 
 public class RotatedBoxRenderer extends CustomRenderer {
     // Models for rotation values
@@ -17,7 +17,7 @@ public class RotatedBoxRenderer extends CustomRenderer {
 
     // Indexing attribute
     private String idx_attrib = null;
-
+    
     private String[] tileEntityAttribs = null;
 
     @Override
@@ -26,16 +26,16 @@ public class RotatedBoxRenderer extends CustomRenderer {
             return false;
         /* See if index attribute defined */
         idx_attrib = custparm.get("textureIndex");
-        ArrayList<Integer> map = new ArrayList<>();
+        ArrayList<Integer> map = new ArrayList<Integer>();
         for(int id = 0; ; id++) {
             String v = custparm.get("index" + id);
             if(v == null) break;
             map.add(Integer.valueOf(v));
         }
-        rotValues = map.toArray(new Integer[0]);
+        rotValues = map.toArray(new Integer[map.size()]);
         models = new RenderPatch[rotValues.length][];
         /* Build unrotated base model */
-        ArrayList<RenderPatch> list = new ArrayList<>();
+        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
         addBox(rpf, list, 0, 1, 0, 1, 0, 1, null);
         
         for(int id = 0; id < rotValues.length; id++) {
@@ -56,7 +56,7 @@ public class RotatedBoxRenderer extends CustomRenderer {
                 }
             }
             else {
-                String[] sv = v.split("/");
+                String sv[] = v.split("/");
                 int x = 0, y = 0, z = 0;
                 if(sv.length == 1) {    /* Only 1 = Y axis */
                     try {

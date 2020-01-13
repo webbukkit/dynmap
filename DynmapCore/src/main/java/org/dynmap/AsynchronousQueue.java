@@ -7,10 +7,10 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class AsynchronousQueue<T> {
-    private final Object lock = new Object();
+    private Object lock = new Object();
     private Thread thread;
-    private LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<>();
-    private Set<T> set = new HashSet<>();
+    private LinkedBlockingQueue<T> queue = new LinkedBlockingQueue<T>();
+    private Set<T> set = new HashSet<T>();
     private Handler<T> handler;
     private int dequeueTime;
     private int accelDequeueTime;
@@ -18,7 +18,7 @@ public class AsynchronousQueue<T> {
     private int pendingcnt;
     private int pendinglimit;
     private boolean normalprio;
-
+    
     public AsynchronousQueue(Handler<T> handler, int dequeueTime, int accelDequeueThresh, int accelDequeueTime, int pendinglimit, boolean normalprio) {
         this.handler = handler;
         this.dequeueTime = dequeueTime;
@@ -68,7 +68,7 @@ public class AsynchronousQueue<T> {
     public List<T> popAll() {
         List<T> s;
         synchronized(lock) {
-            s = new ArrayList<>(queue);
+            s = new ArrayList<T>(queue);
             queue.clear();
             set.clear();
         }
@@ -77,7 +77,12 @@ public class AsynchronousQueue<T> {
     
     public void start() {
         synchronized (lock) {
-            thread = new Thread(this::running);
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    running();
+                }
+            });
             thread.start();
             try {
                 if(!normalprio)

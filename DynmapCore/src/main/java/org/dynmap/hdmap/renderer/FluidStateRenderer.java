@@ -1,12 +1,17 @@
 package org.dynmap.hdmap.renderer;
 
-import org.dynmap.renderer.*;
-import org.dynmap.renderer.RenderPatchFactory.SideVisible;
-import org.dynmap.utils.DynIntHashMap;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
+
+import org.dynmap.Log;
+import org.dynmap.renderer.CustomRenderer;
+import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.renderer.MapDataContext;
+import org.dynmap.renderer.RenderPatch;
+import org.dynmap.renderer.RenderPatchFactory;
+import org.dynmap.renderer.RenderPatchFactory.SideVisible;
+import org.dynmap.utils.DynIntHashMap;
 
 /**
  * Renderer for vanilla fluids - will attempt to emulate vanilla rendering behavior, but still WIP
@@ -27,12 +32,12 @@ public class FluidStateRenderer extends CustomRenderer {
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
-        ArrayList<RenderPatch> list = new ArrayList<>();
+        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
         // Create meshes for flat topped blocks
         for (int i = 0; i < 10; i++) {
             list.clear();
             CustomRenderer.addBox(rpf, list, 0.0, 1.0, 0.0, 1.0 - (i / 9.0), 0.0, 1.0, still_patches);
-            putCachedModel(9 - i, 9 - i, 9 - i, 9 - i, list.toArray(new RenderPatch[0]));
+            putCachedModel(9 - i, 9 - i, 9 - i, 9 - i, list.toArray(new RenderPatch[list.size()]));
         }
         if (bottom == null) {
         	bottom = rpf.getPatch(0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, SideVisible.TOP, PATCH_STILL);
@@ -52,29 +57,29 @@ public class FluidStateRenderer extends CustomRenderer {
     	}
     	else {
     		bs = ctx.getBlockTypeAt(dx, dy, dz);
-        }
-        DynmapBlockState fbs = bs.getLiquidState();
-        return (fbs != null) ? fbs : bs;
+		}
+    	DynmapBlockState fbs = bs.getLiquidState();
+    	return (fbs != null) ? fbs : bs;
     }
-
+    
     // Height of air, in ninths
     private int getAirHeight(DynmapBlockState bs) {
-        int idx = bs.stateIndex;
-        return (idx > 7) ? 1 : (idx + 1);
+    	int idx = bs.stateIndex;
+    	return (idx > 7) ? 1 : (idx + 1);
     }
-
-    private static int getIntKey(int h_1_1, int h_n1_1, int h_1_n1, int h_n1_n1) {
-        return (h_1_1) + (h_n1_1 << 4) + (h_1_n1 << 8) + (h_n1_n1 << 12);
+    
+    private static final int getIntKey(int h_1_1, int h_n1_1, int h_1_n1, int h_n1_n1) {
+    	return (h_1_1) + (h_n1_1 << 4) + (h_1_n1 << 8) + (h_n1_n1 << 12);
     }
 
     // Get cached model
     private static RenderPatch[] getCachedModel(int h_1_1, int h_n1_1, int h_1_n1, int h_n1_n1) {
-        return (RenderPatch[]) meshcache.get(getIntKey(h_1_1, h_n1_1, h_1_n1, h_n1_n1));
+    	return (RenderPatch[]) meshcache.get(getIntKey(h_1_1, h_n1_1, h_1_n1, h_n1_n1));
     }
-
+    
     // Put cached model
     private static void putCachedModel(int h_1_1, int h_n1_1, int h_1_n1, int h_n1_n1, RenderPatch[] model) {
-        meshcache.put(getIntKey(h_1_1, h_n1_1, h_1_n1, h_n1_n1), model);
+    	meshcache.put(getIntKey(h_1_1, h_n1_1, h_1_n1, h_n1_n1), model);
     }
     
     
@@ -90,54 +95,61 @@ public class FluidStateRenderer extends CustomRenderer {
     	// Check each of 4 neighbors
     	// First, self
     	int h = getAirHeight(b0);	// Our block is always liquid
-        if (h == 1) {    // Max
-            accum += (11 * h);
-            cnt += 11;
-        } else {
-            accum += h;
-            cnt++;
-        }
-        // Others are all nieghbors
-        if (b1.matchingBaseState(b0)) {
-            h = getAirHeight(b1);
-            if (h == 1) {    // Max
-                accum += (11 * h);
-                cnt += 11;
-            } else {
-                accum += h;
-                cnt++;
-            }
-        } else if (!b1.isSolid()) {
-            accum += 9;
-            cnt += 1;
-        }
-        if (b2.matchingBaseState(b0)) {
-            h = getAirHeight(b2);
-            if (h == 1) {    // Max
-                accum += (11 * h);
-                cnt += 11;
-            } else {
-                accum += h;
-                cnt++;
-            }
-        } else if (!b2.isSolid()) {
-            accum += 9;
-            cnt += 1;
-        }
-        if (b3.matchingBaseState(b0)) {
-            h = getAirHeight(b3);
-            if (h == 1) {    // Max
-                accum += (11 * h);
-                cnt += 11;
-            } else {
-                accum += h;
-                cnt++;
-            }
-        } else if (!b3.isSolid()) {
-            accum += 9;
-            cnt += 1;
-        }
-        return 9 - ((accum + cnt / 2) / cnt);
+    	if (h == 1) {	// Max
+    		accum += (11 * h);
+    		cnt += 11;
+    	}
+    	else {
+    		accum += h;
+    		cnt++;
+    	}
+    	// Others are all nieghbors
+    	if (b1.matchingBaseState(b0)) {
+    		h = getAirHeight(b1);
+        	if (h == 1) {	// Max
+        		accum += (11 * h);
+        		cnt += 11;
+        	}
+        	else {
+        		accum += h;
+        		cnt++;
+        	}
+    	}
+    	else if (b1.isSolid() == false) {
+    		accum += 9;
+    		cnt += 1;
+    	}
+    	if (b2.matchingBaseState(b0)) {
+    		h = getAirHeight(b2);
+        	if (h == 1) {	// Max
+        		accum += (11 * h);
+        		cnt += 11;
+        	}
+        	else {
+        		accum += h;
+        		cnt++;
+        	}
+    	}
+    	else if (b2.isSolid() == false) {
+    		accum += 9;
+    		cnt += 1;
+    	}
+    	if (b3.matchingBaseState(b0)) {
+    		h = getAirHeight(b3);
+        	if (h == 1) {	// Max
+        		accum += (11 * h);
+        		cnt += 11;
+        	}
+        	else {
+        		accum += h;
+        		cnt++;
+        	}
+    	}
+    	else if (b3.isSolid() == false) {
+    		accum += 9;
+    		cnt += 1;
+    	}
+    	return 9 - ((accum + cnt/2) / cnt);
     }
     
     
@@ -176,38 +188,41 @@ public class FluidStateRenderer extends CustomRenderer {
     	RenderPatch[] mod = getCachedModel(bh_1_1, bh_n1_1, bh_1_n1, bh_n1_n1);
     	// If not found, create model
     	if (mod == null) {
-            RenderPatchFactory rpf = ctx.getPatchFactory();
-            ArrayList<RenderPatch> list = new ArrayList<>();
-            list.add(bottom);    // All models have bottom patch
-            // Add side for each face
-            addSide(list, rpf, 0, 0, 0, 1, bh_n1_n1, bh_n1_1); // Xminus
-            addSide(list, rpf, 1, 1, 1, 0, bh_1_1, bh_1_n1); // Xplus
-            addSide(list, rpf, 1, 0, 0, 0, bh_1_n1, bh_n1_n1); // Zminus
-            addSide(list, rpf, 0, 1, 1, 1, bh_n1_1, bh_1_1); // Zplus
+        	RenderPatchFactory rpf = ctx.getPatchFactory();
+			ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+			list.add(bottom);	// All models have bottom patch
+			// Add side for each face
+			addSide(list, rpf, 0, 0, 0, 1, bh_n1_n1, bh_n1_1); // Xminus
+			addSide(list, rpf, 1, 1, 1, 0, bh_1_1, bh_1_n1); // Xplus
+			addSide(list, rpf, 1, 0, 0, 0, bh_1_n1, bh_n1_n1); // Zminus
+			addSide(list, rpf, 0, 1, 1, 1, bh_n1_1, bh_1_1); // Zplus
 
-            int edge_xm = bh_n1_n1 + bh_n1_1;
-            int edge_xp = bh_1_n1 + bh_1_1;
-            int edge_zm = bh_n1_n1 + bh_1_n1;
-            int edge_zp = bh_1_1 + bh_n1_1;
-
-            // See which edge is lowest
-            if ((edge_xp <= edge_xm) && (edge_xp <= edge_zm) && (edge_xp <= edge_zp)) { // bh_1_1 and bh_1_n1 (Xplus)
-                addTop(list, rpf, 1, 1, 1, 0, bh_1_1, bh_1_n1, bh_n1_1, bh_n1_n1);
-            } else if ((edge_zp <= edge_zm) && (edge_zp <= edge_xm) && (edge_zp <= edge_xp)) {//  bh_n1_1 and bh_1_1 (zPlus)
-                addTop(list, rpf, 0, 1, 1, 1, bh_n1_1, bh_1_1, bh_n1_n1, bh_1_n1);
-            } else if ((edge_xm <= edge_xp) && (edge_xm <= edge_zm) && (edge_xm <= edge_zp)) {    // bh_n1_n1 and bh_n1_1 (xMinus)
-                addTop(list, rpf, 0, 0, 0, 1, bh_n1_n1, bh_n1_1, bh_1_n1, bh_1_1);
-            } else {    // bh_1_n1 and bh_n1_n1 (zMinus)
-                addTop(list, rpf, 1, 0, 0, 0, bh_1_n1, bh_n1_n1, bh_1_1, bh_n1_1);
-            }
-            mod = list.toArray(new RenderPatch[0]);
-            putCachedModel(bh_1_1, bh_n1_1, bh_1_n1, bh_n1_n1, mod);
-
-            //Log.info(String.format("%d:%d:%d::bh_1_1=%d,bh_1_n1=%d,bh_n1_1=%d,bh_n1_n1=%d", ctx.getX(), ctx.getY(), ctx.getZ(), bh_1_1, bh_1_n1, bh_n1_1, bh_n1_n1));
-            //for (RenderPatch rp : list) {
-            //	Log.info(rp.toString());
-            //}
-        }
+			int edge_xm = bh_n1_n1 + bh_n1_1;
+			int edge_xp = bh_1_n1 + bh_1_1;
+			int edge_zm = bh_n1_n1 + bh_1_n1;
+			int edge_zp = bh_1_1 + bh_n1_1;
+			
+			// See which edge is lowest
+			if ((edge_xp <= edge_xm) && (edge_xp <= edge_zm) && (edge_xp <= edge_zp)) { // bh_1_1 and bh_1_n1 (Xplus)
+				addTop(list, rpf, 1, 1, 1, 0, bh_1_1, bh_1_n1, bh_n1_1, bh_n1_n1);
+			}
+			else if ((edge_zp <= edge_zm) && (edge_zp <= edge_xm) && (edge_zp <= edge_xp)) {//  bh_n1_1 and bh_1_1 (zPlus)
+				addTop(list, rpf, 0, 1, 1, 1, bh_n1_1, bh_1_1, bh_n1_n1, bh_1_n1);
+			}
+			else if ((edge_xm <= edge_xp) && (edge_xm <= edge_zm) && (edge_xm <= edge_zp)) {	// bh_n1_n1 and bh_n1_1 (xMinus)
+				addTop(list, rpf, 0, 0, 0, 1, bh_n1_n1, bh_n1_1, bh_1_n1, bh_1_1);
+			}
+			else {	// bh_1_n1 and bh_n1_n1 (zMinus)
+				addTop(list, rpf, 1, 0, 0, 0, bh_1_n1, bh_n1_n1, bh_1_1, bh_n1_1);
+			}
+			mod = list.toArray(new RenderPatch[list.size()]);
+	    	putCachedModel(bh_1_1, bh_n1_1, bh_1_n1, bh_n1_n1, mod);
+	    	
+	    	//Log.info(String.format("%d:%d:%d::bh_1_1=%d,bh_1_n1=%d,bh_n1_1=%d,bh_n1_n1=%d", ctx.getX(), ctx.getY(), ctx.getZ(), bh_1_1, bh_1_n1, bh_n1_1, bh_n1_n1));
+	    	//for (RenderPatch rp : list) {
+	    	//	Log.info(rp.toString());
+	    	//}
+    	}
     	return mod;
     }
     

@@ -1,10 +1,14 @@
 package org.dynmap.hdmap.renderer;
 
-import org.dynmap.renderer.*;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Map;
+
+import org.dynmap.renderer.CustomRenderer;
+import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.renderer.MapDataContext;
+import org.dynmap.renderer.RenderPatch;
+import org.dynmap.renderer.RenderPatchFactory;
 
 public class CTMVertTextureRenderer extends CustomRenderer {
     private static final int TEXTURE_BOTTOM = 0;
@@ -25,7 +29,7 @@ public class CTMVertTextureRenderer extends CustomRenderer {
         if(!super.initializeRenderer(rpf, blkname, blockdatamask, custparm))
             return false;
         blk = DynmapBlockState.getBaseStateByName(blkname);
-        ArrayList<RenderPatch> list = new ArrayList<>();
+        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
         /* Build no neighbors patches */
         addBox(rpf, list, 0, 1, 0, 1, 0, 1, new int[] { TEXTURE_BOTTOM, TEXTURE_TOP, TEXTURE_SIDE_NO_NEIGHBOR, TEXTURE_SIDE_NO_NEIGHBOR, TEXTURE_SIDE_NO_NEIGHBOR, TEXTURE_SIDE_NO_NEIGHBOR });
         mesh_no_neighbor = list.toArray(new RenderPatch[6]);

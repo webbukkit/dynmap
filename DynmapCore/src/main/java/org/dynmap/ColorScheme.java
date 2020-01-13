@@ -1,8 +1,5 @@
 package org.dynmap;
 
-import org.dynmap.common.BiomeMap;
-import org.dynmap.debug.Debug;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,8 +7,11 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.dynmap.common.BiomeMap;
+import org.dynmap.debug.Debug;
+
 public class ColorScheme {
-    private static final HashMap<String, ColorScheme> cache = new HashMap<>();
+    private static final HashMap<String, ColorScheme> cache = new HashMap<String, ColorScheme>();
 
     public String name;
     /* Switch to arrays - faster than map */
@@ -64,7 +64,7 @@ public class ColorScheme {
         /* Default the biome color */
         for(int i = 0; i < biomecolors.length; i++) {
             Color[] c = new Color[5];
-            int red = 0x80 | (0x40 * ((i) & 1)) | (0x20 * ((i >> 3) & 1)) | (0x10 * ((i >> 6) & 1));
+            int red = 0x80 | (0x40 * ((i >> 0) & 1)) | (0x20 * ((i >> 3) & 1)) | (0x10 * ((i >> 6) & 1));
             int green = 0x80 | (0x40 * ((i >> 1) & 1)) | (0x20 * ((i >> 4) & 1)) | (0x10 * ((i >> 7) & 1));
             int blue = 0x80 | (0x40 * ((i >> 2) & 1)) | (0x20 * ((i >> 5) & 1));
             c[0] = new Color(red, green, blue);
@@ -129,21 +129,21 @@ public class ColorScheme {
                         if(bio.startsWith("RAINFALL-")) {
                             try {
                                 double v = Double.parseDouble(bio.substring(9));
-                                if ((v >= 0) && (v <= 1.00)) {
-                                    id = (int) (v * 63.0);
+                                if((v >= 0) && (v <= 1.00)) {
+                                    id = (int)(v * 63.0);
                                     israin = true;
                                 }
-                            } catch (NumberFormatException ignored) {
+                            } catch (NumberFormatException nfx) {
                             }
                         }
                         else if(bio.startsWith("TEMPERATURE-")) {
                             try {
                                 double v = Double.parseDouble(bio.substring(12));
-                                if ((v >= 0) && (v <= 1.00)) {
-                                    id = (int) (v * 63.0);
+                                if((v >= 0) && (v <= 1.00)) {
+                                    id = (int)(v * 63.0);
                                     istemp = true;
                                 }
-                            } catch (NumberFormatException ignored) {
+                            } catch (NumberFormatException nfx) {
                             }
                         }
                     }

@@ -1,11 +1,15 @@
 package org.dynmap.hdmap.renderer;
 
-import org.dynmap.renderer.*;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+
+import org.dynmap.renderer.CustomRenderer;
+import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.renderer.MapDataContext;
+import org.dynmap.renderer.RenderPatch;
+import org.dynmap.renderer.RenderPatchFactory;
 
 public class RailCraftSlabBlockRenderer extends CustomRenderer {
     private static final int TEXTURE_SIDES = 0;
@@ -72,7 +76,7 @@ public class RailCraftSlabBlockRenderer extends CustomRenderer {
     }
     
     private RenderPatch[] buildStepMeshes(RenderPatchFactory rpf, int dat) {
-        ArrayList<RenderPatch> list = new ArrayList<>();
+        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
         switch (dat) {
             case 0:
                 addBox(rpf, list, 0, 1, 0.0, 0.5, 0, 1);
@@ -84,7 +88,7 @@ public class RailCraftSlabBlockRenderer extends CustomRenderer {
                 addBox(rpf, list, 0, 1, 0, 1, 0, 1);
                 break;
         }
-        return list.toArray(new RenderPatch[0]);
+        return list.toArray(new RenderPatch[list.size()]);
     }
     
     @Override

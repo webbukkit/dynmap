@@ -1,17 +1,25 @@
 package org.dynmap.hdmap;
 
-import org.dynmap.*;
+import static org.dynmap.JSONUtils.a;
+import static org.dynmap.JSONUtils.s;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.dynmap.Client;
+import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapChunk;
+import org.dynmap.DynmapCore;
+import org.dynmap.DynmapWorld;
+import org.dynmap.Log;
+import org.dynmap.MapManager;
+import org.dynmap.MapTile;
+import org.dynmap.MapType;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.MapStorageTile;
 import org.dynmap.storage.MapStorageTileEnumCB;
 import org.dynmap.utils.TileFlags;
 import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.dynmap.JSONUtils.a;
-import static org.dynmap.JSONUtils.s;
 
 public class HDMap extends MapType {
 
@@ -20,7 +28,7 @@ public class HDMap extends MapType {
     private HDPerspective perspective;
     private HDShader shader;
     private HDLighting lighting;
-    //    private ConfigurationNode configuration;
+//    private ConfigurationNode configuration;
     private int mapzoomout;
     private String imgfmtstring;
     private MapType.ImageFormat imgformat;
@@ -215,7 +223,7 @@ public class HDMap extends MapType {
 
     /* Get maps rendered concurrently with this map in this world */
     public List<MapType> getMapsSharingRender(DynmapWorld w) {
-        ArrayList<MapType> maps = new ArrayList<>();
+        ArrayList<MapType> maps = new ArrayList<MapType>();
         for(MapType mt : w.maps) {
             if(mt instanceof HDMap) {
                 HDMap hdmt = (HDMap)mt;
@@ -229,7 +237,7 @@ public class HDMap extends MapType {
     
     /* Get names of maps rendered concurrently with this map type in this world */
     public List<String> getMapNamesSharingRender(DynmapWorld w) {
-        ArrayList<String> lst = new ArrayList<>();
+        ArrayList<String> lst = new ArrayList<String>();
         for(MapType mt : w.maps) {
             if(mt instanceof HDMap) {
                 HDMap hdmt = (HDMap)mt;
@@ -417,13 +425,13 @@ public class HDMap extends MapType {
         return false;
     }
     public boolean setImageFormatSetting(String f) {
-        if (!imgfmtstring.equals(f)) {
+        if(imgfmtstring.equals(f) == false) {
             MapType.ImageFormat newfmt;
-            if (f.equals("default"))
+            if(f.equals("default"))
                 newfmt = MapType.ImageFormat.fromID(core.getDefImageFormat());
             else
                 newfmt = MapType.ImageFormat.fromID(f);
-            if (newfmt != null) {
+            if(newfmt != null) {
                 imgformat = newfmt;
                 imgfmtstring = f;
                 return true;

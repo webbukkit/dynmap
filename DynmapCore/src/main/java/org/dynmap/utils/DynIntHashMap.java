@@ -3,7 +3,6 @@ package org.dynmap.utils;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This is a copy of java.util.HashMap which uses longs as keys
@@ -117,7 +116,7 @@ public class DynIntHashMap
     /**
      * The hash table data.
      */
-    transient Entry[] table;
+    transient Entry table[];
 
     /**
      * The total number of mappings in the hash table.
@@ -258,7 +257,7 @@ public class DynIntHashMap
      * for this key.
      */
     Entry getEntry(int key) {
-        Entry[] tab = table;
+        Entry tab[] = table;
         int index = (key & 0x7FFFFFFF) % tab.length;
 
         for (Entry e = tab[index]; e != null; e = e.next)
@@ -277,7 +276,7 @@ public class DynIntHashMap
      *         specified value.
      */
     public boolean containsValue(Object value) {
-        Entry[] tab = table;
+        Entry tab[] = table;
 
         if (value==null) {
             for (int i = tab.length ; i-- > 0 ;)
@@ -307,7 +306,7 @@ public class DynIntHashMap
      *         <tt>null</tt> with the specified key.
      */
     public Object put(int key, Object value) {
-        Entry[] tab = table;
+        Entry tab[] = table;
         int index = (key & 0x7FFFFFFF) % tab.length;
 
         // Look for entry in hash table
@@ -353,7 +352,7 @@ public class DynIntHashMap
      * for this key.
      */
     Entry removeEntryForKey(int key) {
-        Entry[] tab = table;
+        Entry tab[] = table;
         int index = (key & 0x7FFFFFFF) % tab.length;
 
         for (Entry e = tab[index], prev = null; e != null;
@@ -401,7 +400,7 @@ public class DynIntHashMap
      * Removes all mappings from this map.
      */
     public void clear() {
-        Entry[] tab = table;
+        Entry tab[] = table;
         modCount++;
         for (int index = tab.length; --index >= 0; )
             tab[index] = null;
@@ -414,10 +413,10 @@ public class DynIntHashMap
      * number of keys in this map exceeds its capacity and load factor.
      */
     void rehash() {
-        Entry[] oldTable = table;
+        Entry oldTable[] = table;
         int oldCapacity = oldTable.length;
         int newCapacity = oldCapacity * 2 + 1;
-        Entry[] newTable = new Entry[newCapacity];
+        Entry newTable[] = new Entry[newCapacity];
 
         modCount++;
         threshold = (int)(newCapacity * loadFactor);
@@ -436,7 +435,7 @@ public class DynIntHashMap
     }
 
     static boolean eq(Object o1, Object o2) {
-        return (Objects.equals(o1, o2));
+        return (o1==null ? o2==null : o1.equals(o2));
     }
 
     Entry newEntry(int key, Object value, Entry next) {
@@ -453,20 +452,20 @@ public class DynIntHashMap
 
     // Return keys matching given value
     public List<Integer> keysWithValue(Object value) {
-        Entry[] tab = table;
-        ArrayList<Integer> match = new ArrayList<>();
+        Entry tab[] = table;
+        ArrayList<Integer> match = new ArrayList<Integer>();
 
-        if (value == null) {
-            for (int i = tab.length; i-- > 0; ) {
-                for (Entry e = tab[i]; e != null; e = e.next) {
-                    if (e.value == null) {
+        if (value==null) {
+            for (int i = tab.length ; i-- > 0 ;) {
+                for (Entry e = tab[i] ; e != null ; e = e.next) {
+                    if (e.value==null) {
                         match.add(e.key);
                     }
                 }
             }
         } else {
-            for (int i = tab.length; i-- > 0; ) {
-                for (Entry e = tab[i]; e != null; e = e.next) {
+            for (int i = tab.length ; i-- > 0 ;) {
+                for (Entry e = tab[i] ; e != null ; e = e.next) {
                     if (value.equals(e.value)) {
                         match.add(e.key);
                     }

@@ -1,28 +1,28 @@
 package org.dynmap;
 
-import org.dynmap.utils.TileFlags;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.dynmap.utils.TileFlags;
 
 public class MapTypeState {
     public static final long DEF_INV_PERIOD = 30;
     public static final long NANOS_PER_SECOND = 1000000000L;
     public MapType type;
-    private final Object invTileLock = new Object();
+    private Object invTileLock = new Object();
     private TileFlags pendingInvTiles = new TileFlags();
     private TileFlags pendingInvTilesAlt = new TileFlags();
     private TileFlags invTiles = new TileFlags();
     private TileFlags.Iterator invTilesIter = invTiles.getIterator();
     private long nextInvTS;
     private long invTSPeriod;
-    private ArrayList<TileFlags> zoomOutInvAccum = new ArrayList<>();
-    private ArrayList<TileFlags> zoomOutInv = new ArrayList<>();
+    private ArrayList<TileFlags> zoomOutInvAccum = new ArrayList<TileFlags>();
+    private ArrayList<TileFlags> zoomOutInv = new ArrayList<TileFlags>();
     private TileFlags.Iterator zoomOutInvIter = null;
     private int zoomOutInvIterLevel = -1;
     private final int zoomOutLevels;
-
+    
     public MapTypeState(DynmapWorld world, MapType mt) {
         type = mt;
         invTSPeriod = DEF_INV_PERIOD * NANOS_PER_SECOND;
@@ -110,7 +110,7 @@ public class MapTypeState {
     }
     
     public List<List<String>> saveZoomOut() {
-        ArrayList<List<String>> rslt = new ArrayList<>();
+        ArrayList<List<String>> rslt = new ArrayList<List<String>>();
         synchronized(invTileLock) {
             boolean empty = true;
             for (TileFlags tf : zoomOutInv) {

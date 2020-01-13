@@ -14,9 +14,9 @@ import org.dynmap.bukkit.helper.v115.BukkitVersionHelperSpigot115;
 
 public class Helper {
     
-    public static BukkitVersionHelper getHelper() {
+    public static final BukkitVersionHelper getHelper() {
         if (BukkitVersionHelper.helper == null) {
-            String v = Bukkit.getServer().getVersion();
+        	String v = Bukkit.getServer().getVersion();
             Log.info("version=" + v);
             if (v.contains("MCPC")) {
                 Log.severe("*********************************************************************************");

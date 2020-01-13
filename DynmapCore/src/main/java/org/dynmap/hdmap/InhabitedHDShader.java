@@ -1,6 +1,16 @@
 package org.dynmap.hdmap;
 
-import org.dynmap.*;
+import static org.dynmap.JSONUtils.s;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.TreeSet;
+
+import org.dynmap.Color;
+import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
+import org.dynmap.Log;
+import org.dynmap.MapManager;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.renderer.DynmapBlockState;
@@ -10,23 +20,17 @@ import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.TreeSet;
-
-import static org.dynmap.JSONUtils.s;
-
 public class InhabitedHDShader implements HDShader {
     private final String name;
-    private final long[] filllevel; /* Values for colors */
-    private final Color[] fillcolor;
-
+    private final long filllevel[]; /* Values for colors */
+    private final Color fillcolor[];
+    
     private Color readColor(String id, ConfigurationNode cfg) {
         String lclr = cfg.getString(id, null);
-        if ((lclr != null) && (lclr.startsWith("#"))) {
+        if((lclr != null) && (lclr.startsWith("#"))) {
             try {
                 int c = Integer.parseInt(lclr.substring(1), 16);
-                return new Color((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
+                return new Color((c>>16)&0xFF, (c>>8)&0xFF, c&0xFF);
             } catch (NumberFormatException nfx) {
                 Log.severe("Invalid color value: " + lclr + " for '" + id + "'");
             }
@@ -35,18 +39,18 @@ public class InhabitedHDShader implements HDShader {
     }
     public InhabitedHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
-        HashMap<Long, Color> map = new HashMap<>();
+        HashMap<Long, Color> map = new HashMap<Long, Color>();
         for (String key : configuration.keySet()) {
             if (key.startsWith("color")) {
                 try {
                     long val = Long.parseLong(key.substring(5));
                     Color clr = readColor(key, configuration);
                     map.put(val, clr);
-                } catch (NumberFormatException ignored) {
+                } catch (NumberFormatException nfx) {
                 }
             }
         }
-        TreeSet<Long> keys = new TreeSet<>(map.keySet());
+        TreeSet<Long> keys = new TreeSet<Long>(map.keySet());
         filllevel = new long[keys.size()];
         fillcolor = new Color[keys.size()];
         int idx = 0;
@@ -93,7 +97,7 @@ public class InhabitedHDShader implements HDShader {
     }
     
     private class OurShaderState implements HDShaderState {
-        private Color[] color;
+        private Color color[];
         private Color c;
         protected HDMap map;
         private HDLighting lighting;
@@ -141,7 +145,8 @@ public class InhabitedHDShader implements HDShader {
          * Reset renderer state for new ray
          */
         public void reset(HDPerspectiveState ps) {
-            for (Color value : color) value.setTransparent();
+            for(int i = 0; i < color.length; i++)
+                color[i].setTransparent();
         }
         /**
          * Process next ray step - called for each block on route
