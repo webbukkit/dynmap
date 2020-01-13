@@ -9,19 +9,23 @@ import org.dynmap.debug.Debug;
 import org.dynmap.debug.Debugger;
 import org.dynmap.exporter.DynmapExpCommands;
 import org.dynmap.hdmap.HDBlockModels;
+import org.dynmap.hdmap.HDBlockStateTextureMap;
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.impl.MarkerAPIImpl;
 import org.dynmap.modsupport.ModSupportImpl;
+import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.servlet.FileResourceHandler;
 import org.dynmap.servlet.JettyNullLogger;
 import org.dynmap.servlet.LoginServlet;
 import org.dynmap.servlet.MapStorageResourceHandler;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.filetree.FileTreeMapStorage;
+import org.dynmap.storage.mariadb.MariaDBMapStorage;
 import org.dynmap.storage.mysql.MySQLMapStorage;
 import org.dynmap.storage.postgresql.PostgreSQLMapStorage;
 import org.dynmap.storage.sqllte.SQLiteMapStorage;
+import org.dynmap.utils.BlockStep;
 import org.dynmap.utils.ImageIOManager;
 import org.dynmap.web.BanIPFilter;
 import org.dynmap.web.CustomHeaderFilter;
@@ -36,7 +40,6 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
-import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.Filter;
@@ -50,244 +53,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
 public class DynmapCore implements DynmapCommonAPI {
-    /**
-     * Callbacks for core initialization - subclassed by platform plugins
-     */
-    public static abstract class EnableCoreCallbacks {
-        /**
-         * Called during enableCore to report that configuration.txt is loaded
-         */
-        public abstract void configurationLoaded();
-    }
-
-    private File jarfile;
-    private DynmapServerInterface server;
-    private String version;
-    private String platform = null;
-    private String platformVersion = null;
-    private Server webServer = null;
-    private String webhostname = null;
-    private int webport = 0;
-    private HandlerRouter router = null;
-    public MapManager mapManager = null;
-    public PlayerList playerList;
-    public ConfigurationNode configuration;
-    public ConfigurationNode world_config;
-    public final ComponentManager componentManager = new ComponentManager();
-    public final DynmapListenerManager listenerManager = new DynmapListenerManager(this);
-    public PlayerFaces playerfacemgr;
-    public Events events = new Events();
-    public String deftemplatesuffix = "";
-    private final DynmapMapCommands dmapcmds = new DynmapMapCommands();
-    private final DynmapExpCommands dynmapexpcmds = new DynmapExpCommands();
-    boolean bettergrass = false;
-    boolean smoothlighting = false;
-    private boolean ctmsupport = false;
-    private boolean customcolorssupport = false;
-    private String def_image_format = "png";
-    private final HashSet<String> enabledTriggers = new HashSet<>();
-    public boolean disable_chat_to_web = false;
-    private WebAuthManager authmgr;
-    public boolean player_info_protected;
-    private boolean transparentLeaves = true;
-    private List<String> sortPermissionNodes;
-    private int perTickLimit = 50;   // 50 ms
-    private boolean dumpMissing = false;
-    private static boolean migrate_chunks = false;
-    private String[] biomenames = new String[0];
-
-    private int config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
-    private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
-    private int updateplayerlimit;  /* Number of online players that will cause update processing to pause */
-    private boolean didfullpause;
-    private boolean didupdatepause;
-    private final Map<String, LinkedList<String>> ids_by_ip = new HashMap<>();
-    private boolean persist_ids_by_ip = false;
-    private int snapshotcachesize;
-    private boolean snapshotsoftref;
-    private Map<String, Integer> blockmap = null;
-    private Map<String, Integer> itemmap = null;
-
-    private boolean loginRequired;
-
-    /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
-    @SuppressWarnings("unused")
-    public boolean is_reload = false;
-    @SuppressWarnings("unused")
-    public static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
-
-    private MarkerAPIImpl markerapi;
-
-    private File dataDirectory;
-    private File tilesDirectory;
-    private File exportDirectory;
-    private String plugin_ver;
-    private MapStorage defaultStorage;
-
-    private String[] deftriggers = {};
-
-    /* Constructor for core */
-    public DynmapCore() {
-    }
-
-    /* Cleanup method */
-    public void cleanup() {
-        server = null;
-        markerapi = null;
-    }
-
-    public void restartMarkerSaveJob() {
-        this.markerapi.scheduleWriteJob();
-    }
-
-    // Set plugin jar file
-    public void setPluginJarFile(File f) {
-        jarfile = f;
-    }
-
-    // Get plugin jar file
-    public File getPluginJarFile() {
-        return jarfile;
-    }
-
-    /* Dependencies - need to be supplied by plugin wrapper */
-    public void setPluginVersion(String pluginver, String platform) {
-        this.plugin_ver = pluginver;
-        this.platform = platform;
-    }
-
-    /* Default platform to forge... */
-    public void setPluginVersion(String pluginver) {
-        setPluginVersion(pluginver, "Forge");
-    }
-
-    public void setDataFolder(File dir) {
-        dataDirectory = dir;
-    }
-
-    public final File getDataFolder() {
-        return dataDirectory;
-    }
-
-    public final File getTilesFolder() {
-        return tilesDirectory;
-    }
-
-    public final File getExportFolder() {
-        return exportDirectory;
-    }
-
-    public void setMinecraftVersion(String mcver) {
-        this.platformVersion = mcver;
-    }
-
-    public void setServer(DynmapServerInterface srv) {
-        server = srv;
-    }
-
-    public final DynmapServerInterface getServer() {
-        return server;
-    }
-
-
-    @SuppressWarnings("unused")
-    public final void setBiomeNames(String[] names) {
-        this.biomenames = names;
-    }
-
-    public static boolean migrateChunks() {
-        return migrate_chunks;
-    }
-
-    @SuppressWarnings("unused")
-    public final String getBiomeName(int biomeId) {
-        String n = null;
-        if ((biomeId >= 0) && (biomeId < biomenames.length)) {
-            n = biomenames[biomeId];
-        }
-        if (n == null) n = "biome" + biomeId;
-        return n;
-    }
-
-    public final String[] getBiomeNames() {
-        return biomenames;
-    }
-
-    public final MapManager getMapManager() {
-        return mapManager;
-    }
-
-    public final void setTriggerDefault(String[] triggers) {
-        deftriggers = triggers;
-    }
-
-    // --Commented out by Inspection START (1/12/2020 17:28):
-//    public final void setLeafTransparency(boolean trans) {
-//        transparentLeaves = trans;
-//    }
-// --Commented out by Inspection STOP (1/12/2020 17:28)
-    public final boolean getLeafTransparency() {
-        return transparentLeaves;
-    }
-
-    /* Add/Replace branches in configuration tree with contribution from a separate file */
-    private void mergeConfigurationBranch(ConfigurationNode cfgnode, boolean replace_existing, @SuppressWarnings("SameParameterValue") boolean islist) {
-        Object srcbranch = cfgnode.getObject("templates");
-        if (srcbranch == null)
-            return;
-        /* See if top branch is in configuration - if not, just add whole thing */
-        Object destbranch = configuration.getObject("templates");
-        if (destbranch == null) {    /* Not found */
-            configuration.put("templates", srcbranch);   /* Add new tree to configuration */
-            return;
-        }
-        /* If list, merge by "name" attribute */
-        if (islist) {
-            List<ConfigurationNode> dest = configuration.getNodes("templates");
-            List<ConfigurationNode> src = cfgnode.getNodes("templates");
-            /* Go through new records : see what to do with each */
-            for (ConfigurationNode node : src) {
-                String name = node.getString("name", null);
-                if (name == null) continue;
-                /* Walk destination - see if match */
-                boolean matched = false;
-                for (ConfigurationNode dnode : dest) {
-                    String dname = dnode.getString("name", null);
-                    if (dname == null) continue;
-                    if (dname.equals(name)) {    /* Match? */
-                        if (replace_existing) {
-                            dnode.clear();
-                            dnode.putAll(node);
-                        }
-                        matched = true;
-                        break;
-                    }
-                }
-                /* If no match, add to end */
-                if (!matched) {
-                    dest.add(node);
-                }
-            }
-            configuration.put("templates", dest);
-        }
-        /* If configuration node, merge by key */
-        else {
-            ConfigurationNode src = cfgnode.getNode("templates");
-            ConfigurationNode dest = configuration.getNode("templates");
-            for (String key : src.keySet()) {    /* Check each contribution */
-                if (dest.containsKey(key)) { /* Exists? */
-                    if (replace_existing) {  /* If replacing, do so */
-                        dest.put(key, src.getObject(key));
-                    }
-                } else {  /* Else, always add if not there */
-                    dest.put(key, src.getObject(key));
-                }
-            }
-        }
-    }
-
     /* Table of default templates - all are resources in dynmap.jar unnder templates/, and go in templates directory when needed */
     private static final String[] stdtemplates = {"normal.txt", "nether.txt", "normal-lowres.txt",
             "nether-lowres.txt", "normal-hires.txt", "nether-hires.txt",
@@ -297,675 +63,9 @@ public class DynmapCore implements DynmapCommonAPI {
             "nether-low_boost_hi.txt", "nether-hi_boost_vhi.txt", "nether-hi_boost_xhi.txt",
             "the_end-low_boost_hi.txt", "the_end-hi_boost_vhi.txt", "the_end-hi_boost_xhi.txt"
     };
-
     private static final String CUSTOM_PREFIX = "custom-";
-
-    /* Load templates from template folder */
-    private void loadTemplates() {
-        File templatedir = new File(dataDirectory, "templates");
-        templatedir.mkdirs();
-        /* First, prime the templates directory with default standard templates, if needed */
-        for (String stdtemplate : stdtemplates) {
-            File f = new File(templatedir, stdtemplate);
-            updateVersionUsingDefaultResource("/templates/" + stdtemplate, f);
-        }
-        /* Now process files */
-        String[] templates = templatedir.list();
-        /* Go through list - process all ones not starting with 'custom' first */
-        assert templates != null;
-        for (String tname : templates) {
-            /* If matches naming convention */
-            if (tname.endsWith(".txt") && (!tname.startsWith(CUSTOM_PREFIX))) {
-                File tf = new File(templatedir, tname);
-                ConfigurationNode cn = new ConfigurationNode(tf);
-                cn.load();
-                /* Supplement existing values (don't replace), since configuration.txt is more custom than these */
-                mergeConfigurationBranch(cn, false, false);
-            }
-        }
-        /* Go through list again - this time do custom- ones */
-        for (String tname : templates) {
-            /* If matches naming convention */
-            if (tname.endsWith(".txt") && tname.startsWith(CUSTOM_PREFIX)) {
-                File tf = new File(templatedir, tname);
-                ConfigurationNode cn = new ConfigurationNode(tf);
-                cn.load();
-                /* This are overrides - replace even configuration.txt content */
-                mergeConfigurationBranch(cn, true, false);
-            }
-        }
-    }
-
-// --Commented out by Inspection START (1/12/2020 17:25):
-//    public boolean enableCore() {
-//        boolean rslt = initConfiguration(null);
-//        if (rslt)
-//            rslt = enableCore(null);
-//        return rslt;
-//    }
-// --Commented out by Inspection STOP (1/12/2020 17:25)
-
-    public boolean initConfiguration(EnableCoreCallbacks cb) {
-        /* Start with clean events */
-        events = new Events();
-        /* Default to being unprotected - set to protected by update components */
-        player_info_protected = false;
-
-        /* Load plugin version info */
-        loadVersion();
-
-        /* Initialize confguration.txt if needed */
-        File f = new File(dataDirectory, "configuration.txt");
-        if (!createDefaultFileFromResource("/configuration.txt", f)) {
-            return false;
-        }
-
-        /* Load configuration.txt */
-        configuration = new ConfigurationNode(f);
-        configuration.load();
-
-        /* Prime the tiles directory */
-        tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
-        if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
-            Log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
-        }
-        // Prime the exports directory
-        exportDirectory = getFile(configuration.getString("exportpath", "export"));
-        if (!exportDirectory.isDirectory() && !exportDirectory.mkdirs()) {
-            Log.warning("Could not create directory for exports ('" + exportDirectory + "').");
-        }
-        // Create default storage handler
-        if (defaultStorage != null && !defaultStorage.shutdown())
-            Log.severe("Unable to stop existing data storage provider, memory may leak");
-        String storetype = configuration.getString("storage/type", "filetree");
-        switch (storetype) {
-            case "filetree":
-                defaultStorage = new FileTreeMapStorage();
-                break;
-            case "sqlite":
-                defaultStorage = new SQLiteMapStorage();
-                break;
-            case "mysql":
-                defaultStorage = new MySQLMapStorage(MySQLMapStorage.MYSQL);
-                break;
-            case "mariadb":
-                defaultStorage = new MySQLMapStorage(MySQLMapStorage.MARIADB);
-                break;
-            case "postgres":
-            case "postgresql":
-                defaultStorage = new PostgreSQLMapStorage();
-                break;
-            default:
-                Log.severe("Invalid storage type for map data: " + storetype);
-                return false;
-        }
-        if (!defaultStorage.init(this)) {
-            Log.severe("Map storage initialization failure");
-            return false;
-        }
-
-        /* Register API with plugin, if needed */
-        if (!markerAPIInitialized()) {
-            MarkerAPIImpl api = MarkerAPIImpl.initializeMarkerAPI(this);
-            this.registerMarkerAPI(api);
-        }
-        /* Call back to plugin to report that configuration is available */
-        if (cb != null)
-            cb.configurationLoaded();
-        return true;
-    }
-
-    public boolean enableCore() {
-        /* Update extracted files, if needed */
-        updateExtractedFiles();
-        /* Initialize authorization manager */
-        if (configuration.getBoolean("login-enabled", false)) {
-            authmgr = new WebAuthManager(this);
-            defaultStorage.setLoginEnabled(this);
-        }
-
-        /* Load control for leaf transparency (spout lighting bug workaround) */
-        transparentLeaves = configuration.getBoolean("transparent-leaves", true);
-        /* Get default image format */
-        def_image_format = configuration.getString("image-format", "png");
-        MapType.ImageFormat fmt = MapType.ImageFormat.fromID(def_image_format);
-        if (fmt == null) {
-            Log.severe("Invalid image-format: " + def_image_format);
-            def_image_format = "png";
-        }
-
-        DynmapWorld.doInitialScan(configuration.getBoolean("initial-zoomout-validate", true));
-
-        smoothlighting = configuration.getBoolean("smooth-lighting", false);
-        ctmsupport = configuration.getBoolean("ctm-support", true);
-        customcolorssupport = configuration.getBoolean("custom-colors-support", true);
-        Log.verbose = configuration.getBoolean("verbose", true);
-        deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
-        /* Get snapshot cache size */
-        snapshotcachesize = configuration.getInteger("snapshotcachesize", 500);
-        /* Get soft ref flag for cache (weak=false, soft=true) */
-        snapshotsoftref = configuration.getBoolean("soft-ref-cache", true);
-        /* Default better-grass */
-        bettergrass = configuration.getBoolean("better-grass", false);
-        /* Load full render processing player limit */
-        fullrenderplayerlimit = configuration.getInteger("fullrenderplayerlimit", 0);
-        /* Load update render processing player limit */
-        updateplayerlimit = configuration.getInteger("updateplayerlimit", 0);
-        /* Load sort permission nodes */
-        sortPermissionNodes = configuration.getStrings("player-sort-permission-nodes", null);
-
-        perTickLimit = configuration.getInteger("per-tick-time-limit", 50);
-        if (perTickLimit < 5) perTickLimit = 5;
-
-        dumpMissing = configuration.getBoolean("dump-missing-blocks", false);
-
-        migrate_chunks = configuration.getBoolean("migrate-chunks", false);
-        if (migrate_chunks)
-            Log.info("EXPERIMENTAL: chunk migration enabled");
-
-        /* Load preupdate/postupdate commands */
-        ImageIOManager.preUpdateCommand = configuration.getString("custom-commands/image-updates/preupdatecommand", "");
-        ImageIOManager.postUpdateCommand = configuration.getString("custom-commands/image-updates/postupdatecommand", "");
-
-        /* Get block and item maps */
-        blockmap = server.getBlockUniqueIDMap();
-        itemmap = server.getItemUniqueIDMap();
-
-        /* Process mod support */
-        ModSupportImpl.complete(this.dataDirectory);
-        /* Load block models */
-        Log.verboseinfo("Loading models...");
-        HDBlockModels.loadModels(this, configuration);
-        /* Load texture mappings */
-        Log.verboseinfo("Loading texture mappings...");
-        TexturePack.loadTextureMapping(this, configuration);
-
-        /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
-        File f = new File(dataDirectory, "worlds.txt");
-        if (!createDefaultFileFromResource("/worlds.txt", f)) {
-            return false;
-        }
-        world_config = new ConfigurationNode(f);
-        world_config.load();
-
-        /* Now, process templates */
-        Log.verboseinfo("Loading templates...");
-        loadTemplates();
-
-        /* If we're persisting ids-by-ip, load it */
-        persist_ids_by_ip = configuration.getBoolean("persist-ids-by-ip", true);
-        if (persist_ids_by_ip) {
-            Log.verboseinfo("Loading userid-by-IP data...");
-            loadIDsByIP();
-        }
-
-        loadDebuggers();
-
-        playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
-        playerList.load();
-
-        mapManager = new MapManager(this, configuration);
-        mapManager.startRendering();
-
-        playerfacemgr = new PlayerFaces(this);
-
-        updateConfigHashcode(); /* Initialize/update config hashcode */
-
-        loginRequired = configuration.getBoolean("login-required", false);
-
-        loadWebserver();
-
-        enabledTriggers.clear();
-        List<String> triggers = configuration.getStrings("render-triggers", new ArrayList<>());
-        if ((triggers != null) && (triggers.size() > 0)) {
-            for (Object trigger : triggers) {
-                enabledTriggers.add((String) trigger);
-            }
-        } else {
-            enabledTriggers.addAll(Arrays.asList(deftriggers));
-        }
-
-        // Load components.
-        for (Component component : configuration.<Component>createInstances("components", new Class<?>[]{DynmapCore.class}, new Object[]{this})) {
-            componentManager.add(component);
-        }
-        Log.verboseinfo("Loaded " + componentManager.components.size() + " components.");
-
-        if (!configuration.getBoolean("disable-webserver", false)) {
-            startWebserver();
-        }
-
-        /* Add login/logoff listeners */
-        listenerManager.addListener(EventType.PLAYER_JOIN, (DynmapListenerManager.PlayerEventListener) this::playerJoined);
-        listenerManager.addListener(EventType.PLAYER_QUIT, (DynmapListenerManager.PlayerEventListener) this::playerQuit);
-
-        /* Print version info */
-        Log.info("version " + plugin_ver + " is enabled - core version " + version);
-        Log.info("For support, visit https://forums.dynmap.us");
-        Log.info("To report or track bugs, visit https://github.com/webbukkit/dynmap/issues");
-
-        events.trigger("initialized", null);
-
-        //dumpColorMap("standard.txt", "standard");
-        //dumpColorMap("dokudark.txt", "dokudark.zip");
-        //dumpColorMap("dokulight.txt", "dokulight.zip");
-        //dumpColorMap("dokuhigh.txt", "dokuhigh.zip");
-        //dumpColorMap("misa.txt", "misa.zip");
-        //dumpColorMap("sphax.txt", "sphax.zip");
-
-        return true;
-    }
-
-// --Commented out by Inspection START (1/12/2020 17:25):
-//    void dumpColorMap(String id, String name) {
-//        int[] sides = new int[] { BlockStep.Y_MINUS.ordinal(), BlockStep.X_PLUS.ordinal(), BlockStep.Z_PLUS.ordinal(),
-//                BlockStep.Y_PLUS.ordinal(), BlockStep.X_MINUS.ordinal(), BlockStep.Z_MINUS.ordinal() };
-//        FileWriter fw = null;
-//        try {
-//            fw = new FileWriter(id);
-//            TexturePack tp = TexturePack.getTexturePack(this, name);
-//            if (tp == null) return;
-//            tp = tp.resampleTexturePack(1);
-//            if (tp == null) return;
-//            Color c = new Color();
-//            for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
-//                DynmapBlockState blk = DynmapBlockState.getStateByGlobalIndex(gidx);
-//                if (blk.isAir()) continue;
-//                int meta0color = 0;
-//                HDBlockStateTextureMap map = HDBlockStateTextureMap.getByBlockState(blk);
-//                boolean done = false;
-//                for (int i = 0; (!done) && (i < sides.length); i++) {
-//                    int idx = map.getIndexForFace(sides[i]);
-//                    if (idx < 0) continue;
-//                    int[] rgb = tp.getTileARGB(idx % 1000000);
-//                    if (rgb == null) continue;
-//                    if (rgb[0] == 0) continue;
-//                    c.setARGB(rgb[0]);
-//                    idx = (idx / 1000000);
-//                    switch(idx) {
-//                        case 1: // grass
-//                        case 18: // grass
-//                            System.out.println("Used grass for " + blk);
-//                            c.blendColor(tp.getTrivialGrassMultiplier() | 0xFF000000);
-//                            break;
-//                        case 2: // foliage
-//                        case 19: // foliage
-//                        case 22: // foliage
-//                            System.out.println("Used foliage for " + blk);
-//                            c.blendColor(tp.getTrivialFoliageMultiplier() | 0xFF000000);
-//                            break;
-//                        case 13: // pine
-//                            c.blendColor(0x619961 | 0xFF000000);
-//                            break;
-//                        case 14: // birch
-//                            c.blendColor(0x80a755 | 0xFF000000);
-//                            break;
-//                        case 15: // lily
-//                            c.blendColor(0x208030 | 0xFF000000);
-//                            break;
-//                        case 3: // water
-//                        case 20: // water
-//                            System.out.println("Used water for " + blk);
-//                            c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
-//                            break;
-//                        case 12: // clear inside
-//                            if (blk.isWater()) { // special case for water
-//                                System.out.println("Used water for " + blk);
-//                                c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
-//                            }
-//                            break;
-//                    }
-//                    int custmult = tp.getCustomBlockMultiplier(blk);
-//                    if (custmult != 0xFFFFFF) {
-//                        System.out.println(String.format("Custom color: %06x for %s", custmult, blk));
-//                        if ((custmult & 0xFF000000) == 0) {
-//                            custmult |= 0xFF000000;
-//                        }
-//                        c.blendColor(custmult);
-//                    }
-//                    String ln = "";
-//                    if (blk.stateIndex == 0) {
-//                        meta0color = c.getARGB();
-//                        ln = blk.blockName + " ";
-//                    }
-//                    else {
-//                        ln = blk + " ";
-//                    }
-//                    if ((blk.stateIndex == 0) || (meta0color != c.getARGB())) {
-//                        ln += c.getRed() + " " + c.getGreen() + " " + c.getBlue() + " " + c.getAlpha();
-//                        ln += " " + (c.getRed()*4/5) + " " + (c.getGreen()*4/5) + " " + (c.getBlue()*4/5) + " " + c.getAlpha();
-//                        ln += " " + (c.getRed()/2) + " " + (c.getGreen()/2) + " " + (c.getBlue()/2) + " " + c.getAlpha();
-//                        ln += " " + (c.getRed()*2/5) + " " + (c.getGreen()*2/5) + " " + (c.getBlue()*2/5) + " " + c.getAlpha() + "\n";
-//                        fw.write(ln);
-//                    }
-//                    done = true;
-//                }
-//            }
-//        } catch (IOException iox) {
-//        } finally {
-//            if (fw != null) { try { fw.close(); } catch (IOException x) {} }
-//        }
-//    }
-// --Commented out by Inspection STOP (1/12/2020 17:25)
-
-    private void playerJoined(DynmapPlayer p) {
-        playerList.updateOnlinePlayers(null);
-        if ((fullrenderplayerlimit > 0) || (updateplayerlimit > 0)) {
-            int pcnt = getServer().getOnlinePlayers().length;
-
-            if ((fullrenderplayerlimit > 0) && (pcnt == fullrenderplayerlimit)) {
-                if (!getPauseFullRadiusRenders()) {  /* If not paused, pause it */
-                    setPauseFullRadiusRenders(true);
-                    Log.info("Pause full/radius renders - player limit reached");
-                    didfullpause = true;
-                } else {
-                    didfullpause = false;
-                }
-            }
-            if ((updateplayerlimit > 0) && (pcnt == updateplayerlimit)) {
-                if (!getPauseUpdateRenders()) {  /* If not paused, pause it */
-                    setPauseUpdateRenders(true);
-                    Log.info("Pause tile update renders - player limit reached");
-                    didupdatepause = true;
-                } else {
-                    didupdatepause = false;
-                }
-            }
-        }
-        /* Add player info to IP-to-ID table */
-        InetSocketAddress addr = p.getAddress();
-        if (addr != null) {
-            String ip = addr.getAddress().getHostAddress();
-            LinkedList<String> ids = ids_by_ip.computeIfAbsent(ip, k -> new LinkedList<>());
-            String pid = p.getName();
-            if (ids.indexOf(pid) != 0) {
-                ids.remove(pid);    /* Remove from list */
-                ids.addFirst(pid);  /* Put us first on list */
-            }
-        }
-        /* Check sort weight permissions list */
-        if ((sortPermissionNodes != null) && (sortPermissionNodes.size() > 0)) {
-            int ord;
-            for (ord = 0; ord < sortPermissionNodes.size(); ord++) {
-                if (p.hasPermissionNode(sortPermissionNodes.get(ord))) {
-                    break;
-                }
-            }
-            p.setSortWeight(ord);
-        } else {
-            p.setSortWeight(0); // Initialize to zero
-        }
-        /* And re-attach to active jobs */
-        if (mapManager != null)
-            mapManager.connectTasksToPlayer(p);
-    }
-
-    /* Called by plugin each time a player quits the server */
-    private void playerQuit(DynmapPlayer p) {
-        playerList.updateOnlinePlayers(p.getName());
-        if ((fullrenderplayerlimit > 0) || (updateplayerlimit > 0)) {
-            /* Quitting player is still online at this moment, so discount count by 1 */
-            int pcnt = getServer().getOnlinePlayers().length - 1;
-            if ((fullrenderplayerlimit > 0) && (pcnt == (fullrenderplayerlimit - 1))) {
-                if (didfullpause && getPauseFullRadiusRenders()) {  /* Only unpause if we did the pause */
-                    setPauseFullRadiusRenders(false);
-                    Log.info("Resume full/radius renders - below player limit");
-                }
-                didfullpause = false;
-            }
-            if ((updateplayerlimit > 0) && (pcnt == (updateplayerlimit - 1))) {
-                if (didupdatepause && getPauseUpdateRenders()) {  /* Only unpause if we did the pause */
-                    setPauseUpdateRenders(false);
-                    Log.info("Resume tile update renders - below player limit");
-                }
-                didupdatepause = false;
-            }
-        }
-    }
-
-    public void updateConfigHashcode() {
-        config_hashcode = (int) System.currentTimeMillis();
-    }
-
-    public int getConfigHashcode() {
-        return config_hashcode;
-    }
-
-    private FileResource createFileResource(String path) {
-        try {
-            File f = new File(path);
-            URI uri = f.toURI();
-            URL url = uri.toURL();
-            return new FileResource(url);
-        } catch (Exception e) {
-            Log.info("Could not create file resource");
-            return null;
-        }
-    }
-
-    public void loadWebserver() {
-        org.eclipse.jetty.util.log.Log.setLog(new JettyNullLogger());
-        String ip = server.getServerIP();
-        if ((ip == null) || (ip.trim().length() == 0)) {
-            ip = "0.0.0.0";
-        }
-        webhostname = configuration.getString("webserver-bindaddress", ip);
-        webport = configuration.getInteger("webserver-port", 8123);
-
-        webServer = new Server();
-        webServer.setSessionIdManager(new HashSessionIdManager());
-
-        int maxconnections = configuration.getInteger("max-sessions", 30);
-        if (maxconnections < 2) maxconnections = 2;
-        LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(maxconnections);
-        ExecutorThreadPool pool = new ExecutorThreadPool(2, maxconnections, 60, TimeUnit.SECONDS, queue);
-        webServer.setThreadPool(pool);
-
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setMaxIdleTime(5000);
-        connector.setAcceptors(1);
-        connector.setAcceptQueueSize(50);
-        connector.setLowResourcesMaxIdleTime(1000);
-        connector.setLowResourcesConnections(maxconnections / 2);
-        if (!webhostname.equals("0.0.0.0"))
-            connector.setHost(webhostname);
-        connector.setPort(webport);
-        webServer.setConnectors(new Connector[]{connector});
-
-        webServer.setStopAtShutdown(true);
-        //webServer.setGracefulShutdown(1000);
-
-        final boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
-        router = new HandlerRouter() {{
-            this.addHandler("/", new FileResourceHandler() {{
-                this.setAliases(allow_symlinks);
-                this.setWelcomeFiles(new String[]{"index.html"});
-                this.setDirectoriesListed(true);
-                this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
-            }});
-            this.addHandler("/tiles/*", new MapStorageResourceHandler() {{
-                this.setCore(DynmapCore.this);
-            }});
-        }};
-
-        if (allow_symlinks)
-            Log.verboseinfo("Web server is permitting symbolic links");
-        else
-            Log.verboseinfo("Web server is not permitting symbolic links");
-
-        List<Filter> filters = new LinkedList<>();
-
-        /* Check for banned IPs */
-        boolean checkbannedips = configuration.getBoolean("check-banned-ips", true);
-        if (checkbannedips) {
-            filters.add(new BanIPFilter(this));
-        }
-//        filters.add(new LoginFilter(this));
-
-        /* Load customized response headers, if any */
-        filters.add(new CustomHeaderFilter(configuration.getNode("http-response-headers")));
-
-        FilterHandler fh = new FilterHandler(router, filters);
-        HandlerList hlist = new HandlerList();
-        hlist.setHandlers(new org.eclipse.jetty.server.Handler[]{new SessionHandler(), fh});
-        webServer.setHandler(hlist);
-
-        addServlet("/up/configuration", new org.dynmap.servlet.ClientConfigurationServlet(this));
-        addServlet("/standalone/config.js", new org.dynmap.servlet.ConfigJSServlet(this));
-        if (authmgr != null) {
-            LoginServlet login = new LoginServlet(this);
-            addServlet("/up/login", login);
-            addServlet("/up/register", login);
-        }
-    }
-
-    public boolean isLoginSupportEnabled() {
-        return (authmgr != null);
-    }
-
-    public boolean isLoginRequired() {
-        return loginRequired;
-    }
-
-    public boolean isCTMSupportEnabled() {
-        return ctmsupport;
-    }
-
-    public boolean isCustomColorsSupportEnabled() {
-        return customcolorssupport;
-    }
-
-    public Set<String> getIPBans() {
-        return getServer().getIPBans();
-    }
-
-    public void addServlet(String path, HttpServlet servlet) {
-        new ServletHolder(servlet);
-        router.addServlet(path, servlet);
-    }
-
-
-    public void startWebserver() {
-        try {
-            if (webServer != null) {
-                webServer.start();
-                Log.info("Web server started on address " + webhostname + ":" + webport);
-            }
-        } catch (Exception e) {
-            Log.severe("Failed to start WebServer on address " + webhostname + ":" + webport + " : " + e.getMessage());
-        }
-    }
-
-    public void disableCore() {
-        if (persist_ids_by_ip)
-            saveIDsByIP();
-
-        if (webServer != null) {
-            try {
-                webServer.stop();
-                for (int i = 0; i < 100; i++) {    /* Limit wait to 10 seconds */
-                    if (webServer.isStopping())
-                        Thread.sleep(100);
-                }
-                if (webServer.isStopping()) {
-                    Log.warning("Graceful shutdown timed out - continuing to terminate");
-                }
-            } catch (Exception e) {
-                Log.severe("Failed to stop WebServer!", e);
-            }
-            webServer = null;
-        }
-
-        int componentCount = componentManager.components.size();
-        for (Component component : componentManager.components) {
-            component.dispose();
-        }
-        componentManager.clear();
-        Log.info("Unloaded " + componentCount + " components.");
-
-        if (mapManager != null) {
-            mapManager.stopRendering();
-            mapManager = null;
-        }
-
-        playerfacemgr = null;
-        /* Clean up registered listeners */
-        listenerManager.cleanup();
-
-        /* Don't clean up markerAPI - other plugins may still be accessing it */
-
-        /* Don't shutdown storage - markerAPI is still using it */
-
-        authmgr = null;
-
-        Debug.clearDebuggers();
-    }
-
-    private static File combinePaths(File parent, String path) {
-        return combinePaths(parent, new File(path));
-    }
-
-    private static File combinePaths(File parent, File path) {
-        if (path.isAbsolute())
-            return path;
-        return new File(parent, path.getPath());
-    }
-
-    public File getFile(String path) {
-        return combinePaths(getDataFolder(), path);
-    }
-
-    protected void loadDebuggers() {
-        List<ConfigurationNode> debuggersConfiguration = configuration.getNodes("debuggers");
-        Debug.clearDebuggers();
-        for (ConfigurationNode debuggerConfiguration : debuggersConfiguration) {
-            try {
-                Class<?> debuggerClass = Class.forName(debuggerConfiguration.getString("class"));
-                Constructor<?> constructor = debuggerClass.getConstructor(DynmapCore.class, ConfigurationNode.class);
-                Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfiguration);
-                Debug.addDebugger(debugger);
-            } catch (Exception e) {
-                Log.severe("Error loading debugger: " + e);
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /* Parse argument strings : handle quoted strings */
-    public static String[] parseArgs(String[] args, DynmapCommandSender snd) {
-        ArrayList<String> rslt = new ArrayList<>();
-        /* Build command line, so we can parse our way - make sure there is trailing space */
-        StringBuilder cmdline = new StringBuilder();
-        for (String arg : args) {
-            cmdline.append(arg).append(" ");
-        }
-        boolean inquote = false;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < cmdline.length(); i++) {
-            char c = cmdline.charAt(i);
-            if (inquote) {   /* If in quote, accumulate until end or another quote */
-                if (c == '\"') { /* End quote */
-                    inquote = false;
-                } else {
-                    sb.append(c);
-                }
-            } else if (c == '\"') {    /* Start of quote? */
-                inquote = true;
-            } else if (c == ' ') { /* Ending space? */
-                rslt.add(sb.toString());
-                sb.setLength(0);
-            } else {
-                sb.append(c);
-            }
-        }
-        if (inquote) {   /* If still in quote, syntax error */
-            snd.sendMessage("Error: unclosed doublequote");
-            return null;
-        }
-        return rslt.toArray(new String[0]);
-    }
-
-    private static final Set<String> commands = new HashSet<>(Arrays.asList("render",
+    private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[]{
+            "render",
             "hide",
             "show",
             "version",
@@ -988,37 +88,7 @@ public class DynmapCore implements DynmapCommonAPI {
             "add-id-for-ip",
             "del-id-for-ip",
             "webregister",
-            "help"));
-
-    private static class CommandInfo {
-        final String cmd;
-        final String subcmd;
-        final String args;
-        final String helptext;
-
-        public CommandInfo(String cmd, String subcmd, String helptxt) {
-            this.cmd = cmd;
-            this.subcmd = subcmd;
-            this.helptext = helptxt;
-            this.args = "";
-        }
-
-        public CommandInfo(String cmd, String subcmd, String args, String helptxt) {
-            this.cmd = cmd;
-            this.subcmd = subcmd;
-            this.args = args;
-            this.helptext = helptxt;
-        }
-
-        public boolean matches(String c, String sc) {
-            return (cmd.equals(c) && subcmd.equals(sc));
-        }
-
-        public boolean matches(String c) {
-            return cmd.equals(c);
-        }
-    }
-
+            "help"}));
     private static final CommandInfo[] commandinfo = {
             new CommandInfo("dynmap", "", "Control execution of dynmap."),
             new CommandInfo("dynmap", "hide", "Hides the current player from the map."),
@@ -1125,6 +195,915 @@ public class DynmapCore implements DynmapCommonAPI {
             new CommandInfo("dynmapexp", "export", "<name>", "Export map data to <name>.zip in export path."),
             new CommandInfo("dynmapexp", "purge", "<name>", "Purge exported map data <name>.zip from export path.")
     };
+    public static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
+    private static boolean migrate_chunks = false;
+    public MapManager mapManager = null;
+    public PlayerList playerList;
+    public ConfigurationNode configuration;
+    public ConfigurationNode world_config;
+    public ComponentManager componentManager = new ComponentManager();
+    public DynmapListenerManager listenerManager = new DynmapListenerManager(this);
+    public PlayerFaces playerfacemgr;
+    public Events events = new Events();
+    public String deftemplatesuffix = "";
+    public boolean disable_chat_to_web = false;
+    public boolean player_info_protected;
+    /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
+    public boolean is_reload = false;
+    boolean bettergrass = false;
+    boolean smoothlighting = false;
+    private File jarfile;
+    private DynmapServerInterface server;
+    private String version;
+    private String platform = null;
+    private String platformVersion = null;
+    private Server webServer = null;
+    private String webhostname = null;
+    private int webport = 0;
+    private HandlerRouter router = null;
+    private DynmapMapCommands dmapcmds = new DynmapMapCommands();
+    private DynmapExpCommands dynmapexpcmds = new DynmapExpCommands();
+    private boolean ctmsupport = false;
+    private boolean customcolorssupport = false;
+    private String def_image_format = "png";
+    private HashSet<String> enabledTriggers = new HashSet<String>();
+    private WebAuthManager authmgr;
+    private boolean transparentLeaves = true;
+    private List<String> sortPermissionNodes;
+    private int perTickLimit = 50;   // 50 ms
+    private boolean dumpMissing = false;
+    private int config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
+    private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
+    private int updateplayerlimit;  /* Number of online players that will cause update processing to pause */
+    private boolean didfullpause;
+    private boolean didupdatepause;
+    private Map<String, LinkedList<String>> ids_by_ip = new HashMap<String, LinkedList<String>>();
+    private boolean persist_ids_by_ip = false;
+    private int snapshotcachesize;
+    private boolean snapshotsoftref;
+    private String[] biomenames = new String[0];
+    private Map<String, Integer> blockmap = null;
+    private Map<String, Integer> itemmap = null;
+    private boolean loginRequired;
+    private MarkerAPIImpl markerapi;
+    private File dataDirectory;
+    private File tilesDirectory;
+    private File exportDirectory;
+    private String plugin_ver;
+    private MapStorage defaultStorage;
+    private String[] deftriggers = {};
+
+    /* Constructor for core */
+    public DynmapCore() {
+    }
+
+    public static final boolean migrateChunks() {
+        return migrate_chunks;
+    }
+
+    private static File combinePaths(File parent, String path) {
+        return combinePaths(parent, new File(path));
+    }
+
+    private static File combinePaths(File parent, File path) {
+        if (path.isAbsolute())
+            return path;
+        return new File(parent, path.getPath());
+    }
+
+    /* Parse argument strings : handle quoted strings */
+    public static String[] parseArgs(String[] args, DynmapCommandSender snd) {
+        ArrayList<String> rslt = new ArrayList<String>();
+        /* Build command line, so we can parse our way - make sure there is trailing space */
+        String cmdline = "";
+        for (int i = 0; i < args.length; i++) {
+            cmdline += args[i] + " ";
+        }
+        boolean inquote = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < cmdline.length(); i++) {
+            char c = cmdline.charAt(i);
+            if (inquote) {   /* If in quote, accumulate until end or another quote */
+                if (c == '\"') { /* End quote */
+                    inquote = false;
+                } else {
+                    sb.append(c);
+                }
+            } else if (c == '\"') {    /* Start of quote? */
+                inquote = true;
+            } else if (c == ' ') { /* Ending space? */
+                rslt.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        if (inquote) {   /* If still in quote, syntax error */
+            snd.sendMessage("Error: unclosed doublequote");
+            return null;
+        }
+        return rslt.toArray(new String[rslt.size()]);
+    }
+
+    public static void setIgnoreChunkLoads(boolean ignore) {
+        ignore_chunk_loads = ignore;
+    }
+
+    private static boolean deleteDirectory(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.getName().equals(".") || f.getName().equals("..")) continue;
+                if (f.isDirectory()) {
+                    deleteDirectory(f);
+                } else if (f.isFile()) {
+                    f.delete();
+                }
+            }
+        }
+        return dir.delete();
+    }
+
+    /* Cleanup method */
+    public void cleanup() {
+        server = null;
+        markerapi = null;
+    }
+
+    public void restartMarkerSaveJob() {
+        this.markerapi.scheduleWriteJob();
+    }
+
+    // Get plugin jar file
+    public File getPluginJarFile() {
+        return jarfile;
+    }
+
+    // Set plugin jar file
+    public void setPluginJarFile(File f) {
+        jarfile = f;
+    }
+
+    /* Dependencies - need to be supplied by plugin wrapper */
+    public void setPluginVersion(String pluginver, String platform) {
+        this.plugin_ver = pluginver;
+        this.platform = platform;
+    }
+
+    /* Default platform to forge... */
+    public void setPluginVersion(String pluginver) {
+        setPluginVersion(pluginver, "Forge");
+    }
+
+    public final File getDataFolder() {
+        return dataDirectory;
+    }
+
+    public void setDataFolder(File dir) {
+        dataDirectory = dir;
+    }
+
+    public final File getTilesFolder() {
+        return tilesDirectory;
+    }
+
+    public final File getExportFolder() {
+        return exportDirectory;
+    }
+
+    public void setMinecraftVersion(String mcver) {
+        this.platformVersion = mcver;
+    }
+
+    public final DynmapServerInterface getServer() {
+        return server;
+    }
+
+    public void setServer(DynmapServerInterface srv) {
+        server = srv;
+    }
+
+    public final String getBiomeName(int biomeid) {
+        String n = null;
+        if ((biomeid >= 0) && (biomeid < biomenames.length)) {
+            n = biomenames[biomeid];
+        }
+        if (n == null) n = "biome" + biomeid;
+        return n;
+    }
+
+    public final String[] getBiomeNames() {
+        return biomenames;
+    }
+
+    public final void setBiomeNames(String[] names) {
+        biomenames = names;
+    }
+
+    public final MapManager getMapManager() {
+        return mapManager;
+    }
+
+    public final void setTriggerDefault(String[] triggers) {
+        deftriggers = triggers;
+    }
+
+    public final boolean getLeafTransparency() {
+        return transparentLeaves;
+    }
+
+    public final void setLeafTransparency(boolean trans) {
+        transparentLeaves = trans;
+    }
+
+    /* Add/Replace branches in configuration tree with contribution from a separate file */
+    private void mergeConfigurationBranch(ConfigurationNode cfgnode, String branch, boolean replace_existing, boolean islist) {
+        Object srcbranch = cfgnode.getObject(branch);
+        if (srcbranch == null)
+            return;
+        /* See if top branch is in configuration - if not, just add whole thing */
+        Object destbranch = configuration.getObject(branch);
+        if (destbranch == null) {    /* Not found */
+            configuration.put(branch, srcbranch);   /* Add new tree to configuration */
+            return;
+        }
+        /* If list, merge by "name" attribute */
+        if (islist) {
+            List<ConfigurationNode> dest = configuration.getNodes(branch);
+            List<ConfigurationNode> src = cfgnode.getNodes(branch);
+            /* Go through new records : see what to do with each */
+            for (ConfigurationNode node : src) {
+                String name = node.getString("name", null);
+                if (name == null) continue;
+                /* Walk destination - see if match */
+                boolean matched = false;
+                for (ConfigurationNode dnode : dest) {
+                    String dname = dnode.getString("name", null);
+                    if (dname == null) continue;
+                    if (dname.equals(name)) {    /* Match? */
+                        if (replace_existing) {
+                            dnode.clear();
+                            dnode.putAll(node);
+                        }
+                        matched = true;
+                        break;
+                    }
+                }
+                /* If no match, add to end */
+                if (!matched) {
+                    dest.add(node);
+                }
+            }
+            configuration.put(branch, dest);
+        }
+        /* If configuration node, merge by key */
+        else {
+            ConfigurationNode src = cfgnode.getNode(branch);
+            ConfigurationNode dest = configuration.getNode(branch);
+            for (String key : src.keySet()) {    /* Check each contribution */
+                if (dest.containsKey(key)) { /* Exists? */
+                    if (replace_existing) {  /* If replacing, do so */
+                        dest.put(key, src.getObject(key));
+                    }
+                } else {  /* Else, always add if not there */
+                    dest.put(key, src.getObject(key));
+                }
+            }
+        }
+    }
+
+    /* Load templates from template folder */
+    private void loadTemplates() {
+        File templatedir = new File(dataDirectory, "templates");
+        templatedir.mkdirs();
+        /* First, prime the templates directory with default standard templates, if needed */
+        for (String stdtemplate : stdtemplates) {
+            File f = new File(templatedir, stdtemplate);
+            updateVersionUsingDefaultResource("/templates/" + stdtemplate, f);
+        }
+        /* Now process files */
+        String[] templates = templatedir.list();
+        /* Go through list - process all ones not starting with 'custom' first */
+        for (String tname : templates) {
+            /* If matches naming convention */
+            if (tname.endsWith(".txt") && (!tname.startsWith(CUSTOM_PREFIX))) {
+                File tf = new File(templatedir, tname);
+                ConfigurationNode cn = new ConfigurationNode(tf);
+                cn.load();
+                /* Supplement existing values (don't replace), since configuration.txt is more custom than these */
+                mergeConfigurationBranch(cn, "templates", false, false);
+            }
+        }
+        /* Go through list again - this time do custom- ones */
+        for (String tname : templates) {
+            /* If matches naming convention */
+            if (tname.endsWith(".txt") && tname.startsWith(CUSTOM_PREFIX)) {
+                File tf = new File(templatedir, tname);
+                ConfigurationNode cn = new ConfigurationNode(tf);
+                cn.load();
+                /* This are overrides - replace even configuration.txt content */
+                mergeConfigurationBranch(cn, "templates", true, false);
+            }
+        }
+    }
+
+    public boolean enableCore() {
+        boolean rslt = initConfiguration(null);
+        if (rslt)
+            rslt = enableCore(null);
+        return rslt;
+    }
+
+    public boolean initConfiguration(EnableCoreCallbacks cb) {
+        /* Start with clean events */
+        events = new Events();
+        /* Default to being unprotected - set to protected by update components */
+        player_info_protected = false;
+
+        /* Load plugin version info */
+        loadVersion();
+
+        /* Initialize confguration.txt if needed */
+        File f = new File(dataDirectory, "configuration.txt");
+        if (!createDefaultFileFromResource("/configuration.txt", f)) {
+            return false;
+        }
+
+        /* Load configuration.txt */
+        configuration = new ConfigurationNode(f);
+        configuration.load();
+
+        /* Prime the tiles directory */
+        tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
+        if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
+            Log.warning("Could not create directory for tiles ('" + tilesDirectory + "').");
+        }
+        // Prime the exports directory
+        exportDirectory = getFile(configuration.getString("exportpath", "export"));
+        if (!exportDirectory.isDirectory() && !exportDirectory.mkdirs()) {
+            Log.warning("Could not create directory for exports ('" + exportDirectory + "').");
+        }
+        // Create default storage handler
+        if (defaultStorage != null && !defaultStorage.shutdown())
+            Log.severe("Unable to stop existing data storage provider, memory may leak");
+        String storetype = configuration.getString("storage/type", "filetree");
+        if (storetype.equals("filetree")) {
+            defaultStorage = new FileTreeMapStorage();
+        } else if (storetype.equals("sqlite")) {
+            defaultStorage = new SQLiteMapStorage();
+        } else if (storetype.equals("mysql")) {
+            defaultStorage = new MySQLMapStorage(MySQLMapStorage.MYSQL);
+        } else if (storetype.equals("mariadb")) {
+            defaultStorage = new MySQLMapStorage(MySQLMapStorage.MARIADB);
+        } else if (storetype.equals("postgres") || storetype.equals("postgresql")) {
+            defaultStorage = new PostgreSQLMapStorage();
+        } else {
+            Log.severe("Invalid storage type for map data: " + storetype);
+            return false;
+        }
+        if (!defaultStorage.init(this)) {
+            Log.severe("Map storage initialization failure");
+            return false;
+        }
+
+        /* Register API with plugin, if needed */
+        if (!markerAPIInitialized()) {
+            MarkerAPIImpl api = MarkerAPIImpl.initializeMarkerAPI(this);
+            this.registerMarkerAPI(api);
+        }
+        /* Call back to plugin to report that configuration is available */
+        if (cb != null)
+            cb.configurationLoaded();
+        return true;
+    }
+
+    public boolean enableCore(EnableCoreCallbacks cb) {
+        /* Update extracted files, if needed */
+        updateExtractedFiles();
+        /* Initialize authorization manager */
+        if (configuration.getBoolean("login-enabled", false)) {
+            authmgr = new WebAuthManager(this);
+            defaultStorage.setLoginEnabled(this);
+        }
+
+        /* Load control for leaf transparency (spout lighting bug workaround) */
+        transparentLeaves = configuration.getBoolean("transparent-leaves", true);
+        /* Get default image format */
+        def_image_format = configuration.getString("image-format", "png");
+        MapType.ImageFormat fmt = MapType.ImageFormat.fromID(def_image_format);
+        if (fmt == null) {
+            Log.severe("Invalid image-format: " + def_image_format);
+            def_image_format = "png";
+        }
+
+        DynmapWorld.doInitialScan(configuration.getBoolean("initial-zoomout-validate", true));
+
+        smoothlighting = configuration.getBoolean("smooth-lighting", false);
+        ctmsupport = configuration.getBoolean("ctm-support", true);
+        customcolorssupport = configuration.getBoolean("custom-colors-support", true);
+        Log.verbose = configuration.getBoolean("verbose", true);
+        deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
+        /* Get snapshot cache size */
+        snapshotcachesize = configuration.getInteger("snapshotcachesize", 500);
+        /* Get soft ref flag for cache (weak=false, soft=true) */
+        snapshotsoftref = configuration.getBoolean("soft-ref-cache", true);
+        /* Default better-grass */
+        bettergrass = configuration.getBoolean("better-grass", false);
+        /* Load full render processing player limit */
+        fullrenderplayerlimit = configuration.getInteger("fullrenderplayerlimit", 0);
+        /* Load update render processing player limit */
+        updateplayerlimit = configuration.getInteger("updateplayerlimit", 0);
+        /* Load sort permission nodes */
+        sortPermissionNodes = configuration.getStrings("player-sort-permission-nodes", null);
+
+        perTickLimit = configuration.getInteger("per-tick-time-limit", 50);
+        if (perTickLimit < 5) perTickLimit = 5;
+
+        dumpMissing = configuration.getBoolean("dump-missing-blocks", false);
+
+        migrate_chunks = configuration.getBoolean("migrate-chunks", false);
+        if (migrate_chunks)
+            Log.info("EXPERIMENTAL: chunk migration enabled");
+
+        /* Load preupdate/postupdate commands */
+        ImageIOManager.preUpdateCommand = configuration.getString("custom-commands/image-updates/preupdatecommand", "");
+        ImageIOManager.postUpdateCommand = configuration.getString("custom-commands/image-updates/postupdatecommand", "");
+
+        /* Get block and item maps */
+        blockmap = server.getBlockUniqueIDMap();
+        itemmap = server.getItemUniqueIDMap();
+
+        /* Process mod support */
+        ModSupportImpl.complete(this.dataDirectory);
+        /* Load block models */
+        Log.verboseinfo("Loading models...");
+        HDBlockModels.loadModels(this, configuration);
+        /* Load texture mappings */
+        Log.verboseinfo("Loading texture mappings...");
+        TexturePack.loadTextureMapping(this, configuration);
+
+        /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
+        File f = new File(dataDirectory, "worlds.txt");
+        if (!createDefaultFileFromResource("/worlds.txt", f)) {
+            return false;
+        }
+        world_config = new ConfigurationNode(f);
+        world_config.load();
+
+        /* Now, process templates */
+        Log.verboseinfo("Loading templates...");
+        loadTemplates();
+
+        /* If we're persisting ids-by-ip, load it */
+        persist_ids_by_ip = configuration.getBoolean("persist-ids-by-ip", true);
+        if (persist_ids_by_ip) {
+            Log.verboseinfo("Loading userid-by-IP data...");
+            loadIDsByIP();
+        }
+
+        loadDebuggers();
+
+        playerList = new PlayerList(getServer(), getFile("hiddenplayers.txt"), configuration);
+        playerList.load();
+
+        mapManager = new MapManager(this, configuration);
+        mapManager.startRendering();
+
+        playerfacemgr = new PlayerFaces(this);
+
+        updateConfigHashcode(); /* Initialize/update config hashcode */
+
+        loginRequired = configuration.getBoolean("login-required", false);
+
+        loadWebserver();
+
+        enabledTriggers.clear();
+        List<String> triggers = configuration.getStrings("render-triggers", new ArrayList<String>());
+        if ((triggers != null) && (triggers.size() > 0)) {
+            for (Object trigger : triggers) {
+                enabledTriggers.add((String) trigger);
+            }
+        } else {
+            for (String def : deftriggers) {
+                enabledTriggers.add(def);
+            }
+        }
+
+        // Load components.
+        for (Component component : configuration.<Component>createInstances("components", new Class<?>[]{DynmapCore.class}, new Object[]{this})) {
+            componentManager.add(component);
+        }
+        Log.verboseinfo("Loaded " + componentManager.components.size() + " components.");
+
+        if (!configuration.getBoolean("disable-webserver", false)) {
+            startWebserver();
+        }
+
+        /* Add login/logoff listeners */
+        listenerManager.addListener(EventType.PLAYER_JOIN, new DynmapListenerManager.PlayerEventListener() {
+            @Override
+            public void playerEvent(DynmapPlayer p) {
+                playerJoined(p);
+            }
+        });
+        listenerManager.addListener(EventType.PLAYER_QUIT, new DynmapListenerManager.PlayerEventListener() {
+            @Override
+            public void playerEvent(DynmapPlayer p) {
+                playerQuit(p);
+            }
+        });
+
+        /* Print version info */
+        Log.info("version " + plugin_ver + " is enabled - core version " + version);
+        Log.info("For support, visit https://forums.dynmap.us");
+        Log.info("To report or track bugs, visit https://github.com/webbukkit/dynmap/issues");
+
+        events.<Object>trigger("initialized", null);
+
+        //dumpColorMap("standard.txt", "standard");
+        //dumpColorMap("dokudark.txt", "dokudark.zip");
+        //dumpColorMap("dokulight.txt", "dokulight.zip");
+        //dumpColorMap("dokuhigh.txt", "dokuhigh.zip");
+        //dumpColorMap("misa.txt", "misa.zip");
+        //dumpColorMap("sphax.txt", "sphax.zip");
+
+        return true;
+    }
+
+    void dumpColorMap(String id, String name) {
+        int[] sides = new int[]{BlockStep.Y_MINUS.ordinal(), BlockStep.X_PLUS.ordinal(), BlockStep.Z_PLUS.ordinal(),
+                BlockStep.Y_PLUS.ordinal(), BlockStep.X_MINUS.ordinal(), BlockStep.Z_MINUS.ordinal()};
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(id);
+            TexturePack tp = TexturePack.getTexturePack(this, name);
+            if (tp == null) return;
+            tp = tp.resampleTexturePack(1);
+            if (tp == null) return;
+            Color c = new Color();
+            for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
+                DynmapBlockState blk = DynmapBlockState.getStateByGlobalIndex(gidx);
+                if (blk.isAir()) continue;
+                int meta0color = 0;
+                HDBlockStateTextureMap map = HDBlockStateTextureMap.getByBlockState(blk);
+                boolean done = false;
+                for (int i = 0; (!done) && (i < sides.length); i++) {
+                    int idx = map.getIndexForFace(sides[i]);
+                    if (idx < 0) continue;
+                    int rgb[] = tp.getTileARGB(idx % 1000000);
+                    if (rgb == null) continue;
+                    if (rgb[0] == 0) continue;
+                    c.setARGB(rgb[0]);
+                    idx = (idx / 1000000);
+                    switch (idx) {
+                        case 1: // grass
+                        case 18: // grass
+                            System.out.println("Used grass for " + blk);
+                            c.blendColor(tp.getTrivialGrassMultiplier() | 0xFF000000);
+                            break;
+                        case 2: // foliage
+                        case 19: // foliage
+                        case 22: // foliage
+                            System.out.println("Used foliage for " + blk);
+                            c.blendColor(tp.getTrivialFoliageMultiplier() | 0xFF000000);
+                            break;
+                        case 13: // pine
+                            c.blendColor(0x619961 | 0xFF000000);
+                            break;
+                        case 14: // birch
+                            c.blendColor(0x80a755 | 0xFF000000);
+                            break;
+                        case 15: // lily
+                            c.blendColor(0x208030 | 0xFF000000);
+                            break;
+                        case 3: // water
+                        case 20: // water
+                            System.out.println("Used water for " + blk);
+                            c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
+                            break;
+                        case 12: // clear inside
+                            if (blk.isWater()) { // special case for water
+                                System.out.println("Used water for " + blk);
+                                c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
+                            }
+                            break;
+                    }
+                    int custmult = tp.getCustomBlockMultiplier(blk);
+                    if (custmult != 0xFFFFFF) {
+                        System.out.println(String.format("Custom color: %06x for %s", custmult, blk));
+                        if ((custmult & 0xFF000000) == 0) {
+                            custmult |= 0xFF000000;
+                        }
+                        c.blendColor(custmult);
+                    }
+                    String ln = "";
+                    if (blk.stateIndex == 0) {
+                        meta0color = c.getARGB();
+                        ln = blk.blockName + " ";
+                    } else {
+                        ln = blk + " ";
+                    }
+                    if ((blk.stateIndex == 0) || (meta0color != c.getARGB())) {
+                        ln += c.getRed() + " " + c.getGreen() + " " + c.getBlue() + " " + c.getAlpha();
+                        ln += " " + (c.getRed() * 4 / 5) + " " + (c.getGreen() * 4 / 5) + " " + (c.getBlue() * 4 / 5) + " " + c.getAlpha();
+                        ln += " " + (c.getRed() / 2) + " " + (c.getGreen() / 2) + " " + (c.getBlue() / 2) + " " + c.getAlpha();
+                        ln += " " + (c.getRed() * 2 / 5) + " " + (c.getGreen() * 2 / 5) + " " + (c.getBlue() * 2 / 5) + " " + c.getAlpha() + "\n";
+                        fw.write(ln);
+                    }
+                    done = true;
+                }
+            }
+        } catch (IOException iox) {
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException x) {
+                }
+            }
+        }
+    }
+
+    private void playerJoined(DynmapPlayer p) {
+        playerList.updateOnlinePlayers(null);
+        if ((fullrenderplayerlimit > 0) || (updateplayerlimit > 0)) {
+            int pcnt = getServer().getOnlinePlayers().length;
+
+            if ((fullrenderplayerlimit > 0) && (pcnt == fullrenderplayerlimit)) {
+                if (getPauseFullRadiusRenders() == false) {  /* If not paused, pause it */
+                    setPauseFullRadiusRenders(true);
+                    Log.info("Pause full/radius renders - player limit reached");
+                    didfullpause = true;
+                } else {
+                    didfullpause = false;
+                }
+            }
+            if ((updateplayerlimit > 0) && (pcnt == updateplayerlimit)) {
+                if (getPauseUpdateRenders() == false) {  /* If not paused, pause it */
+                    setPauseUpdateRenders(true);
+                    Log.info("Pause tile update renders - player limit reached");
+                    didupdatepause = true;
+                } else {
+                    didupdatepause = false;
+                }
+            }
+        }
+        /* Add player info to IP-to-ID table */
+        InetSocketAddress addr = p.getAddress();
+        if (addr != null) {
+            String ip = addr.getAddress().getHostAddress();
+            LinkedList<String> ids = ids_by_ip.get(ip);
+            if (ids == null) {
+                ids = new LinkedList<String>();
+                ids_by_ip.put(ip, ids);
+            }
+            String pid = p.getName();
+            if (ids.indexOf(pid) != 0) {
+                ids.remove(pid);    /* Remove from list */
+                ids.addFirst(pid);  /* Put us first on list */
+            }
+        }
+        /* Check sort weight permissions list */
+        if ((sortPermissionNodes != null) && (sortPermissionNodes.size() > 0)) {
+            int ord;
+            for (ord = 0; ord < sortPermissionNodes.size(); ord++) {
+                if (p.hasPermissionNode(sortPermissionNodes.get(ord))) {
+                    break;
+                }
+            }
+            p.setSortWeight(ord);
+        } else {
+            p.setSortWeight(0); // Initialize to zero
+        }
+        /* And re-attach to active jobs */
+        if (mapManager != null)
+            mapManager.connectTasksToPlayer(p);
+    }
+
+    /* Called by plugin each time a player quits the server */
+    private void playerQuit(DynmapPlayer p) {
+        playerList.updateOnlinePlayers(p.getName());
+        if ((fullrenderplayerlimit > 0) || (updateplayerlimit > 0)) {
+            /* Quitting player is still online at this moment, so discount count by 1 */
+            int pcnt = getServer().getOnlinePlayers().length - 1;
+            if ((fullrenderplayerlimit > 0) && (pcnt == (fullrenderplayerlimit - 1))) {
+                if (didfullpause && getPauseFullRadiusRenders()) {  /* Only unpause if we did the pause */
+                    setPauseFullRadiusRenders(false);
+                    Log.info("Resume full/radius renders - below player limit");
+                }
+                didfullpause = false;
+            }
+            if ((updateplayerlimit > 0) && (pcnt == (updateplayerlimit - 1))) {
+                if (didupdatepause && getPauseUpdateRenders()) {  /* Only unpause if we did the pause */
+                    setPauseUpdateRenders(false);
+                    Log.info("Resume tile update renders - below player limit");
+                }
+                didupdatepause = false;
+            }
+        }
+    }
+
+    public void updateConfigHashcode() {
+        config_hashcode = (int) System.currentTimeMillis();
+    }
+
+    public int getConfigHashcode() {
+        return config_hashcode;
+    }
+
+    private FileResource createFileResource(String path) {
+        try {
+            File f = new File(path);
+            URI uri = f.toURI();
+            URL url = uri.toURL();
+            return new FileResource(url);
+        } catch (Exception e) {
+            Log.info("Could not create file resource");
+            return null;
+        }
+    }
+
+    public void loadWebserver() {
+        org.eclipse.jetty.util.log.Log.setLog(new JettyNullLogger());
+        String ip = server.getServerIP();
+        if ((ip == null) || (ip.trim().length() == 0)) {
+            ip = "0.0.0.0";
+        }
+        webhostname = configuration.getString("webserver-bindaddress", ip);
+        webport = configuration.getInteger("webserver-port", 8123);
+
+        webServer = new Server();
+        webServer.setSessionIdManager(new HashSessionIdManager());
+
+        int maxconnections = configuration.getInteger("max-sessions", 30);
+        if (maxconnections < 2) maxconnections = 2;
+        LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(maxconnections);
+        ExecutorThreadPool pool = new ExecutorThreadPool(2, maxconnections, 60, TimeUnit.SECONDS, queue);
+        webServer.setThreadPool(pool);
+
+        SelectChannelConnector connector = new SelectChannelConnector();
+        connector.setMaxIdleTime(5000);
+        connector.setAcceptors(1);
+        connector.setAcceptQueueSize(50);
+        connector.setLowResourcesMaxIdleTime(1000);
+        connector.setLowResourcesConnections(maxconnections / 2);
+        if (webhostname.equals("0.0.0.0") == false)
+            connector.setHost(webhostname);
+        connector.setPort(webport);
+        webServer.setConnectors(new Connector[]{connector});
+
+        webServer.setStopAtShutdown(true);
+        //webServer.setGracefulShutdown(1000);
+
+        final boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
+        router = new HandlerRouter() {{
+            this.addHandler("/", new FileResourceHandler() {{
+                this.setAliases(allow_symlinks);
+                this.setWelcomeFiles(new String[]{"index.html"});
+                this.setDirectoriesListed(true);
+                this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
+            }});
+            this.addHandler("/tiles/*", new MapStorageResourceHandler() {{
+                this.setCore(DynmapCore.this);
+            }});
+        }};
+
+        if (allow_symlinks)
+            Log.verboseinfo("Web server is permitting symbolic links");
+        else
+            Log.verboseinfo("Web server is not permitting symbolic links");
+
+        List<Filter> filters = new LinkedList<Filter>();
+
+        /* Check for banned IPs */
+        boolean checkbannedips = configuration.getBoolean("check-banned-ips", true);
+        if (checkbannedips) {
+            filters.add(new BanIPFilter(this));
+        }
+//        filters.add(new LoginFilter(this));
+
+        /* Load customized response headers, if any */
+        filters.add(new CustomHeaderFilter(configuration.getNode("http-response-headers")));
+
+        FilterHandler fh = new FilterHandler(router, filters);
+        HandlerList hlist = new HandlerList();
+        hlist.setHandlers(new org.eclipse.jetty.server.Handler[]{new SessionHandler(), fh});
+        webServer.setHandler(hlist);
+
+        addServlet("/up/configuration", new org.dynmap.servlet.ClientConfigurationServlet(this));
+        addServlet("/standalone/config.js", new org.dynmap.servlet.ConfigJSServlet(this));
+        if (authmgr != null) {
+            LoginServlet login = new LoginServlet(this);
+            addServlet("/up/login", login);
+            addServlet("/up/register", login);
+        }
+    }
+
+    public boolean isLoginSupportEnabled() {
+        return (authmgr != null);
+    }
+
+    public boolean isLoginRequired() {
+        return loginRequired;
+    }
+
+    public boolean isCTMSupportEnabled() {
+        return ctmsupport;
+    }
+
+    public boolean isCustomColorsSupportEnabled() {
+        return customcolorssupport;
+    }
+
+    public Set<String> getIPBans() {
+        return getServer().getIPBans();
+    }
+
+    public void addServlet(String path, HttpServlet servlet) {
+        new ServletHolder(servlet);
+        router.addServlet(path, servlet);
+    }
+
+    public void startWebserver() {
+        try {
+            if (webServer != null) {
+                webServer.start();
+                Log.info("Web server started on address " + webhostname + ":" + webport);
+            }
+        } catch (Exception e) {
+            Log.severe("Failed to start WebServer on address " + webhostname + ":" + webport + " : " + e.getMessage());
+        }
+    }
+
+    public void disableCore() {
+        if (persist_ids_by_ip)
+            saveIDsByIP();
+
+        if (webServer != null) {
+            try {
+                webServer.stop();
+                for (int i = 0; i < 100; i++) {    /* Limit wait to 10 seconds */
+                    if (webServer.isStopping())
+                        Thread.sleep(100);
+                }
+                if (webServer.isStopping()) {
+                    Log.warning("Graceful shutdown timed out - continuing to terminate");
+                }
+            } catch (Exception e) {
+                Log.severe("Failed to stop WebServer!", e);
+            }
+            webServer = null;
+        }
+
+        if (componentManager != null) {
+            int componentCount = componentManager.components.size();
+            for (Component component : componentManager.components) {
+                component.dispose();
+            }
+            componentManager.clear();
+            Log.info("Unloaded " + componentCount + " components.");
+        }
+
+        if (mapManager != null) {
+            mapManager.stopRendering();
+            mapManager = null;
+        }
+
+        playerfacemgr = null;
+        /* Clean up registered listeners */
+        listenerManager.cleanup();
+
+        /* Don't clean up markerAPI - other plugins may still be accessing it */
+
+        /* Don't shutdown storage - markerAPI is still using it */
+
+        authmgr = null;
+
+        Debug.clearDebuggers();
+    }
+
+    public File getFile(String path) {
+        return combinePaths(getDataFolder(), path);
+    }
+
+    ;
+
+    protected void loadDebuggers() {
+        List<ConfigurationNode> debuggersConfiguration = configuration.getNodes("debuggers");
+        Debug.clearDebuggers();
+        for (ConfigurationNode debuggerConfiguration : debuggersConfiguration) {
+            try {
+                Class<?> debuggerClass = Class.forName((String) debuggerConfiguration.getString("class"));
+                Constructor<?> constructor = debuggerClass.getConstructor(DynmapCore.class, ConfigurationNode.class);
+                Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfiguration);
+                Debug.addDebugger(debugger);
+            } catch (Exception e) {
+                Log.severe("Error loading debugger: " + e);
+                e.printStackTrace();
+                continue;
+            }
+        }
+    }
 
     public void printCommandHelp(DynmapCommandSender sender, String cmd, String subcmd) {
         boolean matched = false;
@@ -1146,20 +1125,19 @@ public class DynmapCore implements DynmapCommonAPI {
                 sender.sendMessage(String.format("/%s - %s", ci.cmd, ci.helptext));
             }
         }
-        StringBuilder subcmdlist = new StringBuilder(" Valid subcommands:");
-        TreeSet<String> ts = new TreeSet<>();
+        String subcmdlist = " Valid subcommands:";
+        TreeSet<String> ts = new TreeSet<String>();
         for (CommandInfo ci : commandinfo) {
             if (ci.matches(cmd)) {
                 ts.add(ci.subcmd);
             }
         }
         for (String sc : ts) {
-            subcmdlist.append(" ").append(sc);
+            subcmdlist += " " + sc;
         }
-        sender.sendMessage(subcmdlist.toString());
+        sender.sendMessage(subcmdlist);
     }
 
-    @SuppressWarnings("ConstantConditions")
     public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
         if (mapManager == null) { // Initialization faulure
             sender.sendMessage("Dynmap failed to initialize properly: commands not available");
@@ -1237,7 +1215,7 @@ public class DynmapCore implements DynmapCommonAPI {
                     if (w == null) {
                         sender.sendMessage("World '" + args[1] + "' not defined/loaded");
                     }
-                    int x, z;
+                    int x = 0, z = 0;
                     try {
                         x = Integer.parseInt(args[2]);
                     } catch (NumberFormatException nfe) {
@@ -1280,7 +1258,7 @@ public class DynmapCore implements DynmapCommonAPI {
                     if (w == null) {
                         sender.sendMessage("World '" + args[1] + "' not defined/loaded");
                     }
-                    int x, z;
+                    int x = 0, z = 0;
                     try {
                         x = Integer.parseInt(args[2]);
                     } catch (NumberFormatException nfe) {
@@ -1408,7 +1386,6 @@ public class DynmapCore implements DynmapCommonAPI {
             } else if (c.equals("triggerstats") && checkPlayerPermission(sender, "stats")) {
                 mapManager.printTriggerStats(sender);
             } else if (c.equals("pause") && checkPlayerPermission(sender, "pause")) {
-                //noinspection StatementWithEmptyBody
                 if (args.length == 1) {
                 } else if (args[1].equals("full")) {
                     setPauseFullRadiusRenders(true);
@@ -1445,11 +1422,11 @@ public class DynmapCore implements DynmapCommonAPI {
                 else
                     mapManager.resetStats(sender, args[1]);
             } else if (c.equals("sendtoweb") && checkPlayerPermission(sender, "sendtoweb")) {
-                StringBuilder msg = new StringBuilder();
+                String msg = "";
                 for (int i = 1; i < args.length; i++) {
-                    msg.append(args[i]).append(" ");
+                    msg += args[i] + " ";
                 }
-                this.sendBroadcastToWeb("dynmap", msg.toString());
+                this.sendBroadcastToWeb("dynmap", msg);
             } else if (c.equals("ids-for-ip") && checkPlayerPermission(sender, "ids-for-ip")) {
                 if (args.length > 1) {
                     List<String> ids = getIDsForIP(args[1]);
@@ -1476,7 +1453,7 @@ public class DynmapCore implements DynmapCommonAPI {
             } else if ((c.equals("add-id-for-ip") && checkPlayerPermission(sender, "add-id-for-ip")) ||
                     (c.equals("del-id-for-ip") && checkPlayerPermission(sender, "del-id-for-ip"))) {
                 if (args.length > 2) {
-                    String ipaddr;
+                    String ipaddr = "";
                     try {
                         InetAddress ip = InetAddress.getByName(args[2]);
                         ipaddr = ip.getHostAddress();
@@ -1484,7 +1461,11 @@ public class DynmapCore implements DynmapCommonAPI {
                         sender.sendMessage("Invalid address : " + args[2]);
                         return true;
                     }
-                    LinkedList<String> ids = ids_by_ip.computeIfAbsent(ipaddr, k -> new LinkedList<>());
+                    LinkedList<String> ids = ids_by_ip.get(ipaddr);
+                    if (ids == null) {
+                        ids = new LinkedList<String>();
+                        ids_by_ip.put(ipaddr, ids);
+                    }
                     ids.remove(args[1]); /* Remove existing, if any */
                     if (c.equals("add-id-for-ip")) {
                         ids.addFirst(args[1]);  /* And add us first */
@@ -1539,7 +1520,6 @@ public class DynmapCore implements DynmapCommonAPI {
 
         // Get the template.
         ConfigurationNode templateConfiguration = null;
-        //noinspection ConstantConditions
         if (worldConfiguration != null) {
             String templateName = worldConfiguration.getString("template");
             if (templateName != null) {
@@ -1563,7 +1543,7 @@ public class DynmapCore implements DynmapCommonAPI {
         /* Update world_config with final */
         List<Map<String, Object>> worlds = world_config.getMapList("worlds");
         if (worlds == null) {
-            worlds = new ArrayList<>();
+            worlds = new ArrayList<Map<String, Object>>();
             world_config.put("worlds", worlds);
         }
         boolean did_upd = false;
@@ -1613,12 +1593,7 @@ public class DynmapCore implements DynmapCommonAPI {
         return configuration.getString("webpath", "web");
     }
 
-    public static void setIgnoreChunkLoads(boolean ignore) {
-        ignore_chunk_loads = ignore;
-    }
-
     /* Uses resource to create default file, if file does not yet exist */
-    @SuppressWarnings("ConstantConditions")
     public boolean createDefaultFileFromResource(String resourcename, File deffile) {
         if (deffile.canRead())
             return true;
@@ -1643,12 +1618,12 @@ public class DynmapCore implements DynmapCommonAPI {
                 if (fos != null)
                     try {
                         fos.close();
-                    } catch (IOException ignored) {
+                    } catch (IOException iox) {
                     }
                 if (in != null)
                     try {
                         in.close();
-                    } catch (IOException ignored) {
+                    } catch (IOException iox) {
                     }
             }
             return true;
@@ -1658,50 +1633,47 @@ public class DynmapCore implements DynmapCommonAPI {
     /*
      * Update if new version
      */
-    public void updateVersionUsingDefaultResource(String resourcename, File deffile) {
+    public boolean updateVersionUsingDefaultResource(String resourcename, File deffile) {
         InputStream in = getClass().getResourceAsStream(resourcename);
         if (in == null) {
             Log.severe("Unable to find resource - " + resourcename);
-            return;
+            return false;
         }
-        if (!deffile.canRead()) {    /* Doesn't exist? */
-            createDefaultFileFromResource(resourcename, deffile);
-            return;
+        if (deffile.canRead() == false) {    /* Doesn't exist? */
+            return createDefaultFileFromResource(resourcename, deffile);
         }
         /* Load default from resource */
-        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") ConfigurationNode def_fc = new ConfigurationNode(in);
+        ConfigurationNode def_fc = new ConfigurationNode(in);
         /* Load existing from file */
         ConfigurationNode fc = new ConfigurationNode(deffile);
         fc.load();
         if (fc.getString("version", "").equals(def_fc.getString("version", ""))) {
-            return;
+            return true;
         }
         deffile.delete();
-        createDefaultFileFromResource(resourcename, deffile);
+        return createDefaultFileFromResource(resourcename, deffile);
     }
 
     /*
      * Add in any missing sections to existing file, using resource
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean updateUsingDefaultResource(String resourcename, File deffile, String basenode) {
         InputStream in = getClass().getResourceAsStream(resourcename);
         if (in == null) {
             Log.severe("Unable to find resource - " + resourcename);
             return false;
         }
-        if (!deffile.canRead()) {    /* Doesn't exist? */
+        if (deffile.canRead() == false) {    /* Doesn't exist? */
             return createDefaultFileFromResource(resourcename, deffile);
         }
         /* Load default from resource */
-        // noinspection MismatchedQueryAndUpdateOfCollection
         ConfigurationNode def_fc = new ConfigurationNode(in);
         /* Load existing from file */
         ConfigurationNode fc = new ConfigurationNode(deffile);
         fc.load();
         /* Now, get the list associated with the base node default */
         List<Map<String, Object>> existing = fc.getMapList(basenode);
-        Set<String> existing_names = new HashSet<>();
+        Set<String> existing_names = new HashSet<String>();
         /* Make map, indexed by 'name' in map */
         if (existing != null) {
             for (Map<String, Object> m : existing) {
@@ -1718,8 +1690,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 Object name = m.get("name");
                 if (name instanceof String) {
                     /* If not an existing one, need to add it */
-                    if (!existing_names.contains(name)) {
-                        assert existing != null;
+                    if (existing_names.contains((String) name) == false) {
                         existing.add(m);
                         did_update = true;
                     }
@@ -1734,7 +1705,6 @@ public class DynmapCore implements DynmapCommonAPI {
         }
         return true;
     }
-
 
     /**
      * ** This is the public API for other plugins to use for accessing the Marker API **
@@ -1779,14 +1749,6 @@ public class DynmapCore implements DynmapCommonAPI {
     }
 
     /*
-     * Pause full/radius render processing
-     * @param dopause - true to pause, false to unpause
-     */
-    public void setPauseFullRadiusRenders(boolean dopause) {
-        mapManager.setPauseFullRadiusRenders(dopause);
-    }
-
-    /*
      * Test if full renders are paused
      * @return true if paused
      */
@@ -1795,11 +1757,11 @@ public class DynmapCore implements DynmapCommonAPI {
     }
 
     /*
-     * Pause update render processing
+     * Pause full/radius render processing
      * @param dopause - true to pause, false to unpause
      */
-    public void setPauseUpdateRenders(boolean dopause) {
-        mapManager.setPauseUpdateRenders(dopause);
+    public void setPauseFullRadiusRenders(boolean dopause) {
+        mapManager.setPauseFullRadiusRenders(dopause);
     }
 
     /*
@@ -1810,14 +1772,21 @@ public class DynmapCore implements DynmapCommonAPI {
         return mapManager.getPauseUpdateRenders();
     }
 
+    /*
+     * Pause update render processing
+     * @param dopause - true to pause, false to unpause
+     */
+    public void setPauseUpdateRenders(boolean dopause) {
+        mapManager.setPauseUpdateRenders(dopause);
+    }
+
     /**
      * Get list of IDs seen on give IP (most recent to least recent)
      *
      * @param addr - IP address
      * @return list of IDs
      */
-    @SuppressWarnings("unused")
-    public List<String> getIDsForIP(@NotNull InetAddress addr) {
+    public List<String> getIDsForIP(InetAddress addr) {
         return getIDsForIP(addr.getHostAddress());
     }
 
@@ -1830,13 +1799,13 @@ public class DynmapCore implements DynmapCommonAPI {
     public List<String> getIDsForIP(String ip) {
         LinkedList<String> ids = ids_by_ip.get(ip);
         if (ids != null)
-            return new ArrayList<>(ids);
+            return new ArrayList<String>(ids);
         return null;
     }
 
     private void loadIDsByIP() {
         File f = new File(getDataFolder(), "ids-by-ip.txt");
-        if (!f.exists())
+        if (f.exists() == false)
             return;
         ConfigurationNode fc = new ConfigurationNode(new File(getDataFolder(), "ids-by-ip.txt"));
         try {
@@ -1846,7 +1815,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 List<String> ids = fc.getList(k);
                 if (ids != null) {
                     k = k.replace("_", ".");
-                    ids_by_ip.put(k, new LinkedList<>(ids));
+                    ids_by_ip.put(k, new LinkedList<String>(ids));
                 }
             }
         } catch (Exception iox) {
@@ -1856,7 +1825,7 @@ public class DynmapCore implements DynmapCommonAPI {
 
     private void saveIDsByIP() {
         File f = new File(getDataFolder(), "ids-by-ip.txt");
-        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") ConfigurationNode fc = new ConfigurationNode();
+        ConfigurationNode fc = new ConfigurationNode();
         for (String k : ids_by_ip.keySet()) {
             List<String> v = ids_by_ip.get(k);
             if (v != null) {
@@ -1961,28 +1930,22 @@ public class DynmapCore implements DynmapCommonAPI {
 
     /* Enable/disable world */
     public boolean setWorldEnable(String wname, boolean isenab) {
-        try {
-            wname = DynmapWorld.normalizeWorldName(wname);
-            List<Map<String, Object>> worlds = world_config.getMapList("worlds");
-            for (Map<String, Object> m : worlds) {
-                String wn = (String) m.get("name");
-                if ((wn != null) && (wn.equals(wname))) {
-                    m.put("enabled", isenab);
-                    return true;
-                }
+        wname = DynmapWorld.normalizeWorldName(wname);
+        List<Map<String, Object>> worlds = world_config.getMapList("worlds");
+        for (Map<String, Object> m : worlds) {
+            String wn = (String) m.get("name");
+            if ((wn != null) && (wn.equals(wname))) {
+                m.put("enabled", isenab);
+                return true;
             }
-            /* If not found, and disable, add disable node */
-            if (!isenab) {
-                //noinspection MismatchedQueryAndUpdateOfCollection
-                Map<String, Object> newworld = new LinkedHashMap<>();
-                newworld.put("name", wname);
-                //noinspection ConstantConditions
-                newworld.put("enabled", isenab);
-            }
-            return true;
-        } catch (Throwable e) {
-            return false;
         }
+        /* If not found, and disable, add disable node */
+        if (isenab == false) {
+            Map<String, Object> newworld = new LinkedHashMap<String, Object>();
+            newworld.put("name", wname);
+            newworld.put("enabled", isenab);
+        }
+        return true;
     }
 
     public boolean setWorldZoomOut(String wname, int xzoomout) {
@@ -2021,7 +1984,7 @@ public class DynmapCore implements DynmapCommonAPI {
             String wn = (String) m.get("name");
             if ((wn != null) && (wn.equals(wname))) {
                 if (loc != null) {
-                    Map<String, Object> c = new LinkedHashMap<>();
+                    Map<String, Object> c = new LinkedHashMap<String, Object>();
                     c.put("x", loc.x);
                     c.put("y", loc.y);
                     c.put("z", loc.z);
@@ -2038,7 +2001,7 @@ public class DynmapCore implements DynmapCommonAPI {
     public boolean setWorldOrder(String wname, int order) {
         wname = DynmapWorld.normalizeWorldName(wname);
         List<Map<String, Object>> worlds = world_config.getMapList("worlds");
-        ArrayList<Map<String, Object>> newworlds = new ArrayList<>(worlds);
+        ArrayList<Map<String, Object>> newworlds = new ArrayList<Map<String, Object>>(worlds);
 
         Map<String, Object> w = null;
         for (Map<String, Object> m : worlds) {
@@ -2070,7 +2033,7 @@ public class DynmapCore implements DynmapCommonAPI {
         wname = DynmapWorld.normalizeWorldName(wname);
         List<Map<String, Object>> worlds = world_config.getMapList("worlds");
         if (worlds == null) {
-            worlds = new ArrayList<>();
+            worlds = new ArrayList<Map<String, Object>>();
             world_config.put("worlds", worlds);
         }
         for (int i = 0; i < worlds.size(); i++) {
@@ -2084,24 +2047,23 @@ public class DynmapCore implements DynmapCommonAPI {
         return false;
     }
 
-    public void saveWorldConfig() {
-        world_config.save();
+    public boolean saveWorldConfig() {
+        boolean rslt = world_config.save();    /* Save world config */
         updateConfigHashcode(); /* Update config hashcode */
+        return rslt;
     }
 
     /* Refresh world config */
-    public void refreshWorld(String wname) {
-        try {
-            wname = DynmapWorld.normalizeWorldName(wname);
-            saveWorldConfig();
-            if (mapManager != null) {
-                mapManager.deactivateWorld(wname);  /* Clean it up */
-                DynmapWorld w = getServer().getWorldByName(wname);  /* Get new instance */
-                if (w != null)
-                    mapManager.activateWorld(w);    /* And activate it again */
-            }
-        } catch (Throwable ignored) {
+    public boolean refreshWorld(String wname) {
+        wname = DynmapWorld.normalizeWorldName(wname);
+        saveWorldConfig();
+        if (mapManager != null) {
+            mapManager.deactivateWorld(wname);  /* Clean it up */
+            DynmapWorld w = getServer().getWorldByName(wname);  /* Get new instance */
+            if (w != null)
+                mapManager.activateWorld(w);    /* And activate it again */
         }
+        return true;
     }
 
     /* Load core version */
@@ -2110,7 +2072,8 @@ public class DynmapCore implements DynmapCommonAPI {
         if (in == null)
             return;
         Yaml yaml = new Yaml();
-        Map<String, Object> val = yaml.load(in);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> val = (Map<String, Object>) yaml.load(in);
         if (val != null)
             version = (String) val.get("version");
     }
@@ -2130,9 +2093,12 @@ public class DynmapCore implements DynmapCommonAPI {
     public void webChat(final String name, final String message) {
         if (mapManager == null)
             return;
-        Runnable c = () -> {
-            ChatEvent event = new ChatEvent("web", name, message);
-            events.trigger("webchat", event);
+        Runnable c = new Runnable() {
+            @Override
+            public void run() {
+                ChatEvent event = new ChatEvent("web", name, message);
+                events.trigger("webchat", event);
+            }
         };
         getServer().scheduleServerTask(c, 1);
     }
@@ -2184,7 +2150,6 @@ public class DynmapCore implements DynmapCommonAPI {
         return false;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     boolean processCompletedRegister(String uid, String pc, String hash) {
         if (authmgr != null)
             return authmgr.processCompletedRegister(uid, pc, hash);
@@ -2197,7 +2162,7 @@ public class DynmapCore implements DynmapCommonAPI {
         /* Can always see self */
         if (player.equals(player_to_see)) return true;
         /* If player is hidden, that is dominant */
-        if (!getPlayerVisbility(player_to_see)) return false;
+        if (getPlayerVisbility(player_to_see) == false) return false;
         /* Check if player has see-all permission */
         if (checkPermission(player, "playermarkers.seeall")) return true;
         if (markerapi != null) {
@@ -2238,41 +2203,35 @@ public class DynmapCore implements DynmapCommonAPI {
         return platformVersion;
     }
 
-    private static void deleteDirectory(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.getName().equals(".") || f.getName().equals("..")) continue;
-                if (f.isDirectory()) {
-                    deleteDirectory(f);
-                } else if (f.isFile()) {
-                    f.delete();
-                }
-            }
-        }
-        dir.delete();
-    }
-
     private void updateExtractedFiles() {
         if (jarfile == null) return;
         File df = this.getDataFolder();
-        if (!df.exists()) df.mkdirs();
+        if (df.exists() == false) df.mkdirs();
         File ver = new File(df, "version.txt");
-        StringBuilder prevver = new StringBuilder("1.6");
+        String prevver = "1.6";
         if (ver.exists()) {
-            try (Reader ir = new FileReader(ver)) {
-                prevver = new StringBuilder();
+            Reader ir = null;
+            try {
+                ir = new FileReader(ver);
+                prevver = "";
                 int c;
                 while ((c = ir.read()) >= 0) {
-                    prevver.append((char) c);
+                    prevver += (char) c;
                 }
-            } catch (IOException ignored) {
+            } catch (IOException iox) {
+            } finally {
+                if (ir != null) {
+                    try {
+                        ir.close();
+                    } catch (IOException iox) {
+                    }
+                }
             }
         } else {  // First time, delete old external texture pack
             deleteDirectory(new File(df, "texturepacks/standard"));
         }
         /* If matched, we're good */
-        if (prevver.toString().equals(this.getDynmapCoreVersion())) {
+        if (prevver.equals(this.getDynmapCoreVersion())) {
             return;
         }
         /* Get deleted file list */
@@ -2292,7 +2251,7 @@ public class DynmapCore implements DynmapCommonAPI {
             } finally {
                 try {
                     in.close();
-                } catch (IOException ignored) {
+                } catch (IOException x) {
                 }
             }
         }
@@ -2335,27 +2294,39 @@ public class DynmapCore implements DynmapCommonAPI {
             if (ins != null) {
                 try {
                     ins.close();
-                } catch (IOException ignored) {
+                } catch (IOException iox) {
                 }
+                ins = null;
             }
             if (fos != null) {
                 try {
                     fos.close();
-                } catch (IOException ignored) {
+                } catch (IOException iox) {
                 }
+                fos = null;
             }
             if (zf != null) {
                 try {
                     zf.close();
-                } catch (IOException ignored) {
+                } catch (IOException iox) {
                 }
+                zf = null;
             }
         }
 
         /* Finally, write new version cookie */
-        try (Writer out = new FileWriter(ver)) {
+        Writer out = null;
+        try {
+            out = new FileWriter(ver);
             out.write(this.getDynmapCoreVersion());
-        } catch (IOException ignored) {
+        } catch (IOException iox) {
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException iox) {
+                }
+            }
         }
         Log.info("Extracted files upgraded");
     }
@@ -2377,7 +2348,7 @@ public class DynmapCore implements DynmapCommonAPI {
 
     // Notice that server has finished starting (needed for forge, which starts dynmap before full server is running)
     public void serverStarted() {
-        events.trigger("server-started", null);
+        events.<Object>trigger("server-started", null);
     }
 
     // Normalize ID (strip out submods)
@@ -2419,6 +2390,45 @@ public class DynmapCore implements DynmapCommonAPI {
 
     public MapStorage getDefaultMapStorage() {
         return defaultStorage;
+    }
+
+    /**
+     * Callbacks for core initialization - subclassed by platform plugins
+     */
+    public static abstract class EnableCoreCallbacks {
+        /**
+         * Called during enableCore to report that configuration.txt is loaded
+         */
+        public abstract void configurationLoaded();
+    }
+
+    private static class CommandInfo {
+        final String cmd;
+        final String subcmd;
+        final String args;
+        final String helptext;
+
+        public CommandInfo(String cmd, String subcmd, String helptxt) {
+            this.cmd = cmd;
+            this.subcmd = subcmd;
+            this.helptext = helptxt;
+            this.args = "";
+        }
+
+        public CommandInfo(String cmd, String subcmd, String args, String helptxt) {
+            this.cmd = cmd;
+            this.subcmd = subcmd;
+            this.args = args;
+            this.helptext = helptxt;
+        }
+
+        public boolean matches(String c, String sc) {
+            return (cmd.equals(c) && subcmd.equals(sc));
+        }
+
+        public boolean matches(String c) {
+            return cmd.equals(c);
+        }
     }
 }
 
