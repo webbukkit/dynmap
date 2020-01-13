@@ -24,29 +24,33 @@ import java.util.List;
 public class MySQLMapStorage extends MapStorage {
     public static final String MYSQL = "mysql";
     public static final String MARIADB = "mariadb";
-    private static final Charset UTF8 = StandardCharsets.UTF_8;
-    private final HashMap<String, Integer> mapKey = new HashMap<>();
-    private String type;
-    private HikariDataSource datasource;
-    private String userid;
-    private String password;
-    private String database;
-    private String hostname;
-    private String prefix = "";
-    private String tableTiles;
-    private String tableMaps;
-    private String tableFaces;
-    private String tableMarkerIcons;
-    private String tableMarkerFiles;
-    private String tableStandaloneFiles;
-    private String tableSchemaVersion;
-    private int port;
+    protected static final Charset UTF8 = StandardCharsets.UTF_8;
+    protected final HashMap<String, Integer> mapKey = new HashMap<>();
+    protected String type;
+    protected HikariDataSource datasource;
+    protected String userid;
+    protected String password;
+    protected String database;
+    protected String hostname;
+    protected String prefix = "";
+    protected String tableTiles;
+    protected String tableMaps;
+    protected String tableFaces;
+    protected String tableMarkerIcons;
+    protected String tableMarkerFiles;
+    protected String tableStandaloneFiles;
+    protected String tableSchemaVersion;
+    protected int port;
 
     // Pre-built SQL statements
-    private HashMap<String, String> sqlStatements = new HashMap<>();
+    protected HashMap<String, String> sqlStatements = new HashMap<>();
 
     public MySQLMapStorage(String type) {
         this.type = type;
+    }
+
+    protected boolean initSuper(DynmapCore core){
+        return super.init(core);
     }
 
     @Override
@@ -125,7 +129,7 @@ public class MySQLMapStorage extends MapStorage {
         return false;
     }
 
-    private void prepareSQL() {
+    protected void prepareSQL() {
         this.sqlStatements.put("getSchemaVersion",
                 "SELECT level " +
                         "FROM " +
@@ -725,7 +729,8 @@ public class MySQLMapStorage extends MapStorage {
         }
     }
 
-    private boolean initializeTables() {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    protected boolean initializeTables() {
         Connection c = null;
         int version = this.getSchemaVersion();   // Get the existing schema version for the DB (if any)
         // If new, add our tables
