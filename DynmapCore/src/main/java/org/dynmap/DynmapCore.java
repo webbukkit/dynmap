@@ -19,7 +19,6 @@ import org.dynmap.servlet.LoginServlet;
 import org.dynmap.servlet.MapStorageResourceHandler;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.filetree.FileTreeMapStorage;
-import org.dynmap.storage.mariadb.MariaDBMapStorage;
 import org.dynmap.storage.mysql.MySQLMapStorage;
 import org.dynmap.storage.postgresql.PostgreSQLMapStorage;
 import org.dynmap.storage.sqllte.SQLiteMapStorage;
@@ -387,10 +386,10 @@ public class DynmapCore implements DynmapCommonAPI {
                 defaultStorage = new SQLiteMapStorage();
                 break;
             case "mysql":
-                defaultStorage = new MySQLMapStorage();
+                defaultStorage = new MySQLMapStorage(MySQLMapStorage.MYSQL);
                 break;
             case "mariadb":
-                defaultStorage = new MariaDBMapStorage();
+                defaultStorage = new MySQLMapStorage(MySQLMapStorage.MARIADB);
                 break;
             case "postgres":
             case "postgresql":
@@ -416,7 +415,6 @@ public class DynmapCore implements DynmapCommonAPI {
         return true;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean enableCore() {
         /* Update extracted files, if needed */
         updateExtractedFiles();

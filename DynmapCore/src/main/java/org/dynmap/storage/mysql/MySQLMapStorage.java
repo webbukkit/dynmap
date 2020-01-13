@@ -22,8 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MySQLMapStorage extends MapStorage {
+    public static final String MYSQL = "mysql";
+    public static final String MARIADB = "mariadb";
     private static final Charset UTF8 = StandardCharsets.UTF_8;
     private final HashMap<String, Integer> mapKey = new HashMap<>();
+    private String type;
     private HikariDataSource datasource;
     private String userid;
     private String password;
@@ -38,9 +41,12 @@ public class MySQLMapStorage extends MapStorage {
     private String tableStandaloneFiles;
     private String tableSchemaVersion;
     private int port;
-    private int poolSize;
 
-    public MySQLMapStorage() {
+    // Pre-built SQL statements
+    private HashMap<String, String> sqlStatements = new HashMap<>();
+
+    public MySQLMapStorage(String type) {
+        this.type = type;
     }
 
     @Override
@@ -55,7 +61,7 @@ public class MySQLMapStorage extends MapStorage {
         this.password = core.configuration.getString("storage/password", "dynmap");
         this.prefix = core.configuration.getString("storage/prefix", "");
         String flags = core.configuration.getString("storage/flags", "?allowReconnect=true");
-        this.poolSize = core.configuration.getInteger("storage/poolSize", 8);
+        int poolSize = core.configuration.getInteger("storage/poolSize", 12);
         this.tableTiles = this.prefix + "Tiles";
         this.tableMaps = this.prefix + "Maps";
         this.tableFaces = this.prefix + "Faces";
@@ -64,16 +70,14 @@ public class MySQLMapStorage extends MapStorage {
         this.tableStandaloneFiles = this.prefix + "StandaloneFiles";
         this.tableSchemaVersion = this.prefix + "SchemaVersion";
 
-        String connectionString = "jdbc:mysql://" + this.hostname + ":" + this.port + "/" + this.database + flags;
-        Log.info("Opening MySQL database " + this.hostname + ":" + this.port + "/" + this.database + " as map store");
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            // Initialize/update tables, if needed
-            if (!this.initializeTables()) {
-                return false;
-            }
-        } catch (ClassNotFoundException cnfx) {
-            Log.severe("MySQL-JDBC classes not found - MySQL data source not usable");
+        String connectionString = "jdbc:" + this.type + "://" + this.hostname + ":" + this.port + "/" + this.database + flags;
+        Log.info("Opening " + (this.type.equals(MySQLMapStorage.MYSQL) ? "MySQL" : "MariaDB") + " database " + this.hostname + ":" + this.port + "/" + this.database + " as map store");
+
+        if (((this.type.equals(MySQLMapStorage.MARIADB) && !initMariaDB()) || this.type.equals(MySQLMapStorage.MYSQL)) && !initMySQL())
+            return false;
+
+        // Initialize/update tables, if needed
+        if (!this.initializeTables()) {
             return false;
         }
 
@@ -81,15 +85,36 @@ public class MySQLMapStorage extends MapStorage {
         config.setJdbcUrl(connectionString);
         config.setUsername(this.userid);
         config.setPassword(this.password);
-        config.setMaximumPoolSize(this.poolSize);
+        config.setMaximumPoolSize(poolSize);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
         datasource = new HikariDataSource(config);
 
+        this.prepareSQL();
 
         return this.writeConfigPHP(core);
+    }
+
+    private boolean initMySQL() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException cnfx) {
+            Log.severe("MySQL-JDBC classes not found - MySQL data source not usable");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean initMariaDB() {
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+        } catch (ClassNotFoundException cnfx) {
+            Log.severe("MariaDB-JDBC classes not found - Falling back to MySQL");
+            return false;
+        }
+        return false;
     }
 
     public boolean shutdown() {
@@ -98,6 +123,479 @@ public class MySQLMapStorage extends MapStorage {
             return true;
         }
         return false;
+    }
+
+    private void prepareSQL() {
+        this.sqlStatements.put("getSchemaVersion",
+                "SELECT level " +
+                        "FROM " +
+                        this.tableSchemaVersion +
+                        ";"
+        );
+        this.sqlStatements.put("doLoadMaps",
+                "SELECT * " +
+                        "FROM " +
+                        this.tableMaps +
+                        ";"
+        );
+        this.sqlStatements.put("getMapKey1",
+                "INSERT INTO " +
+                        this.tableMaps +
+                        " (" +
+                        "WorldID, " +
+                        "MapID, " +
+                        "Variant, " +
+                        "ServerID" +
+                        ") " +
+                        "VALUES (?, ?, ?, ?)" +
+                        ";"
+        );
+        this.sqlStatements.put("getMapKey2",
+                "SELECT ID FROM " +
+                        this.tableMaps + " " +
+                        "WHERE WorldID = ? " +
+                        "AND MapID = ? " +
+                        "AND Variant = ? " +
+                        "AND ServerID = ?" +
+                        ";"
+        );
+        this.sqlStatements.put("initializeTables1",
+                "CREATE TABLE " +
+                        this.tableMaps +
+                        " (" +
+                        "ID INTEGER PRIMARY KEY AUTO_INCREMENT, " +
+                        "WorldID VARCHAR(64) NOT NULL, " +
+                        "MapID VARCHAR(64) NOT NULL, " +
+                        "Variant VARCHAR(16) NOT NULL, " +
+                        "ServerID BIGINT NOT NULL DEFAULT 0" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables2",
+                "CREATE TABLE " +
+                        this.tableTiles +
+                        " (" +
+                        "MapID INT NOT NULL, " +
+                        "x INT NOT NULL, " +
+                        "y INT NOT NULL, " +
+                        "zoom INT NOT NULL, " +
+                        "HashCode BIGINT NOT NULL, " +
+                        "LastUpdate BIGINT NOT NULL, " +
+                        "Format INT NOT NULL, Image BLOB, " +
+                        "PRIMARY KEY(MapID, x, y, zoom)" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables3",
+                "CREATE TABLE " +
+                        this.tableFaces +
+                        " (" +
+                        "PlayerName VARCHAR(64) NOT NULL, " +
+                        "TypeID INT NOT NULL, " +
+                        "Image BLOB, " +
+                        "PRIMARY KEY(PlayerName, TypeID)" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables4",
+                "CREATE TABLE " +
+                        this.tableMarkerIcons +
+                        " (" +
+                        "IconName VARCHAR(128) PRIMARY KEY NOT NULL, " +
+                        "Image BLOB" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables5",
+                "CREATE TABLE " +
+                        this.tableMarkerFiles +
+                        " (" +
+                        "FileName VARCHAR(128) PRIMARY KEY NOT NULL, " +
+                        "Content MEDIUMTEXT" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables6",
+                "CREATE TABLE " +
+                        this.tableStandaloneFiles +
+                        " (" +
+                        "FileName VARCHAR(128) NOT NULL, " +
+                        "ServerID BIGINT NOT NULL DEFAULT 0, " +
+                        "Content MEDIUMTEXT, " +
+                        "PRIMARY KEY (FileName, ServerID)" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables7",
+                "CREATE TABLE " +
+                        this.tableSchemaVersion +
+                        " (" +
+                        "level INT PRIMARY KEY NOT NULL" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables8",
+                "INSERT INTO " +
+                        this.tableSchemaVersion +
+                        " (" +
+                        "level" +
+                        ") " +
+                        "VALUES" +
+                        " (" +
+                        "3" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables9",
+                "CREATE TABLE " +
+                        this.tableStandaloneFiles +
+                        " (" +
+                        "FileName VARCHAR(128) NOT NULL, " +
+                        "ServerID BIGINT NOT NULL DEFAULT 0, " +
+                        "Content MEDIUMTEXT, " +
+                        "PRIMARY KEY (FileName, ServerID)" +
+                        ")"
+        );
+        this.sqlStatements.put("initializeTables10",
+                "ALTER TABLE " +
+                        this.tableMaps +
+                        " " +
+                        "ADD COLUMN " +
+                        "ServerID " +
+                        "BIGINT " +
+                        "NOT NULL " +
+                        "DEFAULT 0 " +
+                        "AFTER Variant"
+        );
+        this.sqlStatements.put("initializeTables11",
+                "UPDATE " +
+                        this.tableSchemaVersion +
+                        " " +
+                        "SET " +
+                        "level=3 " +
+                        "WHERE " +
+                        "level = 1" +
+                        ";"
+        );
+        this.sqlStatements.put("initializeTables12",
+                "DELETE FROM " +
+                        this.tableStandaloneFiles +
+                        ";"
+        );
+        this.sqlStatements.put("initializeTables13",
+                "ALTER TABLE " +
+                        this.tableStandaloneFiles +
+                        " " +
+                        "DROP COLUMN Content" +
+                        ";"
+        );
+        this.sqlStatements.put("initializeTables14",
+                "ALTER TABLE " +
+                        this.tableStandaloneFiles +
+                        " " +
+                        "ADD COLUMN Content " +
+                        "MEDIUMTEXT" +
+                        ";"
+        );
+        this.sqlStatements.put("initializeTables15",
+                "UPDATE " +
+                        this.tableSchemaVersion +
+                        " " +
+                        "SET level=3 " +
+                        "WHERE level = 2" +
+                        ";"
+        );
+        this.sqlStatements.put("processEnumMapTiles",
+                "SELECT x,y,zoom,Format " +
+                        "FROM " +
+                        this.tableTiles +
+                        " " +
+                        "WHERE " +
+                        "MapID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("processPurgeMapTiles",
+                "DELETE FROM " +
+                        this.tableTiles +
+                        " " +
+                        "WHERE " +
+                        "MapID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setPlayerFaceImage1",
+                "DELETE FROM " +
+                        this.tableFaces +
+                        " " +
+                        "WHERE " +
+                        "PlayerName=? AND " +
+                        "TypeIDx=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setPlayerFaceImage2",
+                "UPDATE " +
+                        this.tableFaces +
+                        " " +
+                        "SET Image=? " +
+                        "WHERE " +
+                        "PlayerName=? AND " +
+                        "TypeID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setPlayerFaceImage3",
+                "INSERT INTO " +
+                        this.tableFaces +
+                        " (" +
+                        "PlayerName," +
+                        "TypeID," +
+                        "Image" +
+                        ") " +
+                        "VALUES " +
+                        "(" +
+                        "?," +
+                        "?," +
+                        "?" +
+                        ");"
+        );
+        this.sqlStatements.put("getPlayerFaceImage",
+                "SELECT Image " +
+                        "FROM " +
+                        this.tableFaces +
+                        " " +
+                        "WHERE " +
+                        "PlayerName=? AND " +
+                        "TypeID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("hasPlayerFaceImage",
+                "SELECT TypeID " +
+                        "FROM " +
+                        this.tableFaces +
+                        " " +
+                        "WHERE " +
+                        "PlayerName=? AND " +
+                        "TypeID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerImage1",
+                "SELECT IconName " +
+                        "FROM " +
+                        this.tableMarkerIcons +
+                        " " +
+                        "WHERE " +
+                        "IconName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerImage2",
+                "DELETE FROM " +
+                        this.tableMarkerIcons +
+                        " " +
+                        "WHERE " +
+                        "IconName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerImage3",
+                "UPDATE " +
+                        this.tableMarkerIcons +
+                        " SET " +
+                        "Image=? " +
+                        "WHERE " +
+                        "IconName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerImage4",
+                "INSERT INTO " +
+                        this.tableMarkerIcons +
+                        " (" +
+                        "IconName," +
+                        "Image" +
+                        ") " +
+                        "VALUES " +
+                        "(" +
+                        "?," +
+                        "?" +
+                        ")" +
+                        ";"
+        );
+        this.sqlStatements.put("getMarkerImage",
+                "SELECT Image " +
+                        "FROM " +
+                        this.tableMarkerIcons +
+                        " " +
+                        "WHERE " +
+                        "IconName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerFile1",
+                "SELECT FileName " +
+                        "FROM " +
+                        this.tableMarkerFiles +
+                        " " +
+                        "WHERE " +
+                        "FileName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerFile2",
+                "DELETE FROM " +
+                        this.tableMarkerFiles +
+                        " " +
+                        "WHERE " +
+                        "FileName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerFile3",
+                "UPDATE " +
+                        this.tableMarkerFiles +
+                        " " +
+                        "SET " +
+                        "Content=? " +
+                        "WHERE " +
+                        "FileName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setMarkerFile4",
+                "INSERT INTO " +
+                        this.tableMarkerFiles +
+                        " (" +
+                        "FileName," +
+                        "Content" +
+                        ") " +
+                        "VALUES " +
+                        "(" +
+                        "?," +
+                        "?" +
+                        ")" +
+                        ";"
+        );
+        this.sqlStatements.put("getMarkerFile",
+                "SELECT Content FROM " +
+                        this.tableMarkerFiles +
+                        " " +
+                        "WHERE " +
+                        "FileName=?" +
+                        ";"
+        );
+        this.sqlStatements.put("getStandaloneFile",
+                "SELECT Content FROM " +
+                        this.tableStandaloneFiles +
+                        " " +
+                        "WHERE " +
+                        "FileName=? AND " +
+                        "ServerID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setStandaloneFile1",
+                "SELECT FileName FROM " +
+                        this.tableStandaloneFiles +
+                        " " +
+                        "WHERE " +
+                        "FileName=? AND " +
+                        "ServerID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setStandaloneFile2",
+                "DELETE FROM " +
+                        this.tableStandaloneFiles +
+                        " " +
+                        "WHERE " +
+                        "FileName=? AND " +
+                        "ServerID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setStandaloneFile3",
+                "UPDATE " +
+                        this.tableStandaloneFiles +
+                        " " +
+                        "SET " +
+                        "Content=? " +
+                        "WHERE " +
+                        "FileName=? AND " +
+                        "ServerID=?" +
+                        ";"
+        );
+        this.sqlStatements.put("setStandaloneFile4",
+                "INSERT INTO " +
+                        this.tableStandaloneFiles +
+                        " (" +
+                        "FileName," +
+                        "ServerID," +
+                        "Content" +
+                        ") " +
+                        "VALUES" +
+                        " (" +
+                        "?," +
+                        "?," +
+                        "?" +
+                        ")" +
+                        ";"
+        );
+        this.sqlStatements.put("exists",
+                "SELECT HashCode FROM " +
+                        MySQLMapStorage.this.tableTiles +
+                        " " +
+                        "WHERE " +
+                        "MapID=? AND " +
+                        "x=? AND " +
+                        "y=? AND " +
+                        "zoom=?" +
+                        ";"
+        );
+        this.sqlStatements.put("read",
+                "SELECT HashCode,LastUpdate,Format,Image " +
+                        "FROM " +
+                        MySQLMapStorage.this.tableTiles +
+                        " " +
+                        "WHERE " +
+                        "MapID=? AND " +
+                        "x=? AND " +
+                        "y=? AND " +
+                        "zoom=?" +
+                        ";"
+        );
+        this.sqlStatements.put("write1",
+                "DELETE FROM " +
+                        MySQLMapStorage.this.tableTiles +
+                        " " +
+                        "WHERE " +
+                        "MapID=? AND " +
+                        "x=? and " +
+                        "y=? AND " +
+                        "zoom=?" +
+                        ";"
+        );
+        this.sqlStatements.put("write2",
+                "UPDATE " +
+                        MySQLMapStorage.this.tableTiles +
+                        " " +
+                        "SET " +
+                        "HashCode=?, " +
+                        "LastUpdate=?, " +
+                        "Format=?, " +
+                        "Image=? " +
+                        "WHERE " +
+                        "MapID=? AND " +
+                        "x=? and " +
+                        "y=? AND " +
+                        "zoom=?" +
+                        ";"
+        );
+        this.sqlStatements.put("write3",
+                "INSERT INTO " +
+                        MySQLMapStorage.this.tableTiles +
+                        " (" +
+                        "MapID," +
+                        "x," +
+                        "y," +
+                        "zoom," +
+                        "HashCode," +
+                        "LastUpdate," +
+                        "Format," +
+                        "Image" +
+                        ") " +
+                        "VALUES" +
+                        " (" +
+                        "?," +
+                        "?," +
+                        "?," +
+                        "?," +
+                        "?," +
+                        "?," +
+                        "?," +
+                        "?" +
+                        ")" +
+                        ";"
+        );
     }
 
     private boolean writeConfigPHP(DynmapCore core) {
@@ -136,7 +634,7 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = this.getConnection();    // Get connection (create DB if needed)
             Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT level FROM " + this.tableSchemaVersion + ";");
+            ResultSet rs = stmt.executeQuery(this.sqlStatements.get("getSchemaVersion"));
             if (rs.next()) {
                 ver = rs.getInt("level");
             }
@@ -165,7 +663,7 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = this.getConnection();
             Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * from " + this.tableMaps + ";");
+            ResultSet rs = stmt.executeQuery(this.sqlStatements.get("doLoadMaps"));
             while (rs.next()) {
                 int key = rs.getInt("ID");
                 String worldID = rs.getString("WorldID");
@@ -195,7 +693,7 @@ public class MySQLMapStorage extends MapStorage {
                 try {
                     c = this.getConnection();
                     // Insert row
-                    PreparedStatement stmt = c.prepareStatement("INSERT INTO " + this.tableMaps + " (WorldID,MapID,Variant,ServerID) VALUES (?, ?, ?, ?);");
+                    PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("getMapKey1"));
                     stmt.setString(1, w.getName());
                     stmt.setString(2, mt.getPrefix());
                     stmt.setString(3, var.toString());
@@ -203,7 +701,7 @@ public class MySQLMapStorage extends MapStorage {
                     stmt.executeUpdate();
                     stmt.close();
                     //  Query key assigned
-                    stmt = c.prepareStatement("SELECT ID FROM " + this.tableMaps + " WHERE WorldID = ? AND MapID = ? AND Variant = ? AND ServerID = ?;");
+                    stmt = c.prepareStatement(this.sqlStatements.get("getMapKey2"));
                     stmt.setString(1, w.getName());
                     stmt.setString(2, mt.getPrefix());
                     stmt.setString(3, var.toString());
@@ -234,14 +732,14 @@ public class MySQLMapStorage extends MapStorage {
         if (version == 0) {
             try {
                 c = this.getConnection();
-                this.doUpdate(c, "CREATE TABLE " + this.tableMaps + " (ID INTEGER PRIMARY KEY AUTO_INCREMENT, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
-                this.doUpdate(c, "CREATE TABLE " + this.tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image BLOB, PRIMARY KEY(MapID, x, y, zoom))");
-                this.doUpdate(c, "CREATE TABLE " + this.tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image BLOB, PRIMARY KEY(PlayerName, TypeID))");
-                this.doUpdate(c, "CREATE TABLE " + this.tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BLOB)");
-                this.doUpdate(c, "CREATE TABLE " + this.tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
-                this.doUpdate(c, "CREATE TABLE " + this.tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
-                this.doUpdate(c, "CREATE TABLE " + this.tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
-                this.doUpdate(c, "INSERT INTO " + this.tableSchemaVersion + " (level) VALUES (3)");
+                this.doUpdate(c, this.sqlStatements.get("initializeTables1"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables2"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables3"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables4"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables5"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables6"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables7"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables8"));
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 return false;
@@ -252,9 +750,9 @@ public class MySQLMapStorage extends MapStorage {
         } else if (version == 1) {
             try {
                 c = this.getConnection();
-                this.doUpdate(c, "CREATE TABLE " + this.tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
-                this.doUpdate(c, "ALTER TABLE " + this.tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
-                this.doUpdate(c, "UPDATE " + this.tableSchemaVersion + " SET level=3 WHERE level = 1;");
+                this.doUpdate(c, this.sqlStatements.get("initializeTables9"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables10"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables11"));
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 return false;
@@ -265,10 +763,10 @@ public class MySQLMapStorage extends MapStorage {
         } else if (version == 2) {
             try {
                 c = this.getConnection();
-                this.doUpdate(c, "DELETE FROM " + this.tableStandaloneFiles + ";");
-                this.doUpdate(c, "ALTER TABLE " + this.tableStandaloneFiles + " DROP COLUMN Content;");
-                this.doUpdate(c, "ALTER TABLE " + this.tableStandaloneFiles + " ADD COLUMN Content MEDIUMTEXT;");
-                this.doUpdate(c, "UPDATE " + this.tableSchemaVersion + " SET level=3 WHERE level = 2;");
+                this.doUpdate(c, this.sqlStatements.get("initializeTables12"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables13"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables14"));
+                this.doUpdate(c, this.sqlStatements.get("initializeTables15"));
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 return false;
@@ -393,8 +891,9 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = this.getConnection();
             // Query tiles for given mapkey
-            Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM " + this.tableTiles + " WHERE MapID=" + mapkey + ";");
+            PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("processEnumMapTiles"));
+            stmt.setInt(1, mapkey);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
                 final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
@@ -440,8 +939,9 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = this.getConnection();
             // Query tiles for given mapkey
-            Statement stmt = c.createStatement();
-            stmt.executeUpdate("DELETE FROM " + this.tableTiles + " WHERE MapID=" + mapkey + ";");
+            PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("processPurgeMapTiles"));
+            stmt.setInt(1, mapkey);
+            stmt.executeUpdate();
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Tile purge error - " + x.getMessage());
@@ -464,16 +964,16 @@ public class MySQLMapStorage extends MapStorage {
             c = this.getConnection();
             PreparedStatement stmt;
             if (encImage == null) { // If delete
-                stmt = c.prepareStatement("DELETE FROM " + this.tableFaces + " WHERE PlayerName=? AND TypeIDx=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setPlayerFaceImage1"));
                 stmt.setString(1, playername);
                 stmt.setInt(2, facetype.typeID);
             } else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + this.tableFaces + " SET Image=? WHERE PlayerName=? AND TypeID=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setPlayerFaceImage2"));
                 stmt.setBinaryStream(1, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
                 stmt.setString(2, playername);
                 stmt.setInt(3, facetype.typeID);
             } else {
-                stmt = c.prepareStatement("INSERT INTO " + this.tableFaces + " (PlayerName,TypeID,Image) VALUES (?,?,?);");
+                stmt = c.prepareStatement(this.sqlStatements.get("setPlayerFaceImage3"));
                 stmt.setString(1, playername);
                 stmt.setInt(2, facetype.typeID);
                 stmt.setBinaryStream(3, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
@@ -497,7 +997,7 @@ public class MySQLMapStorage extends MapStorage {
         BufferInputStream image = null;
         try {
             c = this.getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM " + this.tableFaces + " WHERE PlayerName=? AND TypeID=?;");
+            PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("getPlayerFaceImage"));
             stmt.setString(1, playername);
             stmt.setInt(2, facetype.typeID);
             ResultSet rs = stmt.executeQuery();
@@ -522,7 +1022,7 @@ public class MySQLMapStorage extends MapStorage {
         boolean exists = false;
         try {
             c = this.getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT TypeID FROM " + this.tableFaces + " WHERE PlayerName=? AND TypeID=?;");
+            PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("hasPlayerFaceImage"));
             stmt.setString(1, playername);
             stmt.setInt(2, facetype.typeID);
             ResultSet rs = stmt.executeQuery();
@@ -550,7 +1050,7 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = this.getConnection();
             boolean exists = false;
-            stmt = c.prepareStatement("SELECT IconName FROM " + this.tableMarkerIcons + " WHERE IconName=?;");
+            stmt = c.prepareStatement(this.sqlStatements.get("setMarkerImage1"));
             stmt.setString(1, markerid);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -563,15 +1063,15 @@ public class MySQLMapStorage extends MapStorage {
             if (encImage == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
-                stmt = c.prepareStatement("DELETE FROM " + this.tableMarkerIcons + " WHERE IconName=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setMarkerImage2"));
                 stmt.setString(1, markerid);
                 stmt.executeUpdate();
             } else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + this.tableMarkerIcons + " SET Image=? WHERE IconName=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setMarkerImage3"));
                 stmt.setBinaryStream(1, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
                 stmt.setString(2, markerid);
             } else {
-                stmt = c.prepareStatement("INSERT INTO " + this.tableMarkerIcons + " (IconName,Image) VALUES (?,?);");
+                stmt = c.prepareStatement(this.sqlStatements.get("setMarkerImage4"));
                 stmt.setString(1, markerid);
                 stmt.setBinaryStream(2, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
             }
@@ -604,7 +1104,7 @@ public class MySQLMapStorage extends MapStorage {
         BufferInputStream image = null;
         try {
             c = this.getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Image FROM " + this.tableMarkerIcons + " WHERE IconName=?;");
+            PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("getMarkerImage"));
             stmt.setString(1, markerid);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -631,7 +1131,7 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = this.getConnection();
             boolean exists = false;
-            stmt = c.prepareStatement("SELECT FileName FROM " + this.tableMarkerFiles + " WHERE FileName=?;");
+            stmt = c.prepareStatement(this.sqlStatements.get("setMarkerFile1"));
             stmt.setString(1, world);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -644,15 +1144,15 @@ public class MySQLMapStorage extends MapStorage {
             if (content == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return false;
-                stmt = c.prepareStatement("DELETE FROM " + this.tableMarkerFiles + " WHERE FileName=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setMarkerFile2"));
                 stmt.setString(1, world);
                 stmt.executeUpdate();
             } else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + this.tableMarkerFiles + " SET Content=? WHERE FileName=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setMarkerFile3"));
                 stmt.setBytes(1, content.getBytes(UTF8));
                 stmt.setString(2, world);
             } else {
-                stmt = c.prepareStatement("INSERT INTO " + this.tableMarkerFiles + " (FileName,Content) VALUES (?,?);");
+                stmt = c.prepareStatement(this.sqlStatements.get("setMarkerFile4"));
                 stmt.setString(1, world);
                 stmt.setBytes(2, content.getBytes(UTF8));
             }
@@ -685,7 +1185,7 @@ public class MySQLMapStorage extends MapStorage {
         String content = null;
         try {
             c = this.getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Content FROM " + this.tableMarkerFiles + " WHERE FileName=?;");
+            PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("getMarkerFile"));
             stmt.setString(1, world);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -734,7 +1234,7 @@ public class MySQLMapStorage extends MapStorage {
         BufferInputStream content = null;
         try {
             c = this.getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT Content FROM " + this.tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
+            PreparedStatement stmt = c.prepareStatement(this.sqlStatements.get("getStandaloneFile"));
             stmt.setString(1, fileid);
             stmt.setLong(2, this.serverID);
             ResultSet rs = stmt.executeQuery();
@@ -762,7 +1262,7 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = this.getConnection();
             boolean exists = false;
-            stmt = c.prepareStatement("SELECT FileName FROM " + this.tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
+            stmt = c.prepareStatement(this.sqlStatements.get("setStandaloneFile1"));
             stmt.setString(1, fileid);
             stmt.setLong(2, this.serverID);
             rs = stmt.executeQuery();
@@ -776,17 +1276,17 @@ public class MySQLMapStorage extends MapStorage {
             if (content == null) { // If delete
                 // If delete, and doesn't exist, quit
                 if (!exists) return true;
-                stmt = c.prepareStatement("DELETE FROM " + this.tableStandaloneFiles + " WHERE FileName=? AND ServerID=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setStandaloneFile2"));
                 stmt.setString(1, fileid);
                 stmt.setLong(2, this.serverID);
                 stmt.executeUpdate();
             } else if (exists) {
-                stmt = c.prepareStatement("UPDATE " + this.tableStandaloneFiles + " SET Content=? WHERE FileName=? AND ServerID=?;");
+                stmt = c.prepareStatement(this.sqlStatements.get("setStandaloneFile3"));
                 stmt.setBinaryStream(1, new BufferInputStream(content.buf, content.len), content.len);
                 stmt.setString(2, fileid);
                 stmt.setLong(3, this.serverID);
             } else {
-                stmt = c.prepareStatement("INSERT INTO " + this.tableStandaloneFiles + " (FileName,ServerID,Content) VALUES (?,?,?);");
+                stmt = c.prepareStatement(this.sqlStatements.get("setStandaloneFile4"));
                 stmt.setString(1, fileid);
                 stmt.setLong(2, this.serverID);
                 stmt.setBinaryStream(3, new BufferInputStream(content.buf, content.len), content.len);
@@ -849,11 +1349,26 @@ public class MySQLMapStorage extends MapStorage {
 
             this.mapkey = MySQLMapStorage.this.getMapKey(world, map, var);
 
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(map.getPrefix());
+            sb.append(var.variantSuffix);
+            sb.append('/');
+            sb.append((x >> 5));
+            sb.append('_');
+            sb.append((y >> 5));
+            sb.append('/');
             if (zoom > 0) {
-                this.uri = map.getPrefix() + var.variantSuffix + "/" + (x >> 5) + "_" + (y >> 5) + "/" + "zzzzzzzzzzzzzzzz".substring(0, zoom) + "_" + x + "_" + y + "." + map.getImageFormat().getFileExt();
-            } else {
-                this.uri = map.getPrefix() + var.variantSuffix + "/" + (x >> 5) + "_" + (y >> 5) + "/" + x + "_" + y + "." + map.getImageFormat().getFileExt();
+                //noinspection SpellCheckingInspection
+                sb.append("zzzzzzzzzzzzzzzz", 0, zoom);
+                sb.append('_');
             }
+            sb.append(x);
+            sb.append('_');
+            sb.append(y);
+            sb.append('.');
+            sb.append(map.getImageFormat().getFileExt());
+            this.uri = sb.toString();
         }
 
         @Override
@@ -863,8 +1378,12 @@ public class MySQLMapStorage extends MapStorage {
             Connection c = null;
             try {
                 c = MySQLMapStorage.this.getConnection();
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT HashCode FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=" + this.mapkey + " AND x=" + this.x + " AND y=" + this.y + " AND zoom=" + this.zoom + ";");
+                PreparedStatement stmt = c.prepareStatement(sqlStatements.get("exists"));
+                stmt.setInt(1, this.mapkey);
+                stmt.setInt(2, this.x);
+                stmt.setInt(3, this.y);
+                stmt.setInt(4, this.zoom);
+                ResultSet rs = stmt.executeQuery();
                 rslt = rs.next();
                 rs.close();
                 stmt.close();
@@ -884,8 +1403,12 @@ public class MySQLMapStorage extends MapStorage {
             Connection c = null;
             try {
                 c = MySQLMapStorage.this.getConnection();
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT HashCode FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=" + this.mapkey + " AND x=" + this.x + " AND y=" + this.y + " AND zoom=" + this.zoom + ";");
+                PreparedStatement stmt = c.prepareStatement(sqlStatements.get("exists"));
+                stmt.setInt(1, this.mapkey);
+                stmt.setInt(2, this.x);
+                stmt.setInt(3, this.y);
+                stmt.setInt(4, this.zoom);
+                ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     long v = rs.getLong("HashCode");
                     rslt = (v == hash);
@@ -908,8 +1431,12 @@ public class MySQLMapStorage extends MapStorage {
             Connection c = null;
             try {
                 c = MySQLMapStorage.this.getConnection();
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT HashCode,LastUpdate,Format,Image FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=" + this.mapkey + " AND x=" + this.x + " AND y=" + this.y + " AND zoom=" + this.zoom + ";");
+                PreparedStatement stmt = c.prepareStatement(sqlStatements.get("read"));
+                stmt.setInt(1, this.mapkey);
+                stmt.setInt(2, this.x);
+                stmt.setInt(3, this.y);
+                stmt.setInt(4, this.zoom);
+                ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     rslt = new TileRead();
                     rslt.hashCode = rs.getLong("HashCode");
@@ -942,13 +1469,13 @@ public class MySQLMapStorage extends MapStorage {
                 c = MySQLMapStorage.this.getConnection();
                 PreparedStatement stmt;
                 if (encImage == null) { // If delete
-                    stmt = c.prepareStatement("DELETE FROM " + MySQLMapStorage.this.tableTiles + " WHERE MapID=? AND x=? and y=? AND zoom=?;");
+                    stmt = c.prepareStatement(sqlStatements.get("write1"));
                     stmt.setInt(1, this.mapkey);
                     stmt.setInt(2, this.x);
                     stmt.setInt(3, this.y);
                     stmt.setInt(4, this.zoom);
                 } else if (exists) {
-                    stmt = c.prepareStatement("UPDATE " + MySQLMapStorage.this.tableTiles + " SET HashCode=?, LastUpdate=?, Format=?, Image=? WHERE MapID=? AND x=? and y=? AND zoom=?;");
+                    stmt = c.prepareStatement(sqlStatements.get("write2"));
                     stmt.setLong(1, hash);
                     stmt.setLong(2, System.currentTimeMillis());
                     stmt.setInt(3, this.map.getImageFormat().getEncoding().ordinal());
@@ -958,7 +1485,7 @@ public class MySQLMapStorage extends MapStorage {
                     stmt.setInt(7, this.y);
                     stmt.setInt(8, this.zoom);
                 } else {
-                    stmt = c.prepareStatement("INSERT INTO " + MySQLMapStorage.this.tableTiles + " (MapID,x,y,zoom,HashCode,LastUpdate,Format,Image) VALUES (?,?,?,?,?,?,?,?);");
+                    stmt = c.prepareStatement(sqlStatements.get("write3"));
                     stmt.setInt(1, this.mapkey);
                     stmt.setInt(2, this.x);
                     stmt.setInt(3, this.y);

@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+@Deprecated
 public class MariaDBMapStorage extends MapStorage {
     private static final Charset UTF8 = StandardCharsets.UTF_8;
     private final HashMap<String, Integer> mapKey = new HashMap<>();
