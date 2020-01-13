@@ -340,15 +340,11 @@ patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=10,pat
 # Activator Rail - ascending to west 
 patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=5,data=11,patch0=SlopeXUpZTop@90
 
-
-# Ladder - attached to east side of block
-patchblock:id=ladder,data=2,patch0=VertX0In@270
-# Ladder - attached to west side of block
-patchblock:id=ladder,data=3,patch0=VertX0In@90
-# Ladder - attached to north side of block
-patchblock:id=ladder,data=4,patch0=VertX0In@180
-# Ladder - attached to south side of block
-patchblock:id=ladder,data=5,patch0=VertX0In
+# Ladder
+patchblock:id=ladder,data=0,data=1,patch0=VertX0In@270
+patchblock:id=ladder,data=2,data=3,patch0=VertX0In@90
+patchblock:id=ladder,data=4,data=5,patch0=VertX0In@180
+patchblock:id=ladder,data=6,data=7,patch0=VertX0In
 # Wall sign - facing east
 [-1.13.2]patchblock:id=wall_sign,data=0-1,patch0=WSignFront,patch1=WSignBack,patch2=WSignTop,patch3=WSignBottom,patch4=WSignLeft,patch5=WSignRight
 [1.14-]patchblock:id=oak_wall_sign,id=birch_wall_sign,id=spruce_wall_sign,id=acacia_wall_sign,id=jungle_wall_sign,id=dark_oak_wall_sign,data=0-1,patch0=WSignFront,patch1=WSignBack,patch2=WSignTop,patch3=WSignBottom,patch4=WSignLeft,patch5=WSignRight
