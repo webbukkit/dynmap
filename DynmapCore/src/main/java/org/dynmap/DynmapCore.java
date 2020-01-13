@@ -23,7 +23,7 @@ import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.filetree.FileTreeMapStorage;
 import org.dynmap.storage.mysql.MySQLMapStorage;
 import org.dynmap.storage.postgresql.PostgreSQLHikariMapStorage;
-import org.dynmap.storage.sqllte.SQLiteMapStorage;
+import org.dynmap.storage.sqlite.SQLiteMapStorage;
 import org.dynmap.utils.BlockStep;
 import org.dynmap.utils.ImageIOManager;
 import org.dynmap.web.BanIPFilter;
@@ -63,8 +63,7 @@ public class DynmapCore implements DynmapCommonAPI {
             "the_end-low_boost_hi.txt", "the_end-hi_boost_vhi.txt", "the_end-hi_boost_xhi.txt"
     };
     private static final String CUSTOM_PREFIX = "custom-";
-    private static final Set<String> commands = new HashSet<String>(Arrays.asList(new String[]{
-            "render",
+    private static final Set<String> commands = new HashSet<String>(Arrays.asList("render",
             "hide",
             "show",
             "version",
@@ -87,7 +86,7 @@ public class DynmapCore implements DynmapCommonAPI {
             "add-id-for-ip",
             "del-id-for-ip",
             "webregister",
-            "help"}));
+            "help"));
     private static final CommandInfo[] commandinfo = {
             new CommandInfo("dynmap", "", "Control execution of dynmap."),
             new CommandInfo("dynmap", "hide", "Hides the current player from the map."),
@@ -717,7 +716,7 @@ public class DynmapCore implements DynmapCommonAPI {
         Log.info("For support, visit https://forums.dynmap.us");
         Log.info("To report or track bugs, visit https://github.com/webbukkit/dynmap/issues");
 
-        events.<Object>trigger("initialized", null);
+        events.trigger("initialized", null);
 
         //dumpColorMap("standard.txt", "standard");
         //dumpColorMap("dokudark.txt", "dokudark.zip");
@@ -749,7 +748,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 for (int i = 0; (!done) && (i < sides.length); i++) {
                     int idx = map.getIndexForFace(sides[i]);
                     if (idx < 0) continue;
-                    int rgb[] = tp.getTileARGB(idx % 1000000);
+                    int[] rgb = tp.getTileARGB(idx % 1000000);
                     if (rgb == null) continue;
                     if (rgb[0] == 0) continue;
                     c.setARGB(rgb[0]);
@@ -1085,14 +1084,12 @@ public class DynmapCore implements DynmapCommonAPI {
         return combinePaths(getDataFolder(), path);
     }
 
-    ;
-
     protected void loadDebuggers() {
         List<ConfigurationNode> debuggersConfiguration = configuration.getNodes("debuggers");
         Debug.clearDebuggers();
         for (ConfigurationNode debuggerConfiguration : debuggersConfiguration) {
             try {
-                Class<?> debuggerClass = Class.forName((String) debuggerConfiguration.getString("class"));
+                Class<?> debuggerClass = Class.forName(debuggerConfiguration.getString("class"));
                 Constructor<?> constructor = debuggerClass.getConstructor(DynmapCore.class, ConfigurationNode.class);
                 Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfiguration);
                 Debug.addDebugger(debugger);
@@ -1689,7 +1686,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 Object name = m.get("name");
                 if (name instanceof String) {
                     /* If not an existing one, need to add it */
-                    if (existing_names.contains((String) name) == false) {
+                    if (existing_names.contains(name) == false) {
                         existing.add(m);
                         did_update = true;
                     }
@@ -2072,7 +2069,7 @@ public class DynmapCore implements DynmapCommonAPI {
             return;
         Yaml yaml = new Yaml();
         @SuppressWarnings("unchecked")
-        Map<String, Object> val = (Map<String, Object>) yaml.load(in);
+        Map<String, Object> val = yaml.load(in);
         if (val != null)
             version = (String) val.get("version");
     }
@@ -2347,7 +2344,7 @@ public class DynmapCore implements DynmapCommonAPI {
 
     // Notice that server has finished starting (needed for forge, which starts dynmap before full server is running)
     public void serverStarted() {
-        events.<Object>trigger("server-started", null);
+        events.trigger("server-started", null);
     }
 
     // Normalize ID (strip out submods)

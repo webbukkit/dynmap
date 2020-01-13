@@ -789,7 +789,7 @@ public class MySQLMapStorage extends MapStorage {
     @NotNull
     private Connection getConnection() throws SQLException {
         Connection connection = datasource.getConnection();
-        if (connection == null) throw new NullPointerException();
+        if (connection == null) throw new SQLException("Null connection");
         return connection;
     }
 

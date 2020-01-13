@@ -8,6 +8,7 @@ import org.dynmap.PlayerFaces.FaceType;
 import org.dynmap.storage.*;
 import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -280,7 +281,7 @@ public class MariaDBMapStorage extends MapStorage {
         return connection;
     }
 
-    private void releaseConnection(Connection c) {
+    private void releaseConnection(@NotNull Connection c) {
         try {
             c.close();
         } catch (SQLException ignored) {
