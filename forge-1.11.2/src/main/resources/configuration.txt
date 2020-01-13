@@ -33,6 +33,7 @@ storage:
   #userid: dynmap
   #password: dynmap
   #prefix: ""
+  #poolSize: 12
 
 components:
   - class: org.dynmap.ClientConfigurationComponent

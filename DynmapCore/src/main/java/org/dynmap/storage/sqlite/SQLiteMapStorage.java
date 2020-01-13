@@ -22,8 +22,8 @@ import java.util.List;
 public class SQLiteMapStorage extends MapStorage {
     private static final int POOLSIZE = 16;
     private static final Charset UTF8 = StandardCharsets.UTF_8;
-    private String databaseFile;
     private final HashMap<String, Integer> mapKey = new HashMap<>();
+    private String databaseFile;
     private HikariDataSource datasource;
 
     @SuppressWarnings("unused")
@@ -324,9 +324,10 @@ public class SQLiteMapStorage extends MapStorage {
         try {
             c = getConnection();
             // Query tiles for given mapkey
-            Statement stmt = c.createStatement();
+            PreparedStatement stmt = c.prepareStatement("SELECT x,y,zoom,Format FROM Tiles WHERE MapID=?;");
+            stmt.setInt(1, mapkey);
             //ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM Tiles WHERE MapID=" + mapkey + ";");
-            ResultSet rs = doExecuteQuery(stmt, "SELECT x,y,zoom,Format FROM Tiles WHERE MapID=" + mapkey + ";");
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
                 final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
@@ -372,9 +373,9 @@ public class SQLiteMapStorage extends MapStorage {
         try {
             c = getConnection();
             // Query tiles for given mapkey
-            Statement stmt = c.createStatement();
-            //stmt.executeUpdate("DELETE FROM Tiles WHERE MapID=" + mapkey + ";");
-            doExecuteUpdate(stmt, "DELETE FROM Tiles WHERE MapID=" + mapkey + ";");
+            PreparedStatement stmt = c.prepareStatement("DELETE FROM Tiles WHERE MapID=?;");
+            stmt.setInt(1, mapkey);
+            stmt.executeUpdate();
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Tile purge error - " + x.getMessage());
@@ -740,11 +741,26 @@ public class SQLiteMapStorage extends MapStorage {
 
             mapkey = getMapKey(world, map, var);
 
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(map.getPrefix());
+            sb.append(var.variantSuffix);
+            sb.append('/');
+            sb.append((x >> 5));
+            sb.append('_');
+            sb.append((y >> 5));
+            sb.append('/');
             if (zoom > 0) {
-                uri = map.getPrefix() + var.variantSuffix + "/" + (x >> 5) + "_" + (y >> 5) + "/" + "zzzzzzzzzzzzzzzz".substring(0, zoom) + "_" + x + "_" + y + "." + map.getImageFormat().getFileExt();
-            } else {
-                uri = map.getPrefix() + var.variantSuffix + "/" + (x >> 5) + "_" + (y >> 5) + "/" + x + "_" + y + "." + map.getImageFormat().getFileExt();
+                //noinspection SpellCheckingInspection
+                sb.append("zzzzzzzzzzzzzzzz", 0, zoom);
+                sb.append('_');
             }
+            sb.append(x);
+            sb.append('_');
+            sb.append(y);
+            sb.append('.');
+            sb.append(map.getImageFormat().getFileExt());
+            this.uri = sb.toString();
         }
 
         @Override
@@ -754,9 +770,13 @@ public class SQLiteMapStorage extends MapStorage {
             Connection c = null;
             try {
                 c = getConnection();
-                Statement stmt = c.createStatement();
+                PreparedStatement stmt = c.prepareStatement("SELECT HashCode FROM Tiles WHERE MapID=? AND x=? AND y=? AND zoom=?;");
+                stmt.setInt(1, mapkey);
+                stmt.setInt(2, x);
+                stmt.setInt(3, y);
+                stmt.setInt(4, zoom);
                 //ResultSet rs = stmt.executeQuery("SELECT HashCode FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
-                ResultSet rs = doExecuteQuery(stmt, "SELECT HashCode FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
+                ResultSet rs = stmt.executeQuery();
                 rslt = rs.next();
                 rs.close();
                 stmt.close();
@@ -776,9 +796,13 @@ public class SQLiteMapStorage extends MapStorage {
             Connection c = null;
             try {
                 c = getConnection();
-                Statement stmt = c.createStatement();
+                PreparedStatement stmt = c.prepareStatement("SELECT HashCode FROM Tiles WHERE MapID=? AND x=? AND y=? AND zoom=?;");
+                stmt.setInt(1, mapkey);
+                stmt.setInt(2, x);
+                stmt.setInt(3, y);
+                stmt.setInt(4, zoom);
                 //ResultSet rs = stmt.executeQuery("SELECT HashCode FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
-                ResultSet rs = doExecuteQuery(stmt, "SELECT HashCode FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
+                ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     long v = rs.getLong("HashCode");
                     rslt = (v == hash);
@@ -801,9 +825,13 @@ public class SQLiteMapStorage extends MapStorage {
             Connection c = null;
             try {
                 c = getConnection();
-                Statement stmt = c.createStatement();
+                PreparedStatement stmt = c.prepareStatement("SELECT HashCode,LastUpdate,Format,Image,ImageLen FROM Tiles WHERE MapID=? AND x=? AND y=? AND zoom=?;");
+                stmt.setInt(1, mapkey);
+                stmt.setInt(2, x);
+                stmt.setInt(3, y);
+                stmt.setInt(4, zoom);
                 //ResultSet rs = stmt.executeQuery("SELECT HashCode,LastUpdate,Format,Image FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
-                ResultSet rs = doExecuteQuery(stmt, "SELECT HashCode,LastUpdate,Format,Image,ImageLen FROM Tiles WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
+                ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     rslt = new TileRead();
                     rslt.hashCode = rs.getLong("HashCode");
