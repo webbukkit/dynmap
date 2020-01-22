@@ -35,6 +35,10 @@ public class JettyNullLogger implements Logger {
     public void debug(String s, Object... objects) {
     }
 
+    @Override
+    public void debug(String s, long l) {
+    }
+
     public void debug(Throwable throwable) {
     }
 

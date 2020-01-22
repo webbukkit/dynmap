@@ -2,8 +2,9 @@ description = "DynmapCore"
 
 dependencies {
     compile project(path: ':DynmapCoreAPI', configuration: 'shadow')
-    compile 'org.eclipse.jetty:jetty-server:8.1.21.v20160908'
-    compile 'org.eclipse.jetty:jetty-servlet:8.1.21.v20160908'
+    compile 'javax.servlet:javax.servlet-api:3.1'
+    compile 'org.eclipse.jetty:jetty-server:9.4.24.v20191120'
+    compile 'org.eclipse.jetty:jetty-servlet:9.4.24.v20191120'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'org.yaml:snakeyaml:1.23'
     compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
@@ -34,8 +35,9 @@ jar {
 shadowJar {
     dependencies {
         include(dependency('com.googlecode.json-simple:json-simple:'))
-		include(dependency('org.yaml:snakeyaml:'))
-		include(dependency('com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:'))
+        include(dependency('org.yaml:snakeyaml:'))
+        include(dependency('com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:'))
+        include(dependency('javax.servlet::'))
         include(dependency('org.eclipse.jetty::'))
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
         include(dependency(':DynmapCoreAPI'))
