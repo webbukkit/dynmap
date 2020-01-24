@@ -49,12 +49,7 @@ public class FileResourceHandler extends ResourceHandler {
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Resource resource;
         String normalizedTarget = getNormalizedPath(target);
-        
-        try {
-        	resource = getResource(normalizedTarget);
-        } catch(MalformedURLException ex) {
-            return;
-        }
+        resource = getResource(normalizedTarget);
         if (resource == null) {
             return;
         }
@@ -63,7 +58,7 @@ public class FileResourceHandler extends ResourceHandler {
             return;
         }
     	if(!target.equals(normalizedTarget)){
-    		baseRequest.setRequestURI(normalizedTarget);
+    		baseRequest.setURIPathQuery(normalizedTarget);
     		baseRequest.setPathInfo(normalizedTarget);
     		try{
     			Class<?> requestClass = request.getClass();

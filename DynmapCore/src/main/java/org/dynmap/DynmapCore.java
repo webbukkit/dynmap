@@ -1,5 +1,38 @@
 package org.dynmap;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapListenerManager.EventType;
@@ -31,10 +64,12 @@ import org.dynmap.web.CustomHeaderFilter;
 import org.dynmap.web.FilterHandler;
 import org.dynmap.web.HandlerRouter;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.NetworkTrafficServerConnector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.AllowSymLinkAliasChecker;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.server.session.HashSessionIdManager;
+import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.FileResource;
@@ -930,22 +965,19 @@ public class DynmapCore implements DynmapCommonAPI {
         webhostname = configuration.getString("webserver-bindaddress", ip);
         webport = configuration.getInteger("webserver-port", 8123);
 
-        webServer = new Server();
-        webServer.setSessionIdManager(new HashSessionIdManager());
-
         int maxconnections = configuration.getInteger("max-sessions", 30);
         if (maxconnections < 2) maxconnections = 2;
         LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(maxconnections);
-        ExecutorThreadPool pool = new ExecutorThreadPool(2, maxconnections, 60, TimeUnit.SECONDS, queue);
-        webServer.setThreadPool(pool);
 
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setMaxIdleTime(5000);
-        connector.setAcceptors(1);
+        ExecutorThreadPool pool = new ExecutorThreadPool(maxconnections, 2, queue);
+
+        webServer = new Server(pool);
+        webServer.setSessionIdManager(new DefaultSessionIdManager(webServer));
+
+        NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(webServer);
+        connector.setIdleTimeout(5000);
         connector.setAcceptQueueSize(50);
-        connector.setLowResourcesMaxIdleTime(1000);
-        connector.setLowResourcesConnections(maxconnections / 2);
-        if (webhostname.equals("0.0.0.0") == false)
+        if(webhostname.equals("0.0.0.0") == false)
             connector.setHost(webhostname);
         connector.setPort(webport);
         webServer.setConnectors(new Connector[]{connector});
@@ -955,12 +987,35 @@ public class DynmapCore implements DynmapCommonAPI {
 
         final boolean allow_symlinks = configuration.getBoolean("allow-symlinks", false);
         router = new HandlerRouter() {{
-            this.addHandler("/", new FileResourceHandler() {{
-                this.setAliases(allow_symlinks);
-                this.setWelcomeFiles(new String[]{"index.html"});
+            FileResourceHandler fileResourceHandler = new FileResourceHandler() {{
+                this.setWelcomeFiles(new String[] { "index.html" });
+                this.setRedirectWelcome(false);
                 this.setDirectoriesListed(true);
                 this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
-            }});
+            }};
+            try {
+                fileResourceHandler.doStart();
+            }catch (Exception ex){
+                ex.printStackTrace();
+                Log.severe("Failed to start resource handler: "+ex.getMessage());
+            }
+            ContextHandler fileResourceContext = new ContextHandler();
+            fileResourceContext.setHandler(fileResourceHandler);
+            fileResourceContext.clearAliasChecks();
+            if (allow_symlinks){
+                fileResourceContext.addAliasCheck(new ContextHandler.ApproveAliases());
+                fileResourceContext.addAliasCheck(new ContextHandler.ApproveNonExistentDirectoryAliases());
+                fileResourceContext.addAliasCheck(new AllowSymLinkAliasChecker());
+            }
+            try {
+                Class<?> handlerClass = fileResourceHandler.getClass().getSuperclass().getSuperclass();
+                Field field = handlerClass.getDeclaredField("_context");
+                field.setAccessible(true);
+                field.set(fileResourceHandler,fileResourceContext);
+            }catch (Exception e){
+                Log.severe("Failed to initialize resource handler: "+e.getMessage());
+            }
+            this.addHandler("/", fileResourceHandler);
             this.addHandler("/tiles/*", new MapStorageResourceHandler() {{
                 this.setCore(DynmapCore.this);
             }});

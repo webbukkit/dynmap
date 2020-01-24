@@ -1,5 +1,6 @@
 package org.dynmap.web;
 
+import org.dynmap.Log;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -22,7 +23,14 @@ public class FilterHandler extends AbstractHandler {
     public FilterHandler(Handler handler, Iterable<Filter> filters) {
         this.handler = handler;
         for(Filter f : filters) {
-            this.filters.add(new FilterHolder(f));
+            try {
+                FilterHolder holder = new FilterHolder(f);
+                holder.start();
+                holder.initialize();
+                this.filters.add(holder);
+            }catch (Exception e){
+                Log.severe("Failed to initialize filter holder: "+e.toString());
+            }
         }
     }
     
