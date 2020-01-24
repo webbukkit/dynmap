@@ -88,7 +88,7 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	        public StdSection() {
 	            states = new DynmapBlockState[BLOCKS_PER_SECTION];
 	            Arrays.fill(states,  DynmapBlockState.AIR);
-	            skylight = fullData;
+	            skylight = emptyData;
 	            emitlight = emptyData;
 	        }
 	        @Override
@@ -212,7 +212,9 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	            		}
 	            	}
 	            }
-	            cursect.emitlight = sec.getByteArray("BlockLight");
+	            if (sec.hasKey("BlockLight")) {
+	            	cursect.emitlight = sec.getByteArray("BlockLight");
+	            }
 	            if (sec.hasKey("SkyLight")) {
 	                cursect.skylight = sec.getByteArray("SkyLight");
 	            }
