@@ -44,7 +44,7 @@ shadowJar {
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
         include(dependency(':DynmapCoreAPI'))
         include(dependency('org.jetbrains:annotations:15.0'))
-        include(dependency('com.zaxxer:HikariCP:2.4.13'))
+        include(dependency('com.zaxxer:HikariCP:'))
 	}
 	relocate('org.json.simple', 'org.dynmap.json.simple')
 	relocate('org.yaml.snakeyaml', 'org.dynmap.snakeyaml')

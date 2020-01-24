@@ -50,11 +50,6 @@ public class SQLiteMapStorage extends MapStorage {
             return false;
         }
 
-        // Initialize/update tables, if needed
-        if (!initializeTables()) {
-            return false;
-        }
-
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(connectionString);
         config.setMaximumPoolSize(POOLSIZE);
@@ -64,7 +59,8 @@ public class SQLiteMapStorage extends MapStorage {
 
         datasource = new HikariDataSource(config);
 
-        return true;
+        // Initialize/update tables, if needed
+        return initializeTables();
     }
 
     public boolean shutdown() {

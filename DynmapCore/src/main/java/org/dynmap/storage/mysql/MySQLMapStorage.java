@@ -80,11 +80,6 @@ public class MySQLMapStorage extends MapStorage {
         if (((this.type.equals(MySQLMapStorage.MARIADB) && !initMariaDB()) || this.type.equals(MySQLMapStorage.MYSQL)) && !initMySQL())
             return false;
 
-        // Initialize/update tables, if needed
-        if (!this.initializeTables()) {
-            return false;
-        }
-
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(connectionString);
         config.setUsername(this.userid);
@@ -97,6 +92,11 @@ public class MySQLMapStorage extends MapStorage {
         datasource = new HikariDataSource(config);
 
         this.prepareSQL();
+
+        // Initialize/update tables, if needed
+        if (!this.initializeTables()) {
+            return false;
+        }
 
         return this.writeConfigPHP(core);
     }

@@ -43,10 +43,6 @@ public class PostgreSQLHikariMapStorage extends MySQLMapStorage {
         Log.info("Opening PostgreSQL database " + hostname + ":" + port + "/" + database + " as map store");
         try {
             Class.forName("org.postgresql.Driver");
-            // Initialize/update tables, if needed
-            if (!initializeTables()) {
-                return false;
-            }
         } catch (ClassNotFoundException cnfx) {
             Log.severe("PostgreSQL-JDBC classes not found - PostgreSQL data source not usable");
             return false;
@@ -64,6 +60,11 @@ public class PostgreSQLHikariMapStorage extends MySQLMapStorage {
         datasource = new HikariDataSource(config);
 
         this.prepareSQL();
+
+        // Initialize/update tables, if needed
+        if (!initializeTables()) {
+            return false;
+        }
 
         return writeConfigPHP(core);
     }
