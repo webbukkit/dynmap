@@ -21,9 +21,17 @@ public class PEXPermissions implements PermissionProvider {
         Plugin permissionsPlugin = server.getPluginManager().getPlugin("PermissionsEx");
         if (permissionsPlugin == null)
             return null;
+
+        try {
+            Class.forName("ru.tehkode.permissions.bukkit.PermissionsEx");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+
         server.getPluginManager().enablePlugin(permissionsPlugin);
         if(permissionsPlugin.isEnabled() == false)
             return null;
+
         //Broken in new dev builds, apparently
         //if(PermissionsEx.isAvailable() == false)
         //    return null;
