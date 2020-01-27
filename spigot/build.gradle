@@ -1,11 +1,18 @@
 
 description = 'dynmap'
 
+repositories {
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
 dependencies {
   compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
     compile 'com.nijikokun.bukkit:Permissions:3.1.6'
     compile 'me.lucko.luckperms:luckperms-api:4.3'
     compile 'net.luckperms:api:5.0'
+    compile('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
     compile project(":dynmap-api")
     compile project(path: ":DynmapCore", configuration: "shadow")
     compile group: 'ru.tehkode', name: 'PermissionsEx', version:'1.19.1'
