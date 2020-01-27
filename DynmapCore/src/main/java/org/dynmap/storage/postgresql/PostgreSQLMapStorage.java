@@ -456,7 +456,7 @@ public class PostgreSQLMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE " + tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image BYTEA, PRIMARY KEY(PlayerName, TypeID))");
                 doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BYTEA)");
                 doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content BYTEA)");
-                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content TEXT, PRIMARY KEY (FileName, ServerID))");
+                doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content BYTEA, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
                 doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (3)");
             } catch (SQLException x) {
@@ -488,7 +488,7 @@ public class PostgreSQLMapStorage extends MapStorage {
                 c = getConnection();
                 doUpdate(c, "DELETE FROM " + tableStandaloneFiles + ";");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " DROP COLUMN Content;");
-                doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " ADD COLUMN Content TEXT;");
+                doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " ADD COLUMN Content BYTEA;");
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 2;");
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
