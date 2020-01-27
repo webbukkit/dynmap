@@ -16,3 +16,10 @@ The following target platforms are supported:
 - Forge v1.10.2 - via Dynmap-<version>-forge-1.10.2.jar mod
 - Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
 - Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
+
+# Data Storage
+Dynmap supports the following storage backends:
+- Flat files: The default for a new installation
+- SQLite
+- MySQL
+- PostgreSQL: EXPERIMENTAL
