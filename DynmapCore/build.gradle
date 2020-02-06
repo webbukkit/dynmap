@@ -3,8 +3,8 @@ description = "DynmapCore"
 dependencies {
     compile project(path: ':DynmapCoreAPI', configuration: 'shadow')
     compile 'javax.servlet:javax.servlet-api:3.1'
-    compile 'org.eclipse.jetty:jetty-server:9.4.24.v20191120'
-    compile 'org.eclipse.jetty:jetty-servlet:9.4.24.v20191120'
+    compile 'org.eclipse.jetty:jetty-server:9.4.26.v20200117'
+    compile 'org.eclipse.jetty:jetty-servlet:9.4.26.v20200117'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'org.yaml:snakeyaml:1.23'
     compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
