@@ -887,22 +887,19 @@
 }
 
 .dynmap .mapMarker .markerIcon16x16 {
-	margin-top: -8px;
-	margin-left: -8px;
+	transform: translate(-50%, -50%);
 	width: 16px;
 	height: 16px;
 }
 
 .dynmap .mapMarker .markerIcon8x8 {
-	margin-top: -4px;
-	margin-left: -4px;
+	transform: translate(-50%, -50%);
 	width: 8px;
 	height: 8px;
 }
 
 .dynmap .mapMarker .markerIcon32x32 {
-	margin-top: -16px;
-	margin-left: -16px;
+	transform: translate(-50%, -50%);
 	width: 32px;
 	height: 32px;
 }
