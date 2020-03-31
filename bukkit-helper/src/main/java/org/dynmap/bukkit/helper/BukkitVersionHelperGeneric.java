@@ -132,7 +132,11 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         cw_gethandle = getMethod(craftworld, new String[] { "getHandle" }, new Class[0]);
         /* CraftChunkSnapshot */
         craftchunksnapshot = getOBCClass("org.bukkit.craftbukkit.CraftChunkSnapshot");
-        biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
+		try {
+			biomebasearray = getNMSClass("[Lnet.minecraft.world.biome.Biome;");
+		} catch (Exception x) {
+			biomebasearray = getNMSClass("[Lnet.minecraft.server.BiomeBase;");
+		}
         ccss_biome = getPrivateFieldNoFail(craftchunksnapshot, new String[] { "biome" }, biomebasearray);
         if(ccss_biome == null) {
             biomestorage = getNMSClass("net.minecraft.server.BiomeStorage");
