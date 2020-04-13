@@ -89,6 +89,7 @@ import org.dynmap.bukkit.permissions.PEXPermissions;
 import org.dynmap.bukkit.permissions.PermBukkitPermissions;
 import org.dynmap.bukkit.permissions.GroupManagerPermissions;
 import org.dynmap.bukkit.permissions.PermissionProvider;
+import org.dynmap.bukkit.permissions.VaultPermissions;
 import org.dynmap.bukkit.permissions.bPermPermissions;
 import org.dynmap.bukkit.permissions.LuckPermsPermissions;
 import org.dynmap.bukkit.permissions.LuckPerms5Permissions;
@@ -854,6 +855,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             perdefs.put(p.getName(), p.getDefault() == PermissionDefault.TRUE);
         }
         
+
         permissions = PEXPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = bPermPermissions.create(getServer(), "dynmap", perdefs);
@@ -867,6 +869,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             permissions = LuckPermsPermissions.create(getServer(), "dynmap");
         if (permissions == null)
             permissions = LuckPerms5Permissions.create(getServer(), "dynmap");
+        if (permissions == null)
+            permissions = VaultPermissions.create(this, "dynmap");
         if (permissions == null)
             permissions = BukkitPermissions.create("dynmap", perdefs);
         if (permissions == null)
