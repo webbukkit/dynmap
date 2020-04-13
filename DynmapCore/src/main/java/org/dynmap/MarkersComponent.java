@@ -25,6 +25,7 @@ public class MarkersComponent extends ClientComponent {
     private MarkerSignManager signmgr;
     private MarkerIcon spawnicon;
     private String spawnlbl;
+    private String worldborderlbl;
     private MarkerSet offlineset;
     private MarkerIcon offlineicon;
     private MarkerSet spawnbedset;
@@ -56,6 +57,9 @@ public class MarkersComponent extends ClientComponent {
             if(spawnicon == null) {
                 spawnicon = api.getMarkerIcon(MarkerIcon.WORLD);
             }
+        }
+        if (showBorder) {
+            worldborderlbl = configuration.getString("worldborderlabel", "Border");
         }
         if (showSpawn || showBorder) {
             /* Add listener for world loads */
@@ -280,7 +284,7 @@ public class MarkersComponent extends ClientComponent {
                     }
                 }
                 if (am == null) {
-                    am = ms.createAreaMarker(borderid, "Border", false, w.getName(), x, z, false);
+                    am = ms.createAreaMarker(borderid, worldborderlbl, false, w.getName(), x, z, false);
                 }
                 else {
                     am.setCornerLocations(x, z);

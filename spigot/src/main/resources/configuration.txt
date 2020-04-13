@@ -128,6 +128,7 @@ components:
     spawnbedformat: "%name%'s bed"
     # (optional) show world border (vanilla 1.8+)
     showworldborder: true
+    worldborderlabel: "Border"
     
   - class: org.dynmap.ClientComponent
     type: chat
