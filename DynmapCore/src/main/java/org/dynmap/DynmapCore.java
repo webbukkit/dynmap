@@ -49,10 +49,7 @@ import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.impl.MarkerAPIImpl;
 import org.dynmap.modsupport.ModSupportImpl;
 import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.servlet.FileResourceHandler;
-import org.dynmap.servlet.JettyNullLogger;
-import org.dynmap.servlet.LoginServlet;
-import org.dynmap.servlet.MapStorageResourceHandler;
+import org.dynmap.servlet.*;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.filetree.FileTreeMapStorage;
 import org.dynmap.storage.mysql.MySQLMapStorage;
@@ -843,12 +840,15 @@ public class DynmapCore implements DynmapCommonAPI {
         filters.add(new CustomHeaderFilter(configuration.getNode("http-response-headers")));
 
         FilterHandler fh = new FilterHandler(router, filters);
+        ContextHandler contextHandler = new ContextHandler();
+        contextHandler.setContextPath("/");
+        contextHandler.setHandler(fh);
         HandlerList hlist = new HandlerList();
-        hlist.setHandlers(new org.eclipse.jetty.server.Handler[] { new SessionHandler(), fh });
+        hlist.setHandlers(new org.eclipse.jetty.server.Handler[] { new SessionHandler(), contextHandler });
         webServer.setHandler(hlist);
         
-        addServlet("/up/configuration", new org.dynmap.servlet.ClientConfigurationServlet(this));
-        addServlet("/standalone/config.js", new org.dynmap.servlet.ConfigJSServlet(this));
+        addServlet("/up/configuration", new ClientConfigurationServlet(this));
+        addServlet("/standalone/config.js", new ConfigJSServlet(this));
         if(authmgr != null) {
             LoginServlet login = new LoginServlet(this);
             addServlet("/up/login", login);

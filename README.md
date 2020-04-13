@@ -23,3 +23,6 @@ Dynmap supports the following storage backends:
 - SQLite
 - MySQL
 - PostgreSQL: EXPERIMENTAL
+
+# Where to go for questions and discussions
+I've just created a Reddit for the Dynmap family of mods/plugins - please give it a try - https://www.reddit.com/r/Dynmap/
