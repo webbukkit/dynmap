@@ -133,7 +133,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         /* CraftChunkSnapshot */
         craftchunksnapshot = getOBCClass("org.bukkit.craftbukkit.CraftChunkSnapshot");
 		try {
-			biomebasearray = getNMSClass("[Lnet.minecraft.world.biome.Biome;");
+			biomebasearray = getNMSClassNoFail("[Lnet.minecraft.world.biome.Biome;");
 		} catch (Exception x) {
 			biomebasearray = getNMSClass("[Lnet.minecraft.server.BiomeBase;");
 		}

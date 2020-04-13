@@ -78,7 +78,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         // Get block fields
         nmsblock = getNMSClass("net.minecraft.server.Block");
 	    try {
-			nmsblockarray = getNMSClass("[Lnet.minecraft.block.Block;");
+			nmsblockarray = getNMSClassNoFail("[Lnet.minecraft.block.Block;");
 		} catch (Exception x) {
 			nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
 		}
@@ -98,7 +98,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
 	    try {
-			biomebasearray = getNMSClass("[Lnet.minecraft.world.biome.Biome;");
+			biomebasearray = getNMSClassNoFail("[Lnet.minecraft.world.biome.Biome;");
 		} catch (Exception x) {
 			biomebasearray = getNMSClass("[Lnet.minecraft.server.BiomeBase;");
 		}
