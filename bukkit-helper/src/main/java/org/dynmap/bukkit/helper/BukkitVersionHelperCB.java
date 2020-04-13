@@ -60,9 +60,14 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         Server srv = Bukkit.getServer();
         /* Get getHandle() method */
         try {
-            Method m = srv.getClass().getMethod("getHandle");
-            Object scm = m.invoke(srv); /* And use it to get SCM (nms object) */
-            return scm.getClass().getPackage().getName();
+			try {
+				Class.forName("red.mohist.Mohist");
+				return "net.minecraft.server.v1_12_R1";
+			} catch (Exception x) {
+				Method m = srv.getClass().getMethod("getHandle");
+				Object scm = m.invoke(srv); /* And use it to get SCM (nms object) */
+				return scm.getClass().getPackage().getName();
+			}
         } catch (Exception x) {
             Log.severe("Error finding net.minecraft.server packages");
             return null;
@@ -72,7 +77,11 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     protected void loadNMS() {
         // Get block fields
         nmsblock = getNMSClass("net.minecraft.server.Block");
-        nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
+	    try {
+			nmsblockarray = getNMSClass("[Lnet.minecraft.block.Block;");
+		} catch (Exception x) {
+			nmsblockarray = getNMSClass("[Lnet.minecraft.server.Block;");
+		}
         nmsmaterial = getNMSClass("net.minecraft.server.Material");
         if (isBlockIdNeeded()) {   // Not needed for 1.13+
             blockbyid = getFieldNoFail(nmsblock, new String[] { "byId" }, nmsblockarray);
@@ -88,7 +97,11 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
 
         /* Set up biomebase fields */
         biomebase = getNMSClass("net.minecraft.server.BiomeBase");
-        biomebasearray =  getNMSClass("[Lnet.minecraft.server.BiomeBase;");
+	    try {
+			biomebasearray = getNMSClass("[Lnet.minecraft.world.biome.Biome;");
+		} catch (Exception x) {
+			biomebasearray = getNMSClass("[Lnet.minecraft.server.BiomeBase;");
+		}
         biomebaselist = getPrivateFieldNoFail(biomebase, new String[] { "biomes" }, biomebasearray);
         if ((biomebaselist == null) && isBiomeBaseListNeeded()) {
             getbiomefunc = getMethodNoFail(biomebase, new String[] { "getBiome" }, new Class[] { int.class, biomebase });
