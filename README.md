@@ -16,3 +16,6 @@ The following target platforms are supported:
 - Forge v1.10.2 - via Dynmap-<version>-forge-1.10.2.jar mod
 - Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
 - Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
+
+# Where to go for questions and discussions
+I've just created a Reddit for the Dynmap family of mods/plugins - please give it a try - https://www.reddit.com/r/Dynmap/
