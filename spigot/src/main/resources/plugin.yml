@@ -2,7 +2,7 @@ name: dynmap
 main: org.dynmap.bukkit.DynmapPlugin
 version: "${version}-${buildnumber}"
 authors: [mikeprimm]
-website: "https://www.reddit.com/r/Dynmap/"
+website: "https://forums.dynmap.us"
 softdepend: [ Permissions, PermissionEx, bPermissions, PermissionsBukkit, GroupManager, LuckPerms, Vault ]
 commands:
   dynmap:
