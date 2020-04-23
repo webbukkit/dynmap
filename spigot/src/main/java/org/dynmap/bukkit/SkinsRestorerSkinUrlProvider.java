@@ -27,6 +27,10 @@ public class SkinsRestorerSkinUrlProvider implements SkinUrlProvider {
         String skinName = mSkinsRestorerApi.getSkinName(playerName);
 
         Object skinDataProperty = mSkinsRestorerApi.getSkinData(skinName == null ? playerName : skinName);
+
+        if (skinDataProperty == null)
+            return null;
+
         String skinDataPropertyValue;
 
         try {
