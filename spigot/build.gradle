@@ -5,6 +5,9 @@ repositories {
     maven {
         url 'https://jitpack.io'
     }
+    maven {
+        url 'https://repo.codemc.org/repository/maven-snapshots'
+    }
 }
 
 dependencies {
@@ -41,6 +44,7 @@ dependencies {
     implementation(project(':bukkit-helper-115')) { 
         transitive = false
     }
+    implementation 'com:skinsrestorer:13.7.5-20191221.213031-7@jar'
 }
 
 processResources {

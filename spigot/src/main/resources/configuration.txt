@@ -280,6 +280,9 @@ custom-colors-support: true
 # Customize URL used for fetching player skins (%player% is macro for name)
 skin-url: "http://skins.minecraft.net/MinecraftSkins/%player%.png"
 
+# Enable skins via SkinsRestorer plugin instead of internal legacy implementation (disabled by default)
+#skinsrestorer-integration: true
+
 render-triggers:
   #- playermove
   #- playerjoin
