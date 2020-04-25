@@ -13,10 +13,10 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-    compile project(":DynmapCore")
-    compile project(":DynmapCoreAPI")
+    compile project(path: ":DynmapCore", configuration: "shadow")
 }
 
 sourceCompatibility = 1.8
@@ -61,29 +61,15 @@ processResources
     rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
-jar {
-   manifest {
-        attributes 'FMLAT': 'dynmap_at.cfg'
-   }
-}
-
 shadowJar {
     dependencies {
-        include(dependency('com.googlecode.json-simple:json-simple:'))
-		include(dependency('org.yaml:snakeyaml:'))
-		include(dependency('com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:'))
-        include(dependency('org.eclipse.jetty::'))
-        include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
         include(dependency(':DynmapCore'))
-        include(dependency(':DynmapCoreAPI'))
-	}
-	relocate('org.json.simple', 'org.dynmap.json.simple')
-	relocate('org.yaml.snakeyaml', 'org.dynmap.snakeyaml')
-	relocate('org.eclipse.jetty', 'org.dynmap.jetty')
-	relocate('org.owasp.html', 'org.dynmap.org.owasp.html')
-	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
+    }
     archiveName = "Dynmap-${parent.version}-forge-1.12.2.jar"
     destinationDir = file '../target'
+    manifest {
+        attributes 'FMLAT': 'dynmap_at.cfg'
+    }
 }
 
 shadowJar.doLast {

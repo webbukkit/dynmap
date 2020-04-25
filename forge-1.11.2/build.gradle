@@ -71,6 +71,7 @@ shadowJar {
         attributes 'FMLAT': 'dynmap_at.cfg'
     }
 }
+
 shadowJar.doLast {
     task ->
         ant.checksum file: task.archivePath
