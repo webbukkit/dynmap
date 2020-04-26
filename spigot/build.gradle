@@ -11,11 +11,12 @@ repositories {
 }
 
 dependencies {
-  compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
+    compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
     compile 'com.nijikokun.bukkit:Permissions:3.1.6'
     compile 'me.lucko.luckperms:luckperms-api:4.3'
     compile 'net.luckperms:api:5.0'
     compile('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
+    compileOnly 'com:skinsrestorer:13.7.5-20191221.213031-7@jar'
     compile project(":dynmap-api")
     compile project(path: ":DynmapCore", configuration: "shadow")
     compile group: 'ru.tehkode', name: 'PermissionsEx', version:'1.19.1'
@@ -44,7 +45,6 @@ dependencies {
     implementation(project(':bukkit-helper-115')) { 
         transitive = false
     }
-    implementation 'com:skinsrestorer:13.7.5-20191221.213031-7@jar'
 }
 
 processResources {
