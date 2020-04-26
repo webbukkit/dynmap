@@ -1047,8 +1047,9 @@ public class DynmapPlugin
                 }
             }
             List<ModInfo> mcl = ModList.get().getMods();
-            for (ModInfo mc : mcl) {
-                Object mod = ModList.get().getModContainerById(mc.getModId()).get().getMod();
+            for (ModInfo mci : mcl) {
+                ModContainer mc = ModList.get().getModContainerById(mci.getModId()).get();
+                Object mod = (mc != null) ? mc.getMod() : null;
                 if (mod == null) continue;
                 InputStream is = mod.getClass().getClassLoader().getResourceAsStream(rname);
                 if (is != null) {
@@ -1494,6 +1495,7 @@ public class DynmapPlugin
         cm.getDispatcher().register(new DmapCommand(this));
         cm.getDispatcher().register(new DmarkerCommand(this));
         cm.getDispatcher().register(new DynmapExpCommand(this));
+
         Log.info("Register commands");
         
         /* Submit metrics to mcstats.org */
@@ -2034,6 +2036,7 @@ class DynmapCommandHandler extends LiteralArgumentBuilder<CommandSource>
 //    @Override
     public void execute(MinecraftServer server, ICommandSource sender,
             String[] args) throws CommandException {
+        Log.info("execute " + cmd + " args=" + args.toString());
         plugin.onCommand(sender, cmd, args);
     }
 
