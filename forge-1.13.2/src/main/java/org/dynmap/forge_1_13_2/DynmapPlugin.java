@@ -195,10 +195,10 @@ public class DynmapPlugin
     			stateByID = Arrays.copyOf(stateByID, idx+1);
     			Arrays.fill(stateByID, plen, stateByID.length, DynmapBlockState.AIR);
     		}
-    		Block b = bs.getBlock();
+            Block b = bs.getBlock();
     		// If this is new block vs last, it's the base block state
     		if (b != baseb) {
-    			basebs = null;
+    			basebs = b;
     			baseidx = idx;
     		}
     		
