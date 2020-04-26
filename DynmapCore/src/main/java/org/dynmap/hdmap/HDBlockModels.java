@@ -188,7 +188,7 @@ public class HDBlockModels {
         /* Check mods to see if model files defined there: do these first, as they trump other sources */
         for (String modid : core.getServer().getModList()) {
             File f = core.getServer().getModContainerFile(modid);   // Get mod file
-            if (f.isFile()) {
+            if ((f != null) && f.isFile()) {
                 zf = null;
                 in = null;
                 try {

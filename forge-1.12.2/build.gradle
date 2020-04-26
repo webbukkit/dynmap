@@ -1,10 +1,8 @@
 buildscript {
     repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        mavenCentral()        
         maven {url = "https://oss.sonatype.org/content/repositories/snapshots/"}
     }
     dependencies {
@@ -17,6 +15,8 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     compile project(path: ":DynmapCore", configuration: "shadow")
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'org.yaml:snakeyaml:1.23'
 }
 
 sourceCompatibility = 1.8

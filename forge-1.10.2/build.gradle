@@ -17,6 +17,8 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     compile project(path: ":DynmapCore", configuration: "shadow")
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'org.yaml:snakeyaml:1.23'
 }
 
 sourceCompatibility = 1.8
