@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+         maven { url "http://repo.mikeprimm.com" }
         jcenter()
         mavenCentral()        
         maven {url = "https://oss.sonatype.org/content/repositories/snapshots/"}
@@ -22,13 +23,6 @@ dependencies {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
-
-repositories {
-    maven {
-        name = 'forge'
-        url = 'http://files.minecraftforge.net/maven'
-    }
-}
 
 minecraft {
    mappings channel: 'stable', version: '47-1.13.2'

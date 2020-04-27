@@ -961,7 +961,7 @@ public class ForgeMapChunkCache extends MapChunkCache
         	if (cp instanceof ChunkProviderServer)
         	{
                 cps = (ChunkProviderServer)cp;
-                Log.info("World " + dw.getName() + " has chunk provider " + cps.class.getName());
+                Log.info("World " + dw.getName() + " has chunk provider " + cps.getClass().getName());
         	}
         	else
         	{
