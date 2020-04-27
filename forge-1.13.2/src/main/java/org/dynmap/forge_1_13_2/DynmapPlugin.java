@@ -67,8 +67,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
@@ -1012,10 +1012,8 @@ public class DynmapPlugin
         	ModFileInfo mfi = ModList.get().getModFileById(name);    // Try case sensitive lookup
             if (mfi != null) {
             	File f = mfi.getFile().getFilePath().toFile();
-                Log.info("getModContainferFile(" + name + ")=" + f.getAbsolutePath());
                 return f;
             }
-            Log.info("getModContainferFile(" + name + ")=null");
         	return null;
         }
         @Override
@@ -1037,8 +1035,8 @@ public class DynmapPlugin
         @Override
         public InputStream openResource(String modid, String rname) {
             if (modid != null) {
-                ModContainer mc = ModList.get().getModContainerById(modid).get();
-                Object mod = (mc != null) ? mc.getMod() : null;
+                Optional<? extends ModContainer> mc = ModList.get().getModContainerById(modid);
+                Object mod = (mc.isPresent()) ? mc.get().getMod() : null;
                 if (mod != null) {
                     InputStream is = mod.getClass().getClassLoader().getResourceAsStream(rname);
                     if (is != null) {
@@ -1048,8 +1046,8 @@ public class DynmapPlugin
             }
             List<ModInfo> mcl = ModList.get().getMods();
             for (ModInfo mci : mcl) {
-                ModContainer mc = ModList.get().getModContainerById(mci.getModId()).get();
-                Object mod = (mc != null) ? mc.getMod() : null;
+                Optional<? extends ModContainer> mc = ModList.get().getModContainerById(mci.getModId());
+                Object mod = (mc.isPresent()) ? mc.get().getMod() : null;
                 if (mod == null) continue;
                 InputStream is = mod.getClass().getClassLoader().getResourceAsStream(rname);
                 if (is != null) {
