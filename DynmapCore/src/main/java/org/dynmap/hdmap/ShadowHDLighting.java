@@ -15,8 +15,6 @@ public class ShadowHDLighting extends DefaultHDLighting {
     protected final int   lightscale[];   /* scale skylight level (light = lightscale[skylight] */
     protected final boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
     protected final boolean smooth;
-    protected final boolean grayscale;
-    protected final Color graytone;
     protected final boolean useWorldBrightnessTable;
     
     public ShadowHDLighting(DynmapCore core, ConfigurationNode configuration) {
@@ -46,8 +44,6 @@ public class ShadowHDLighting extends DefaultHDLighting {
                 lightscale[i] = i - (15-v);
         }
         smooth = configuration.getBoolean("smooth-lighting", MapManager.mapman.getSmoothLighting());
-        grayscale = configuration.getBoolean("grayscale", false);
-        graytone = configuration.getColor("graytone", null);
     }
     
     private void    applySmoothLighting(HDPerspectiveState ps, HDShaderState ss, Color incolor, Color[] outcolor, int[] shadowscale) {
@@ -219,18 +215,7 @@ public class ShadowHDLighting extends DefaultHDLighting {
         }
         return lightlevel;
     }
-    
-    private void checkGrayscale(Color[] outcolor) {
-        if (grayscale) {
-            outcolor[0].setGrayscale();
-            if (graytone != null) outcolor[0].blendColor(graytone);
-            if (outcolor.length > 1) {
-                outcolor[1].setGrayscale();
-                if (graytone != null) outcolor[1].blendColor(graytone);
-            }
-        }
-    }
-    
+        
     /* Apply lighting to given pixel colors (1 outcolor if normal, 2 if night/day) */
     public void    applyLighting(HDPerspectiveState ps, HDShaderState ss, Color incolor, Color[] outcolor) {
         int[] shadowscale = null;

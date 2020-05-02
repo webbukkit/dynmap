@@ -93,11 +93,10 @@ lightings:
       grayscale: true
       graytone: '#C09A53'
       smooth-lighting: true
-    # No shadows day mode - grayscale parchment
-    - class: org.dynmap.hdmap.ShadowHDLighting
+    # Default day mode - grayscale parchment
+    - class: org.dynmap.hdmap.DefaultHDLighting 
       name: parchment-noshadow
       grayscale: true
       graytone: '#C09A53'
-      shadowstrength: 0.0
      
       

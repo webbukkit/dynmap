@@ -10,11 +10,26 @@ import static org.dynmap.JSONUtils.s;
 
 public class DefaultHDLighting implements HDLighting {
     private String name;
+    protected final boolean grayscale;
+    protected final Color graytone;
 
     public DefaultHDLighting(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
+        grayscale = configuration.getBoolean("grayscale", false);
+        graytone = configuration.getColor("graytone", null);
     }
     
+    protected void checkGrayscale(Color[] outcolor) {
+        if (grayscale) {
+            outcolor[0].setGrayscale();
+            if (graytone != null) outcolor[0].blendColor(graytone);
+            if (outcolor.length > 1) {
+                outcolor[1].setGrayscale();
+                if (graytone != null) outcolor[1].blendColor(graytone);
+            }
+        }
+    }
+
     /* Get lighting name */
     public String getName() { return name; }
     
@@ -22,6 +37,7 @@ public class DefaultHDLighting implements HDLighting {
     public void    applyLighting(HDPerspectiveState ps, HDShaderState ss, Color incolor, Color[] outcolor) {
         for(int i = 0; i < outcolor.length; i++)
             outcolor[i].setColor(incolor);
+        checkGrayscale(outcolor);
     }
     
     /* Test if Biome Data is needed for this renderer */
