@@ -3,6 +3,7 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 	var Coord = L.Control.extend({
 		valfield: $('<span/>'),
 		mcrfield: $('<span/>'),
+		chunkfield: $('<span/>'),
 
 		onAdd: function(map) {
 			if(configuration.hidey)
@@ -16,6 +17,10 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 			if(configuration['show-mcr']) {
 				$('<br/>').appendTo(this._container);
 				this.mcrfield.addClass('coord-control-value').text('').appendTo(this._container);
+			}
+			if(configuration['show-chunk']) {
+				$('<br/>').appendTo(this._container);
+				this.chunkfield.addClass('coord-control-value').text('').appendTo(this._container);
 			}
 			this._update();
 			return this.getContainer();
@@ -44,7 +49,9 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 		else
 			coord.valfield.text(Math.round(loc.x) + ',' + loc.y + ',' + Math.round(loc.z));
 		if(configuration['show-mcr'])
-			coord.mcrfield.text('r.' + Math.floor(loc.x/512) + '.' + Math.floor(loc.z/512) + '.mcr');
+			coord.mcrfield.text('r.' + Math.floor(loc.x/512) + '.' + Math.floor(loc.z/512) + '.mca');
+		if(configuration['show-chunk'])
+			coord.chunkfield.text('Chunk: ' + Math.floor(loc.x/16) + ',' + Math.floor(loc.z/16));
 	});
 	dynmap.map.on('mouseout', function(mevent) {
 		if(!dynmap.map) return;
@@ -54,5 +61,7 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 			coord.valfield.text('---,---,---');
 		if(configuration['show-mcr'])
 			coord.mcrfield.text('--------');
+		if(configuration['show-chunk'])
+			coord.chunkfield.text('Chunk: ---,---');
 	});
 };

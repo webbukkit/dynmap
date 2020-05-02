@@ -175,6 +175,7 @@ components:
     label: "Location"
     hidey: false
     show-mcr: false
+    show-chunk: false
     
   # Note: more than one logo component can be defined
   #- class: org.dynmap.ClientComponent
