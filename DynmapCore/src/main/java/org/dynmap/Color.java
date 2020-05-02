@@ -37,6 +37,14 @@ public class Color {
     public final void setTransparent() {
         val = TRANSPARENT;
     }
+    public final void setGrayscale() {
+        int alpha = (val >> 24) & 0xFF;
+        int red = (val >> 16) & 0xFF;
+        int green = (val >> 8) & 0xFF;
+        int blue = val & 0xFF;
+        int gray = ((red * 76) + (green * 151) + (blue * 28)) / 255;
+        setRGBA(gray, gray, gray, alpha);
+    }
     public final void setColor(Color c) {
         val = c.val;
     }

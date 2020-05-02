@@ -218,7 +218,20 @@ public class ConfigurationNode implements Map<String, Object> {
             return null;
         return o.toString();
     }
-    
+
+    public Color getColor(String path, String def) {
+        String lclr = this.getString(path, def);
+        if((lclr != null) && (lclr.startsWith("#"))) {
+            try {
+                int c = Integer.parseInt(lclr.substring(1), 16);
+                return new Color((c>>16)&0xFF, (c>>8)&0xFF, c&0xFF);
+            } catch (NumberFormatException nfx) {
+                Log.severe("Invalid color value: " + lclr + " for '" + path + "'");
+            }
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> List<T> getList(String path) {
         try {

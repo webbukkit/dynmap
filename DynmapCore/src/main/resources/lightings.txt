@@ -80,5 +80,24 @@ lightings:
       shadowstrength: 0.5
       ambientlight: 4
       use-brightness-table: false
-      
+    # Shadows enabled day mode - grayscale
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: grayscale
+      shadowstrength: 1.0
+      grayscale: true
+      smooth-lighting: true
+    # Shadows enabled day mode - grayscale parchment
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: parchment
+      shadowstrength: 1.0
+      grayscale: true
+      graytone: '#ECE999'
+      smooth-lighting: true
+    # No shadows day mode - grayscale parchment
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: parchment-noshadow
+      grayscale: true
+      graytone: '#ECE999'
+      shadowstrength: 0.0
+     
       

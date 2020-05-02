@@ -9,7 +9,6 @@ import java.util.List;
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapCore;
-import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
@@ -28,28 +27,16 @@ public class TopoHDShader implements HDShader {
     private BitSet hiddenids;
     private final int linespacing;
     
-    private Color readColor(String id, ConfigurationNode cfg) {
-        String lclr = cfg.getString(id, null);
-        if((lclr != null) && (lclr.startsWith("#"))) {
-            try {
-                int c = Integer.parseInt(lclr.substring(1), 16);
-                return new Color((c>>16)&0xFF, (c>>8)&0xFF, c&0xFF);
-            } catch (NumberFormatException nfx) {
-                Log.severe("Invalid color value: " + lclr + " for '" + id + "'");
-            }
-        }
-        return null;
-    }
     public TopoHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         
         fillcolor = new Color[256];   /* Color by Y */
         /* Load defined colors from parameters */
         for(int i = 0; i < 256; i++) {
-            fillcolor[i] = readColor("color" + i,  configuration);
+            fillcolor[i] = configuration.getColor("color" + i,  null);
         }
-        linecolor = readColor("linecolor",  configuration);
-        watercolor = readColor("watercolor",  configuration);
+        linecolor = configuration.getColor("linecolor", null);
+        watercolor = configuration.getColor("watercolor", null);
         float wateralpha = configuration.getFloat("wateralpha", 1.0F);
         if (wateralpha < 1.0) {
             watercolor.setAlpha((int)(255 * wateralpha));
