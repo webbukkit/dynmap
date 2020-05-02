@@ -6,21 +6,21 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 		chunkfield: $('<span/>'),
 
 		onAdd: function(map) {
-			if(configuration.hidey)
+			if(configuration.hidey) 
 				this._container = L.DomUtil.create('div', 'coord-control coord-control-noy');
 			else
 				this._container = L.DomUtil.create('div', 'coord-control');
 			this._map = map;
 			$('<span/>').addClass('coord-control-label').text((configuration.label || 'x,y,z') + ': ').appendTo(this._container);
 			$('<br/>').appendTo(this._container);
-			this.valfield.addClass('coord-control-value').text('').appendTo(this._container);
+			this.valfield.addClass('coord-control-value').text(configuration.hidey ? '---,---' : '---,---,---').appendTo(this._container);
 			if(configuration['show-mcr']) {
 				$('<br/>').appendTo(this._container);
-				this.mcrfield.addClass('coord-control-value').text('').appendTo(this._container);
+				this.mcrfield.addClass('coord-control-value').text('--------').appendTo(this._container);
 			}
 			if(configuration['show-chunk']) {
 				$('<br/>').appendTo(this._container);
-				this.chunkfield.addClass('coord-control-value').text('').appendTo(this._container);
+				this.chunkfield.addClass('coord-control-value').text('Chunk: ---,---').appendTo(this._container);
 			}
 			this._update();
 			return this.getContainer();

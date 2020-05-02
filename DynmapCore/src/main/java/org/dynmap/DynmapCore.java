@@ -2288,8 +2288,9 @@ public class DynmapCore implements DynmapCommonAPI {
         else {  // First time, delete old external texture pack
             deleteDirectory(new File(df, "texturepacks/standard"));
         }
+        String curver = this.getDynmapCoreVersion();
         /* If matched, we're good */
-        if (prevver.equals(this.getDynmapCoreVersion())) {
+        if (prevver.equals(curver) && (!curver.endsWith(("-Dev")))) {
             return;
         }
         /* Get deleted file list */
