@@ -10,7 +10,7 @@ import static org.dynmap.JSONUtils.s;
 
 public class DefaultHDLighting implements HDLighting {
     private String name;
-    protected final boolean grayscale;
+    protected boolean grayscale;
     protected final Color graytone;
 
     public DefaultHDLighting(DynmapCore core, ConfigurationNode configuration) {

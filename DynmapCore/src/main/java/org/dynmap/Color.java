@@ -63,6 +63,16 @@ public class Color {
     public final void setAlpha(int v) {
         val = (val & 0x00FFFFFF) | (v << 24);
     }
+    public final void scaleColor(Color minimum, Color maximum) {
+        int alpha = (val >> 24) & 0xFF;
+        int red = (val >> 16) & 0xFF;
+        int green = (val >> 8) & 0xFF;
+        int blue = val & 0xFF;
+        red = minimum.getRed() + ((maximum.getRed() - minimum.getRed()) * red) / 256;
+        green = minimum.getGreen() + ((maximum.getGreen() - minimum.getGreen()) * green) / 256;
+        blue = minimum.getBlue() + ((maximum.getBlue() - minimum.getBlue()) * blue) / 256;
+        setRGBA(red, green, blue, alpha);
+    }
     /**
      * Scale each color component, based on the corresponding component
      * @param c - color to blend

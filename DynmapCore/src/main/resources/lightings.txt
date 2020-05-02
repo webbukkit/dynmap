@@ -98,5 +98,28 @@ lightings:
       name: parchment-noshadow
       grayscale: true
       graytone: '#C09A53'
-     
+    # Spawn at night warning map
+    - class: org.dynmap.hdmap.LightLevelHDLighting 
+      name: nightspawn
+      color0: '#FF0000'
+      color1: '#FF6600'
+      color2: '#FF9900'
+      color3: '#FFCC00'
+      color4: '#FFCC33'
+      color5: '#FFCC66'
+      color6: '#FFCC99'
+      color7: '#FFFF00'      
+      night: true
+     # Spawn day-night warning map
+    - class: org.dynmap.hdmap.LightLevelHDLighting 
+      name: daynightspawn
+      color0: '#FF0000'
+      color1: '#FF6600'
+      color2: '#FF9900'
+      color3: '#FFCC00'
+      color4: '#FFCC33'
+      color5: '#FFCC66'
+      color6: '#FFCC99'
+      color7: '#FFFF00'      
+      night-and-day: true
       
