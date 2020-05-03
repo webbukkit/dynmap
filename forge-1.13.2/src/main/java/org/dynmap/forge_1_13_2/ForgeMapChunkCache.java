@@ -1097,6 +1097,7 @@ public class ForgeMapChunkCache extends MapChunkCache
             }
             if(rslt != null) 
                 rslt = rslt.getCompound("Level");
+            //Log.info(String.format("loadChunk(%d,%d)=%s", x, z, (rslt != null) ? rslt.toString() : "null"));
             return rslt;
         } catch (Exception exc) {
             Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);

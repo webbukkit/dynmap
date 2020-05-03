@@ -7,6 +7,7 @@ import org.dynmap.renderer.DynmapBlockState;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.BitArray;
 
 /**
  * Represents a static, thread-safe snapshot of chunk of blocks
@@ -140,96 +141,60 @@ public class ChunkSnapshot
         NBTTagList sect = nbt.getList("Sections", 10);
         for (int i = 0; i < sect.size(); i++) {
             NBTTagCompound sec = sect.getCompound(i);
-            byte secnum = sec.getByte("Y");
+            int secnum = sec.getByte("Y");
             if (secnum >= this.sectionCnt) {
-                Log.info("Section " + (int) secnum + " above world height " + worldheight);
+                //Log.info("Section " + (int) secnum + " above world height " + worldheight);
                 continue;
             }
+            if (secnum < 0)
+                continue;
+            //System.out.println("section(" + secnum + ")=" + sec.asString());
             // Create normal section to initialize
             StdSection cursect = new StdSection();
             this.section[secnum] = cursect;
             DynmapBlockState[] states = cursect.states;
-            // JEI format
-            if (sec.contains("Palette")) {
-            	int[] p = sec.getIntArray("Palette");
-                // Palette is list of state values, where Blocks=bit 11-4 of index, Data=bit 3-0
-            	byte[] msb_bytes = sec.getByteArray("Blocks");
-            	int mlen = msb_bytes.length / 2;
-            	byte[] lsb_bytes = sec.getByteArray("Data");
-            	int llen = BLOCKS_PER_SECTION / 2;
-            	if (llen > lsb_bytes.length) llen = lsb_bytes.length;
-                for(int j = 0; j < llen; j++) {
-                	int idx = lsb_bytes[j] & 0xF;
-                	int idx2 = (lsb_bytes[j] & 0xF0) >>> 4;
-        			if (j < mlen) {
-        				idx += (255 & msb_bytes[2*j]) << 4;
-        				idx2 += (255 & msb_bytes[2*j+1]) << 4;
-        			}
-        			// Get even block id
-        			states[2*j] = DynmapPlugin.stateByID[(idx < p.length) ? p[idx] : 0];
-        			// Get odd block id
-        			states[2*j+1] = DynmapPlugin.stateByID[(idx2 < p.length) ? p[idx2] : 0];
+            DynmapBlockState[] palette = null;
+            // If we've got palette and block states list, process non-empty section
+            if (sec.contains("Palette", 9) && sec.contains("BlockStates", 12)) {
+                NBTTagList plist = sec.getList("Palette", 10);
+                long[] statelist = sec.getLongArray("BlockStates");
+                palette = new DynmapBlockState[plist.size()];
+                for (int pi = 0; pi < plist.size(); pi++) {
+                    NBTTagCompound tc = plist.getCompound(pi);
+                    String pname = tc.getString("Name");
+                    if (tc.contains("Properties")) {
+                        StringBuilder statestr = new StringBuilder();
+                        NBTTagCompound prop = tc.getCompound("Properties");
+                        for (String pid : prop.keySet()) {
+                            if (statestr.length() > 0) statestr.append(',');
+                            statestr.append(pid).append('=').append(prop.get(pid).getString());
+                        }
+                        palette[pi] = DynmapBlockState.getStateByNameAndState(pname, statestr.toString());
+                    }
+                    if (palette[pi] == null) {
+                        palette[pi] = DynmapBlockState.getBaseStateByName(pname);
+                    }
+                    if (palette[pi] == null) {
+                        palette[pi] = DynmapBlockState.AIR;
+                    }
+                }
+                int bitsperblock = (statelist.length * 64) / 4096;
+                BitArray db = new BitArray(bitsperblock, 4096, statelist);
+                if (bitsperblock > 8) {	// Not palette
+                    for (int j = 0; j < 4096; j++) {
+                        states[j] = DynmapBlockState.getStateByGlobalIndex(db.getAt(j));
+                    }
+                }
+                else {
+                    for (int j = 0; j < 4096; j++) {
+                        int v = db.getAt(j);
+                        states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
+                    }
                 }
             }
-            else {
-                // Get block IDs
-            	byte[] lsb_bytes = sec.getByteArray("Blocks");
-            	if (lsb_bytes.length < BLOCKS_PER_SECTION) {
-            	    lsb_bytes = Arrays.copyOf(lsb_bytes, BLOCKS_PER_SECTION);
-            	}
-            	// Get any additional ID data
-            	byte[] addid = null;
-                if (sec.contains("Add")) {    /* If additional data, add it */
-                    addid = sec.getByteArray("Add");
-                    if (addid.length < (BLOCKS_PER_SECTION / 2)) {
-                        addid = Arrays.copyOf(addid, (BLOCKS_PER_SECTION / 2));
-                    }
-                }
-                // Check for NEID additional additional ID data
-                byte[] addid2 = null;
-                if (sec.contains("Add2")) {    /* If additional data (NEID), add it */
-                    addid2 = sec.getByteArray("Add2");
-                    if (addid2.length < (BLOCKS_PER_SECTION / 2)) {
-                        addid2 = Arrays.copyOf(addid2, (BLOCKS_PER_SECTION / 2));
-                    }
-                }
-                // Get meta nibble data
-                byte[] bd = null;
-                if (sec.contains("Data")) {
-                    bd = sec.getByteArray("Data");
-                    if (bd.length < (BLOCKS_PER_SECTION / 2)) {
-                        bd = Arrays.copyOf(bd, (BLOCKS_PER_SECTION / 2));
-                    }
-                }
-                // Traverse section
-            	for(int j = 0; j < BLOCKS_PER_SECTION; j += 2) {
-            	    // Start with block ID
-            	    int id = (0xFF & lsb_bytes[j]) << 4;
-                    int id2 = (0xFF & lsb_bytes[j+1]) << 4;
-            	    // Add in additional parts
-                    if (addid != null) {
-                        byte b = addid[j >> 1];
-                        id += (0xF & b) << 12;
-                        id2 += (0xF0 & b) << 8;
-                    }
-                    // Add in additional additional parts
-                    if (addid2 != null) {
-                        byte b = addid2[j >> 1];
-                        id += (0xF & b) << 16;
-                        id2 += (0xF0 & b) << 12;
-                    }
-                    // Add in metadata
-                    if (bd != null) {
-                        byte b = bd[j >> 1];
-                        id += (0xF & b);
-                        id2 += (0xF0 & b) >> 4;
-                    }
-                    // Compute states
-                    states[j] = DynmapPlugin.stateByID[id];
-                    states[j+1] = DynmapPlugin.stateByID[id2];
-            	}
+            if (sec.contains("BlockLight")) {
+                cursect.emitlight = sec.getByteArray("BlockLight");
             }
-            cursect.emitlight = sec.getByteArray("BlockLight");
             if (sec.contains("SkyLight")) {
                 cursect.skylight = sec.getByteArray("SkyLight");
             }
@@ -237,21 +202,12 @@ public class ChunkSnapshot
         /* Get biome data */
         this.biome = new int[COLUMNS_PER_CHUNK];
         if (nbt.contains("Biomes")) {
-            byte[] b = nbt.getByteArray("Biomes");
-            if (b != null) {
-            	for (int i = 0; i < b.length; i++) {
-            		int bv = 255 & b[i];
-            		this.biome[i] = (bv == 255) ? 0 : bv;
-            	}
-            }
-            else {	// Check JEI biomes
-            	int[] bb = nbt.getIntArray("Biomes");
-            	if (bb != null) {
-                	for (int i = 0; i < bb.length; i++) {
-                		int bv = bb[i];
-                		this.biome[i] = (bv < 0) ? 0 : bv;
-                	}
-            	}
+            int[] bb = nbt.getIntArray("Biomes");
+            if (bb != null) {
+                for (int i = 0; i < bb.length; i++) {
+                    int bv = bb[i];
+                    this.biome[i] = (bv < 0) ? 0 : bv;
+                }
             }
         }
     }
