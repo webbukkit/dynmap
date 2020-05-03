@@ -3,7 +3,6 @@ package org.dynmap.forge_1_13_2.permissions;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.dynmap.Log;
@@ -33,19 +32,19 @@ public class OpPermissions implements PermissionProvider {
     }
 
     @Override
-    public boolean has(ICommandSource sender, String permission) {
-        if(sender instanceof EntityPlayer) {
+    public boolean has(EntityPlayer psender, String permission) {
+        if(psender != null) {
             if(usrCommands.contains(permission)) {
                 return true;
             }
-            return DynmapPlugin.plugin.isOp(((EntityPlayer)sender).getEntity().getName().getString());
+            return DynmapPlugin.plugin.isOp(psender.getEntity().getName().getString());
         }
         return true;
     }
     @Override
-    public boolean hasPermissionNode(ICommandSource sender, String permission) {
-        if(sender instanceof EntityPlayer) {
-            return DynmapPlugin.plugin.isOp(((EntityPlayer)sender).getEntity().getName().getString());
+    public boolean hasPermissionNode(EntityPlayer psender, String permission) {
+        if(psender != null) {
+            return DynmapPlugin.plugin.isOp(psender.getEntity().getName().getString());
         }
         return true;
     } 

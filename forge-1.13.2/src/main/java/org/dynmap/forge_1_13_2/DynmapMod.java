@@ -103,13 +103,14 @@ public class DynmapMod
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
         server = event.getServer();
-    }
+        if(plugin == null)
+            plugin = proxy.startServer(server);
+		plugin.onStarting(event.getCommandDispatcher());
+	}
     
     @SubscribeEvent
     public void onServerStarted(FMLServerStartedEvent event) {
         DynmapCommonAPIListener.register(new APICallback()); 
-        if(plugin == null)
-            plugin = proxy.startServer(server);
         plugin.serverStarted();
     }
 

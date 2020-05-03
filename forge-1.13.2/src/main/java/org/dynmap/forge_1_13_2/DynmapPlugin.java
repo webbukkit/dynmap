@@ -32,7 +32,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -120,7 +119,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.state.IProperty;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -448,24 +451,20 @@ public class DynmapPlugin
     	return (server.isSinglePlayer() && player.equalsIgnoreCase(server.getServerOwner()));
     }
     
-    private boolean hasPerm(ICommandSource sender, String permission) {
+    private boolean hasPerm(EntityPlayer psender, String permission) {  
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if(ph != null) {
-            if((sender instanceof EntityPlayer) && ph.hasPermission(((EntityPlayer)sender).getEntity().getName().getString(), permission)) {
-                return true;
-            }
+        if((psender != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
+            return true;
         }
-        return permissions.has(sender, permission);
+        return permissions.has(psender, permission);
     }
     
-    private boolean hasPermNode(ICommandSource sender, String permission) {
+    private boolean hasPermNode(EntityPlayer psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if(ph != null) {
-            if((sender instanceof EntityPlayer) && ph.hasPermissionNode(((EntityPlayer)sender).getEntity().getName().getString(), permission)) {
-                return true;
-            }
+        if((psender != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
+            return true;
         }
-        return permissions.hasPermissionNode(sender, permission);
+        return permissions.hasPermissionNode(psender, permission);
     } 
 
     private Set<String> hasOfflinePermissions(String player, Set<String> perms) {
@@ -1309,13 +1308,13 @@ public class DynmapPlugin
     /* Handler for generic console command sender */
     public class ForgeCommandSender implements DynmapCommandSender
     {
-        private ICommandSource sender;
+        private CommandSource sender;
 
         protected ForgeCommandSender() {
         	sender = null;
         }
 
-        public ForgeCommandSender(ICommandSource send)
+        public ForgeCommandSender(CommandSource send)
         {
             sender = send;
         }
@@ -1331,7 +1330,7 @@ public class DynmapPlugin
         {
         	if(sender != null) {
                 ITextComponent ichatcomponent = new TextComponentString(msg);
-        	    sender.sendMessage(ichatcomponent);
+                sender.sendFeedback(ichatcomponent, false);
         	}
         }
 
@@ -1435,6 +1434,31 @@ public class DynmapPlugin
         DynmapCommonAPIListener.apiInitialized(core);
     }
     
+    private static int test(CommandSource source) throws CommandSyntaxException
+	{
+        System.out.println(source.toString());
+		return 1;
+    }
+    
+    private DynmapCommand dynmapCmd;
+    private DmapCommand dmapCmd;
+    private DmarkerCommand dmarkerCmd;
+    private DynmapExpCommand dynmapexpCmd;
+
+    public void onStarting(CommandDispatcher<CommandSource> cd) {
+        /* Register command hander */
+        dynmapCmd = new DynmapCommand(this);
+        dmapCmd = new DmapCommand(this);
+        dmarkerCmd = new DmarkerCommand(this);
+        dynmapexpCmd = new DynmapExpCommand(this);
+        dynmapCmd.register(cd);
+        dmapCmd.register(cd);
+        dmarkerCmd.register(cd);
+        dynmapexpCmd.register(cd);
+
+        Log.info("Register commands");
+    }
+    
     public void onStart() {
     	initializeBlockStates();
         /* Enable core */
@@ -1487,14 +1511,6 @@ public class DynmapPlugin
         /* Register our update trigger events */
         registerEvents();
         Log.info("Register events");
-        /* Register command hander */
-        Commands cm = server.getCommandManager();
-        cm.getDispatcher().register(new DynmapCommand(this));
-        cm.getDispatcher().register(new DmapCommand(this));
-        cm.getDispatcher().register(new DmarkerCommand(this));
-        cm.getDispatcher().register(new DynmapExpCommand(this));
-
-        Log.info("Register commands");
         
         /* Submit metrics to mcstats.org */
         initMetrics();
@@ -1531,13 +1547,19 @@ public class DynmapPlugin
         Log.info("Disabled");
     }
 
-    void onCommand(ICommandSource sender, String cmd, String[] args)
+    void onCommand(CommandSource sender, String cmd, String[] args)
     {
         DynmapCommandSender dsender;
+        EntityPlayer psender;
+        try {
+            psender = sender.asPlayer();
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException x) {
+            psender = null;
+        }
 
-        if (sender instanceof EntityPlayer)
+        if (psender != null)
         {
-            dsender = getOrAddPlayer((EntityPlayer)sender);
+            dsender = new ForgePlayer(psender);
         }
         else
         {
@@ -2017,29 +2039,39 @@ public class DynmapPlugin
             core.serverStarted();
         }
     }
+    public MinecraftServer getMCServer() {
+        return server;
+    }
 }
 
-class DynmapCommandHandler extends LiteralArgumentBuilder<CommandSource>
+class DynmapCommandHandler
 {
     private String cmd;
     private DynmapPlugin plugin;
 
     public DynmapCommandHandler(String cmd, DynmapPlugin p)
     {
-    	super(cmd);
         this.cmd = cmd;
         this.plugin = p;
     }
 
-//    @Override
-    public void execute(MinecraftServer server, ICommandSource sender,
-            String[] args) throws CommandException {
-        Log.info("execute " + cmd + " args=" + args.toString());
-        plugin.onCommand(sender, cmd, args);
+    public void register(CommandDispatcher<CommandSource> cd) {
+        cd.register(Commands.literal(cmd).
+            then(RequiredArgumentBuilder.<CommandSource, String> argument("args", StringArgumentType.greedyString()).
+            executes((ctx) -> this.execute(plugin.getMCServer(), ctx.getSource(), ctx.getInput()))).
+            executes((ctx) -> this.execute(plugin.getMCServer(), ctx.getSource(), ctx.getInput())));
     }
 
 //    @Override
-    public String getUsage(ICommandSource arg0) {
+    public int execute(MinecraftServer server, CommandSource sender,
+            String cmdline) throws CommandException {
+        String[] args = cmdline.split("\\s+");
+        plugin.onCommand(sender, cmd, Arrays.copyOfRange(args, 1, args.length));
+        return 1;
+    }
+
+//    @Override
+    public String getUsage(CommandSource arg0) {
         return "Run /" + cmd + " help for details on using command";
     }
 }

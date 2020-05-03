@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.dynmap.ConfigurationNode;
@@ -85,17 +84,17 @@ public class FilePermissions implements PermissionProvider {
     }
 
     @Override
-    public boolean has(ICommandSource sender, String permission) {
-        if(sender instanceof EntityPlayer) {
-        	String n = ((EntityPlayer) sender).getName().getString().toLowerCase();
+    public boolean has(EntityPlayer psender, String permission) {
+        if(psender != null) {
+        	String n = psender.getName().getString().toLowerCase();
             return hasPerm(n, permission);
         }
         return true;
     }
     @Override
-    public boolean hasPermissionNode(ICommandSource sender, String permission) {
-        if(sender instanceof EntityPlayer) {
-            String player = ((EntityPlayer) sender).getName().getString().toLowerCase();
+    public boolean hasPermissionNode(EntityPlayer psender, String permission) {
+        if(psender != null) {
+            String player = psender.getName().getString().toLowerCase();
             return DynmapPlugin.plugin.isOp(player);
         }
         return false;
