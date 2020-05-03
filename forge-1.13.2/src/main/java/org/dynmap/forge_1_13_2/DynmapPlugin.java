@@ -51,6 +51,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockReader;
@@ -72,6 +74,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensio
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -258,10 +262,10 @@ public class DynmapPlugin
     public static final Biome[] getBiomeList() {
         if (biomelist == null) {
         	biomelist = new Biome[256];
-        	Iterator<Biome> iter = Biome.MUTATION_TO_BASE_ID_MAP.iterator();
+        	Iterator<Biome> iter = ForgeRegistries.BIOMES.iterator();
         	while (iter.hasNext()) {
-        		Biome b = iter.next();
-        		int bidx = Biome.MUTATION_TO_BASE_ID_MAP.get(b);
+                Biome b = iter.next();
+                int bidx = RegistryNamespaced.BIOME.getId(b);
         		if (bidx >= biomelist.length) {
         			biomelist = Arrays.copyOf(biomelist, bidx + biomelist.length);
         		}
@@ -1361,15 +1365,22 @@ public class DynmapPlugin
             if(bb != null) {
                 String id = bb.getRegistryName().getPath();
                 float tmp = bb.getDefaultTemperature(), hum = bb.getDownfall();
+                int watermult = bb.getWaterColor();
+                Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
+
                 BiomeMap bmap = BiomeMap.byBiomeID(i);
                 if (bmap.isDefault()) {
-                    BiomeMap m = new BiomeMap(i, id, tmp, hum);
-                    Log.verboseinfo("Add custom biome [" + m.toString() + "] (" + i + ")");
+                    bmap = new BiomeMap(i, id, tmp, hum);
+                    Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
                 }
                 else {
                     bmap.setTemperature(tmp);
                     bmap.setRainfall(hum);
+                }
+                if (watermult != -1) {
+                    bmap.setWaterColorMultiplier(watermult);
+                	Log.verboseinfo("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
                 }
             }
         }

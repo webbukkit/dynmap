@@ -552,8 +552,9 @@ public class DynmapCore implements DynmapCommonAPI {
         
         /* Print version info */
         Log.info("version " + plugin_ver + " is enabled - core version " + version );
-        Log.info("For support, visit https://forums.dynmap.us");
+        Log.info("For support, visit https://reddit.com/r/Dynmap");
         Log.info("To report or track bugs, visit https://github.com/webbukkit/dynmap/issues");
+        Log.info("If you'd like to donate, please visit https://www.patreon.com/dynmap or https://ko-fi.com/michaelprimm");
 
         events.<Object>trigger("initialized", null);
                 

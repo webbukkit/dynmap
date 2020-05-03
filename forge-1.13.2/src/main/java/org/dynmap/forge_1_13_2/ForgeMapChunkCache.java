@@ -927,7 +927,7 @@ public class ForgeMapChunkCache extends MapChunkCache
     	        Class<?>[] p = m.getParameterTypes();
     	        if ((p.length == 3) && (p[0].equals(Chunk.class)) && (p[1].equals(World.class)) && (p[2].equals(NBTTagCompound.class))) {
     	            writechunktonbt = m;
-                    //Log.info("Found writechunktonbt- " + m.getName());
+                    Log.info("Found writechunktonbt- " + m.getName());
     	            m.setAccessible(true);
     	            break;
     	        }
@@ -1059,6 +1059,7 @@ public class ForgeMapChunkCache extends MapChunkCache
             NBTTagCompound rslt = null;
             ChunkPos coord = new ChunkPos(x, z);
 
+            //}
             // if (pendingcoords.contains(coord.asLong()) {
             //     for (Object o : chunkstoremove.values()) {
             //         if (chunkCoord == null) {
@@ -1095,8 +1096,14 @@ public class ForgeMapChunkCache extends MapChunkCache
                 }
                 rslt = CompressedStreamTools.read(str);
             }
-            if(rslt != null) 
+            if(rslt != null) {
                 rslt = rslt.getCompound("Level");
+                // Don't load uncooked chunks
+                String stat = rslt.getString("Status");
+                if ((stat == null) || (stat.equals("full") == false)) {
+                    rslt = null;
+                }
+            }
             //Log.info(String.format("loadChunk(%d,%d)=%s", x, z, (rslt != null) ? rslt.toString() : "null"));
             return rslt;
         } catch (Exception exc) {
