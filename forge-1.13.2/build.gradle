@@ -25,8 +25,8 @@ targetCompatibility = 1.8
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
 minecraft {
-   mappings channel: 'stable', version: '47-1.13.2'
-   runs {
+    mappings channel: 'stable', version: '47-1.13.2'
+    runs {
         server {
             workingDirectory project.file('run').canonicalPath
         }
@@ -44,12 +44,15 @@ processResources
         include 'META-INF/mods.toml'
                 
         // replace version and mcversion
-        expand version: project.version + '-' + project.ext.buildNumber
+        expand(
+        	version: project.version + '-' + project.ext.buildNumber,
+        	mcversion: "1.13.2"
+    	)
     }
         
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
+        exclude 'META-INF/mods.toml'
     }
 }
 

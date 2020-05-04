@@ -5,12 +5,7 @@ issueTrackerURL="https://github.com/webbukkit/dynmap/issues"
 modId="dynmap"
 version="${version}"
 displayName="Dynmap"
-#updateJSONURL="http://myurl.me/" #optional
-#displayURL="http://example.com/" #optional
-#logoFile="examplemod.png" #optional
-#credits="Thanks for this example mod goes to Java" #optional
 authors="mikeprimm"
-# The description text for the mod (multi line!) (#mandatory)
 description='''
 Dynamic, Google-maps style rendered maps for your Minecraft server
 '''

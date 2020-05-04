@@ -31,6 +31,7 @@ public class DynmapMod
     
     public static DynmapPlugin plugin;
     public static File jarfile;
+    public static String ver;
     public static boolean useforcedchunks;
 
     public class APICallback extends DynmapCommonAPIListener {
@@ -73,6 +74,9 @@ public class DynmapMod
     {
     	//TOOO
         jarfile = ModList.get().getModFileById("dynmap").getFile().getFilePath().toFile();
+
+        ver = ModList.get().getModContainerById("dynmap").get().getModInfo().getVersion().toString();
+
         //// Load configuration file - use suggested (config/WesterosBlocks.cfg)
         //Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
         //try {
