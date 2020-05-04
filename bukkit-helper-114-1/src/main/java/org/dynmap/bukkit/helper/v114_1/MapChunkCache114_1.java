@@ -21,6 +21,7 @@ import org.dynmap.utils.VisibilityLimit;
 import net.minecraft.server.v1_14_R1.Chunk;
 import net.minecraft.server.v1_14_R1.ChunkCoordIntPair;
 import net.minecraft.server.v1_14_R1.ChunkRegionLoader;
+import net.minecraft.server.v1_14_R1.ChunkStatus;
 import net.minecraft.server.v1_14_R1.DataBits;
 import net.minecraft.server.v1_14_R1.NBTTagCompound;
 import net.minecraft.server.v1_14_R1.NBTTagList;
@@ -301,7 +302,8 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
             nbt = nbt.getCompound("Level");
             if (nbt != null) {
                 String stat = nbt.getString("Status");
-                if ((stat == null) || (stat.equals("full") == false)) {
+				ChunkStatus cs = ChunkStatus.a(stat);
+                if ((stat == null) || (!cs.b(ChunkStatus.LIGHT))) {
                     nbt = null;
                 }
             }
