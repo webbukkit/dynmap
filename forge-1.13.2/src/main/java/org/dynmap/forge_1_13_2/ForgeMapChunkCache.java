@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.chunk.storage.IChunkLoader;
@@ -1100,7 +1101,10 @@ public class ForgeMapChunkCache extends MapChunkCache
                 rslt = rslt.getCompound("Level");
                 // Don't load uncooked chunks
                 String stat = rslt.getString("Status");
-                if ((stat == null) || (stat.equals("full") == false)) {
+                ChunkStatus cs = ChunkStatus.getByName(stat);
+                if ((stat == null) || 
+                    // Needs to be at least lighted
+                    (!cs.isAtLeast(ChunkStatus.LIGHTED))) {
                     rslt = null;
                 }
             }
