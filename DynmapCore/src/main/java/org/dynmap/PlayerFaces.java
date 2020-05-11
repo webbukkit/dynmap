@@ -127,7 +127,7 @@ public class PlayerFaces {
                 if(fetchskins && (refreshskins || missing_any)) {
                 	URL url = null;
                 	if (skinurl.equals("") == false) {
-                		url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8").replace("%UUID%", playeruuid)));
+                		url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8").replace("%uuid%", playeruuid)));
                 	}
                 	else if (playerskinurl != null) {
                 		url = new URL(playerskinurl);
