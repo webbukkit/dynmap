@@ -108,6 +108,7 @@ public class PlayerFaces {
     private class LoadPlayerImages implements Runnable {
         public final String playername;
         public final String playerskinurl;
+        public final String playeruuid;
         public LoadPlayerImages(String playername, String playerskinurl, UUID playeruuid) {
             this.playername = playername;
             this.playerskinurl = playerskinurl;
