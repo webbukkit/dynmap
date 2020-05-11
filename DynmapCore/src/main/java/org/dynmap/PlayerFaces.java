@@ -111,6 +111,7 @@ public class PlayerFaces {
         public LoadPlayerImages(String playername, String playerskinurl, UUID playeruuid) {
             this.playername = playername;
             this.playerskinurl = playerskinurl;
+            this.playeruuid = playeruuid;
         }
         public void run() {
             boolean has_8x8 = storage.hasPlayerFaceImage(playername, FaceType.FACE_8X8);
@@ -125,7 +126,7 @@ public class PlayerFaces {
                 if(fetchskins && (refreshskins || missing_any)) {
                 	URL url = null;
                 	if (skinurl.equals("") == false) {
-                		url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8")));
+                		url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8").replace("%UUID%", playeruuid)));
                 	}
                 	else if (playerskinurl != null) {
                 		url = new URL(playerskinurl);
