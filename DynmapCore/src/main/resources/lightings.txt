@@ -122,4 +122,12 @@ lightings:
       color6: '#FFCC99'
       color7: '#FFFF00'      
       night-and-day: true
+    # Shadows enabled day mode - grayscale parchment, brown ink
+    - class: org.dynmap.hdmap.ShadowHDLighting
+      name: parchmentbrownink
+      shadowstrength: 1.0
+      grayscale: true
+      graytone: '#C09A53'
+      graytonedark: '#400000'
+      smooth-lighting: true
       

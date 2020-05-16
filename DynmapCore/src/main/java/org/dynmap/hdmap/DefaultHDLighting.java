@@ -12,20 +12,22 @@ public class DefaultHDLighting implements HDLighting {
     private String name;
     protected boolean grayscale;
     protected final Color graytone;
+    protected final Color graytonedark;
 
     public DefaultHDLighting(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         grayscale = configuration.getBoolean("grayscale", false);
         graytone = configuration.getColor("graytone", null);
+        graytonedark = configuration.getColor("graytonedark", "#000000");
     }
     
     protected void checkGrayscale(Color[] outcolor) {
         if (grayscale) {
             outcolor[0].setGrayscale();
-            if (graytone != null) outcolor[0].blendColor(graytone);
+            if (graytone != null) outcolor[0].scaleColor(graytonedark,graytone);
             if (outcolor.length > 1) {
                 outcolor[1].setGrayscale();
-                if (graytone != null) outcolor[1].blendColor(graytone);
+                if (graytone != null) outcolor[1].scaleColor(graytonedark, graytone);
             }
         }
     }
