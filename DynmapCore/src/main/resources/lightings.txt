@@ -143,7 +143,7 @@ lightings:
     - class: org.dynmap.hdmap.DefaultHDLighting
       name: parchmentbw
       blackandwhite: true
-      blackthreshold: 64
+      blackthreshold: 80
       graytone: '#C09A53'
       graytonedark: '#400000'
       
