@@ -139,4 +139,11 @@ lightings:
       graytone: '#C09A53'
       graytonedark: '#400000'
       smooth-lighting: true
+    # Shadows disabled - black and white parchment, brown ink
+    - class: org.dynmap.hdmap.DefaultHDLighting
+      name: parchmentbw
+      blackandwhite: true
+      blackthreshold: 64
+      graytone: '#C09A53'
+      graytonedark: '#400000'
       
