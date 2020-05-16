@@ -569,19 +569,19 @@ public class DynmapCore implements DynmapCommonAPI {
         //dumpColorMap("misa.txt", "misa.zip");
         //dumpColorMap("sphax.txt", "sphax.zip");
 
-        Log.info("Block Name dump");
-        Log.info("---------------");
-        for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); ) {
-        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
-        	if (bs != null) {
-        		Log.info(String.format("%d,%s,%d", i, bs.blockName, bs.getStateCount()));
-        		i += bs.getStateCount();
-        	}
-        	else {
-        		i++;
-        	}
-        }
-        Log.info("---------------");
+//        Log.info("Block Name dump");
+//        Log.info("---------------");
+//        for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); ) {
+//        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
+//        	if (bs != null) {
+//        		Log.info(String.format("%d,%s,%d", i, bs.blockName, bs.getStateCount()));
+//        		i += bs.getStateCount();
+//        	}
+//        	else {
+//        		i++;
+//        	}
+//        }
+//        Log.info("---------------");
         return true;
     }
     
