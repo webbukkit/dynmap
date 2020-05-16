@@ -18,6 +18,7 @@ public class LightLevelHDLighting extends DefaultHDLighting {
     public LightLevelHDLighting(DynmapCore core, ConfigurationNode configuration) {
         super(core, configuration);
         grayscale = true;   // Force to grayscale
+        blackandwhite = false;
         for (int i = 0; i < 16; i++) {
             lightlevelcolors[i] = configuration.getColor("color" + i, null);
         }

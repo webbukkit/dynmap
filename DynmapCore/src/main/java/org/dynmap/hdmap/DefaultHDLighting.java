@@ -11,24 +11,38 @@ import static org.dynmap.JSONUtils.s;
 public class DefaultHDLighting implements HDLighting {
     private String name;
     protected boolean grayscale;
+    protected boolean blackandwhite;
+    protected int blackthreshold;
     protected final Color graytone;
     protected final Color graytonedark;
 
     public DefaultHDLighting(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         grayscale = configuration.getBoolean("grayscale", false);
-        graytone = configuration.getColor("graytone", null);
+        graytone = configuration.getColor("graytone", "#FFFFFF");
         graytonedark = configuration.getColor("graytonedark", "#000000");
+        blackandwhite = configuration.getBoolean("blackandwhite", false);
+        if (blackandwhite) grayscale = false;
+        blackthreshold = configuration.getInteger("blackthreshold",  0x40);
     }
     
     protected void checkGrayscale(Color[] outcolor) {
         if (grayscale) {
-            outcolor[0].setGrayscale();
-            if (graytone != null) outcolor[0].scaleColor(graytonedark,graytone);
-            if (outcolor.length > 1) {
-                outcolor[1].setGrayscale();
-                if (graytone != null) outcolor[1].scaleColor(graytonedark, graytone);
-            }
+        	for (int i = 0; i < outcolor.length; i++) {
+        		outcolor[i].setGrayscale();
+        		outcolor[i].scaleColor(graytonedark,graytone);
+        	}
+        }
+        else if (blackandwhite) {
+        	for (int i = 0; i < outcolor.length; i++) {
+        		outcolor[i].setGrayscale();
+        		if (outcolor[i].getRed() > blackthreshold) {
+        			outcolor[i].setColor(graytone);
+        		}
+        		else {
+        			outcolor[i].setColor(graytonedark);
+        		}
+        	}        	
         }
     }
 
