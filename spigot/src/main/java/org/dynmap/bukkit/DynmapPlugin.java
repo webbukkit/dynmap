@@ -105,6 +105,7 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
+import skinsrestorer.bukkit.SkinsRestorer;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapCore core;
@@ -896,6 +897,23 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             this.setEnabled(false);
             return;
         }
+
+        /* Skins support via SkinsRestorer */
+        SkinsRestorerSkinUrlProvider skinUrlProvider = null;
+
+        if (core.configuration.getBoolean("skinsrestorer-integration", false)) {
+            SkinsRestorer skinsRestorer = (SkinsRestorer) getServer().getPluginManager().getPlugin("SkinsRestorer");
+
+            if (skinsRestorer == null) {
+                Log.warning("SkinsRestorer integration can't be enabled because SkinsRestorer not installed");
+            } else {
+                skinUrlProvider = new SkinsRestorerSkinUrlProvider(skinsRestorer);
+                Log.info("SkinsRestorer integration enabled");
+            }
+        }
+
+        core.setSkinUrlProvider(skinUrlProvider);
+
         /* See if we need to wait before enabling core */
         if(!readyToEnable()) {
             Listener pl = new Listener() {

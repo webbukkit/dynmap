@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -104,6 +103,7 @@ public class DynmapCore implements DynmapCommonAPI {
     public ComponentManager componentManager = new ComponentManager();
     public DynmapListenerManager listenerManager = new DynmapListenerManager(this);
     public PlayerFaces playerfacemgr;
+    public SkinUrlProvider skinUrlProvider;
     public Events events = new Events();
     public String deftemplatesuffix = "";
     private DynmapMapCommands dmapcmds = new DynmapMapCommands();
@@ -154,6 +154,10 @@ public class DynmapCore implements DynmapCommonAPI {
 
     /* Constructor for core */
     public DynmapCore() {
+    }
+
+    public void setSkinUrlProvider(SkinUrlProvider skinUrlProvider) {
+        this.skinUrlProvider = skinUrlProvider;
     }
     
     /* Cleanup method */

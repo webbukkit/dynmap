@@ -106,12 +106,16 @@ public class PlayerFaces {
     }
     
     private class LoadPlayerImages implements Runnable {
+        private SkinUrlProvider mSkinUrlProvider;
         public final String playername;
         public final String playerskinurl;
-        public LoadPlayerImages(String playername, String playerskinurl, UUID playeruuid) {
+
+        public LoadPlayerImages(String playername, String playerskinurl, UUID playeruuid, SkinUrlProvider skinUrlProvider) {
             this.playername = playername;
             this.playerskinurl = playerskinurl;
+            mSkinUrlProvider = skinUrlProvider;
         }
+
         public void run() {
             boolean has_8x8 = storage.hasPlayerFaceImage(playername, FaceType.FACE_8X8);
             boolean has_16x16 = storage.hasPlayerFaceImage(playername, FaceType.FACE_16X16);
@@ -123,16 +127,20 @@ public class PlayerFaces {
             BufferedImage img = null;
             try {
                 if(fetchskins && (refreshskins || missing_any)) {
-                	URL url = null;
-                	if (skinurl.equals("") == false) {
-                		url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8")));
-                	}
-                	else if (playerskinurl != null) {
-                		url = new URL(playerskinurl);
-                	}
-                	if (url != null) {
-                		img = ImageIO.read(url);    /* Load skin for player */
-                	}
+                    URL url = null;
+
+                    if (mSkinUrlProvider == null) {
+                        if (!skinurl.equals("")) {
+                            url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8")));
+                        } else if (playerskinurl != null) {
+                            url = new URL(playerskinurl);
+                        }
+                    } else {
+                        url = mSkinUrlProvider.getSkinUrl(playername);
+                    }
+
+                    if (url != null)
+                        img = ImageIO.read(url);    /* Load skin for player */
                 }
             } catch (IOException iox) {
                 Debug.debug("Error loading skin for '" + playername + "' - " + iox);
@@ -292,7 +300,7 @@ public class PlayerFaces {
         core.listenerManager.addListener(EventType.PLAYER_JOIN, new PlayerEventListener() {
             @Override
             public void playerEvent(DynmapPlayer p) {
-                Runnable job = new LoadPlayerImages(p.getName(), p.getSkinURL(), p.getUUID());
+                Runnable job = new LoadPlayerImages(p.getName(), p.getSkinURL(), p.getUUID(), core.skinUrlProvider);
                 if(fetchskins)
                     MapManager.scheduleDelayedJob(job, 0);
                 else
