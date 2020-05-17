@@ -162,7 +162,6 @@ public class DynmapPlugin
     private long perTickLimit = (50000000); // 50 ms
     private boolean isMCPC = false;
     private boolean useSaveFolder = true;
-    private Field displayName = null; // MCPC+ display name
 	
     private static final int SIGNPOST_ID = 63;
     private static final int WALLSIGN_ID = 68;
@@ -435,14 +434,7 @@ public class DynmapPlugin
     public DynmapPlugin(MinecraftServer srv)
     {
         plugin = this;
-        this.server = srv;
-        
-        displayName = null;
-        try {
-            displayName = EntityPlayerMP.class.getField("displayName");
-        } catch (SecurityException e) {
-        } catch (NoSuchFieldException e) {
-        }
+        this.server = srv;        
     }
 
     public boolean isOp(String player) {
@@ -1137,8 +1129,10 @@ public class DynmapPlugin
         @Override
         public String getName()
         {
-        	if(player != null)
-        		return player.getEntity().getName().getString();
+        	if(player != null) {
+        		String n = player.getEntity().getName().getString();;
+        		return n;
+        	}
         	else
         		return "[Server]";
         }
@@ -1146,14 +1140,8 @@ public class DynmapPlugin
         public String getDisplayName()
         {
         	if(player != null) {
-        	    if (displayName != null) {
-        	        try {
-                        return (String) displayName.get(player);
-                    } catch (IllegalArgumentException e) {
-                    } catch (IllegalAccessException e) {
-                    }
-        	    }
-        		return player.getDisplayName().getUnformattedComponentText();
+        		String n = player.getDisplayName().getString();
+        		return n;
         	}
         	else
         		return "[Server]";
