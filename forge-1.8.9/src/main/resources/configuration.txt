@@ -257,7 +257,7 @@ block-id-alias:
 
 # Default image format for HDMaps (png, jpg, jpg-q75, jpg-q80, jpg-q85, jpg-q90, jpg-q95, jpg-q100)
 # Has no effect on maps with explicit format settings
-image-format: png
+image-format: jpg-q90
 
 #  use-generated-textures: if true, use generated textures (same as client); false is static water/lava textures
 #  correct-water-lighting: if true, use corrected water lighting (same as client); false is legacy water (darker)
