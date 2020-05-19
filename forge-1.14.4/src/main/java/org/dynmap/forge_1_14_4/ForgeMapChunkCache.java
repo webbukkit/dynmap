@@ -11,30 +11,30 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.nbt.ByteArrayNBT;
+import net.minecraft.nbt.ByteNBT;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.nbt.NBTTagByteArray;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagLong;
-import net.minecraft.nbt.NBTTagShort;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.DoubleNBT;
+import net.minecraft.nbt.FloatNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.IntArrayNBT;
+import net.minecraft.nbt.IntNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.LongNBT;
+import net.minecraft.nbt.ShortNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.chunk.storage.AnvilChunkLoader;
-import net.minecraft.world.chunk.storage.IChunkLoader;
+import net.minecraft.world.chunk.storage.ChunkSerializer;
 import net.minecraft.world.chunk.storage.RegionFileCache;
-import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraft.world.server.ChunkManager;
+import net.minecraft.world.server.ServerChunkProvider;
+import net.minecraft.world.server.ServerWorld;
 
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
@@ -58,20 +58,19 @@ public class ForgeMapChunkCache extends MapChunkCache
 {
     private static boolean init = false;
     private static Field unloadqueue = null;
-    private static Field currentchunkloader = null;
     private static Field updateEntityTick = null;
-    /* AnvilChunkLoader fields */
+    /* ChunkManager fields */
     private static Field chunksToRemove = null; // Map
     //private static Field pendingAnvilChunksCoordinates = null; // Set
-    private static Method writechunktonbt = null; // writeChunkToNBT(Chunk c, World w, NBTTagCompound nbt)
+    private static Method writechunktonbt = null; // writeChunkToNBT(Chunk c, World w, CompoundNBT nbt)
 
-    /* AnvilChunkLoaderPending fields */
+    /* ChunjManager Pending fields */
     private static Field chunkCoord = null;
     private static Field nbtTag = null;
     
     private World w;
     private DynmapWorld dw;
-    private ChunkProviderServer cps;
+    private ServerChunkProvider cps;
     private int nsect;
     private List<DynmapChunk> chunks;
     private ListIterator<DynmapChunk> iterator;
@@ -885,7 +884,7 @@ public class ForgeMapChunkCache extends MapChunkCache
     public static void init() {
     	if (!init)
     	{
-    		Field[] f = ChunkProviderServer.class.getDeclaredFields();
+    		Field[] f = ServerChunkProvider.class.getDeclaredFields();
     		
     		for(int i = 0; i < f.length; i++) {
     			if((unloadqueue == null) && f[i].getType().isAssignableFrom(it.unimi.dsi.fastutil.longs.LongSet.class)) {
@@ -893,14 +892,9 @@ public class ForgeMapChunkCache extends MapChunkCache
     				//Log.info("Found unloadqueue - " + f[i].getName());
     				unloadqueue.setAccessible(true);
     			}
-    			else if((currentchunkloader == null) && f[i].getType().isAssignableFrom(IChunkLoader.class)) {
-    				currentchunkloader = f[i];
-    				//Log.info("Found currentchunkprovider - " + f[i].getName());
-    				currentchunkloader.setAccessible(true);
-    			}
     		}
     		
-    		f = WorldServer.class.getDeclaredFields();
+    		f = ServerWorld.class.getDeclaredFields();
     		for(int i = 0; i < f.length; i++) {
     			if((updateEntityTick == null) && f[i].getType().isAssignableFrom(int.class)) {
     				updateEntityTick = f[i];
@@ -909,7 +903,7 @@ public class ForgeMapChunkCache extends MapChunkCache
     			}
     		}
 
-    		f = AnvilChunkLoader.class.getDeclaredFields();
+    		f = ChunkManager.class.getDeclaredFields();
     		for(int i = 0; i < f.length; i++) {
     		    if((chunksToRemove == null) && (f[i].getType().equals(Map.class))) {
                     chunksToRemove = f[i];
@@ -923,10 +917,10 @@ public class ForgeMapChunkCache extends MapChunkCache
 //    		    }
     		}
     		// Get writeChunkToNBT method
-    	    Method[] ma = AnvilChunkLoader.class.getDeclaredMethods();
+    	    Method[] ma = ChunkManager.class.getDeclaredMethods();
     	    for (Method m : ma) {
     	        Class<?>[] p = m.getParameterTypes();
-    	        if ((p.length == 3) && (p[0].equals(Chunk.class)) && (p[1].equals(World.class)) && (p[2].equals(NBTTagCompound.class))) {
+    	        if ((p.length == 3) && (p[0].equals(Chunk.class)) && (p[1].equals(World.class)) && (p[2].equals(CompoundNBT.class))) {
     	            writechunktonbt = m;
                     Log.info("Found writechunktonbt- " + m.getName());
     	            m.setAccessible(true);
@@ -934,7 +928,7 @@ public class ForgeMapChunkCache extends MapChunkCache
     	        }
     	    }
     		
-            if ((unloadqueue == null) || (currentchunkloader == null) || (writechunktonbt == null))
+            if ((unloadqueue == null) || (writechunktonbt == null))
             {
     			Log.severe("ERROR: cannot find unload queue or chunk provider field - dynmap cannot load chunks");
     		}
@@ -959,12 +953,12 @@ public class ForgeMapChunkCache extends MapChunkCache
         this.dw = dw;
         this.w = dw.getWorld();
         if(dw.isLoaded()) {
-        	/* Check if world's provider is ChunkProviderServer */
-        	IChunkProvider cp = this.w.getChunkProvider();
+        	/* Check if world's provider is ServerChunkProvider */
+        	AbstractChunkProvider cp = this.w.getChunkProvider();
 
-        	if (cp instanceof ChunkProviderServer)
+        	if (cp instanceof ServerChunkProvider)
         	{
-                cps = (ChunkProviderServer)cp;
+                cps = (ServerChunkProvider)cp;
         	}
         	else
         	{
@@ -1040,71 +1034,24 @@ public class ForgeMapChunkCache extends MapChunkCache
 
     private static boolean didError = false;
     
-    public NBTTagCompound readChunk(int x, int z) {
-        if((cps == null) || (!(cps.chunkLoader instanceof AnvilChunkLoader)) ||
-                (((chunksToRemove == null) /*|| (pendingAnvilChunksCoordinates == null) */))) {
-            if (!didError) {
-                Log.severe("**** DYNMAP CANNOT READ CHUNKS (UNSUPPORTED CHUNK LOADER) ****");
-                didError = true;
-            }
-            return null;
-        }
+    public CompoundNBT readChunk(int x, int z) {
         try {
-            AnvilChunkLoader acl = (AnvilChunkLoader)cps.chunkLoader;
-            Map<?,?> chunkstoremove = null;
-            //it.unimi.dsi.fastutil.longs.LongSet pendingcoords;
-            
-            chunkstoremove = (Map<?,?>)chunksToRemove.get(acl);
-            //pendingcoords = (it.unimi.dsi.fastutil.longs.LongSet) pendingAnvilChunksCoordinates.get(acl);
+            ChunkManager acl = cps.chunkManager;
 
-            NBTTagCompound rslt = null;
+            CompoundNBT rslt = null;
             ChunkPos coord = new ChunkPos(x, z);
 
-            //}
-            // if (pendingcoords.contains(coord.asLong()) {
-            //     for (Object o : chunkstoremove.values()) {
-            //         if (chunkCoord == null) {
-            //             Field[] f = o.getClass().getDeclaredFields();
-            //             for(Field ff : f) {
-            //                 if((chunkCoord == null) && (ff.getType().equals(ChunkPos.class))) {
-            //                     chunkCoord = ff;
-            //                     chunkCoord.setAccessible(true);
-            //                 }
-            //                 else if((nbtTag == null) && (ff.getType().equals(NBTTagCompound.class))) {
-            //                     nbtTag = ff;
-            //                     nbtTag.setAccessible(true);
-            //                 }
-            //             }
-            //             if ((chunkCoord == null) || (nbtTag == null)) {
-            //                 Log.severe("Error getting chunkCoord and nbtTag for Forge");
-            //                 return null;
-            //             }
-            //         }
-            //         ChunkPos occ = (ChunkPos)chunkCoord.get(o);
-
-            //         if (occ.equals(coord)) {
-            //             rslt = (NBTTagCompound)nbtTag.get(o);
-            //             break;
-            //         }
-            //     }
-            // }
-
             if (rslt == null) {
-                DataInputStream str = RegionFileCache.getChunkInputStream(acl.chunkSaveLocation, x, z);
-
-                if (str == null) {
-                    return null;
-                }
-                rslt = CompressedStreamTools.read(str);
+            	rslt = acl.readChunk(coord);
             }
             if(rslt != null) {
                 rslt = rslt.getCompound("Level");
                 // Don't load uncooked chunks
                 String stat = rslt.getString("Status");
-                ChunkStatus cs = ChunkStatus.getByName(stat);
+                ChunkStatus cs = ChunkStatus.byName(stat);
                 if ((stat == null) || 
                     // Needs to be at least lighted
-                    (!cs.isAtLeast(ChunkStatus.LIGHTED))) {
+                    (!cs.isAtLeast(ChunkStatus.LIGHT))) {
                     rslt = null;
                 }
             }
@@ -1116,35 +1063,35 @@ public class ForgeMapChunkCache extends MapChunkCache
         }
     }
     
-    private Object getNBTValue(INBTBase v) {
+    private Object getNBTValue(INBT v) {
         Object val = null;
         switch(v.getId()) {
             case 1: // Byte
-                val = Byte.valueOf(((NBTTagByte)v).getByte());
+                val = Byte.valueOf(((ByteNBT)v).getByte());
                 break;
             case 2: // Short
-                val = Short.valueOf(((NBTTagShort)v).getShort());
+                val = Short.valueOf(((ShortNBT)v).getShort());
                 break;
             case 3: // Int
-                val = Integer.valueOf(((NBTTagInt)v).getInt());
+                val = Integer.valueOf(((IntNBT)v).getInt());
                 break;
             case 4: // Long
-                val = Long.valueOf(((NBTTagLong)v).getLong());
+                val = Long.valueOf(((LongNBT)v).getLong());
                 break;
             case 5: // Float
-                val = Float.valueOf(((NBTTagFloat)v).getFloat());
+                val = Float.valueOf(((FloatNBT)v).getFloat());
                 break;
             case 6: // Double
-                val = Double.valueOf(((NBTTagDouble)v).getDouble());
+                val = Double.valueOf(((DoubleNBT)v).getDouble());
                 break;
             case 7: // Byte[]
-                val = ((NBTTagByteArray)v).getByteArray();
+                val = ((ByteArrayNBT)v).getByteArray();
                 break;
             case 8: // String
-                val = ((NBTTagString)v).getString();
+                val = ((StringNBT)v).getString();
                 break;
             case 9: // List
-                NBTTagList tl = (NBTTagList) v;
+                ListNBT tl = (ListNBT) v;
                 ArrayList<Object> vlist = new ArrayList<Object>();
                 int type = tl.getTagType();
                 for (int i = 0; i < tl.size(); i++) {
@@ -1162,7 +1109,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                             vlist.add(sv);
                             break;
                         case 10:
-                            NBTTagCompound tc = tl.getCompound(i);
+                            CompoundNBT tc = tl.getCompound(i);
                             vlist.add(getNBTValue(tc));
                             break;
                         case 11:
@@ -1174,17 +1121,17 @@ public class ForgeMapChunkCache extends MapChunkCache
                 val = vlist;
                 break;
             case 10: // Map
-                NBTTagCompound tc = (NBTTagCompound) v;
+                CompoundNBT tc = (CompoundNBT) v;
                 HashMap<String, Object> vmap = new HashMap<String, Object>();
                 for (Object t : tc.keySet()) {
                     String st = (String) t;
-                    INBTBase tg = tc.get(st);
+                    INBT tg = tc.get(st);
                     vmap.put(st, getNBTValue(tg));
                 }
                 val = vmap;
                 break;
             case 11: // Int[]
-                val = ((NBTTagIntArray)v).getIntArray();
+                val = ((IntArrayNBT)v).getIntArray();
                 break;
         }
         return val;
@@ -1252,16 +1199,16 @@ public class ForgeMapChunkCache extends MapChunkCache
     }
 
     // Prep snapshot and add to cache
-    private SnapshotRec prepChunkSnapshot(DynmapChunk chunk, NBTTagCompound nbt) {
+    private SnapshotRec prepChunkSnapshot(DynmapChunk chunk, CompoundNBT nbt) {
         ChunkSnapshot ss = new ChunkSnapshot(nbt, dw.worldheight);
         DynIntHashMap tileData = new DynIntHashMap();
 
-        NBTTagList tiles = nbt.getList("TileEntities", 10);
-        if(tiles == null) tiles = new NBTTagList();
+        ListNBT tiles = nbt.getList("TileEntities", 10);
+        if(tiles == null) tiles = new ListNBT();
         /* Get tile entity data */
         List<Object> vals = new ArrayList<Object>();
         for(int tid = 0; tid < tiles.size(); tid++) {
-            NBTTagCompound tc = tiles.getCompound(tid);
+            CompoundNBT tc = tiles.getCompound(tid);
             int tx = tc.getInt("x");
             int ty = tc.getInt("y");
             int tz = tc.getInt("z");
@@ -1272,7 +1219,7 @@ public class ForgeMapChunkCache extends MapChunkCache
             if(te_fields != null) {
                 vals.clear();
                 for(String id: te_fields) {
-                    INBTBase v = tc.get(id);  /* Get field */
+                    INBT v = tc.get(id);  /* Get field */
                     if(v != null) {
                         Object val = getNBTValue(v);
                         if(val != null) {
@@ -1325,13 +1272,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                 ChunkSnapshot ss;
                 DynIntHashMap tileData;
                 if (vis) {  // If visible 
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    try {
-                        writechunktonbt.invoke(cps.chunkLoader, cps.getChunk(chunk.x, chunk.z, false, false), w, nbt);
-                    } catch (IllegalAccessException e) {
-                    } catch (IllegalArgumentException e) {
-                    } catch (InvocationTargetException e) {
-                    }                
+                    CompoundNBT nbt = ChunkSerializer.write((ServerWorld)w, cps.getChunk(chunk.x, chunk.z, false));
                     SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
                     ss = ssr.ss;
                     tileData = ssr.tileData;
@@ -1399,7 +1340,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                 endChunkLoad(startTime, ChunkStats.CACHED_SNAPSHOT_HIT);
             }
             else {
-                NBTTagCompound nbt = readChunk(chunk.x, chunk.z);
+                CompoundNBT nbt = readChunk(chunk.x, chunk.z);
                 // If read was good
                 if (nbt != null) {
                     ChunkSnapshot ss;

@@ -33,10 +33,15 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.ServerPlayNetHandler;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.BanList;
+import net.minecraft.server.management.IPBanList;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.ObjectIntIdentityMap;
 import net.minecraft.util.ResourceLocation;
@@ -44,7 +49,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -52,8 +59,14 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.ModList;
@@ -145,7 +158,6 @@ public class DynmapPlugin
     private long perTickLimit = (50000000); // 50 ms
     private boolean isMCPC = false;
     private boolean useSaveFolder = true;
-    private Field displayName = null; // MCPC+ display name
 	
     private static final int SIGNPOST_ID = 63;
     private static final int WALLSIGN_ID = 68;
@@ -178,7 +190,7 @@ public class DynmapPlugin
     	
     	Iterator<BlockState> iter = bsids.iterator();
 		while (iter.hasNext()) {
-			IBlockState bs = iter.next();
+			BlockState bs = iter.next();
 			int idx = bsids.get(bs);
     		if (idx >= stateByID.length) {
     			int plen = stateByID.length;
@@ -248,7 +260,7 @@ public class DynmapPlugin
         	Iterator<Biome> iter = ForgeRegistries.BIOMES.iterator();
         	while (iter.hasNext()) {
                 Biome b = iter.next();
-                int bidx = RegistryNamespaced.BIOME.getId(b);
+                int bidx = Registry.BIOME.getId(b);
         		if (bidx >= biomelist.length) {
         			biomelist = Arrays.copyOf(biomelist, bidx + biomelist.length);
         		}
@@ -257,11 +269,11 @@ public class DynmapPlugin
         }
         return biomelist;
     }
-    public static final NetworkManager getNetworkManager(NetHandlerPlayServer nh) {
+    public static final NetworkManager getNetworkManager(ServerPlayNetHandler nh) {
         return nh.netManager;
     }
     
-    private ForgePlayer getOrAddPlayer(EntityPlayer p) {
+    private ForgePlayer getOrAddPlayer(PlayerEntity p) {
         String name = p.getEntity().getName().getString();
     	ForgePlayer fp = players.get(name);
     	if(fp != null) {
@@ -309,7 +321,7 @@ public class DynmapPlugin
 
     private class ChatMessage {
     	String message;
-    	EntityPlayer sender;
+    	PlayerEntity sender;
     }
     private ConcurrentLinkedQueue<ChatMessage> msgqueue = new ConcurrentLinkedQueue<ChatMessage>();
     
@@ -419,13 +431,6 @@ public class DynmapPlugin
     {
         plugin = this;
         this.server = srv;
-        
-        displayName = null;
-        try {
-            displayName = EntityPlayerMP.class.getField("displayName");
-        } catch (SecurityException e) {
-        } catch (NoSuchFieldException e) {
-        }
     }
 
     public boolean isOp(String player) {
@@ -438,7 +443,7 @@ public class DynmapPlugin
     	return (server.isSinglePlayer() && player.equalsIgnoreCase(server.getServerOwner()));
     }
     
-    private boolean hasPerm(EntityPlayer psender, String permission) {  
+    private boolean hasPerm(PlayerEntity psender, String permission) {  
         PermissionsHandler ph = PermissionsHandler.getHandler();
         if((psender != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
             return true;
@@ -446,7 +451,7 @@ public class DynmapPlugin
         return permissions.has(psender, permission);
     }
     
-    private boolean hasPermNode(EntityPlayer psender, String permission) {
+    private boolean hasPermNode(PlayerEntity psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
         if((psender != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
             return true;
@@ -536,7 +541,7 @@ public class DynmapPlugin
 
             for (int i = 0; i < pcnt; i++)
             {
-                EntityPlayer p = (EntityPlayer)playlist.get(i);
+                PlayerEntity p = (PlayerEntity)playlist.get(i);
                 dplay[i] = getOrAddPlayer(p);
             }
 
@@ -556,7 +561,7 @@ public class DynmapPlugin
 
             for (Object o : players)
             {
-                EntityPlayer p = (EntityPlayer)o;
+                PlayerEntity p = (PlayerEntity)o;
 
                 if (p.getEntity().getName().getString().equalsIgnoreCase(name))
                 {
@@ -569,7 +574,7 @@ public class DynmapPlugin
         @Override
         public Set<String> getIPBans()
         {
-            UserListIPBans bl = server.getPlayerList().getBannedIPs();
+            IPBanList bl = server.getPlayerList().getBannedIPs();
             Set<String> ips = new HashSet<String>();
 
             for (String s : bl.getKeys()) {
@@ -612,7 +617,7 @@ public class DynmapPlugin
         @Override
         public boolean isPlayerBanned(String pid)
         {
-            UserListBans bl = server.getPlayerList().getBannedPlayers();
+            BanList bl = server.getPlayerList().getBannedPlayers();
             return bl.isBanned(getProfileByName(pid));
         }
         
@@ -724,7 +729,7 @@ public class DynmapPlugin
         @Override
         public void broadcastMessage(String msg)
         {
-            ITextComponent component = new TextComponentString(msg);
+            ITextComponent component = new StringTextComponent(msg);
             server.getPlayerList().sendMessage(component);
             Log.info(stripChatColor(msg));
         }
@@ -775,7 +780,7 @@ public class DynmapPlugin
         {
             net.minecraft.server.management.PlayerList scm = server.getPlayerList();
             if (scm == null) return Collections.emptySet();
-            UserListBans bl = scm.getBannedPlayers();
+            BanList bl = scm.getBannedPlayers();
             if (bl == null) return Collections.emptySet();
             if(bl.isBanned(getProfileByName(player))) {
                 return Collections.emptySet();
@@ -794,7 +799,7 @@ public class DynmapPlugin
         {
             net.minecraft.server.management.PlayerList scm = server.getPlayerList();
             if (scm == null) return false;
-            UserListBans bl = scm.getBannedPlayers();
+            BanList bl = scm.getBannedPlayers();
             if (bl == null) return false;
             if(bl.isBanned(getProfileByName(player))) {
                 return false;
@@ -908,7 +913,7 @@ public class DynmapPlugin
 
             while(!blockupdatequeue.isEmpty()) {
                 BlockUpdateRec r = blockupdatequeue.remove();
-                IBlockState bs = r.w.getBlockState(new BlockPos(r.x, r.y, r.z));
+                BlockState bs = r.w.getBlockState(new BlockPos(r.x, r.y, r.z));
                 int idx = Block.BLOCK_STATE_IDS.get(bs);
                 if(!org.dynmap.hdmap.HDBlockModels.isChangeIgnoredBlock(stateByID[idx])) {
                     if(onblockchange_with_id)
@@ -1079,12 +1084,12 @@ public class DynmapPlugin
      */
     public class ForgePlayer extends ForgeCommandSender implements DynmapPlayer
     {
-        private EntityPlayer player;
+        private PlayerEntity player;
         private final String skinurl;
         private final UUID uuid;
 
 
-        public ForgePlayer(EntityPlayer p)
+        public ForgePlayer(PlayerEntity p)
         {
             player = p;
             String url = null;
@@ -1120,8 +1125,10 @@ public class DynmapPlugin
         @Override
         public String getName()
         {
-        	if(player != null)
-        		return player.getEntity().getName().getString();
+        	if(player != null) {
+        		String n = player.getEntity().getName().getString();;
+        		return n;
+        	}
         	else
         		return "[Server]";
         }
@@ -1129,14 +1136,8 @@ public class DynmapPlugin
         public String getDisplayName()
         {
         	if(player != null) {
-        	    if (displayName != null) {
-        	        try {
-                        return (String) displayName.get(player);
-                    } catch (IllegalArgumentException e) {
-                    } catch (IllegalAccessException e) {
-                    }
-        	    }
-        		return player.getDisplayName().getUnformattedComponentText();
+        		String n = player.getDisplayName().getString();
+        		return n;
         	}
         	else
         		return "[Server]";
@@ -1174,8 +1175,8 @@ public class DynmapPlugin
         @Override
         public InetSocketAddress getAddress()
         {
-            if((player != null) && (player instanceof EntityPlayerMP)) {
-            	NetHandlerPlayServer nsh = ((EntityPlayerMP)player).connection;
+            if((player != null) && (player instanceof ServerPlayerEntity)) {
+            	ServerPlayNetHandler nsh = ((ServerPlayerEntity)player).connection;
             	if((nsh != null) && (getNetworkManager(nsh) != null)) {
             		SocketAddress sa = getNetworkManager(nsh).getRemoteAddress();
             		if(sa instanceof InetSocketAddress) {
@@ -1251,7 +1252,7 @@ public class DynmapPlugin
         @Override
         public void sendMessage(String msg)
         {
-            ITextComponent ichatcomponent = new TextComponentString(msg);
+            ITextComponent ichatcomponent = new StringTextComponent(msg);
             player.sendMessage(ichatcomponent);
         }
         @Override
@@ -1316,7 +1317,7 @@ public class DynmapPlugin
         public void sendMessage(String msg)
         {
         	if(sender != null) {
-                ITextComponent ichatcomponent = new TextComponentString(msg);
+                ITextComponent ichatcomponent = new StringTextComponent(msg);
                 sender.sendFeedback(ichatcomponent, false);
         	}
         }
@@ -1484,7 +1485,7 @@ public class DynmapPlugin
         
         /* Initialized the currently loaded worlds */
         if(server.getWorlds() != null) { 
-            for (WorldServer world : server.getWorlds()) {
+            for (ServerWorld world : server.getWorlds()) {
                 ForgeWorld w = this.getWorld(world);
                 /*NOTYET - need rest of forge
                 if(DimensionManager.getWorld(world.provider.getDimensionId()) == null) { // If not loaded
@@ -1544,7 +1545,7 @@ public class DynmapPlugin
     void onCommand(CommandSource sender, String cmd, String[] args)
     {
         DynmapCommandSender dsender;
-        EntityPlayer psender;
+        PlayerEntity psender;
         try {
             psender = sender.asPlayer();
         } catch (com.mojang.brigadier.exceptions.CommandSyntaxException x) {
@@ -1619,7 +1620,7 @@ public class DynmapPlugin
     	public void handleWorldLoad(WorldEvent.Load event) {
 			if(!core_enabled) return;
 			IWorld w = event.getWorld();
-			if(!(w instanceof WorldServer)) return;
+			if(!(w instanceof ServerWorld)) return;
             final ForgeWorld fw = getWorld(w);
             // This event can be called from off server thread, so push processing there
             core.getServer().scheduleServerTask(new Runnable() {
@@ -1633,7 +1634,7 @@ public class DynmapPlugin
     	public void handleWorldUnload(WorldEvent.Unload event) {
 			if(!core_enabled) return;
 			IWorld w = event.getWorld();
-            if(!(w instanceof WorldServer)) return;
+            if(!(w instanceof ServerWorld)) return;
             final ForgeWorld fw = getWorld(w);
             if(fw != null) {
                 // This event can be called from off server thread, so push processing there
@@ -1646,8 +1647,8 @@ public class DynmapPlugin
                 // Set world unloaded (needs to be immediate, since it may be invalid after event)
                 fw.setWorldUnloaded();
                 // Clean up tracker
-                WorldUpdateTracker wut = updateTrackers.remove(fw.getName());
-                if(wut != null) wut.world = null;
+                //WorldUpdateTracker wut = updateTrackers.remove(fw.getName());
+                //if(wut != null) wut.world = null;
             }
         }
         
@@ -1656,7 +1657,7 @@ public class DynmapPlugin
 			if(!core_enabled) return;
 			if(!onchunkgenerate) return;
 			IWorld w = event.getWorld();
-            if(!(w instanceof WorldServer)) return;
+            if(!(w instanceof ServerWorld)) return;
 			IChunk c = event.getChunk();
 			if((c != null) /*TODO && (!c.isTerrainPopulated())*/) {	// If new chunk?
 				ForgeWorld fw = getWorld(w, false);
@@ -1685,7 +1686,7 @@ public class DynmapPlugin
 			if(!core_enabled) return;
 			if(!onchunkpopulate) return;
 			World w = event.getWorld();
-            if(!(w instanceof WorldServer)) return;
+            if(!(w instanceof ServerWorld)) return;
             Chunk c = w.getChunkFromChunkCoords(event.getChunkX(), event.getChunkZ());
 			int ymin = 0, ymax = 0;
 			if(c != null) {
@@ -1713,82 +1714,83 @@ public class DynmapPlugin
     private boolean onchunkgenerate = false;
     private boolean onblockchange_with_id = false;
     
+
+// TODO: Not in 1.14.4 - need to find equivalent
+//    public class WorldUpdateTracker implements IWorldEventListener {
+//    	String worldid;
+//    	IWorld world;
+//        @Override
+//        public void notifyLightSet(BlockPos pos) {
+//            if(sscache != null)
+//                sscache.invalidateSnapshot(worldid, pos.getX(), pos.getY(), pos.getZ());
+//            if(onlightingchange) {
+//            	mapManager.touch(worldid, pos.getX(), pos.getY(), pos.getZ(), "lightingchange");
+//            }
+//		}
+//		@Override
+//        public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
+//		}
+//        @Override
+//        public void onEntityAdded(Entity entityIn) {
+//        }
+//        @Override
+//        public void onEntityRemoved(Entity entityIn) {
+//        }
+//        @Override
+//        public void sendBlockBreakProgress(int breakerId, BlockPos pos,
+//                int progress) {
+//        }
+//        @Override
+//        public void broadcastSound(int p_180440_1_, BlockPos p_180440_2_,
+//                int p_180440_3_) {
+//        }
+//        @Override
+//        public void playSoundToAllNearExcept(PlayerEntity player,
+//                SoundEvent soundIn, SoundCategory category, double x, double y,
+//                double z, float volume, float pitch) {
+//        }
+//        @Override
+//        public void playRecord(SoundEvent soundIn, BlockPos pos) {
+//        }
+//        @Override
+//        public void playEvent(PlayerEntity arg0, int arg1, BlockPos arg2, int arg3) {
+//        }
+//		@Override
+//		public void notifyBlockUpdate(IBlockReader worldIn, BlockPos pos, BlockState oldState, BlockState newState,
+//				int flags) {
+//            if(sscache != null)
+//                sscache.invalidateSnapshot(worldid, pos.getX(), pos.getY(), pos.getZ());
+//            if(onblockchange) {
+//                BlockUpdateRec r = new BlockUpdateRec();
+//                r.w = world;
+//                r.wid = worldid;
+//                r.x = pos.getX(); r.y = pos.getY(); r.z = pos.getZ();
+//                blockupdatequeue.add(r);
+//            }
+//		}
+//		@Override
+//		public void addParticle(IParticleData particleData, boolean alwaysRender, double x, double y, double z,
+//				double xSpeed, double ySpeed, double zSpeed) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//		@Override
+//		public void addParticle(IParticleData particleData, boolean ignoreRange, boolean minimizeLevel, double x,
+//				double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//    }
     
-    public class WorldUpdateTracker implements IWorldEventListener {
-    	String worldid;
-    	IWorld world;
-        @Override
-        public void notifyLightSet(BlockPos pos) {
-            if(sscache != null)
-                sscache.invalidateSnapshot(worldid, pos.getX(), pos.getY(), pos.getZ());
-            if(onlightingchange) {
-            	mapManager.touch(worldid, pos.getX(), pos.getY(), pos.getZ(), "lightingchange");
-            }
-		}
-		@Override
-        public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
-		}
-        @Override
-        public void onEntityAdded(Entity entityIn) {
-        }
-        @Override
-        public void onEntityRemoved(Entity entityIn) {
-        }
-        @Override
-        public void sendBlockBreakProgress(int breakerId, BlockPos pos,
-                int progress) {
-        }
-        @Override
-        public void broadcastSound(int p_180440_1_, BlockPos p_180440_2_,
-                int p_180440_3_) {
-        }
-        @Override
-        public void playSoundToAllNearExcept(EntityPlayer player,
-                SoundEvent soundIn, SoundCategory category, double x, double y,
-                double z, float volume, float pitch) {
-        }
-        @Override
-        public void playRecord(SoundEvent soundIn, BlockPos pos) {
-        }
-        @Override
-        public void playEvent(EntityPlayer arg0, int arg1, BlockPos arg2, int arg3) {
-        }
-		@Override
-		public void notifyBlockUpdate(IBlockReader worldIn, BlockPos pos, IBlockState oldState, IBlockState newState,
-				int flags) {
-            if(sscache != null)
-                sscache.invalidateSnapshot(worldid, pos.getX(), pos.getY(), pos.getZ());
-            if(onblockchange) {
-                BlockUpdateRec r = new BlockUpdateRec();
-                r.w = world;
-                r.wid = worldid;
-                r.x = pos.getX(); r.y = pos.getY(); r.z = pos.getZ();
-                blockupdatequeue.add(r);
-            }
-		}
-		@Override
-		public void addParticle(IParticleData particleData, boolean alwaysRender, double x, double y, double z,
-				double xSpeed, double ySpeed, double zSpeed) {
-			// TODO Auto-generated method stub
-			
-		}
-		@Override
-		public void addParticle(IParticleData particleData, boolean ignoreRange, boolean minimizeLevel, double x,
-				double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-			// TODO Auto-generated method stub
-			
-		}
-    }
-    
-    private WorldTracker worldTracker = null;
-    private HashMap<String, WorldUpdateTracker> updateTrackers = new HashMap<String, WorldUpdateTracker>();
+//    private WorldTracker worldTracker = null;
+//    private HashMap<String, WorldUpdateTracker> updateTrackers = new HashMap<String, WorldUpdateTracker>();
     
     private void registerEvents()
     {
-    	if(worldTracker == null) {
-    		worldTracker = new WorldTracker();
-    		MinecraftForge.EVENT_BUS.register(worldTracker);
-    	}
+//    	if(worldTracker == null) {
+//    		worldTracker = new WorldTracker();
+//    		MinecraftForge.EVENT_BUS.register(worldTracker);
+//    	}
         // To trigger rendering.
         onblockchange = core.isTrigger("blockupdate");
         onlightingchange = core.isTrigger("lightingupdate");
@@ -1820,11 +1822,11 @@ public class DynmapPlugin
            		if(fw.isLoaded() == false) {
        				fw.setWorldLoaded(w);
        				// Add tracker
-       	    		WorldUpdateTracker wit = new WorldUpdateTracker();
-       	    		wit.worldid = fw.getName();
-       	    		wit.world = w;
-       	    		updateTrackers.put(fw.getName(), wit);
-       	    		w.getWorld().addEventListener(wit);
+//       	    		WorldUpdateTracker wit = new WorldUpdateTracker();
+//       	    		wit.worldid = fw.getName();
+//       	    		wit.world = w;
+//       	    		updateTrackers.put(fw.getName(), wit);
+//      	    		w.getWorld().addEventListener(wit);
            		}
     			return fw;
     		}
@@ -1835,11 +1837,11 @@ public class DynmapPlugin
     		fw = new ForgeWorld(w);
     		worlds.put(fw.getName(), fw);
     		// Add tracker
-    		WorldUpdateTracker wit = new WorldUpdateTracker();
-    		wit.worldid = fw.getName();
-    		wit.world = w;
-    		updateTrackers.put(fw.getName(), wit);
-    		w.getWorld().addEventListener(wit);
+//    		WorldUpdateTracker wit = new WorldUpdateTracker();
+//    		wit.worldid = fw.getName();
+//    		wit.world = w;
+//    		updateTrackers.put(fw.getName(), wit);
+//    		w.getWorld().addEventListener(wit);
     	}
 		last_world = w;
 		last_fworld = fw;

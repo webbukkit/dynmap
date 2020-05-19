@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
@@ -84,7 +84,7 @@ public class FilePermissions implements PermissionProvider {
     }
 
     @Override
-    public boolean has(EntityPlayer psender, String permission) {
+    public boolean has(PlayerEntity psender, String permission) {
         if(psender != null) {
         	String n = psender.getName().getString().toLowerCase();
             return hasPerm(n, permission);
@@ -92,7 +92,7 @@ public class FilePermissions implements PermissionProvider {
         return true;
     }
     @Override
-    public boolean hasPermissionNode(EntityPlayer psender, String permission) {
+    public boolean hasPermissionNode(PlayerEntity psender, String permission) {
         if(psender != null) {
             String player = psender.getName().getString().toLowerCase();
             return DynmapPlugin.plugin.isOp(player);

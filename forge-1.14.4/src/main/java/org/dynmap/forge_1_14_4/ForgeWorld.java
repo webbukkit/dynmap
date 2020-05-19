@@ -10,8 +10,8 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.EndDimension;
 import net.minecraft.world.dimension.NetherDimension;
 import net.minecraft.world.gen.Heightmap.Type;
-import net.minecraft.world.EnumLightType;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
@@ -124,10 +124,9 @@ public class ForgeWorld extends DynmapWorld
     public DynmapLocation getSpawnLocation()
     {
     	if(world != null) {
-    		BlockPos sloc = world.getSpawnPoint();
-    		spawnloc.x = sloc.getX();
-    		spawnloc.y = sloc.getY();
-    		spawnloc.z = sloc.getZ();
+    		spawnloc.x = world.getWorldInfo().getSpawnX();
+    		spawnloc.y = world.getWorldInfo().getSpawnY();
+    		spawnloc.z = world.getWorldInfo().getSpawnZ();
     		spawnloc.world = this.getName();
     	}
         return spawnloc;
@@ -196,7 +195,7 @@ public class ForgeWorld extends DynmapWorld
     public int getHighestBlockYAt(int x, int z)
     {
     	if(world != null) {
-            return world.getWorld().getChunk(x >> 4, z >> 4).getHeightmap(Type.LIGHT_BLOCKING).getHeight(x & 15, z & 15);
+            return world.getWorld().getChunk(x >> 4, z >> 4).func_217303_b(Type.MOTION_BLOCKING).getHeight(x & 15, z & 15);
     	}
     	else
     		return -1;
@@ -212,7 +211,7 @@ public class ForgeWorld extends DynmapWorld
     public int getSkyLightLevel(int x, int y, int z)
     {
     	if(world != null) {
-    	    return world.getLightFor(EnumLightType.SKY, new BlockPos(x, y, z));
+    	    return world.getLightFor(LightType.SKY, new BlockPos(x, y, z));
     	}
     	else
     		return -1;
