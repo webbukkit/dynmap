@@ -212,13 +212,11 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	            			states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
 	            		}
 	            	}
-	            }
-	            if (sec.hasKey("BlockLight")) {
-	            	cursect.emitlight = sec.getByteArray("BlockLight");
-	            }
-	            if (sec.hasKey("SkyLight")) {
-	                cursect.skylight = sec.getByteArray("SkyLight");
-	            }
+				}
+				byte[] emitlight  = sec.getByteArray("BlockLight");
+				cursect.emitlight = (emitlight == null) ? emptyData : emitlight.clone();
+				byte[] skylight = sec.getByteArray("SkyLight");
+				cursect.skylight = (skylight == null) ? fullData : skylight.clone();
 	        }
 	        /* Get biome data */
 	        this.biome = new int[COLUMNS_PER_CHUNK];
