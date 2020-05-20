@@ -59,6 +59,15 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	    {
 	        Arrays.fill(fullData, (byte)0xFF);
 	    }
+	    
+	    private static byte[] dataCopy(byte[] v) {
+	    	if (Arrays.equals(v, emptyData))
+	    		return emptyData;
+	    	else if (Arrays.equals(v, fullData))
+	    		return fullData;
+	    	else
+	    		return v.clone();
+	    }
 
 	    private static class EmptySection implements Section {
 	        @Override
@@ -89,7 +98,7 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	        public StdSection() {
 	            states = new DynmapBlockState[BLOCKS_PER_SECTION];
 	            Arrays.fill(states,  DynmapBlockState.AIR);
-	            skylight = fullData;
+	            skylight = emptyData;
 	            emitlight = emptyData;
 	        }
 	        @Override
@@ -213,10 +222,12 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	            		}
 	            	}
 				}
-				byte[] emitlight  = sec.getByteArray("BlockLight");
-				cursect.emitlight = (emitlight == null) ? emptyData : emitlight.clone();
-				byte[] skylight = sec.getByteArray("SkyLight");
-				cursect.skylight = (skylight == null) ? fullData : skylight.clone();
+	            if (sec.hasKey("BlockLight")) {
+					cursect.emitlight = dataCopy(sec.getByteArray("BlockLight"));
+	            }
+				if (sec.hasKey("SkyLight")) {
+					cursect.skylight = dataCopy(sec.getByteArray("SkyLight"));
+				}
 	        }
 	        /* Get biome data */
 	        this.biome = new int[COLUMNS_PER_CHUNK];
