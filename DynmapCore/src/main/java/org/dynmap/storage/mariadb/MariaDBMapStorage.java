@@ -288,7 +288,7 @@ public class MariaDBMapStorage extends MapStorage {
         tableStandaloneFiles = prefix + "StandaloneFiles";
         tableSchemaVersion = prefix + "SchemaVersion";
         
-        connectionString = "jdbc:mariadb://" + hostname + ":" + port + "/" + database + "?allowReconnect=true";
+        connectionString = "jdbc:mariadb://" + hostname + ":" + port + "/" + database + "?allowReconnect=true&autoReconnect=true";
         Log.info("Opening MariaDB database " + hostname + ":" + port + "/" + database + " as map store");
         try {
             Class.forName("org.mariadb.jdbc.Driver");
