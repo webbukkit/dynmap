@@ -58,7 +58,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.server.ChunkHolder;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
@@ -67,6 +69,8 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimension
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.ModList;
@@ -125,7 +129,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSortedSet;
 import net.minecraft.state.IProperty;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DynmapPlugin
@@ -156,7 +164,6 @@ public class DynmapPlugin
     private long avgticklen;
     // Per tick limit, in nsec
     private long perTickLimit = (50000000); // 50 ms
-    private boolean isMCPC = false;
     private boolean useSaveFolder = true;
 	
     private static final int SIGNPOST_ID = 63;
@@ -174,7 +181,31 @@ public class DynmapPlugin
     ConcurrentLinkedQueue<BlockUpdateRec> blockupdatequeue = new ConcurrentLinkedQueue<BlockUpdateRec>();
 
     public static DynmapBlockState[] stateByID;
-    
+
+    private Map<String, LongOpenHashSet> knownloadedchunks = new HashMap<String, LongOpenHashSet>();
+    private boolean didInitialKnownChunks = false;
+    private void addKnownChunk(ForgeWorld fw, ChunkPos pos) {
+    	LongOpenHashSet cset = knownloadedchunks.get(fw.getName());
+    	if (cset == null) {
+    		cset = new LongOpenHashSet();
+    		knownloadedchunks.put(fw.getName(), cset);
+    	}                    	
+    	cset.add(pos.asLong());
+    }
+    private void removeKnownChunk(ForgeWorld fw, ChunkPos pos) {
+    	LongOpenHashSet cset = knownloadedchunks.get(fw.getName());
+    	if (cset != null) {
+        	cset.remove(pos.asLong());     		
+    	}
+    }
+    private boolean checkIfKnownChunk(ForgeWorld fw, ChunkPos pos) {
+    	LongOpenHashSet cset = knownloadedchunks.get(fw.getName());
+    	if (cset != null) {
+    		return cset.contains(pos.asLong());     		
+    	}
+    	return false;
+    }
+
     /**
      * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
      */
@@ -962,10 +993,8 @@ public class DynmapPlugin
 
                 core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, dp, cm.message);
             }
-            /* Check for idle worlds */
+            // Check for generated chunks
             if((cur_tick % 20) == 0) {
-            	//TODO
-                //doIdleOutOfWorlds();
             }
 		}
 
@@ -1025,22 +1054,26 @@ public class DynmapPlugin
 
         @Override
         public InputStream openResource(String modid, String rname) {
-            if (modid != null) {
-                Optional<? extends ModContainer> mc = ModList.get().getModContainerById(modid);
-                Object mod = (mc.isPresent()) ? mc.get().getMod() : null;
-                if (mod != null) {
-                    InputStream is = mod.getClass().getClassLoader().getResourceAsStream(rname);
-                    if (is != null) {
-                        return is;
-                    }
+        	if (modid == null) modid = "minecraft";
+
+        	Optional<? extends ModContainer> mc = ModList.get().getModContainerById(modid);
+            Object mod = (mc.isPresent()) ? mc.get().getMod() : null;
+            if (mod != null) {
+                ClassLoader cl = mod.getClass().getClassLoader();
+                if (cl == null) cl = ClassLoader.getSystemClassLoader();
+                InputStream is = cl.getResourceAsStream(rname);
+                if (is != null) {
+                    return is;
                 }
             }
             List<ModInfo> mcl = ModList.get().getMods();
             for (ModInfo mci : mcl) {
-                Optional<? extends ModContainer> mc = ModList.get().getModContainerById(mci.getModId());
-                Object mod = (mc.isPresent()) ? mc.get().getMod() : null;
+                mc = ModList.get().getModContainerById(mci.getModId());
+                mod = (mc.isPresent()) ? mc.get().getMod() : null;
                 if (mod == null) continue;
-                InputStream is = mod.getClass().getClassLoader().getResourceAsStream(rname);
+                ClassLoader cl = mod.getClass().getClassLoader();
+                if (cl == null) cl = ClassLoader.getSystemClassLoader();
+                InputStream is = cl.getResourceAsStream(rname);
                 if (is != null) {
                     return is;
                 }
@@ -1393,6 +1426,7 @@ public class DynmapPlugin
         loadExtraBiomes(mcver);
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
+        
         /* Initialize permissions handler */
         permissions = FilePermissions.create();
         if(permissions == null) {
@@ -1507,9 +1541,6 @@ public class DynmapPlugin
         registerEvents();
         Log.info("Register events");
         
-        /* Submit metrics to mcstats.org */
-        initMetrics();
-
         //DynmapCommonAPIListener.apiInitialized(core);
 
         Log.info("Enabled");
@@ -1616,7 +1647,7 @@ public class DynmapPlugin
     }
 
     public class WorldTracker {
-    	@SubscribeEvent
+        @SubscribeEvent(priority=EventPriority.LOWEST)
     	public void handleWorldLoad(WorldEvent.Load event) {
 			if(!core_enabled) return;
 			IWorld w = event.getWorld();
@@ -1630,7 +1661,7 @@ public class DynmapPlugin
             	}
             }, 0);
     	}
-        @SubscribeEvent
+        @SubscribeEvent(priority=EventPriority.LOWEST)
     	public void handleWorldUnload(WorldEvent.Unload event) {
 			if(!core_enabled) return;
 			IWorld w = event.getWorld();
@@ -1652,153 +1683,138 @@ public class DynmapPlugin
             }
         }
         
-        @SubscribeEvent
+        @SubscribeEvent(priority=EventPriority.LOWEST)
     	public void handleChunkLoad(ChunkEvent.Load event) {
-			if(!core_enabled) return;
 			if(!onchunkgenerate) return;
+
 			IWorld w = event.getWorld();
             if(!(w instanceof ServerWorld)) return;
 			IChunk c = event.getChunk();
-			if((c != null) /*TODO && (!c.isTerrainPopulated())*/) {	// If new chunk?
+			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
 				ForgeWorld fw = getWorld(w, false);
-				if(fw == null) {
-					return;
-				}
-				int ymax = 0;
-				ChunkSection[] sections = c.getSections();
-				for(int i = 0; i < sections.length; i++) {
-					if((sections[i] != null) && (sections[i].isEmpty() == false)) {
-						ymax = 16*(i+1);
-					}
-				}
-				ChunkPos cp = c.getPos();
-				int x = cp.x << 4;
-				int z = cp.z << 4;
-				if(ymax > 0) {
-					mapManager.touchVolume(fw.getName(), x, 0, z, x+15, ymax, z+16, "chunkgenerate");
+				if (fw != null) {
+					addKnownChunk(fw, c.getPos());
 				}
 			}
     	}
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+    	public void handleChunkUnload(ChunkEvent.Unload event) {
+			if(!onchunkgenerate) return;
 
-        /*TODO
-        @SubscribeEvent
-    	public void handleChunkPopulate(PopulateChunkEvent.Post event) {
-			if(!core_enabled) return;
-			if(!onchunkpopulate) return;
-			World w = event.getWorld();
+			IWorld w = event.getWorld();
             if(!(w instanceof ServerWorld)) return;
-            Chunk c = w.getChunkFromChunkCoords(event.getChunkX(), event.getChunkZ());
-			int ymin = 0, ymax = 0;
-			if(c != null) {
-                ForgeWorld fw = getWorld(event.getWorld(), false);
-                if (fw == null) return;
+			IChunk c = event.getChunk();
+			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+				ForgeWorld fw = getWorld(w, false);
+				ChunkPos cp = c.getPos();
+				if (fw != null) {
+					if (!checkIfKnownChunk(fw, cp)) {
+        				int ymax = 0;
+        				ChunkSection[] sections = c.getSections();
+        				for(int i = 0; i < sections.length; i++) {
+        					if((sections[i] != null) && (sections[i].isEmpty() == false)) {
+        						ymax = 16*(i+1);
+        					}
+        				}
+        				int x = cp.x << 4;
+        				int z = cp.z << 4;
+        				// If not empty AND not initial scan
+        				if (ymax > 0) {
+            				Log.info("New generated chunk detected at " + cp + " for " + fw.getName());
+        					mapManager.touchVolume(fw.getName(), x, 0, z, x+15, ymax, z+16, "chunkgenerate");
+        				}
+					}
+					removeKnownChunk(fw, cp);
+				}
+			}
+    	}
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+    	public void handleChunkDataSave(ChunkDataEvent.Save event) {
+			if(!onchunkgenerate) return;
 
-                ExtendedBlockStorage[] sections = c.getBlockStorageArray();
-				for(int i = 0; i < sections.length; i++) {
-					if((sections[i] != null) && (sections[i].isEmpty() == false)) {
-						ymax = 16*(i+1);
+			IWorld w = event.getWorld();
+            if(!(w instanceof ServerWorld)) return;
+			IChunk c = event.getChunk();
+			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+				ForgeWorld fw = getWorld(w, false);
+				ChunkPos cp = c.getPos();
+				if (fw != null) {
+					if (!checkIfKnownChunk(fw, cp)) {
+        				int ymax = 0;
+        				ChunkSection[] sections = c.getSections();
+        				for(int i = 0; i < sections.length; i++) {
+        					if((sections[i] != null) && (sections[i].isEmpty() == false)) {
+        						ymax = 16*(i+1);
+        					}
+        				}
+        				int x = cp.x << 4;
+        				int z = cp.z << 4;
+        				// If not empty AND not initial scan
+        				if (ymax > 0) {
+        					mapManager.touchVolume(fw.getName(), x, 0, z, x+15, ymax, z+16, "chunkgenerate");
+        				}						
+						addKnownChunk(fw, cp);
 					}
 				}
-				int x = c.x << 4;
-				int z = c.z << 4;
-				if(ymax > 0)
-					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+16, "chunkpopulate");
 			}
-    	}     
-    	*/   
+    	}
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+        public void handleBlockEvent(BlockEvent event) {
+        	if(!core_enabled) return;
+        	if(!onblockchange) return;
+        	BlockUpdateRec r = new BlockUpdateRec();
+        	r.w = event.getWorld();
+			ForgeWorld fw = getWorld(r.w, false);
+			r.wid = fw.getName();
+			BlockPos p = event.getPos();
+			r.x = p.getX();
+			r.y = p.getY();
+			r.z = p.getZ();
+			blockupdatequeue.add(r);        	
+        }
     }
-    
+    private WorldTracker worldTracker = null;
     private boolean onblockchange = false;
-    private boolean onlightingchange = false;
     private boolean onchunkpopulate = false;
     private boolean onchunkgenerate = false;
     private boolean onblockchange_with_id = false;
     
-
-// TODO: Not in 1.14.4 - need to find equivalent
-//    public class WorldUpdateTracker implements IWorldEventListener {
-//    	String worldid;
-//    	IWorld world;
-//        @Override
-//        public void notifyLightSet(BlockPos pos) {
-//            if(sscache != null)
-//                sscache.invalidateSnapshot(worldid, pos.getX(), pos.getY(), pos.getZ());
-//            if(onlightingchange) {
-//            	mapManager.touch(worldid, pos.getX(), pos.getY(), pos.getZ(), "lightingchange");
-//            }
-//		}
-//		@Override
-//        public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
-//		}
-//        @Override
-//        public void onEntityAdded(Entity entityIn) {
-//        }
-//        @Override
-//        public void onEntityRemoved(Entity entityIn) {
-//        }
-//        @Override
-//        public void sendBlockBreakProgress(int breakerId, BlockPos pos,
-//                int progress) {
-//        }
-//        @Override
-//        public void broadcastSound(int p_180440_1_, BlockPos p_180440_2_,
-//                int p_180440_3_) {
-//        }
-//        @Override
-//        public void playSoundToAllNearExcept(PlayerEntity player,
-//                SoundEvent soundIn, SoundCategory category, double x, double y,
-//                double z, float volume, float pitch) {
-//        }
-//        @Override
-//        public void playRecord(SoundEvent soundIn, BlockPos pos) {
-//        }
-//        @Override
-//        public void playEvent(PlayerEntity arg0, int arg1, BlockPos arg2, int arg3) {
-//        }
-//		@Override
-//		public void notifyBlockUpdate(IBlockReader worldIn, BlockPos pos, BlockState oldState, BlockState newState,
-//				int flags) {
-//            if(sscache != null)
-//                sscache.invalidateSnapshot(worldid, pos.getX(), pos.getY(), pos.getZ());
-//            if(onblockchange) {
-//                BlockUpdateRec r = new BlockUpdateRec();
-//                r.w = world;
-//                r.wid = worldid;
-//                r.x = pos.getX(); r.y = pos.getY(); r.z = pos.getZ();
-//                blockupdatequeue.add(r);
-//            }
-//		}
-//		@Override
-//		public void addParticle(IParticleData particleData, boolean alwaysRender, double x, double y, double z,
-//				double xSpeed, double ySpeed, double zSpeed) {
-//			// TODO Auto-generated method stub
-//			
-//		}
-//		@Override
-//		public void addParticle(IParticleData particleData, boolean ignoreRange, boolean minimizeLevel, double x,
-//				double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-//			// TODO Auto-generated method stub
-//			
-//		}
-//    }
-    
-//    private WorldTracker worldTracker = null;
-//    private HashMap<String, WorldUpdateTracker> updateTrackers = new HashMap<String, WorldUpdateTracker>();
-    
     private void registerEvents()
     {
-//    	if(worldTracker == null) {
-//    		worldTracker = new WorldTracker();
-//    		MinecraftForge.EVENT_BUS.register(worldTracker);
-//    	}
         // To trigger rendering.
         onblockchange = core.isTrigger("blockupdate");
-        onlightingchange = core.isTrigger("lightingupdate");
         onchunkpopulate = core.isTrigger("chunkpopulate");
         onchunkgenerate = core.isTrigger("chunkgenerate");
         onblockchange_with_id = core.isTrigger("blockupdate-with-id");
         if(onblockchange_with_id)
         	onblockchange = true;
+    	if ((worldTracker == null) && (onblockchange || onchunkpopulate || onchunkgenerate)) {
+    		worldTracker = new WorldTracker();
+    		MinecraftForge.EVENT_BUS.register(worldTracker);
+    	}        
+    	// Prime the known full chunks
+        if (onchunkgenerate && (server.getWorlds() != null)) { 
+            for (ServerWorld world : server.getWorlds()) {
+            	ForgeWorld fw = getWorld(world);
+            	if (fw == null) continue;
+            	Long2ObjectLinkedOpenHashMap<ChunkHolder> chunks = world.getChunkProvider().chunkManager.field_219252_f.clone();
+            	for (Entry<Long, ChunkHolder> k : chunks.long2ObjectEntrySet()) {
+            		long key = k.getKey().longValue();
+            		ChunkHolder ch = k.getValue();
+            		IChunk c = null;
+            		try {
+            			c = ch.func_219302_f().getNow(null);
+            		} catch (Exception x) { }
+            		if (c == null) continue;
+            		ChunkStatus cs = c.getStatus();
+            		ChunkPos pos = ch.getPosition();
+            		if (cs == ChunkStatus.FULL) {	// Cooked?
+    					// Add it as known
+        				addKnownChunk(fw, pos);
+            		}
+            	}
+            }
+        }
     }
 
     private ForgeWorld getWorldByName(String name) {
@@ -1821,12 +1837,6 @@ public class DynmapPlugin
 	           	last_fworld = fw;
            		if(fw.isLoaded() == false) {
        				fw.setWorldLoaded(w);
-       				// Add tracker
-//       	    		WorldUpdateTracker wit = new WorldUpdateTracker();
-//       	    		wit.worldid = fw.getName();
-//       	    		wit.world = w;
-//       	    		updateTrackers.put(fw.getName(), wit);
-//      	    		w.getWorld().addEventListener(wit);
            		}
     			return fw;
     		}
@@ -1836,116 +1846,10 @@ public class DynmapPlugin
     		/* Add to list if not found */
     		fw = new ForgeWorld(w);
     		worlds.put(fw.getName(), fw);
-    		// Add tracker
-//    		WorldUpdateTracker wit = new WorldUpdateTracker();
-//    		wit.worldid = fw.getName();
-//    		wit.world = w;
-//    		updateTrackers.put(fw.getName(), wit);
-//    		w.getWorld().addEventListener(wit);
     	}
 		last_world = w;
 		last_fworld = fw;
     	return fw;
-    }
-
-    /*
-    private void removeWorld(ForgeWorld fw) {
-    	WorldUpdateTracker wit = updateTrackers.remove(fw.getName());
-    	if(wit != null) {
-    		//fw.getWorld().removeWorldAccess(wit);
-    	}
-    	worlds.remove(fw.getName());
-    	if(last_fworld == fw) {
-			last_world = null;
-			last_fworld = null;
-    	}
-    }
-    */
-
-    private void initMetrics() {
-        /*
-        try {
-        	Mod m = DynmapMod.class.getAnnotation(Mod.class);
-            metrics = new ForgeMetrics(m.name(), m.version());
-            ;
-            ForgeMetrics.Graph features = metrics.createGraph("Features Used");
-            
-            features.addPlotter(new ForgeMetrics.Plotter("Internal Web Server") {
-                @Override
-                public int getValue() {
-                    if (!core.configuration.getBoolean("disable-webserver", false))
-                        return 1;
-                    return 0;
-                }
-            });
-            features.addPlotter(new ForgeMetrics.Plotter("Login Security") {
-                @Override
-                public int getValue() {
-                    if(core.configuration.getBoolean("login-enabled", false))
-                        return 1;
-                    return 0;
-                }
-            });
-            features.addPlotter(new ForgeMetrics.Plotter("Player Info Protected") {
-                @Override
-                public int getValue() {
-                    if(core.player_info_protected)
-                        return 1;
-                    return 0;
-                }
-            });
-            
-            ForgeMetrics.Graph maps = metrics.createGraph("Map Data");
-            maps.addPlotter(new ForgeMetrics.Plotter("Worlds") {
-                @Override
-                public int getValue() {
-                    if(core.mapManager != null)
-                        return core.mapManager.getWorlds().size();
-                    return 0;
-                }
-            });
-            maps.addPlotter(new ForgeMetrics.Plotter("Maps") {
-                @Override
-                public int getValue() {
-                    int cnt = 0;
-                    if(core.mapManager != null) {
-                        for(DynmapWorld w :core.mapManager.getWorlds()) {
-                            cnt += w.maps.size();
-                        }
-                    }
-                    return cnt;
-                }
-            });
-            maps.addPlotter(new ForgeMetrics.Plotter("HD Maps") {
-                @Override
-                public int getValue() {
-                    int cnt = 0;
-                    if(core.mapManager != null) {
-                        for(DynmapWorld w :core.mapManager.getWorlds()) {
-                            for(MapType mt : w.maps) {
-                                if(mt instanceof HDMap) {
-                                    cnt++;
-                                }
-                            }
-                        }
-                    }
-                    return cnt;
-                }
-            });
-            for (String mod : modsused) {
-                features.addPlotter(new ForgeMetrics.Plotter(mod + " Blocks") {
-                    @Override
-                    public int getValue() {
-                        return 1;
-                    }
-                });
-            }
-            
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
-        }
-        */
     }
 
     private void saveWorlds() {
@@ -1963,23 +1867,16 @@ public class DynmapPlugin
             lst.add(vals);
         }
         cn.put("worlds", lst);
-        cn.put("isMCPC", isMCPC);
         cn.put("useSaveFolderAsName", useSaveFolder);
         cn.put("maxWorldHeight", ForgeWorld.getMaxWorldHeight());
 
         cn.save();
     }
     private void loadWorlds() {
-        isMCPC = server.getServerModName().contains("mcpc");
         File f = new File(core.getDataFolder(), "forgeworlds.yml");
         if(f.canRead() == false) {
             useSaveFolder = true;
-            if (isMCPC) {
-                ForgeWorld.setMCPCMapping();
-            }
-            else {
-                ForgeWorld.setSaveFolderMapping();
-            }
+            ForgeWorld.setSaveFolderMapping();
             return;
         }
         ConfigurationNode cn = new ConfigurationNode(f);
@@ -1987,21 +1884,12 @@ public class DynmapPlugin
         // If defined, use maxWorldHeight
         ForgeWorld.setMaxWorldHeight(cn.getInteger("maxWorldHeight", 256));
         
-        // If existing, only switch to save folder if MCPC+
-        useSaveFolder = isMCPC;
         // If setting defined, use it 
         if (cn.containsKey("useSaveFolderAsName")) {
             useSaveFolder = cn.getBoolean("useSaveFolderAsName", useSaveFolder);
         }
-        if (isMCPC) {
-            ForgeWorld.setMCPCMapping();
-        }
-        else if (useSaveFolder) {
+    	if (useSaveFolder) {
             ForgeWorld.setSaveFolderMapping();
-        }
-        // If inconsistent between MCPC and non-MCPC
-        if (isMCPC != cn.getBoolean("isMCPC", false)) {
-            return;
         }
         List<Map<String,Object>> lst = cn.getMapList("worlds");
         if(lst == null) {

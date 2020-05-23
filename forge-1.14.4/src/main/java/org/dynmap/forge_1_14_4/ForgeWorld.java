@@ -29,13 +29,9 @@ public class ForgeWorld extends DynmapWorld
     private final boolean istheend;
     private final String env;
     private DynmapLocation spawnloc = new DynmapLocation();
-    private static boolean doMCPCMapping = false;
     private static boolean doSaveFolderMapping = false;
     private static int maxWorldHeight = 256;    // Maximum allows world height
     
-    public static void setMCPCMapping() {
-        doMCPCMapping = true;
-    }
     public static void setSaveFolderMapping() {
         doSaveFolderMapping = true;
     }
@@ -48,10 +44,7 @@ public class ForgeWorld extends DynmapWorld
 
     public static String getWorldName(IWorld w) {
         String n;
-        if (doMCPCMapping) {    // MCPC+ mapping
-            n = w.getWorldInfo().getWorldName();
-        }
-        else if (doSaveFolderMapping) { // New vanilla Forge mapping (consistent with MCPC+)
+        if (doSaveFolderMapping) { // New vanilla Forge mapping
             if (w.getDimension().getType() == DimensionType.OVERWORLD) {
                 n = w.getWorldInfo().getWorldName();
             }
@@ -81,9 +74,9 @@ public class ForgeWorld extends DynmapWorld
 
     public ForgeWorld(IWorld w)
     {
-        this(getWorldName(w), w.getWorld().getHeight(), w.getSeaLevel(), w.getDimension() instanceof NetherDimension,
+        this(getWorldName(w), w.getWorld().getHeight(), w.getSeaLevel(), w.getDimension().isNether(),
         		w.getDimension() instanceof EndDimension, 
-        		w.getWorldInfo().getWorldName() + "/" + w.getDimension().getType().toString());
+        		w.getWorldInfo().getWorldName() + "/" + w.getDimension().getType().getRegistryName().toString());
         setWorldLoaded(w);
     }
     public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle)

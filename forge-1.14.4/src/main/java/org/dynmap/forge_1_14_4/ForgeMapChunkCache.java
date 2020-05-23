@@ -57,12 +57,9 @@ import org.dynmap.utils.VisibilityLimit;
 public class ForgeMapChunkCache extends MapChunkCache
 {
     private static boolean init = false;
-    private static Field unloadqueue = null;
     private static Field updateEntityTick = null;
     /* ChunkManager fields */
     private static Field chunksToRemove = null; // Map
-    //private static Field pendingAnvilChunksCoordinates = null; // Set
-    private static Method writechunktonbt = null; // writeChunkToNBT(Chunk c, World w, CompoundNBT nbt)
 
     /* ChunjManager Pending fields */
     private static Field chunkCoord = null;
@@ -87,8 +84,8 @@ public class ForgeMapChunkCache extends MapChunkCache
     private byte[][] sameneighborbiomecnt;
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
-    private it.unimi.dsi.fastutil.longs.LongSet queue = null;
 
+    
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
             BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS
                                               };
@@ -885,15 +882,7 @@ public class ForgeMapChunkCache extends MapChunkCache
     	if (!init)
     	{
     		Field[] f = ServerChunkProvider.class.getDeclaredFields();
-    		
-    		for(int i = 0; i < f.length; i++) {
-    			if((unloadqueue == null) && f[i].getType().isAssignableFrom(it.unimi.dsi.fastutil.longs.LongSet.class)) {
-    	    		unloadqueue = f[i];
-    				//Log.info("Found unloadqueue - " + f[i].getName());
-    				unloadqueue.setAccessible(true);
-    			}
-    		}
-    		
+    		    		
     		f = ServerWorld.class.getDeclaredFields();
     		for(int i = 0; i < f.length; i++) {
     			if((updateEntityTick == null) && f[i].getType().isAssignableFrom(int.class)) {
@@ -915,22 +904,6 @@ public class ForgeMapChunkCache extends MapChunkCache
 //    		        pendingAnvilChunksCoordinates = f[i];
 //    		        pendingAnvilChunksCoordinates.setAccessible(true);
 //    		    }
-    		}
-    		// Get writeChunkToNBT method
-    	    Method[] ma = ChunkManager.class.getDeclaredMethods();
-    	    for (Method m : ma) {
-    	        Class<?>[] p = m.getParameterTypes();
-    	        if ((p.length == 3) && (p[0].equals(Chunk.class)) && (p[1].equals(World.class)) && (p[2].equals(CompoundNBT.class))) {
-    	            writechunktonbt = m;
-                    Log.info("Found writechunktonbt- " + m.getName());
-    	            m.setAccessible(true);
-    	            break;
-    	        }
-    	    }
-    		
-            if ((unloadqueue == null) || (writechunktonbt == null))
-            {
-    			Log.severe("ERROR: cannot find unload queue or chunk provider field - dynmap cannot load chunks");
     		}
 			if (updateEntityTick == null) {
 				Log.severe("ERROR: cannot find updateEntityTick - dynmap cannot drive entity cleanup when no players are active");
@@ -1016,20 +989,6 @@ public class ForgeMapChunkCache extends MapChunkCache
         snaptile = new DynIntHashMap[snapcnt];
         isSectionNotEmpty = new boolean[snapcnt][];
         
-        try
-        {
-            if ((unloadqueue != null) && (cps != null))
-            {
-                queue = (it.unimi.dsi.fastutil.longs.LongSet) unloadqueue.get(cps);
-            }
-        }
-        catch (IllegalArgumentException iax)
-        {
-        }
-        catch (IllegalAccessException e)
-        {
-        }
-
     }
 
     private static boolean didError = false;
@@ -1038,12 +997,8 @@ public class ForgeMapChunkCache extends MapChunkCache
         try {
             ChunkManager acl = cps.chunkManager;
 
-            CompoundNBT rslt = null;
             ChunkPos coord = new ChunkPos(x, z);
-
-            if (rslt == null) {
-            	rslt = acl.readChunk(coord);
-            }
+            CompoundNBT rslt = acl.readChunk(coord);
             if(rslt != null) {
                 rslt = rslt.getCompound("Level");
                 // Don't load uncooked chunks
@@ -1187,17 +1142,6 @@ public class ForgeMapChunkCache extends MapChunkCache
         return (ssr != null);
     }
     
-    private boolean isChunkUnloadPending(DynmapChunk chunk) {
-        boolean isunloadpending = false;
-        
-        if (queue != null)
-        {
-            long coord = ChunkPos.asLong(chunk.x, chunk.z);
-            isunloadpending = queue.contains(coord);
-        }
-        return isunloadpending;
-    }
-
     // Prep snapshot and add to cache
     private SnapshotRec prepChunkSnapshot(DynmapChunk chunk, CompoundNBT nbt) {
         ChunkSnapshot ss = new ChunkSnapshot(nbt, dw.worldheight);
@@ -1268,11 +1212,12 @@ public class ForgeMapChunkCache extends MapChunkCache
                 cnt++;
             }
             // If chunk is loaded and not being unloaded, we're grabbing its NBT data
-            else if (cps.chunkExists(chunk.x, chunk.z) && (!isChunkUnloadPending(chunk))) {
+            else if (cps.chunkExists(chunk.x, chunk.z)) {
                 ChunkSnapshot ss;
                 DynIntHashMap tileData;
                 if (vis) {  // If visible 
                     CompoundNBT nbt = ChunkSerializer.write((ServerWorld)w, cps.getChunk(chunk.x, chunk.z, false));
+                    if (nbt != null) nbt = nbt.getCompound("Level");
                     SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
                     ss = ssr.ss;
                     tileData = ssr.tileData;
