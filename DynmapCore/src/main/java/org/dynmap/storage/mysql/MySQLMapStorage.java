@@ -281,7 +281,7 @@ public class MySQLMapStorage extends MapStorage {
         userid = core.configuration.getString("storage/userid", "dynmap");
         password = core.configuration.getString("storage/password", "dynmap");
         prefix = core.configuration.getString("storage/prefix", "");
-        flags = core.configuration.getString("storage/flags", "?allowReconnect=true");
+        flags = core.configuration.getString("storage/flags", "?allowReconnect=true&autoReconnect=true");
         tableTiles = prefix + "Tiles";
         tableMaps = prefix + "Maps";
         tableFaces = prefix + "Faces";

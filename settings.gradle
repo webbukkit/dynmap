@@ -7,6 +7,7 @@ include ':bukkit-helper'
 include ':dynmap-api'
 include ':DynmapCore'
 include ':DynmapCoreAPI'
+include ':forge-1.15.2'
 include ':forge-1.14.4'
 include ':forge-1.13.2'
 include ':forge-1.12.2'
@@ -23,6 +24,7 @@ project(':bukkit-helper').projectDir = "$rootDir/bukkit-helper" as File
 project(':dynmap-api').projectDir = "$rootDir/dynmap-api" as File
 project(':DynmapCore').projectDir = "$rootDir/DynmapCore" as File
 project(':DynmapCoreAPI').projectDir = "$rootDir/DynmapCoreAPI" as File
+project(':forge-1.15.2').projectDir = "$rootDir/forge-1.15.2" as File
 project(':forge-1.14.4').projectDir = "$rootDir/forge-1.14.4" as File
 project(':forge-1.13.2').projectDir = "$rootDir/forge-1.13.2" as File
 project(':forge-1.12.2').projectDir = "$rootDir/forge-1.12.2" as File
