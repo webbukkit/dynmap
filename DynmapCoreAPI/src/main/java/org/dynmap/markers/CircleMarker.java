@@ -3,7 +3,7 @@ package org.dynmap.markers;
 /**
  * This defines the public interface to a circle marker object, for use with the MarkerAPI
  */
-public interface CircleMarker extends MarkerDescription {
+public interface CircleMarker extends MarkerDescription, EnterExitMarker {
     /**
      * Get center X coordinate
      * @return x coordinate

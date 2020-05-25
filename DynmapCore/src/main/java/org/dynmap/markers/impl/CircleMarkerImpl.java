@@ -8,11 +8,13 @@ import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.markers.CircleMarker;
+import org.dynmap.markers.EnterExitMarker;
 import org.dynmap.markers.MarkerSet;
+import org.dynmap.markers.EnterExitMarker.EnterExitText;
 import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 import org.dynmap.utils.Vector3D;
 
-class CircleMarkerImpl implements CircleMarker {
+class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     private String markerid;
     private String label;
     private boolean markup;
@@ -34,6 +36,8 @@ class CircleMarkerImpl implements CircleMarker {
     private boolean boostflag = false;
     private int minzoom = -1;
     private int maxzoom = -1;
+    private EnterExitText greeting;
+    private EnterExitText farewell;
 
     private static class BoundingBox {
         double xmin, xmax;
@@ -118,6 +122,20 @@ class CircleMarkerImpl implements CircleMarker {
         boostflag = node.getBoolean("boostFlag", false);
         minzoom = node.getInteger("minzoom", -1);
         maxzoom = node.getInteger("maxzoom", -1);
+        String gt = node.getString("greeting", null);
+        String gst = node.getString("greetingsub", null);
+        if ((gt != null) || (gst != null)) {
+        	greeting = new EnterExitText();
+        	greeting.title = gt;
+        	greeting.subtitle = gst;
+        }
+        String ft = node.getString("farewell", null);
+        String fst = node.getString("farewellsub", null);
+        if ((ft != null) || (fst != null)) {
+        	farewell = new EnterExitText();
+        	farewell.title = ft;
+        	farewell.subtitle = fst;
+        }
 
         ispersistent = true;    /* Loaded from config, so must be */
         
@@ -129,6 +147,16 @@ class CircleMarkerImpl implements CircleMarker {
         bb_cache = null;
     }
     
+    @Override
+	public String getUniqueMarkerID() {
+    	if (markerset != null) {
+    		return markerset + ":circle:" + markerid;
+    	}
+    	else {
+    		return null;
+    	}
+    }
+
     @Override
     public String getMarkerID() {
         return markerid;
@@ -202,6 +230,22 @@ class CircleMarkerImpl implements CircleMarker {
         if (maxzoom >= 0) {
             node.put("maxzoom", maxzoom);
         }
+        if (greeting != null) {
+        	if (greeting.title != null) {
+        		node.put("greeting", greeting.title);
+        	}
+        	if (greeting.subtitle != null) {
+        		node.put("greetingsub", greeting.subtitle);
+        	}        	
+        }
+        if (farewell != null) {
+        	if (farewell.title != null) {
+        		node.put("farewell", farewell.title);        		
+        	}
+        	if (farewell.subtitle != null) {
+        		node.put("farewellsub", farewell.subtitle);        		
+        	}
+        }        
         return node;
     }
     @Override
@@ -450,4 +494,55 @@ class CircleMarkerImpl implements CircleMarker {
         if(ispersistent)
             MarkerAPIImpl.saveMarkers();
     }
+	@Override
+	public EnterExitText getGreetingText() {
+		return greeting;
+	}
+	@Override
+	public EnterExitText getFarewellText() {
+		return farewell;
+	}
+	@Override
+	public void setGreetingText(String title, String subtitle) {
+		if ((title != null) || (subtitle != null)) {
+			greeting = new EnterExitText();
+			greeting.title = title;
+			greeting.subtitle = subtitle;
+		}
+		else {
+			greeting = null;
+		}
+        if (markerset != null) {
+            setMarkerSet(markerset);
+        }
+        if(ispersistent)
+            MarkerAPIImpl.saveMarkers();
+	}
+	@Override
+	public void setFarewellText(String title, String subtitle) {
+		if ((title != null) || (subtitle != null)) {
+			farewell = new EnterExitText();
+			farewell.title = title;
+			farewell.subtitle = subtitle;
+		}
+		else {
+			farewell = null;
+		}
+        if (markerset != null) {
+            setMarkerSet(markerset);
+        }
+        if(ispersistent)
+            MarkerAPIImpl.saveMarkers();
+	}
+	@Override
+	public boolean testIfPointWithinMarker(String worldid, double x, double y, double z) {
+		// Wrong world
+		if (!worldid.equals(this.world)) {
+			return false;
+		}
+		// Test if inside ellipse
+		double dx = ((x - this.x) * (x - this.x)) / (xr * xr);
+		double dz = ((z - this.z) * (z - this.z)) / (zr * zr);
+		return (dx + dz) <= 1.0;
+	}
 }

@@ -4,6 +4,10 @@ package org.dynmap.markers;
  * This defines the public interface to a generic marker object, for use with the MarkerAPI
  */
 public interface GenericMarker {
+	/**
+	 * Get unique ID of the marker (markersetid:type:markerid)
+	 */
+	public String getUniqueMarkerID();
     /**
      * Get ID of the marker (unique string within the MarkerSet)
      * @return id of marker

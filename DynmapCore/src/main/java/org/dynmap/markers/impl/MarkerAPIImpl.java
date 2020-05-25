@@ -948,7 +948,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
 
     private static boolean processCircleArgs(DynmapCommandSender sender, CircleMarker marker, Map<String,String> parms) {
-        String val = null;
+        String val = null, val2 = null;
         try {
             int scolor = marker.getLineColor();
             int fcolor = marker.getFillColor();
@@ -964,6 +964,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             boolean boost = marker.getBoostFlag();
             int minzoom = marker.getMinZoom();
             int maxzoom = marker.getMaxZoom();
+            EnterExitText greet = marker.getGreetingText();
+            EnterExitText farew = marker.getFarewellText();
             
             val = parms.get(ARG_STROKECOLOR);
             if(val != null)
@@ -1026,6 +1028,23 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             marker.setBoostFlag(boost);
             marker.setMinZoom(minzoom);
             marker.setMaxZoom(maxzoom);
+            // Handle greeting
+            val = parms.get(ARG_GREETING);
+            val2 = parms.get(ARG_GREETINGSUB);
+            if ((val != null) || (val2 != null)) {
+            	String title = (val != null) ? ((val.length() > 0) ? val : null) : ((greet != null) ? greet.title : null);
+            	String subtitle = (val2 != null) ? ((val2.length() > 0) ? val2 : null) : ((greet != null) ? greet.subtitle : null);
+            	marker.setGreetingText(title, subtitle);
+            }
+            // Handle farewell
+            val = parms.get(ARG_FAREWELL);
+            val2 = parms.get(ARG_FAREWELLSUB);
+            if ((val != null) || (val2 != null)) {
+            	String title = (val != null) ? ((val.length() > 0) ? val : null) : ((farew != null) ? farew.title : null);
+            	String subtitle = (val2 != null) ? ((val2.length() > 0) ? val2 : null) : ((farew != null) ? farew.subtitle : null);
+            	marker.setFarewellText(title, subtitle);
+            }
+            
         } catch (NumberFormatException nfx) {
             sender.sendMessage("Invalid parameter format: " + val);
             return false;
@@ -2625,7 +2644,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             CircleMarker m = sortmarkers.get(s);
             String msg = m.getMarkerID() + ": label:\"" + m.getLabel() + "\", set:" + m.getMarkerSet().getMarkerSetID() + 
                     ", world:" + m.getWorld() + ", center:" + m.getCenterX() + "/" + m.getCenterY() + "/" + m.getCenterZ() +
-                    ", radius:" + m.getRadiusX() + "/" + m.getRadiusZ() +
+                    ", radiusx:" + m.getRadiusX() + ", radiusz:" + m.getRadiusZ() +
                     ", weight: " + m.getLineWeight() + ", color:" + String.format("%06x", m.getLineColor()) +
                     ", opacity: " + m.getLineOpacity() + ", fillcolor: " + String.format("%06x", m.getFillColor()) +
                     ", fillopacity: " + m.getFillOpacity() + ", boost:" + m.getBoostFlag() + ", markup:" + m.isLabelMarkup();
@@ -2635,6 +2654,16 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             if (m.getMaxZoom() >= 0) {
                 msg += ", maxzoom:" + m.getMaxZoom();
             }
+        	EnterExitText t = m.getGreetingText();
+            if (t != null) {
+            	if (t.title != null) msg += ", greeting='" + t.title + "'";
+            	if (t.subtitle != null) msg += ", greetingsub='" + t.subtitle + "'";
+            }
+        	t = m.getFarewellText();
+            if (t != null) {
+            	if (t.title != null) msg += ", farewell='" + t.title + "'";
+            	if (t.subtitle != null) msg += ", farewellsub='" + t.subtitle + "'";
+            }            
             sender.sendMessage(msg);
         }
         return true;

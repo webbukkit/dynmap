@@ -278,7 +278,7 @@ class MarkerSetImpl implements MarkerSet {
         	if (enterexitmarkers == null) {
         		enterexitmarkers = new ConcurrentHashMap<String, EnterExitMarker>();
         	}
-        	enterexitmarkers.put(marker.getMarkerID(),  marker);
+        	enterexitmarkers.put(marker.getUniqueMarkerID(),  marker);
         }
         if(ispersistent && marker.isPersistentMarker()) {   /* If persistent */
             MarkerAPIImpl.saveMarkers();        /* Drive save */
@@ -299,7 +299,7 @@ class MarkerSetImpl implements MarkerSet {
             }
         }
         if (enterexitmarkers != null) {
-        	enterexitmarkers.remove(marker.getMarkerID());
+        	enterexitmarkers.remove(marker.getUniqueMarkerID());
         	if (enterexitmarkers.isEmpty()) {
         		enterexitmarkers = null;
         	}
@@ -346,6 +346,12 @@ class MarkerSetImpl implements MarkerSet {
             }
             boostingcirclemarkers.put(marker.getMarkerID(), marker);
         }
+        if ((marker.getGreetingText() != null) || (marker.getFarewellText() != null)) {
+        	if (enterexitmarkers == null) {
+        		enterexitmarkers = new ConcurrentHashMap<String, EnterExitMarker>();
+        	}
+        	enterexitmarkers.put(marker.getUniqueMarkerID(),  marker);
+        }        
         if(ispersistent && marker.isPersistentMarker()) {   /* If persistent */
             MarkerAPIImpl.saveMarkers();        /* Drive save */
         }
@@ -363,6 +369,12 @@ class MarkerSetImpl implements MarkerSet {
             if (boostingcirclemarkers.isEmpty()) {
                 boostingcirclemarkers = null;
             }
+        }
+        if (enterexitmarkers != null) {
+        	enterexitmarkers.remove(marker.getUniqueMarkerID());
+        	if (enterexitmarkers.isEmpty()) {
+        		enterexitmarkers = null;
+        	}
         }
         if(ispersistent && marker.isPersistentMarker()) {   /* If persistent */
             MarkerAPIImpl.saveMarkers();        /* Drive save */
@@ -468,7 +480,7 @@ class MarkerSetImpl implements MarkerSet {
                     	if (enterexitmarkers == null) {
                     		enterexitmarkers = new ConcurrentHashMap<String, EnterExitMarker>();
                     	}
-                    	enterexitmarkers.put(marker.getMarkerID(),  marker);
+                    	enterexitmarkers.put(marker.getUniqueMarkerID(),  marker);
                     }
                 }
                 else {
@@ -501,6 +513,12 @@ class MarkerSetImpl implements MarkerSet {
                             boostingcirclemarkers = new ConcurrentHashMap<String, CircleMarkerImpl>();
                         }
                         boostingcirclemarkers.put(id,  marker);
+                    }
+                    if ((marker.getGreetingText() != null) || (marker.getFarewellText() != null)) {
+                    	if (enterexitmarkers == null) {
+                    		enterexitmarkers = new ConcurrentHashMap<String, EnterExitMarker>();
+                    	}
+                    	enterexitmarkers.put(marker.getUniqueMarkerID(),  marker);
                     }
                 }
                 else {

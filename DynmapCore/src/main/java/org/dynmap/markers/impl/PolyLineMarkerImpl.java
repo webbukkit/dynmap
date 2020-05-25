@@ -119,6 +119,16 @@ class PolyLineMarkerImpl implements PolyLineMarker {
     }
     
     @Override
+	public String getUniqueMarkerID() {
+    	if (markerset != null) {
+    		return markerset + ":poly:" + markerid;
+    	}
+    	else {
+    		return null;
+    	}
+    }
+
+    @Override
     public String getMarkerID() {
         return markerid;
     }

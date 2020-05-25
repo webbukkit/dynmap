@@ -171,6 +171,16 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     }
     
     @Override
+	public String getUniqueMarkerID() {
+    	if (markerset != null) {
+    		return markerset + ":area:" + markerid;
+    	}
+    	else {
+    		return null;
+    	}
+    }
+
+    @Override
     public String getMarkerID() {
         return markerid;
     }
