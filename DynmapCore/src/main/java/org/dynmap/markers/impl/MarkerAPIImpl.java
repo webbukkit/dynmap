@@ -2243,13 +2243,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
         	EnterExitText t = m.getGreetingText();
             if (t != null) {
-            	if (t.title != null) msg += ", greeting='" + t.title + "'";
-            	if (t.subtitle != null) msg += ", greetingsub='" + t.subtitle + "'";
+            	if (t.title != null) msg += ", greeting:\"" + t.title + "\"";
+            	if (t.subtitle != null) msg += ", greetingsub:\"" + t.subtitle + "\"";
             }
         	t = m.getFarewellText();
             if (t != null) {
-            	if (t.title != null) msg += ", farewell='" + t.title + "'";
-            	if (t.subtitle != null) msg += ", farewellsub='" + t.subtitle + "'";
+            	if (t.title != null) msg += ", farewell:\"" + t.title + "\"";
+            	if (t.subtitle != null) msg += ", farewellsub:\"" + t.subtitle + "\"";
             }
             sender.sendMessage(msg);
         }
@@ -2656,13 +2656,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
         	EnterExitText t = m.getGreetingText();
             if (t != null) {
-            	if (t.title != null) msg += ", greeting='" + t.title + "'";
-            	if (t.subtitle != null) msg += ", greetingsub='" + t.subtitle + "'";
+            	if (t.title != null) msg += ", greeting:\"" + t.title + "\"";
+            	if (t.subtitle != null) msg += ", greetingsub:\"" + t.subtitle + "\"";
             }
         	t = m.getFarewellText();
             if (t != null) {
-            	if (t.title != null) msg += ", farewell='" + t.title + "'";
-            	if (t.subtitle != null) msg += ", farewellsub='" + t.subtitle + "'";
+            	if (t.title != null) msg += ", farewell:\"" + t.title + "\"";
+            	if (t.subtitle != null) msg += ", farewellsub:\"" + t.subtitle + "\"";
             }            
             sender.sendMessage(msg);
         }
