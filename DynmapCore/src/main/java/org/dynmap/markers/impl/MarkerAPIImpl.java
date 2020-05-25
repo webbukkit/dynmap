@@ -37,6 +37,7 @@ import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.CircleMarker;
 import org.dynmap.markers.EnterExitMarker;
+import org.dynmap.markers.EnterExitMarker.EnterExitText;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerDescription;
@@ -828,6 +829,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
 
     private static boolean processAreaArgs(DynmapCommandSender sender, AreaMarker marker, Map<String,String> parms) {
         String val = null;
+        String val2 = null;
         try {
             double ytop = marker.getTopY();
             double ybottom = marker.getBottomY();
@@ -839,6 +841,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             boolean boost = marker.getBoostFlag();
             int minzoom = marker.getMinZoom();
             int maxzoom = marker.getMaxZoom();
+            EnterExitText greet = marker.getGreetingText();
+            EnterExitText farew = marker.getFarewellText();
 
             val = parms.get(ARG_STROKECOLOR);
             if(val != null)
@@ -886,6 +890,22 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             marker.setBoostFlag(boost);
             marker.setMinZoom(minzoom);
             marker.setMaxZoom(maxzoom);
+            // Handle greeting
+            val = parms.get(ARG_GREETING);
+            val2 = parms.get(ARG_GREETINGSUB);
+            if ((val != null) || (val2 != null)) {
+            	String title = (val != null) ? ((val.length() > 0) ? val : null) : ((greet != null) ? greet.title : null);
+            	String subtitle = (val2 != null) ? ((val2.length() > 0) ? val2 : null) : ((greet != null) ? greet.subtitle : null);
+            	marker.setGreetingText(title, subtitle);
+            }
+            // Handle farewell
+            val = parms.get(ARG_FAREWELL);
+            val2 = parms.get(ARG_FAREWELLSUB);
+            if ((val != null) || (val2 != null)) {
+            	String title = (val != null) ? ((val.length() > 0) ? val : null) : ((farew != null) ? farew.title : null);
+            	String subtitle = (val2 != null) ? ((val2.length() > 0) ? val2 : null) : ((farew != null) ? farew.subtitle : null);
+            	marker.setFarewellText(title, subtitle);
+            }
         } catch (NumberFormatException nfx) {
             sender.sendMessage("Invalid parameter format: " + val);
             return false;
@@ -1050,6 +1070,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private static final String ARG_WORLD = "world";
     private static final String ARG_BOOST = "boost";
     private static final String ARG_DESC = "desc";
+    private static final String ARG_GREETING = "greeting";
+    private static final String ARG_GREETINGSUB = "greetingsub";
+    private static final String ARG_FAREWELL = "farewell";
+    private static final String ARG_FAREWELLSUB = "farewellsub";
+    
     
     /* Parse argument strings : handle 'attrib:value' and quoted strings */
     private static Map<String,String> parseArgs(String[] args, DynmapCommandSender snd) {
@@ -2196,6 +2221,16 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             if (m.getMaxZoom() >= 0) {
                 msg += ", maxzoom:" + m.getMaxZoom();
+            }
+        	EnterExitText t = m.getGreetingText();
+            if (t != null) {
+            	if (t.title != null) msg += ", greeting='" + t.title + "'";
+            	if (t.subtitle != null) msg += ", greetingsub='" + t.subtitle + "'";
+            }
+        	t = m.getFarewellText();
+            if (t != null) {
+            	if (t.title != null) msg += ", farewell='" + t.title + "'";
+            	if (t.subtitle != null) msg += ", farewellsub='" + t.subtitle + "'";
             }
             sender.sendMessage(msg);
         }

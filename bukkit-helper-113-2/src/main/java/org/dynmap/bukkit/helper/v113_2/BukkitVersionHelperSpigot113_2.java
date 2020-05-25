@@ -19,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.entity.Player;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
@@ -188,6 +189,12 @@ public class BukkitVersionHelperSpigot113_2 extends BukkitVersionHelperCB {
         	}
         }
         return p;
+    }
+	// Send title/subtitle to user
+    public void sendTitleText(Player p, String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTIcks) {
+    	if (p != null) {
+    		p.sendTitle(title, subtitle, fadeInTicks, stayTicks, fadeOutTIcks);
+    	}
     }
 
 }

@@ -38,6 +38,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.ServerPlayNetHandler;
+import net.minecraft.network.play.server.STitlePacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.BanList;
@@ -1325,6 +1326,26 @@ public class DynmapPlugin
         public UUID getUUID() {
         	return uuid;
         }
+        /**
+         * Send title and subtitle text (called from server thread)
+         */
+        @Override
+        public void sendTitleText(String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks) {
+        	if (player instanceof ServerPlayerEntity) {
+        		ServerPlayerEntity mp = (ServerPlayerEntity) player;
+        		STitlePacket times = new STitlePacket(fadeInTicks, stayTicks, fadeOutTicks);
+        		mp.connection.sendPacket(times);
+                if (title != null) {
+                	STitlePacket titlepkt = new STitlePacket(STitlePacket.Type.TITLE, new StringTextComponent(title));
+            		mp.connection.sendPacket(titlepkt);
+                }
+
+                if (subtitle != null) {
+                	STitlePacket subtitlepkt = new STitlePacket(STitlePacket.Type.SUBTITLE, new StringTextComponent(subtitle));
+            		mp.connection.sendPacket(subtitlepkt);
+                }
+        	}
+    	}
     }
     /* Handler for generic console command sender */
     public class ForgeCommandSender implements DynmapCommandSender

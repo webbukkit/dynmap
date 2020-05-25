@@ -720,6 +720,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public UUID getUUID() {
         	return uuid;
         }
+        /**
+         * Send title and subtitle text (called from server thread)
+         */
+        @Override
+        public void sendTitleText(String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTIcks) {
+        	if (player != null) {
+        		helper.sendTitleText(player, title, subtitle, fadeInTicks, stayTicks, fadeOutTIcks);
+        	}
+    	}
     }
     /* Handler for generic console command sender */
     public class BukkitCommandSender implements DynmapCommandSender {

@@ -201,4 +201,13 @@ public abstract class BukkitVersionHelper {
 	}
 
 	public abstract String getStateStringByCombinedId(int blkid, int meta);
+	
+	// Send title/subtitle to user
+    public void sendTitleText(Player p, String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTIcks) {
+    	// Do send message for old implementations
+    	if (p != null) {
+    		if (title != null) p.sendMessage(title);
+    		if (subtitle != null) p.sendMessage(subtitle);
+    	}
+    }
 }

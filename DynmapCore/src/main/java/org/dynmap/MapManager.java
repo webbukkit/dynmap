@@ -77,6 +77,20 @@ public class MapManager {
     private boolean tpspausefullrenders = false;
     private boolean tpspausezoomout = false;
 
+    // User enter/exit processing
+    private static final int DEFAULT_ENTEREXIT_PERIOD = 1000;	// 1 second
+    private static final int DEFAULT_TITLE_FADEIN = 10;	// 10 ticks = 1/2 second
+    private static final int DEFAULT_TITLE_STAY = 70;	// 70 ticks = 3 1/2 second
+    private static final int DEFAULT_TITLE_FADEOUT = 20;	// 20 ticks = 1 second    
+    private static final boolean DEFAULT_ENTEREXIT_USETITLE = true;
+    private int enterexitperiod = DEFAULT_ENTEREXIT_PERIOD;	// Enter/exit processing period
+    private int titleFadeIn = DEFAULT_TITLE_FADEIN;
+    private int titleStay = DEFAULT_TITLE_STAY;
+    private int titleFadeOut = DEFAULT_TITLE_FADEOUT;
+    private boolean enterexitUseTitle = DEFAULT_ENTEREXIT_USETITLE;
+
+    private HashMap<UUID, HashSet<EnterExitMarker>> entersetstate = new HashMap<UUID, HashSet<EnterExitMarker>>();
+
     private boolean did_start = false;
     
     private int zoomout_period = DEFAULT_ZOOMOUT_PERIOD;	/* Zoom-out tile processing period, in seconds */
@@ -934,8 +948,20 @@ public class MapManager {
             scheduleDelayedJob(this, 1000); /* Once per second */
         }
     }
-
-    private HashMap<UUID, HashSet<EnterExitMarker>> entersetstate = new HashMap<UUID, HashSet<EnterExitMarker>>();
+    
+    private void sendPlayerEnterExit(DynmapPlayer player, EnterExitText txt) {
+		core.getServer().scheduleServerTask(new Runnable() {
+			public void run() {
+				if (enterexitUseTitle) {
+					player.sendTitleText(txt.title, txt.subtitle, titleFadeIn, titleStay, titleFadeOut);
+				}
+				else {
+					if (txt.title != null) player.sendMessage(txt.title);
+					if (txt.subtitle != null) player.sendMessage(txt.subtitle);
+				}
+			}
+		}, 0);    	
+    }
     
     private class DoUserMoveProcessing implements Runnable {
         public void run() {
@@ -954,7 +980,7 @@ public class MapManager {
         		for (EnterExitMarker m : newset) {
         			EnterExitText txt = m.getGreetingText();
         			if ((txt != null) && ((oldset == null) || (oldset.contains(m) == false))) {
-        				Log.info(String.format("User %s enter: %s - %s", player.getName(), txt.title, txt.subtitle));
+        				sendPlayerEnterExit(player, txt);
         			}
         		}
         		// See which we just left
@@ -962,15 +988,16 @@ public class MapManager {
             		for (EnterExitMarker m : oldset) {
             			EnterExitText txt = m.getFarewellText();
             			if ((txt != null) && (newset.contains(m) == false)) {
-            				Log.info(String.format("User %s exit: %s - %s", player.getName(), txt.title, txt.subtitle));
+            				sendPlayerEnterExit(player, txt);
             			}
             		}        			
         		}
         		newstate.put(puuid, newset);
         	}
         	entersetstate = newstate;	// Replace old with new
-        	
-            scheduleDelayedJob(this, 1000); /* Once per second */
+        	if (enterexitperiod > 0) {
+        		scheduleDelayedJob(this, enterexitperiod);
+        	}
         }
     }
 
@@ -1055,6 +1082,12 @@ public class MapManager {
         if (tpslimit_fullrenders > 19.5) tpslimit_fullrenders = 19.5;
         tpslimit_zoomout = configuration.getDouble("zoomout-min-tps", 18.0);
         if (tpslimit_zoomout > 19.5) tpslimit_zoomout = 19.5;
+        // Load enter/exit processing settings
+        enterexitperiod = configuration.getInteger("enterexitperiod", DEFAULT_ENTEREXIT_PERIOD);
+        titleFadeIn = configuration.getInteger("titleFadeIn", DEFAULT_TITLE_FADEIN);
+        titleStay = configuration.getInteger("titleStay", DEFAULT_TITLE_STAY);
+        titleFadeOut = configuration.getInteger("titleFadeOut", DEFAULT_TITLE_FADEOUT);
+        enterexitUseTitle = configuration.getBoolean("enterexitUseTitle", DEFAULT_ENTEREXIT_USETITLE);
         // Load the save pending job period
         savependingperiod = configuration.getInteger("save-pending-period", 900);
         if ((savependingperiod > 0) && (savependingperiod < 60)) savependingperiod = 60;
@@ -1501,7 +1534,11 @@ public class MapManager {
         scheduleDelayedJob(new DoZoomOutProcessing(), 60000);
         scheduleDelayedJob(new CheckWorldTimes(), 5000);
         scheduleDelayedJob(new DoTouchProcessing(), 1000);
-        scheduleDelayedJob(new DoUserMoveProcessing(), 1000);
+        // If enabled, start enter/exit processing
+        if (enterexitperiod > 0) {
+        	Log.info("Starting enter/exit processing");
+        	scheduleDelayedJob(new DoUserMoveProcessing(), enterexitperiod);
+        }
         /* Resume pending jobs */
         for(FullWorldRenderState job : active_renders.values()) {
             scheduleDelayedJob(job, 5000);

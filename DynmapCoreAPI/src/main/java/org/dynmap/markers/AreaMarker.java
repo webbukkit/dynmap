@@ -3,7 +3,7 @@ package org.dynmap.markers;
 /**
  * This defines the public interface to an area marker object, for use with the MarkerAPI
  */
-public interface AreaMarker extends MarkerDescription {
+public interface AreaMarker extends MarkerDescription, EnterExitMarker {
     /**
      * Get top Y coordinate
      * @return coordinate

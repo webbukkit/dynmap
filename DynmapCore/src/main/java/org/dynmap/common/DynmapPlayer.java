@@ -94,4 +94,12 @@ public interface DynmapPlayer extends DynmapCommandSender {
      * Return UUID, or null if not available
      */
     public default UUID getUUID() { return null; }
+    /**
+     * Send title and subtitle text (called from server thread)
+     */
+    public default void sendTitleText(String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTIcks) {
+    	// Fallback if not implemented
+    	if (title != null) this.sendMessage(title);;
+    	if (subtitle != null) this.sendMessage(subtitle);
+	}
 }
