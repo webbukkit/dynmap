@@ -46,6 +46,9 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
         Coord(double x, double z) {
             this.x = x; this.z = z;
         }
+        public String toString() {
+        	return String.format("{%f,%f}",  x, z);
+        }
     }
     private static class BoundingBox {
         double xmin, xmax;
@@ -614,7 +617,6 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
 		}
 		// Test if inside polygon
         int nvert = corners.size();
-        int i, j;
         Coord v0, v1;
         boolean c = false;
         if (nvert == 2) {	// Diagonal corners (simple rectangle
@@ -626,12 +628,11 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     		}
         }
         else {
-        	for (i = 0, j = nvert-1; i < nvert; j = i++) {
+        	for (int i = 0, j = nvert-1; i < nvert; j = i, i++) {
         		v0 = corners.get(i);
         		v1 = corners.get(j);
         		if (((v0.z > z) != (v1.z > z)) &&
-    				(((x - v0.x) * (v1.z - v0.z)) < 
-					((v1.x - v0.x) * (z - v0.z)))) {
+        			(x < (v0.x + ((v1.x-v0.x)*(z-v0.z)/(v1.z-v0.z))))) {
         			c = !c;
         		}
         	}
