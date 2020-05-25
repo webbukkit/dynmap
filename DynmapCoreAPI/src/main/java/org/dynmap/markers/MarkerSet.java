@@ -256,4 +256,8 @@ public interface MarkerSet {
      * @return default marker
      */
     public MarkerIcon getDefaultMarkerIcon();
+	/**
+	 * Add entered markers to set based on given coordinates
+	 */
+	public void addEnteredMarkers(Set<EnterExitMarker> entered, String worldid, double x, double y, double z);
 }

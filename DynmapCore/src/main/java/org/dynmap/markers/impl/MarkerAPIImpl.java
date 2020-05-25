@@ -36,6 +36,7 @@ import org.dynmap.common.DynmapPlayer;
 import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.CircleMarker;
+import org.dynmap.markers.EnterExitMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerDescription;
@@ -3215,5 +3216,19 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
         }
         return false;
+    }
+    /**
+     * Build entered marker set based on given location
+     * @param worldid - world
+     * @param x
+     * @param y
+     * @param z
+     * @param entered
+     */
+    public static void getEnteredMarkers(String worldid, double x, double y, double z, Set<EnterExitMarker> entered) {
+        if (api == null) return;
+        for(MarkerSetImpl ms : api.markersets.values()) {
+        	ms.addEnteredMarkers(entered, worldid, x, y, z);
+        }
     }
 }

@@ -13,4 +13,7 @@ public class DynmapLocation {
         world = w;
         this.x = x; this.y = y; this.z = z;
     }
+    public String toString() {
+    	return String.format("{%s,%f,%f,%f}", world, x, y, z);
+    }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +33,9 @@ import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.debug.Debug;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.hdmap.HDMapManager;
+import org.dynmap.markers.EnterExitMarker;
+import org.dynmap.markers.EnterExitMarker.EnterExitText;
+import org.dynmap.markers.impl.MarkerAPIImpl;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.MapStorageBaseTileEnumCB;
@@ -930,7 +934,46 @@ public class MapManager {
             scheduleDelayedJob(this, 1000); /* Once per second */
         }
     }
+
+    private HashMap<UUID, HashSet<EnterExitMarker>> entersetstate = new HashMap<UUID, HashSet<EnterExitMarker>>();
     
+    private class DoUserMoveProcessing implements Runnable {
+        public void run() {
+            HashMap<UUID, HashSet<EnterExitMarker>> newstate = new HashMap<UUID, HashSet<EnterExitMarker>>();
+        	DynmapPlayer[] pl = core.playerList.getOnlinePlayers();
+        	for (DynmapPlayer player : pl) {
+        		if (player == null) continue;
+        		UUID puuid = player.getUUID();
+        		HashSet<EnterExitMarker> newset = new HashSet<EnterExitMarker>();
+        		DynmapLocation dl = player.getLocation();
+        		if (dl != null) {
+        			MarkerAPIImpl.getEnteredMarkers(dl.world, dl.x, dl.y, dl.z, newset);
+        		}
+        		HashSet<EnterExitMarker> oldset = entersetstate.get(puuid);
+        		// See which we just entered
+        		for (EnterExitMarker m : newset) {
+        			EnterExitText txt = m.getGreetingText();
+        			if ((txt != null) && ((oldset == null) || (oldset.contains(m) == false))) {
+        				Log.info(String.format("User %s enter: %s - %s", player.getName(), txt.title, txt.subtitle));
+        			}
+        		}
+        		// See which we just left
+        		if (oldset != null) {
+            		for (EnterExitMarker m : oldset) {
+            			EnterExitText txt = m.getFarewellText();
+            			if ((txt != null) && (newset.contains(m) == false)) {
+            				Log.info(String.format("User %s exit: %s - %s", player.getName(), txt.title, txt.subtitle));
+            			}
+            		}        			
+        		}
+        		newstate.put(puuid, newset);
+        	}
+        	entersetstate = newstate;	// Replace old with new
+        	
+            scheduleDelayedJob(this, 1000); /* Once per second */
+        }
+    }
+
     private void addNextTilesToUpdate(int cnt) {
         ArrayList<MapTile> tiles = new ArrayList<MapTile>();
         TileFlags.TileCoord coord = new TileFlags.TileCoord();
@@ -1458,6 +1501,7 @@ public class MapManager {
         scheduleDelayedJob(new DoZoomOutProcessing(), 60000);
         scheduleDelayedJob(new CheckWorldTimes(), 5000);
         scheduleDelayedJob(new DoTouchProcessing(), 1000);
+        scheduleDelayedJob(new DoUserMoveProcessing(), 1000);
         /* Resume pending jobs */
         for(FullWorldRenderState job : active_renders.values()) {
             scheduleDelayedJob(job, 5000);

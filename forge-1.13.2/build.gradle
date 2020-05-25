@@ -62,9 +62,6 @@ shadowJar {
     }
     archiveName = "Dynmap-${parent.version}-forge-1.13.2.jar"
     destinationDir = file '../target'
-    manifest {
-        attributes 'FMLAT': 'dynmap_at.cfg'
-    }
 }
 
 shadowJar.doLast {

@@ -14,6 +14,7 @@ import org.dynmap.Log;
 import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.CircleMarker;
+import org.dynmap.markers.EnterExitMarker;
 import org.dynmap.markers.PolyLineMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerIcon;
@@ -27,6 +28,7 @@ class MarkerSetImpl implements MarkerSet {
     private ConcurrentHashMap<String, CircleMarkerImpl> circlemarkers = new ConcurrentHashMap<String, CircleMarkerImpl>();
     private ConcurrentHashMap<String, AreaMarkerImpl> boostingareamarkers = null;
     private ConcurrentHashMap<String, CircleMarkerImpl> boostingcirclemarkers = null;
+    private ConcurrentHashMap<String, EnterExitMarker> enterexitmarkers = null;
     private String setid;
     private String label;
     private ConcurrentHashMap<String, MarkerIconImpl> allowedicons = null;
@@ -79,6 +81,10 @@ class MarkerSetImpl implements MarkerSet {
         if (boostingcirclemarkers != null) {
             boostingcirclemarkers.clear();
             boostingcirclemarkers = null;
+        }
+        if (enterexitmarkers != null) {
+        	enterexitmarkers.clear();
+        	enterexitmarkers = null;
         }
         deficon = null;
     }
@@ -268,6 +274,12 @@ class MarkerSetImpl implements MarkerSet {
             }
             boostingareamarkers.put(marker.getMarkerID(), marker);
         }
+        if ((marker.getGreetingText() != null) || (marker.getFarewellText() != null)) {
+        	if (enterexitmarkers == null) {
+        		enterexitmarkers = new ConcurrentHashMap<String, EnterExitMarker>();
+        	}
+        	enterexitmarkers.put(marker.getMarkerID(),  marker);
+        }
         if(ispersistent && marker.isPersistentMarker()) {   /* If persistent */
             MarkerAPIImpl.saveMarkers();        /* Drive save */
         }
@@ -286,7 +298,13 @@ class MarkerSetImpl implements MarkerSet {
                 boostingareamarkers = null;
             }
         }
-        if(ispersistent && marker.isPersistentMarker()) {   /* If persistent */
+        if (enterexitmarkers != null) {
+        	enterexitmarkers.remove(marker.getMarkerID());
+        	if (enterexitmarkers.isEmpty()) {
+        		enterexitmarkers = null;
+        	}
+        }
+        if (ispersistent && marker.isPersistentMarker()) {   /* If persistent */
             MarkerAPIImpl.saveMarkers();        /* Drive save */
         }
         MarkerAPIImpl.areaMarkerUpdated(marker, MarkerUpdate.DELETED);
@@ -445,6 +463,12 @@ class MarkerSetImpl implements MarkerSet {
                             boostingareamarkers = new ConcurrentHashMap<String, AreaMarkerImpl>();
                         }
                         boostingareamarkers.put(id,  marker);
+                    }
+                    if ((marker.getGreetingText() != null) || (marker.getFarewellText() != null)) {
+                    	if (enterexitmarkers == null) {
+                    		enterexitmarkers = new ConcurrentHashMap<String, EnterExitMarker>();
+                    	}
+                    	enterexitmarkers.put(marker.getMarkerID(),  marker);
                     }
                 }
                 else {
@@ -745,5 +769,16 @@ class MarkerSetImpl implements MarkerSet {
         }
         return false;
     }
-
+	/**
+	 * Add entered markers to set based on given coordinates
+	 */
+    @Override
+	public void addEnteredMarkers(Set<EnterExitMarker> entered, String worldid, double x, double y, double z) {
+    	if (enterexitmarkers == null) return;
+		for (EnterExitMarker m : enterexitmarkers.values()) {
+			if (m.testIfPointWithinMarker(worldid, x, y, z)) {
+				entered.add(m);
+			}
+		}
+    }
 }
