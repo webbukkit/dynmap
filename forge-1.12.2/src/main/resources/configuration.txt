@@ -431,6 +431,19 @@ url:
 snapshotcachesize: 500
 # Snapshot cache uses soft references (true), else weak references (false)
 soft-ref-cache: true
+
+# Player enter/exit title messages for map markers
+#
+# Processing period - how often to check player positions vs markers - default is 1000ms (1 second)
+#enterexitperiod: 1000
+# Title message fade in time, in ticks (0.05 second intervals) - default is 10 (1/2 second)
+#titleFadeIn: 10
+# Title message stay time, in ticks (0.05 second intervals) - default is 70 (3.5 seconds)
+#titleStay: 70
+# Title message fade out time, in ticks (0.05 seocnd intervals) - default is 20 (1 second)
+#titleFadeOut: 20
+# Enter/exit messages use on screen titles (true - default), if false chat messages are sent instead
+#enterexitUseTitle: true
     
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
