@@ -395,16 +395,20 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 Log.severe("Error creating markers directory - " + api.markerdir.getPath());
             }
         }
-        /* Now publish marker files to the tiles directory */
-        for(MarkerIcon ico : api.getMarkerIcons()) {
-            api.publishMarkerIcon(ico);
-        }
-        /* Freshen files */
-        api.freshenMarkerFiles();
-        /* Add listener so we update marker files for other worlds as they become active */
-        core.events.addListener("worldactivated", api);
+        MapManager.scheduleDelayedJob(new Runnable() {
+        	public void run() {
+                /* Now publish marker files to the tiles directory */
+                for(MarkerIcon ico : api.getMarkerIcons()) {
+                    api.publishMarkerIcon(ico);
+                }
+                /* Freshen files */
+                api.freshenMarkerFiles();
+                /* Add listener so we update marker files for other worlds as they become active */
+                core.events.addListener("worldactivated", api);
 
-        api.scheduleWriteJob(); /* Start write job */
+                api.scheduleWriteJob(); /* Start write job */        		
+        	}
+        }, 0);
         
         return api;
     }
