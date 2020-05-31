@@ -471,6 +471,8 @@ soft-ref-cache: true
 #titleFadeOut: 20
 # Enter/exit messages use on screen titles (true - default), if false chat messages are sent instead
 #enterexitUseTitle: true
+# Set true if new enter messages should supercede pending exit messages (vs being queued in order), default false
+#enterReplacesExits: true
 
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log

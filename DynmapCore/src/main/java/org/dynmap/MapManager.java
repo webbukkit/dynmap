@@ -83,17 +83,23 @@ public class MapManager {
     private static final int DEFAULT_TITLE_STAY = 70;	// 70 ticks = 3 1/2 second
     private static final int DEFAULT_TITLE_FADEOUT = 20;	// 20 ticks = 1 second    
     private static final boolean DEFAULT_ENTEREXIT_USETITLE = true;
+    private static final boolean DEFAULT_ENTEREPLACESEXITS = false;
     private int enterexitperiod = DEFAULT_ENTEREXIT_PERIOD;	// Enter/exit processing period
     private int titleFadeIn = DEFAULT_TITLE_FADEIN;
     private int titleStay = DEFAULT_TITLE_STAY;
     private int titleFadeOut = DEFAULT_TITLE_FADEOUT;
     private boolean enterexitUseTitle = DEFAULT_ENTEREXIT_USETITLE;
+    private boolean enterReplacesExits = DEFAULT_ENTEREPLACESEXITS;
     
     private HashMap<UUID, HashSet<EnterExitMarker>> entersetstate = new HashMap<UUID, HashSet<EnterExitMarker>>();
     
+    private static class TextQueueRec {
+    	EnterExitText txt;
+    	boolean isEnter;
+    }
     private static class SendQueueRec {
     	DynmapPlayer player;
-    	ArrayList<EnterExitText> queue = new ArrayList<EnterExitText>();
+    	ArrayList<TextQueueRec> queue = new ArrayList<TextQueueRec>();
     	int tickdelay;    	
     };    
     private HashMap<UUID, SendQueueRec> entersetsendqueue = new HashMap<UUID, SendQueueRec>();
@@ -970,7 +976,7 @@ public class MapManager {
 		}, 0);    	
     }
     
-    private void enqueueMessage(UUID uuid, DynmapPlayer player, EnterExitText txt) {
+    private void enqueueMessage(UUID uuid, DynmapPlayer player, EnterExitText txt, boolean isEnter) {
     	SendQueueRec rec = entersetsendqueue.get(uuid);
     	if (rec == null) {
     		rec = new SendQueueRec();
@@ -978,7 +984,18 @@ public class MapManager {
     		rec.tickdelay = 0;
     		entersetsendqueue.put(uuid, rec);
     	}
-    	rec.queue.add(txt);
+    	TextQueueRec txtrec = new TextQueueRec();
+    	txtrec.isEnter = isEnter;
+    	txtrec.txt = txt;
+    	rec.queue.add(txtrec);
+    	// If enter replaces exits, and we just added enter, purge exits
+    	if (enterReplacesExits && isEnter) {
+    		ArrayList<TextQueueRec> newlst = new ArrayList<TextQueueRec>();
+    		for (TextQueueRec r : rec.queue) {
+    			if (r.isEnter) newlst.add(r);	// Keep the enter records
+    		}
+    		rec.queue = newlst;
+    	}
     }
     
     private class DoUserMoveProcessing implements Runnable {
@@ -999,7 +1016,7 @@ public class MapManager {
             		for (EnterExitMarker m : oldset) {
             			EnterExitText txt = m.getFarewellText();
             			if ((txt != null) && (newset.contains(m) == false)) {
-            				enqueueMessage(puuid, player, txt);
+            				enqueueMessage(puuid, player, txt, false);
             			}
             		}        			
         		}
@@ -1007,7 +1024,7 @@ public class MapManager {
         		for (EnterExitMarker m : newset) {
         			EnterExitText txt = m.getGreetingText();
         			if ((txt != null) && ((oldset == null) || (oldset.contains(m) == false))) {
-        				enqueueMessage(puuid, player, txt);
+        				enqueueMessage(puuid, player, txt, true);
         			}
         		}
         		newstate.put(puuid, newset);
@@ -1026,8 +1043,8 @@ public class MapManager {
         		rec.tickdelay = 0;
         		// If something to send, send it
         		if (rec.queue.size() > 0) {
-        			EnterExitText txt = rec.queue.remove(0);
-        			sendPlayerEnterExit(rec.player, txt);	// And send it
+        			TextQueueRec txt = rec.queue.remove(0);
+        			sendPlayerEnterExit(rec.player, txt.txt);	// And send it
         			rec.tickdelay = 50 * (titleFadeIn + 10);	// Delay by fade in time plus 1/2 second       			
         		}
         		else {	// Else, if we are empty and exhausted delay, remove it
@@ -1127,6 +1144,7 @@ public class MapManager {
         titleStay = configuration.getInteger("titleStay", DEFAULT_TITLE_STAY);
         titleFadeOut = configuration.getInteger("titleFadeOut", DEFAULT_TITLE_FADEOUT);
         enterexitUseTitle = configuration.getBoolean("enterexitUseTitle", DEFAULT_ENTEREXIT_USETITLE);
+        enterReplacesExits = configuration.getBoolean("enterReplacesExits", DEFAULT_ENTEREPLACESEXITS);
         // Load the save pending job period
         savependingperiod = configuration.getInteger("save-pending-period", 900);
         if ((savependingperiod > 0) && (savependingperiod < 60)) savependingperiod = 60;
