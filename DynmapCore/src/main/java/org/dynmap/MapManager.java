@@ -88,8 +88,15 @@ public class MapManager {
     private int titleStay = DEFAULT_TITLE_STAY;
     private int titleFadeOut = DEFAULT_TITLE_FADEOUT;
     private boolean enterexitUseTitle = DEFAULT_ENTEREXIT_USETITLE;
-
+    
     private HashMap<UUID, HashSet<EnterExitMarker>> entersetstate = new HashMap<UUID, HashSet<EnterExitMarker>>();
+    
+    private static class SendQueueRec {
+    	DynmapPlayer player;
+    	ArrayList<EnterExitText> queue = new ArrayList<EnterExitText>();
+    	int tickdelay;    	
+    };    
+    private HashMap<UUID, SendQueueRec> entersetsendqueue = new HashMap<UUID, SendQueueRec>();
 
     private boolean did_start = false;
     
@@ -963,6 +970,17 @@ public class MapManager {
 		}, 0);    	
     }
     
+    private void enqueueMessage(UUID uuid, DynmapPlayer player, EnterExitText txt) {
+    	SendQueueRec rec = entersetsendqueue.get(uuid);
+    	if (rec == null) {
+    		rec = new SendQueueRec();
+    		rec.player = player;
+    		rec.tickdelay = 0;
+    		entersetsendqueue.put(uuid, rec);
+    	}
+    	rec.queue.add(txt);
+    }
+    
     private class DoUserMoveProcessing implements Runnable {
         public void run() {
             HashMap<UUID, HashSet<EnterExitMarker>> newstate = new HashMap<UUID, HashSet<EnterExitMarker>>();
@@ -976,25 +994,46 @@ public class MapManager {
         			MarkerAPIImpl.getEnteredMarkers(dl.world, dl.x, dl.y, dl.z, newset);
         		}
         		HashSet<EnterExitMarker> oldset = entersetstate.get(puuid);
-        		// See which we just entered
-        		for (EnterExitMarker m : newset) {
-        			EnterExitText txt = m.getGreetingText();
-        			if ((txt != null) && ((oldset == null) || (oldset.contains(m) == false))) {
-        				sendPlayerEnterExit(player, txt);
-        			}
-        		}
         		// See which we just left
         		if (oldset != null) {
             		for (EnterExitMarker m : oldset) {
             			EnterExitText txt = m.getFarewellText();
             			if ((txt != null) && (newset.contains(m) == false)) {
-            				sendPlayerEnterExit(player, txt);
+            				enqueueMessage(puuid, player, txt);
             			}
             		}        			
+        		}
+        		// See which we just entered
+        		for (EnterExitMarker m : newset) {
+        			EnterExitText txt = m.getGreetingText();
+        			if ((txt != null) && ((oldset == null) || (oldset.contains(m) == false))) {
+        				enqueueMessage(puuid, player, txt);
+        			}
         		}
         		newstate.put(puuid, newset);
         	}
         	entersetstate = newstate;	// Replace old with new
+        	
+        	// Go through queues - send pending messages
+        	List<UUID> keys = new ArrayList<UUID>(entersetsendqueue.keySet());
+        	for (UUID id : keys) {
+        		SendQueueRec rec = entersetsendqueue.get(id);
+        		// Check delay - count down if needed
+        		if (rec.tickdelay > enterexitperiod) {
+        			rec.tickdelay -= enterexitperiod;
+        			continue;
+        		}
+        		rec.tickdelay = 0;
+        		// If something to send, send it
+        		if (rec.queue.size() > 0) {
+        			EnterExitText txt = rec.queue.remove(0);
+        			sendPlayerEnterExit(rec.player, txt);	// And send it
+        			rec.tickdelay = 50 * (titleFadeIn + 10);	// Delay by fade in time plus 1/2 second       			
+        		}
+        		else {	// Else, if we are empty and exhausted delay, remove it
+        			entersetsendqueue.remove(id);
+        		}
+        	}			
         	if (enterexitperiod > 0) {
         		scheduleDelayedJob(this, enterexitperiod);
         	}
