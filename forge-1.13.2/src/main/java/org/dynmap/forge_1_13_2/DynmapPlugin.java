@@ -27,6 +27,7 @@ import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFlowingFluid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -35,6 +36,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -240,6 +242,9 @@ public class DynmapPlugin
                 }
                 if (mat == Material.LEAVES) {
                     dbs.setLeaves();
+                }
+                if ((!bs.getFluidState().isEmpty()) && !(bs.getBlock() instanceof BlockFlowingFluid)) {
+                    dbs.setWaterlogged();
                 }
             }
     	}

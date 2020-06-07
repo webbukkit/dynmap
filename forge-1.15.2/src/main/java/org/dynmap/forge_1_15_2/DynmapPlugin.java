@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
@@ -268,6 +269,9 @@ public class DynmapPlugin
                 }
                 if (mat == Material.LEAVES) {
                     dbs.setLeaves();
+                }
+                if ((!bs.getFluidState().isEmpty()) && !(bs.getBlock() instanceof FlowingFluidBlock)) {
+                    dbs.setWaterlogged();
                 }
             }
     	}
