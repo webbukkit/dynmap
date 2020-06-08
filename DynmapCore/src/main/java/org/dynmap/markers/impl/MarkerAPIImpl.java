@@ -394,7 +394,15 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             if(api.markerdir.mkdirs() == false) {   /* Create directory if needed */
                 Log.severe("Error creating markers directory - " + api.markerdir.getPath());
             }
-        }
+        }        
+        return api;
+    }
+    /**
+     * Singleton initializer complete (after rendder pool available
+     * @param core - core object
+     * @return API object
+     */
+    public static void completeInitializeMarkerAPI(MarkerAPIImpl api) {
         MapManager.scheduleDelayedJob(new Runnable() {
         	public void run() {
                 /* Now publish marker files to the tiles directory */
@@ -404,13 +412,13 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 /* Freshen files */
                 api.freshenMarkerFiles();
                 /* Add listener so we update marker files for other worlds as they become active */
-                core.events.addListener("worldactivated", api);
+                api.core.events.addListener("worldactivated", api);
 
                 api.scheduleWriteJob(); /* Start write job */        		
-        	}
+
+        		Log.info("Finish marker initialization");
+    		}
         }, 0);
-        
-        return api;
     }
     
     public void scheduleWriteJob() {

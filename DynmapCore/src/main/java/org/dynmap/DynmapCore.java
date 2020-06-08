@@ -508,6 +508,10 @@ public class DynmapCore implements DynmapCommonAPI {
         mapManager = new MapManager(this, configuration);
         mapManager.startRendering();
 
+        if (markerapi != null) {
+        	MarkerAPIImpl.completeInitializeMarkerAPI(markerapi);
+        }
+        
         playerfacemgr = new PlayerFaces(this);
         
         updateConfigHashcode(); /* Initialize/update config hashcode */
