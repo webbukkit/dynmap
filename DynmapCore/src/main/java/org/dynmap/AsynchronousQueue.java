@@ -83,6 +83,7 @@ public class AsynchronousQueue<T> {
                     running();
                 }
             });
+            thread.setDaemon(true);
             thread.start();
             try {
                 if(!normalprio)
