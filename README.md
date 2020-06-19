@@ -32,3 +32,5 @@ I've just created a Reddit for the Dynmap family of mods/plugins - please give i
 
 # Where to go to make donations
 I've set up a coffee-fund jar (I believe in the theory that software developers are machines that turn caffeine into code), for anyone who wants to throw in some tips!  I've got a Patreon here - https://www.patreon.com/dynmap, and for folks just looking to for a one-time coffee buy, hit my Ko-Fi at https://ko-fi.com/michaelprimm !
+
+
