@@ -874,7 +874,7 @@ public class DynmapPlugin
                 c.setHiddenFillStyle(w.hiddenchunkstyle);
             }
 
-            if (c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false)
+            if (!c.setChunkDataTypes(blockdata, biome, highesty, rawbiome))
             {
                 Log.severe("CraftBukkit build does not support biome APIs");
             }
@@ -1460,7 +1460,7 @@ public class DynmapPlugin
         /* Get and initialize data folder */
         File dataDirectory = new File("dynmap");
 
-        if (dataDirectory.exists() == false)
+        if (!dataDirectory.exists())
         {
             dataDirectory.mkdirs();
         }
@@ -1737,7 +1737,7 @@ public class DynmapPlugin
         				int ymax = 0;
         				ChunkSection[] sections = c.getSections();
         				for(int i = 0; i < sections.length; i++) {
-        					if((sections[i] != null) && (sections[i].isEmpty() == false)) {
+        					if((sections[i] != null) && (!sections[i].isEmpty())) {
         						ymax = 16*(i+1);
         					}
         				}
@@ -1768,7 +1768,7 @@ public class DynmapPlugin
         				int ymax = 0;
         				ChunkSection[] sections = c.getSections();
         				for(int i = 0; i < sections.length; i++) {
-        					if((sections[i] != null) && (sections[i].isEmpty() == false)) {
+        					if((sections[i] != null) && (!sections[i].isEmpty())) {
         						ymax = 16*(i+1);
         					}
         				}
@@ -1860,7 +1860,7 @@ public class DynmapPlugin
 			if(fw.getRawName().equals(wname)) {
 				last_world = w;
 	           	last_fworld = fw;
-           		if(fw.isLoaded() == false) {
+           		if(!fw.isLoaded()) {
        				fw.setWorldLoaded(w);
            		}
     			return fw;
@@ -1899,7 +1899,7 @@ public class DynmapPlugin
     }
     private void loadWorlds() {
         File f = new File(core.getDataFolder(), "forgeworlds.yml");
-        if(f.canRead() == false) {
+        if(!f.canRead()) {
             useSaveFolder = true;
             ForgeWorld.setSaveFolderMapping();
             return;

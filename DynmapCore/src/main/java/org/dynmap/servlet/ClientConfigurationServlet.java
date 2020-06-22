@@ -76,7 +76,7 @@ public class ClientConfigurationServlet extends HttpServlet {
                         JSONObject m = iter2.next();
                         Boolean prot = (Boolean) g(m, "protected");
                         /* If not protected, leave it in */
-                        if((prot == null) || (prot.booleanValue() == false)) {
+                        if((prot == null) || (!prot.booleanValue())) {
                             newmlist.add(m);
                             continue;
                         }

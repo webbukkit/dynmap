@@ -90,7 +90,7 @@ public class DynmapMapCommands {
         }
         /* Get active worlds */
         for(DynmapWorld w : core.getMapManager().getWorlds()) {
-            if((wnames != null) && (wnames.contains(w.getName()) == false)) {
+            if((wnames != null) && (!wnames.contains(w.getName()))) {
                 continue;
             }
             StringBuilder sb = new StringBuilder();
@@ -112,7 +112,7 @@ public class DynmapMapCommands {
         }
         /* Get disabled worlds */
         for(String wn : core.getMapManager().getDisabledWorlds()) {
-            if((wnames != null) && (wnames.contains(wn) == false)) {
+            if((wnames != null) && (!wnames.contains(wn))) {
                 continue;
             }
             sender.sendMessage("world " + wn + ": isenabled=false");

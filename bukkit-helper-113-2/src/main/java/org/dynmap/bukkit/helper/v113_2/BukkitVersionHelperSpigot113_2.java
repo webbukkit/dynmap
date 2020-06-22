@@ -131,7 +131,7 @@ public class BukkitVersionHelperSpigot113_2 extends BukkitVersionHelperCB {
     		}
     		Material mat = bd.getMaterial();
             DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
-            if ((!bd.s().e()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
+            if ((!bd.s().e()) && (!(bd.getBlock() instanceof BlockFluids))) {	// Test if fluid type for block is not empty
             	bs.setWaterlogged();
             }
             if (mat == Material.AIR) {

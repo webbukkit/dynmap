@@ -91,7 +91,7 @@ public class ClientUpdateComponent extends Component {
                         hide = true;
                     }
                 }
-                else if(pw.isNether() == false) {   /* Not nether */
+                else if(!pw.isNether()) {   /* Not nether */
                     if(pw.getHighestBlockYAt((int)pl.x, (int)pl.z) > pl.y) {
                         hide = true;
                     }

@@ -685,7 +685,7 @@ public class DynmapCore implements DynmapCommonAPI {
             int pcnt = getServer().getOnlinePlayers().length;
             
             if ((fullrenderplayerlimit > 0) && (pcnt == fullrenderplayerlimit)) {
-                if(getPauseFullRadiusRenders() == false) {  /* If not paused, pause it */
+                if(!getPauseFullRadiusRenders()) {  /* If not paused, pause it */
                     setPauseFullRadiusRenders(true);
                     Log.info("Pause full/radius renders - player limit reached");
                     didfullpause = true;
@@ -695,7 +695,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 }
             }
             if ((updateplayerlimit > 0) && (pcnt == updateplayerlimit)) {
-                if(getPauseUpdateRenders() == false) {  /* If not paused, pause it */
+                if(!getPauseUpdateRenders()) {  /* If not paused, pause it */
                     setPauseUpdateRenders(true);
                     Log.info("Pause tile update renders - player limit reached");
                     didupdatepause = true;
@@ -801,7 +801,7 @@ public class DynmapCore implements DynmapCommonAPI {
         NetworkTrafficServerConnector connector = new NetworkTrafficServerConnector(webServer);
         connector.setIdleTimeout(5000);
         connector.setAcceptQueueSize(50);
-        if(webhostname.equals("0.0.0.0") == false)
+        if(!webhostname.equals("0.0.0.0"))
             connector.setHost(webhostname);
         connector.setPort(webport);
         webServer.setConnectors(new Connector[]{connector});
@@ -1736,7 +1736,7 @@ public class DynmapCore implements DynmapCommonAPI {
             Log.severe("Unable to find resource - " + resourcename);
             return false;
         }
-        if(deffile.canRead() == false) {    /* Doesn't exist? */
+        if(!deffile.canRead()) {    /* Doesn't exist? */
             return createDefaultFileFromResource(resourcename, deffile);
         }
         /* Load default from resource */
@@ -1759,7 +1759,7 @@ public class DynmapCore implements DynmapCommonAPI {
             Log.severe("Unable to find resource - " + resourcename);
             return false;
         }
-        if(deffile.canRead() == false) {    /* Doesn't exist? */
+        if(!deffile.canRead()) {    /* Doesn't exist? */
             return createDefaultFileFromResource(resourcename, deffile);
         }
         /* Load default from resource */
@@ -1786,7 +1786,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 Object name = m.get("name");
                 if(name instanceof String) {
                     /* If not an existing one, need to add it */
-                    if(existing_names.contains((String)name) == false) {
+                    if(!existing_names.contains((String) name)) {
                         existing.add(m);
                         did_update = true;
                     }
@@ -1889,7 +1889,7 @@ public class DynmapCore implements DynmapCommonAPI {
 
     private void loadIDsByIP() {
         File f = new File(getDataFolder(), "ids-by-ip.txt");
-        if(f.exists() == false)
+        if(!f.exists())
             return;
         ConfigurationNode fc = new ConfigurationNode(new File(getDataFolder(), "ids-by-ip.txt"));
         try {
@@ -2024,7 +2024,7 @@ public class DynmapCore implements DynmapCommonAPI {
             }
         }
         /* If not found, and disable, add disable node */
-        if(isenab == false) {
+        if(!isenab) {
             Map<String,Object> newworld = new LinkedHashMap<String,Object>();
             newworld.put("name", wname);
             newworld.put("enabled", isenab);
@@ -2234,7 +2234,7 @@ public class DynmapCore implements DynmapCommonAPI {
         /* Can always see self */
         if(player.equals(player_to_see)) return true;
         /* If player is hidden, that is dominant */
-        if(getPlayerVisbility(player_to_see) == false) return false;
+        if(!getPlayerVisbility(player_to_see)) return false;
         /* Check if player has see-all permission */
         if(checkPermission(player, "playermarkers.seeall")) return true;
         if(markerapi != null) {
@@ -2288,7 +2288,7 @@ public class DynmapCore implements DynmapCommonAPI {
     private void updateExtractedFiles() {
         if(jarfile == null) return;
         File df = this.getDataFolder();
-        if(df.exists() == false) df.mkdirs();
+        if(!df.exists()) df.mkdirs();
         File ver = new File(df, "version.txt");
         String prevver = "1.6";
         if(ver.exists()) {

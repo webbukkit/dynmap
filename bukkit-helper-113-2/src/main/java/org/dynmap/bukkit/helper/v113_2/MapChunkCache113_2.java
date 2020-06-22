@@ -75,7 +75,7 @@ public class MapChunkCache113_2 extends AbstractMapChunkCache {
 			// Check one in each direction: see if all are generated
 			for (int xx = x-3; xx <= x+3; xx++) {
 				for (int zz = z-3; zz <= z+3; zz++) {
-					if (w.isChunkGenerated(xx, zz) == false) {
+					if (!w.isChunkGenerated(xx, zz)) {
 						generated = false;
 						break;
 					}

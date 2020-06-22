@@ -390,8 +390,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         
         /* Build paths for markers */
         api.markerdir = new File(core.getDataFolder(), "markers");
-        if(api.markerdir.isDirectory() == false) {
-            if(api.markerdir.mkdirs() == false) {   /* Create directory if needed */
+        if(!api.markerdir.isDirectory()) {
+            if(!api.markerdir.mkdirs()) {   /* Create directory if needed */
                 Log.severe("Error creating markers directory - " + api.markerdir.getPath());
             }
         }        
@@ -1832,7 +1832,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             if(deficon != null) {
                 MarkerIcon mi = null;
-                if(deficon.equals("") == false) {
+                if(!deficon.equals("")) {
                     mi = MarkerAPIImpl.getMarkerIconImpl(deficon);
                     if(mi == null) {
                         sender.sendMessage("Error: invalid marker icon - " + deficon);
@@ -2138,7 +2138,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             api.pointaccum.put(id, ll);
         }
         else {  /* Else, if list exists, see if world matches */
-            if(ll.get(0).world.equals(loc.world) == false) {
+            if(!ll.get(0).world.equals(loc.world)) {
                 ll.clear(); /* Reset list - point on new world */
             }
         }

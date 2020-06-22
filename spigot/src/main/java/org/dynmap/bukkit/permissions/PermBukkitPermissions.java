@@ -18,7 +18,7 @@ public class PermBukkitPermissions extends BukkitPermissions {
             return null;
         
         server.getPluginManager().enablePlugin(permissionsPlugin);
-        if(permissionsPlugin.isEnabled() == false)
+        if(!permissionsPlugin.isEnabled())
             return null;
         
         Log.info("Using PermissionsBukkit " + permissionsPlugin.getDescription().getVersion() + " for access control");

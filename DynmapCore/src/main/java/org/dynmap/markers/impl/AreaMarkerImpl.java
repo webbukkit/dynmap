@@ -293,7 +293,7 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     @Override
     public void setDescription(String desc) {
         if(markerset == null) return;
-        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+        if((this.desc == null) || (!this.desc.equals(desc))) {
             this.desc = desc;
             MarkerAPIImpl.areaMarkerUpdated(this, MarkerUpdate.UPDATED);
             if(ispersistent)

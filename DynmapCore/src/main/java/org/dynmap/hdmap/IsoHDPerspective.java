@@ -1260,7 +1260,7 @@ public class IsoHDPerspective implements HDPerspective {
                     Log.severe("Error while raytracing tile: perspective=" + this.name + ", coord=" + mapiter.getX() + "," + mapiter.getY() + "," + mapiter.getZ() + ", blockid=" + mapiter.getBlockType() + ", lighting=" + mapiter.getBlockSkyLight() + ":" + mapiter.getBlockEmittedLight() + ", biome=" + mapiter.getBiome().toString(), ex);
                 }
                 for(int i = 0; i < numshaders; i++) {
-                    if(shaderdone[i] == false) {
+                    if(!shaderdone[i]) {
                         shaderstate[i].rayFinished(ps);
                     }
                     else {
@@ -1302,7 +1302,7 @@ public class IsoHDPerspective implements HDPerspective {
 
             mtile.getWriteLock();
             try {
-                if(mtile.matchesHashCode(crc) == false) {
+                if(!mtile.matchesHashCode(crc)) {
                     /* Wrap buffer as buffered image */
                     if(rendered[i]) {   
                         mtile.write(crc, im[i].buf_img);
@@ -1333,7 +1333,7 @@ public class IsoHDPerspective implements HDPerspective {
                 mtile.getWriteLock();
                 tile_update = false;
                 try {
-                    if(mtile.matchesHashCode(crc) == false) {
+                    if(!mtile.matchesHashCode(crc)) {
                         /* Wrap buffer as buffered image */
                         if(rendered[i]) {
                             mtile.write(crc, dayim[i].buf_img);

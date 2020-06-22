@@ -1423,7 +1423,7 @@ public class ForgeMapChunkCache extends MapChunkCache
 
         DynmapCore.setIgnoreChunkLoads(false);
 
-        if (iterator.hasNext() == false)    /* If we're done */
+        if (!iterator.hasNext())    /* If we're done */
         {
             isempty = true;
 
@@ -1487,7 +1487,7 @@ public class ForgeMapChunkCache extends MapChunkCache
         {
             for (int i = 0; i < nsect; i++)
             {
-                if (snaparray[idx].isSectionEmpty(i) == false)
+                if (!snaparray[idx].isSectionEmpty(i))
                 {
                     isSectionNotEmpty[idx][i] = true;
                 }

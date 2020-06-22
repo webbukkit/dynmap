@@ -194,7 +194,7 @@ public class WebAuthManager {
         else {
             uid = player.getName();
         }
-        if (checkUserName(uid) == false) {
+        if (!checkUserName(uid)) {
             sender.sendMessage("Invalid user ID");
             return true;
         }

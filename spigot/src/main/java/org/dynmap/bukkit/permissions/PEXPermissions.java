@@ -29,7 +29,7 @@ public class PEXPermissions implements PermissionProvider {
         }
 
         server.getPluginManager().enablePlugin(permissionsPlugin);
-        if(permissionsPlugin.isEnabled() == false)
+        if(!permissionsPlugin.isEnabled())
             return null;
 
         //Broken in new dev builds, apparently

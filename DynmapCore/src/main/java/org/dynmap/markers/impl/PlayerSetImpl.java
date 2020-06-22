@@ -109,7 +109,7 @@ class PlayerSetImpl implements PlayerSet {
         if(players.size() == this.players.size()) {
             boolean match = true;
             for(String s : players) {
-                if(this.players.contains(s.toLowerCase()) == false) {
+                if(!this.players.contains(s.toLowerCase())) {
                     match = false;
                     break;
                 }

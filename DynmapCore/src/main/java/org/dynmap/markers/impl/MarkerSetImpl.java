@@ -126,7 +126,7 @@ class MarkerSetImpl implements MarkerSet {
         if(markers.containsKey(id)) return null;    /* Duplicate ID? */
         if(!(icon instanceof MarkerIconImpl)) return null;
         /* If limited icons, and this isn't valid one, quit */
-        if((allowedicons != null) && (allowedicons.containsKey(icon.getMarkerIconID()) == false)) return null;
+        if((allowedicons != null) && (!allowedicons.containsKey(icon.getMarkerIconID()))) return null;
         /* Create marker */
         is_persistent = is_persistent && this.ispersistent;
         MarkerImpl marker = new MarkerImpl(id, label, markup, world, x, y, z, (MarkerIconImpl)icon, is_persistent, this);
@@ -699,7 +699,7 @@ class MarkerSetImpl implements MarkerSet {
     @Override
     public void setLabelShow(Boolean show) {
         if(show == showlabels) return;
-        if((show == null) || (show.equals(showlabels) == false)) {
+        if((show == null) || (!show.equals(showlabels))) {
             showlabels = show;
             MarkerAPIImpl.markerSetUpdated(this, MarkerUpdate.UPDATED);
             if(ispersistent)

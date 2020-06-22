@@ -22,7 +22,7 @@ public class GroupManagerPermissions implements PermissionProvider {
         if (permissionsPlugin == null)
             return null;
         server.getPluginManager().enablePlugin(permissionsPlugin);
-        if(permissionsPlugin.isEnabled() == false)
+        if(!permissionsPlugin.isEnabled())
             return null;
         Log.info("Using GroupManager " + permissionsPlugin.getDescription().getVersion() + " for access control");
         return new GroupManagerPermissions(name, permissionsPlugin);

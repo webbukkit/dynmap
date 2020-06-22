@@ -138,7 +138,7 @@ class MarkerImpl implements Marker {
         }
         /* Check if icons restricted for this set */
         Set<MarkerIcon> icns = markerset.getAllowedMarkerIcons();
-        if((icns != null) && (icns.contains(icon) == false)) {
+        if((icns != null) && (!icns.contains(icon))) {
             return false;
         }
         this.icon = (MarkerIconImpl)icon;
@@ -238,7 +238,7 @@ class MarkerImpl implements Marker {
     @Override
     public void setDescription(String desc) {
         if(markerset == null) return;
-        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+        if((this.desc == null) || (!this.desc.equals(desc))) {
             this.desc = desc;
             MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);
             if(ispersistent)

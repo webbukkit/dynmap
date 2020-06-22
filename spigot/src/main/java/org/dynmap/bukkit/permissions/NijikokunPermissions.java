@@ -25,7 +25,7 @@ public class NijikokunPermissions implements PermissionProvider {
             return null;
         
         server.getPluginManager().enablePlugin(permissionsPlugin);
-        if(permissionsPlugin.isEnabled() == false)
+        if(!permissionsPlugin.isEnabled())
             return null;
         
         Log.info("Using Permissions " + permissionsPlugin.getDescription().getVersion() + " for access control");

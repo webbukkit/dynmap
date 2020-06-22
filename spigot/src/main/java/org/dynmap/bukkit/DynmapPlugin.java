@@ -156,7 +156,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             bw = new BukkitWorld(w);
             world_by_name.put(w.getName(), bw);
         }
-        else if(bw.isLoaded() == false) {
+        else if(!bw.isLoaded()) {
             bw.setWorldLoaded(w);
         }
         last_world = w;
@@ -385,7 +385,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public boolean sendWebChatEvent(String source, String name, String msg) {
             DynmapWebChatEvent evt = new DynmapWebChatEvent(source, name, msg);
             getServer().getPluginManager().callEvent(evt);
-            return ((evt.isCancelled() == false) && (evt.isProcessed() == false));
+            return ((!evt.isCancelled()) && (!evt.isProcessed()));
         }
         @Override
         public void broadcastMessage(String msg) {
@@ -463,7 +463,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
                 c.setHiddenFillStyle(w.hiddenchunkstyle);
             }
-            if(c.setChunkDataTypes(blockdata, biome, highesty, rawbiome) == false) {
+            if(!c.setChunkDataTypes(blockdata, biome, highesty, rawbiome)) {
                 Log.severe("CraftBukkit build does not support biome APIs");
             }
             if(chunks.size() == 0) {    /* No chunks to get? */
@@ -515,7 +515,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
             }
             /* If cancelled due to world unload return nothing */
-            if(w.isLoaded() == false)
+            if(!w.isLoaded())
                 return null;
             return c;
         }
@@ -887,7 +887,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             permissions = new OpPermissions(new String[] { "fullrender", "cancelrender", "radiusrender", "resetstats", "reload", "purgequeue", "pause", "ips-for-id", "ids-for-ip", "add-id-for-ip", "del-id-for-ip" });
         /* Get and initialize data folder */
         File dataDirectory = this.getDataFolder();
-        if(dataDirectory.exists() == false)
+        if(!dataDirectory.exists())
             dataDirectory.mkdirs();
          
         /* Instantiate core */
@@ -1175,7 +1175,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private class BlockCheckHandler implements Runnable {
         public void run() {
             BlockToCheck btt;
-            while(blocks_to_check.isEmpty() != true) {
+            while(!blocks_to_check.isEmpty()) {
                 btt = blocks_to_check.pop();
                 Location loc = btt.loc;
                 World w = loc.getWorld();
@@ -1196,7 +1196,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             startIfNeeded();
         }
         public void startIfNeeded() {
-            if((blocks_to_check == null) && (blocks_to_check_accum.isEmpty() == false)) { /* More pending? */
+            if((blocks_to_check == null) && (!blocks_to_check_accum.isEmpty())) { /* More pending? */
                 blocks_to_check = blocks_to_check_accum;
                 blocks_to_check_accum = new LinkedList<BlockToCheck>();
                 getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, this, 10);

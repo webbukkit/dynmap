@@ -138,7 +138,7 @@ public class BiomeMap {
         // Handle null biome
         if (id == null) { id = "biome_" + idx; }
         id = id.toUpperCase().replace(' ', '_');
-        if(isUniqueID(id) == false) {
+        if(!isUniqueID(id)) {
             id = id + "_" + idx;
         }
         this.id = id;

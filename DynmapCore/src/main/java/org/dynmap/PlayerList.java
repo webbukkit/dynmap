@@ -132,7 +132,7 @@ public class PlayerList {
         for (int i = 0; i < onlinePlayers.length; i++) {
             DynmapPlayer p = onlinePlayers[i];
             if(p == null) continue;
-            if((worldName != null) && (p.getWorld().equals(worldName) == false)) continue;
+            if((worldName != null) && (!p.getWorld().equals(worldName))) continue;
             String pname = p.getName().toLowerCase();
             if (!(useWhitelist ^ hiddenPlayerNames.contains(pname))) {
                 if(!invisibility_asserts.containsKey(pname)) {
