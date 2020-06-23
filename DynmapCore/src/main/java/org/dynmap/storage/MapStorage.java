@@ -242,9 +242,9 @@ public abstract class MapStorage {
         String p = wpath.getAbsolutePath();
         if(!p.endsWith("/"))
             p += "/";
-        sb.append("$webpath = \'");
+        sb.append("$webpath = '");
         sb.append(WebAuthManager.esc(p));
-        sb.append("\';\n");
+        sb.append("';\n");
     }
 
     private static final int RETRY_LIMIT = 4;

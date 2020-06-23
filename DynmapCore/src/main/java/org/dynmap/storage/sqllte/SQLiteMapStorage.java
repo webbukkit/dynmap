@@ -926,9 +926,9 @@ public class SQLiteMapStorage extends MapStorage {
     
     @Override
     public void addPaths(StringBuilder sb, DynmapCore core) {
-        sb.append("$dbfile = \'");
+        sb.append("$dbfile = '");
         sb.append(WebAuthManager.esc(databaseFile));
-        sb.append("\';\n");
+        sb.append("';\n");
         
         // Need to call base to add webpath
         super.addPaths(sb, core);
