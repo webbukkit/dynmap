@@ -1753,7 +1753,7 @@ public class TexturePack {
             int off = val.indexOf('+');
             int offset = 0;
             if (off > 0) {
-                offset = Integer.valueOf(val.substring(off+1));
+                offset = Integer.parseInt(val.substring(off+1));
                 val = val.substring(0,  off);
             }
             Integer v = vars.get(val);
@@ -1786,10 +1786,10 @@ public class TexturePack {
             else {
                 throw new NumberFormatException("Unknown attribute: " + txt);
             }
-            txtid = Integer.valueOf(val.substring(0, off));
+            txtid = Integer.parseInt(val.substring(0, off));
         }
         else {
-            txtid = Integer.valueOf(val);
+            txtid = Integer.parseInt(val);
         }
         /* Shift function code from x1000 to x1000000 for internal processing */
         int funcid = (txtid / COLORMOD_MULT_FILE);
@@ -2437,7 +2437,7 @@ public class TexturePack {
                             return;
                         }
                         try {
-                            int val = Integer.valueOf(v[1]);    /* Parse default value */
+                            int val = Integer.parseInt(v[1]);    /* Parse default value */
                             int parmval = config.getInteger(v[0], val); /* Read value, with applied default */
                             varvals.put(v[0], parmval); /* And save value */
                         } catch (NumberFormatException nfx) {

@@ -1231,7 +1231,7 @@ public class ForgeMapChunkCache extends MapChunkCache
         if (queue != null)
         {
             long coord = ChunkPos.chunkXZ2Int(chunk.x, chunk.z);
-            isunloadpending = queue.contains(Long.valueOf(coord));
+            isunloadpending = queue.contains(coord);
         }
         return isunloadpending;
     }

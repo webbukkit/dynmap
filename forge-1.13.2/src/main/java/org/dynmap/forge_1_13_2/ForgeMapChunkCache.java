@@ -1120,22 +1120,22 @@ public class ForgeMapChunkCache extends MapChunkCache
         Object val = null;
         switch(v.getId()) {
             case 1: // Byte
-                val = Byte.valueOf(((NBTTagByte)v).getByte());
+                val = ((NBTTagByte) v).getByte();
                 break;
             case 2: // Short
-                val = Short.valueOf(((NBTTagShort)v).getShort());
+                val = ((NBTTagShort) v).getShort();
                 break;
             case 3: // Int
-                val = Integer.valueOf(((NBTTagInt)v).getInt());
+                val = ((NBTTagInt) v).getInt();
                 break;
             case 4: // Long
-                val = Long.valueOf(((NBTTagLong)v).getLong());
+                val = ((NBTTagLong) v).getLong();
                 break;
             case 5: // Float
-                val = Float.valueOf(((NBTTagFloat)v).getFloat());
+                val = ((NBTTagFloat) v).getFloat();
                 break;
             case 6: // Double
-                val = Double.valueOf(((NBTTagDouble)v).getDouble());
+                val = ((NBTTagDouble) v).getDouble();
                 break;
             case 7: // Byte[]
                 val = ((NBTTagByteArray)v).getByteArray();

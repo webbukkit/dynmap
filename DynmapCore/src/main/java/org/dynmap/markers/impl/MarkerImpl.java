@@ -184,9 +184,9 @@ class MarkerImpl implements Marker {
         HashMap<String, Object> node = new HashMap<String, Object>();
         node.put("label", label);
         node.put("markup", markup);
-        node.put("x", Double.valueOf(x));
-        node.put("y", Double.valueOf(y));
-        node.put("z", Double.valueOf(z));
+        node.put("x", x);
+        node.put("y", y);
+        node.put("z", z);
         node.put("world", world);
         node.put("icon", icon.getMarkerIconID());
         if (this.minzoom >= 0) {

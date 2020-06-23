@@ -379,7 +379,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     public boolean isInUnloadQueue(Object unloadqueue, int x, int z) {
         if(unloadqueue != null) {
             if (cps_unloadqueue_isSet)
-                return ((Set<Long>) unloadqueue).contains(Long.valueOf((long)x & 0xFFFFFFFF | ((long)z & 0xFFFFFFFF) << 32));
+                return ((Set<Long>) unloadqueue).contains((long) x & 0xFFFFFFFF | ((long) z & 0xFFFFFFFF) << 32);
             return (Boolean)callMethod(unloadqueue, lhs_containskey, new Object[] { x, z }, true);
         }
         return true;
@@ -398,7 +398,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get inhabited ticks count from chunk
      */
-    private static final Long zero = new Long(0);
+    private static final Long zero = 0L;
     public long getInhabitedTicks(Chunk c) {
         if (nmsc_inhabitedticks == null) {
             return 0;

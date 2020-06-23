@@ -121,7 +121,7 @@ public class HDBlockModels {
      * @return scaled models
      */
     public static HDScaledBlockModels   getModelsForScale(int scale) {
-        HDScaledBlockModels model = scaled_models_by_scale.get(Integer.valueOf(scale));
+        HDScaledBlockModels model = scaled_models_by_scale.get(scale);
         if(model == null) {
             model = new HDScaledBlockModels(scale);
             scaled_models_by_scale.put(scale, model);
@@ -270,7 +270,7 @@ public class HDBlockModels {
             int off = val.indexOf('+');
             int offset = 0;
             if (off > 0) {
-                offset = Integer.valueOf(val.substring(off+1));
+                offset = Integer.parseInt(val.substring(off+1));
                 val = val.substring(0,  off);
             }
             Integer v = vars.get(val);
@@ -603,7 +603,7 @@ public class HDBlockModels {
                             return;
                         }
                         try {
-                            int val = Integer.valueOf(v[1]);    /* Parse default value */
+                            int val = Integer.parseInt(v[1]);    /* Parse default value */
                             int parmval = config.getInteger(v[0], val); /* Read value, with applied default */
                             varvals.put(v[0], parmval); /* And save value */
                         } catch (NumberFormatException nfx) {

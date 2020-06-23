@@ -1374,7 +1374,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             else if((x != null) && (y != null) && (z != null) && (world != null)) {
                 try {
-                    loc = new DynmapLocation(world, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z));
+                    loc = new DynmapLocation(world, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z));
                 } catch (NumberFormatException nfx) {
                     sender.sendMessage("Coordinates x, y, and z must be numbers");
                     return true;
@@ -1528,7 +1528,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             DynmapLocation loc = null;
             if((x != null) && (y != null) && (z != null) && (world != null)) {
                 try {
-                    loc = new DynmapLocation(world, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z));
+                    loc = new DynmapLocation(world, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z));
                 } catch (NumberFormatException nfx) {
                     sender.sendMessage("Coordinates x, y, and z must be numbers");
                     return true;
@@ -1740,7 +1740,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 }
                 if(prio != null) {
                     try {
-                        set.setLayerPriority(Integer.valueOf(prio));
+                        set.setLayerPriority(Integer.parseInt(prio));
                     } catch (NumberFormatException nfx) {
                         sender.sendMessage("Invalid priority: " + prio);
                     }
@@ -1754,14 +1754,14 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 }
                 if(minzoom != null) {
                     try {
-                        set.setMinZoom(Integer.valueOf(minzoom));
+                        set.setMinZoom(Integer.parseInt(minzoom));
                     } catch (NumberFormatException nfx) {
                         sender.sendMessage("Invalid min zoom: " + minzoom);
                     }
                 }
                 if(maxzoom != null) {
                     try {
-                        set.setMaxZoom(Integer.valueOf(maxzoom));
+                        set.setMaxZoom(Integer.parseInt(maxzoom));
                     } catch (NumberFormatException nfx) {
                         sender.sendMessage("Invalid max zoom: " + maxzoom);
                     }
@@ -1843,21 +1843,21 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
 
             if(prio != null) {
                 try {
-                    set.setLayerPriority(Integer.valueOf(prio));
+                    set.setLayerPriority(Integer.parseInt(prio));
                 } catch (NumberFormatException nfx) {
                     sender.sendMessage("Invalid priority: " + prio);
                 }
             }
             if(minzoom != null) {
                 try {
-                    set.setMinZoom(Integer.valueOf(minzoom));
+                    set.setMinZoom(Integer.parseInt(minzoom));
                 } catch (NumberFormatException nfx) {
                     sender.sendMessage("Invalid min zoom: " + minzoom);
                 }
             }
             if(maxzoom != null) {
                 try {
-                    set.setMaxZoom(Integer.valueOf(maxzoom));
+                    set.setMaxZoom(Integer.parseInt(maxzoom));
                 } catch (NumberFormatException nfx) {
                     sender.sendMessage("Invalid max zoom: " + maxzoom);
                 }
@@ -2596,7 +2596,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
         else if((x != null) && (y != null) && (z != null) && (world != null)) {
             try {
-                loc = new DynmapLocation(world, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z));
+                loc = new DynmapLocation(world, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(z));
             } catch (NumberFormatException nfx) {
                 sender.sendMessage("Coordinates x, y, and z must be numbers");
                 return true;
@@ -3044,7 +3044,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         Map<String, Object> markerdata = new HashMap<String, Object>();
                 
         final Map<String, Object> worlddata = new HashMap<String, Object>();
-        worlddata.put("timestamp", Long.valueOf(System.currentTimeMillis()));   /* Add timestamp */
+        worlddata.put("timestamp", System.currentTimeMillis());   /* Add timestamp */
 
         for(MarkerSet ms : markersets.values()) {
             HashMap<String, Object> msdata = new HashMap<String, Object>();

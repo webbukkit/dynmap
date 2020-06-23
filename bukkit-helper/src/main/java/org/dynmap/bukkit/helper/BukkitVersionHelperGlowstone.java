@@ -85,7 +85,7 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
         }
         if (rb != null) {
             for (int i = 0; i < 256; i++) {
-                b[i] = Integer.valueOf(255 & (int)rb[i]);
+                b[i] = 255 & (int) rb[i];
             }
         }
         return b;
