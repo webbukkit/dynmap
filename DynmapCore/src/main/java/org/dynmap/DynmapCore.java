@@ -979,7 +979,7 @@ public class DynmapCore implements DynmapCommonAPI {
         Debug.clearDebuggers();
         for (ConfigurationNode debuggerConfiguration : debuggersConfiguration) {
             try {
-                Class<?> debuggerClass = Class.forName((String) debuggerConfiguration.getString("class"));
+                Class<?> debuggerClass = Class.forName(debuggerConfiguration.getString("class"));
                 Constructor<?> constructor = debuggerClass.getConstructor(DynmapCore.class, ConfigurationNode.class);
                 Debugger debugger = (Debugger) constructor.newInstance(this, debuggerConfiguration);
                 Debug.addDebugger(debugger);
@@ -1786,7 +1786,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 Object name = m.get("name");
                 if(name instanceof String) {
                     /* If not an existing one, need to add it */
-                    if(existing_names.contains((String)name) == false) {
+                    if(existing_names.contains(name) == false) {
                         existing.add(m);
                         did_update = true;
                     }
@@ -2155,7 +2155,7 @@ public class DynmapCore implements DynmapCommonAPI {
             return;
         Yaml yaml = new Yaml();
         @SuppressWarnings("unchecked")
-        Map<String,Object> val = (Map<String,Object>)yaml.load(in);
+        Map<String,Object> val = yaml.load(in);
         if(val != null)
             version = (String)val.get("version");
     }

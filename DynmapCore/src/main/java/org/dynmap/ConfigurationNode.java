@@ -272,7 +272,7 @@ public class ConfigurationNode implements Map<String, Object> {
             return new ArrayList<ConfigurationNode>();
         
         ArrayList<ConfigurationNode> nodes = new ArrayList<ConfigurationNode>();
-        for(Object i : (List<?>)o) {
+        for(Object i : o) {
             if (i instanceof Map<?, ?>) {
                 Map<String, Object> map;
                 try {

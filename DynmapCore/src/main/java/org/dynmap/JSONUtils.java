@@ -18,7 +18,7 @@ public class JSONUtils {
             if (oo == null) {
                 return null;
             } else /*if (oo instanceof JSONObject)*/ {
-                subobject = (JSONObject)o;
+                subobject = o;
             }
             return g(subobject, subpath);
         }

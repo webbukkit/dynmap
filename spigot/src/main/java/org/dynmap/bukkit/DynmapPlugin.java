@@ -1009,7 +1009,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         long elapsed = now - lasttick;
         lasttick = now;
         avgticklen = ((avgticklen * 99) / 100) + (elapsed / 100);
-        tps = (double)1E9 / (double)avgticklen;
+        tps = 1E9 / (double)avgticklen;
         if (mapManager != null) {
             chunks_in_cur_tick = mapManager.getMaxChunkLoadsPerTick();
         }

@@ -1043,7 +1043,7 @@ public class ForgeMapChunkCache extends MapChunkCache
                 val = ((ByteArrayNBT)v).getByteArray();
                 break;
             case 8: // String
-                val = ((StringNBT)v).getString();
+                val = v.getString();
                 break;
             case 9: // List
                 ListNBT tl = (ListNBT) v;
