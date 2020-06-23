@@ -84,7 +84,7 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
     @Override
     public void setTexturePath(String txtpath) {
         this.texturePath = txtpath;
-        if (this.texturePath.endsWith("/") == false) {
+        if (!this.texturePath.endsWith("/")) {
             this.texturePath += "/";
         }
         if (this.texturePath.startsWith("/")) {

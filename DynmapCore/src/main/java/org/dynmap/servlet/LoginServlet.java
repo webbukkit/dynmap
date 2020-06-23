@@ -78,7 +78,7 @@ public class LoginServlet extends HttpServlet {
             String pwd = req.getParameter("j_password");
             String vpwd = req.getParameter("j_verify_password");
             String passcode = req.getParameter("j_passcode");
-            if((pwd == null) || (vpwd == null) || (pwd.equals(vpwd) == false)) {
+            if((pwd == null) || (vpwd == null) || (!pwd.equals(vpwd))) {
                 resp.sendRedirect(LOGIN_PAGE + "?error=verifyfailed");
                 sendResponse(resp, "verifyfailed");
             }

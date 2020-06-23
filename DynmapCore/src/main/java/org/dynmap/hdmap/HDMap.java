@@ -425,7 +425,7 @@ public class HDMap extends MapType {
         return false;
     }
     public boolean setImageFormatSetting(String f) {
-        if(imgfmtstring.equals(f) == false) {
+        if(!imgfmtstring.equals(f)) {
             MapType.ImageFormat newfmt;
             if(f.equals("default"))
                 newfmt = MapType.ImageFormat.fromID(core.getDefImageFormat());

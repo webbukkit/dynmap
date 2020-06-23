@@ -317,7 +317,7 @@ public abstract class MapStorage {
         File f = new File(baseStandaloneDir, fileid);
         if (getReadLock(fileid, 5000)) {
             int retrycnt = 0;
-            if (f.exists() == false) 
+            if (!f.exists())
                 done = true;
             while (!done) {
                 byte[] b = new byte[(int) f.length()];

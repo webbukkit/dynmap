@@ -890,7 +890,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
                      * while the actual in-use chunk area for a player where the chunks are managed
                      * by the MC base server is 21x21 (or about a 160 block radius).
                      * Also, if we did generate it, need to save it */
-                    if (w.isChunkInUse(chunk.x, chunk.z) == false) {
+                    if (!w.isChunkInUse(chunk.x, chunk.z)) {
                         if (BukkitVersionHelper.helper.isUnloadChunkBroken()) {
                             // Give up on broken unloadChunk API - lets see if this works
                             w.unloadChunkRequest(chunk.x, chunk.z);
@@ -902,7 +902,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
                     endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
                 }
                 else if (isunloadpending) { /* Else, if loaded and unload is pending */
-                    if (w.isChunkInUse(chunk.x, chunk.z) == false) {
+                    if (!w.isChunkInUse(chunk.x, chunk.z)) {
                         w.unloadChunkRequest(chunk.x, chunk.z); /* Request new unload */
                     }
                     endChunkLoad(startTime, ChunkStats.LOADED_CHUNKS);
@@ -918,7 +918,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
         }
         DynmapCore.setIgnoreChunkLoads(false);
 
-        if(iterator.hasNext() == false) {   /* If we're done */
+        if(!iterator.hasNext()) {   /* If we're done */
             isempty = true;
             /* Fill missing chunks with empty dummy chunk */
             for(int i = 0; i < snaparray.length; i++) {
@@ -966,7 +966,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
         isSectionNotEmpty[idx] = new boolean[nsect + 1];
         if(snaparray[idx] != EMPTY) {
             for(int i = 0; i < nsect; i++) {
-                if(snaparray[idx].isSectionEmpty(i) == false) {
+                if(!snaparray[idx].isSectionEmpty(i)) {
                     isSectionNotEmpty[idx][i] = true;
                 }
             }

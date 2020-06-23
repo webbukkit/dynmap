@@ -138,7 +138,7 @@ public class MapManager {
         public boolean equals(Object o) {
             if(this == o) return true;
             TouchEvent te = (TouchEvent)o;
-            if((x != te.x) || (y != te.y) || (z != te.z) || (world.equals(te.world) == false))
+            if((x != te.x) || (y != te.y) || (z != te.z) || (!world.equals(te.world)))
                 return false;
             return true;
         }        
@@ -378,7 +378,7 @@ public class MapManager {
             if(map_index >= 0) {
                 String m = n.getString("map","");
                 map = world.maps.get(map_index);
-                if((map == null) || (map.getName().equals(m) == false)) {
+                if((map == null) || (!map.getName().equals(m))) {
                     throw new Exception();
                 }
             }
@@ -528,7 +528,7 @@ public class MapManager {
                     scheduleDelayedJob(this, 20*5); /* Delay 5 seconds and retry */
                     return;
                 }
-                else if(world.isLoaded() == false) {    /* Update renders are paused? */
+                else if(!world.isLoaded()) {    /* Update renders are paused? */
                     if(!pausedforworld) {
                         pausedforworld = true;
                         Log.info("Paused " + rendertype + " for world '" + world.getName() + "' - world unloaded");
@@ -593,7 +593,7 @@ public class MapManager {
                             }
                         }
                         else {
-                            if(renderedmaps.contains(world.maps.get(map_index)) == false)
+                            if(!renderedmaps.contains(world.maps.get(map_index)))
                                 break;
                         }
                     }
@@ -763,7 +763,7 @@ public class MapManager {
                                                       tile.isRawBiomeDataNeeded());
             if(cache == null) {
                 /* If world unloaded, don't cancel */
-                if(world.isLoaded() == false) {
+                if(!world.isLoaded()) {
                     return true;
                 }
                 return false; /* Cancelled/aborted */
@@ -782,7 +782,7 @@ public class MapManager {
             }
 
             if(tile0 != null) {    /* Single tile? */
-                if(cache.isEmpty() == false) {
+                if(!cache.isEmpty()) {
                     if (skipTile) {
                         skipcnt++;
                     } else {
@@ -794,7 +794,7 @@ public class MapManager {
         		/* Remove tile from tile queue, since we're processing it already */
             	tileQueue.remove(tile);
                 /* Switch to not checking if rendered tile is blank - breaks us on skylands, where tiles can be nominally blank - just work off chunk cache empty */
-                if (cache.isEmpty() == false) {
+                if (!cache.isEmpty()) {
                     boolean upd;
                     if (skipTile) {
                         upd = false;
@@ -1015,7 +1015,7 @@ public class MapManager {
         		if (oldset != null) {
             		for (EnterExitMarker m : oldset) {
             			EnterExitText txt = m.getFarewellText();
-            			if ((txt != null) && (newset.contains(m) == false)) {
+            			if ((txt != null) && (!newset.contains(m))) {
             				enqueueMessage(puuid, player, txt, false);
             			}
             		}        			
@@ -1023,7 +1023,7 @@ public class MapManager {
         		// See which we just entered
         		for (EnterExitMarker m : newset) {
         			EnterExitText txt = m.getGreetingText();
-        			if ((txt != null) && ((oldset == null) || (oldset.contains(m) == false))) {
+        			if ((txt != null) && ((oldset == null) || (!oldset.contains(m)))) {
         				enqueueMessage(puuid, player, txt, true);
         			}
         		}
@@ -1850,7 +1850,7 @@ public class MapManager {
         ArrayList<TouchEvent> te = null;
         ArrayList<TouchVolumeEvent> tve = null;
 
-        if(touch_events.isEmpty() == false) {
+        if(!touch_events.isEmpty()) {
             te = new ArrayList<TouchEvent>(touch_events.keySet());
             for(int i = 0; i < te.size(); i++) {
                 touch_events.remove(te.get(i));
@@ -1858,7 +1858,7 @@ public class MapManager {
         }
 
         synchronized(touch_lock) {
-            if(touch_volume_events.isEmpty() == false) {
+            if(!touch_volume_events.isEmpty()) {
                 tve = new ArrayList<TouchVolumeEvent>(touch_volume_events);
                 touch_volume_events.clear();
             }
@@ -1871,7 +1871,7 @@ public class MapManager {
             for(TouchEvent evt : te) {
                 int invalidates = 0;
                 /* If different world, look it up */
-                if(evt.world.equals(wname) == false) {
+                if(!evt.world.equals(wname)) {
                     wname = evt.world;
                     world = getWorld(wname);
                 }
@@ -1902,7 +1902,7 @@ public class MapManager {
         if(tve != null) {
             for(TouchVolumeEvent evt : tve) {
                 /* If different world, look it up */
-                if(evt.world.equals(wname) == false) {
+                if(!evt.world.equals(wname)) {
                     wname = evt.world;
                     world = getWorld(wname);
                 }

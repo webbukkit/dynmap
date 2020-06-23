@@ -654,7 +654,7 @@ public class TexturePack {
             /* Load CTM support, if enabled */
             if(core.isCTMSupportEnabled()) {
                 ctm = new CTMTexturePack(tpl, this, core, is_rp);
-                if(ctm.isValid() == false) {
+                if(!ctm.isValid()) {
                     ctm = null;
                 }
             }
@@ -677,7 +677,7 @@ public class TexturePack {
             /* Loop through dynamic files */
             for(int i = 0; i < addonfiles.size(); i++) {
                 DynamicTileFile dtf = addonfiles.get(i);
-                if (dtf.used == false) {    // Not used, skip it - save memory and avoid errors for downlevel mods and such
+                if (!dtf.used) {    // Not used, skip it - save memory and avoid errors for downlevel mods and such
                     continue;
                 }
                 is = tpl.openModTPResource(dtf.filename, dtf.modname);
@@ -1372,7 +1372,7 @@ public class TexturePack {
             li.trivial_color = clr_scale[9];
         }
         // If we didn't actually load, don't use color lookup for this (handle broken RPs like John Smith)
-        if (li.isLoaded == false) {
+        if (!li.isLoaded) {
             this.blockColoring.scrubValues(idx);
         }
     }
@@ -2420,7 +2420,7 @@ public class TexturePack {
                         return; /* Quit */
                     }
                     /* If setting is not defined or false, quit */
-                    else if(config.getBoolean(line, false) == false) {
+                    else if(!config.getBoolean(line, false)) {
                         return;
                     }
                     else {
@@ -2592,7 +2592,7 @@ public class TexturePack {
         Set<String> aliased = MapManager.mapman.getAliasedBlocks();
         for (String an : aliased) {
             String newid = MapManager.mapman.getBlockAlias(an);
-            if (newid.equals(an) == false) {
+            if (!newid.equals(an)) {
                 HDBlockStateTextureMap.remapTexture(an, newid);
             }
         }
@@ -3402,7 +3402,7 @@ public class TexturePack {
             Integer txt_id = tileIDByMatID.get(txtbase);
             int id = -1;
             if (txt_id == null) {
-                if (txtbase.startsWith("txt") == false) {
+                if (!txtbase.startsWith("txt")) {
                     continue;
                 }
                 try {

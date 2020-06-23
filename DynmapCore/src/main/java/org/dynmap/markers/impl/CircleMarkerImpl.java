@@ -262,7 +262,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     }
     @Override
     public void setDescription(String desc) {
-        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+        if((this.desc == null) || (!this.desc.equals(desc))) {
             this.desc = desc;
             MarkerAPIImpl.circleMarkerUpdated(this, MarkerUpdate.UPDATED);
             if(ispersistent)

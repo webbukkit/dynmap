@@ -80,7 +80,7 @@ public class ForgeConfigFile {
                                 instr = intok = false;
                                 break;
                             case '{':
-                                if(tok.equals("") == false) {
+                                if(!tok.equals("")) {
                                     section.add(tok);
                                     tok = "";
                                     instr = intok = false;

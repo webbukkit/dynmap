@@ -62,7 +62,7 @@ public class TileHashManager {
                     fd = new RandomAccessFile(f, "rw");
                 } catch (FileNotFoundException nfnx) {
                     File pf = f.getParentFile();
-                    if (pf.exists() == false) {
+                    if (!pf.exists()) {
                         pf.mkdirs();
                     }
                     fd = new RandomAccessFile(f, "rw");

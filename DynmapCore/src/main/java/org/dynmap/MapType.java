@@ -149,7 +149,7 @@ public abstract class MapType {
         LinkedList<File> dirs = new LinkedList<File>();
         String ext = "." + getImageFormat().getFileExt();
         dirs.add(root);
-        while(dirs.isEmpty() == false) {
+        while(!dirs.isEmpty()) {
             File dir = dirs.pop();
             String[] lst = dir.list();
             if(lst == null) continue;

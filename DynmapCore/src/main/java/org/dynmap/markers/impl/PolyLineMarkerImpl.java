@@ -222,7 +222,7 @@ class PolyLineMarkerImpl implements PolyLineMarker {
     @Override
     public void setDescription(String desc) {
         if(markerset == null) return;
-        if((this.desc == null) || (this.desc.equals(desc) == false)) {
+        if((this.desc == null) || (!this.desc.equals(desc))) {
             this.desc = desc;
             MarkerAPIImpl.polyLineMarkerUpdated(this, MarkerUpdate.UPDATED);
             if(ispersistent)

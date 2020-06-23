@@ -62,7 +62,7 @@ public class FileTreeMapStorage extends MapStorage {
         private File getTileFile() {
             ImageEncoding fmt = map.getImageFormat().getEncoding();
             File ff = getTileFile(fmt);
-            if (ff.exists() == false) {
+            if (!ff.exists()) {
                 if (fmt == ImageEncoding.PNG) {
                     fmt = ImageEncoding.JPG;
                 }
@@ -99,7 +99,7 @@ public class FileTreeMapStorage extends MapStorage {
         public TileRead read() {
             ImageEncoding fmt = map.getImageFormat().getEncoding();
             File ff = getTileFile(fmt);
-            if (ff.exists() == false) { // Fallback and try to read other format
+            if (!ff.exists()) { // Fallback and try to read other format
                 if (fmt == ImageEncoding.PNG) {
                     fmt = ImageEncoding.JPG;
                 }
@@ -151,10 +151,10 @@ public class FileTreeMapStorage extends MapStorage {
                 }
                 return true;
             }
-            if (ffpar.exists() == false) {
+            if (!ffpar.exists()) {
                 ffpar.mkdirs();
             }
-            if (replaceFile(ff, encImage.buf, encImage.len) == false) {
+            if (!replaceFile(ff, encImage.buf, encImage.len)) {
                 return false;
             }
             hashmap.updateHashCode(world.getName() + "." + map.getPrefix(), x, y, hash);
@@ -299,7 +299,7 @@ public class FileTreeMapStorage extends MapStorage {
 
     private void processEnumMapTiles(DynmapWorld world, MapType map, File base, ImageVariant var, MapStorageTileEnumCB cb, MapStorageBaseTileEnumCB cbBase, MapStorageTileSearchEndCB cbEnd) {
         File bdir = new File(base, map.getPrefix() + var.variantSuffix);
-        if (bdir.isDirectory() == false) {
+        if (!bdir.isDirectory()) {
             if(cbEnd != null)
                 cbEnd.searchEnded();
             return;
@@ -308,7 +308,7 @@ public class FileTreeMapStorage extends MapStorage {
         LinkedList<File> dirs = new LinkedList<File>(); // List to traverse
         dirs.add(bdir);   // Directory for map
         // While more paths to handle
-        while (dirs.isEmpty() == false) {
+        while (!dirs.isEmpty()) {
             File dir = dirs.pop();
             String[] dirlst = dir.list();
             if (dirlst == null) continue;
@@ -409,20 +409,20 @@ public class FileTreeMapStorage extends MapStorage {
         String[] hlist = base.list();
         if (hlist != null) {
             for (String h : hlist) {
-                if (h.endsWith(".hash") == false) continue;
+                if (!h.endsWith(".hash")) continue;
                 if (h.startsWith(mname + "_")) continue;
                 File f = new File(base, h);
                 f.delete();
             }
         }
         File bdir = new File(base, mname);
-        if (bdir.isDirectory() == false) return;
+        if (!bdir.isDirectory()) return;
 
         LinkedList<File> dirs = new LinkedList<File>(); // List to traverse
         LinkedList<File> dirsdone = new LinkedList<File>();
         dirs.add(bdir);   // Directory for map
         // While more paths to handle
-        while (dirs.isEmpty() == false) {
+        while (!dirs.isEmpty()) {
             File dir = dirs.pop();
             dirsdone.add(dir);
             String[] dirlst = dir.list();
@@ -476,7 +476,7 @@ public class FileTreeMapStorage extends MapStorage {
             ff.delete();
             return true;
         }
-        if (ffpar.exists() == false) {
+        if (!ffpar.exists()) {
             ffpar.mkdirs();
         }
         getWriteLock(baseFilename);
@@ -530,7 +530,7 @@ public class FileTreeMapStorage extends MapStorage {
             ff.delete();
             return true;
         }
-        if (ffpar.exists() == false) {
+        if (!ffpar.exists()) {
             ffpar.mkdirs();
         }
         getWriteLock(baseFilename);
@@ -575,7 +575,7 @@ public class FileTreeMapStorage extends MapStorage {
             ff.delete();
             return true;
         }
-        if (ffpar.exists() == false) {
+        if (!ffpar.exists()) {
             ffpar.mkdirs();
         }
         getWriteLock(baseFilename);

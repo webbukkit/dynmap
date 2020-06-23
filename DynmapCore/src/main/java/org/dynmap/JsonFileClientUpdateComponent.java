@@ -66,7 +66,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             while(true) {
                 FileToWrite f = null;
                 synchronized(lock) {
-                    if(files_to_write.isEmpty() == false) {
+                    if(!files_to_write.isEmpty()) {
                         f = files_to_write.removeFirst();
                     }
                     else {
@@ -499,7 +499,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 		}, 0);
     }
     protected void handleRegister() {
-        if(core.pendingRegisters() == false)
+        if(!core.pendingRegisters())
             return;
         BufferInputStream bis = storage.getStandaloneFile("dynmap_reg.php");
         if (bis != null) {

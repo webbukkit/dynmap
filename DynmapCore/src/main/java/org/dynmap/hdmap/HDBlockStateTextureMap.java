@@ -94,7 +94,7 @@ public class HDBlockStateTextureMap {
                         	Log.warning("Invalid texture block state: " + blkname + ":" + stateid);
                         	continue;
                         }
-                        if ((this.blockset != null) && (this.blockset.equals("core") == false)) {
+                        if ((this.blockset != null) && (!this.blockset.equals("core"))) {
                             HDBlockModels.resetIfNotBlockSet(bs, this.blockset);
                         }
                         copyToStateIndex(bs, this, null);
@@ -107,7 +107,7 @@ public class HDBlockStateTextureMap {
                         	Log.warning("Invalid texture block state: " + blkname + ":" + stateid);
                         	continue;
                         }
-                        if ((this.blockset != null) && (this.blockset.equals("core") == false)) {
+                        if ((this.blockset != null) && (!this.blockset.equals("core"))) {
                             HDBlockModels.resetIfNotBlockSet(bs, this.blockset);
                         }
                         copyToStateIndex(bs, this, null);

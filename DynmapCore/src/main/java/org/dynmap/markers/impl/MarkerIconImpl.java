@@ -45,7 +45,7 @@ class MarkerIconImpl implements MarkerIcon {
     @Override
     public void setMarkerIconLabel(String lbl) {
         if(lbl == null) lbl = iconid;
-        if(label.equals(lbl) == false) {
+        if(!label.equals(lbl)) {
             label = lbl;
             MarkerAPIImpl.saveMarkers();
         }

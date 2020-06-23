@@ -534,7 +534,7 @@ public class CTMTexturePack {
                 for (int i = 0; i < out.length; i++) {
                     String vv = lst.get(i);
                     // If not absolute path
-                    if ((vv.startsWith("/") == false) && (vv.startsWith("assets/") == false)) {
+                    if ((!vv.startsWith("/")) && (!vv.startsWith("assets/"))) {
                         vv = this.basePath + "/" + vv;    // Build path
                     }
                     if (vv.endsWith(".png")) {   // If needed, strip of png

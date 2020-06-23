@@ -49,7 +49,7 @@ public class HDBlockModels {
     /* Reset model if defined by different block set */
     public static boolean resetIfNotBlockSet(DynmapBlockState blk, String blockset) {
         HDBlockModel bm = models_by_id_data.get(blk.globalStateIndex);
-        if((bm != null) && (bm.getBlockSet().equals(blockset) == false)) {
+        if((bm != null) && (!bm.getBlockSet().equals(blockset))) {
             Debug.debug("Reset block model for " + blk + " from " + bm.getBlockSet() + " due to new def from " + blockset);
             models_by_id_data.remove(blk.globalStateIndex);
             return true;
@@ -75,7 +75,7 @@ public class HDBlockModels {
         Set<String> aliasedblocks = MapManager.mapman.getAliasedBlocks();
         for (String bn : aliasedblocks) {
             String newid = MapManager.mapman.getBlockAlias(bn);
-            if (newid.equals(bn) == false) {
+            if (!newid.equals(bn)) {
                 remapModel(bn, newid);
             }
         }
@@ -454,7 +454,7 @@ public class HDBlockModels {
                         for(int x = 0; x < scale; x++) {
                             for(int y = 0; y < scale; y++) {
                                 for(int z = 0; z < scale; z++) {
-                                    if(vmod.isSubblockSet(x, y, z) == false) continue;
+                                    if(!vmod.isSubblockSet(x, y, z)) continue;
                                     switch(rot) {
                                         case 0:
                                             for(HDBlockVolumetricModel bm : modlist) {
@@ -586,7 +586,7 @@ public class HDBlockModels {
                         return; /* Quit */
                     }
                     /* If setting is not defined or false, quit */
-                    else if(config.getBoolean(line, false) == false) {
+                    else if(!config.getBoolean(line, false)) {
                         return;
                     }
                     else {
