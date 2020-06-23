@@ -169,7 +169,7 @@ public class ClientUpdateComponent extends Component {
 
         s(u, "updates", new JSONArray());
         for(Object update : core.mapManager.getWorldUpdates(worldName, since)) {
-            a(u, "updates", (Client.Update)update);
+            a(u, "updates", update);
         }
     }
 

@@ -287,7 +287,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                 Object[] byid = (Object[])blockbyid.get(nmsblock);
                 for (int i = 0; i < map.length; i++) {
                     if (byid[i] != null) {
-                        Object mat = (Object)material.get(byid[i]);
+                        Object mat = material.get(byid[i]);
                         if (mat != null) {
                         	Boolean solid = (Boolean) material_issolid.invoke(mat);
                         	Boolean liquid = (Boolean) material_isliquid.invoke(mat);
@@ -301,7 +301,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                 for (int i = 0; i < map.length; i++) {
                     Object blk = blockbyidfunc.invoke(nmsblock, i);
                     if (blk != null) {
-                        Object mat = (Object)material.get(blk);
+                        Object mat = material.get(blk);
                         if (mat != null) {
                         	Boolean solid = (Boolean) material_issolid.invoke(mat);
                         	Boolean liquid = (Boolean) material_isliquid.invoke(mat);

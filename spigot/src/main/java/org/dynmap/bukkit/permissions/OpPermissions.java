@@ -21,7 +21,7 @@ public class OpPermissions implements PermissionProvider {
     public boolean has(CommandSender sender, String permission) {
         return (sender instanceof Player)
             ? opCommands.contains(permission)
-                ? ((Player) sender).isOp()
+                ? sender.isOp()
                 : true
             : true;
     }

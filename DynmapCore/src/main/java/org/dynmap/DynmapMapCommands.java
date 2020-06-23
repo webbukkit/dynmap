@@ -462,7 +462,7 @@ public class DynmapMapCommands {
                 for(MapType map : w.maps){
                     if(map == mt) continue;
                     if(map instanceof HDMap) {
-                        if(((HDMap)map).getPrefix().equals(tok[1])) {
+                        if(map.getPrefix().equals(tok[1])) {
                             sender.sendMessage("Prefix " + tok[1] + " already in use");
                             return true;
                         }

@@ -2855,7 +2855,7 @@ public class TexturePack {
                 break;
             case COLORMOD_LILYTONED:
                 /* Rotate texture based on lily orientation function (from renderBlockLilyPad in RenderBlocks.jara in MCP) */
-                long l1 = (long)(mapiter.getX() * 0x2fc20f) ^ (long)mapiter.getZ() * 0x6ebfff5L ^ (long)mapiter.getY();
+                long l1 = (mapiter.getX() * 0x2fc20f) ^ (long)mapiter.getZ() * 0x6ebfff5L ^ mapiter.getY();
                 l1 = l1 * l1 * 0x285b825L + l1 * 11L;
                 int orientation = (int)(l1 >> 16 & 3L);
                 switch(orientation) {

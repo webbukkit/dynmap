@@ -903,7 +903,7 @@ public class DynmapPlugin
             long elapsed = cur_tick_starttime - lasttick;
             lasttick = cur_tick_starttime;
             avgticklen = ((avgticklen * 99) / 100) + (elapsed / 100);
-            tps = (double)1E9 / (double)avgticklen;
+            tps = 1E9 / (double)avgticklen;
             // Tick core
             if (core != null) {
                 core.serverTick(tps);
