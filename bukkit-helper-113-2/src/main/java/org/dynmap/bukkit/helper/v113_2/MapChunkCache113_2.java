@@ -18,11 +18,11 @@ public class MapChunkCache113_2 extends AbstractMapChunkCache {
 
     public static class WrappedSnapshot implements Snapshot {
     	private final ChunkSnapshot ss;
-    	private final DataPaletteBlock[] blockids;
+    	private final DataPaletteBlock<?>[] blockids;
     	private final int sectionmask;
 		public WrappedSnapshot(ChunkSnapshot ss) {
     		this.ss = ss;
-    		blockids = (DataPaletteBlock[]) BukkitVersionHelper.helper.getBlockIDFieldFromSnapshot(ss);
+    		blockids = (DataPaletteBlock<?>[]) BukkitVersionHelper.helper.getBlockIDFieldFromSnapshot(ss);
     		int mask = 0;
     		for (int i = 0; i < blockids.length; i++) {
     			if (ss.isSectionEmpty(i))

@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class HandlerRouter extends AbstractHandler {
 
-    PathMap pathMap = new PathMap();
+    PathMap<?> pathMap = new PathMap<Object>();
     public HandlerRouter() {
     }
     
@@ -32,7 +32,7 @@ public class HandlerRouter extends AbstractHandler {
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String pathInfo = request.getPathInfo();
-        PathMap.MappedEntry e = pathMap.getMatch(pathInfo);
+        PathMap.MappedEntry<?> e = pathMap.getMatch(pathInfo);
         String mappedPath = e.getMapped();
 
         String childPathInfo = pathInfo;

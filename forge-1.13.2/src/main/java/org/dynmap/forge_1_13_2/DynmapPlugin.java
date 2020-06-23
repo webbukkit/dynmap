@@ -221,7 +221,7 @@ public class DynmapPlugin
             if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
                 Material mat = bs.getMaterial();
                 String statename = "";
-                for(IProperty p : bs.getProperties()) {
+                for(IProperty<?> p : bs.getProperties()) {
                 	if (statename.length() > 0) {
                 		statename += ",";
                 	}
