@@ -60,7 +60,7 @@ public class HDBlockVolumetricModel extends HDBlockModel {
      */
     public short[] getScaledMap(int res) {
         if(scaledblocks == null) { scaledblocks = new HashMap<Integer, short[]>(); }
-        short[] map = scaledblocks.get(Integer.valueOf(res));
+        short[] map = scaledblocks.get(res);
         if(map == null) {
             map = new short[res*res*res];
             if(res == nativeres) {
@@ -179,7 +179,7 @@ public class HDBlockVolumetricModel extends HDBlockModel {
                     if(map[i] < 0) map[i] = 0;
                 }
             }
-            scaledblocks.put(Integer.valueOf(res), map);
+            scaledblocks.put(res, map);
         }
         return map;
     }

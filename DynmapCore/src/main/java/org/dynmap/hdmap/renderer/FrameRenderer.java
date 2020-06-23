@@ -95,12 +95,12 @@ public class FrameRenderer extends CustomRenderer {
             txtOffset = 0;
             String txt_off = custparm.get("textureOffset");
             if(txt_off != null) {
-                txtOffset = Integer.valueOf(txt_off);
+                txtOffset = Integer.parseInt(txt_off);
             }
             idx_attrib = idx;
             String txt_def = custparm.get("textureDefault");
             if(txt_def != null) {
-                txtDefIndex = Integer.valueOf(txt_def);
+                txtDefIndex = Integer.parseInt(txt_def);
             }
             
             map_id = custparm.get("textureMap");

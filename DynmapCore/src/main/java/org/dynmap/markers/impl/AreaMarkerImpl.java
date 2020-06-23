@@ -239,8 +239,8 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
             zz.add(corners.get(i).z);
         }
         node.put("x", xx);
-        node.put("ytop", Double.valueOf(ytop));
-        node.put("ybottom", Double.valueOf(ybottom));
+        node.put("ytop", ytop);
+        node.put("ybottom", ybottom);
         node.put("z", zz);
         node.put("world", world);
         if(desc != null)

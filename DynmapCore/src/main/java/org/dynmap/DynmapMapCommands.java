@@ -198,7 +198,7 @@ public class DynmapMapCommands {
                 }
                 int exo = -1;
                 try {
-                    exo = Integer.valueOf(tok[1]);
+                    exo = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {}
                 if((exo < 0) || (exo > 32)) {
                     sender.sendMessage("Invalid value for extrazoomout: " + tok[1]);
@@ -213,7 +213,7 @@ public class DynmapMapCommands {
                 }
                 int tud = -1;
                 try {
-                    tud = Integer.valueOf(tok[1]);
+                    tud = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {}
                 did_update |= core.setWorldTileUpdateDelay(wname, tud);
             }
@@ -228,9 +228,9 @@ public class DynmapMapCommands {
                     String[] toks = tok[1].split("/");
                     if(toks.length == 3) {
                         double x = 0, y = 0, z = 0;
-                        x = Double.valueOf(toks[0]);
-                        y = Double.valueOf(toks[1]);
-                        z = Double.valueOf(toks[2]);
+                        x = Double.parseDouble(toks[0]);
+                        y = Double.parseDouble(toks[1]);
+                        z = Double.parseDouble(toks[2]);
                         loc = new DynmapLocation(wname, x, y, z);
                        good = true;
                     }
@@ -261,7 +261,7 @@ public class DynmapMapCommands {
                 }
                 int order = -1;
                 try {
-                    order = Integer.valueOf(tok[1]);
+                    order = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {}
                 if(order < 1) {
                     sender.sendMessage("Order value must be number from 1 to number of worlds");
@@ -479,7 +479,7 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("mapzoomin")) {
                 int mzi = -1;
                 try {
-                    mzi = Integer.valueOf(tok[1]);
+                    mzi = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {
                 }
                 if((mzi < 0) || (mzi > 32)) {
@@ -491,7 +491,7 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("mapzoomout")) {
                 int mzi = -1;
                 try {
-                    mzi = Integer.valueOf(tok[1]);
+                    mzi = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {
                 }
                 if((mzi < 0) || (mzi > 32)) {
@@ -503,7 +503,7 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("boostzoom")) {
                 int mzi = -1;
                 try {
-                    mzi = Integer.valueOf(tok[1]);
+                    mzi = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {
                 }
                 if((mzi < 0) || (mzi > 3)) {
@@ -515,7 +515,7 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("tileupdatedelay")) {
                 int tud = -1;
                 try {
-                    tud = Integer.valueOf(tok[1]);
+                    tud = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {
                 }
                 did_update |= mt.setTileUpdateDelay(tud);
@@ -560,7 +560,7 @@ public class DynmapMapCommands {
             else if(tok[0].equalsIgnoreCase("order")) {
                 int idx = -1;
                 try {
-                    idx = Integer.valueOf(tok[1]);
+                    idx = Integer.parseInt(tok[1]);
                 } catch (NumberFormatException nfx) {
                 }
                 if(idx < 1) {

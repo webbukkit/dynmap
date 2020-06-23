@@ -21,7 +21,7 @@ import org.dynmap.utils.BufferOutputStream;
 public abstract class MapStorage {
     private static Object lock = new Object();
     private static HashMap<String, Integer> filelocks = new HashMap<String, Integer>();
-    private static final Integer WRITELOCK = new Integer(-1);
+    private static final Integer WRITELOCK = -1;
     protected File baseStandaloneDir;
 
     protected long serverID;
@@ -396,11 +396,11 @@ public abstract class MapStorage {
             while(!got_lock) {
                 Integer lockcnt = filelocks.get(baseFilename);    /* Get lock count */
                 if(lockcnt == null) {
-                    filelocks.put(baseFilename, Integer.valueOf(1));  /* First lock */
+                    filelocks.put(baseFilename, 1);  /* First lock */
                     got_lock = true;
                 }
                 else if(!lockcnt.equals(WRITELOCK)) {   /* Other read locks */
-                    filelocks.put(baseFilename, Integer.valueOf(lockcnt+1));
+                    filelocks.put(baseFilename, lockcnt + 1);
                     got_lock = true;
                 }
                 else {  /* Write lock in place */
@@ -434,7 +434,7 @@ public abstract class MapStorage {
             else if(lockcnt.equals(WRITELOCK))
                 Log.severe("releaseReadLock(" + baseFilename + ") on write-locked file");
             else if(lockcnt > 1) {
-                filelocks.put(baseFilename, Integer.valueOf(lockcnt-1));
+                filelocks.put(baseFilename, lockcnt - 1);
             }
             else {
                 filelocks.remove(baseFilename);   /* Remove lock */

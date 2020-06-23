@@ -110,7 +110,7 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
                 int off = patchid.lastIndexOf('#');
                 if(off > 0) {
                     try {
-                        txt_idx = Integer.valueOf(patchid.substring(off+1));
+                        txt_idx = Integer.parseInt(patchid.substring(off+1));
                     } catch (NumberFormatException nfx) {
                         return null;
                     }
