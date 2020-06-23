@@ -225,13 +225,13 @@ public class WebAuthManager {
         /* Create password hash */
         sb.append("$pwdhash = array(\n");
         for(String uid : pwdhash_by_userid.keySet()) {
-            sb.append("  \'").append(esc(uid)).append("\' => \'").append(esc(pwdhash_by_userid.get(uid))).append("\',\n");
+            sb.append("  '").append(esc(uid)).append("' => '").append(esc(pwdhash_by_userid.get(uid))).append("',\n");
         }
         sb.append(");\n");
         /* Create registration table */
         sb.append("$pendingreg = array(\n");
         for(String uid : pending_registrations.keySet()) {
-            sb.append("  \'").append(esc(uid)).append("\' => \'").append(esc(pending_registrations.get(uid))).append("\',\n");
+            sb.append("  '").append(esc(uid)).append("' => '").append(esc(pending_registrations.get(uid))).append("',\n");
         }
         sb.append(");\n");
         if (wrap) {
@@ -247,7 +247,7 @@ public class WebAuthManager {
             if(c == '\\')
                 sb.append("\\\\");
             else if(c == '\'')
-                sb.append("\\\'");
+                sb.append("\\'");
             else
                 sb.append(c);
         }
@@ -265,13 +265,13 @@ public class WebAuthManager {
         for(DynmapWorld w : core.getMapManager().getWorlds()) {
             if(w.isProtected()) {
                 String perm = "world." + w.getName();
-                sb.append("  \'").append(esc(w.getName())).append("\' => \'");
+                sb.append("  '").append(esc(w.getName())).append("' => '");
                 for(String uid : pwdhash_by_userid.keySet()) {
                     if(core.getServer().checkPlayerPermission(uid, perm)) {
                         sb.append("[").append(esc(uid)).append("]");
                     }
                 }
-                sb.append("\',\n");
+                sb.append("',\n");
             }
             for(MapType mt : w.maps) {
                 if(mt.isProtected()) {
@@ -285,19 +285,19 @@ public class WebAuthManager {
         sb.append("$mapaccess = array(\n");
         for(String id : mid) {
             String perm = "map." + id;
-            sb.append("  \'").append(esc(id)).append("\' => \'");
+            sb.append("  '").append(esc(id)).append("' => '");
             for(String uid : pwdhash_by_userid.keySet()) {
                 if(core.getServer().checkPlayerPermission(uid, perm)) {
                     sb.append("[").append(esc(uid)).append("]");
                 }
             }
-            sb.append("\',\n");
+            sb.append("',\n");
         }
         sb.append(");\n");
 
         HashSet<String> cantseeall = new HashSet<String>();
         String perm = "playermarkers.seeall";
-        sb.append("$seeallmarkers = \'");
+        sb.append("$seeallmarkers = '");
         for(String uid : pwdhash_by_userid.keySet()) {
             if(core.getServer().checkPlayerPermission(uid, perm)) {
                 sb.append("[").append(esc(uid)).append("]");
@@ -306,18 +306,18 @@ public class WebAuthManager {
                 cantseeall.add(uid);
             }
         }
-        sb.append("\';\n");
+        sb.append("';\n");
         /* Add visibility lists for each player that doesn't see everything */
         sb.append("$playervisible = array(\n");
         for(String id : cantseeall) {
             id = id.toLowerCase();
             Set<String> vis = core.getPlayersVisibleToPlayer(id);
             if((vis.size() == 1) && vis.contains(id)) continue;
-            sb.append("  \'").append(esc(id)).append("\' => \'");
+            sb.append("  '").append(esc(id)).append("' => '");
             for(String uid : vis) {
                 sb.append("[").append(esc(uid)).append("]");
             }
-            sb.append("\',\n");
+            sb.append("',\n");
         }
         sb.append(");\n");
 

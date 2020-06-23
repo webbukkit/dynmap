@@ -665,12 +665,12 @@ public class FileTreeMapStorage extends MapStorage {
         String p = core.getTilesFolder().getAbsolutePath();
         if(!p.endsWith("/"))
             p += "/";
-        sb.append("$tilespath = \'");
+        sb.append("$tilespath = '");
         sb.append(WebAuthManager.esc(p));
-        sb.append("\';\n");
-        sb.append("$markerspath = \'");
+        sb.append("';\n");
+        sb.append("$markerspath = '");
         sb.append(WebAuthManager.esc(p));
-        sb.append("\';\n");
+        sb.append("';\n");
         
         // Need to call base to add webpath
         super.addPaths(sb, core);
