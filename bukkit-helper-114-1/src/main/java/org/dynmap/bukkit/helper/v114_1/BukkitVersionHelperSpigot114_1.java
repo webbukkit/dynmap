@@ -208,5 +208,19 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
     		p.sendTitle(title, subtitle, fadeInTicks, stayTicks, fadeOutTIcks);
     	}
     }
+	private String[] biomenames;
+	@Override
+	public String[] getBiomeNames() {
+    	if (biomenames == null) {
+    		biomenames = new String[1024];
+            for (int i = 0; i < 1024; i++) {
+            	BiomeBase bb = IRegistry.BIOME.fromId(i);
+            	if (bb != null) {
+            		biomenames[i] = bb.r();
+            	}
+            }
+        }
+        return biomenames;
+	}
 
 }
