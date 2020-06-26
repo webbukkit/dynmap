@@ -2430,3 +2430,109 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.15-]block:id=honey_block,patch0=0:honey_block_top,patch1=0:honey_block_bottom,patch2=0:honey_block_side,transparency=TRANSPARENT
 # Honeycomb block
 [1.15-]block:id=honeycomb_block,allfaces=0:honeycomb_block,stdrot=true
+
+# 1.16 blocks
+[1.16-]texture:id=nether_gold_ore
+[1.16-]texture:id=soul_fire_0
+[1.16-]texture:id=soul_fire_1
+[1.16-]texture:id=soul_soil
+[1.16-]texture:id=basalt_side
+[1.16-]texture:id=basalt_top
+[1.16-]texture:id=polished_basalt_side
+[1.16-]texture:id=polished_basalt_top
+[1.16-]texture:id=soul_torch
+[1.16-]texturefile:id=chain,filename=assets/minecraft/textures/block/chain.png,format=CUSTOM,tile0=0:0/3:16/6:0,tile1=3:0/3:16/6:0,xcount=2,ycount=1
+[1.16-]texture:id=soul_campfire_log_lit
+[1.16-]texture:id=soul_campfire_fire
+[1.16-]texturefile:id=soul_lantern,filename=assets/minecraft/textures/block/soul_lantern.png,format=CUSTOM,tile0=0:0/6:10/5:3,xcount=1,ycount=3
+[1.16-]texture:id=warped_stem_top
+[1.16-]texture:id=warped_stem
+[1.16-]texture:id=stripped_warped_stem_top
+[1.16-]texture:id=stripped_warped_stem
+[1.16-]texture:id=warped_nylium
+[1.16-]texture:id=warped_nylium_side
+[1.16-]texture:id=warped_fungus
+[1.16-]texture:id=warped_wart_block
+[1.16-]texture:id=warped_roots
+[1.16-]texture:id=nether_sprouts
+[1.16-]texture:id=crimson_roots
+[1.16-]texture:id=crimson_stem_top
+[1.16-]texture:id=crimson_stem
+[1.16-]texture:id=stripped_crimson_stem
+[1.16-]texture:id=stripped_crimson_stem_top
+[1.16-]texture:id=crimson_nylium
+[1.16-]texture:id=crimson_nylium_side
+[1.16-]texture:id=crimson_fungus
+
+# Nether gold ore
+[1.16-]block:id=nether_gold_ore,allfaces=0:nether_gold_ore,stdrot=true
+# Soul Fire
+[1.16-]block:id=soul_fire,patch0-3=0:soul_fire_0,patch4-7=0:soul_fire_1,transparency=TRANSPARENT
+# Soul soil
+[1.16-]block:id=soul_soil,allfaces=0:soul_soil,stdrot=true
+# Basalt
+[1.16-]block:id=basalt,data=1,allsides=0:basalt_side,topbottom=0:basalt_top,stdrot=true
+[1.16-]block:id=basalt,data=0,north=0:basalt_top,south=0:basalt_top,east=4000:basalt_side,west=4000:basalt_side,top=0:basalt_side,bottom=0:basalt_side
+[1.16-]block:id=basalt,data=2,north=4000:basalt_side,south=4000:basalt_side,east=0:basalt_top,west=0:basalt_top,top=4000:basalt_side,bottom=4000:basalt_side
+# Polished Basalt
+[1.16-]block:id=polished_basalt,data=1,allsides=0:polished_basalt_side,topbottom=0:polished_basalt_top,stdrot=true
+[1.16-]block:id=polished_basalt,data=0,north=0:polished_basalt_top,south=0:polished_basalt_top,east=4000:polished_basalt_side,west=4000:polished_basalt_side,top=0:polished_basalt_side,bottom=0:polished_basalt_side
+[1.16-]block:id=polished_basalt,data=2,north=4000:polished_basalt_side,south=4000:polished_basalt_side,east=0:polished_basalt_top,west=0:polished_basalt_top,top=4000:polished_basalt_side,bottom=4000:polished_basalt_side
+# Soul Torch
+[1.16-]block:id=soul_torch,patch0=0:soul_torch,transparency=TRANSPARENT
+# Soul Wall torch
+[1.16-]block:id=soul_wall_torch,data=0,data=1,data=2,data=3,patch0=0:soul_torch,transparency=TRANSPARENT
+# Chain
+[1.16-]block:id=chain,patch0=0:chain,patch1=1:chain,transparency=TRANSPARENT
+# Soul Lantern
+[1.16-]block:id=soul_lantern,patch0=0:soul_lantern,transparency=TRANSPARENT
+# Soul Campfire
+[1.16-]block:id=soul_campfire,patch0=0:campfire_log,patch1=0:soul_campfire_log_lit,patch2=0:soul_campfire_fire,transparency=TRANSPARENT
+# Warped Stem
+[1.16-]block:id=warped_stem,data=1,allsides=0:warped_stem,topbottom=0:warped_stem_top,stdrot=true
+[1.16-]block:id=warped_stem,data=0,north=0:warped_stem_top,south=0:warped_stem_top,east=4000:warped_stem,west=4000:warped_stem,top=0:warped_stem,bottom=0:warped_stem
+[1.16-]block:id=warped_stem,data=2,north=4000:warped_stem,south=4000:warped_stem,east=0:warped_stem_top,west=0:warped_stem_top,top=4000:warped_stem,bottom=4000:warped_stem
+# Stripped Warped Stem
+[1.16-]block:id=stripped_warped_stem,data=1,allsides=0:stripped_warped_stem,topbottom=0:stripped_warped_stem_top,stdrot=true
+[1.16-]block:id=stripped_warped_stem,data=0,north=0:stripped_warped_stem_top,south=0:stripped_warped_stem_top,east=4000:stripped_warped_stem,west=4000:stripped_warped_stem,top=0:stripped_warped_stem,bottom=0:stripped_warped_stem
+[1.16-]block:id=stripped_warped_stem,data=2,north=4000:stripped_warped_stem,south=4000:stripped_warped_stem,east=0:stripped_warped_stem_top,west=0:stripped_warped_stem_top,top=4000:stripped_warped_stem,bottom=4000:stripped_warped_stem
+# Warped Hyphae
+[1.16-]block:id=warped_hyphae,data=1,allsides=0:warped_stem,topbottom=0:warped_stem,stdrot=true
+[1.16-]block:id=warped_hyphae,data=0,north=0:warped_stem,south=0:warped_stem,east=4000:warped_stem,west=4000:warped_stem,top=0:warped_stem,bottom=0:warped_stem
+[1.16-]block:id=warped_hyphae,data=2,north=4000:warped_stem,south=4000:warped_stem,east=0:warped_stem,west=0:warped_stem,top=4000:warped_stem,bottom=4000:warped_stem
+# Stripped Warped Hyphae
+[1.16-]block:id=stripped_warped_hyphae,data=1,allsides=0:stripped_warped_stem,topbottom=0:stripped_warped_stem,stdrot=true
+[1.16-]block:id=stripped_warped_hyphae,data=0,north=0:stripped_warped_stem,south=0:stripped_warped_stem,east=4000:stripped_warped_stem,west=4000:stripped_warped_stem,top=0:stripped_warped_stem,bottom=0:stripped_warped_stem
+[1.16-]block:id=stripped_warped_hyphae,data=2,north=4000:stripped_warped_stem,south=4000:stripped_warped_stem,east=0:stripped_warped_stem,west=0:stripped_warped_stem,top=4000:stripped_warped_stem,bottom=4000:stripped_warped_stem
+# Warped Nylium
+[1.16-]block:id=warped_nylium,allsides=0:warped_nylium_side,top=0:warped_nylium,bottom=0:netherrack,stdrot=true
+# Warped Fungus
+[1.16-]block:id=warped_fungus,patch0-1=0:warped_fungus,transparency=TRANSPARENT
+# Warped Wart Block
+[1.16-]block:id=warped_wart_block,allfaces=0:warped_wart_block,stdrot=true
+# Warped Roots
+[1.16-]block:id=warped_roots,patch0-1=0:warped_roots,transparency=TRANSPARENT
+# Nether Sprouts
+[1.16-]block:id=nether_sprouts,patch0-1=0:nether_sprouts,transparency=TRANSPARENT
+# Crimson Stem
+[1.16-]block:id=crimson_stem,data=1,allsides=0:crimson_stem,topbottom=0:crimson_stem_top,stdrot=true
+[1.16-]block:id=crimson_stem,data=0,north=0:crimson_stem_top,south=0:crimson_stem_top,east=4000:crimson_stem,west=4000:crimson_stem,top=0:crimson_stem,bottom=0:crimson_stem
+[1.16-]block:id=crimson_stem,data=2,north=4000:crimson_stem,south=4000:crimson_stem,east=0:crimson_stem_top,west=0:crimson_stem_top,top=4000:crimson_stem,bottom=4000:crimson_stem
+# Stripped Crimson Stem
+[1.16-]block:id=stripped_crimson_stem,data=1,allsides=0:stripped_crimson_stem,topbottom=0:stripped_crimson_stem_top,stdrot=true
+[1.16-]block:id=stripped_crimson_stem,data=0,north=0:stripped_crimson_stem_top,south=0:stripped_crimson_stem_top,east=4000:stripped_crimson_stem,west=4000:stripped_crimson_stem,top=0:stripped_crimson_stem,bottom=0:stripped_crimson_stem
+[1.16-]block:id=stripped_crimson_stem,data=2,north=4000:stripped_crimson_stem,south=4000:stripped_crimson_stem,east=0:stripped_crimson_stem_top,west=0:stripped_crimson_stem_top,top=4000:stripped_crimson_stem,bottom=4000:stripped_crimson_stem
+# Crimson Roots
+[1.16-]block:id=crimson_roots,patch0-1=0:crimson_roots,transparency=TRANSPARENT
+# Crimson Hyphae
+[1.16-]block:id=crimson_hyphae,data=1,allsides=0:crimson_stem,topbottom=0:crimson_stem,stdrot=true
+[1.16-]block:id=crimson_hyphae,data=0,north=0:crimson_stem,south=0:crimson_stem,east=4000:crimson_stem,west=4000:crimson_stem,top=0:crimson_stem,bottom=0:crimson_stem
+[1.16-]block:id=crimson_hyphae,data=2,north=4000:crimson_stem,south=4000:crimson_stem,east=0:crimson_stem,west=0:crimson_stem,top=4000:crimson_stem,bottom=4000:crimson_stem
+# Stripped Crimson Hyphae
+[1.16-]block:id=stripped_crimson_hyphae,data=1,allsides=0:stripped_crimson_stem,topbottom=0:stripped_crimson_stem,stdrot=true
+[1.16-]block:id=stripped_crimson_hyphae,data=0,north=0:stripped_crimson_stem,south=0:stripped_crimson_stem,east=4000:stripped_crimson_stem,west=4000:stripped_crimson_stem,top=0:stripped_crimson_stem,bottom=0:stripped_crimson_stem
+[1.16-]block:id=stripped_crimson_hyphae,data=2,north=4000:stripped_crimson_stem,south=4000:stripped_crimson_stem,east=0:stripped_crimson_stem,west=0:stripped_crimson_stem,top=4000:stripped_crimson_stem,bottom=4000:stripped_crimson_stem
+# Crimson Nylium
+[1.16-]block:id=crimson_nylium,allsides=0:crimson_nylium_side,top=0:crimson_nylium,bottom=0:netherrack,stdrot=true
+# Crimson Fungus
+[1.16-]block:id=crimson_fungus,patch0-1=0:crimson_fungus,transparency=TRANSPARENT

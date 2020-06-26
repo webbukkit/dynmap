@@ -1718,11 +1718,11 @@ public class TexturePack {
                     }
                 }
                 if (blank) {
-                    missing += blk.blockName;
+                    missing += blk.blockName + "\n";
                 }
             }
             if (missing.length() > 0) {
-                Log.warning("Blocks missing texture definition: " + missing);
+                Log.warning("Blocks missing texture definition:\n" + missing);
             }
         }
     }

@@ -1623,3 +1623,41 @@ patchblock:id=bubble_column
 [1.15-]patchrotate:id=bee_nest,data=0,roty=90
 # Honey block
 [1.15-]boxlist:id=honey_block,box=0:1:0:1:0:1:1/1/1/1/1/1,box=0.0625:0.9375:0.0625:0.9375:0.0625:0.9375:0/1/2/2/2/2
+
+# 1.16 blocks
+# Soul Fire
+[1.16-]patchblock:id=soul_fire,patch0=VertX0,patch1=VertX0@90,patch2=VertX0@180,patch3=VertX0@270,patch4=SlopeXUpZTop675,patch5=SlopeXUpZTop675@90,patch6=SlopeXUpZTop675@180,patch4=SlopeXUpZTop675@270
+# Soul Torch
+[1.16-]patchblock:id=soul_torch,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
+# Soul wall torch
+[1.16-]patchblock:id=soul_wall_torch,data=3,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
+[1.16-]patchblock:id=soul_wall_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
+[1.16-]patchblock:id=soul_wall_torch,data=1,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
+[1.16-]patchblock:id=soul_wall_torch,data=0,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+# Chain
+[1.16-]patchblock:id=chain,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+# Soul Lantern
+[1.16-]boxlist:id=soul_lantern,data=0,box=0.3125:0.6875:0.0625:0.5:0.3125:0.6875,box=0.375:0.625:0.5:0.625:0.375:0.625,box=0.4065:0.5937:0.6875:0.9375:0.5:0.51,box=0.5:0.51:0.625:1:0.4065:0.5937
+[1.16-]boxlist:id=soul_lantern,data=1,box=0.3125:0.6875:0:0.4375:0.3125:0.6875,box=0.375:0.625:0.4375:0.5625:0.375:0.625,box=0.4065:0.5937:0.5625:0.6875:0.5:0.51,box=0.5:0.51:0.5625:0.6875:0.4065:0.5937
+# Soul Campfire
+[1.16-]boxlist:id=soul_campfire,data=0,data=1,data=2,data=3,box=0.0625:0.3125:0:0.25:0:1:0/0/1/0/0/0,box=0:1:0.1875:0.4375:0.6875:0.9375:0/1/1/1/0/0,box=0.6875:0.9375:0:0.25:0:1:0/0/0/0/1/0,box=0:1:0.1875:0.4375:0.0625:0.3125:0/1/1/1/0/0,box=0.3125:0.6875:0:0.0625:0:1:0/1/0/0/0/0,box=0.49:0.51:0:1:0:1:-1/-1/2/2/2/2,box=0:1:0:1:0.49:0.51:-1/-1/2/2/2/2
+[1.16-]boxlist:id=soul_campfire,data=4,data=5,data=6,data=7,box=0.0625:0.3125:0:0.25:0:1:0/0/0/0/0/0,box=0:1:0.1875:0.4375:0.6875:0.9375:0/0/0/0/0/0,box=0.6875:0.9375:0:0.25:0:1:0/0/0/0/0/0,box=0:1:0.1875:0.4375:0.0625:0.3125:0/0/0/0/0/0,box=0.3125:0.6875:0:0.0625:0:1:0/0/0/0/0/0
+[1.16-]patchblock:id=soul_campfire,data=8,data=9,data=10,data=11
+[1.16-]patchrotate:id=soul_campfire,data=0,roty=180
+[1.16-]patchblock:id=soul_campfire,data=12,data=13,data=14,data=15
+[1.16-]patchrotate:id=soul_campfire,data=4,roty=180
+[1.16-]patchblock:id=soul_campfire,data=16,data=17,data=18,data=19
+[1.16-]patchrotate:id=soul_campfire,data=0,roty=270
+[1.16-]patchblock:id=soul_campfire,data=20,data=21,data=22,data=23
+[1.16-]patchrotate:id=soul_campfire,data=4,roty=270
+[1.16-]patchblock:id=soul_campfire,data=24,data=25,data=26,data=27
+[1.16-]patchrotate:id=soul_campfire,data=0,roty=90
+[1.16-]patchblock:id=soul_campfire,data=28,data=29,data=30,data=31
+[1.16-]patchrotate:id=soul_campfire,data=4,roty=90
+# Warped Fungus
+# Warped Roots
+# Nether Sprouts
+# Crimson Fungus
+# Crimson Roots
+[1.16-]patchblock:id=warped_fungus,id=warped_roots,id=nether_sprouts,id=crimson_fungus,id=crimson_roots,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+

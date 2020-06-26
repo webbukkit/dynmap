@@ -247,4 +247,14 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
         Log.severe("getStateStringByCombinedId not implemented");		
 		return null;
 	}
+	@Override
+    /** Get ID string from biomebase */
+    public String getBiomeBaseIDString(Object bb) {
+        String s = ((BiomeBase)bb).n();
+        if (s != null) {
+        	String[] ss = s.split("\\.");
+        	return ss[ss.length-1];
+        }
+        return null;
+    }
 }
