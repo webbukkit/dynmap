@@ -3,6 +3,7 @@ include ':spigot'
 include ':bukkit-helper-113-2'
 include ':bukkit-helper-114-1'
 include ':bukkit-helper-115'
+include ':bukkit-helper-116'
 include ':bukkit-helper'
 include ':dynmap-api'
 include ':DynmapCore'
@@ -20,6 +21,7 @@ project(':spigot').projectDir = "$rootDir/spigot" as File
 project(':bukkit-helper-113-2').projectDir = "$rootDir/bukkit-helper-113-2" as File
 project(':bukkit-helper-114-1').projectDir = "$rootDir/bukkit-helper-114-1" as File
 project(':bukkit-helper-115').projectDir = "$rootDir/bukkit-helper-115" as File
+project(':bukkit-helper-116').projectDir = "$rootDir/bukkit-helper-116" as File
 project(':bukkit-helper').projectDir = "$rootDir/bukkit-helper" as File
 project(':dynmap-api').projectDir = "$rootDir/dynmap-api" as File
 project(':DynmapCore').projectDir = "$rootDir/DynmapCore" as File
