@@ -1658,6 +1658,16 @@ patchblock:id=bubble_column
 # Warped Roots
 # Nether Sprouts
 # Crimson Fungus
+# Weeping Vines
+# Weeping Vines Plant
+# Twisting Vines
+# Twisting Vines Plant
 # Crimson Roots
-[1.16-]patchblock:id=warped_fungus,id=warped_roots,id=nether_sprouts,id=crimson_fungus,id=crimson_roots,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
-
+[1.16-]patchblock:id=warped_fungus,id=warped_roots,id=nether_sprouts,id=crimson_fungus,id=weeping_vines,id=weeping_vines_plant,id=twisting_vines,id=twisting_vines_plant,id=crimson_roots,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+# Crimson Slab
+# Warped Slab
+[1.16-]boxblock:id=crimson_slab,id=warped_slab,data=0,data=1,ymin=0.5
+[1.16-]boxblock:id=crimson_slab,id=warped_slab,data=2,data=3,ymax=0.5
+# Warped pressure plate
+# Crimson pressure plate
+[1.16-]boxblock:id=crimson_pressure_plate,id=warped_pressure_plate,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275

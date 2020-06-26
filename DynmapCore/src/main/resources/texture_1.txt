@@ -2455,7 +2455,6 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]texture:id=warped_wart_block
 [1.16-]texture:id=warped_roots
 [1.16-]texture:id=nether_sprouts
-[1.16-]texture:id=crimson_roots
 [1.16-]texture:id=crimson_stem_top
 [1.16-]texture:id=crimson_stem
 [1.16-]texture:id=stripped_crimson_stem
@@ -2463,6 +2462,14 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]texture:id=crimson_nylium
 [1.16-]texture:id=crimson_nylium_side
 [1.16-]texture:id=crimson_fungus
+[1.16-]texture:id=crimson_roots
+[1.16-]texture:id=shroomlight
+[1.16-]texture:id=weeping_vines
+[1.16-]texture:id=weeping_vines_plant
+[1.16-]texture:id=twisting_vines
+[1.16-]texture:id=twisting_vines_plant
+[1.16-]texture:id=crimson_planks
+[1.16-]texture:id=warped_planks
 
 # Nether gold ore
 [1.16-]block:id=nether_gold_ore,allfaces=0:nether_gold_ore,stdrot=true
@@ -2522,8 +2529,6 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]block:id=stripped_crimson_stem,data=1,allsides=0:stripped_crimson_stem,topbottom=0:stripped_crimson_stem_top,stdrot=true
 [1.16-]block:id=stripped_crimson_stem,data=0,north=0:stripped_crimson_stem_top,south=0:stripped_crimson_stem_top,east=4000:stripped_crimson_stem,west=4000:stripped_crimson_stem,top=0:stripped_crimson_stem,bottom=0:stripped_crimson_stem
 [1.16-]block:id=stripped_crimson_stem,data=2,north=4000:stripped_crimson_stem,south=4000:stripped_crimson_stem,east=0:stripped_crimson_stem_top,west=0:stripped_crimson_stem_top,top=4000:stripped_crimson_stem,bottom=4000:stripped_crimson_stem
-# Crimson Roots
-[1.16-]block:id=crimson_roots,patch0-1=0:crimson_roots,transparency=TRANSPARENT
 # Crimson Hyphae
 [1.16-]block:id=crimson_hyphae,data=1,allsides=0:crimson_stem,topbottom=0:crimson_stem,stdrot=true
 [1.16-]block:id=crimson_hyphae,data=0,north=0:crimson_stem,south=0:crimson_stem,east=4000:crimson_stem,west=4000:crimson_stem,top=0:crimson_stem,bottom=0:crimson_stem
@@ -2536,3 +2541,29 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]block:id=crimson_nylium,allsides=0:crimson_nylium_side,top=0:crimson_nylium,bottom=0:netherrack,stdrot=true
 # Crimson Fungus
 [1.16-]block:id=crimson_fungus,patch0-1=0:crimson_fungus,transparency=TRANSPARENT
+# Crimson Roots
+[1.16-]block:id=crimson_roots,patch0-1=0:crimson_roots,transparency=TRANSPARENT
+# Shroomlight
+[1.16-]block:id=shroomlight,allfaces=0:shroomlight,stdrot=true
+# Weeping Vines
+[1.16-]block:id=weeping_vines,patch0-1=0:weeping_vines,transparency=TRANSPARENT
+# Weeping Vines Plant
+[1.16-]block:id=weeping_vines_plant,patch0-1=0:weeping_vines_plant,transparency=TRANSPARENT
+# Twisting Vines
+[1.16-]block:id=twisting_vines,patch0-1=0:twisting_vines,transparency=TRANSPARENT
+# Twisting Vines Plant
+[1.16-]block:id=twisting_vines_plant,patch0-1=0:twisting_vines_plant,transparency=TRANSPARENT
+# Crimson Planks
+[1.16-]block:id=crimson_planks,allfaces=0:crimson_planks,stdrot=true
+# Warped Planks
+[1.16-]block:id=warped_planks,allfaces=0:warped_planks,stdrot=true
+# Crimson slab
+[1.16-]block:id=crimson_slab,data=0,data=1,data=2,data=3,allfaces=0:crimson_planks,stdrot=true,transparency=SEMITRANSPARENT
+[1.16-]block:id=crimson_slab,data=4,data=5,allfaces=0:crimson_planks,stdrot=true
+# Warped slab
+[1.16-]block:id=warped_slab,data=0,data=1,data=2,data=3,allfaces=0:warped_planks,stdrot=true,transparency=SEMITRANSPARENT
+[1.16-]block:id=warped_slab,data=4,data=5,allfaces=0:warped_planks,stdrot=true
+# Warped pressure plate
+block:id=warped_pressure_plate,allfaces=0:warped_planks,stdrot=true,transparency=TRANSPARENT
+# Crimson pressure plate
+block:id=crimson_pressure_plate,allfaces=0:crimson_planks,stdrot=true,transparency=TRANSPARENT
