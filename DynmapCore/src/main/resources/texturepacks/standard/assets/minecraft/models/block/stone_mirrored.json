@@ -1,6 +1,0 @@
-{
-    "parent": "block/cube_mirrored_all",
-    "textures": {
-        "all": "block/stone"
-    }
-}

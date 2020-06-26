@@ -1,7 +1,0 @@
-{
-    "variants": {
-        "type=bottom": { "model": "block/smooth_quartz_slab" },
-        "type=top": { "model": "block/smooth_quartz_slab_top" },
-        "type=double": { "model": "block/smooth_quartz" }
-    }
-}

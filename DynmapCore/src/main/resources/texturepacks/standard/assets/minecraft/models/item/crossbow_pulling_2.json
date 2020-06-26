@@ -1,6 +1,0 @@
-{
-    "parent": "item/crossbow",
-    "textures": {
-        "layer0": "item/crossbow_pulling_2"
-    }
-}

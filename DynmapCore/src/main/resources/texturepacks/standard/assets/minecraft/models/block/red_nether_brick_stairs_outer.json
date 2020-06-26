@@ -1,8 +1,0 @@
-{
-    "parent": "block/outer_stairs",
-    "textures": {
-        "bottom": "block/red_nether_bricks",
-        "top": "block/red_nether_bricks",
-        "side": "block/red_nether_bricks"
-    }
-}

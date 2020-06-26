@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "inverted=false": { "model": "block/daylight_detector" },
-        "inverted=true": { "model": "block/daylight_detector_inverted" }
-    }
-}

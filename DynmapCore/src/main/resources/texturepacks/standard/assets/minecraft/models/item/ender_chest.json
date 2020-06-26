@@ -1,6 +1,0 @@
-{
-    "parent": "item/chest",
-    "textures": {
-        "particle": "block/obsidian"
-    }
-}

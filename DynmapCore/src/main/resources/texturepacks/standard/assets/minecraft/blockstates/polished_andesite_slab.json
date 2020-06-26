@@ -1,7 +1,0 @@
-{
-    "variants": {
-        "type=bottom": { "model": "block/polished_andesite_slab" },
-        "type=top": { "model": "block/polished_andesite_slab_top" },
-        "type=double": { "model": "block/polished_andesite" }
-    }
-}

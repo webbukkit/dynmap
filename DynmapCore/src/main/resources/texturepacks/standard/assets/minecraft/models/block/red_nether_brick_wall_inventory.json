@@ -1,6 +1,0 @@
-{
-    "parent": "block/wall_inventory",
-    "textures": {
-        "wall": "block/red_nether_bricks"
-    }
-}

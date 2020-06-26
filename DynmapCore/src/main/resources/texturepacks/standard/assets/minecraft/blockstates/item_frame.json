@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "map=false": { "model": "block/item_frame" },
-        "map=true":  { "model": "block/item_frame_map" }
-    }
-}

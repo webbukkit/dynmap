@@ -1,6 +1,0 @@
-{
-    "parent": "block/coral_fan",
-    "textures": {
-        "fan": "block/dead_fire_coral_fan"
-    }
-}

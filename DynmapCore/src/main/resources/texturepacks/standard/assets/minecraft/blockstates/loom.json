@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "block/loom" },
-        "facing=south": { "model": "block/loom", "y": 180 },
-        "facing=west":  { "model": "block/loom", "y": 270 },
-        "facing=east":  { "model": "block/loom", "y": 90 }
-    }
-}
