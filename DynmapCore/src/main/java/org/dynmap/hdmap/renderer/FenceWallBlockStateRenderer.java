@@ -5,6 +5,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
+import org.dynmap.Log;
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.MapDataContext;
 import org.dynmap.renderer.RenderPatch;
@@ -14,7 +15,8 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
     private static final int TEXTURE_SIDES = 0;
     private static final int TEXTURE_TOP = 1;
     private static final int TEXTURE_BOTTOM = 2;
-    private boolean check_yplus;
+    private boolean is_wall;
+    private boolean is_tall_wall;
 
     private static final int SIDE_XP = 0x1;	// East
     private static final int SIDE_XN = 0x2; // West
@@ -24,8 +26,14 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
     private static final int SIDE_Z = SIDE_ZN | SIDE_ZP;
     private static final int SIDE_YP = 0x10; // Up
 
-    // Meshes, indexed by connection combination (bit 0=X+, bit 1=X-, bit 2=Z+, bit 3=Z-, bit 4=Y+)
-    private RenderPatch[][] meshes = new RenderPatch[32][];
+    // For tall wall
+    private static final int SIDE_XP_MULT = 1;
+    private static final int SIDE_XN_MULT = 3;
+    private static final int SIDE_ZP_MULT = 9;
+    private static final int SIDE_ZN_MULT = 27;
+    private static final int SIDE_UP_MULT = 81;
+    
+    private RenderPatch[][] meshes;
     
     @Override
     public boolean initializeRenderer(RenderPatchFactory rpf, String blkname, BitSet blockdatamask, Map<String,String> custparm) {
@@ -35,7 +43,11 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
         String type = custparm.get("type");
         if((type != null) && (type.equals("wall"))) {
             buildWallMeshes(rpf);
-            check_yplus = true;
+            is_wall = true;
+        }
+        else if((type != null) && (type.equals("tallwall"))) {
+            buildTallWallMeshes(rpf);
+            is_tall_wall = true;        	
         }
         else {
             buildFenceMeshes(rpf);
@@ -55,6 +67,7 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
     }
     
     private void buildFenceMeshes(RenderPatchFactory rpf) {
+        meshes = new RenderPatch[16][];
         ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
         for(int dat = 0; dat < 16; dat++) {
             /* Add center post */
@@ -93,6 +106,7 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
     }
 
     private void buildWallMeshes(RenderPatchFactory rpf) {
+        meshes = new RenderPatch[32][];
         ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
         for(int dat = 0; dat < 32; dat++) {
             boolean need_post = ((dat & 0xF) == 0) || ((dat & 0x10) == 0x10);
@@ -129,17 +143,70 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
             list.clear();
         }
     }
-    
+
+    private void buildTallWallMeshes(RenderPatchFactory rpf) {
+        meshes = new RenderPatch[162][];
+        ArrayList<RenderPatch> list = new ArrayList<RenderPatch>();
+        for(int dat = 0; dat < 162; dat++) {        	
+            switch ((dat / SIDE_XN_MULT) % 3) {
+            	case 1:	// low
+                    addBox(rpf, list, 0.0, 0.5, 0.0, 0.8125, 0.3125, 0.6875);
+                    break;
+            	case 2: // Tall
+                    addBox(rpf, list, 0.0, 0.5, 0.0, 1.0, 0.3125, 0.6875);
+                    break;            		
+            }
+            switch ((dat / SIDE_XP_MULT) % 3) {
+            	case 1:	// low
+            		addBox(rpf, list, 0.5, 1.0, 0.0, 0.8125, 0.3125, 0.6875);
+            		break;
+            	case 2: // Tall
+            		addBox(rpf, list, 0.5, 1.0, 0.0, 1.0, 0.3125, 0.6875);
+            		break;            		
+            }
+            switch ((dat / SIDE_ZN_MULT) % 3) {
+        		case 1:	// low
+        			addBox(rpf, list, 0.3125, 0.6875, 0.0, 0.8125, 0.0, 0.5);
+        			break;
+        		case 2: // Tall
+        			addBox(rpf, list, 0.3125, 0.6875, 0.0, 1.0, 0.0, 0.5);
+        			break;            		
+            }
+            switch ((dat / SIDE_ZP_MULT) % 3) {
+        		case 1:	// low
+                    addBox(rpf, list, 0.3125, 0.6875, 0.0, 0.8125, 0.5, 1.0);
+        			break;
+        		case 2: // Tall
+                    addBox(rpf, list, 0.3125, 0.6875, 0.0, 1.0, 0.5, 1.0);
+        			break;            		
+            }
+           switch ((dat / SIDE_UP_MULT) % 2) {
+        	   case 0:	// true
+        		   addBox(rpf, list, 0.25, 0.75, 0.0, 1.0, 0.25, 0.75);
+        		   break;
+            }
+            meshes[dat] = list.toArray(new RenderPatch[list.size()]);
+            list.clear();
+        }
+    }
+
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
     	int idx = ctx.getBlockType().stateIndex;
     	int off = 0;
-        if(check_yplus) {	// Wall?
+        if (is_wall) {	// Wall?
         	if ((idx & 0x20) == 0) off += SIDE_XP;	// East connected
         	if ((idx & 0x10) == 0) off += SIDE_ZN;	// North connected
         	if ((idx & 0x08) == 0) off += SIDE_ZP;	// South connected
         	if ((idx & 0x04) == 0) off += SIDE_YP;	// Up connected
         	if ((idx & 0x01) == 0) off += SIDE_XN;	// West connected
+        }
+        else if (is_tall_wall) {
+        	off += (idx % 3) * SIDE_XN_MULT;
+        	off += ((idx / 6) % 2) * SIDE_UP_MULT;
+        	off += ((idx / 12) % 3) * SIDE_ZP_MULT;
+        	off += ((idx / 36) % 3) * SIDE_ZN_MULT;
+        	off += ((idx / 108) % 3) * SIDE_XP_MULT;
         }
         else {	// Fence
         	if ((idx & 0x10) == 0) off += SIDE_XP;	// East connected

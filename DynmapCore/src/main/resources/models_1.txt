@@ -1012,7 +1012,8 @@ patchblock:id=beacon,patch0=BeaconGlassSide,patch1=BeaconGlassSide@90,patch2=Bea
 
 # Cobblestone wall
 # Mossy cobblestone wall
-customblock:id=cobblestone_wall,id=mossy_cobblestone_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
+[-1.15.2]customblock:id=cobblestone_wall,id=mossy_cobblestone_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
+[1.16.0-]customblock:id=cobblestone_wall,id=mossy_cobblestone_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=tallwall
 
 # Flower pot
 patchblock:id=flower_pot,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt
@@ -1293,7 +1294,8 @@ customblock:id=spruce_door,id=birch_door,id=jungle_door,id=acacia_door,id=dark_o
 #block:id=end_rod,patch0=0:end_rod,transparency=TRANSPARENT
 
 # Chorus Plant
-customblock:id=chorus_plant,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall,link0=200
+[-1.15.2]customblock:id=chorus_plant,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall,link0=200
+[1.16.0-]customblock:id=chorus_plant,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=tallwall,link0=200
 
 # Chorus Flower
 block:id=chorus_flower,scale=8
@@ -1478,7 +1480,8 @@ patchblock:id=bubble_column
 # Sandstone wall
 # End stone brick wall
 # Diorite wall
-[1.14-]customblock:id=brick_wall,id=prismarine_wall,id=red_sandstone_wall,id=mossy_stone_brick_wall,id=granite_wall,id=stone_brick_wall,id=nether_brick_wall,id=andesite_wall,id=red_nether_brick_wall,id=sandstone_wall,id=end_stone_brick_wall,id=diorite_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
+[1.14-1.15.2]customblock:id=brick_wall,id=prismarine_wall,id=red_sandstone_wall,id=mossy_stone_brick_wall,id=granite_wall,id=stone_brick_wall,id=nether_brick_wall,id=andesite_wall,id=red_nether_brick_wall,id=sandstone_wall,id=end_stone_brick_wall,id=diorite_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
+[1.16-]customblock:id=brick_wall,id=prismarine_wall,id=red_sandstone_wall,id=mossy_stone_brick_wall,id=granite_wall,id=stone_brick_wall,id=nether_brick_wall,id=andesite_wall,id=red_nether_brick_wall,id=sandstone_wall,id=end_stone_brick_wall,id=diorite_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=tallwall
 # Scaffolding
 [1.14-]boxlist:id=scaffolding,box=0:1:0.99:1:0:1:0/0/-1/-1/-1/-1,box=0:0.125:0:1:0:0.125:2/-1/1/1/1/1,box=0:0.125:0:1:0.875:1:2/-1/1/1/1/1,box=0.875:1:0:1:0.875:1:2/-1/1/1/1/1,box=0.875:1:0:1:0:0.125:2/-1/1/1/1/1,box=0.125:0.875:0.875:1:0:0.125:2/-1/1/1/1/1,box=0.125:0.875:0.875:1:0.875:1:2/-1/1/1/1/1,box=0.875:1:0.875:1:0.125:0.875:2/-1/1/1/1/1,box=0:0.125:0.875:1:0.125:0.875:2/-1/1/1/1/1
 # Composter
@@ -1741,4 +1744,4 @@ patchblock:id=bubble_column
 # Blackstone wall
 # Polished Blackstone wall
 # Polished Blackstone Brick wall
-[1.16-]customblock:id=blackstone_wall,id=polished_blackstone_wall,id=polished_blackstone_brick_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall
+[1.16-]customblock:id=blackstone_wall,id=polished_blackstone_wall,id=polished_blackstone_brick_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=tallwall

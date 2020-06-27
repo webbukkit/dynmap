@@ -560,7 +560,7 @@ public class DynmapCore implements DynmapCommonAPI {
         
         /* Print version info */
         Log.info("version " + plugin_ver + " is enabled - core version " + version );
-        Log.info("For support, visit https://reddit.com/r/Dynmap");
+        Log.info("For support, visit https://reddit.com/r/Dynmap or our Discord at https://discord.gg/s3rd5qn");
         Log.info("To report or track bugs, visit https://github.com/webbukkit/dynmap/issues");
         Log.info("If you'd like to donate, please visit https://www.patreon.com/dynmap or https://ko-fi.com/michaelprimm");
 
@@ -573,19 +573,32 @@ public class DynmapCore implements DynmapCommonAPI {
         //dumpColorMap("misa.txt", "misa.zip");
         //dumpColorMap("sphax.txt", "sphax.zip");
 
-//        Log.info("Block Name dump");
-//        Log.info("---------------");
-//        for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); ) {
-//        	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
-//        	if (bs != null) {
-//        		Log.info(String.format("%d,%s,%d", i, bs.blockName, bs.getStateCount()));
-//        		i += bs.getStateCount();
-//        	}
-//        	else {
-//        		i++;
-//        	}
-//        }
-//        Log.info("---------------");
+        if (configuration.getBoolean("dumpBlockState", false)) {
+        	Log.info("Block State Dump");
+        	Log.info("----------------");
+        	for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); i++) {
+        		DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
+        		if (bs != null) {
+        			Log.info(String.format("%d: %s", i, bs.toString()));
+        		}
+        	}
+        	Log.info("----------------");
+        }
+        if (configuration.getBoolean("dumpBlockNames", false)) {
+        	Log.info("Block Name dump");
+        	Log.info("---------------");
+        	for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); ) {
+    			DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
+    			if (bs != null) {
+    				Log.info(String.format("%d,%s,%d", i, bs.blockName, bs.getStateCount()));
+    				i += bs.getStateCount();
+    			}
+    			else {
+    				i++;
+    			}
+        	}
+        	Log.info("---------------");
+        }
         return true;
     }
     
