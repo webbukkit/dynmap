@@ -2470,6 +2470,28 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]texture:id=twisting_vines_plant
 [1.16-]texture:id=crimson_planks
 [1.16-]texture:id=warped_planks
+[1.16-]texture:id=warped_trapdoor
+[1.16-]texture:id=crimson_trapdoor
+[1.16-]texture:id=warped_door_top
+[1.16-]texture:id=warped_door_bottom
+[1.16-]texture:id=crimson_door_top
+[1.16-]texture:id=crimson_door_bottom
+[1.16-]texturefile:id=crimson_sign,filename=assets/minecraft/textures/entity/signs/crimson.png,format=SIGN
+[1.16-]texturefile:id=warped_sign,filename=assets/minecraft/textures/entity/signs/warped.png,format=SIGN
+[1.16-]texture:id=target_top
+[1.16-]texture:id=target_side
+[1.16-]texture:id=netherite_block
+[1.16-]texture:id=ancient_debris_top
+[1.16-]texture:id=ancient_debris_side
+[1.16-]texture:id=crying_obsidian
+[1.16-]texture:id=respawn_anchor_top_off
+[1.16-]texture:id=respawn_anchor_top
+[1.16-]texture:id=respawn_anchor_bottom
+[1.16-]texture:id=respawn_anchor_side0
+[1.16-]texture:id=respawn_anchor_side1
+[1.16-]texture:id=respawn_anchor_side2
+[1.16-]texture:id=respawn_anchor_side3
+[1.16-]texture:id=respawn_anchor_side4
 
 # Nether gold ore
 [1.16-]block:id=nether_gold_ore,allfaces=0:nether_gold_ore,stdrot=true
@@ -2564,6 +2586,54 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]block:id=warped_slab,data=0,data=1,data=2,data=3,allfaces=0:warped_planks,stdrot=true,transparency=SEMITRANSPARENT
 [1.16-]block:id=warped_slab,data=4,data=5,allfaces=0:warped_planks,stdrot=true
 # Warped pressure plate
-block:id=warped_pressure_plate,allfaces=0:warped_planks,stdrot=true,transparency=TRANSPARENT
+[1.16-]block:id=warped_pressure_plate,allfaces=0:warped_planks,stdrot=true,transparency=TRANSPARENT
 # Crimson pressure plate
-block:id=crimson_pressure_plate,allfaces=0:crimson_planks,stdrot=true,transparency=TRANSPARENT
+[1.16-]block:id=crimson_pressure_plate,allfaces=0:crimson_planks,stdrot=true,transparency=TRANSPARENT
+# Crimson Fence
+[1.16-]block:id=crimson_fence,patch0-2=0:crimson_planks,transparency=TRANSPARENT
+# Warped Fence
+[1.16-]block:id=warped_fence,patch0-2=0:warped_planks,transparency=TRANSPARENT
+# Crimson Trapdoor
+[1.16-]block:id=crimson_trapdoor,allfaces=0:crimson_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Warped Trapdoor
+[1.16-]block:id=warped_trapdoor,allfaces=0:warped_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Crimson Fence gate
+[1.16-]block:id=crimson_fence_gate,patch0-2=0:crimson_planks,stdrot=true,transparency=TRANSPARENT
+# Warped Fence gate
+[1.16-]block:id=warped_fence_gate,patch0-2=0:warped_planks,stdrot=true,transparency=TRANSPARENT
+# Crimson stairs
+[1.16-]block:id=crimson_stairs,patch0-2=0:crimson_planks,transparency=SEMITRANSPARENT
+# Warped stairs
+[1.16-]block:id=warped_stairs,patch0-2=0:warped_planks,transparency=SEMITRANSPARENT
+# Crimson button
+[1.16-]block:id=crimson_button,allfaces=0:crimson_planks,stdrot=true,transparency=TRANSPARENT
+# Warped button
+[1.16-]block:id=warped_button,allfaces=0:warped_planks,stdrot=true,transparency=TRANSPARENT
+# Crimson Door
+[1.16-]block:id=crimson_door,data=*,patch0=0:crimson_door_top,patch1=0:crimson_door_bottom,transparency=TRANSPARENT
+# Warped Door
+[1.16-]block:id=warped_door,data=*,patch0=0:warped_door_top,patch1=0:warped_door_bottom,transparency=TRANSPARENT
+# Crimson sign
+[1.16-]block:id=crimson_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=crimson_sign
+# Crimson Wall sign
+[1.16-]block:id=crimson_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=crimson_sign
+# Warped sign
+[1.16-]block:id=warped_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=warped_sign
+# Warped Wall sign
+[1.16-]block:id=warped_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=warped_sign
+# Target
+[1.16-]block:id=target,data=1,allsides=0:target_side,topbottom=0:target_top,stdrot=true
+[1.16-]block:id=target,data=0,north=0:target_top,south=0:target_top,east=4000:target_side,west=4000:target_side,top=0:target_side,bottom=0:target_side
+[1.16-]block:id=target,data=2,north=4000:target_side,south=4000:target_side,east=0:target_top,west=0:target_top,top=4000:target_side,bottom=4000:target_side
+# Netherite Block
+[1.16-]block:id=netherite_block,allfaces=0:netherite_block,stdrot=true
+# Ancient Debris
+[1.16-]block:id=ancient_debris,north=0:ancient_debris_top,south=0:ancient_debris_top,east=4000:ancient_debris_side,west=4000:ancient_debris_side,top=0:ancient_debris_side,bottom=0:ancient_debris_side
+# Crying Obsidian
+[1.16-]block:id=crying_obsidian,allfaces=0:crying_obsidian,stdrot=true
+# Respawn Anchor
+[1.16-]block:id=respawn_anchor,data=0,allsides=0:respawn_anchor_side0,top=0:respawn_anchor_top_off,bottom=0:respawn_anchor_bottom,stdrot=true
+[1.16-]block:id=respawn_anchor,data=1,allsides=0:respawn_anchor_side1,top=0:respawn_anchor_top,bottom=0:respawn_anchor_bottom,stdrot=true
+[1.16-]block:id=respawn_anchor,data=2,allsides=0:respawn_anchor_side2,top=0:respawn_anchor_top,bottom=0:respawn_anchor_bottom,stdrot=true
+[1.16-]block:id=respawn_anchor,data=3,allsides=0:respawn_anchor_side3,top=0:respawn_anchor_top,bottom=0:respawn_anchor_bottom,stdrot=true
+[1.16-]block:id=respawn_anchor,data=4,allsides=0:respawn_anchor_side4,top=0:respawn_anchor_top,bottom=0:respawn_anchor_bottom,stdrot=true
