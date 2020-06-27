@@ -25,6 +25,7 @@ import net.minecraft.server.v1_16_R1.ChunkCoordIntPair;
 import net.minecraft.server.v1_16_R1.ChunkRegionLoader;
 import net.minecraft.server.v1_16_R1.ChunkStatus;
 import net.minecraft.server.v1_16_R1.DataBits;
+import net.minecraft.server.v1_16_R1.DataBitsPacked;
 import net.minecraft.server.v1_16_R1.NBTTagCompound;
 import net.minecraft.server.v1_16_R1.NBTTagList;
 
@@ -208,19 +209,28 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	            			palette[pi] = DynmapBlockState.AIR;
 	            		}
 	            	}
-	            	int bitsperblock = (statelist.length * 64) / 4096;
-	            	DataBits db = new DataBits(bitsperblock, 4096, statelist);
-	            	if (bitsperblock > 8) {	// Not palette
-	            		for (int j = 0; j < 4096; j++) {
-	            			states[j] = DynmapBlockState.getStateByGlobalIndex(db.a(j));
-	            		}
+	            	int recsperblock = (4096 + statelist.length - 1) / statelist.length;
+	            	int bitsperblock = 64 / recsperblock;
+	            	DataBits db = null;
+	            	DataBitsPacked dbp = null;
+	            	try {
+	            		db = new DataBits(bitsperblock, 4096, statelist);
+	            	} catch (Exception x) {	// Handle legacy encoded
+		            	bitsperblock = (statelist.length * 64) / 4096;
+	            		dbp = new DataBitsPacked(bitsperblock, 4096, statelist);
 	            	}
-	            	else {
-	            		for (int j = 0; j < 4096; j++) {
-	            			int v = db.a(j);
-	            			states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
-	            		}
-	            	}
+        			if (bitsperblock > 8) {	// Not palette
+            			for (int j = 0; j < 4096; j++) {
+            				int v = (db != null) ? db.a(j) : dbp.a(j);
+            				states[j] = DynmapBlockState.getStateByGlobalIndex(v);
+            			}
+        			}
+        			else {
+            			for (int j = 0; j < 4096; j++) {
+            				int v = (db != null) ? db.a(j) : dbp.a(j);
+            				states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
+            			}
+        			}
 				}
 	            if (sec.hasKey("BlockLight")) {
 					cursect.emitlight = dataCopy(sec.getByteArray("BlockLight"));
