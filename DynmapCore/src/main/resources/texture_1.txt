@@ -2634,9 +2634,7 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Warped Wall sign
 [1.16-]block:id=warped_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=warped_sign
 # Target
-[1.16-]block:id=target,data=1,allsides=0:target_side,topbottom=0:target_top,stdrot=true
-[1.16-]block:id=target,data=0,north=0:target_top,south=0:target_top,east=4000:target_side,west=4000:target_side,top=0:target_side,bottom=0:target_side
-[1.16-]block:id=target,data=2,north=4000:target_side,south=4000:target_side,east=0:target_top,west=0:target_top,top=4000:target_side,bottom=4000:target_side
+[1.16-]block:id=target,allsides=0:target_side,topbottom=0:target_top,stdrot=true
 # Netherite Block
 [1.16-]block:id=netherite_block,allfaces=0:netherite_block,stdrot=true
 # Ancient Debris
