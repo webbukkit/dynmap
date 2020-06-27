@@ -1666,11 +1666,15 @@ patchblock:id=bubble_column
 [1.16-]patchblock:id=warped_fungus,id=warped_roots,id=nether_sprouts,id=crimson_fungus,id=weeping_vines,id=weeping_vines_plant,id=twisting_vines,id=twisting_vines_plant,id=crimson_roots,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 # Crimson Slab
 # Warped Slab
-[1.16-]boxblock:id=crimson_slab,id=warped_slab,data=0,data=1,ymin=0.5
-[1.16-]boxblock:id=crimson_slab,id=warped_slab,data=2,data=3,ymax=0.5
+# Blackstone Slab
+# Polished Blackstone slab
+# Polished Blackstone Brick slab
+[1.16-]boxblock:id=crimson_slab,id=warped_slab,id=blackstone_slab,id=polished_blackstone_brick_slab,id=polished_blackstone_slab,data=0,data=1,ymin=0.5
+[1.16-]boxblock:id=crimson_slab,id=warped_slab,id=blackstone_slab,id=polished_blackstone_brick_slab,id=polished_blackstone_slab,data=2,data=3,ymax=0.5
 # Warped pressure plate
 # Crimson pressure plate
-[1.16-]boxblock:id=crimson_pressure_plate,id=warped_pressure_plate,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275
+# Polished Blackstone pressure plate
+[1.16-]boxblock:id=crimson_pressure_plate,id=warped_pressure_plate,id=polished_blackstone_pressure_plate,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275
 # Crimson fence
 # Warped Fence
 [1.16-]customblock:id=crimson_fence,id=warped_fence,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=fence
@@ -1687,17 +1691,21 @@ patchblock:id=bubble_column
 [1.16-]customblock:id=crimson_fence_gate,id=warped_fence_gate,class=org.dynmap.hdmap.renderer.FenceGateBlockStateRenderer
 # Crimson stairs
 # Warped stairs
-[1.16-]customblock:id=crimson_stairs,id=warped_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
+# Blackstone stairs
+# Polished Blackstone stairs
+# Polished Blackstone brick stairs
+[1.16-]customblock:id=crimson_stairs,id=warped_stairs,id=blackstone_stairs,id=polished_blackstone_stairs,id=polished_blackstone_brick_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
 # Crimson button
 # Warped button
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=16-19,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=20-23,xmin=0.375,xmax=0.625,ymin=0.875,zmin=0.3125,zmax=0.6875
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=14-15,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=12-13,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=10-11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=8-9,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=0-3,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
-[1.16-]boxblock:id=crimson_button,id=warped_button,data=4-7,xmin=0.375,xmax=0.625,ymax=0.125,zmin=0.3125,zmax=0.6875
+# Polished blackstone button
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=16-19,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=20-23,xmin=0.375,xmax=0.625,ymin=0.875,zmin=0.3125,zmax=0.6875
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=14-15,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=12-13,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=10-11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=8-9,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=0-3,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+[1.16-]boxblock:id=crimson_button,id=warped_button,id=polished_blackstone_button,data=4-7,xmin=0.375,xmax=0.625,ymax=0.125,zmin=0.3125,zmax=0.6875
 # Crimson Door
 # Warped Door
 [1.16-]customblock:id=crimson_door,id=warped_door,class=org.dynmap.hdmap.renderer.DoorStateRenderer
@@ -1725,3 +1733,12 @@ patchblock:id=bubble_column
 [1.16-]patchblock:id=crimson_sign,id=warped_sign,data=6-7,patch0=SignFront@247,patch1=SignBack@247,patch2=SignTop@247,patch3=SignBottom@247,patch4=SignLeft@247,patch5=SignRight@247,patch6=PostFront@247,patch7=PostBack@247,patch8=PostLeft@247,patch9=PostRight@247
 [1.16-]patchblock:id=crimson_sign,id=warped_sign,data=14-15,patch0=SignFront@337,patch1=SignBack@337,patch2=SignTop@337,patch3=SignBottom@337,patch4=SignLeft@337,patch5=SignRight@337,patch6=PostFront@337,patch7=PostBack@337,patch8=PostLeft@337,patch9=PostRight@337
 [1.16-]patchblock:id=crimson_sign,id=warped_sign,data=22-23,patch0=SignFront@67,patch1=SignBack@67,patch2=SignTop@67,patch3=SignBottom@67,patch4=SignLeft@67,patch5=SignRight@67,patch6=PostFront@67,patch7=PostBack@67,patch8=PostLeft@67,patch9=PostRight@67
+# Potted Crimson Fungus
+# Potted Warped Fungus
+# Potted Crimson Roots
+# Potted Warped Roots
+[1.16-]patchblock:id=potted_crimson_fungus,id=potted_warped_fungus,id=potted_crimson_roots,id=potted_warped_roots,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Blackstone wall
+# Polished Blackstone wall
+# Polished Blackstone Brick wall
+[1.16-]customblock:id=blackstone_wall,id=polished_blackstone_wall,id=polished_blackstone_brick_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=wall

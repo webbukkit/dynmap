@@ -2492,6 +2492,18 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]texture:id=respawn_anchor_side2
 [1.16-]texture:id=respawn_anchor_side3
 [1.16-]texture:id=respawn_anchor_side4
+[1.16-]texture:id=lodestone_top
+[1.16-]texture:id=lodestone_side
+[1.16-]texture:id=blackstone_top
+[1.16-]texture:id=blackstone
+[1.16-]texture:id=polished_blackstone
+[1.16-]texture:id=polished_blackstone_bricks
+[1.16-]texture:id=cracked_polished_blackstone_bricks
+[1.16-]texture:id=chiseled_polished_blackstone
+[1.16-]texture:id=gilded_blackstone
+[1.16-]texture:id=chiseled_nether_bricks
+[1.16-]texture:id=cracked_nether_bricks
+[1.16-]texture:id=quartz_bricks
 
 # Nether gold ore
 [1.16-]block:id=nether_gold_ore,allfaces=0:nether_gold_ore,stdrot=true
@@ -2628,7 +2640,7 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Netherite Block
 [1.16-]block:id=netherite_block,allfaces=0:netherite_block,stdrot=true
 # Ancient Debris
-[1.16-]block:id=ancient_debris,north=0:ancient_debris_top,south=0:ancient_debris_top,east=4000:ancient_debris_side,west=4000:ancient_debris_side,top=0:ancient_debris_side,bottom=0:ancient_debris_side
+[1.16-]block:id=ancient_debris,top=0:ancient_debris_top,bottom=0:ancient_debris_top,allsides=0:ancient_debris_side,stdrot=true
 # Crying Obsidian
 [1.16-]block:id=crying_obsidian,allfaces=0:crying_obsidian,stdrot=true
 # Respawn Anchor
@@ -2637,3 +2649,58 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.16-]block:id=respawn_anchor,data=2,allsides=0:respawn_anchor_side2,top=0:respawn_anchor_top,bottom=0:respawn_anchor_bottom,stdrot=true
 [1.16-]block:id=respawn_anchor,data=3,allsides=0:respawn_anchor_side3,top=0:respawn_anchor_top,bottom=0:respawn_anchor_bottom,stdrot=true
 [1.16-]block:id=respawn_anchor,data=4,allsides=0:respawn_anchor_side4,top=0:respawn_anchor_top,bottom=0:respawn_anchor_bottom,stdrot=true
+# Potted Crimson Fungus
+[1.16-]block:id=potted_crimson_fungus,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:crimson_fungus,transparency=TRANSPARENT
+# Potted Warped Fungus
+[1.16-]block:id=potted_warped_fungus,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:warped_fungus,transparency=TRANSPARENT
+# Potted Crimson Roots
+[1.16-]block:id=potted_crimson_roots,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:crimson_roots,transparency=TRANSPARENT
+# Potted Warped Roots
+[1.16-]block:id=potted_warped_roots,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:warped_roots,transparency=TRANSPARENT
+# Lodestone
+[1.16-]block:id=lodestone,top=0:lodestone_top,bottom=0:lodestone_top,allsides=0:lodestone_side,stdrot=true
+# Blackstone
+[1.16-]block:id=blackstone,top=0:blackstone_top,bottom=0:blackstone_top,allsides=0:blackstone,stdrot=true
+# Blockstone stairs
+[1.16-]block:id=blackstone_stairs,patch0=0:blackstone,patch1=0:blackstone_top,patch2=0:blackstone_top,transparency=SEMITRANSPARENT
+# Blackstone wall
+[1.16-]block:id=blackstone_wall,patch0-2=0:blackstone,transparency=TRANSPARENT
+# Blackstone slab
+[1.16-]block:id=blackstone_slab,data=0,data=1,data=2,data=3,allsides=0:blackstone,top=0:blackstone_top,bottom=0:blackstone_top,stdrot=true,transparency=SEMITRANSPARENT
+[1.16-]block:id=blackstone_slab,data=4,data=5,allsides=0:blackstone,top=0:blackstone_top,bottom=0:blackstone_top,stdrot=true
+# Polished Blackstone
+[1.16-]block:id=polished_blackstone,allfaces=0:polished_blackstone,stdrot=true
+# Polished Blackstone Bricks
+[1.16-]block:id=polished_blackstone_bricks,allfaces=0:polished_blackstone_bricks,stdrot=true
+# Cracled Polished Blackstone Bricks
+[1.16-]block:id=cracked_polished_blackstone_bricks,allfaces=0:cracked_polished_blackstone_bricks,stdrot=true
+# Chiseled Polished Blackstone
+[1.16-]block:id=chiseled_polished_blackstone,allfaces=0:chiseled_polished_blackstone,stdrot=true
+# Polished Blackstone Brick slab
+[1.16-]block:id=polished_blackstone_brick_slab,data=0,data=1,data=2,data=3,allsides=0:polished_blackstone_bricks,top=0:polished_blackstone_bricks,bottom=0:polished_blackstone_bricks,stdrot=true,transparency=SEMITRANSPARENT
+[1.16-]block:id=polished_blackstone_brick_slab,data=4,data=5,allsides=0:polished_blackstone_bricks,top=0:polished_blackstone_bricks,bottom=0:polished_blackstone_bricks,stdrot=true
+# Polished Blockstone stairs
+[1.16-]block:id=polished_blackstone_stairs,patch0=0:polished_blackstone,patch1=0:polished_blackstone,patch2=0:polished_blackstone,transparency=SEMITRANSPARENT
+# Polished Blackstone brick wall
+[1.16-]block:id=polished_blackstone_brick_wall,patch0-2=0:polished_blackstone_bricks,transparency=TRANSPARENT
+# Polished Blackstone wall
+[1.16-]block:id=polished_blackstone_wall,patch0-2=0:polished_blackstone,transparency=TRANSPARENT
+# Gilded Blackstone
+[1.16-]block:id=gilded_blackstone,allfaces=0:gilded_blackstone,stdrot=true
+# Polished Blackstone slab
+[1.16-]block:id=polished_blackstone_slab,data=0,data=1,data=2,data=3,allsides=0:polished_blackstone,top=0:polished_blackstone,bottom=0:polished_blackstone,stdrot=true,transparency=SEMITRANSPARENT
+[1.16-]block:id=polished_blackstone_slab,data=4,data=5,allsides=0:polished_blackstone,top=0:polished_blackstone,bottom=0:polished_blackstone,stdrot=true
+# Polished Blockstone Brick stairs
+[1.16-]block:id=polished_blackstone_brick_stairs,patch0=0:polished_blackstone_bricks,patch1=0:polished_blackstone_bricks,patch2=0:polished_blackstone_bricks,transparency=SEMITRANSPARENT
+# Polished Blackstone pressure plate
+[1.16-]block:id=polished_blackstone_pressure_plate,allfaces=0:polished_blackstone,stdrot=true,transparency=TRANSPARENT
+# Polished Blackstone button
+[1.16-]block:id=polished_blackstone_button,allfaces=0:polished_blackstone,stdrot=true,transparency=TRANSPARENT
+# Chiseled Nether Bricks
+[1.16-]block:id=chiseled_nether_bricks,allfaces=0:chiseled_nether_bricks,stdrot=true
+# Cracked Nether Bricks
+[1.16-]block:id=cracked_nether_bricks,allfaces=0:cracked_nether_bricks,stdrot=true
+# Quartz Bricks
+[1.16-]block:id=quartz_bricks,allfaces=0:quartz_bricks,stdrot=true
+
+
