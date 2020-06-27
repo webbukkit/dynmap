@@ -208,7 +208,8 @@ public class MapChunkCache115 extends AbstractMapChunkCache {
 	            			palette[pi] = DynmapBlockState.AIR;
 	            		}
 	            	}
-	            	int bitsperblock = (statelist.length * 64) / 4096;
+	            	int recsperblock = (4096 + statelist.length - 1) / statelist.length;
+	            	int bitsperblock = 64 / recsperblock;
 	            	DataBits db = new DataBits(bitsperblock, 4096, statelist);
 	            	if (bitsperblock > 8) {	// Not palette
 	            		for (int j = 0; j < 4096; j++) {
