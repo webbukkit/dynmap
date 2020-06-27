@@ -28,6 +28,7 @@ import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 
 import net.minecraft.server.v1_16_R1.BiomeBase;
+import net.minecraft.server.v1_16_R1.BiomeFog;
 import net.minecraft.server.v1_16_R1.Block;
 import net.minecraft.server.v1_16_R1.BlockFluids;
 import net.minecraft.server.v1_16_R1.BlockRotatable;
@@ -42,8 +43,8 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
     private Field watercolorfield;
     
     public BukkitVersionHelperSpigot116() {
-		Class biomebase =  getNMSClass("net.minecraft.server.BiomeBase");
-		watercolorfield = getPrivateField(biomebase, new String[] { "t" }, int.class);
+		Class biomefog =  getNMSClass("net.minecraft.server.BiomeFog");
+		watercolorfield = getPrivateField(biomefog, new String[] { "c" }, int.class);
     }
     
     /**
@@ -151,7 +152,7 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
     @Override
 	public int getBiomeBaseWaterMult(Object bb) {
     	try {
-			return (int) watercolorfield.get(bb);
+			return (int) watercolorfield.get(((BiomeBase)bb).q());
 		} catch (IllegalArgumentException e) {
 		} catch (IllegalAccessException e) {
 		}
