@@ -32,31 +32,12 @@ public class Sponge7Permissions implements PermissionProvider {
 
     @Override
     public boolean has(ICommandSender sender, String permission) {
-        if(sender instanceof EntityPlayerMP) {
-        	boolean rc = false;
-        	EntityPlayerMP player = (EntityPlayerMP) sender;
-        	Optional<Player> p = Sponge.getServer().getPlayer(player.getUniqueID());
-        	if (p.isPresent()) {
-        		
-        		rc = p.get().hasPermission("dynmap." + permission);
-        	}
-        	return rc;
-        }
-        return true;
+    	return sender.canUseCommand(4, "dynmap." + permission);
     }
     
     @Override
     public boolean hasPermissionNode(ICommandSender sender, String permission) {
-        if(sender instanceof EntityPlayerMP) {
-        	boolean rc = false;
-        	EntityPlayerMP player = (EntityPlayerMP) sender;
-        	Optional<Player> p = Sponge.getServer().getPlayer(player.getUniqueID());
-        	if (p.isPresent()) {
-        		rc = p.get().hasPermission("dynmap." + permission);
-        	}
-        	return rc;
-        }
-        return true;    	
+    	return sender.canUseCommand(4, "dynmap." + permission);
     }
     
     @Override
