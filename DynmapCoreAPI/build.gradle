@@ -1,6 +1,11 @@
 description = "DynmapCoreAPI"
 
 jar {
-	archiveName = "${project.name}-${project.version}.jar"
+//	archiveName = "${project.name}-${project.version}-all.jar"
     destinationDir = file '../target'
+    classifier = "all"
+}
+
+artifacts {
+    archives jar
 }
