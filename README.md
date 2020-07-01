@@ -10,15 +10,13 @@ Or (on Windows):
     
 # What platforms are supported?
 The following target platforms are supported:
-- CraftBukkit/Spigot - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.8.9 through v1.15.2)
-- Forge v1.8.9 - via Dynmap-<version>-forge-1.8.9.jar mod
-- Forge v1.9.4 - via Dynmap-<version>-forge-1.9.4.jar mod
-- Forge v1.10.2 - via Dynmap-<version>-forge-1.10.2.jar mod
+- CraftBukkit/Spigot - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.15.2)
 - Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
 - Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
 - Forge v1.13.2 - via Dynmap-<version>-forge-1.13.2.jar mod
 - Forge v1.14.4 - via Dynmap-<version>-forge-1.14.4.jar mod
 - Forge v1.15.2 - via Dynmap-<version>-forge-1.15.2.jar mod
+- Forge v1.16.1 - via Dynmap-<version>-forge-1.16.1.jar mod
     
 # Data Storage
 Dynmap supports the following storage backends:
