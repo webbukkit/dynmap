@@ -1898,7 +1898,6 @@ public class DynmapPlugin
         File f = new File(core.getDataFolder(), "forgeworlds.yml");
         if(f.canRead() == false) {
             useSaveFolder = true;
-            ForgeWorld.setSaveFolderMapping();
             return;
         }
         ConfigurationNode cn = new ConfigurationNode(f);
@@ -1909,9 +1908,6 @@ public class DynmapPlugin
         // If setting defined, use it 
         if (cn.containsKey("useSaveFolderAsName")) {
             useSaveFolder = cn.getBoolean("useSaveFolderAsName", useSaveFolder);
-        }
-    	if (useSaveFolder) {
-            ForgeWorld.setSaveFolderMapping();
         }
         List<Map<String,Object>> lst = cn.getMapList("worlds");
         if(lst == null) {

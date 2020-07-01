@@ -1,16 +1,12 @@
 package org.dynmap.forge_1_16_1;
-import java.io.File;
 /**
  * Forge specific implementation of DynmapWorld
  */
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.Heightmap.Type;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
@@ -30,12 +26,8 @@ public class ForgeWorld extends DynmapWorld
     private final boolean istheend;
     private final String env;
     private DynmapLocation spawnloc = new DynmapLocation();
-    private static boolean doSaveFolderMapping = false;
     private static int maxWorldHeight = 256;    // Maximum allows world height
     
-    public static void setSaveFolderMapping() {
-        doSaveFolderMapping = true;
-    }
     public static int getMaxWorldHeight() {
         return maxWorldHeight;
     }
