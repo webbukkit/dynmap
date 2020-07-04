@@ -13,6 +13,10 @@ import org.dynmap.hdmap.HDLighting;
 import org.dynmap.hdmap.HDMap;
 import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.hdmap.HDShader;
+import org.dynmap.utils.MapChunkCache.HiddenChunkStyle;
+import org.dynmap.utils.RectangleVisibilityLimit;
+import org.dynmap.utils.RoundVisibilityLimit;
+import org.dynmap.utils.VisibilityLimit;
 
 /**
  * Handler for world and map edit commands (via /dmap)
@@ -20,7 +24,7 @@ import org.dynmap.hdmap.HDShader;
 public class DynmapMapCommands {
 
     private boolean checkIfActive(DynmapCore core, DynmapCommandSender sender) {
-        if((!core.getPauseFullRadiusRenders()) || (!core.getPauseUpdateRenders())) {
+        if ((!core.getPauseFullRadiusRenders()) || (!core.getPauseUpdateRenders())) {
             sender.sendMessage("Cannot edit map data while rendering active - run '/dynmap pause all' to pause rendering");
             return true;
         }
@@ -30,51 +34,63 @@ public class DynmapMapCommands {
     public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args, DynmapCore core) {
         /* Re-parse args - handle doublequotes */
         args = DynmapCore.parseArgs(args, sender);
-        if(args.length < 1)
+        if (args.length < 1)
             return false;
         cmd = args[0];
         boolean rslt = false;
+        boolean edit = false;
         
-        if(cmd.equalsIgnoreCase("worldlist")) {
+        if (cmd.equalsIgnoreCase("worldlist")) {
             rslt = handleWorldList(sender, args, core);
         }
-        else if(cmd.equalsIgnoreCase("perspectivelist")) {
+        else if (cmd.equalsIgnoreCase("perspectivelist")) {
             rslt = handlePerspectiveList(sender, args, core);
         }
-        else if(cmd.equalsIgnoreCase("shaderlist")) {
+        else if (cmd.equalsIgnoreCase("shaderlist")) {
             rslt = handleShaderList(sender, args, core);
         }
-        else if(cmd.equalsIgnoreCase("lightinglist")) {
+        else if (cmd.equalsIgnoreCase("lightinglist")) {
             rslt = handleLightingList(sender, args, core);
         }
-        else if(cmd.equalsIgnoreCase("maplist")) {
+        else if (cmd.equalsIgnoreCase("maplist")) {
             rslt = handleMapList(sender, args, core);
         }
-        else if(cmd.equalsIgnoreCase("blocklist")) {
+        else if (cmd.equalsIgnoreCase("blocklist")) {
             rslt = handleBlockList(sender, args, core);
         }
-        /* Other commands are edits - must be paused to run these */
-        else if(checkIfActive(core, sender)) {
-            rslt = true;
+        else if (cmd.equalsIgnoreCase("worldgetlimits")) {
+        	rslt = handleWorldGetLimits(sender, args, core);
         }
-        else {
-            if(cmd.equalsIgnoreCase("worldset")) {
-                rslt = handleWorldSet(sender, args, core);
-            }
-            else if(cmd.equalsIgnoreCase("mapdelete")) {
-                rslt = handleMapDelete(sender, args, core);
-            }
-            else if(cmd.equalsIgnoreCase("worldreset")) {
-                rslt = handleWorldReset(sender, args, core);
-            }
-            else if(cmd.equalsIgnoreCase("mapset")) {
-                rslt = handleMapSet(sender, args, core, false);
-            }
-            else if(cmd.equalsIgnoreCase("mapadd")) {
-                rslt = handleMapSet(sender, args, core, true);
-            }
-            if(rslt)
-                sender.sendMessage("If you are done editing map data, run '/dynmap pause none' to resume rendering");
+        else if (cmd.equalsIgnoreCase("worldremovelimit")) {
+        	edit = true;
+        	rslt = handleWorldRemoveLimit(sender, args, core);
+        }
+        else if (cmd.equalsIgnoreCase("worldaddlimit")) {
+        	edit = true;
+        	rslt = handleWorldAddLimit(sender, args, core);
+        }
+        else if (cmd.equalsIgnoreCase("worldset")) {
+        	edit = true;
+    		rslt = handleWorldSet(sender, args, core);
+        }
+        else if (cmd.equalsIgnoreCase("mapdelete")) {
+        	edit = true;
+            rslt = handleMapDelete(sender, args, core);
+    	}
+        else if (cmd.equalsIgnoreCase("worldreset")) {
+        	edit = true;
+            rslt = handleWorldReset(sender, args, core);
+        }
+        else if (cmd.equalsIgnoreCase("mapset")) {
+        	edit = true;
+            rslt = handleMapSet(sender, args, core, false);
+        }
+        else if (cmd.equalsIgnoreCase("mapadd")) {
+        	edit = true;
+            rslt = handleMapSet(sender, args, core, true);
+        }
+        if (edit && rslt) {
+            sender.sendMessage("If you are done editing map data, run '/dynmap pause none' to resume rendering");
         }
         return rslt;
     }
@@ -121,6 +137,235 @@ public class DynmapMapCommands {
         return true;
     }
 
+    private boolean handleWorldGetLimits(DynmapCommandSender sender, String[] args, DynmapCore core) {
+        if(!core.checkPlayerPermission(sender, "dmap.worldlist"))
+            return true;
+        if(args.length < 2) {
+            sender.sendMessage("World ID required");
+            return true;
+        }
+        String world_id = args[1];
+        DynmapWorld w = core.getMapManager().getWorld(world_id);
+        if (w == null) {
+            sender.sendMessage(String.format("World %s not found", world_id));
+            return true;
+        }
+        sender.sendMessage("limits:");
+        int viscnt = 0;
+        if ((w.visibility_limits != null) && (w.visibility_limits.size() > 0)) {
+        	viscnt = w.visibility_limits.size();
+        	for (int i = 0; i < viscnt; i++) {
+        		VisibilityLimit limit = w.visibility_limits.get(i);
+        		if (limit instanceof RoundVisibilityLimit) {
+        			RoundVisibilityLimit rlimit = (RoundVisibilityLimit) limit;
+        			sender.sendMessage(String.format(" %d: limittype=visible, type=round, center=%d/%d, radius=%f", i, rlimit.x_center, rlimit.z_center, rlimit.radius));
+        		}
+        		else if (limit instanceof RectangleVisibilityLimit) {
+        			RectangleVisibilityLimit rlimit = (RectangleVisibilityLimit) limit;
+        			sender.sendMessage(String.format(" %d: limittype=visible, type=rect, corner1=%d/%d, corner2=%d/%d", i, rlimit.x_min, rlimit.z_min, rlimit.x_max, rlimit.z_max));
+        		}
+        	}
+        }
+        if ((w.hidden_limits != null) && (w.hidden_limits.size() > 0)) {
+        	for (int i = 0; i < w.hidden_limits.size(); i++) {
+        		VisibilityLimit limit = w.hidden_limits.get(i);
+        		if (limit instanceof RoundVisibilityLimit) {
+        			RoundVisibilityLimit rlimit = (RoundVisibilityLimit) limit;
+        			sender.sendMessage(String.format(" %d: limittype=hidden, type=round, center=%d/%d, radius=%f", i + viscnt, rlimit.x_center, rlimit.z_center, rlimit.radius));
+        		}
+        		else if (limit instanceof RectangleVisibilityLimit) {
+        			RectangleVisibilityLimit rlimit = (RectangleVisibilityLimit) limit;
+        			sender.sendMessage(String.format(" %d: limittype=hidden, type=rect, corner1=%d/%d, corner2=%d/%d", i + viscnt, rlimit.x_min, rlimit.z_min, rlimit.x_max, rlimit.z_max));
+        		}
+        	}
+        }
+        sender.sendMessage("hiddenstyle: " + w.hiddenchunkstyle.getValue());
+        return true;
+    }
+
+    private boolean handleWorldAddLimit(DynmapCommandSender sender, String[] args, DynmapCore core) {
+        if(!core.checkPlayerPermission(sender, "dmap.worldset"))
+            return true;
+        if(args.length < 2) {
+            sender.sendMessage("World ID required");
+            return true;
+        }
+        /* Test if render active - quit if so */
+        if (checkIfActive(core, sender)) {
+            return true;
+        }
+        String world_id = args[1];
+        DynmapWorld w = core.getMapManager().getWorld(world_id);
+        if (w == null) {
+            sender.sendMessage(String.format("World %s not found", world_id));
+            return true;
+        }
+        String limittype = "visible";
+        String type = "rect";	// Default to rectangle
+        int corner1[] = null;
+        int corner2[] = null;
+        int center[] = null;
+        double radius = 0.0;
+        HiddenChunkStyle style = null;
+        // Other args are field:value
+        for (int argid = 2; argid < args.length; argid++) {
+        	String[] argval = args[argid].split(":");
+        	if (argval.length != 2) {
+        		sender.sendMessage("Argument witout value: " + args[argid]);
+        		return false;
+        	}
+        	String[] toks;
+        	String id = argval[0];
+        	String val = argval[1];
+        	switch (id) {
+        		case "type":
+        			if ((val.equals("round")) || (val.equals("rect"))) {
+        				type = val;
+        			}
+        			else {
+                		sender.sendMessage("Bad type value: " + val);
+            			return false;
+        			}
+        			break;
+        		case "limittype":
+        			if ((val.equals("visible")) || (val.equals("hidden"))) {
+        				limittype = val;
+        			}
+        			else {
+                		sender.sendMessage("Bad limittype value: " + val);
+            			return false;
+        			}
+        			break;
+        		case "corner1":
+        		case "corner2":
+        		case "center":
+        			if ((type.equals("rect") && id.equals("center")) ||
+    					(type.equals("round") && (!id.equals("center")))) {
+                		sender.sendMessage("Bad parameter for type " + type + ": " + id);
+            			return false;        				
+        			}
+                    toks = val.split("/");
+                    if (toks.length == 2) {
+                        int x = 0, z = 0;
+                        x = Integer.valueOf(toks[0]);
+                        z = Integer.valueOf(toks[1]);
+                        switch (id) {
+                        	case "corner1":
+                        		corner1 = new int[] { x, z };
+                        		break;
+                        	case "corner2":
+                        		corner2 = new int[] { x, z };
+                        		break;
+                        	case "center":
+                        		center = new int[] { x, z };
+                        		break;
+                    	}
+                    }
+                    else {
+                		sender.sendMessage("Bad value for parameter " + id + ": " + val);
+            			return false;     
+                    }
+                    break;
+        		case "radius":
+        			if (!type.equals("round")) {
+                		sender.sendMessage("Bad parameter for type " + type + ": " + id);
+            			return false;        				
+        			}
+        			radius = Double.valueOf(val);
+        			break;
+        		case "style":
+        			style = HiddenChunkStyle.fromValue(val);
+        			if (style == null) {
+                		sender.sendMessage("Bad parameter for style: " + val);
+            			return false;        				
+        			}
+        			break;
+        		default:
+            		sender.sendMessage("Bad parameter: " + id);
+            		return false;
+        	}
+        }
+        // If enough for rectange area, add it
+        VisibilityLimit newlimit = null;
+        if ((type.contentEquals("rect") && (corner1 != null) && (corner2 != null))) {
+        	newlimit = new RectangleVisibilityLimit(corner1[0], corner1[1], corner2[0], corner2[1]);      	
+        }
+        else if ((type.contentEquals("round") && (center != null) && (radius > 0.0))) {
+        	newlimit = new RoundVisibilityLimit(center[0], center[1], radius);
+        }
+        boolean updated = false;
+        if (newlimit != null) {
+        	if (limittype.contentEquals("visible")) {
+        		if (w.visibility_limits == null) { w.visibility_limits = new ArrayList<VisibilityLimit>(); }
+        		w.visibility_limits.add(newlimit);
+        	}
+        	else {
+        		if (w.hidden_limits == null) { w.hidden_limits = new ArrayList<VisibilityLimit>(); }
+        		w.hidden_limits.add(newlimit);        		
+        	}
+            updated = true;
+        }
+        // If new style, apply it
+        if (style != null) {
+        	w.hiddenchunkstyle = style;
+            updated = true;        	
+        }
+        // Apply update
+        if (updated) {
+            core.updateWorldConfig(w);
+            sender.sendMessage("Refreshing configuration for world " + world_id);
+            core.refreshWorld(world_id);
+        }
+        return true;
+    }
+
+    private boolean handleWorldRemoveLimit(DynmapCommandSender sender, String[] args, DynmapCore core) {
+        if(!core.checkPlayerPermission(sender, "dmap.worldset"))
+            return true;
+        if(args.length < 3) {
+            sender.sendMessage("World ID and limit index required");
+            return true;
+        }
+        /* Test if render active - quit if so */
+        if (checkIfActive(core, sender)) {
+            return true;
+        }
+        String world_id = args[1];
+        DynmapWorld w = core.getMapManager().getWorld(world_id);
+        if (w == null) {
+            sender.sendMessage(String.format("World %s not found", world_id));
+            return true;
+        }
+        boolean updated = false;
+        String idx = args[2];
+        int idxnum = Integer.valueOf(idx);
+        int viscnt = (w.visibility_limits != null) ? w.visibility_limits.size() : 0;
+        if ((idxnum >= 0) && (idxnum < viscnt)) {
+        	w.visibility_limits.remove(idxnum);
+        	if (w.visibility_limits.size() == 0) {
+        		w.visibility_limits = null;
+        	}
+        	updated = true;
+        }
+        else {
+        	idxnum -= viscnt;
+        	if ((idxnum >= 0) && (w.hidden_limits != null) && (idxnum < w.hidden_limits.size())) {
+            	w.hidden_limits.remove(idxnum);
+            	if (w.hidden_limits.size() == 0) {
+            		w.hidden_limits = null;
+            	}
+            	updated = true;	
+        	}
+        }
+        // Apply update
+        if (updated) {
+            core.updateWorldConfig(w);
+            sender.sendMessage("Refreshing configuration for world " + world_id);
+            core.refreshWorld(world_id);
+        }
+        return true;
+    }
+    
     private boolean handleWorldSet(DynmapCommandSender sender, String[] args, DynmapCore core) {
         if(!core.checkPlayerPermission(sender, "dmap.worldset"))
             return true;
@@ -130,7 +375,7 @@ public class DynmapMapCommands {
         }
         String wname = args[1]; /* Get world name */
         /* Test if render active - quit if so */
-        if(checkIfActive(core, sender)) {
+        if (checkIfActive(core, sender)) {
             return true;
         }
         
@@ -317,6 +562,9 @@ public class DynmapMapCommands {
     private boolean handleMapDelete(DynmapCommandSender sender, String[] args, DynmapCore core) {
         if(!core.checkPlayerPermission(sender, "dmap.mapdelete"))
             return true;
+        if (checkIfActive(core, sender)) {
+        	return false;
+        }
         if(args.length < 2) {
             sender.sendMessage("World:map name required");
             return true;
@@ -359,6 +607,9 @@ public class DynmapMapCommands {
     private boolean handleWorldReset(DynmapCommandSender sender, String[] args, DynmapCore core) {
         if(!core.checkPlayerPermission(sender, "dmap.worldreset"))
             return true;
+        if (checkIfActive(core, sender)) {
+        	return false;
+        }
         if(args.length < 2) {
             sender.sendMessage("World name required");
             return true;
@@ -397,6 +648,9 @@ public class DynmapMapCommands {
     private boolean handleMapSet(DynmapCommandSender sender, String[] args, DynmapCore core, boolean isnew) {
         if(!core.checkPlayerPermission(sender, isnew?"dmap.mapadd":"dmap.mapset"))
             return true;
+        if (checkIfActive(core, sender)) {
+        	return false;
+        }
         if(args.length < 2) {
             sender.sendMessage("World:map name required");
             return true;
