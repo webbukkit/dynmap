@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_12_2.permissions;
+package org.dynmap.forge_1_11_2.permissions;
 
 import java.util.HashSet;
 

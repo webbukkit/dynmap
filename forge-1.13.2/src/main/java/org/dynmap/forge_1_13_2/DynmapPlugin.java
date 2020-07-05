@@ -1456,6 +1456,10 @@ public class DynmapPlugin
         {
         	return;
         }
+        // Extract default permission example, if needed
+        File filepermexample = new File(core.getDataFolder(), "permissions.yml.example");
+        core.createDefaultFileFromResource("/permissions.yml.example", filepermexample);
+
         DynmapCommonAPIListener.apiInitialized(core);
     }
     

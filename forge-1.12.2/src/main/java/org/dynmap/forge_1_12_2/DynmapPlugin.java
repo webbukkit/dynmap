@@ -1475,9 +1475,9 @@ public class DynmapPlugin
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
         /* Initialize permissions handler */
-        permissions = Sponge7Permissions.create();
+    	permissions = FilePermissions.create();
         if (permissions == null) {
-        	permissions = FilePermissions.create();
+            permissions = Sponge7Permissions.create();
         }
         if(permissions == null) {
             permissions = new OpPermissions(new String[] { "webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self" });
@@ -1510,6 +1510,10 @@ public class DynmapPlugin
         {
         	return;
         }
+        // Extract default permission example, if needed
+        File filepermexample = new File(core.getDataFolder(), "permissions.yml.example");
+        core.createDefaultFileFromResource("/permissions.yml.example", filepermexample);
+
         DynmapCommonAPIListener.apiInitialized(core);
     }
     
