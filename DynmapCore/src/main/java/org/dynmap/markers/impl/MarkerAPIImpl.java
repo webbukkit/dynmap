@@ -2237,13 +2237,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
         for(String s : sortmarkers.keySet()) {
             AreaMarker m = sortmarkers.get(s);
-            String ptlist = "{ ";
-            for(int i = 0; i < m.getCornerCount(); i++) {
-                ptlist += "{" + m.getCornerX(i) + "," + m.getCornerZ(i)+ "} ";
-            }
-            ptlist += "}";
             String msg = m.getMarkerID() + ": label:\"" + m.getLabel() + "\", set:" + m.getMarkerSet().getMarkerSetID() + 
-                    ", world:" + m.getWorld() + ", corners:" + ptlist + 
+                    ", world:" + m.getWorld() + 
                     ", weight:" + m.getLineWeight() + ", color:" + String.format("%06x", m.getLineColor()) +
                     ", opacity:" + m.getLineOpacity() + ", fillcolor:" + String.format("%06x", m.getFillColor()) +
                     ", fillopacity:" + m.getFillOpacity() + ", boost:" + m.getBoostFlag() + ", markup:" + m.isLabelMarkup();
