@@ -1791,6 +1791,7 @@ public class DynmapPlugin
         	BlockUpdateRec r = new BlockUpdateRec();
         	r.w = event.getWorld();
 			ForgeWorld fw = getWorld(r.w, false);
+			if (fw == null) return;
 			r.wid = fw.getName();
 			BlockPos p = event.getPos();
 			r.x = p.getX();

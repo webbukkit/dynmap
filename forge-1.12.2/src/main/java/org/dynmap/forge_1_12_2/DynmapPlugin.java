@@ -1689,6 +1689,7 @@ public class DynmapPlugin
 			World w = event.getWorld();
 			if(!(w instanceof WorldServer)) return;
             final ForgeWorld fw = getWorld(w);
+			if (fw == null) return;
             // This event can be called from off server thread, so push processing there
             core.getServer().scheduleServerTask(new Runnable() {
             	public void run() {
