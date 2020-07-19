@@ -1371,8 +1371,8 @@ block:id=acacia_slab,data=4,data=5,allfaces=0:acacia_planks,stdrot=true
 block:id=dark_oak_slab,data=0,data=1,data=2,data=3,allfaces=0:dark_oak_planks,stdrot=true,transparency=SEMITRANSPARENT
 block:id=dark_oak_slab,data=4,data=5,allfaces=0:dark_oak_planks,stdrot=true
 # Stone slab
-block:id=stone_slab,data=0,data=1,data=2,data=3,allsides=0:stone_slab_side,topbottom=0:stone_slab_top,stdrot=true,transparency=SEMITRANSPARENT
-block:id=stone_slab,data=4,data=5,allsides=0:stone_slab_side,topbottom=0:stone_slab_top,stdrot=true
+block:id=stone_slab,data=0,data=1,data=2,data=3,allsides=0:stone,topbottom=0:stone,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,data=4,data=5,allsides=0:stone,topbottom=0:stone,stdrot=true
 # Sandstone slab
 block:id=sandstone_slab,data=0,data=1,data=2,data=3,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true,transparency=SEMITRANSPARENT
 block:id=sandstone_slab,data=4,data=5,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true
