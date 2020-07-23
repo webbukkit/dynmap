@@ -37,6 +37,9 @@ L.CustomMarker = L.Class.extend({
 		
 		map.on('viewreset', this._reset, this);
 		this._reset();
+		if (map.options.zoomAnimation && map.options.markerZoomAnimation) {
+			map.on('zoomanim', this._animateZoom, this);
+		}
 	},
 	
 	onRemove: function(map) {
@@ -59,6 +62,12 @@ L.CustomMarker = L.Class.extend({
 	setLatLng: function(latlng) {
 		this._latlng = latlng;
 		this._reset();
+	},
+
+	_animateZoom: function (opt) {
+		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center);
+		L.DomUtil.setPosition(this._element, pos);
+		this._element.style.zIndex = pos.y;
 	},
 	
 	_reset: function() {
@@ -97,6 +106,9 @@ L.CustomMarker = L.Class.extend({
 				this.dragging.enable();
 			}
 		}
+		var animation = (map.options.zoomAnimation && map.options.markerZoomAnimation);
+		if (this._element)
+			this._element.className += animation ? ' leaflet-zoom-animated' : ' leaflet-zoom-hide';
 	},
 	
 	_onMouseClick: function(e) {
