@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-         maven { url "http://repo.mikeprimm.com" }
+         maven { url "https://repo.mikeprimm.com" }
         jcenter()
         mavenCentral()        
         maven {url = "https://oss.sonatype.org/content/repositories/snapshots/"}

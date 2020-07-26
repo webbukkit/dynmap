@@ -91,7 +91,7 @@ treat it accordingly.
 
 Plugins or mods using the published APIs - DynmapCoreAPI (for all platforms) or dynmap-api (only for Spigot/Bukkit) - may access these components as 
 'compile' dependencies: DO NOT INTEGRATE THEM INTO YOUR PLUGIN - this will break Dynmap and/or other plugins when these interfaces are updated or 
-expanded.  These libraries are published at http://repo.mikeprimm.com and will be updated each official release.
+expanded.  These libraries are published at https://repo.mikeprimm.com and will be updated each official release.
 
 # Where to go for questions and discussions
 I've just created a Reddit for the Dynmap family of mods/plugins - please give it a try - https://www.reddit.com/r/Dynmap/
