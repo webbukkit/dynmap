@@ -20,5 +20,5 @@ assignees: ''
 * **Other Relevant Data/Screenshots:** *I'm using this texture pack and these plugins and my map is from alpha .8*
 * **Steps to Replicate:** *Please be clear in this section so we can replicate your issue*
 
- [ ] *I have looked at all other issues and this is not a duplicate*
+ [ ] *I have looked at all other issues and this is not a duplicate*  
  [ ] *I have been able to replicate this*
