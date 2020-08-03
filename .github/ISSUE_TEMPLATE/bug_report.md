@@ -17,5 +17,8 @@ assignees: ''
 * **Pastebin of Configuration.txt:** *https://pastebin.com/5SETL3z2*
 * **Server Host (if applicable):** *McProHosting, Shockbyte, Selfhosted, etc.*
 * **Pastebin of crashlogs or other relevant logs:** *https://pastebin.com/crashcausedbydynmap*
-* **Other Relevant Data:** *I'm using this texture pack and these plugins and my map is from alpha .8*
+* **Other Relevant Data/Screenshots:** *I'm using this texture pack and these plugins and my map is from alpha .8*
 * **Steps to Replicate:** *Please be clear in this section so we can replicate your issue*
+
+ [ ] *I have looked at all other issues and this is not a duplicate*
+ [ ] *I have been able to replicate this*
