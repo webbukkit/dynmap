@@ -109,7 +109,7 @@ public class DynmapMod
         server = event.getServer();
         if(plugin == null)
             plugin = proxy.startServer(server);
-		plugin.onStarting(event.getCommandDispatcher());
+		plugin.onStarting(server.getCommandManager().getDispatcher());
 	}
     
     @SubscribeEvent
