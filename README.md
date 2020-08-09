@@ -10,7 +10,7 @@ Or (on Windows):
     
 # What platforms are supported?
 The following target platforms are supported:
-- CraftBukkit/Spigot - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.15.2)
+- CraftBukkit/Spigot - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.1)
 - Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
 - Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
 - Forge v1.13.2 - via Dynmap-<version>-forge-1.13.2.jar mod
@@ -30,7 +30,7 @@ The Dynmap team welcomes Pull Requests with fixes, new features, and new platfor
 - Ultimately, we reserve the right to accept or deny a PR for any reason: fact is, by accepting it, we're also accepting any of the problems with supporting it,
 explaining it to users, and fixing current and future problems - if we don't think the PR is of value consistent with that cost, we'll probably not accept it.
 - All PRs should be as small as they can be to accomplish the feature or fix being supplied.  To that end:
-   - Do not lump multiple features into one PR - you;ll be asked to split them up before they will be reviewed or accepted
+   - Do not lump multiple features into one PR - you'll be asked to split them up before they will be reviewed or accepted
    - Do not make style changes, reflow code, pretty printing, or otherwise make formatting-only code changes.  This makes the PR excessively large, 
    creating changes to be reviewed that don't actually do anything (but we have to review them to be sure they aren't being used to disguise security 
    compromises or other malicious code), and they create problems with the MANY people who fork Dynmap for the sake of doing PRs or their own private
@@ -53,7 +53,7 @@ using just Java 8.
 - Don't introduce other language depdendencies - Java only: no Kotlin, Scala, JRuby, whatever. They just add runtime dependencies that most of the platforms lack,
 and language skills above and beyond the Java language requirements the code base already mandates, which just creates obstacles to other people contributing.
 - Similarly, do not update existing libraries and dependencies - these are often tied to the versions on various platforms, and updates will likely break runtime
-- Do not include code specific to other plugins or mods.  Dynmap has APIs for the purpose of avoidng the problem of working with other mods - there are many 
+- Do not include code specific to other plugins or mods.  Dynmap has APIs for the purpose of avoiding the problem of working with other mods - there are many 
 'Dynmap-XXX' mods and plugins which use the APIs to provide support for other mods and plugins (WorldGuard, Nucleus, Citizens, dozens of others).  Maintaining
 interfaces in Dynmap particular to dozens of mods on multiple versions of multiple platforms is unmanageable, so we don't do it.  The ONLY exception currently
 are security mods - although, even for those, leverage of platform-standard security interfaces is always preferred (e.g. Sponge or Bukket standard permissions)
@@ -69,11 +69,11 @@ modified source code - though doing so is encouraged.
 not yet (or no longer) supported by the Dynmap team.  If the Dynmap team comes to support this platform or version, the modifying team must agree to
 cease distribution of the unofficial version, unless otherwise authorized to continue doing so.  Further:
     - The team distributing the modified version must cite the origin of the Dynmap code, but must also clearly indicate that the version is NOT supported by
-    nor endorced by the Dynmap team, and that ALL support should be directed through the team providing the modified version.
+    nor endorsed by the Dynmap team, and that ALL support should be directed through the team providing the modified version.
     - Any modified version CANNOT be monitized or otherwise charged for, under any circumstances, nor can redistribution of it be limited or restricted.
     - The modified code must continue to be Apache Public License v2, with no additional conditions or restrictions, including full public availability of the
     modified source code.
-    - Any code from Dynmap used in such versions should be built from an appropriate fork, as DynampCore and other components (other than DynmapCpreAPI and 
+    - Any code from Dynmap used in such versions should be built from an appropriate fork, as DynmapCore and other components (other than DynmapCoreAPI and 
     dynmap-api) are subject to breaking changes at any time, and the support messages in DynmapCore MUST be modified to refer to the supporting team (or, at
     least, removed).  The modified version should NOT refer to the Dynmap Discord nor to /r/Dynmap on Reddit for support. in any case.
     - Any bugs or issues opened in conjunction with the use of the modified version on this repository will be closed without comment.
@@ -94,7 +94,8 @@ Plugins or mods using the published APIs - DynmapCoreAPI (for all platforms) or 
 expanded.  These libraries are published at https://repo.mikeprimm.com and will be updated each official release.
 
 # Where to go for questions and discussions
-I've just created a Reddit for the Dynmap family of mods/plugins - please give it a try - https://www.reddit.com/r/Dynmap/
+We have a Discord located at https://discord.gg/52pqBpw
+We also have a subreddit located at https://www.reddit.com/r/Dynmap/
 
 # Where to go to make donations
 I've set up a coffee-fund jar (I believe in the theory that software developers are machines that turn caffeine into code), for anyone who wants to throw in some tips!  I've got a Patreon here - https://www.patreon.com/dynmap, and for folks just looking to for a one-time coffee buy, hit my Ko-Fi at https://ko-fi.com/michaelprimm !
