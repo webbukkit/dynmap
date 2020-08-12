@@ -32,7 +32,7 @@ import net.minecraft.server.v1_16_R1.NBTTagList;
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
-public class MapChunkCache115 extends AbstractMapChunkCache {
+public class MapChunkCache116 extends AbstractMapChunkCache {
 
 	public static class NBTSnapshot implements Snapshot {
 	    private static interface Section {

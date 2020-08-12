@@ -22,7 +22,7 @@ import org.dynmap.bukkit.helper.BukkitMaterial;
 import org.dynmap.bukkit.helper.BukkitVersionHelperCB;
 import org.dynmap.bukkit.helper.BukkitVersionHelperGeneric;
 import org.dynmap.bukkit.helper.BukkitWorld;
-import org.dynmap.bukkit.helper.v116.MapChunkCache115;
+import org.dynmap.bukkit.helper.v116.MapChunkCache116;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
@@ -141,7 +141,7 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache115 c = new MapChunkCache115();
+        MapChunkCache116 c = new MapChunkCache116();
         c.setChunks(dw, chunks);
         return c;
     }
