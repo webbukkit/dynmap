@@ -136,7 +136,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         ccss_biome = getPrivateFieldNoFail(craftchunksnapshot, new String[] { "biome" }, biomebasearray);
         if(ccss_biome == null) {
             biomestorage = getNMSClass("net.minecraft.server.BiomeStorage");
-            biomestoragebase = getPrivateField(biomestorage, new String[] { "g", "f" }, biomebasearray);
+            biomestoragebase = getPrivateField(biomestorage, new String[] { "h", "g", "f" }, biomebasearray);
             ccss_biome = getPrivateField(craftchunksnapshot, new String[] { "biome" }, biomestorage);
         }
         /* CraftChunk */

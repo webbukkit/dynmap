@@ -1,0 +1,10 @@
+
+description = 'bukkit-helper-1.16'
+
+dependencies {
+  compile project(':bukkit-helper')
+  compile project(':dynmap-api')
+  compile project(path: ':DynmapCore', configuration: 'shadow')
+  compile group: 'org.spigotmc', name: 'spigot-api', version:'1.16.2-R0.1-SNAPSHOT'
+  compile group: 'org.spigotmc', name: 'spigot', version:'1.16.2-R0.1-SNAPSHOT'
+}
