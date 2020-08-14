@@ -295,7 +295,7 @@ public class DynmapPlugin {
     private void serverStart(MinecraftServer server) {
         // Set the server so we don't NPE during setup
         this.server = server;
-        this.fserver = new FabricServer(this, server); // FIXME: Get server in actual server itf
+        this.fserver = new FabricServer(this, server);
         this.onEnable();
         plugin.onStarting(server.getCommandManager().getDispatcher());
     }
