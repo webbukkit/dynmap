@@ -1101,6 +1101,7 @@ public class FabricMapChunkCache extends MapChunkCache {
                     try {
                         nbt = ChunkSerializer.serialize((ServerWorld) w, cps.getWorldChunk(chunk.x, chunk.z, false));
                     } catch (NullPointerException e) {
+                        // TODO: find out why this is happening and why it only seems to happen since 1.16.2
                         Log.severe("ChunkSerializer.serialize threw a NullPointerException", e);
                     }
                     if (nbt != null) nbt = nbt.getCompound("Level");

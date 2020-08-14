@@ -186,7 +186,7 @@ public class ChunkSnapshot {
 
                 int bitsperblock = (statelist.length * 64) / 4096;
                 int expectedStatelistLength = (4096 + (64 / bitsperblock) - 1) / (64 / bitsperblock);
-                if (expectedStatelistLength > statelist.length) {
+                if (expectedStatelistLength > statelist.length) { // TODO: find out why this is happening and why it doesn't seem to happen on other platforms
                     Log.warning("Got statelist of length " + statelist.length + " but expected a length of " + expectedStatelistLength);
                     long[] expandedStatelist = new long[expectedStatelistLength];
                     System.arraycopy(statelist, 0, expandedStatelist, 0, statelist.length);
