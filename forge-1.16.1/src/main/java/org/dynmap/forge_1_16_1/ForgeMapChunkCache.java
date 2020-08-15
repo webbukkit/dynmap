@@ -1143,7 +1143,7 @@ public class ForgeMapChunkCache extends MapChunkCache
     }
     
     // Prep snapshot and add to cache
-    private SnapshotRec prepChunkSnapshot(DynmapChunk chunk, CompoundNBT nbt) {
+    private SnapshotRec prepChunkSnapshot(DynmapChunk chunk, CompoundNBT nbt) throws ChunkSnapshot.StateListException {
         ChunkSnapshot ss = new ChunkSnapshot(nbt, dw.worldheight);
         DynIntHashMap tileData = new DynIntHashMap();
 
@@ -1218,9 +1218,13 @@ public class ForgeMapChunkCache extends MapChunkCache
                 if (vis) {  // If visible 
                     CompoundNBT nbt = ChunkSerializer.write((ServerWorld)w, cps.getChunk(chunk.x, chunk.z, false));
                     if (nbt != null) nbt = nbt.getCompound("Level");
-                    SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
-                    ss = ssr.ss;
-                    tileData = ssr.tileData;
+                    try {
+                        SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
+                        ss = ssr.ss;
+                        tileData = ssr.tileData;
+                    } catch (ChunkSnapshot.StateListException e) {
+                        continue;
+                    }
                 }
                 else {
                     if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
@@ -1305,9 +1309,13 @@ public class ForgeMapChunkCache extends MapChunkCache
                     }
                     else {
                         // Prep snapshot
-                        SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
-                        ss = ssr.ss;
-                        tileData = ssr.tileData;
+                        try {
+                            SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
+                            ss = ssr.ss;
+                            tileData = ssr.tileData;
+                        } catch (ChunkSnapshot.StateListException e) {
+                            continue;
+                        }
                     }
                     snaparray[chunkindex] = ss;
                     snaptile[chunkindex] = tileData;

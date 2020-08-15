@@ -119,7 +119,21 @@ public class ChunkSnapshot
         this.inhabitedTicks = inhabitedTime;
     }
 
-    public ChunkSnapshot(CompoundNBT nbt, int worldheight) {
+    public static class StateListException extends Exception {
+        private static boolean loggedOnce = false;
+
+        public StateListException(int x, int z, int expectedLength, int actualLength) {
+            if (Log.verbose || !loggedOnce) {
+                loggedOnce = true;
+                Log.info("Skipping chunk at x=" + x + ",z=" + z + ". Expected statelist of length " + expectedLength + " but got " + actualLength + ". This can happen if the chunk was not yet converted to the 1.16 format which can be fixed by visiting the chunk.");
+                if (!Log.verbose) {
+                    Log.info("You will only see this message once. Turn on verbose logging in the configuration to see all messages.");
+                }
+            }
+        }
+    }
+
+    public ChunkSnapshot(CompoundNBT nbt, int worldheight) throws StateListException {
         this.x = nbt.getInt("xPos");
         this.z = nbt.getInt("zPos");
         this.captureFulltime = 0;
@@ -178,7 +192,13 @@ public class ChunkSnapshot
                         palette[pi] = DynmapBlockState.AIR;
                     }
                 }
+
                 int bitsperblock = (statelist.length * 64) / 4096;
+                int expectedStatelistLength = (4096 + (64 / bitsperblock) - 1) / (64 / bitsperblock);
+                if (expectedStatelistLength != statelist.length) {
+                    throw new StateListException(x, z, expectedStatelistLength, statelist.length);
+                }
+
                 BitArray db = new BitArray(bitsperblock, 4096, statelist);
                 if (bitsperblock > 8) {	// Not palette
                     for (int j = 0; j < 4096; j++) {
