@@ -51,8 +51,8 @@ public class FabricWorld extends DynmapWorld {
     public FabricWorld(DynmapPlugin plugin, World w) {
         this(plugin, getWorldName(plugin, w), w.getHeight(),
                 w.getSeaLevel(),
-                w.getRegistryKey() == World.END,
                 w.getRegistryKey() == World.NETHER,
+                w.getRegistryKey() == World.END,
                 w.getRegistryKey().getValue().getPath());
         setWorldLoaded(w);
     }

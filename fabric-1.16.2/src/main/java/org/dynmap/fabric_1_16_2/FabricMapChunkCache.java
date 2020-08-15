@@ -1024,7 +1024,7 @@ public class FabricMapChunkCache extends MapChunkCache {
     }
 
     // Prep snapshot and add to cache
-    private SnapshotCache.SnapshotRec prepChunkSnapshot(DynmapChunk chunk, CompoundTag nbt) {
+    private SnapshotCache.SnapshotRec prepChunkSnapshot(DynmapChunk chunk, CompoundTag nbt) throws ChunkSnapshot.StateListException {
         ChunkSnapshot ss = new ChunkSnapshot(nbt, dw.worldheight);
         DynIntHashMap tileData = new DynIntHashMap();
 
@@ -1104,11 +1104,16 @@ public class FabricMapChunkCache extends MapChunkCache {
                     } catch (NullPointerException e) {
                         // TODO: find out why this is happening and why it only seems to happen since 1.16.2
                         Log.severe("ChunkSerializer.serialize threw a NullPointerException", e);
+                        continue;
                     }
                     if (nbt != null) nbt = nbt.getCompound("Level");
-                    SnapshotCache.SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
-                    ss = ssr.ss;
-                    tileData = ssr.tileData;
+                    try {
+                        SnapshotCache.SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
+                        ss = ssr.ss;
+                        tileData = ssr.tileData;
+                    } catch (ChunkSnapshot.StateListException e) {
+                        continue;
+                    }
                 } else {
                     if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
                         ss = STONE;
@@ -1182,9 +1187,13 @@ public class FabricMapChunkCache extends MapChunkCache {
                         tileData = new DynIntHashMap();
                     } else {
                         // Prep snapshot
-                        SnapshotCache.SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
-                        ss = ssr.ss;
-                        tileData = ssr.tileData;
+                        try {
+                            SnapshotCache.SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
+                            ss = ssr.ss;
+                            tileData = ssr.tileData;
+                        } catch (ChunkSnapshot.StateListException e) {
+                            continue;
+                        }
                     }
                     snaparray[chunkindex] = ss;
                     snaptile[chunkindex] = tileData;
