@@ -126,6 +126,17 @@ public class ChunkSnapshot {
     }
 
     public static class StateListException extends Exception {
+        private static boolean loggedOnce = false;
+
+        public StateListException(int x, int z, int expectedLength, int actualLength) {
+            if (Log.verbose || !loggedOnce) {
+                loggedOnce = true;
+                Log.info("Skipping chunk at x=" + x + ",z=" + z + ". Expected statelist of length " + expectedLength + " but got " + actualLength + ". This can happen if the chunk was not yet converted to the 1.16 format which can be fixed by visiting the chunk.");
+                if (!Log.verbose) {
+                    Log.info("You will only see this message once. Turn on verbose logging in the configuration to see all messages.");
+                }
+            }
+        }
     }
 
     public ChunkSnapshot(CompoundTag nbt, int worldheight) throws StateListException {
@@ -189,12 +200,8 @@ public class ChunkSnapshot {
 
                 int bitsperblock = (statelist.length * 64) / 4096;
                 int expectedStatelistLength = (4096 + (64 / bitsperblock) - 1) / (64 / bitsperblock);
-                if (expectedStatelistLength > statelist.length) { // TODO: find out why this is happening and why it doesn't seem to happen on other platforms
-                    Log.warning("Got statelist of length " + statelist.length + " but expected a length of " + expectedStatelistLength + " at ChunkPos(x=" + x + ",z=" + z + ")");
-                    throw new StateListException();
-                    /*long[] expandedStatelist = new long[expectedStatelistLength];
-                    System.arraycopy(statelist, 0, expandedStatelist, 0, statelist.length);
-                    statelist = expandedStatelist;*/
+                if (expectedStatelistLength != statelist.length) {
+                    throw new StateListException(x, z, expectedStatelistLength, statelist.length);
                 }
 
                 PackedIntegerArray db = new PackedIntegerArray(bitsperblock, 4096, statelist);
