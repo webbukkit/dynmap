@@ -2,6 +2,8 @@ package org.dynmap.forge_1_16_1;
 
 import java.util.Arrays;
 
+import net.minecraft.util.ArbitraryBitLengthIntArray;
+import net.minecraft.util.math.MathHelper;
 import org.dynmap.Log;
 import org.dynmap.renderer.DynmapBlockState;
 
@@ -122,10 +124,10 @@ public class ChunkSnapshot
     public static class StateListException extends Exception {
         private static boolean loggedOnce = false;
 
-        public StateListException(int x, int z, int expectedLength, int actualLength) {
+        public StateListException(int x, int z, int actualLength, int expectedLength, int expectedLegacyLength) {
             if (Log.verbose || !loggedOnce) {
                 loggedOnce = true;
-                Log.info("Skipping chunk at x=" + x + ",z=" + z + ". Expected statelist of length " + expectedLength + " but got " + actualLength + ". This can happen if the chunk was not yet converted to the 1.16 format which can be fixed by visiting the chunk.");
+                Log.info("Skipping chunk at x=" + x + ",z=" + z + ". Expected statelist of length " + expectedLength + " or " + expectedLegacyLength + " but got " + actualLength + ". This can happen if the chunk was not yet converted to the 1.16 format which can be fixed by visiting the chunk.");
                 if (!Log.verbose) {
                     Log.info("You will only see this message once. Turn on verbose logging in the configuration to see all messages.");
                 }
@@ -193,21 +195,31 @@ public class ChunkSnapshot
                     }
                 }
 
+                BitArray db = null;
+                ArbitraryBitLengthIntArray dbp = null;
+
                 int bitsperblock = (statelist.length * 64) / 4096;
                 int expectedStatelistLength = (4096 + (64 / bitsperblock) - 1) / (64 / bitsperblock);
-                if (expectedStatelistLength != statelist.length) {
-                    throw new StateListException(x, z, expectedStatelistLength, statelist.length);
+                if (statelist.length == expectedStatelistLength) {
+                    db = new BitArray(bitsperblock, 4096, statelist);
+                } else {
+                    int expectedLegacyStatelistLength = MathHelper.roundUp(bitsperblock * 4096, 64) / 64;
+                    if (statelist.length == expectedLegacyStatelistLength) {
+                        dbp = new ArbitraryBitLengthIntArray(bitsperblock, 4096, statelist);
+                    } else {
+                        throw new StateListException(x, z, statelist.length, expectedStatelistLength, expectedLegacyStatelistLength);
+                    }
                 }
 
-                BitArray db = new BitArray(bitsperblock, 4096, statelist);
                 if (bitsperblock > 8) {	// Not palette
                     for (int j = 0; j < 4096; j++) {
-                        states[j] = DynmapBlockState.getStateByGlobalIndex(db.getAt(j));
+                        int v = db != null ? db.getAt(j) : dbp.func_233048_a_(j);
+                        states[j] = DynmapBlockState.getStateByGlobalIndex(v);
                     }
                 }
                 else {
                     for (int j = 0; j < 4096; j++) {
-                        int v = db.getAt(j);
+                        int v = db != null ? db.getAt(j) : dbp.func_233048_a_(j);
                         states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
                     }
                 }
