@@ -1288,7 +1288,7 @@ public class DynmapPlugin
         public void sendMessage(String msg)
         {
             ITextComponent ichatcomponent = new StringTextComponent(msg);
-            server.getPlayerList().func_232641_a_(ichatcomponent, ChatType.CHAT, player.getUniqueID());
+            player.sendMessage(ichatcomponent, Util.field_240973_b_);
         }
         @Override
         public boolean isInvisible() {
