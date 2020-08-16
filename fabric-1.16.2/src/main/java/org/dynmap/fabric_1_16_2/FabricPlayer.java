@@ -6,12 +6,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.apache.commons.codec.binary.Base64;
 import org.dynmap.DynmapLocation;
@@ -186,7 +186,7 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
     @Override
     public void sendMessage(String msg) {
         Text ichatcomponent = new LiteralText(msg);
-        player.getServer().getPlayerManager().broadcastChatMessage(ichatcomponent, MessageType.CHAT, player.getUuid());
+        player.sendSystemMessage(ichatcomponent, Util.NIL_UUID);
     }
 
     @Override
