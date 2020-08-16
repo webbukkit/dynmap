@@ -455,7 +455,7 @@ public class DynmapPlugin
     
     private boolean hasPerm(EntityPlayer psender, String permission) {  
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if((psender != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
+        if((psender != null) && (ph != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
             return true;
         }
         return permissions.has(psender, permission);
@@ -463,7 +463,7 @@ public class DynmapPlugin
     
     private boolean hasPermNode(EntityPlayer psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if((psender != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
+        if((psender != null) && (ph != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
             return true;
         }
         return permissions.hasPermissionNode(psender, permission);
@@ -1594,8 +1594,12 @@ public class DynmapPlugin
         {
             dsender = new ForgeCommandSender(sender);
         }
-
-        core.processCommand(dsender, cmd, cmd, args);
+        try {
+        	core.processCommand(dsender, cmd, cmd, args);
+        } catch (Exception x) {
+            dsender.sendMessage("Command internal error: " + x.getMessage());
+        	Log.severe("Error with command: " + cmd + Arrays.deepToString(args), x);
+        }
     }
 
     private DynmapLocation toLoc(World worldObj, double x, double y, double z)
