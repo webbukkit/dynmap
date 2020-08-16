@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.dynmap.Log;
 import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.utils.DataBitsPacked;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -178,16 +179,25 @@ public class ChunkSnapshot
                         palette[pi] = DynmapBlockState.AIR;
                     }
                 }
-                int bitsperblock = (statelist.length * 64) / 4096;
-                BitArray db = new BitArray(bitsperblock, 4096, statelist);
+            	int recsperblock = (4096 + statelist.length - 1) / statelist.length;
+            	int bitsperblock = 64 / recsperblock;
+            	BitArray db = null;
+            	DataBitsPacked dbp = null;
+            	try {
+            		db = new BitArray(bitsperblock, 4096, statelist);
+            	} catch (Exception x) {	// Handle legacy encoded
+	            	bitsperblock = (statelist.length * 64) / 4096;
+            		dbp = new DataBitsPacked(bitsperblock, 4096, statelist);
+            	}
                 if (bitsperblock > 8) {	// Not palette
                     for (int j = 0; j < 4096; j++) {
-                        states[j] = DynmapBlockState.getStateByGlobalIndex(db.getAt(j));
+                    	int v = (dbp != null) ? dbp.getAt(j) : db.getAt(j);
+                        states[j] = DynmapBlockState.getStateByGlobalIndex(v);
                     }
                 }
                 else {
                     for (int j = 0; j < 4096; j++) {
-                        int v = db.getAt(j);
+                    	int v = (dbp != null) ? dbp.getAt(j) : db.getAt(j);
                         states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
                     }
                 }
