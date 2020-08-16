@@ -2,6 +2,7 @@ package org.dynmap.forge_1_13_2;
 
 import java.io.File;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.Log;
@@ -12,13 +13,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.FMLNetworkConstants;
 
 @Mod("dynmap")
 public class DynmapMod
@@ -65,6 +69,8 @@ public class DynmapMod
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
 
         MinecraftForge.EVENT_BUS.register(this);
+
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
         Log.setLogger(new OurLog());      
         org.dynmap.modsupport.ModSupportImpl.init();
