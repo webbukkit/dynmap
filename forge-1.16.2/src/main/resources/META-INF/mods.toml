@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[33,)"
 issueTrackerURL="https://github.com/webbukkit/dynmap/issues"
+license="Apache Public License v2"
 [[mods]]
 modId="dynmap"
 version="${version}"
