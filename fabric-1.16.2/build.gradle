@@ -14,8 +14,8 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version + "+" + project.minecraft_version
-group = project.maven_group
+version = parent.version
+group = parent.group
 
 configurations {
     shadow
@@ -75,23 +75,12 @@ jar {
     }
 }
 
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
+remapJar {
+    archiveName = "${archivesBaseName}-${version}-fabric-${project.minecraft_version}.jar"
+    destinationDir = file '../target'
+}
 
-    // select the repositories you want to publish to
-    repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
-    }
+remapJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
 }
