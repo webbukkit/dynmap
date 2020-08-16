@@ -34,28 +34,28 @@ explaining it to users, and fixing current and future problems - if we don't thi
    - Do not make style changes, reflow code, pretty printing, or otherwise make formatting-only code changes.  This makes the PR excessively large, 
    creating changes to be reviewed that don't actually do anything (but we have to review them to be sure they aren't being used to disguise security 
    compromises or other malicious code), and they create problems with the MANY people who fork Dynmap for the sake of doing PRs or their own private
-   custom builds - since all theose modified lines create merge conflicts - once again, with no actual function having been accomplished.  If we decide
+   custom builds - since all those modified lines create merge conflicts - once again, with no actual function having been accomplished.  If we decide
    the code needs to be 'prettied up', it'll be done by the Dynmap team.
 - Do not make changes to core code (anything in DynmapCore or DynmapCoreAPI) unless you're ready to build and test it on all supported platforms.  Code that
 breaks building of ANY supported platform will be rejected.
-- Likewise, any Spigot related changes are expected to function correctly on all supported Spigot and PaperMC versions (currently 1.10.2 through 1.16.1).  
+- Likewise, any Spigot related changes are expected to function correctly on all supported Spigot and PaperMC versions (currently 1.11.2 through 1.16.1).  
 - Do not include any code that involves platform specific native libraries or command line behaviors.  Dynmap supports 32-bit and 64-bit, Windows, lots of
-Linux versions (both x86 and ARM), MacOS, being used in Docker environments, and more - this is all about staying as 'pure Java' as the Minecraft server itself
+Linux versions (both x86 and ARM), MacOS, Docker environments, and more - this is all about staying as 'pure Java' as the Minecraft server itself
 is.  If your PR includes platform specific dependencies that are not coded to handle working on all the above platforms properly, the PR will be rejected.
 - Dynmap's code is Apache Public License v2 - do not include any code that is not compatible with this license.  By contributing code, you are agreeing to
 that code being subject to the APL v2.
 - Do not include any code that unconditionally adds to Dynmap's hosting requirements - for example, support for a database can be added, but the use of the
 database (which likely depends on a database server being deployed and configured by the user) cannot become an unconditional requirement in order to run
 Dynmap.  Features can add the option to exploit new or additional technologies, but cannot add unconditionally to the minimum requirements on the supported
-platforms (which is what is needed to run the corresponiding MC server, plus the Dynmap plugin or mod)
+platforms (which is what is needed to run the corresponding MC server, plus the Dynmap plugin or mod)
 - Dynmap is built and supports running on Java 8 - it can run on newer versions, but any contributed code and dependencies MUST support being compiled and run
-using just Java 8.
+using Java 8.
 - Don't introduce other language depdendencies - Java only: no Kotlin, Scala, JRuby, whatever. They just add runtime dependencies that most of the platforms lack,
 and language skills above and beyond the Java language requirements the code base already mandates, which just creates obstacles to other people contributing.
 - Similarly, do not update existing libraries and dependencies - these are often tied to the versions on various platforms, and updates will likely break runtime
 - Do not include code specific to other plugins or mods.  Dynmap has APIs for the purpose of avoiding the problem of working with other mods - there are many 
 'Dynmap-XXX' mods and plugins which use the APIs to provide support for other mods and plugins (WorldGuard, Nucleus, Citizens, dozens of others).  Maintaining
-interfaces in Dynmap particular to dozens of mods on multiple versions of multiple platforms is unmanageable, so we don't do it.  The ONLY exception currently
+interfaces in Dynmap specific to dozens of mods on multiple versions of multiple platforms is unmanageable, so we don't do it.  The ONLY exception currently
 are security mods - although, even for those, leverage of platform-standard security interfaces is always preferred (e.g. Sponge or Bukket standard permissions)
 
 # Porting, Supporting Other Platforms, Customized Dynmap Builds
@@ -79,7 +79,7 @@ cease distribution of the unofficial version, unless otherwise authorized to con
     - Any bugs or issues opened in conjunction with the use of the modified version on this repository will be closed without comment.
 
 Additions of new funtion, including new platform support, in this official Dynmap code base MUST be fully contained within the PRs submitted to this 
-repository.  Further, it is always exptected than any updates will be built and tested across all relevant platforms - meaning anh chances to shared code 
+repository.  Further, it is always expected than any updates will be built and tested across all relevant platforms - meaning, any changes to shared code 
 components (DynmapCore, DynmapCoreAPI) MUST be successfully built and tested on ALL supported platforms (Forge, Spigot, etc).  Changes which break 
 supported platforms will be rejected.
 
