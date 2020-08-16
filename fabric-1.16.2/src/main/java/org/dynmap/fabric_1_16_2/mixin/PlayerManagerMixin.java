@@ -22,8 +22,8 @@ public class PlayerManagerMixin {
         PlayerEvents.PLAYER_LOGGED_OUT.invoker().onPlayerLoggedOut(player);
     }
 
-    @Inject(method = "respawnPlayer", at = @At("TAIL"))
+    @Inject(method = "respawnPlayer", at = @At("RETURN"))
     public void respawnPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> info) {
-        PlayerEvents.PLAYER_RESPAWN.invoker().onPlayerRespawn(player);
+        PlayerEvents.PLAYER_RESPAWN.invoker().onPlayerRespawn(info.getReturnValue());
     }
 }
