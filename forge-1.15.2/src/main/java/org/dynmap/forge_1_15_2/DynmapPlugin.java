@@ -482,7 +482,7 @@ public class DynmapPlugin
     
     private boolean hasPerm(PlayerEntity psender, String permission) {  
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if((psender != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
+        if((psender != null) && (ph != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
             return true;
         }
         return permissions.has(psender, permission);
@@ -490,7 +490,7 @@ public class DynmapPlugin
     
     private boolean hasPermNode(PlayerEntity psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if((psender != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
+        if((psender != null) && (ph != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
             return true;
         }
         return permissions.hasPermissionNode(psender, permission);
@@ -1485,6 +1485,10 @@ public class DynmapPlugin
         {
         	return;
         }
+        // Extract default permission example, if needed
+        File filepermexample = new File(core.getDataFolder(), "permissions.yml.example");
+        core.createDefaultFileFromResource("/permissions.yml.example", filepermexample);
+        
         DynmapCommonAPIListener.apiInitialized(core);
     }
     
@@ -1616,8 +1620,12 @@ public class DynmapPlugin
         {
             dsender = new ForgeCommandSender(sender);
         }
-
-        core.processCommand(dsender, cmd, cmd, args);
+        try {
+        	core.processCommand(dsender, cmd, cmd, args);
+        } catch (Exception x) {
+            dsender.sendMessage("Command internal error: " + x.getMessage());
+        	Log.severe("Error with command: " + cmd + Arrays.deepToString(args), x);
+        }
     }
 
     private DynmapLocation toLoc(World worldObj, double x, double y, double z)
@@ -1678,6 +1686,7 @@ public class DynmapPlugin
 			IWorld w = event.getWorld();
 			if(!(w instanceof ServerWorld)) return;
             final ForgeWorld fw = getWorld(w);
+			if (fw == null) return;
             // This event can be called from off server thread, so push processing there
             core.getServer().scheduleServerTask(new Runnable() {
             	public void run() {
@@ -1790,6 +1799,7 @@ public class DynmapPlugin
         	BlockUpdateRec r = new BlockUpdateRec();
         	r.w = event.getWorld();
 			ForgeWorld fw = getWorld(r.w, false);
+			if (fw == null) return;
 			r.wid = fw.getName();
 			BlockPos p = event.getPos();
 			r.x = p.getX();

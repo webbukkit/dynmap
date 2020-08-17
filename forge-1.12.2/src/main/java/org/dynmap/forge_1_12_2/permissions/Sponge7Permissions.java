@@ -24,6 +24,7 @@ public class Sponge7Permissions implements PermissionProvider {
         }
         Log.info("Using Sponge Permissions for access control");
         Log.info("Web interface permissions only available for online users");
+        Log.info("Note: you may need to give users permissions for base commands (e.g. dynmap.command.* on LuckPerms) as well as for specific actions");
         return new Sponge7Permissions();
     }
 

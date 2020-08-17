@@ -15,7 +15,7 @@ worlds:
   #  enabled: false
   #   Use sendposition: false to prevent player positions from showing when on this world (if sendposition is globally enabled)
   #  sendposition: false
-  #   Use sendhealth: false ot prevent player health from showing when on this world (if sendhealth is globally enabled)
+  #   Use sendhealth: false to prevent player health from showing when on this world (if sendhealth is globally enabled)
   #  sendhealth: false
   #  # If world isn't contiguous chunks (due to teleporting, for example), fullrender needs to be given other locations to scan for tiles on each patch of chunks
   #  fullrenderlocations:
@@ -115,9 +115,9 @@ worlds:
   #      background: "#300806"
   #      mapzoomin: 1
   #    - class: org.dynmap.hdmap.HDMap
-  #      name: nether
+  #      name: surface
   #      title: "Surface"
-  #      prefix: nt
+  #      prefix: surface
   #      perspective: iso_SE_30_hires
   #      shader: stdtexture
   #      lighting: nethershadows

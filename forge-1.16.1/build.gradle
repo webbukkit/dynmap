@@ -1,0 +1,87 @@
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
+
+minecraft {
+    mappings channel: 'snapshot', version: '20200514-1.16'
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    runs {
+        server {
+            workingDirectory project.file('run').canonicalPath
+        }
+    }
+}
+
+project.archivesBaseName = "${project.archivesBaseName}-forge-1.16.1"
+
+dependencies {
+    compile project(path: ":DynmapCore", configuration: "shadow")
+    minecraft 'net.minecraftforge:forge:1.16.1-32.0.106'
+}
+
+processResources
+{
+    inputs.property "version", project.version + '-' + project.ext.buildNumber
+    
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+                
+        // replace version and mcversion
+        expand(
+        	version: project.version + '-' + project.ext.buildNumber,
+        	mcversion: "1.16.1"
+    	)
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META-INF/mods.toml'
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency(':DynmapCore'))
+    }
+    archiveName = "Dynmap-${parent.version}-forge-1.16.1.jar"
+    destinationDir = file '../target'
+}
+
+shadowJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
+}
+
+afterEvaluate {
+reobf {
+    shadowJar {
+        mappings = createMcpToSrg.output
+    }
+}
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+}
+
+artifacts {
+    archives deobfJar
+}
+
+build.dependsOn(shadowJar)

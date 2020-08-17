@@ -99,6 +99,7 @@ import org.dynmap.forge_1_11_2.DynmapMod;
 import org.dynmap.forge_1_11_2.permissions.FilePermissions;
 import org.dynmap.forge_1_11_2.permissions.OpPermissions;
 import org.dynmap.forge_1_11_2.permissions.PermissionProvider;
+import org.dynmap.forge_1_11_2.permissions.Sponge7Permissions;
 import org.dynmap.forge_1_11_2.ForgeWorld;
 import org.dynmap.forge_1_11_2.DynmapPlugin.WorldUpdateTracker;
 import org.dynmap.permissions.PermissionsHandler;
@@ -1467,8 +1468,11 @@ public class DynmapPlugin
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
         /* Initialize permissions handler */
-        permissions = FilePermissions.create();
-        if(permissions == null) {
+    	permissions = FilePermissions.create();
+        if (permissions == null) {
+            permissions = Sponge7Permissions.create();
+        }
+        if (permissions == null) {
             permissions = new OpPermissions(new String[] { "webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self" });
         }
         /* Get and initialize data folder */
@@ -1499,6 +1503,10 @@ public class DynmapPlugin
         {
         	return;
         }
+        // Extract default permission example, if needed
+        File filepermexample = new File(core.getDataFolder(), "permissions.yml.example");
+        core.createDefaultFileFromResource("/permissions.yml.example", filepermexample);
+        
         DynmapCommonAPIListener.apiInitialized(core);
     }
     
@@ -1674,6 +1682,7 @@ public class DynmapPlugin
 			World w = event.getWorld();
 			if(!(w instanceof WorldServer)) return;
             final ForgeWorld fw = getWorld(w);
+			if (fw == null) return;
             // This event can be called from off server thread, so push processing there
             core.getServer().scheduleServerTask(new Runnable() {
             	public void run() {

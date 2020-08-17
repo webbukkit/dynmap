@@ -136,7 +136,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
         ccss_biome = getPrivateFieldNoFail(craftchunksnapshot, new String[] { "biome" }, biomebasearray);
         if(ccss_biome == null) {
             biomestorage = getNMSClass("net.minecraft.server.BiomeStorage");
-            biomestoragebase = getPrivateField(biomestorage, new String[] { "g", "f" }, biomebasearray);
+            biomestoragebase = getPrivateField(biomestorage, new String[] { "h", "g", "f" }, biomebasearray);
             ccss_biome = getPrivateField(craftchunksnapshot, new String[] { "biome" }, biomestorage);
         }
         /* CraftChunk */
@@ -569,6 +569,8 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     						String json = new String(Base64Coder.decode(val), Charsets.UTF_8);
     						result = gson.fromJson(json, TexturesPayload.class);
     					} catch (JsonParseException e) {
+    					} catch (IllegalArgumentException x) {
+    						Log.warning("Malformed response from skin URL check: " + val);
     					}
     					if ((result != null) && (result.textures != null) && (result.textures.containsKey("SKIN"))) {
     						url = result.textures.get("SKIN").url;

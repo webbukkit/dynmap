@@ -1394,6 +1394,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 sender.sendMessage("Error: invalid set - " + setid);
                 return true;
             }
+            // Prevent adding persistent markers to a non-persistent set
+            if (!set.isMarkerSetPersistent()) {
+            	sender.sendMessage("Error: cannot add to non-persistent marker set - set is likely plugin owned");
+                return true;
+            }
             MarkerIcon ico = null;
             if(iconid == null) {
                 ico = set.getDefaultMarkerIcon();
@@ -1932,6 +1937,9 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             if (set.getMaxZoom() >= 0) {
                 msg += ", maxzoom:" + set.getMaxZoom();
             }
+            if (set.isMarkerSetPersistent()) {
+            	msg += ", persistent=true";
+            }
             sender.sendMessage(msg);
         }
         return true;
@@ -2193,6 +2201,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             sender.sendMessage("Error: invalid set - " + setid);
             return true;
         }
+        // Prevent adding persistent markers to a non-persistent set
+        if (!set.isMarkerSetPersistent()) {
+        	sender.sendMessage("Error: cannot add to non-persistent marker set - set is likely plugin owned");
+            return true;
+        }
         /* Make coord list */
         double[] xx = new double[ll.size()];
         double[] zz = new double[ll.size()];
@@ -2237,13 +2250,8 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
         for(String s : sortmarkers.keySet()) {
             AreaMarker m = sortmarkers.get(s);
-            String ptlist = "{ ";
-            for(int i = 0; i < m.getCornerCount(); i++) {
-                ptlist += "{" + m.getCornerX(i) + "," + m.getCornerZ(i)+ "} ";
-            }
-            ptlist += "}";
             String msg = m.getMarkerID() + ": label:\"" + m.getLabel() + "\", set:" + m.getMarkerSet().getMarkerSetID() + 
-                    ", world:" + m.getWorld() + ", corners:" + ptlist + 
+                    ", world:" + m.getWorld() + 
                     ", weight:" + m.getLineWeight() + ", color:" + String.format("%06x", m.getLineColor()) +
                     ", opacity:" + m.getLineOpacity() + ", fillcolor:" + String.format("%06x", m.getFillColor()) +
                     ", fillopacity:" + m.getFillOpacity() + ", boost:" + m.getBoostFlag() + ", markup:" + m.isLabelMarkup();
@@ -2398,6 +2406,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         MarkerSet set = api.getMarkerSet(setid);
         if(set == null) {
             sender.sendMessage("Error: invalid set - " + setid);
+            return true;
+        }
+        // Prevent adding persistent markers to a non-persistent set
+        if (!set.isMarkerSetPersistent()) {
+        	sender.sendMessage("Error: cannot add to non-persistent marker set - set is likely plugin owned");
             return true;
         }
         /* Make coord list */
@@ -2616,7 +2629,11 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             sender.sendMessage("Error: invalid set - " + setid);
             return true;
         }
-        
+        // Prevent adding persistent markers to a non-persistent set
+        if (!set.isMarkerSetPersistent()) {
+        	sender.sendMessage("Error: cannot add to non-persistent marker set - set is likely plugin owned");
+            return true;
+        }        
         /* Make circle marker */
         CircleMarker m = set.createCircleMarker(id, label, "true".equals(markup), loc.world, loc.x, loc.y, loc.z, 1, 1, true);
         if(m == null) {

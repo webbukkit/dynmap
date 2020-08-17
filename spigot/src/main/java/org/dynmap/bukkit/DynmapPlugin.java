@@ -779,7 +779,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         BiomeMap.loadWellKnownByVersion(mcver);
         /* Find array of biomes in biomebase */
         Object[] biomelist = helper.getBiomeBaseList();
-        Log.verboseinfo("biomelist length = " + biomelist.length);
+        //Log.info("biomelist length = " + biomelist.length);
         /* Loop through list, skipping well known biomes */
         for(int i = 0; i < biomelist.length; i++) {
             Object bb = biomelist[i];
@@ -787,7 +787,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 float tmp = helper.getBiomeBaseTemperature(bb);
                 float hum = helper.getBiomeBaseHumidity(bb);
                 int watermult = helper.getBiomeBaseWaterMult(bb);
-                Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
+                //Log.info("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
                 
                 BiomeMap bmap = BiomeMap.byBiomeID(i);
                 if (bmap.isDefault()) {
@@ -796,7 +796,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         id = "BIOME_" + i;
                     }
                     bmap = new BiomeMap(i, id, tmp, hum);
-                    Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
+                    //Log.info("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
                 }
                 else {
@@ -805,7 +805,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 }
                 if (watermult != -1) {
                 	bmap.setWaterColorMultiplier(watermult);
-                	Log.verboseinfo("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
+                	//Log.info("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
                 }
             }
         }

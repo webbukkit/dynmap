@@ -402,12 +402,8 @@ public abstract class DynmapWorld {
             }            
         }
         String hiddenchunkstyle = worldconfig.getString("hidestyle", "stone");
-        if(hiddenchunkstyle.equals("air"))
-            this.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_AIR;
-        else if(hiddenchunkstyle.equals("ocean"))
-            this.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_OCEAN;
-        else
-            this.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_STONE_PLAIN;
+        this.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.fromValue(hiddenchunkstyle);
+        if (this.hiddenchunkstyle == null) this.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_STONE_PLAIN;
         
         return true;
     }
@@ -477,7 +473,7 @@ public abstract class DynmapWorld {
         if(hidden_limits != null) {
             ArrayList<Map<String,Object>> lims = new ArrayList<Map<String,Object>>();
             for(int i = 0; i < hidden_limits.size(); i++) {
-                VisibilityLimit lim = visibility_limits.get(i);
+                VisibilityLimit lim = hidden_limits.get(i);
                 LinkedHashMap<String, Object> lv = new LinkedHashMap<String,Object>();
                 if (lim instanceof RectangleVisibilityLimit) {
                     RectangleVisibilityLimit rect_lim = (RectangleVisibilityLimit) lim;
@@ -497,18 +493,7 @@ public abstract class DynmapWorld {
             node.put("hiddenlimits", lims);
         }
         /* Handle hide style */
-        String hide = "stone";
-        switch(hiddenchunkstyle) {
-            case FILL_AIR:
-                hide = "air";
-                break;
-            case FILL_OCEAN:
-                hide = "ocean";
-                break;
-            default:
-                break;
-        }
-        node.put("hidestyle", hide);
+        node.put("hidestyle", hiddenchunkstyle.getValue());
         /* Handle map settings */
         ArrayList<Map<String,Object>> mapinfo = new ArrayList<Map<String,Object>>();
         for(MapType mt : maps) {

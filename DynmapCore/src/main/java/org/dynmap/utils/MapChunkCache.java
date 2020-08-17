@@ -4,9 +4,21 @@ import org.dynmap.DynmapWorld;
 
 public abstract class MapChunkCache {
     public enum HiddenChunkStyle {
-        FILL_AIR,
-        FILL_STONE_PLAIN,
-        FILL_OCEAN
+        FILL_AIR("air"),
+        FILL_STONE_PLAIN("stone"),
+        FILL_OCEAN("ocean");
+    	
+        private final String val;
+        HiddenChunkStyle(String v) { val = v; }
+        public String getValue() { return val; }
+        public static HiddenChunkStyle fromValue(String s) {
+			for (HiddenChunkStyle v : HiddenChunkStyle.values()) {
+        		if (v.val.equals(s)) {
+        			return v;
+        		}
+        	}
+			return null;
+        }
     };
     public enum ChunkStats {
         CACHED_SNAPSHOT_HIT("Cached"),          // Stats for cached snapshot hits

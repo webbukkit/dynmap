@@ -116,6 +116,12 @@ commands:
            /<command> mapset worldname:mapname attrib:value attrib:value - update given map on given world with given attributes
            /<command> worldreset worldname - reset given world to default template for world type
            /<command> worldreset worldname templatename - reset given world to given template
+           /<command> worldgetlimits worldname - list visibility and hidden limits for world
+           /<command> worldaddlimit worldname type:rect corner1:<x>/<z> corner2:<x|z> - Add rectangular visibility limit
+           /<command> worldaddlimit worldname type:round center:<x>/<z> radius:<radius> - Add circular visibility limit
+           /<command> worldaddlimit worldname limittype:hidden type:rect corner1:<x>/<z> corner2:<x|z> - Add rectangular hidden limit
+           /<command> worldaddlimit worldname limittype:hidden type:round center:<x>/<z> radius:<radius> - Add circular hidden limit
+           /<command> worldremovelimit worldname <limit-index> - Remove limit with index <limit-index>
   dynmapexp:
     description: Map export commands
     usage: |
