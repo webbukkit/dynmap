@@ -115,9 +115,9 @@ worlds:
   #      background: "#300806"
   #      mapzoomin: 1
   #    - class: org.dynmap.hdmap.HDMap
-  #      name: nether
+  #      name: surface
   #      title: "Surface"
-  #      prefix: nt
+  #      prefix: surface
   #      perspective: iso_SE_30_hires
   #      shader: stdtexture
   #      lighting: nethershadows

@@ -278,12 +278,17 @@ DynMap.prototype = {
 					worldsadded[wname] = true;
 				}
 
+				var worldName = wname;
+				if(wname.startsWith('world_')) {
+					worldName = wname.substring(6);
+				}
+
 				map.element = $('<li/>')
 					.addClass('map item')
 					.append($('<a/>')
 							.attr({ title: map.options.title, href: '#' })
 							.addClass('maptype')
-							.css({ backgroundImage: 'url(' + (map.options.icon || ('images/block_' + mapindex + '.png')) + ')' })
+							.css({ backgroundImage: 'url(' + (map.options.icon || ('images/block_' + worldName + '_' + mapindex + '.png')) + ')' })
 							.text(map.options.title)
 					)
 					.click(function() {
