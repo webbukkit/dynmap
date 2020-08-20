@@ -1,9 +1,7 @@
-package org.dynmap.bukkit.helper.v116;
+package org.dynmap.bukkit.helper.v116_2;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Biome;
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
-import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,19 +18,19 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.VisibilityLimit;
 
-import net.minecraft.server.v1_16_R1.Chunk;
-import net.minecraft.server.v1_16_R1.ChunkCoordIntPair;
-import net.minecraft.server.v1_16_R1.ChunkRegionLoader;
-import net.minecraft.server.v1_16_R1.ChunkStatus;
-import net.minecraft.server.v1_16_R1.DataBits;
-import net.minecraft.server.v1_16_R1.DataBitsPacked;
-import net.minecraft.server.v1_16_R1.NBTTagCompound;
-import net.minecraft.server.v1_16_R1.NBTTagList;
+import net.minecraft.server.v1_16_R2.Chunk;
+import net.minecraft.server.v1_16_R2.ChunkCoordIntPair;
+import net.minecraft.server.v1_16_R2.ChunkRegionLoader;
+import net.minecraft.server.v1_16_R2.ChunkStatus;
+import net.minecraft.server.v1_16_R2.DataBits;
+import net.minecraft.server.v1_16_R2.DataBitsPacked;
+import net.minecraft.server.v1_16_R2.NBTTagCompound;
+import net.minecraft.server.v1_16_R2.NBTTagList;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
-public class MapChunkCache115 extends AbstractMapChunkCache {
+public class MapChunkCache116_2 extends AbstractMapChunkCache {
 
 	public static class NBTSnapshot implements Snapshot {
 	    private static interface Section {

@@ -479,7 +479,7 @@ public class DynmapPlugin
     
     private boolean hasPerm(PlayerEntity psender, String permission) {  
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if((psender != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
+        if ((psender != null) && (ph != null) && ph.hasPermission(psender.getEntity().getName().getString(), permission)) {
             return true;
         }
         return permissions.has(psender, permission);
@@ -487,7 +487,7 @@ public class DynmapPlugin
     
     private boolean hasPermNode(PlayerEntity psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if((psender != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
+        if ((psender != null) && (ph != null) && ph.hasPermissionNode(psender.getEntity().getName().getString(), permission)) {
             return true;
         }
         return permissions.hasPermissionNode(psender, permission);
@@ -1288,7 +1288,7 @@ public class DynmapPlugin
         public void sendMessage(String msg)
         {
             ITextComponent ichatcomponent = new StringTextComponent(msg);
-            server.getPlayerList().func_232641_a_(ichatcomponent, ChatType.CHAT, player.getUniqueID());
+            player.sendMessage(ichatcomponent, Util.field_240973_b_);
         }
         @Override
         public boolean isInvisible() {
@@ -1617,8 +1617,12 @@ public class DynmapPlugin
         {
             dsender = new ForgeCommandSender(sender);
         }
-
-        core.processCommand(dsender, cmd, cmd, args);
+        try {
+        	core.processCommand(dsender, cmd, cmd, args);
+        } catch (Exception x) {
+            dsender.sendMessage("Command internal error: " + x.getMessage());
+        	Log.severe("Error with command: " + cmd + Arrays.deepToString(args), x);
+        }
     }
 
     private DynmapLocation toLoc(World worldObj, double x, double y, double z)

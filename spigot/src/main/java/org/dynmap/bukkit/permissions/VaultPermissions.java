@@ -49,7 +49,7 @@ public class VaultPermissions implements PermissionProvider, Listener {
     @EventHandler
     public void onServiceRegister(ServiceRegisterEvent event) {
         if (event.getProvider().getService().equals(Permission.class)) {
-            RegisteredServiceProvider<Permission> newProvider = (RegisteredServiceProvider<Permission>) event.getProvider().getProvider();
+        	RegisteredServiceProvider<Permission> newProvider = (RegisteredServiceProvider<Permission>) event.getProvider();
             if (newProvider != this.permissionProvider && newProvider.getPriority().compareTo(this.permissionProvider.getPriority()) >= 0) {
                 this.permissionProvider = newProvider;
                 Log.info("Using Vault provider " + this.permissionProvider.getProvider().getName() + " for access control");
