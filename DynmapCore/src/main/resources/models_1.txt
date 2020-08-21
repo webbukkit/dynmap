@@ -853,7 +853,7 @@ layer:3,4
 --****--
 # Chest - single or double
 # Trap Chest - single or double
-customblock:id=chest,id=trapped_chest,class=org.dynmap.hdmap.renderer.ChestStateRenderer
+customblock:id=chest,id=trapped_chest,class=org.dynmap.hdmap.renderer.ChestStateRenderer,doublechest=true
 
 # Cake Block
 block:id=cake,scale=16

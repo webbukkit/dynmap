@@ -133,7 +133,7 @@ public class DynmapBlockState {
             }
             base.states[stateidx] = this;
         }
-        stateList = stateName.split(",");
+        stateList = stateName.toLowerCase().split(",");
         // If base block state, add to map
         if (base == this) { 
             blocksByName.put(blkname, this);
@@ -232,7 +232,7 @@ public class DynmapBlockState {
         DynmapBlockState blk = getBaseStateByName(name);
         if (blk != null) {
         	if (blk.states != null) {
-        	    String[] statelist = statename.split(",");
+        	    String[] statelist = statename.toLowerCase().split(",");
         		for (DynmapBlockState bb : blk.states) {
         		    boolean match = true;
         		    for (int i = 0; i < statelist.length; i++) {
