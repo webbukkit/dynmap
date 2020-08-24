@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -103,6 +104,7 @@ public class DynmapPlugin {
         plugin = this;
         // Fabric events persist between server instances
         ServerLifecycleEvents.SERVER_STARTING.register(this::serverStart);
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> registerCommands(dispatcher));
         CustomServerLifecycleEvents.SERVER_STARTED_PRE_WORLD_LOAD.register(this::serverStarted);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::serverStop);
     }
@@ -297,7 +299,6 @@ public class DynmapPlugin {
         this.server = server;
         this.fserver = new FabricServer(this, server);
         this.onEnable();
-        plugin.onStarting(server.getCommandManager().getDispatcher());
     }
 
     private void serverStarted(MinecraftServer server) {
@@ -481,9 +482,7 @@ public class DynmapPlugin {
     private DmarkerCommand dmarkerCmd;
     private DynmapExpCommand dynmapexpCmd;
 
-    public void onStarting(CommandDispatcher<ServerCommandSource> cd) {
-        /* Register command hander */
-        // TODO: Use CommandRegistrationCallback
+    public void registerCommands(CommandDispatcher<ServerCommandSource> cd) {
         dynmapCmd = new DynmapCommand(this);
         dmapCmd = new DmapCommand(this);
         dmarkerCmd = new DmarkerCommand(this);
