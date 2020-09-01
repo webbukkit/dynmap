@@ -24,9 +24,11 @@
 /bin
 /dist
 /manifest.mf
+/run
 
 # Mac filesystem dust
 /.DS_Store
 /dependency-reduced-pom.xml
 
+*.log
 /.gradle
