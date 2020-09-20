@@ -565,8 +565,8 @@ block:id=dirt,allfaces=0:dirt,stdrot=true
 # Coarse Dirt
 block:id=coarse_dirt,allfaces=0:coarse_dirt,stdrot=true
 # Pozdol
-block:id=podzol,data=0,allsides=0:grass_block_snow,top=1000:grass_block_top,bottom=0:dirt,stdrot=true
-block:id=podzol,data=1,allsides=1000:podzol_side,top=1000:podzol_top,bottom=0:dirt,stdrot=true
+block:id=podzol,data=0,allsides=0:grass_block_snow,top=0:grass_block_top,bottom=0:dirt,stdrot=true
+block:id=podzol,data=1,allsides=0:podzol_side,top=0:podzol_top,bottom=0:dirt,stdrot=true
 # Cobblestone
 block:id=cobblestone,allfaces=0:cobblestone,stdrot=true
 # Wooden Plank (oak)
