@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class Json {
@@ -69,7 +70,7 @@ public class Json {
         } else if (o instanceof Integer || o instanceof Long) {
             s.append(o.toString());
         } else if (o instanceof Float || o instanceof Double) {
-            s.append(String.format("%.2f",((Number)o).doubleValue()));
+            s.append(String.format(Locale.US, "%.2f",((Number)o).doubleValue()));
         } else if (o instanceof Map<?, ?>) {
             Map<?, ?> m = (Map<?, ?>) o;
             s.append("{");
