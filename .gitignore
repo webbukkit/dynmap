@@ -6,6 +6,9 @@
 # netbeans
 /nbproject
 
+# idea
+.idea/
+
 
 # we use maven!
 /build.xml
@@ -21,9 +24,15 @@
 /bin
 /dist
 /manifest.mf
+/run
 
 # Mac filesystem dust
 /.DS_Store
 /dependency-reduced-pom.xml
 
+*.log
 /.gradle
+/fabric-1.16.1_client.launch
+/fabric-1.16.1_server.launch
+/fabric-1.16.2_client.launch
+/fabric-1.16.2_server.launch

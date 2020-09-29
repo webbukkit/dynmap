@@ -369,6 +369,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	$(dynmap).bind('component.markers', function(event, msg) {
 		if(msg.msg == 'markerupdated') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.markers[msg.id]);
 			
 			var marker = { x: msg.x, y: msg.y, z: msg.z, icon: msg.icon, label: msg.label, markup: msg.markup, desc: msg.desc, dim: msg.dim || '16x16', minzoom: msg.minzoom || -1, maxzoom: msg.maxzoom };
@@ -377,6 +378,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}
 		else if(msg.msg == 'markerdeleted') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.markers[msg.id]);
 			delete set.markers[msg.id];
 		}
@@ -415,6 +417,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}		
 		else if(msg.msg == 'areaupdated') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.areas[msg.id]);
 
 			var area = { x: msg.x, ytop: msg.ytop, ybottom: msg.ybottom, z: msg.z, label: msg.label, markup: msg.markup, desc: msg.desc,
@@ -424,11 +427,13 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}
 		else if(msg.msg == 'areadeleted') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.areas[msg.id]);
 			delete set.areas[msg.id];
 		}
 		else if(msg.msg == 'lineupdated') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.lines[msg.id]);
 			
 			var line = { x: msg.x, y: msg.y, z: msg.z, label: msg.label, markup: msg.markup, desc: msg.desc,
@@ -438,11 +443,13 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}
 		else if(msg.msg == 'linedeleted') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.lines[msg.id]);
 			delete set.lines[msg.id];
 		}
 		else if(msg.msg == 'circleupdated') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.circles[msg.id]);
 
 			var circle = { x: msg.x, y: msg.y, z: msg.z, xr: msg.xr, zr: msg.zr, label: msg.label, markup: msg.markup, desc: msg.desc,
@@ -452,6 +459,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		}
 		else if(msg.msg == 'circledeleted') {
 			var set = dynmapmarkersets[msg.set];
+			if (!set) return;
 			deleteMarker(set, set.circles[msg.id]);
 			delete set.circles[msg.id];
 		}

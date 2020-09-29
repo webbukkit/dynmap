@@ -279,16 +279,25 @@ DynMap.prototype = {
 				}
 
 				var worldName = wname;
-				if(wname.startsWith('world_')) {
-					worldName = wname.substring(6);
+				var mapName = mapindex;
+				if (worldName.endsWith('_nether') || (worldName == 'DIM-1')) {
+				   worldName = 'nether';
+				   mapName = (mapindex == 'nether') ? 'surface' : 'flat';
 				}
-
+				else if (worldName.endsWith('the_end') || (worldName == 'DIM1')) {
+				   worldName = 'the_end';
+				   mapName = (mapindex == 'the_end') ? 'surface' : 'flat';
+				}
+				else {
+				    worldName = 'world';
+				    mapName = [ 'surface', 'flat', 'biome', 'cave' ].includes(mapindex) ? mapindex : 'flat';
+				}
 				map.element = $('<li/>')
 					.addClass('map item')
 					.append($('<a/>')
 							.attr({ title: map.options.title, href: '#' })
 							.addClass('maptype')
-							.css({ backgroundImage: 'url(' + (map.options.icon || ('images/block_' + worldName + '_' + mapindex + '.png')) + ')' })
+							.css({ backgroundImage: 'url(' + (map.options.icon || ('images/block_' + worldName + '_' + mapName + '.png')) + ')' })
 							.text(map.options.title)
 					)
 					.click(function() {

@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class Json {
@@ -66,8 +67,10 @@ public class Json {
             s.append("\"");
             escape((String)o, s);
             s.append("\"");
-        } else if (o instanceof Integer || o instanceof Long || o instanceof Float || o instanceof Double) {
+        } else if (o instanceof Integer || o instanceof Long) {
             s.append(o.toString());
+        } else if (o instanceof Float || o instanceof Double) {
+            s.append(String.format(Locale.US, "%.2f",((Number)o).doubleValue()));
         } else if (o instanceof Map<?, ?>) {
             Map<?, ?> m = (Map<?, ?>) o;
             s.append("{");
@@ -82,7 +85,7 @@ public class Json {
                 s.append(": ");
                 appendJson(entry.getValue(), s);
             }
-            s.append("}");
+            s.append("}\n");
         } else if (o instanceof List<?>) {
             List<?> l = (List<?>) o;
             s.append("[");
@@ -91,7 +94,7 @@ public class Json {
                 if (count++ > 0) s.append(",");
                 appendJson(l.get(i), s);
             }
-            s.append("]");
+            s.append("]\n");
         } else if (o.getClass().isArray()) {
             int length = Array.getLength(o);
             s.append("[");
@@ -100,7 +103,7 @@ public class Json {
                 if (count++ > 0) s.append(",");
                 appendJson(Array.get(o, i), s);
             }
-            s.append("]");
+            s.append("]\n");
         } else if (o instanceof Object) /* TODO: Always true, maybe interface? */ {
             s.append("{");
             boolean first = true;
@@ -127,7 +130,7 @@ public class Json {
                 s.append(": ");
                 appendJson(fieldValue, s);
             }
-            s.append("}");
+            s.append("}\n");
         } else {
             s.append("undefined");
         }
