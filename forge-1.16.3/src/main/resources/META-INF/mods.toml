@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+issueTrackerURL="https://github.com/webbukkit/dynmap/issues"
+license="Apache Public License v2"
+[[mods]]
+modId="dynmap"
+version="${version}"
+displayName="Dynmap"
+authors="mikeprimm"
+description='''
+Dynamic, Google-maps style rendered maps for your Minecraft server
+'''
+
+[[dependencies.dynmap]]
+    modId="forge"
+    mandatory=true
+    versionRange="[34,)"
+    ordering="NONE"
+    # Side this dependency is applied on - BOTH, CLIENT or SERVER
+    side="SERVER"
+[[dependencies.dynmap]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.3]"
+    ordering="NONE"
+    side="SERVER"
