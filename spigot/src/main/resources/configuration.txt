@@ -255,9 +255,17 @@ block-alias:
 #    "minecraft:quartz_ore": "stone"
 #    "diamond_ore": "coal_ore"
   
-# Default image format for HDMaps (png, jpg, jpg-q75, jpg-q80, jpg-q85, jpg-q90, jpg-q95, jpg-q100)
+# Default image format for HDMaps (png, jpg, jpg-q75, jpg-q80, jpg-q85, jpg-q90, jpg-q95, jpg-q100, webp, webp-q75, webp-q80, webp-q85, webp-q90, webp-q95, webp-q100),
+# Note: any webp format requires the presence of the 'webp command line tools' (cwebp, dwebp) (https://developers.google.com/speed/webp/download)
+#
 # Has no effect on maps with explicit format settings
 image-format: jpg-q90
+
+# If cwebp or dwebp are not on the PATH, use these settings to provide their full path.  Do not use these settings if the tools are on the PATH
+# For Windows, include .exe
+#
+#cwebpPath: /usr/bin/cwebp
+#dwebpPath: /usr/bin/dwebp
 
 #  use-generated-textures: if true, use generated textures (same as client); false is static water/lava textures
 #  correct-water-lighting: if true, use corrected water lighting (same as client); false is legacy water (darker)
