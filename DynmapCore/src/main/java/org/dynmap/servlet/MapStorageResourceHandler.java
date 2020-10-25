@@ -120,12 +120,7 @@ public class MapStorageResourceHandler extends AbstractHandler {
         // Got tile, package up for response
         response.setDateHeader("Last-Modified", tr.lastModified);
         response.setIntHeader("Content-Length", tr.image.length());
-        if (tr.format == ImageEncoding.PNG) {
-            response.setContentType("image/png");
-        }
-        else {
-            response.setContentType("image/jpeg");
-        }
+        response.setContentType(tr.format.getContentType());
         ServletOutputStream out = response.getOutputStream();
         out.write(tr.image.buffer(), 0, tr.image.length());
         out.flush();

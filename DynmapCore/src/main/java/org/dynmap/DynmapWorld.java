@@ -157,7 +157,7 @@ public abstract class DynmapWorld {
                 if (tr != null) {
                     BufferedImage im = null;
                     try {
-                        im = ImageIOManager.imageIODecode(tr.image);
+                        im = ImageIOManager.imageIODecode(tr);
                     } catch (IOException iox) {
                         // Broken file - zap it
                         tile1.delete();

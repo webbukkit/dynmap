@@ -33,6 +33,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.dynmap.MapType.ImageEncoding;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapListenerManager.EventType;
@@ -138,6 +139,12 @@ public class DynmapCore implements DynmapCommonAPI {
     
     private boolean loginRequired;
     
+    // WEBP support
+    private String cwebpPath;
+    private String dwebpPath;
+    private boolean did_cwebpPath_warn = false;
+    private boolean did_dwebpPath_warn = false;
+    
     /* Flag to let code know that we're doing reload - make sure we don't double-register event handlers */
     public boolean is_reload = false;
     public static boolean ignore_chunk_loads = false; /* Flag keep us from processing our own chunk loads */
@@ -200,7 +207,6 @@ public class DynmapCore implements DynmapCommonAPI {
     public void setMinecraftVersion(String mcver) {
         this.platformVersion = mcver;
     }
-    
     public void setServer(DynmapServerInterface srv) {
         server = srv;
     }
@@ -212,6 +218,21 @@ public class DynmapCore implements DynmapCommonAPI {
     
     public static final boolean migrateChunks() {
         return migrate_chunks;
+    }
+    
+    public String getCWEBPPath() {
+    	if ((cwebpPath == null) && (!did_cwebpPath_warn)) {
+    		Log.severe("ERROR: trying to use WEBP without cwebp tool installed or cwebpPath set properly");
+    		did_cwebpPath_warn = true;    		
+    	}
+    	return cwebpPath;
+    }
+    public String getDWEBPPath() {
+    	if ((dwebpPath == null) && (!did_dwebpPath_warn)) {
+    		Log.severe("ERROR: trying to use WEBP without dwebp tool installed or dwebpPath set properly");
+    		did_dwebpPath_warn = true;    		
+    	}
+    	return dwebpPath;
     }
 
     public final String getBiomeName(int biomeid) {
@@ -416,6 +437,20 @@ public class DynmapCore implements DynmapCommonAPI {
         return true;
     }
 
+    private String findExecutableOnPath(String fname) {
+		for (String dirname : System.getenv("PATH").split(File.pathSeparator)) {
+			File file = new File(dirname, fname);
+			if (file.isFile() && file.canExecute()) {
+				return file.getAbsolutePath();
+			}
+			file = new File(dirname, fname + ".exe");
+			if (file.isFile() && file.canExecute()) {
+				return file.getAbsolutePath();
+			}
+		}
+		return null;
+    }
+    
     public boolean enableCore(EnableCoreCallbacks cb) {
         /* Update extracted files, if needed */
         updateExtractedFiles();
@@ -427,13 +462,46 @@ public class DynmapCore implements DynmapCommonAPI {
 
         /* Load control for leaf transparency (spout lighting bug workaround) */
         transparentLeaves = configuration.getBoolean("transparent-leaves", true);
+        
+        // Inject core instance
+        ImageIOManager.core = this;
+        // Check for webp support
+    	cwebpPath = configuration.getString("cwebpPath", null);
+    	dwebpPath = configuration.getString("dwebpPath", null);
+    	if (cwebpPath == null) {
+    		cwebpPath = findExecutableOnPath("cwebp");
+    	}
+    	if (dwebpPath == null) {
+    		dwebpPath = findExecutableOnPath("dwebp");
+    	}
+    	if (cwebpPath != null) {
+        	File file = new File(cwebpPath);
+    		if (!file.isFile() || !file.canExecute()) {
+    			cwebpPath = null;
+    		}
+    	}
+    	if (dwebpPath != null) {
+        	File file = new File(dwebpPath);
+    		if (!file.isFile() || !file.canExecute()) {
+    			dwebpPath = null;
+    		}
+    	}
+        if ((cwebpPath != null) && (dwebpPath != null)) {
+        	Log.info("Found cwebp at " + cwebpPath + " and dwebp at " + dwebpPath + ": webp format enabled");
+        }
+        else {
+        	Log.warning("cwebp or dwebp not found, or cwebpPath or dwebpPath is invalid: webp format disabled");        	
+        	cwebpPath = dwebpPath = null;
+        }
         /* Get default image format */
         def_image_format = configuration.getString("image-format", "png");
         MapType.ImageFormat fmt = MapType.ImageFormat.fromID(def_image_format);
-        if(fmt == null) {
+        if ((fmt == null) || ((fmt.enc == ImageEncoding.WEBP) && (cwebpPath == null))) {
             Log.severe("Invalid image-format: " + def_image_format);
             def_image_format = "png";
+            fmt = MapType.ImageFormat.fromID(def_image_format);
         }
+        
         
         DynmapWorld.doInitialScan(configuration.getBoolean("initial-zoomout-validate", true));
         
