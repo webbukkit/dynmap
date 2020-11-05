@@ -14,7 +14,7 @@ import org.dynmap.bukkit.helper.v116_3.BukkitVersionHelperSpigot116_3;
 import org.dynmap.bukkit.helper.v116_4.BukkitVersionHelperSpigot116_4;
 
 public class Helper {
-    
+
     public static final BukkitVersionHelper getHelper() {
         if (BukkitVersionHelper.helper == null) {
         	String v = Bukkit.getServer().getVersion();
@@ -29,7 +29,7 @@ public class Helper {
             else if(v.contains("BukkitForge")) {
                 Log.severe("*********************************************************************************");
                 Log.severe("* BukkitForge is not supported via the Bukkit version of Dynmap.                *");
-                Log.severe("* Install the appropriate Forge version of Dynmap.                              *"); 
+                Log.severe("* Install the appropriate Forge version of Dynmap.                              *");
                 Log.severe("* Add the DynmapCBBridge plugin to enable support for Dynmap-compatible plugins *");
                 Log.severe("*********************************************************************************");
             }
@@ -37,7 +37,7 @@ public class Helper {
                 Log.info("Loading Glowstone support");
                 BukkitVersionHelper.helper = new BukkitVersionHelperGlowstone();
             }
-            else if (v.contains("(MC: 1.16)") || v.contains("(MC: 1.16.1")) {
+            else if (v.contains("(MC: 1.16.1")) {
                 BukkitVersionHelper.helper = new BukkitVersionHelperSpigot116();
             }
             else if (v.contains("(MC: 1.16.2)")) {
@@ -48,6 +48,10 @@ public class Helper {
             }
             else if (v.contains("(MC: 1.16.")) {
                 BukkitVersionHelper.helper = new BukkitVersionHelperSpigot116_4();
+            }
+            // Loading last to prevent the 1.16 contains to match all newer versions and load older helper incorrectly.
+            else if (v.contains("(MC: 1.16")) {
+                BukkitVersionHelper.helper = new BukkitVersionHelperSpigot116();
             }
             else if (v.contains("(MC: 1.15)") || v.contains("(MC: 1.15.")) {
                 BukkitVersionHelper.helper = new BukkitVersionHelperSpigot115();
