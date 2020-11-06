@@ -280,18 +280,19 @@ DynMap.prototype = {
 
 				var worldName = wname;
 				var mapName = mapindex;
-				if (worldName.endsWith('_nether') || (worldName == 'DIM-1')) {
-				   worldName = 'nether';
-				   mapName = (mapindex == 'nether') ? 'surface' : 'flat';
+				//Standart minecraft world names
+				if(worldName.startsWith('world_')) {
+					worldName = wname.substring(6);
 				}
-				else if (worldName.endsWith('the_end') || (worldName == 'DIM1')) {
-				   worldName = 'the_end';
-				   mapName = (mapindex == 'the_end') ? 'surface' : 'flat';
+				//Nether in CurseForge and other custom maps
+				else if(worldName.endsWith('nether') || (worldName == 'DIM-1')) {
+					worldName == 'nether';
 				}
-				else {
-				    worldName = 'world';
-				    mapName = [ 'surface', 'flat', 'biome', 'cave' ].includes(mapindex) ? mapindex : 'flat';
+				//The end in CurseForge and other custom maps
+				else if(worldName.endsWith('the_end') || (worldName == 'DIM1')) {
+					worldName = 'the_end';
 				}
+
 				map.element = $('<li/>')
 					.addClass('map item')
 					.append($('<a/>')
