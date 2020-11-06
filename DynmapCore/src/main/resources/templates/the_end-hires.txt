@@ -25,7 +25,7 @@ templates:
         lighting: brightnight
         mapzoomin: 1
       - class: org.dynmap.hdmap.HDMap
-        name: the_end
+        name: surface
         title: "Surface"
         prefix: st
         perspective: iso_SE_30_hires

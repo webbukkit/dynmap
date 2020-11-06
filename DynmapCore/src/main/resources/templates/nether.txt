@@ -27,7 +27,7 @@ templates:
         # Adjust extra zoom in levels - default is 2
         mapzoomin: 2
       - class: org.dynmap.hdmap.HDMap
-        name: nether
+        name: surface
         title: "Surface"
         prefix: nt
         perspective: iso_SE_60_vlowres
