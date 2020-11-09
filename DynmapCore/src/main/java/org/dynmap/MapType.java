@@ -30,13 +30,16 @@ public abstract class MapType {
     }
     
     public enum ImageEncoding {
-        PNG("png"), JPG("jpg");
+        PNG("png", "image/png"), JPG("jpg", "image/jpeg"), WEBP("webp", "image/webp");
         public final String ext;
+        public final String mimetype;
         
-        ImageEncoding(String ext) {
+        ImageEncoding(String ext, String mime) {
             this.ext = ext;
+            this.mimetype = mime;
         }
         public String getFileExt() { return ext; }
+        public String getContentType() { return mimetype; }
         
         public static ImageEncoding fromOrd(int ix) {
             ImageEncoding[] v = values();
@@ -63,7 +66,14 @@ public abstract class MapType {
         FORMAT_JPG("jpg", 0.85f, ImageEncoding.JPG),
         FORMAT_JPG90("jpg-q90", 0.90f, ImageEncoding.JPG),
         FORMAT_JPG95("jpg-q95", 0.95f, ImageEncoding.JPG),
-        FORMAT_JPG100("jpg-q100", 1.00f, ImageEncoding.JPG);
+        FORMAT_JPG100("jpg-q100", 1.00f, ImageEncoding.JPG),
+        FORMAT_WEBP75("webp-q75", 75, ImageEncoding.WEBP),
+        FORMAT_WEBP80("webp-q80", 80, ImageEncoding.WEBP),
+        FORMAT_WEBP85("webp-q85", 85, ImageEncoding.WEBP),
+        FORMAT_WEBP("webp", 85, ImageEncoding.WEBP),
+        FORMAT_WEBP90("webp-q90", 90, ImageEncoding.WEBP),
+        FORMAT_WEBP95("webp-q95", 95, ImageEncoding.WEBP),
+        FORMAT_WEBP100("webp-q100", 100, ImageEncoding.WEBP);
         String id;
         float qual;
         ImageEncoding enc;

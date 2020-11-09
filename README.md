@@ -1,4 +1,4 @@
-# Dynmap - dynamic web maps for Minecraft servers
+# Dynmap™ - dynamic web maps for Minecraft servers
 
 ## How to build
 Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory
@@ -101,3 +101,4 @@ We also have a subreddit located at https://www.reddit.com/r/Dynmap/
 I've set up a coffee-fund jar (I believe in the theory that software developers are machines that turn caffeine into code), for anyone who wants to throw in some tips!  I've got a Patreon here - https://www.patreon.com/dynmap, and for folks just looking to for a one-time coffee buy, hit my Ko-Fi at https://ko-fi.com/michaelprimm !
 
 
+Dynmap is a trademark of  Michael Primm, TX USA.  All Rights Reserved.

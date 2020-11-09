@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "dynmap",
+  "version": "${version}",
+  "name": "Dynmap",
+  "description": "Dynamic, Google-maps style rendered maps for your Minecraft server",
+  "authors": [
+    "mikeprimm",
+    "LolHens",
+    "i509VCB"
+  ],
+  "contact": {
+    "homepage": "https://github.com/webbukkit/dynmap",
+    "sources": "https://github.com/webbukkit/dynmap"
+  },
+  "license": "Apache-2.0",
+  "icon": "assets/dynmap/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "org.dynmap.fabric_1_15_2.DynmapMod"
+    ]
+  },
+  "mixins": [
+    "dynmap.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": ">=0.17.0",
+    "minecraft": "1.15.2"
+  }
+}
