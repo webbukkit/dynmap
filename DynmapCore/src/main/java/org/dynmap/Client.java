@@ -165,6 +165,10 @@ public class Client {
         /* Handle Essentials nickname encoding too */
         int idx = 0;
         while((idx = s.indexOf('&', idx)) >= 0) {
+            if(idx + 1 >= s.length()) { /* No character after this ampersand */
+                break;
+            }
+
             char c = s.charAt(idx+1);   /* Get next character */
             if(c == '&') {  /* Another ampersand */
                 s = s.substring(0, idx) + s.substring(idx+1);
