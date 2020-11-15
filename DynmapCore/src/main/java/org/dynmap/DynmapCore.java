@@ -438,7 +438,12 @@ public class DynmapCore implements DynmapCommonAPI {
     }
 
     private String findExecutableOnPath(String fname) {
-		for (String dirname : System.getenv("PATH").split(File.pathSeparator)) {
+        String path = System.getenv("PATH");
+        // Fast-fail if path is null.
+        if (path == null)
+            return null;
+
+		for (String dirname : path.split(File.pathSeparator)) {
 			File file = new File(dirname, fname);
 			if (file.isFile() && file.canExecute()) {
 				return file.getAbsolutePath();
