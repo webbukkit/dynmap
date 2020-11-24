@@ -73,15 +73,17 @@ public class FileTreeMapStorage extends MapStorage {
             }
             return ff;
         }
-        private File getTileFileAltFormat() {
+        private List<File> getTileFilesAltFormats() {
             ImageEncoding fmt = map.getImageFormat().getEncoding();
-            if (fmt == ImageEncoding.PNG) {
-                fmt = ImageEncoding.JPG;
+
+            List<File> files = new ArrayList<File>();
+            for (ImageEncoding ie: ImageEncoding.values()) {
+                if (ie != fmt) {
+                    files.add(getTileFile(ie));
+                }
             }
-            else {
-                fmt = ImageEncoding.PNG;
-            }
-            return getTileFile(fmt);
+
+            return files;
         }
         @Override
         public boolean exists() {
@@ -136,11 +138,13 @@ public class FileTreeMapStorage extends MapStorage {
         @Override
         public boolean write(long hash, BufferOutputStream encImage) {
             File ff = getTileFile(map.getImageFormat().getEncoding());
-            File ffalt = getTileFileAltFormat();
+            List<File> ffalt = getTileFilesAltFormats();
             File ffpar = ff.getParentFile();
-            // Always clean up old alternate file, if it exsits
-            if (ffalt.exists()) {
-                ffalt.delete();
+            // Always clean up old alternate files, if they exist
+            for (File file: ffalt) {
+                if (file.exists()) {
+                    file.delete();
+                }
             }
             if (encImage == null) { // Delete?
                 ff.delete();
