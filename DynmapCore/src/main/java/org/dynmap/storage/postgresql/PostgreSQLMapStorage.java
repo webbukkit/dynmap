@@ -308,9 +308,14 @@ public class PostgreSQLMapStorage extends MapStorage {
         return writeConfigPHP(core);
     }
     private boolean writeConfigPHP(DynmapCore core) {
+    	File cfgfile = new File(baseStandaloneDir, "PostgreSQL_config.php");
+    	if (!core.isInternalWebServerDisabled) {	// If using internal server
+    		cfgfile.delete();	// Zap file (in case we left junk from last time)
+    		return true;
+    	}
         FileWriter fw = null;
         try {
-            fw = new FileWriter(new File(baseStandaloneDir, "PostgreSQL_config.php"));
+            fw = new FileWriter(cfgfile);
             fw.write("<?php\n$dbname = \'");
             fw.write(WebAuthManager.esc(database));
             fw.write("\';\n");
@@ -957,26 +962,31 @@ public class PostgreSQLMapStorage extends MapStorage {
     }
 
     @Override
+    // External web server only
     public String getMarkersURI(boolean login_enabled) {
         return "standalone/PostgreSQL_markers.php?marker=";
    }
 
     @Override
+    // External web server only
     public String getTilesURI(boolean login_enabled) {
         return "standalone/PostgreSQL_tiles.php?tile=";
     }
 
     @Override
+    // External web server only
     public String getConfigurationJSONURI(boolean login_enabled) {
         return "standalone/PostgreSQL_configuration.php"; // ?serverid={serverid}";
     }
     
     @Override
+    // External web server only
     public String getUpdateJSONURI(boolean login_enabled) {
         return "standalone/PostgreSQL_update.php?world={world}&ts={timestamp}"; // &serverid={serverid}";
     }
 
     @Override
+    // External web server only
     public String getSendMessageURI() {
         return "standalone/PostgreSQL_sendmessage.php";
     }
@@ -1067,10 +1077,12 @@ public class PostgreSQLMapStorage extends MapStorage {
         return false;
     }
     @Override
+    // External web server only
     public String getStandaloneLoginURI() {
         return "standalone/PostgreSQL_login.php";
     }
     @Override
+    // External web server only
     public String getStandaloneRegisterURI() {
         return "standalone/PostgreSQL_register.php";
     }

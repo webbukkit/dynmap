@@ -195,7 +195,7 @@ public abstract class MapStorage {
      */
     public abstract String getMarkersURI(boolean login_enabled);
     /**
-     * URI to use for loading tiles (for external web server)
+     * URI to use for loading tiles (for external web server only)
      * 
      * @param login_enabled - selects based on login security enabled
      * @return URI
@@ -210,14 +210,14 @@ public abstract class MapStorage {
         return login_enabled;
     }
     /**
-     * Get sendmessage URI
+     * Get sendmessage URI (for external web server only)
      * @return URI
      */
     public String getSendMessageURI() {
         return "standalone/sendmessage.php";
     }
     /**
-     * URI to use for loading configuration JSON files (for external web server)
+     * URI to use for loading configuration JSON files (for external web server only)
      * @param login_enabled - selects based on login security enabled
      * @return URI
      */
@@ -225,7 +225,7 @@ public abstract class MapStorage {
         return login_enabled?"standalone/configuration.php":"standalone/dynmap_config.json?_={timestamp}";
     }
     /**
-     * URI to use for loading update JSON files (for external web server)
+     * URI to use for loading update JSON files (for external web server only)
      * @param login_enabled - selects based on login security enabled
      * @return URI
      */
@@ -445,9 +445,11 @@ public abstract class MapStorage {
     public boolean wrapStandalonePHP() {
         return true;
     }
+    // For external web server only
     public String getStandaloneLoginURI() {
         return "standalone/login.php";
     }
+    // For external web server only
     public String getStandaloneRegisterURI() {
         return "standalone/register.php";
     }

@@ -306,9 +306,14 @@ public class MySQLMapStorage extends MapStorage {
     }
 
     private boolean writeConfigPHP(DynmapCore core) {
+    	File cfgfile = new File(baseStandaloneDir, "MySQL_config.php");
+    	if (!core.isInternalWebServerDisabled) {	// If using internal server
+    		cfgfile.delete();	// Zap file (in case we left junk from last time)
+    		return true;
+    	}
         FileWriter fw = null;
         try {
-            fw = new FileWriter(new File(baseStandaloneDir, "MySQL_config.php"));
+            fw = new FileWriter(cfgfile);
             fw.write("<?php\n$dbname = \'");
             fw.write(WebAuthManager.esc(database));
             fw.write("\';\n");
@@ -956,26 +961,31 @@ public class MySQLMapStorage extends MapStorage {
     }
 
     @Override
+    // External web server only
     public String getMarkersURI(boolean login_enabled) {
         return "standalone/MySQL_markers.php?marker=";
    }
 
     @Override
+    // External web server only
     public String getTilesURI(boolean login_enabled) {
         return "standalone/MySQL_tiles.php?tile=";
     }
 
     @Override
+    // External web server only
     public String getConfigurationJSONURI(boolean login_enabled) {
         return "standalone/MySQL_configuration.php"; // ?serverid={serverid}";
     }
     
     @Override
+    // External web server only
     public String getUpdateJSONURI(boolean login_enabled) {
         return "standalone/MySQL_update.php?world={world}&ts={timestamp}"; // &serverid={serverid}";
     }
 
     @Override
+    // External web server only
     public String getSendMessageURI() {
         return "standalone/MySQL_sendmessage.php";
     }
@@ -1066,10 +1076,12 @@ public class MySQLMapStorage extends MapStorage {
         return false;
     }
     @Override
+    // External web server only
     public String getStandaloneLoginURI() {
         return "standalone/MySQL_login.php";
     }
     @Override
+    // External web server only
     public String getStandaloneRegisterURI() {
         return "standalone/MySQL_register.php";
     }

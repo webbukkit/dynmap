@@ -9,6 +9,7 @@
 # idea
 .idea/
 
+*.launch
 
 # we use maven!
 /build.xml

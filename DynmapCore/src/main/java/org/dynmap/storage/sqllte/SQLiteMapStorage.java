@@ -915,11 +915,13 @@ public class SQLiteMapStorage extends MapStorage {
     }
 
     @Override
+    // External web server only
     public String getMarkersURI(boolean login_enabled) {
         return "standalone/SQLite_markers.php?marker=";
    }
 
     @Override
+    // External web server only
     public String getTilesURI(boolean login_enabled) {
         return "standalone/SQLite_tiles.php?tile=";
     }

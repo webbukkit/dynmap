@@ -617,11 +617,13 @@ public class FileTreeMapStorage extends MapStorage {
     }
     
     @Override
+    // For external web server only
     public String getMarkersURI(boolean login_enabled) {
         return login_enabled?"standalone/markers.php?marker=":"tiles/";
     }
 
     @Override
+    // For external web server only
     public String getTilesURI(boolean login_enabled) {
         return login_enabled?"standalone/tiles.php?tile=":"tiles/";
     }

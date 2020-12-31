@@ -123,6 +123,7 @@ public class DynmapCore implements DynmapCommonAPI {
     private int perTickLimit = 50;   // 50 ms
     private boolean dumpMissing = false;
     private static boolean migrate_chunks = false;
+    public boolean isInternalWebServerDisabled = false;
         
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
@@ -530,6 +531,8 @@ public class DynmapCore implements DynmapCommonAPI {
         updateplayerlimit = configuration.getInteger("updateplayerlimit", 0);
         /* Load sort permission nodes */
         sortPermissionNodes = configuration.getStrings("player-sort-permission-nodes", null);
+        // Check if we are disabling the internal web server (implies external)
+        isInternalWebServerDisabled = configuration.getBoolean("disable-webserver", false);
         
         perTickLimit = configuration.getInteger("per-tick-time-limit", 50);
         if (perTickLimit < 5) perTickLimit = 5;
@@ -594,7 +597,10 @@ public class DynmapCore implements DynmapCommonAPI {
         
         loginRequired = configuration.getBoolean("login-required", false);
             
-        loadWebserver();
+        // If not disabled, load and initialize the internal web server
+        if (!isInternalWebServerDisabled) {
+        	loadWebserver();
+        }
 
         enabledTriggers.clear();
         List<String> triggers = configuration.getStrings("render-triggers", new ArrayList<String>());
@@ -616,26 +622,26 @@ public class DynmapCore implements DynmapCommonAPI {
         }
         Log.verboseinfo("Loaded " + componentManager.components.size() + " components.");
 
-        if (!configuration.getBoolean("disable-webserver", false)) {
+        if (!isInternalWebServerDisabled) {	// If internal not disabled, we should be using it and not external
             startWebserver();
-            if(!componentManager.isLoaded(InternalClientUpdateComponent.class)) {
+            if (!componentManager.isLoaded(InternalClientUpdateComponent.class)) {
                 Log.warning("Using internal server, but " + InternalClientUpdateComponent.class.toString() + " is DISABLED!");
                 webserverCompConfigWarn = true;
             }
-            if(componentManager.isLoaded(JsonFileClientUpdateComponent.class)) {
+            if (componentManager.isLoaded(JsonFileClientUpdateComponent.class)) {
                 Log.warning("Using internal server, but " + JsonFileClientUpdateComponent.class.toString() + " is ENABLED!");
             }
         }
         else {
-            if(componentManager.isLoaded(InternalClientUpdateComponent.class)) {
+            if (componentManager.isLoaded(InternalClientUpdateComponent.class)) {
                 Log.warning("Using external server, but " + InternalClientUpdateComponent.class.toString() + " is ENABLED!");
             }
-            if(!componentManager.isLoaded(JsonFileClientUpdateComponent.class)) {
+            if (!componentManager.isLoaded(JsonFileClientUpdateComponent.class)) {
                 Log.warning("Using external server, but " + JsonFileClientUpdateComponent.class.toString() + " is DISABLED!");
                 webserverCompConfigWarn = true;
             }
         }
-        if(webserverCompConfigWarn){
+        if (webserverCompConfigWarn) {
             Log.warning("If the website is missing files or not loading/updating, this might be why.");
             Log.warning("For more info, read this: " + CompConfigWiki);
             webserverCompConfigWarn = false;
