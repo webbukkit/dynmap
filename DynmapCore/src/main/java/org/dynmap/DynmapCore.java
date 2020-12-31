@@ -394,6 +394,9 @@ public class DynmapCore implements DynmapCommonAPI {
         configuration = new ConfigurationNode(f);
         configuration.load();
 
+        // Check if we are disabling the internal web server (implies external)
+        isInternalWebServerDisabled = configuration.getBoolean("disable-webserver", false);
+
         /* Prime the tiles directory */
         tilesDirectory = getFile(configuration.getString("tilespath", "web/tiles"));
         if (!tilesDirectory.isDirectory() && !tilesDirectory.mkdirs()) {
@@ -531,8 +534,6 @@ public class DynmapCore implements DynmapCommonAPI {
         updateplayerlimit = configuration.getInteger("updateplayerlimit", 0);
         /* Load sort permission nodes */
         sortPermissionNodes = configuration.getStrings("player-sort-permission-nodes", null);
-        // Check if we are disabling the internal web server (implies external)
-        isInternalWebServerDisabled = configuration.getBoolean("disable-webserver", false);
         
         perTickLimit = configuration.getInteger("per-tick-time-limit", 50);
         if (perTickLimit < 5) perTickLimit = 5;
