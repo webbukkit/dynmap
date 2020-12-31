@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
 public class ComponentManager {
     public Set<Component> components = new HashSet<Component>();
@@ -38,10 +39,14 @@ public class ComponentManager {
         components.clear();
     }
     
-    public Iterable<Component> getComponents(Class<Component> c) {
+    public Iterable<Component> getComponents(Class<? extends Component> c) {
         List<Component> list = componentLookup.get(c.toString());
         if (list == null)
             return new ArrayList<Component>();
         return list;
+    }
+
+    public Boolean isLoaded(Class<? extends Component> c){
+        return StreamSupport.stream(getComponents(c).spliterator(), false).count() > 0;
     }
 }

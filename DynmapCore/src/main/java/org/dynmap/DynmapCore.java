@@ -159,6 +159,9 @@ public class DynmapCore implements DynmapCommonAPI {
     
     private String[] deftriggers = { };
 
+    private Boolean webserverCompConfigWarn = false;
+    private final String CompConfigWiki = "https://github.com/webbukkit/dynmap/wiki/Component-Configuration";
+
     /* Constructor for core */
     public DynmapCore() {
     }
@@ -615,6 +618,27 @@ public class DynmapCore implements DynmapCommonAPI {
 
         if (!configuration.getBoolean("disable-webserver", false)) {
             startWebserver();
+            if(!componentManager.isLoaded(InternalClientUpdateComponent.class)) {
+                Log.warning("Using internal server, but " + InternalClientUpdateComponent.class.toString() + " is DISABLED!");
+                webserverCompConfigWarn = true;
+            }
+            if(componentManager.isLoaded(JsonFileClientUpdateComponent.class)) {
+                Log.warning("Using internal server, but " + JsonFileClientUpdateComponent.class.toString() + " is ENABLED!");
+            }
+        }
+        else {
+            if(componentManager.isLoaded(InternalClientUpdateComponent.class)) {
+                Log.warning("Using external server, but " + InternalClientUpdateComponent.class.toString() + " is ENABLED!");
+            }
+            if(!componentManager.isLoaded(JsonFileClientUpdateComponent.class)) {
+                Log.warning("Using external server, but " + JsonFileClientUpdateComponent.class.toString() + " is DISABLED!");
+                webserverCompConfigWarn = true;
+            }
+        }
+        if(webserverCompConfigWarn){
+            Log.warning("If the website is missing files or not loading/updating, this might be why.");
+            Log.warning("For more info, read this: " + CompConfigWiki);
+            webserverCompConfigWarn = false;
         }
         
         /* Add login/logoff listeners */
