@@ -107,6 +107,12 @@ public class BiomeMap {
             new BiomeMap(168, "BAMBOO_JUNGLE");
             new BiomeMap(169, "BAMBOO_JUNGLE_HILLS");
         }
+        if (HDBlockModels.checkVersionRange(mcver, "1.16.0-")) {
+            new BiomeMap(170, "SOUL_SAND_VALLEY");
+            new BiomeMap(171, "CRIMSON_FOREST");
+            new BiomeMap(172, "WARPED_FOREST");
+            new BiomeMap(173, "BASALT_DELTAS");
+        }
         loadDone = true;
     }
     
