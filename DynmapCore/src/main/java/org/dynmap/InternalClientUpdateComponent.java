@@ -22,6 +22,9 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
         super(dcore, configuration);
         dcore.addServlet("/up/world/*", new ClientUpdateServlet(dcore));
 
+        if (dcore.isInternalWebServerDisabled) {
+        	Log.severe("Using InternalClientUpdateComponent with disable-webserver=true is not supported: there will likely be problems");        	
+        }
         jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
         final Boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         final Boolean hidewebchatip = configuration.getBoolean("hidewebchatip", false);
