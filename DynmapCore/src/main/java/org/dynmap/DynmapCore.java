@@ -60,6 +60,7 @@ import org.dynmap.utils.BlockStep;
 import org.dynmap.utils.ImageIOManager;
 import org.dynmap.web.BanIPFilter;
 import org.dynmap.web.CustomHeaderFilter;
+import org.dynmap.web.FileNameFilter;
 import org.dynmap.web.FilterHandler;
 import org.dynmap.web.HandlerRouter;
 import org.eclipse.jetty.server.Connector;
@@ -973,6 +974,8 @@ public class DynmapCore implements DynmapCommonAPI {
         if (checkbannedips) {
             filters.add(new BanIPFilter(this));
         }
+        filters.add(new FileNameFilter(this));
+        
 //        filters.add(new LoginFilter(this));
         
         /* Load customized response headers, if any */
