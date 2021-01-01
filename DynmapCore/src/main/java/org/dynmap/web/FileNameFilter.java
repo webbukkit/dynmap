@@ -1,7 +1,6 @@
 package org.dynmap.web;
 
 import org.dynmap.DynmapCore;
-import org.dynmap.Log;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
