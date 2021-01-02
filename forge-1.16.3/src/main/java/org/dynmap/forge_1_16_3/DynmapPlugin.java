@@ -959,7 +959,7 @@ public class DynmapPlugin
                 BlockUpdateRec r = blockupdatequeue.remove();
                 BlockState bs = r.w.getBlockState(new BlockPos(r.x, r.y, r.z));
                 int idx = Block.BLOCK_STATE_IDS.getId(bs);
-                if(!org.dynmap.hdmap.HDBlockModels.isChangeIgnoredBlock(stateByID[idx])) {
+                if((idx >= 0) && (!org.dynmap.hdmap.HDBlockModels.isChangeIgnoredBlock(stateByID[idx]))) {
                     if(onblockchange_with_id)
                         mapManager.touch(r.wid, r.x, r.y, r.z, "blockchange[" + idx + "]");
                     else
