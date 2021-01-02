@@ -124,10 +124,10 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	        this.biomebase = new Object[COLUMNS_PER_CHUNK];
 	        this.sectionCnt = worldheight / 16;
 	        /* Allocate arrays indexed by section */
-	        this.section = new Section[this.sectionCnt];
+	        this.section = new Section[this.sectionCnt+1];
 
 	        /* Fill with empty data */
-	        for (int i = 0; i < this.sectionCnt; i++) {
+	        for (int i = 0; i <= this.sectionCnt; i++) {
 	            this.section[i] = empty_section;
 	        }
 
@@ -150,9 +150,9 @@ public class MapChunkCache114_1 extends AbstractMapChunkCache {
 	            this.inhabitedTicks = 0;
 	        }
 	        /* Allocate arrays indexed by section */
-	        this.section = new Section[this.sectionCnt];
+	        this.section = new Section[this.sectionCnt+1];
 	        /* Fill with empty data */
-	        for (int i = 0; i < this.sectionCnt; i++) {
+	        for (int i = 0; i <= this.sectionCnt; i++) {
 	            this.section[i] = empty_section;
 	        }
 	        /* Get sections */
