@@ -73,7 +73,8 @@ public abstract class MapType {
         FORMAT_WEBP("webp", 85, ImageEncoding.WEBP),
         FORMAT_WEBP90("webp-q90", 90, ImageEncoding.WEBP),
         FORMAT_WEBP95("webp-q95", 95, ImageEncoding.WEBP),
-        FORMAT_WEBP100("webp-q100", 100, ImageEncoding.WEBP);
+        FORMAT_WEBP100("webp-q100", 100, ImageEncoding.WEBP),
+        FORMAT_WEBPL("webp-l", 85, ImageEncoding.WEBP);
         String id;
         float qual;
         ImageEncoding enc;
