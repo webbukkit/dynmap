@@ -15,6 +15,7 @@ include ':fabric-1.16.4'
 include ':fabric-1.16.2'
 include ':fabric-1.16.1'
 include ':fabric-1.15.2'
+include ':forge-1.16.4'
 include ':forge-1.16.3'
 include ':forge-1.16.2'
 include ':forge-1.16.1'
@@ -40,6 +41,7 @@ project(':fabric-1.16.4').projectDir = "$rootDir/fabric-1.16.4" as File
 project(':fabric-1.16.2').projectDir = "$rootDir/fabric-1.16.2" as File
 project(':fabric-1.16.1').projectDir = "$rootDir/fabric-1.16.1" as File
 project(':fabric-1.15.2').projectDir = "$rootDir/fabric-1.15.2" as File
+project(':forge-1.16.4').projectDir = "$rootDir/forge-1.16.4" as File
 project(':forge-1.16.3').projectDir = "$rootDir/forge-1.16.3" as File
 project(':forge-1.16.2').projectDir = "$rootDir/forge-1.16.2" as File
 project(':forge-1.16.1').projectDir = "$rootDir/forge-1.16.1" as File
