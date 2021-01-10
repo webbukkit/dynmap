@@ -59,7 +59,7 @@ public class ImageIOManager {
         fos.close();
         // Run encoder to new new temp file
         File tmpfile2 = File.createTempFile("pngToWebp", "webp");
-        String args[] = { core.getCWEBPPath(), "-q", Integer.toString((int)fmt.getQuality()), tmpfile.getAbsolutePath(), "-o", tmpfile2.getAbsolutePath() };
+        String args[] = { core.getCWEBPPath(), fmt.getID().endsWith("-l")?"-lossless":"", "-q", Integer.toString((int)fmt.getQuality()), tmpfile.getAbsolutePath(), "-o", tmpfile2.getAbsolutePath() };
         Process pr = Runtime.getRuntime().exec(args);
         try {
         	pr.waitFor();

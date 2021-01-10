@@ -4,26 +4,37 @@
 Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory
 
 To build, run:
+
     ./gradlew clean build install
+    
 Or (on Windows):
+
     gradlew.bat clean build install
     
 # What platforms are supported?
 The following target platforms are supported:
-- CraftBukkit/Spigot - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.1)
+- Spigot/PaperMC - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.4)
 - Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
 - Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
 - Forge v1.13.2 - via Dynmap-<version>-forge-1.13.2.jar mod
 - Forge v1.14.4 - via Dynmap-<version>-forge-1.14.4.jar mod
 - Forge v1.15.2 - via Dynmap-<version>-forge-1.15.2.jar mod
 - Forge v1.16.1 - via Dynmap-<version>-forge-1.16.1.jar mod
+- Forge v1.16.2 - via Dynmap-<version>-forge-1.16.2.jar mod
+- Forge v1.16.3 - via Dynmap-<version>-forge-1.16.3.jar mod
+- Forge v1.16.4 - via Dynmap-<version>-forge-1.16.4.jar mod
+- Fabric v1.15.2 - via Dynmap-<version>-fabric-1.15.2.jar mod
+- Fabric v1.16.1 - via Dynmap-<version>-fabric-1.16.1.jar mod
+- Fabric v1.16.2 - via Dynmap-<version>-fabric-1.16.2.jar mod
+- Fabric v1.16.4 - via Dynmap-<version>-fabric-1.16.4.jar mod
     
 # Data Storage
 Dynmap supports the following storage backends:
 - Flat files: The default for a new installation
 - SQLite
 - MySQL
-- PostgreSQL: EXPERIMENTAL
+- PostgreSQL
+- MariaDB
 
 # Contributing to Dynmap's Code
 The Dynmap team welcomes Pull Requests with fixes, new features, and new platform support.  That said, the following rules apply:
