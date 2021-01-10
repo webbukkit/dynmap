@@ -13,7 +13,7 @@ Or (on Windows):
     
 # What platforms are supported?
 The following target platforms are supported:
-- CraftBukkit/Spigot - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.4)
+- Spigot/PaperMC - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.4)
 - Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
 - Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
 - Forge v1.13.2 - via Dynmap-<version>-forge-1.13.2.jar mod
