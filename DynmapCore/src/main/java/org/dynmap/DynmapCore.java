@@ -503,7 +503,6 @@ public class DynmapCore implements DynmapCommonAPI {
         	Log.info("Found cwebp at " + cwebpPath + " and dwebp at " + dwebpPath + ": webp format enabled");
         }
         else {
-        	Log.warning("cwebp or dwebp not found, or cwebpPath or dwebpPath is invalid: webp format disabled");        	
         	cwebpPath = dwebpPath = null;
         }
         /* Get default image format */
