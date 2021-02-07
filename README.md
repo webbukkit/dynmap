@@ -13,21 +13,21 @@ Or (on Windows):
     
 # What platforms are supported?
 The following target platforms are supported:
-- Spigot/PaperMC ≤v1.16.4 - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.4)
-- Spigot/PaperMC ≤v1.16.5 - via Dynmap-31.beta-6-spigot.jar plugin (from the SpigotMC Resource page)
-- Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
-- Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
-- Forge v1.13.2 - via Dynmap-<version>-forge-1.13.2.jar mod
-- Forge v1.14.4 - via Dynmap-<version>-forge-1.14.4.jar mod
-- Forge v1.15.2 - via Dynmap-<version>-forge-1.15.2.jar mod
-- Forge v1.16.1 - via Dynmap-<version>-forge-1.16.1.jar mod
-- Forge v1.16.2 - via Dynmap-<version>-forge-1.16.2.jar mod
-- Forge v1.16.3 - via Dynmap-<version>-forge-1.16.3.jar mod
-- Forge v1.16.4 - via Dynmap-<version>-forge-1.16.4.jar mod
-- Fabric v1.15.2 - via Dynmap-<version>-fabric-1.15.2.jar mod
-- Fabric v1.16.1 - via Dynmap-<version>-fabric-1.16.1.jar mod
-- Fabric v1.16.2 - via Dynmap-<version>-fabric-1.16.2.jar mod
-- Fabric v1.16.4 - via Dynmap-<version>-fabric-1.16.4.jar mod
+- Spigot/PaperMC ≤v1.16.4 - via the `Dynmap-<version>-spigot.jar` plugin (supports MC v1.11.2 through v1.16.4)
+- Spigot/PaperMC ≤v1.16.5 - via `Dynmap-31.beta-6-spigot.jar` plugin (from the SpigotMC Resource page)
+- Forge v1.11.2 - via `Dynmap-<version>-forge-1.11.2.jar` mod
+- Forge v1.12.2 - via `Dynmap-<version>-forge-1.12.2.jar` mod
+- Forge v1.13.2 - via `Dynmap-<version>-forge-1.13.2.jar` mod
+- Forge v1.14.4 - via `Dynmap-<version>-forge-1.14.4.jar` mod
+- Forge v1.15.2 - via `Dynmap-<version>-forge-1.15.2.jar` mod
+- Forge v1.16.1 - via `Dynmap-<version>-forge-1.16.1.jar` mod
+- Forge v1.16.2 - via `Dynmap-<version>-forge-1.16.2.jar` mod
+- Forge v1.16.3 - via `Dynmap-<version>-forge-1.16.3.jar` mod
+- Forge v1.16.4 - via `Dynmap-<version>-forge-1.16.4.jar` mod
+- Fabric v1.15.2 - via `Dynmap-<version>-fabric-1.15.2.jar` mod
+- Fabric v1.16.1 - via `Dynmap-<version>-fabric-1.16.1.jar` mod
+- Fabric v1.16.2 - via `Dynmap-<version>-fabric-1.16.2.jar` mod
+- Fabric v1.16.4 - via `Dynmap-<version>-fabric-1.16.4.jar` mod
     
 # Data Storage
 Dynmap supports the following storage backends:
