@@ -20,7 +20,7 @@ Or (on Windows):
     gradlew.bat clean build install
     
 # What platforms are supported?
-The following target platforms are supported:
+The following target platforms are supported, and you can find them at the links supplied:
 
 | Server type  | Version | Dynmap JAR | Where? |
 | ------------ | ------- | ---------- | ------ |
