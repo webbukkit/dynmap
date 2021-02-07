@@ -27,6 +27,7 @@ Reddit
 api
 Bukkit
 mikeprimm
+michaelprimm
 repo
 https
 Fi
@@ -34,7 +35,6 @@ Ki
 Patreon
 fi
 ko
-michealprimm
 patreon
 README
 Gradle
