@@ -13,8 +13,8 @@ Or (on Windows):
     
 # What platforms are supported?
 The following target platforms are supported:
-- Spigot/PaperMC - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.4)
-- Spigot/PaperMC - via Dynmap-31.beta-6-spigot.jar plugin (from the SpigotMC Resource page)
+- Spigot/PaperMC ≤v1.16.4 - via the Dynmap-<version>-spigot.jar plugin (supports MC v1.11.2 through v1.16.4)
+- Spigot/PaperMC ≤v1.16.5 - via Dynmap-31.beta-6-spigot.jar plugin (from the SpigotMC Resource page)
 - Forge v1.11.2 - via Dynmap-<version>-forge-1.11.2.jar mod
 - Forge v1.12.2 - via Dynmap-<version>-forge-1.12.2.jar mod
 - Forge v1.13.2 - via Dynmap-<version>-forge-1.13.2.jar mod
