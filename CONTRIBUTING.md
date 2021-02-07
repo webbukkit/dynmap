@@ -49,7 +49,7 @@ not yet (or no longer) supported by the Dynmap team.  If the Dynmap team comes t
 cease distribution of the unofficial version, unless otherwise authorized to continue doing so.  Further:
     - The team distributing the modified version must cite the origin of the Dynmap code, but must also clearly indicate that the version is NOT supported by
     nor endorsed by the Dynmap team, and that ALL support should be directed through the team providing the modified version.
-    - Any modified version CANNOT be monitized or otherwise charged for, under any circumstances, nor can redistribution of it be limited or restricted.
+    - Any modified version CANNOT be monetized or otherwise charged for, under any circumstances, nor can redistribution of it be limited or restricted.
     - The modified code must continue to be Apache Public License v2, with no additional conditions or restrictions, including full public availability of the
     modified source code.
     - Any code from Dynmap used in such versions should be built from an appropriate fork, as DynampCore and other components (other than DynmapCoreAPI and 
@@ -57,8 +57,8 @@ cease distribution of the unofficial version, unless otherwise authorized to con
     least, removed).  The modified version should NOT refer to the Dynmap Discord nor to /r/Dynmap on Reddit for support. in any case.
     - Any bugs or issues opened in conjunction with the use of the modified version on this repository will be closed without comment.
 
-Additions of new funtion, including new platform support, in this official Dynmap code base MUST be fully contained within the PRs submitted to this 
-repository.  Further, it is always exptected than any updates will be built and tested across all relevant platforms - meaning anh chances to shared code 
+Additions of new functions, including new platform support, in this official Dynmap code base MUST be fully contained within the PRs submitted to this 
+repository.  Further, it is always expected than any updates will be built and tested across all relevant platforms - meaning any chances to shared code 
 components (DynmapCore, DynmapCoreAPI) MUST be successfully built and tested on ALL supported platforms (Forge, Spigot, etc).  Changes which break 
 supported platforms will be rejected.
 
