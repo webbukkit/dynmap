@@ -1,0 +1,14 @@
+name: Checking for spelling errors
+
+on:
+  push:
+
+jobs:
+  spellcheck:
+    name: rojopolis/spellcheck
+    runs-on: ubuntu-20.04
+    steps:
+    - name: actions/checkout
+      uses: actions/checkout@v2
+    - name: rojopolis/spellcheck - actually doing something
+      uses: rojopolis/spellcheck-github-actions@0.9.1

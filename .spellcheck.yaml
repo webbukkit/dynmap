@@ -1,0 +1,25 @@
+spellchecker: aspell
+matrix:
+- name: Markdown
+  aspell:
+    lang: en
+  dictionary:
+    wordlists:
+    - .github/workflows/gibberish.txt
+    encoding: utf-8
+  pipeline:
+    - pyspelling.filters.markdown:
+      markdown_extensions:
+      - markdown.extensions.extra:
+    - pyspelling.filters.html:
+        comments: true
+        attributes:
+        - title
+        - alt
+        ignores:
+        - ':matches(code, pre)'
+        - 'code'
+        - 'pre'
+  sources:
+  - '**/*.md'
+  default_encoding: utf-8
