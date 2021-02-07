@@ -1,6 +1,14 @@
 # Dynmap™ - dynamic web maps for Minecraft servers
 
-## How to build
+# Jump around the README
+* [How to build](#how-to-build)
+* [What platforms are supported?](#what-platforms-are-supported)
+* [Data Storage](#data-storage)
+* [Contributing to Dynmap's Code](#contributing-to-dynmaps-code)
+* [Porting, Supporting Other Platforms, Customized Dynmap Builds](#porting-supporting-other-platforms-customized-dynmap-builds)
+* [Where to go for questions and discussions](#where-to-go-for-questions-and-discussions)
+* [Where to go to make donations](#where-to-go-to-make-donations)
+# How to build
 Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory
 
 To build, run:
@@ -13,21 +21,24 @@ Or (on Windows):
     
 # What platforms are supported?
 The following target platforms are supported:
-- Spigot/PaperMC ≤v1.16.4 - via the `Dynmap-<version>-spigot.jar` plugin (supports MC v1.11.2 through v1.16.4)
-- Spigot/PaperMC ≤v1.16.5 - via `Dynmap-31.beta-6-spigot.jar` plugin (from the SpigotMC Resource page)
-- Forge v1.11.2 - via `Dynmap-<version>-forge-1.11.2.jar` mod
-- Forge v1.12.2 - via `Dynmap-<version>-forge-1.12.2.jar` mod
-- Forge v1.13.2 - via `Dynmap-<version>-forge-1.13.2.jar` mod
-- Forge v1.14.4 - via `Dynmap-<version>-forge-1.14.4.jar` mod
-- Forge v1.15.2 - via `Dynmap-<version>-forge-1.15.2.jar` mod
-- Forge v1.16.1 - via `Dynmap-<version>-forge-1.16.1.jar` mod
-- Forge v1.16.2 - via `Dynmap-<version>-forge-1.16.2.jar` mod
-- Forge v1.16.3 - via `Dynmap-<version>-forge-1.16.3.jar` mod
-- Forge v1.16.4 - via `Dynmap-<version>-forge-1.16.4.jar` mod
-- Fabric v1.15.2 - via `Dynmap-<version>-fabric-1.15.2.jar` mod
-- Fabric v1.16.1 - via `Dynmap-<version>-fabric-1.16.1.jar` mod
-- Fabric v1.16.2 - via `Dynmap-<version>-fabric-1.16.2.jar` mod
-- Fabric v1.16.4 - via `Dynmap-<version>-fabric-1.16.4.jar` mod
+
+| Server type  | Version | Dynmap JAR | Where? |
+| ------------ | ------- | ---------- | ------ |
+| Spigot/PaperMC | 1.16.5  | `Dynmap-3.1-beta-6-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
+| Spigot/PaperMC | ≤1.16.4 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Forge | 1.11.2 | `Dynmap-<version>-forge-1.11.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Forge | 1.12.2 | `Dynmap-<version>-forge-1.12.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Forge | 1.13.2 | `Dynmap-<version>-forge-1.13.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Forge | 1.14.4 | `Dynmap-<version>-forge-1.14.4.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Forge | 1.15.2 | `Dynmap-<version>-forge-1.15.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Forge | 1.16.1 | `Dynmap-<version>-forge-1.16.1.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Forge | 1.16.2 | `Dynmap-<version>-forge-1.16.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Forge | 1.16.3 | `Dynmap-<version>-forge-1.16.3.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Forge | 1.16.4 | `Dynmap-<version>-forge-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.15.2 | `Dynmap-<version>-fabric-1.15.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.16.1 | `Dynmap-<version>-fabric-1.16.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.16.2 | `Dynmap-<version>-fabric-1.16.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.16.4 |`Dynmap-<version>-fabric-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
     
 # Data Storage
 Dynmap supports the following storage backends:
