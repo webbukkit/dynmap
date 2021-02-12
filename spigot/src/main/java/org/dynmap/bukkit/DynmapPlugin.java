@@ -104,7 +104,7 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
-import org.dynmap.paperlib.bukkit.World;
+import org.dynmap.paperlib.World;
 import skinsrestorer.bukkit.SkinsRestorer;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
