@@ -1,4 +1,3 @@
-dist: focal
 language: java
 jdk:
   - openjdk8
