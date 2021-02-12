@@ -296,7 +296,7 @@ public class PostgreSQLMapStorage extends MapStorage {
         connectionString = "jdbc:postgresql://" + hostname + ":" + port + "/" + database + flags;
         Log.info("Opening PostgreSQL database " + hostname + ":" + port + "/" + database + " as map store");
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName("org.dynmap.org.postgresql.Driver");	// Use shaded name for our bundled driver
             // Initialize/update tables, if needed
             if(!initializeTables()) {
                 return false;

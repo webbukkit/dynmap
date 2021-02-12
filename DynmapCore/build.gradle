@@ -8,6 +8,7 @@ dependencies {
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'org.yaml:snakeyaml:1.23'
     compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
+    compile 'org.postgresql:postgresql:42.2.18'
 }
 
 processResources {
@@ -40,6 +41,7 @@ shadowJar {
         include(dependency('javax.servlet::'))
         include(dependency('org.eclipse.jetty::'))
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
+        include(dependency('org.postgresql:postgresql:'))
         include(dependency(':DynmapCoreAPI'))
 	}
 	relocate('org.json.simple', 'org.dynmap.json.simple')
@@ -47,6 +49,7 @@ shadowJar {
 	relocate('org.eclipse.jetty', 'org.dynmap.jetty')
 	relocate('org.owasp.html', 'org.dynmap.org.owasp.html')
 	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
+	relocate('org.postgresql', 'org.dynmap.org.postgresql')
     destinationDir = file '../target'
     classifier = ''
 }
