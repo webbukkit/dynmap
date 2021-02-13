@@ -1,4 +1,4 @@
-package org.dynmap.paperlib;
+package org.dynmap.bukkit;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
