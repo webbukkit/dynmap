@@ -8,3 +8,17 @@ dependencies {
   compile group: 'org.bukkit', name: 'bukkit', version:'1.15-R0.1-SNAPSHOT'
   compile group: 'org.bukkit', name: 'craftbukkit', version:'1.15-R0.1-SNAPSHOT'
 }
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.2"
+    }
+}
+
+shadowJar {
+    relocate('io.papermc.lib','org.dynmap.paperlib')
+}

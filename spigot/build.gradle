@@ -7,9 +7,6 @@ repositories {
     maven {
         url 'https://repo.codemc.org/repository/maven-snapshots'
     }
-    maven {
-        url 'https://papermc.io/repo/repository/maven-public/'
-    }
 }
 
 dependencies {
