@@ -4,9 +4,9 @@ import org.dynmap.SkinUrlProvider;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.json.simple.JSONObject;
-import skinsrestorer.bukkit.SkinsRestorer;
-import skinsrestorer.bukkit.SkinsRestorerBukkitAPI;
-import skinsrestorer.shared.utils.ReflectionUtil;
+import net.skinsrestorer.api.SkinsRestorerAPI;
+import net.skinsrestorer.bukkit.SkinsRestorer;
+import net.skinsrestorer.shared.utils.ReflectionUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,7 +15,7 @@ import java.util.Base64;
 
 public class SkinsRestorerSkinUrlProvider implements SkinUrlProvider {
     private JSONParser mJsonParser;
-    private SkinsRestorerBukkitAPI mSkinsRestorerApi;
+    private SkinsRestorerAPI mSkinsRestorerApi;
 
     SkinsRestorerSkinUrlProvider(SkinsRestorer skinsRestorer) {
         mJsonParser = new JSONParser();

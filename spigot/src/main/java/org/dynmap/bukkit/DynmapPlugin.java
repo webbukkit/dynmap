@@ -105,7 +105,7 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
-import skinsrestorer.bukkit.SkinsRestorer;
+import net.skinsrestorer.bukkit.SkinsRestorer;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapCore core;
@@ -140,7 +140,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private BukkitWorld last_bworld;
     
     private BukkitVersionHelper helper;
-    
+
     private final BukkitWorld getWorldByName(String name) {
         if((last_world != null) && (last_world.getName().equals(name))) {
             return last_bworld;
@@ -911,13 +911,18 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         SkinsRestorerSkinUrlProvider skinUrlProvider = null;
 
         if (core.configuration.getBoolean("skinsrestorer-integration", false)) {
-            SkinsRestorer skinsRestorer = (SkinsRestorer) getServer().getPluginManager().getPlugin("SkinsRestorer");
+            try {
+                SkinsRestorer skinsRestorer = (SkinsRestorer) getServer().getPluginManager().getPlugin("SkinsRestorer");
 
-            if (skinsRestorer == null) {
-                Log.warning("SkinsRestorer integration can't be enabled because SkinsRestorer not installed");
-            } else {
-                skinUrlProvider = new SkinsRestorerSkinUrlProvider(skinsRestorer);
-                Log.info("SkinsRestorer integration enabled");
+                if (skinsRestorer == null) {
+                    Log.warning("SkinsRestorer integration can't be enabled because SkinsRestorer not installed");
+                } else {
+                    skinUrlProvider = new SkinsRestorerSkinUrlProvider(skinsRestorer);
+                    Log.info("SkinsRestorer API v14 integration enabled");
+                }
+            }catch(NoClassDefFoundError e) {
+                Log.warning("You are using unsupported version of SkinsRestorer. Use v14 or newer.");
+                Log.warning("Disabled SkinsRestorer integration for this session");
             }
         }
 
