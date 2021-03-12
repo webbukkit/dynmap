@@ -71,16 +71,16 @@ that code being subject to the APL v2.
 - Do not include any code that unconditionally adds to Dynmap's hosting requirements - for example, support for a database can be added, but the use of the
 database (which likely depends on a database server being deployed and configured by the user) cannot become an unconditional requirement in order to run
 Dynmap.  Features can add the option to exploit new or additional technologies, but cannot add unconditionally to the minimum requirements on the supported
-platforms (which is what is needed to run the corresponiding MC server, plus the Dynmap plugin or mod)
+platforms (which is what is needed to run the corresponding MC server, plus the Dynmap plugin or mod)
 - Dynmap is built and supports running on Java 8 - it can run on newer versions, but any contributed code and dependencies MUST support being compiled and run
 using just Java 8.
-- Don't introduce other language depdendencies - Java only: no Kotlin, Scala, JRuby, whatever. They just add runtime dependencies that most of the platforms lack,
+- Don't introduce other language dependencies - Java only: no Kotlin, Scala, JRuby, whatever. They just add runtime dependencies that most of the platforms lack,
 and language skills above and beyond the Java language requirements the code base already mandates, which just creates obstacles to other people contributing.
 - Similarly, do not update existing libraries and dependencies - these are often tied to the versions on various platforms, and updates will likely break runtime
 - Do not include code specific to other plugins or mods.  Dynmap has APIs for the purpose of avoiding the problem of working with other mods - there are many 
 'Dynmap-XXX' mods and plugins which use the APIs to provide support for other mods and plugins (WorldGuard, Nucleus, Citizens, dozens of others).  Maintaining
 interfaces in Dynmap particular to dozens of mods on multiple versions of multiple platforms is unmanageable, so we don't do it.  The ONLY exception currently
-are security mods - although, even for those, leverage of platform-standard security interfaces is always preferred (e.g. Sponge or Bukket standard permissions)
+are security mods - although, even for those, leverage of platform-standard security interfaces is always preferred (e.g. Sponge or Bukkit standard permissions)
 
 # Porting, Supporting Other Platforms, Customized Dynmap Builds
 While Dynmap is open source, subject to the Apache Public License, v2, the Dynmap team does have specific policies and requirements for anyone that would

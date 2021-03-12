@@ -4,20 +4,17 @@ dynmap
 Dynmap's
 APIs
 APL
-Bukket
 Dynmap
 Dynmap's
 DynmapCore
 DynmapCoreAPI
 JRuby
-MacOS
+macOS
 Minecraft
 PRs
 PaperMC
 WorldGuard
 www
-corresponiding
-depdendencies
 reflow
 runtime
 theose
@@ -53,3 +50,4 @@ reddit
 subreddit
 gg
 pqBpw
+JDBC
