@@ -240,7 +240,6 @@ public class DynmapPlugin
     		if (idx >= stateByID.length) {
     			int plen = stateByID.length;
     			stateByID = Arrays.copyOf(stateByID, idx*11/10); // grow array by 10%
-			Log.debug("Resized stateByID from " + plen + " to " + stateByID.length);
     			Arrays.fill(stateByID, plen, stateByID.length, DynmapBlockState.AIR);
     		}
             Block b = bs.getBlock();

@@ -179,7 +179,7 @@ public class DynmapPlugin {
             int idx = bsids.getId(bs);
             if (idx >= stateByID.length) {
                 int plen = stateByID.length;
-                stateByID = Arrays.copyOf(stateByID, idx + 1);
+    			stateByID = Arrays.copyOf(stateByID, idx*11/10); // grow array by 10%    			
                 Arrays.fill(stateByID, plen, stateByID.length, DynmapBlockState.AIR);
             }
             Block b = bs.getBlock();

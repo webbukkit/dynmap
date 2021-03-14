@@ -178,7 +178,7 @@ public class DynmapPlugin
     		int i = Block.getIdFromBlock(b);
     		if (i >= (stateByID.length >> 4)) {
     			int plen = stateByID.length;
-    			stateByID = Arrays.copyOf(stateByID, (i+1) << 4);
+    			stateByID = Arrays.copyOf(stateByID, i*11/10); // grow array by 10%    			
     			Arrays.fill(stateByID, plen, stateByID.length, DynmapBlockState.AIR);
     		}
             ResourceLocation ui = null;
