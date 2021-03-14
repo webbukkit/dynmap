@@ -120,13 +120,13 @@ public class DynmapBlockState {
         stateName = (statename != null) ? statename : "";
         if (base != this) { // If we aren't base block state
             if (base.states == null) {  // If no state list yet
-                base.states = new DynmapBlockState[stateidx+1]; // Enough for us to fit
+                base.states = new DynmapBlockState[Math.max(stateidx+1, 16)]; // Enough for us to fit (at least 16
                 Arrays.fill(base.states, AIR);
                 base.states[0] = base;  // Add base state as index 0
             }
             else if (base.states.length <= stateidx) {  // Not enough room
                 // Resize it
-                DynmapBlockState[] newstates = new DynmapBlockState[stateidx+1];
+                DynmapBlockState[] newstates = new DynmapBlockState[Math.max((stateidx * 3) / 2, 32)];	// Get some extra (logN scaling for big state spaces)
                 System.arraycopy(base.states, 0, newstates, 0, base.states.length);
                 Arrays.fill(newstates, base.states.length, stateidx+1, AIR);
                 base.states = newstates;
