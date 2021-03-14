@@ -27,6 +27,7 @@ public class DynmapBlockState {
     public final int legacyBlockID;
     // List of block states (only defined on base block), indexed by stateIndex (null if single state base block)
     private DynmapBlockState[] states;
+    private int stateLastIdx = 0;
     // Full name for state (base name, or base name[state name])
     private final String fullName;
     // Material string
@@ -131,23 +132,20 @@ public class DynmapBlockState {
         blockName = blkname;
         stateName = (statename != null) ? statename : "";
         
-        if (stateIndex > 4096) {
-        	System.out.println(String.format("DynmapBlockStste(%d, %s, %s, %s, %d)", stateidx, blkname, statename, material, legacyblkid));
-        	Thread.dumpStack();
-        }
         if (base != this) { // If we aren't base block state
             if (base.states == null) {  // If no state list yet
-            	base.states = new DynmapBlockState[stateidx+1]; // Enough for us to fit
+            	base.states = new DynmapBlockState[Math.max((stateidx+1)*3 / 2, 16)]; // Enough for us to fit
                 Arrays.fill(base.states, AIR);
                 base.states[0] = base;  // Add base state as index 0
             }
             else if (base.states.length <= stateidx) {  // Not enough room
                 // Resize it
-            	DynmapBlockState[] newstates = Arrays.copyOf(base.states, stateidx+1);
+            	DynmapBlockState[] newstates = Arrays.copyOf(base.states, Math.max((stateidx+1)*3 / 2, 16));
                 Arrays.fill(newstates, base.states.length, newstates.length, AIR);
                 base.states = newstates;
             }
             base.states[stateidx] = this;
+            base.stateLastIdx = Math.max(base.stateLastIdx, stateidx);
         }
         stateList = stateName.toLowerCase().split(",");
         // If base block state, add to map
@@ -205,7 +203,7 @@ public class DynmapBlockState {
         if (baseState.states == null) {
             return (idx == 0) ? this : null;
         }
-        return ((idx >= 0) && (idx < baseState.states.length)) ? baseState.states[idx] : DynmapBlockState.AIR;
+        return ((idx >= 0) && (idx <= baseState.stateLastIdx)) ? baseState.states[idx] : DynmapBlockState.AIR;
     }
     /**
      * Find base block state by block name
@@ -339,12 +337,7 @@ public class DynmapBlockState {
      * @return state count
      */
     public final int getStateCount() {
-        if (baseState.states == null) {
-            return 1;
-        }
-        else {
-            return baseState.states.length;
-        }
+        return baseState.stateLastIdx + 1;
     }
     /**
      * Get nth state index within base block state
@@ -356,7 +349,7 @@ public class DynmapBlockState {
             return (idx == 0) ? this : AIR;
         }
         else {
-            return (idx < baseState.states.length) ? baseState.states[idx] : AIR; 
+            return (idx <= baseState.stateLastIdx) ? baseState.states[idx] : AIR; 
         }
     }
     /**
