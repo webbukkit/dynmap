@@ -3,6 +3,8 @@ package org.dynmap.renderer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+
 
 // This represents a distinct block state value for a simple block from the world data.
 // Each distinct persistent block state from the world data will map to exactly one instance of this class, such that
@@ -48,7 +50,10 @@ public class DynmapBlockState {
     private static HashMap<Integer, DynmapBlockState> blocksByIndex = new HashMap<Integer, DynmapBlockState>();
     // Map of base states by legacy ID
     private static HashMap<Integer, DynmapBlockState> blocksByLegacyID = new HashMap<Integer, DynmapBlockState>();
-        
+    // Array lookup by global state index (faster than map)
+    private static DynmapBlockState[] blockArrayByIndex = null;
+    private static DynmapBlockState[] blockArrayByLegacyID = null;
+    
     // Well known block names (some versions might need to overwrite these)
     public static String AIR_BLOCK = "minecraft:air";
     public static String STONE_BLOCK = "minecraft:stone";
@@ -107,6 +112,13 @@ public class DynmapBlockState {
      * @param legacyblkid - legacy block ID (if defined), otherwise -1
      */
     public DynmapBlockState(DynmapBlockState base, int stateidx, String blkname, String statename, String material, int legacyblkid) {
+    	// If we generated lookup arrays, flush them and complain about it
+    	if (blockArrayByIndex != null) {
+    		blockArrayByIndex = null;
+    		blockArrayByLegacyID = null;
+    		System.err.println("Error: DynmapBlockState updated after arrays generated");
+    		Thread.dumpStack();
+    	}
         globalStateIndex = (nextGlobalStateIndex++);    // Assign index
         if (base == null) base = this;
         baseState = base;
@@ -118,17 +130,21 @@ public class DynmapBlockState {
         }
         blockName = blkname;
         stateName = (statename != null) ? statename : "";
+        
+        if (stateIndex > 4096) {
+        	System.out.println(String.format("DynmapBlockStste(%d, %s, %s, %s, %d)", stateidx, blkname, statename, material, legacyblkid));
+        	Thread.dumpStack();
+        }
         if (base != this) { // If we aren't base block state
             if (base.states == null) {  // If no state list yet
-                base.states = new DynmapBlockState[Math.max(stateidx+1, 16)]; // Enough for us to fit (at least 16
+            	base.states = new DynmapBlockState[stateidx+1]; // Enough for us to fit
                 Arrays.fill(base.states, AIR);
                 base.states[0] = base;  // Add base state as index 0
             }
             else if (base.states.length <= stateidx) {  // Not enough room
                 // Resize it
-                DynmapBlockState[] newstates = new DynmapBlockState[Math.max((stateidx * 3) / 2, 32)];	// Get some extra (logN scaling for big state spaces)
-                System.arraycopy(base.states, 0, newstates, 0, base.states.length);
-                Arrays.fill(newstates, base.states.length, stateidx+1, AIR);
+            	DynmapBlockState[] newstates = Arrays.copyOf(base.states, stateidx+1);
+                Arrays.fill(newstates, base.states.length, newstates.length, AIR);
                 base.states = newstates;
             }
             base.states[stateidx] = this;
@@ -159,6 +175,26 @@ public class DynmapBlockState {
         if (this.blockName.equals(WATER_BLOCK) && (this == this.baseState)) {
             still_water = this;
         }
+    }
+    /**
+     * Generate static lookup arrays once all BlockStates initialized
+     */
+    public static void finalizeBlockStates() {
+    	// Build blockArrayByIndex
+    	blockArrayByIndex = new DynmapBlockState[nextGlobalStateIndex];
+    	Arrays.fill(blockArrayByIndex, AIR);
+    	for (Map.Entry<Integer, DynmapBlockState> rec : blocksByIndex.entrySet()) {
+    		blockArrayByIndex[rec.getKey().intValue()] = rec.getValue();    		
+    	}
+    	// Build blockArrayByLegacyID
+    	int maxLegacyID = 0;
+    	for (Map.Entry<Integer, DynmapBlockState> rec : blocksByLegacyID.entrySet()) {
+    		maxLegacyID = Math.max(maxLegacyID, rec.getKey());
+    	}
+    	blockArrayByLegacyID = new DynmapBlockState[maxLegacyID+1];
+    	for (Map.Entry<Integer, DynmapBlockState> rec : blocksByLegacyID.entrySet()) {
+    		blockArrayByLegacyID[rec.getKey().intValue()] = rec.getValue();    		
+    	}    	
     }
     /**
      * Get state for same base block with given index
@@ -211,6 +247,13 @@ public class DynmapBlockState {
      * @return block state, or AIR if not found
      */
     public static final DynmapBlockState getStateByGlobalIndex(int gidx) {
+    	if (blockArrayByIndex != null) {
+    		try {
+    			return blockArrayByIndex[gidx];
+    		} catch (ArrayIndexOutOfBoundsException aioob) {
+    			return AIR;
+    		}
+    	}
         DynmapBlockState bs = blocksByIndex.get(gidx);
         return (bs != null) ? bs : AIR;
     }
@@ -220,6 +263,13 @@ public class DynmapBlockState {
      * @return block base state, or null if not found
      */
     public static final DynmapBlockState getStateByLegacyBlockID(int legacyid) {
+    	if (blockArrayByLegacyID != null) {
+    		try {
+    			return blockArrayByLegacyID[legacyid];
+    		} catch (ArrayIndexOutOfBoundsException aioob) {
+    			return null;
+    		}
+    	}    	
     	return blocksByLegacyID.get(legacyid);
     }
     /**

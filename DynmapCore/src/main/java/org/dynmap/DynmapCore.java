@@ -554,6 +554,8 @@ public class DynmapCore implements DynmapCommonAPI {
        
         /* Process mod support */
         ModSupportImpl.complete(this.dataDirectory);
+        // Finalize block state
+        DynmapBlockState.finalizeBlockStates();
         /* Load block models */
         Log.verboseinfo("Loading models...");
         HDBlockModels.loadModels(this, configuration);
