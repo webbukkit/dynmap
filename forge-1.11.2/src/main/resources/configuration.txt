@@ -465,3 +465,6 @@ verbose: false
 #  - class: org.dynmap.debug.LogDebugger
 # Debug: dump blocks missing render data
 dump-missing-blocks: false
+
+# Disable sanitizing the html code of labels and descriptions of markers. Default is true
+sanitize-html: true

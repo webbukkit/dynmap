@@ -122,6 +122,7 @@ public class DynmapCore implements DynmapCommonAPI {
     private boolean transparentLeaves = true;
     private List<String> sortPermissionNodes;
     private int perTickLimit = 50;   // 50 ms
+    private boolean sanitizeHtml = true;
     private boolean dumpMissing = false;
     private static boolean migrate_chunks = false;
     public boolean isInternalWebServerDisabled = false;
@@ -534,6 +535,8 @@ public class DynmapCore implements DynmapCommonAPI {
         updateplayerlimit = configuration.getInteger("updateplayerlimit", 0);
         /* Load sort permission nodes */
         sortPermissionNodes = configuration.getStrings("player-sort-permission-nodes", null);
+        /* Whether to sanitize html labels and descriptions */
+        sanitizeHtml = configuration.getBoolean("sanitize-html", true);
         
         perTickLimit = configuration.getInteger("per-tick-time-limit", 50);
         if (perTickLimit < 5) perTickLimit = 5;
@@ -2534,6 +2537,7 @@ public class DynmapCore implements DynmapCommonAPI {
     public int getMaxTickUseMS() {
         return perTickLimit;
     }
+    public boolean shouldSanitizeHtml() { return sanitizeHtml; }
     public boolean dumpMissingBlocks() {
         return dumpMissing;
     }

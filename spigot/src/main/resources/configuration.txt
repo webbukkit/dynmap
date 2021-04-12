@@ -131,7 +131,7 @@ components:
     # (optional) show world border (vanilla 1.8+)
     showworldborder: true
     worldborderlabel: "Border"
-    
+
   - class: org.dynmap.ClientComponent
     type: chat
     allowurlname: false
@@ -179,7 +179,7 @@ components:
     hidey: false
     show-mcr: false
     show-chunk: false
-    
+
   # Note: more than one logo component can be defined
   #- class: org.dynmap.ClientComponent
   #  type: logo
@@ -499,3 +499,6 @@ dump-missing-blocks: false
 # your worlds before running with this setting enabled (set to true)
 #
 #migrate-chunks: true
+
+# Disable sanitizing the html code of labels and descriptions of markers. Default is true
+#sanitize-html: true
