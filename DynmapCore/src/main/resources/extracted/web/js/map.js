@@ -636,6 +636,11 @@ DynMap.prototype = {
 	update: function() {
 		var me = this;
 
+		if (document.visibilityState === "hidden") {
+		    setTimeout(function() { me.update(); }, me.options.updaterate);
+			return;
+		}
+
 		$(me).trigger('worldupdating');
 		$.getJSON(me.formatUrl('update', { world: me.world.name, timestamp: me.lasttimestamp, reqid: me.reqid }), function(update) {
 				me.reqid++; // Bump request ID always
