@@ -1220,8 +1220,8 @@ customblock:id=purpur_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
 # Beetroot
 patchblock:id=beetroots,patch0=VertX075,patch1=VertX075@90,patch2=VertX025,patch3=VertX025@90
 
-# Grass Path
-boxblock:id=grass_path,ymax=0.9375
+# Grass Path (replaced with dirt_path)
+[-1.16.5]boxblock:id=grass_path,ymax=0.9375
 
 # 209		End Gateway
 
@@ -1633,3 +1633,23 @@ patchblock:id=bubble_column
 # Polished Blackstone wall
 # Polished Blackstone Brick wall
 [1.16-]customblock:id=blackstone_wall,id=polished_blackstone_wall,id=polished_blackstone_brick_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=tallwall
+
+# 1.17
+# Dirt Path
+[1.17-]boxblock:id=dirt_path,ymax=0.9375
+# Cobbled deepslate stairs
+# Deepslate brick stairs
+# Deepslate tile stairs
+# Polished deepslate stairs
+[1.17-]customblock:id=cobbled_deepslate_stairs,id=deepslate_brick_stairs,id=deepslate_tile_stairs,id=polished_deepslate_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
+# Cobbled deepslate slab
+# Deepslate brick slab
+# Deepslate tile slab
+# Polished deepslate slab
+[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,data=0,data=1,ymin=0.5
+[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,data=2,data=3,ymax=0.5
+# Cobbled deepslate wall
+# Deepslate brick wall
+# Deepslate tile wall
+# Polished deepslate wall
+[1.17-]customblock:id=cobbled_deepslate_wall,id=deepslate_brick_wall,id=deepslate_tile_wall,id=polished_deepslate_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=tallwall

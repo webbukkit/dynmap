@@ -464,8 +464,8 @@ texture:id=beetroots_stage0
 texture:id=beetroots_stage1
 texture:id=beetroots_stage2
 texture:id=beetroots_stage3
-texture:id=grass_path_top
-texture:id=grass_path_side
+[-1.16.5]texture:id=grass_path_top
+[-1.16.5]texture:id=grass_path_side
 texture:id=command_block_back
 texture:id=command_block_front
 texture:id=command_block_side
@@ -1604,8 +1604,8 @@ block:id=beetroots,data=1,patch0-3=0:beetroots_stage1,transparency=TRANSPARENT
 block:id=beetroots,data=2,patch0-3=0:beetroots_stage2,transparency=TRANSPARENT
 block:id=beetroots,data=3,patch0-3=0:beetroots_stage3,transparency=TRANSPARENT
 
-# Grass Path
-block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
+# Grass Path (replaced with dirt path in 1.17
+[-1.16.5]block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
 
 # End Gateway
 block:id=end_gateway,data=*,stdrot=true,allfaces=0:endportal
@@ -2637,4 +2637,83 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Quartz Bricks
 [1.16-]block:id=quartz_bricks,allfaces=0:quartz_bricks,stdrot=true
 
+# 1.17
+[1.17-]texture:id=dirt_path_top
+[1.17-]texture:id=dirt_path_side
+[1.17-]texture:id=deepslate
+[1.17-]texture:id=deepslate_top
+[1.17-]texture:id=deepslate_gold_ore
+[1.17-]texture:id=deepslate_iron_ore
+[1.17-]texture:id=deepslate_coal_ore
+[1.17-]texture:id=deepslate_lapis_ore
+[1.17-]texture:id=deepslate_diamond_ore
+[1.17-]texture:id=deepslate_redstone_ore
+[1.17-]texture:id=deepslate_emerald_ore
+[1.17-]texture:id=cobbled_deepslate
+[1.17-]texture:id=deepslate_bricks
+[1.17-]texture:id=deepslate_tiles
+[1.17-]texture:id=polished_deepslate
+[1.17-]texture:id=cracked_deepslate_bricks
+[1.17-]texture:id=cracked_deepslate_tiles
+
+# Dirt path
+[1.17-]block:id=dirt_path,allsides=0:dirt_path_side,top=0:dirt_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
+# Deepslate
+[1.17-]block:id=deepslate,data=1,allsides=0:deepslate,topbottom=0:deepslate_top,stdrot=true
+[1.17-]block:id=deepslate,data=0,north=0:deepslate_top,south=0:deepslate_top,east=4000:deepslate,west=4000:deepslate,top=0:deepslate,bottom=0:deepslate
+[1.17-]block:id=deepslate,data=2,north=4000:deepslate,south=4000:deepslate,east=0:deepslate_top,west=0:deepslate_top,top=4000:deepslate,bottom=4000:deepslate
+# Deepslate gold ore
+[1.17-]block:id=deepslate_gold_ore,allfaces=0:deepslate_gold_ore,stdrot=true
+# Deepslate iron ore
+[1.17-]block:id=deepslate_iron_ore,allfaces=0:deepslate_iron_ore,stdrot=true
+# Deepslate coal ore
+[1.17-]block:id=deepslate_coal_ore,allfaces=0:deepslate_coal_ore,stdrot=true
+# Deepslate lapis ore
+[1.17-]block:id=deepslate_lapis_ore,allfaces=0:deepslate_lapis_ore,stdrot=true
+# Deepslate diamond ore
+[1.17-]block:id=deepslate_diamond_ore,allfaces=0:deepslate_diamond_ore,stdrot=true
+# Deepslate redstone ore
+[1.17-]block:id=deepslate_redstone_ore,allfaces=0:deepslate_redstone_ore,stdrot=true
+# Deepslate emerald ore
+[1.17-]block:id=deepslate_emerald_ore,allfaces=0:deepslate_emerald_ore,stdrot=true
+# Cobbled deepslate
+[1.17-]block:id=cobbled_deepslate,allfaces=0:cobbled_deepslate,stdrot=true
+# Cobbled deepslate stairs
+[1.17-]block:id=cobbled_deepslate_stairs,patch0-2=0:cobbled_deepslate,transparency=SEMITRANSPARENT
+# Cobbled deepslate slab
+[1.17-]block:id=cobbled_deepslate_slab,data=0,data=1,data=2,data=3,allfaces=0:cobbled_deepslate,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=cobbled_deepslate_slab,data=4,data=5,allfaces=0:cobbled_deepslate,stdrot=true
+# Cobbled deepslate wall
+[1.17-]block:id=cobbled_deepslate_wall,patch0-2=0:cobbled_deepslate,transparency=TRANSPARENT
+# Deepslate bricks
+[1.17-]block:id=deepslate_bricks,allfaces=0:deepslate_bricks,stdrot=true
+# Deepslate brick stairs
+[1.17-]block:id=deepslate_brick_stairs,patch0-2=0:deepslate_bricks,transparency=SEMITRANSPARENT
+# Deepslate brick slab
+[1.17-]block:id=deepslate_brick_slab,data=0,data=1,data=2,data=3,allfaces=0:deepslate_bricks,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=deepslate_brick_slab,data=4,data=5,allfaces=0:deepslate_bricks,stdrot=true
+# Deepslate brick wall
+[1.17-]block:id=deepslate_brick_wall,patch0-2=0:deepslate_bricks,transparency=TRANSPARENT
+# Deepslate tiles
+[1.17-]block:id=deepslate_tiles,allfaces=0:deepslate_tiles,stdrot=true
+# Deepslate tile stairs
+[1.17-]block:id=deepslate_tile_stairs,patch0-2=0:deepslate_tiles,transparency=SEMITRANSPARENT
+# Deepslate tile slab
+[1.17-]block:id=deepslate_tile_slab,data=0,data=1,data=2,data=3,allfaces=0:deepslate_tiles,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=deepslate_tile_slab,data=4,data=5,allfaces=0:deepslate_tiles,stdrot=true
+# Deepslate tile wall
+[1.17-]block:id=deepslate_tile_wall,patch0-2=0:deepslate_tiles,transparency=TRANSPARENT
+# Polished deepslate
+[1.17-]block:id=polished_deepslate,allfaces=0:polished_deepslate,stdrot=true
+# Polished deepslate stairs
+[1.17-]block:id=polished_deepslate_stairs,patch0-2=0:polished_deepslate,transparency=SEMITRANSPARENT
+# Polished deepslate slab
+[1.17-]block:id=polished_deepslate_slab,data=0,data=1,data=2,data=3,allfaces=0:polished_deepslate,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=polished_deepslate_slab,data=4,data=5,allfaces=0:polished_deepslate,stdrot=true
+# Polished deepslate wall
+[1.17-]block:id=polished_deepslate_wall,patch0-2=0:polished_deepslate,transparency=TRANSPARENT
+# Cracked deepslate tiles
+[1.17-]block:id=cracked_deepslate_tiles,allfaces=0:cracked_deepslate_tiles,stdrot=true
+# Cracked deepslate bricks
+[1.17-]block:id=cracked_deepslate_bricks,allfaces=0:cracked_deepslate_bricks,stdrot=true
 
