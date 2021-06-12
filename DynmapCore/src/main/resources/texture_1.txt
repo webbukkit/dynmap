@@ -2655,6 +2655,8 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.17-]texture:id=polished_deepslate
 [1.17-]texture:id=cracked_deepslate_bricks
 [1.17-]texture:id=cracked_deepslate_tiles
+[1.17-]texture:id=chiseled_deepslate
+[1.17-]texture:id=deepslate_copper_ore
 
 # Dirt path
 [1.17-]block:id=dirt_path,allsides=0:dirt_path_side,top=0:dirt_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
@@ -2716,4 +2718,12 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.17-]block:id=cracked_deepslate_tiles,allfaces=0:cracked_deepslate_tiles,stdrot=true
 # Cracked deepslate bricks
 [1.17-]block:id=cracked_deepslate_bricks,allfaces=0:cracked_deepslate_bricks,stdrot=true
+# Indested deepslate
+[1.17-]block:id=infested_deepslate,data=1,allsides=0:deepslate,topbottom=0:deepslate_top,stdrot=true
+[1.17-]block:id=infested_deepslate,data=0,north=0:deepslate_top,south=0:deepslate_top,east=4000:deepslate,west=4000:deepslate,top=0:deepslate,bottom=0:deepslate
+[1.17-]block:id=infested_deepslate,data=2,north=4000:deepslate,south=4000:deepslate,east=0:deepslate_top,west=0:deepslate_top,top=4000:deepslate,bottom=4000:deepslate
+# Chiseled deepslate
+[1.17-]block:id=chiseled_deepslate,allfaces=0:chiseled_deepslate,stdrot=true
+# Deepslate copper ore
+[1.17-]block:id=deepslate_copper_ore,allfaces=0:deepslate_copper_ore,stdrot=true
 
