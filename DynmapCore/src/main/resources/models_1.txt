@@ -1641,15 +1641,26 @@ patchblock:id=bubble_column
 # Deepslate brick stairs
 # Deepslate tile stairs
 # Polished deepslate stairs
-[1.17-]customblock:id=cobbled_deepslate_stairs,id=deepslate_brick_stairs,id=deepslate_tile_stairs,id=polished_deepslate_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
+# Cut copper stairs
+# Exposed cut copper stairs
+# Weathered cut copper stairs
+# Oxidized cut copper stairs
+[1.17-]customblock:id=cobbled_deepslate_stairs,id=deepslate_brick_stairs,id=deepslate_tile_stairs,id=polished_deepslate_stairs,id=cut_copper_stairs,id=oxidized_cut_copper_stairs,id=exposed_cut_copper_stairs,id=weathered_cut_copper_stairs,class=org.dynmap.hdmap.renderer.StairStateRenderer
 # Cobbled deepslate slab
 # Deepslate brick slab
 # Deepslate tile slab
 # Polished deepslate slab
-[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,data=0,data=1,ymin=0.5
-[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,data=2,data=3,ymax=0.5
+# Cut copper slab
+# Exposed cut copper slab
+# Weathered cut copper slab
+# Oxidized cut copper slab
+[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,id=cut_copper_slab,id=exposed_cut_copper_slab,id=weathered_cut_copper_slab,id=oxidized_cut_copper_slab,data=0,data=1,ymin=0.5
+[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,id=cut_copper_slab,id=exposed_cut_copper_slab,id=weathered_cut_copper_slab,id=oxidized_cut_copper_slab,data=2,data=3,ymax=0.5
 # Cobbled deepslate wall
 # Deepslate brick wall
 # Deepslate tile wall
 # Polished deepslate wall
 [1.17-]customblock:id=cobbled_deepslate_wall,id=deepslate_brick_wall,id=deepslate_tile_wall,id=polished_deepslate_wall,class=org.dynmap.hdmap.renderer.FenceWallBlockStateRenderer,type=tallwall
+# Glow lichens
+[1.17-]customblock:id=glow_lichen,class=org.dynmap.hdmap.renderer.GlowLichenStateRenderer
+

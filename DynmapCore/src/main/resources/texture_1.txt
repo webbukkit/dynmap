@@ -2657,6 +2657,21 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.17-]texture:id=cracked_deepslate_tiles
 [1.17-]texture:id=chiseled_deepslate
 [1.17-]texture:id=deepslate_copper_ore
+[1.17-]texture:id=azalea_leaves
+[1.17-]texture:id=flowering_azalea_leaves
+[1.17-]texture:id=glow_lichen
+[1.17-]texture:id=calcite
+[1.17-]texture:id=tinted_glass,material=GLASS
+[1.17-]texture:id=powder_snow
+[1.17-]texture:id=oxidized_copper
+[1.17-]texture:id=weathered_copper
+[1.17-]texture:id=exposed_copper
+[1.17-]texture:id=copper_block
+[1.17-]texture:id=copper_ore
+[1.17-]texture:id=oxidized_cut_copper
+[1.17-]texture:id=weathered_cut_copper
+[1.17-]texture:id=exposed_cut_copper
+[1.17-]texture:id=cut_copper
 
 # Dirt path
 [1.17-]block:id=dirt_path,allsides=0:dirt_path_side,top=0:dirt_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
@@ -2718,7 +2733,7 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.17-]block:id=cracked_deepslate_tiles,allfaces=0:cracked_deepslate_tiles,stdrot=true
 # Cracked deepslate bricks
 [1.17-]block:id=cracked_deepslate_bricks,allfaces=0:cracked_deepslate_bricks,stdrot=true
-# Indested deepslate
+# Infested deepslate
 [1.17-]block:id=infested_deepslate,data=1,allsides=0:deepslate,topbottom=0:deepslate_top,stdrot=true
 [1.17-]block:id=infested_deepslate,data=0,north=0:deepslate_top,south=0:deepslate_top,east=4000:deepslate,west=4000:deepslate,top=0:deepslate,bottom=0:deepslate
 [1.17-]block:id=infested_deepslate,data=2,north=4000:deepslate,south=4000:deepslate,east=0:deepslate_top,west=0:deepslate_top,top=4000:deepslate,bottom=4000:deepslate
@@ -2726,4 +2741,59 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.17-]block:id=chiseled_deepslate,allfaces=0:chiseled_deepslate,stdrot=true
 # Deepslate copper ore
 [1.17-]block:id=deepslate_copper_ore,allfaces=0:deepslate_copper_ore,stdrot=true
+# Leaves (azalea)
+[1.17-]block:id=azalea_leaves,allfaces=2000:azalea_leaves,stdrot=true,transparency=LEAVES
+# Leaves (flowering azalea)
+[1.17-]block:id=flowering_azalea_leaves,allfaces=2000:flowering_azalea_leaves,stdrot=true,transparency=LEAVES
+# Glow lichens
+[1.17-]block:id=glow_lichen,patch0-4=0:glow_lichen,transparency=TRANSPARENT
+# Calcite
+[1.17-]block:id=calcite,allfaces=0:calcite,stdrot=true
+# Tinted Glass
+[1.17-]block:id=tinted_glass,allfaces=12000:tinted_glass,stdrot=true,transparency=TRANSPARENT
+# Powder snow
+[1.17-]block:id=powder_snow,allfaces=0:powder_snow,stdrot=true
+# Oxidized copper
+[1.17-]block:id=oxidized_copper,allfaces=0:oxidized_copper,stdrot=true
+# Weathered copper
+[1.17-]block:id=weathered_copper,allfaces=0:weathered_copper,stdrot=true
+# Exposed copper
+[1.17-]block:id=exposed_copper,allfaces=0:exposed_copper,stdrot=true
+# Copper block
+# Waxed copper block
+[1.17-]block:id=copper_block,id=waxed_copper_block,allfaces=0:copper_block,stdrot=true
+# Copper ore
+[1.17-]block:id=copper_ore,allfaces=0:copper_ore,stdrot=true
+# Oxidized cut copper
+# Waxed oxidized cut copper
+[1.17-]block:id=oxidized_cut_copper,id=waxed_oxidized_cut_copper,allfaces=0:oxidized_cut_copper,stdrot=true
+# Weathered cut copper
+# Waxed weathered cut copper
+[1.17-]block:id=weathered_cut_copper,id=waxed_weathered_cut_copper,allfaces=0:weathered_cut_copper,stdrot=true
+# Exposed cut copper
+# Waxed exposed cut copper
+[1.17-]block:id=exposed_cut_copper,id=waxed_exposed_cut_copper,allfaces=0:exposed_cut_copper,stdrot=true
+# Cut copper
+# Waxed cut copper
+[1.17-]block:id=cut_copper,id=waxed_cut_copper,allfaces=0:cut_copper,stdrot=true
+# Cut copper stairs
+[1.17-]block:id=cut_copper_stairs,patch0-2=0:cut_copper,transparency=SEMITRANSPARENT
+# Cut copper slab
+[1.17-]block:id=cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=cut_copper_slab,data=4,data=5,allfaces=0:cut_copper,stdrot=true
+# Exposed cut copper stairs
+[1.17-]block:id=exposed_cut_copper_stairs,patch0-2=0:exposed_cut_copper,transparency=SEMITRANSPARENT
+# Exposed cut copper slab
+[1.17-]block:id=exposed_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:exposed_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=exposed_cut_copper_slab,data=4,data=5,allfaces=0:exposed_cut_copper,stdrot=true
+# Weathered cut copper stairs
+[1.17-]block:id=weathered_cut_copper_stairs,patch0-2=0:weathered_cut_copper,transparency=SEMITRANSPARENT
+# Weathered cut copper slab
+[1.17-]block:id=weathered_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:weathered_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=weathered_cut_copper_slab,data=4,data=5,allfaces=0:weathered_cut_copper,stdrot=true
+# Oxidized cut copper stairs
+[1.17-]block:id=oxidized_cut_copper_stairs,patch0-2=0:oxidized_cut_copper,transparency=SEMITRANSPARENT
+# Oxidized cut copper slab
+[1.17-]block:id=oxidized_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:oxidized_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=oxidized_cut_copper_slab,data=4,data=5,allfaces=0:oxidized_cut_copper,stdrot=true
 
