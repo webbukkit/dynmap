@@ -2672,6 +2672,17 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.17-]texture:id=weathered_cut_copper
 [1.17-]texture:id=exposed_cut_copper
 [1.17-]texture:id=cut_copper
+[1.17-]texture:id=amethyst_block
+[1.17-]texture:id=rooted_dirt
+[1.17-]texture:id=smooth_basalt
+[1.17-]texture:id=raw_gold_block
+[1.17-]texture:id=raw_iron_block
+[1.17-]texture:id=raw_copper_block
+[1.17-]texture:id=cave_vines
+[1.17-]texture:id=cave_vines_lit
+[1.17-]texture:id=cave_vines_plant
+[1.17-]texture:id=cave_vines_plant_lit
+[1.17-]texture:id=moss_block
 
 # Dirt path
 [1.17-]block:id=dirt_path,allsides=0:dirt_path_side,top=0:dirt_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
@@ -2754,11 +2765,14 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Powder snow
 [1.17-]block:id=powder_snow,allfaces=0:powder_snow,stdrot=true
 # Oxidized copper
-[1.17-]block:id=oxidized_copper,allfaces=0:oxidized_copper,stdrot=true
+# Waxed oxidized copper
+[1.17-]block:id=oxidized_copper,id=waxed_oxidized_copper,allfaces=0:oxidized_copper,stdrot=true
 # Weathered copper
-[1.17-]block:id=weathered_copper,allfaces=0:weathered_copper,stdrot=true
+# Waxed wathered copper
+[1.17-]block:id=weathered_copper,id=waxed_weathered_copper,allfaces=0:weathered_copper,stdrot=true
 # Exposed copper
-[1.17-]block:id=exposed_copper,allfaces=0:exposed_copper,stdrot=true
+# Waxed exposed copper
+[1.17-]block:id=exposed_copper,id=waxed_exposed_copper,allfaces=0:exposed_copper,stdrot=true
 # Copper block
 # Waxed copper block
 [1.17-]block:id=copper_block,id=waxed_copper_block,allfaces=0:copper_block,stdrot=true
@@ -2777,23 +2791,50 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Waxed cut copper
 [1.17-]block:id=cut_copper,id=waxed_cut_copper,allfaces=0:cut_copper,stdrot=true
 # Cut copper stairs
-[1.17-]block:id=cut_copper_stairs,patch0-2=0:cut_copper,transparency=SEMITRANSPARENT
+# Waxed cut copper stairs
+[1.17-]block:id=cut_copper_stairs,id=waxed_cut_copper_stairs,patch0-2=0:cut_copper,transparency=SEMITRANSPARENT
 # Cut copper slab
-[1.17-]block:id=cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:cut_copper,stdrot=true,transparency=SEMITRANSPARENT
-[1.17-]block:id=cut_copper_slab,data=4,data=5,allfaces=0:cut_copper,stdrot=true
+# Waxed cut copper slab
+[1.17-]block:id=cut_copper_slab,id=waxed_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=cut_copper_slab,id=waxed_cut_copper_slab,data=4,data=5,allfaces=0:cut_copper,stdrot=true
 # Exposed cut copper stairs
-[1.17-]block:id=exposed_cut_copper_stairs,patch0-2=0:exposed_cut_copper,transparency=SEMITRANSPARENT
+# Waxed exposed cut copper stairs
+[1.17-]block:id=exposed_cut_copper_stairs,id=waxed_exposed_cut_copper_stairs,patch0-2=0:exposed_cut_copper,transparency=SEMITRANSPARENT
 # Exposed cut copper slab
-[1.17-]block:id=exposed_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:exposed_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
-[1.17-]block:id=exposed_cut_copper_slab,data=4,data=5,allfaces=0:exposed_cut_copper,stdrot=true
+# Waxed exposed cut copper slab
+[1.17-]block:id=exposed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:exposed_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=exposed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,data=4,data=5,allfaces=0:exposed_cut_copper,stdrot=true
 # Weathered cut copper stairs
-[1.17-]block:id=weathered_cut_copper_stairs,patch0-2=0:weathered_cut_copper,transparency=SEMITRANSPARENT
+# Waxed weathered cut copper stairs
+[1.17-]block:id=weathered_cut_copper_stairs,id=waxed_weathered_cut_copper_stairs,patch0-2=0:weathered_cut_copper,transparency=SEMITRANSPARENT
 # Weathered cut copper slab
-[1.17-]block:id=weathered_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:weathered_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
-[1.17-]block:id=weathered_cut_copper_slab,data=4,data=5,allfaces=0:weathered_cut_copper,stdrot=true
+# Waxed weathered cut copper slab
+[1.17-]block:id=weathered_cut_copper_slab,id=waxed_weathered_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:weathered_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=weathered_cut_copper_slab,id=waxed_weathered_cut_copper_slab,data=4,data=5,allfaces=0:weathered_cut_copper,stdrot=true
 # Oxidized cut copper stairs
-[1.17-]block:id=oxidized_cut_copper_stairs,patch0-2=0:oxidized_cut_copper,transparency=SEMITRANSPARENT
+# Waxed oxidized cut copper stairs
+[1.17-]block:id=oxidized_cut_copper_stairs,id=waxed_oxidized_cut_copper_stairs,patch0-2=0:oxidized_cut_copper,transparency=SEMITRANSPARENT
 # Oxidized cut copper slab
-[1.17-]block:id=oxidized_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:oxidized_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
-[1.17-]block:id=oxidized_cut_copper_slab,data=4,data=5,allfaces=0:oxidized_cut_copper,stdrot=true
-
+# Waxed oxidized cut copper slab
+[1.17-]block:id=oxidized_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:oxidized_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=oxidized_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,data=4,data=5,allfaces=0:oxidized_cut_copper,stdrot=true
+# Amethyst block
+[1.17-]block:id=amethyst_block,allfaces=0:amethyst_block,stdrot=true
+# Rooted dirt
+[1.17-]block:id=rooted_dirt,allfaces=0:rooted_dirt,stdrot=true
+# Smooth basalt
+[1.17-]block:id=smooth_basalt,allfaces=0:smooth_basalt,stdrot=true
+# Raw iron block
+[1.17-]block:id=raw_iron_block,allfaces=0:raw_iron_block,stdrot=true
+# Raw gold block
+[1.17-]block:id=raw_gold_block,allfaces=0:raw_gold_block,stdrot=true
+# Raw copper block
+[1.17-]block:id=raw_copper_block,allfaces=0:raw_copper_block,stdrot=true
+# Cave vines
+[1.17-]block:id=cave_vines,data=0,data=2,data=4,data=6,data=8,data=10,data=12,data=14,data=16,data=18,data=20,data=22,data=24,data=26,data=28,data=30,data=32,data=34,data=36,data=38,data=40,data=42,data=44,data=46,data=48,data=50,patch0-1=0:cave_vines_lit,transparency=TRANSPARENT
+[1.17-]block:id=cave_vines,data=1,data=3,data=5,data=7,data=9,data=11,data=13,data=15,data=17,data=19,data=21,data=23,data=25,data=27,data=29,data=31,data=33,data=35,data=37,data=39,data=41,data=43,data=45,data=47,data=49,data=51,patch0-1=0:cave_vines,transparency=TRANSPARENT
+# Cave vines plant
+[1.17-]block:id=cave_vines_plant,data=0,patch0-1=0:cave_vines_plant_lit,transparency=TRANSPARENT
+[1.17-]block:id=cave_vines_plant,data=1,patch0-1=0:cave_vines_plant,transparency=TRANSPARENT
+# Moss block
+[1.17-]block:id=moss_block,allfaces=0:moss_block,stdrot=true
