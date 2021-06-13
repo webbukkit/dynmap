@@ -2,17 +2,28 @@ package org.dynmap.bukkit.helper.v117;
 
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_17_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.bukkit.helper.BukkitMaterial;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
-import org.dynmap.bukkit.helper.BukkitVersionHelperGeneric;
 import org.dynmap.bukkit.helper.BukkitWorld;
+import org.dynmap.bukkit.helper.BukkitVersionHelperGeneric.TexturesPayload;
 import org.dynmap.bukkit.helper.v117.MapChunkCache117;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Iterables;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 
 import net.minecraft.core.IRegistry;
 import net.minecraft.nbt.NBTBase;
@@ -351,4 +362,42 @@ public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
 	public double getHealth(Player p) {
 		return p.getHealth();
 	}
+	
+    private static final Gson gson = new GsonBuilder().create();
+
+    /**
+     * Get skin URL for player
+     * @param player
+     */
+	@Override
+    public String getSkinURL(Player player) {
+    	String url = null;
+    	CraftPlayer cp = (CraftPlayer)player;
+    	GameProfile profile = cp.getProfile();
+    	if (profile != null) {
+    		PropertyMap pm = profile.getProperties();
+    		if (pm != null) {
+    			Collection<Property> txt = pm.get("textures");
+    	        Property textureProperty = Iterables.getFirst(pm.get("textures"), null);
+    	        if (textureProperty != null) {
+    				String val = textureProperty.getValue();
+    				if (val != null) {
+    					TexturesPayload result = null;
+    					try {
+    						String json = new String(Base64Coder.decode(val), Charsets.UTF_8);
+    						result = gson.fromJson(json, TexturesPayload.class);
+    					} catch (JsonParseException e) {
+    					} catch (IllegalArgumentException x) {
+    						Log.warning("Malformed response from skin URL check: " + val);
+    					}
+    					if ((result != null) && (result.textures != null) && (result.textures.containsKey("SKIN"))) {
+    						url = result.textures.get("SKIN").url;
+    					}
+    				}
+    			}
+    		}
+    	}    	
+    	return url;
+    }
+
 }
