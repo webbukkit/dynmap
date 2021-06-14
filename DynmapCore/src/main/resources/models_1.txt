@@ -1673,5 +1673,10 @@ patchblock:id=bubble_column
 [1.17-]customblock:id=glow_lichen,class=org.dynmap.hdmap.renderer.GlowLichenStateRenderer
 # Cave vines
 # Cave vines plant
-[1.16-]patchblock:id=cave_vines,id=cave_vines_plant,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+# Hanging roots
+[1.17-]patchblock:id=cave_vines,id=cave_vines_plant,id=hanging_roots,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+# Moss Carpet
+[1.17-]boxblock:id=moss_carpet,ymax=0.0625
+# Pointed dripstone
+[1.17-]patchblock:id=pointed_dripstone,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
