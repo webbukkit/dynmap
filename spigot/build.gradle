@@ -15,7 +15,7 @@ dependencies {
     compile 'me.lucko.luckperms:luckperms-api:4.3'
     compile 'net.luckperms:api:5.0'
     compile('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
-    compileOnly 'net.skinsrestorer:skinsrestorer:14.0.0-SNAPSHOT@jar'
+    compileOnly 'net.skinsrestorer:skinsrestorer:14.1.0-SNAPSHOT@jar'
     compile project(":dynmap-api")
     compile project(path: ":DynmapCore", configuration: "shadow")
     compile group: 'ru.tehkode', name: 'PermissionsEx', version: '1.19.1'
@@ -45,6 +45,9 @@ dependencies {
         transitive = false
     }
     implementation(project(':bukkit-helper-116-4')) {
+        transitive = false
+    }
+    implementation(project(':bukkit-helper-117')) {
         transitive = false
     }
 }
@@ -78,6 +81,7 @@ shadowJar {
         include(dependency(':bukkit-helper-116-2'))
         include(dependency(':bukkit-helper-116-3'))
         include(dependency(':bukkit-helper-116-4'))
+        include(dependency(':bukkit-helper-117'))
     }
     relocate('org.bstats', 'org.dynmap.bstats')
     destinationDir = file '../target'

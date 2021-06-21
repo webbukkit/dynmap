@@ -464,8 +464,8 @@ texture:id=beetroots_stage0
 texture:id=beetroots_stage1
 texture:id=beetroots_stage2
 texture:id=beetroots_stage3
-texture:id=grass_path_top
-texture:id=grass_path_side
+[-1.16.5]texture:id=grass_path_top
+[-1.16.5]texture:id=grass_path_side
 texture:id=command_block_back
 texture:id=command_block_front
 texture:id=command_block_side
@@ -1604,8 +1604,8 @@ block:id=beetroots,data=1,patch0-3=0:beetroots_stage1,transparency=TRANSPARENT
 block:id=beetroots,data=2,patch0-3=0:beetroots_stage2,transparency=TRANSPARENT
 block:id=beetroots,data=3,patch0-3=0:beetroots_stage3,transparency=TRANSPARENT
 
-# Grass Path
-block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
+# Grass Path (replaced with dirt path in 1.17
+[-1.16.5]block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
 
 # End Gateway
 block:id=end_gateway,data=*,stdrot=true,allfaces=0:endportal
@@ -2637,4 +2637,238 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Quartz Bricks
 [1.16-]block:id=quartz_bricks,allfaces=0:quartz_bricks,stdrot=true
 
+# 1.17
+[1.17-]texture:id=dirt_path_top
+[1.17-]texture:id=dirt_path_side
+[1.17-]texture:id=deepslate
+[1.17-]texture:id=deepslate_top
+[1.17-]texture:id=deepslate_gold_ore
+[1.17-]texture:id=deepslate_iron_ore
+[1.17-]texture:id=deepslate_coal_ore
+[1.17-]texture:id=deepslate_lapis_ore
+[1.17-]texture:id=deepslate_diamond_ore
+[1.17-]texture:id=deepslate_redstone_ore
+[1.17-]texture:id=deepslate_emerald_ore
+[1.17-]texture:id=cobbled_deepslate
+[1.17-]texture:id=deepslate_bricks
+[1.17-]texture:id=deepslate_tiles
+[1.17-]texture:id=polished_deepslate
+[1.17-]texture:id=cracked_deepslate_bricks
+[1.17-]texture:id=cracked_deepslate_tiles
+[1.17-]texture:id=chiseled_deepslate
+[1.17-]texture:id=deepslate_copper_ore
+[1.17-]texture:id=azalea_leaves
+[1.17-]texture:id=flowering_azalea_leaves
+[1.17-]texture:id=glow_lichen
+[1.17-]texture:id=calcite
+[1.17-]texture:id=tinted_glass,material=GLASS
+[1.17-]texture:id=powder_snow
+[1.17-]texture:id=oxidized_copper
+[1.17-]texture:id=weathered_copper
+[1.17-]texture:id=exposed_copper
+[1.17-]texture:id=copper_block
+[1.17-]texture:id=copper_ore
+[1.17-]texture:id=oxidized_cut_copper
+[1.17-]texture:id=weathered_cut_copper
+[1.17-]texture:id=exposed_cut_copper
+[1.17-]texture:id=cut_copper
+[1.17-]texture:id=amethyst_block
+[1.17-]texture:id=rooted_dirt
+[1.17-]texture:id=smooth_basalt
+[1.17-]texture:id=raw_gold_block
+[1.17-]texture:id=raw_iron_block
+[1.17-]texture:id=raw_copper_block
+[1.17-]texture:id=cave_vines
+[1.17-]texture:id=cave_vines_lit
+[1.17-]texture:id=cave_vines_plant
+[1.17-]texture:id=cave_vines_plant_lit
+[1.17-]texture:id=moss_block
+[1.17-]texture:id=dripstone_block
+[1.17-]texture:id=hanging_roots
+[1.17-]texture:id=moss_carpet
+[1.17-]texture:id=tuff
+[1.17-]texture:id=pointed_dripstone_up_tip_merge
+[1.17-]texture:id=pointed_dripstone_down_tip_merge
+[1.17-]texture:id=pointed_dripstone_up_tip
+[1.17-]texture:id=pointed_dripstone_down_tip
+[1.17-]texture:id=pointed_dripstone_up_frustum
+[1.17-]texture:id=pointed_dripstone_down_frustum
+[1.17-]texture:id=pointed_dripstone_up_middle
+[1.17-]texture:id=pointed_dripstone_down_middle
+[1.17-]texture:id=pointed_dripstone_up_base
+[1.17-]texture:id=pointed_dripstone_down_base
+
+# Dirt path
+[1.17-]block:id=dirt_path,allsides=0:dirt_path_side,top=0:dirt_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
+# Deepslate
+[1.17-]block:id=deepslate,data=1,allsides=0:deepslate,topbottom=0:deepslate_top,stdrot=true
+[1.17-]block:id=deepslate,data=0,north=0:deepslate_top,south=0:deepslate_top,east=4000:deepslate,west=4000:deepslate,top=0:deepslate,bottom=0:deepslate
+[1.17-]block:id=deepslate,data=2,north=4000:deepslate,south=4000:deepslate,east=0:deepslate_top,west=0:deepslate_top,top=4000:deepslate,bottom=4000:deepslate
+# Deepslate gold ore
+[1.17-]block:id=deepslate_gold_ore,allfaces=0:deepslate_gold_ore,stdrot=true
+# Deepslate iron ore
+[1.17-]block:id=deepslate_iron_ore,allfaces=0:deepslate_iron_ore,stdrot=true
+# Deepslate coal ore
+[1.17-]block:id=deepslate_coal_ore,allfaces=0:deepslate_coal_ore,stdrot=true
+# Deepslate lapis ore
+[1.17-]block:id=deepslate_lapis_ore,allfaces=0:deepslate_lapis_ore,stdrot=true
+# Deepslate diamond ore
+[1.17-]block:id=deepslate_diamond_ore,allfaces=0:deepslate_diamond_ore,stdrot=true
+# Deepslate redstone ore
+[1.17-]block:id=deepslate_redstone_ore,allfaces=0:deepslate_redstone_ore,stdrot=true
+# Deepslate emerald ore
+[1.17-]block:id=deepslate_emerald_ore,allfaces=0:deepslate_emerald_ore,stdrot=true
+# Cobbled deepslate
+[1.17-]block:id=cobbled_deepslate,allfaces=0:cobbled_deepslate,stdrot=true
+# Cobbled deepslate stairs
+[1.17-]block:id=cobbled_deepslate_stairs,patch0-2=0:cobbled_deepslate,transparency=SEMITRANSPARENT
+# Cobbled deepslate slab
+[1.17-]block:id=cobbled_deepslate_slab,data=0,data=1,data=2,data=3,allfaces=0:cobbled_deepslate,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=cobbled_deepslate_slab,data=4,data=5,allfaces=0:cobbled_deepslate,stdrot=true
+# Cobbled deepslate wall
+[1.17-]block:id=cobbled_deepslate_wall,patch0-2=0:cobbled_deepslate,transparency=TRANSPARENT
+# Deepslate bricks
+[1.17-]block:id=deepslate_bricks,allfaces=0:deepslate_bricks,stdrot=true
+# Deepslate brick stairs
+[1.17-]block:id=deepslate_brick_stairs,patch0-2=0:deepslate_bricks,transparency=SEMITRANSPARENT
+# Deepslate brick slab
+[1.17-]block:id=deepslate_brick_slab,data=0,data=1,data=2,data=3,allfaces=0:deepslate_bricks,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=deepslate_brick_slab,data=4,data=5,allfaces=0:deepslate_bricks,stdrot=true
+# Deepslate brick wall
+[1.17-]block:id=deepslate_brick_wall,patch0-2=0:deepslate_bricks,transparency=TRANSPARENT
+# Deepslate tiles
+[1.17-]block:id=deepslate_tiles,allfaces=0:deepslate_tiles,stdrot=true
+# Deepslate tile stairs
+[1.17-]block:id=deepslate_tile_stairs,patch0-2=0:deepslate_tiles,transparency=SEMITRANSPARENT
+# Deepslate tile slab
+[1.17-]block:id=deepslate_tile_slab,data=0,data=1,data=2,data=3,allfaces=0:deepslate_tiles,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=deepslate_tile_slab,data=4,data=5,allfaces=0:deepslate_tiles,stdrot=true
+# Deepslate tile wall
+[1.17-]block:id=deepslate_tile_wall,patch0-2=0:deepslate_tiles,transparency=TRANSPARENT
+# Polished deepslate
+[1.17-]block:id=polished_deepslate,allfaces=0:polished_deepslate,stdrot=true
+# Polished deepslate stairs
+[1.17-]block:id=polished_deepslate_stairs,patch0-2=0:polished_deepslate,transparency=SEMITRANSPARENT
+# Polished deepslate slab
+[1.17-]block:id=polished_deepslate_slab,data=0,data=1,data=2,data=3,allfaces=0:polished_deepslate,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=polished_deepslate_slab,data=4,data=5,allfaces=0:polished_deepslate,stdrot=true
+# Polished deepslate wall
+[1.17-]block:id=polished_deepslate_wall,patch0-2=0:polished_deepslate,transparency=TRANSPARENT
+# Cracked deepslate tiles
+[1.17-]block:id=cracked_deepslate_tiles,allfaces=0:cracked_deepslate_tiles,stdrot=true
+# Cracked deepslate bricks
+[1.17-]block:id=cracked_deepslate_bricks,allfaces=0:cracked_deepslate_bricks,stdrot=true
+# Infested deepslate
+[1.17-]block:id=infested_deepslate,data=1,allsides=0:deepslate,topbottom=0:deepslate_top,stdrot=true
+[1.17-]block:id=infested_deepslate,data=0,north=0:deepslate_top,south=0:deepslate_top,east=4000:deepslate,west=4000:deepslate,top=0:deepslate,bottom=0:deepslate
+[1.17-]block:id=infested_deepslate,data=2,north=4000:deepslate,south=4000:deepslate,east=0:deepslate_top,west=0:deepslate_top,top=4000:deepslate,bottom=4000:deepslate
+# Chiseled deepslate
+[1.17-]block:id=chiseled_deepslate,allfaces=0:chiseled_deepslate,stdrot=true
+# Deepslate copper ore
+[1.17-]block:id=deepslate_copper_ore,allfaces=0:deepslate_copper_ore,stdrot=true
+# Leaves (azalea)
+[1.17-]block:id=azalea_leaves,allfaces=2000:azalea_leaves,stdrot=true,transparency=LEAVES
+# Leaves (flowering azalea)
+[1.17-]block:id=flowering_azalea_leaves,allfaces=2000:flowering_azalea_leaves,stdrot=true,transparency=LEAVES
+# Glow lichens
+[1.17-]block:id=glow_lichen,patch0-4=0:glow_lichen,transparency=TRANSPARENT
+# Calcite
+[1.17-]block:id=calcite,allfaces=0:calcite,stdrot=true
+# Tinted Glass
+[1.17-]block:id=tinted_glass,allfaces=12000:tinted_glass,stdrot=true,transparency=TRANSPARENT
+# Powder snow
+[1.17-]block:id=powder_snow,allfaces=0:powder_snow,stdrot=true
+# Oxidized copper
+# Waxed oxidized copper
+[1.17-]block:id=oxidized_copper,id=waxed_oxidized_copper,allfaces=0:oxidized_copper,stdrot=true
+# Weathered copper
+# Waxed wathered copper
+[1.17-]block:id=weathered_copper,id=waxed_weathered_copper,allfaces=0:weathered_copper,stdrot=true
+# Exposed copper
+# Waxed exposed copper
+[1.17-]block:id=exposed_copper,id=waxed_exposed_copper,allfaces=0:exposed_copper,stdrot=true
+# Copper block
+# Waxed copper block
+[1.17-]block:id=copper_block,id=waxed_copper_block,allfaces=0:copper_block,stdrot=true
+# Copper ore
+[1.17-]block:id=copper_ore,allfaces=0:copper_ore,stdrot=true
+# Oxidized cut copper
+# Waxed oxidized cut copper
+[1.17-]block:id=oxidized_cut_copper,id=waxed_oxidized_cut_copper,allfaces=0:oxidized_cut_copper,stdrot=true
+# Weathered cut copper
+# Waxed weathered cut copper
+[1.17-]block:id=weathered_cut_copper,id=waxed_weathered_cut_copper,allfaces=0:weathered_cut_copper,stdrot=true
+# Exposed cut copper
+# Waxed exposed cut copper
+[1.17-]block:id=exposed_cut_copper,id=waxed_exposed_cut_copper,allfaces=0:exposed_cut_copper,stdrot=true
+# Cut copper
+# Waxed cut copper
+[1.17-]block:id=cut_copper,id=waxed_cut_copper,allfaces=0:cut_copper,stdrot=true
+# Cut copper stairs
+# Waxed cut copper stairs
+[1.17-]block:id=cut_copper_stairs,id=waxed_cut_copper_stairs,patch0-2=0:cut_copper,transparency=SEMITRANSPARENT
+# Cut copper slab
+# Waxed cut copper slab
+[1.17-]block:id=cut_copper_slab,id=waxed_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=cut_copper_slab,id=waxed_cut_copper_slab,data=4,data=5,allfaces=0:cut_copper,stdrot=true
+# Exposed cut copper stairs
+# Waxed exposed cut copper stairs
+[1.17-]block:id=exposed_cut_copper_stairs,id=waxed_exposed_cut_copper_stairs,patch0-2=0:exposed_cut_copper,transparency=SEMITRANSPARENT
+# Exposed cut copper slab
+# Waxed exposed cut copper slab
+[1.17-]block:id=exposed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:exposed_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=exposed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,data=4,data=5,allfaces=0:exposed_cut_copper,stdrot=true
+# Weathered cut copper stairs
+# Waxed weathered cut copper stairs
+[1.17-]block:id=weathered_cut_copper_stairs,id=waxed_weathered_cut_copper_stairs,patch0-2=0:weathered_cut_copper,transparency=SEMITRANSPARENT
+# Weathered cut copper slab
+# Waxed weathered cut copper slab
+[1.17-]block:id=weathered_cut_copper_slab,id=waxed_weathered_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:weathered_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=weathered_cut_copper_slab,id=waxed_weathered_cut_copper_slab,data=4,data=5,allfaces=0:weathered_cut_copper,stdrot=true
+# Oxidized cut copper stairs
+# Waxed oxidized cut copper stairs
+[1.17-]block:id=oxidized_cut_copper_stairs,id=waxed_oxidized_cut_copper_stairs,patch0-2=0:oxidized_cut_copper,transparency=SEMITRANSPARENT
+# Oxidized cut copper slab
+# Waxed oxidized cut copper slab
+[1.17-]block:id=oxidized_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,data=0,data=1,data=2,data=3,allfaces=0:oxidized_cut_copper,stdrot=true,transparency=SEMITRANSPARENT
+[1.17-]block:id=oxidized_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,data=4,data=5,allfaces=0:oxidized_cut_copper,stdrot=true
+# Amethyst block
+[1.17-]block:id=amethyst_block,allfaces=0:amethyst_block,stdrot=true
+# Rooted dirt
+[1.17-]block:id=rooted_dirt,allfaces=0:rooted_dirt,stdrot=true
+# Smooth basalt
+[1.17-]block:id=smooth_basalt,allfaces=0:smooth_basalt,stdrot=true
+# Raw iron block
+[1.17-]block:id=raw_iron_block,allfaces=0:raw_iron_block,stdrot=true
+# Raw gold block
+[1.17-]block:id=raw_gold_block,allfaces=0:raw_gold_block,stdrot=true
+# Raw copper block
+[1.17-]block:id=raw_copper_block,allfaces=0:raw_copper_block,stdrot=true
+# Cave vines
+[1.17-]block:id=cave_vines,data=0,data=2,data=4,data=6,data=8,data=10,data=12,data=14,data=16,data=18,data=20,data=22,data=24,data=26,data=28,data=30,data=32,data=34,data=36,data=38,data=40,data=42,data=44,data=46,data=48,data=50,patch0-1=0:cave_vines_lit,transparency=TRANSPARENT
+[1.17-]block:id=cave_vines,data=1,data=3,data=5,data=7,data=9,data=11,data=13,data=15,data=17,data=19,data=21,data=23,data=25,data=27,data=29,data=31,data=33,data=35,data=37,data=39,data=41,data=43,data=45,data=47,data=49,data=51,patch0-1=0:cave_vines,transparency=TRANSPARENT
+# Cave vines plant
+[1.17-]block:id=cave_vines_plant,data=0,patch0-1=0:cave_vines_plant_lit,transparency=TRANSPARENT
+[1.17-]block:id=cave_vines_plant,data=1,patch0-1=0:cave_vines_plant,transparency=TRANSPARENT
+# Moss block
+[1.17-]block:id=moss_block,allfaces=0:moss_block,stdrot=true
+# Dripstone block
+[1.17-]block:id=dripstone_block,allfaces=0:dripstone_block,stdrot=true
+# Hanging roots
+[1.17-]block:id=hanging_roots,patch0-1=0:hanging_roots,transparency=TRANSPARENT
+# Moss Carpet
+[1.17-]block:id=moss_carpet,stdrot=true,allfaces=0:moss_carpet
+# Tuff
+[1.17-]block:id=tuff,allfaces=0:tuff,stdrot=true
+# Pointed dripstone
+[1.17-]block:id=pointed_dripstone,data=0,data=1,patch0-1=0:pointed_dripstone_up_tip_merge,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=2,data=3,patch0-1=0:pointed_dripstone_down_tip_merge,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=4,data=5,patch0-1=0:pointed_dripstone_up_tip,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=6,data=7,patch0-1=0:pointed_dripstone_down_tip,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=8,data=9,patch0-1=0:pointed_dripstone_up_frustum,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=10,data=11,patch0-1=0:pointed_dripstone_down_frustum,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=12,data=13,patch0-1=0:pointed_dripstone_up_middle,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=14,data=15,patch0-1=0:pointed_dripstone_down_middle,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=16,data=17,patch0-1=0:pointed_dripstone_up_base,transparency=TRANSPARENT
+[1.17-]block:id=pointed_dripstone,data=18,data=19,patch0-1=0:pointed_dripstone_down_base,transparency=TRANSPARENT
 
