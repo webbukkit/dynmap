@@ -17,9 +17,9 @@ public class SkinsRestorerSkinUrlProvider implements SkinUrlProvider {
     private JSONParser mJsonParser;
     private SkinsRestorerAPI mSkinsRestorerApi;
 
-    SkinsRestorerSkinUrlProvider(SkinsRestorer skinsRestorer) {
+    SkinsRestorerSkinUrlProvider() {
         mJsonParser = new JSONParser();
-        mSkinsRestorerApi = skinsRestorer.getSkinsRestorerBukkitAPI();
+        mSkinsRestorerApi = SkinsRestorerAPI.getApi();
     }
 
     @Override
