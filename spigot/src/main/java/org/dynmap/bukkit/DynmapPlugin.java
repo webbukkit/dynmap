@@ -917,10 +917,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 if (skinsRestorer == null) {
                     Log.warning("SkinsRestorer integration can't be enabled because SkinsRestorer not installed");
                 } else {
-                    skinUrlProvider = new SkinsRestorerSkinUrlProvider(skinsRestorer);
+                    skinUrlProvider = new SkinsRestorerSkinUrlProvider();
                     Log.info("SkinsRestorer API v14 integration enabled");
                 }
-            }catch(NoClassDefFoundError e) {
+            } catch(NoClassDefFoundError e) {
                 Log.warning("You are using unsupported version of SkinsRestorer. Use v14 or newer.");
                 Log.warning("Disabled SkinsRestorer integration for this session");
             }
