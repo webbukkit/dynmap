@@ -2685,7 +2685,6 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [1.17-]texture:id=moss_block
 [1.17-]texture:id=dripstone_block
 [1.17-]texture:id=hanging_roots
-[1.17-]texture:id=moss_carpet
 [1.17-]texture:id=tuff
 [1.17-]texture:id=pointed_dripstone_up_tip_merge
 [1.17-]texture:id=pointed_dripstone_down_tip_merge
@@ -2857,7 +2856,7 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 # Hanging roots
 [1.17-]block:id=hanging_roots,patch0-1=0:hanging_roots,transparency=TRANSPARENT
 # Moss Carpet
-[1.17-]block:id=moss_carpet,stdrot=true,allfaces=0:moss_carpet
+[1.17-]block:id=moss_carpet,stdrot=true,allfaces=0:moss_block
 # Tuff
 [1.17-]block:id=tuff,allfaces=0:tuff,stdrot=true
 # Pointed dripstone
