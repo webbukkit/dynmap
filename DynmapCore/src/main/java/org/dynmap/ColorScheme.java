@@ -105,8 +105,8 @@ public class ColorScheme {
                 boolean israin = false;
                 int idx = split[0].indexOf(':');
                 if(idx > 0) {    /* ID:data - data color */
-                    id = new Integer(split[0].substring(0, idx));
-                    dat = new Integer(split[0].substring(idx+1));
+                    id = Integer.parseInt(split[0].substring(0, idx));
+                    dat = Integer.parseInt(split[0].substring(idx+1));
                 }
                 else if(split[0].charAt(0) == '[') {    /* Biome color data */
                     String bio = split[0].substring(1);
@@ -149,7 +149,7 @@ public class ColorScheme {
                     }
                 }
                 else {
-                    id = new Integer(split[0]);
+                    id = Integer.parseInt(split[0]);
                 }
                 if((!isbiome) && (id >= colors.length)) {
                     Color[][] newcolors = new Color[id+1][];

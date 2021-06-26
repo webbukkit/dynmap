@@ -21,7 +21,7 @@ import org.dynmap.utils.BufferOutputStream;
 public abstract class MapStorage {
     private static Object lock = new Object();
     private static HashMap<String, Integer> filelocks = new HashMap<String, Integer>();
-    private static final Integer WRITELOCK = new Integer(-1);
+    private static final Integer WRITELOCK = (-1);
     protected File baseStandaloneDir;
 
     protected long serverID;
