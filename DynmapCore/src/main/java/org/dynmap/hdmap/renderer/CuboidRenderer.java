@@ -17,7 +17,7 @@ import org.dynmap.renderer.RenderPatchFactory.SideVisible;
  * Each crossed-patch is provided with two corner offsets within the cube (xmin,ymin,zmin) and (xmax,ymax,zmax), and a single patch index (default is 0)
  */
 public class CuboidRenderer extends CustomRenderer {
-    private RenderPatch[] model;
+    private RenderPatch[][] models;
     private int textureCount;
 
     private static final int[] crossedPatchDefault = { 0 };
@@ -84,9 +84,32 @@ public class CuboidRenderer extends CustomRenderer {
                     CustomRenderer.addBox(rpf, list, xmin, xmax, ymin, ymax, zmin, zmax, patches);
                 }
             }
-        }
-        model = list.toArray(new RenderPatch[list.size()]);
+        }        
+        RenderPatch[] model = list.toArray(new RenderPatch[list.size()]);
         
+        String rotlist = custparm.get("rotlist");	// See if we have a rotation list
+        if (rotlist != null) {
+            String[] pidx = rotlist.split(":");	// Get list
+        	models = new RenderPatch[pidx.length][];
+            for (int idx = 0; idx < pidx.length; idx++) {
+            	int rot = Integer.parseInt(pidx[idx]);
+
+        		models[idx] = new RenderPatch[model.length];
+            	if (rot != 0) {
+            		for (int i = 0; i < model.length; i++) {
+            			models[idx][i] = rpf.getRotatedPatch(model[i], 0, rot, 0, -1);
+            		}
+            	}
+            	else {
+            		models[idx] = model;
+            	}
+            }
+        }
+        else {
+        	models = new RenderPatch[1][];
+        	models[0] = model;
+        }
+
         return true;
     }
 
@@ -97,6 +120,7 @@ public class CuboidRenderer extends CustomRenderer {
         
     @Override
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
-        return model;
+    	int idx = ctx.getBlockType().stateIndex;
+        return models[idx % models.length];
     }
 }

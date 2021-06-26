@@ -2080,6 +2080,24 @@ block:id=fire_coral,patch0-1=0:fire_coral,transparency=TRANSPARENT
 # Horn coral
 block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 
+# Banners
+block:id=white_banner,id=white_wall_banner,data=*,patch0=0:oak_planks,patch1=0:white_wool,transparency=TRANSPARENT
+block:id=orange_banner,id=orange_wall_banner,data=*,patch0=0:oak_planks,patch1=0:orange_wool,transparency=TRANSPARENT
+block:id=magenta_banner,id=magenta_wall_banner,data=*,patch0=0:oak_planks,patch1=0:magenta_wool,transparency=TRANSPARENT
+block:id=light_blue_banner,id=light_blue_wall_banner,data=*,patch0=0:oak_planks,patch1=0:light_blue_wool,transparency=TRANSPARENT
+block:id=yellow_banner,id=yellow_wall_banner,data=*,patch0=0:oak_planks,patch1=0:yellow_wool,transparency=TRANSPARENT
+block:id=lime_banner,id=lime_wall_banner,data=*,patch0=0:oak_planks,patch1=0:lime_wool,transparency=TRANSPARENT
+block:id=pink_banner,id=pink_wall_banner,data=*,patch0=0:oak_planks,patch1=0:pink_wool,transparency=TRANSPARENT
+block:id=gray_banner,id=gray_wall_banner,data=*,patch0=0:oak_planks,patch1=0:gray_wool,transparency=TRANSPARENT
+block:id=light_gray_banner,id=light_gray_wall_banner,data=*,patch0=0:oak_planks,patch1=0:light_gray_wool,transparency=TRANSPARENT
+block:id=cyan_banner,id=cyan_wall_banner,data=*,patch0=0:oak_planks,patch1=0:cyan_wool,transparency=TRANSPARENT
+block:id=purple_banner,id=purple_wall_banner,data=*,patch0=0:oak_planks,patch1=0:purple_wool,transparency=TRANSPARENT
+block:id=blue_banner,id=blue_wall_banner,data=*,patch0=0:oak_planks,patch1=0:blue_wool,transparency=TRANSPARENT
+block:id=brown_banner,id=brown_wall_banner,data=*,patch0=0:oak_planks,patch1=0:brown_wool,transparency=TRANSPARENT
+block:id=green_banner,id=green_wall_banner,data=*,patch0=0:oak_planks,patch1=0:green_wool,transparency=TRANSPARENT
+block:id=red_banner,id=red_wall_banner,data=*,patch0=0:oak_planks,patch1=0:red_wool,transparency=TRANSPARENT
+block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:black_wool,transparency=TRANSPARENT
+
 # Dead tube coral
 [1.13.1-]block:id=dead_tube_coral,patch0-1=0:dead_tube_coral,transparency=TRANSPARENT
 
@@ -2099,6 +2117,7 @@ block:id=horn_coral,patch0-1=0:horn_coral,transparency=TRANSPARENT
 [-1.13.2]block:id=sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=sign
 # Wall sign
 [-1.13.2]block:id=wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=sign
+
 
 
 [1.14-]texture:id=cornflower

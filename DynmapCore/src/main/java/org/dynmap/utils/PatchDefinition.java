@@ -61,8 +61,11 @@ public class PatchDefinition implements RenderPatch {
     /**
      * Construct patch, based on rotation of existing patch clockwise by N
      * 90 degree steps
-     * @param orig
-     * @param rotate_cnt
+     * @param orig - original patch to copy and rotate
+     * @param rotatex - x rotation in degrees
+     * @param rotatey - y rotation in degrees
+     * @param rotatez - z rotation in degrees
+     * @param textureindex - texture index for new patch (-1 = use same as original patch)
      */
     PatchDefinition(PatchDefinition orig, int rotatex, int rotatey, int rotatez, int textureindex) {
         Vector3D vec = new Vector3D(orig.x0, orig.y0, orig.z0);
@@ -81,7 +84,7 @@ public class PatchDefinition implements RenderPatch {
         vmaxatumax = orig.vmaxatumax;
         vminatumax = orig.vminatumax;
         sidevis = orig.sidevis;
-        this.textureindex = textureindex;
+        this.textureindex = (textureindex < 0) ? orig.textureindex : textureindex;
         u = new Vector3D();
         v = new Vector3D();
         update();

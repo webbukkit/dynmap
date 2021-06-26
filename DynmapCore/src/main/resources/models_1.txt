@@ -1293,6 +1293,10 @@ boxblock:id=conduit,xmin=0.3125,xmax=0.6875,ymin=0.3125,ymax=0.6875,zmin=0.3125,
 # Brown huge mushroom
 customblock:id=red_mushroom_block,id=brown_mushroom_block,class=org.dynmap.hdmap.renderer.MushroomStateRenderer
 
+# Banners
+customblock:id=white_banner,id=orange_banner,id=magenta_banner,id=light_blue_banner,id=yellow_banner,id=lime_banner,id=pink_banner,id=gray_banner,id=light_gray_banner,id=cyan_banner,id=purple_banner,id=blue_banner,id=brown_banner,id=green_banner,id=red_banner,id=black_banner,data=0-15,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0.46:0:0.46/0.54:1.0:0.54/0:0:0:0:0:0,cuboid1=0:0.96:0.46/1.0:1.0:0.54/0:0:0:0:0:0,cuboid2=0:0.25:0.54/1.0:1.0:0.58/1:1:1:1:1:1,rotlist=0:22:45:68:90:112:135:158:180:202:225:248:270:292:315:338
+customblock:id=white_wall_banner,id=orange_wall_banner,id=magenta_wall_banner,id=light_blue_wall_banner,id=yellow_wall_banner,id=lime_wall_banner,id=pink_wall_banner,id=gray_wall_banner,id=light_gray_wall_banner,id=cyan_wall_banner,id=purple_wall_banner,id=blue_wall_banner,id=brown_wall_banner,id=green_wall_banner,id=red_wall_banner,id=black_wall_banner,data=0-3,class=org.dynmap.hdmap.renderer.CuboidRenderer,cuboid0=0:0.83:0.96/1.0:0.875:1.0/0:0:0:0:0:0,cuboid1=0:0.0:0.92/1.0:0.875:0.96/1:1:1:1:1:1,rotlist=0:180:270:90
+
 # 1.13.1 blocks
 
 # Dead tube coral
@@ -1679,4 +1683,3 @@ patchblock:id=bubble_column
 [1.17-]boxblock:id=moss_carpet,ymax=0.0625
 # Pointed dripstone
 [1.17-]patchblock:id=pointed_dripstone,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
-
