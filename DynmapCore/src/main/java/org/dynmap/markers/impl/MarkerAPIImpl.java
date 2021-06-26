@@ -2323,7 +2323,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
     
     private static boolean processUpdateArea(DynmapCore plugin, DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
-        String id, label, setid, newlabel, markup;
+        String id, label, setid, newlabel, markup, newset;
         if(args.length > 1) {
             /* Parse arguements */
             Map<String,String> parms = parseArgs(args, sender);
@@ -2365,6 +2365,15 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             else if(markup != null) {
                 marker.setLabel(marker.getLabel(), "true".equals(markup));
+            }
+    	    newset = parms.get(ARG_NEWSET);
+            if (newset != null) {
+                MarkerSet ms = api.getMarkerSet(newset);
+                if(ms == null) {
+                    sender.sendMessage("Error: invalid new marker set - " + newset);
+                    return true;
+                }
+                marker.setMarkerSet(ms);
             }
             if(!processAreaArgs(sender,marker, parms))
                 return true;
@@ -2524,7 +2533,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         return true;
     }
     private static boolean processUpdateLine(DynmapCore plugin, DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
-        String id, setid, label, newlabel, markup;
+        String id, setid, label, newlabel, markup, newset;
         if(args.length > 1) {
             /* Parse arguements */
             Map<String,String> parms = parseArgs(args, sender);
@@ -2566,6 +2575,15 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             else if(markup != null) {
                 marker.setLabel(marker.getLabel(), "true".equals(markup));
+            }
+    	    newset = parms.get(ARG_NEWSET);
+            if (newset != null) {
+                MarkerSet ms = api.getMarkerSet(newset);
+                if(ms == null) {
+                    sender.sendMessage("Error: invalid new marker set - " + newset);
+                    return true;
+                }
+                marker.setMarkerSet(ms);
             }
             if(!processPolyArgs(sender,marker, parms))
                 return true;
@@ -2742,7 +2760,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         return true;
     }
     private static boolean processUpdateCircle(DynmapCore plugin, DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
-        String id, setid, label, newlabel, markup;
+        String id, setid, label, newlabel, markup, newset;
         if(args.length > 1) {
             /* Parse arguements */
             Map<String,String> parms = parseArgs(args, sender);
@@ -2785,6 +2803,15 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             else if(markup != null) {
                 marker.setLabel(marker.getLabel(), "true".equals(markup));
             }
+    	    newset = parms.get(ARG_NEWSET);
+            if (newset != null) {
+                MarkerSet ms = api.getMarkerSet(newset);
+                if(ms == null) {
+                    sender.sendMessage("Error: invalid new marker set - " + newset);
+                    return true;
+                }
+                marker.setMarkerSet(ms);
+            }            
             if(!processCircleArgs(sender,marker, parms))
                 return true;
             sender.sendMessage("Updated circle id:" + marker.getMarkerID() + " (" + marker.getLabel() + ")");
