@@ -35,7 +35,7 @@ dependencies {
 
 processResources
 {
-    filesMatching('mods.toml') {
+    filesMatching('META-INF/mods.toml') {
         // replace version and mcversion
         expand(
         	version: project.version + '-' + project.ext.buildNumber,
