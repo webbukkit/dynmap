@@ -33,7 +33,6 @@ dependencies {
 
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
-    shadow project(path: ':DynmapCoreAPI', configuration: 'shadow')
     shadow project(path: ':DynmapCore', configuration: 'shadow')
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
