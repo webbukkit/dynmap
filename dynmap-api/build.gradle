@@ -2,8 +2,8 @@
 description = "dynmap-api"
 
 dependencies {
-    compile group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
-    compile project(":DynmapCoreAPI")
+    implementation group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
+    implementation project(":DynmapCoreAPI")
 }
 
 jar {

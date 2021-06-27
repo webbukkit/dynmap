@@ -1,26 +1,27 @@
 description = "DynmapCore"
 
 dependencies {
-    compile project(path: ':DynmapCoreAPI', configuration: 'shadow')
-    compile 'javax.servlet:javax.servlet-api:3.1'
-    compile 'org.eclipse.jetty:jetty-server:9.4.26.v20200117'
-    compile 'org.eclipse.jetty:jetty-servlet:9.4.26.v20200117'
-    compile 'com.googlecode.json-simple:json-simple:1.1.1'
-    compile 'org.yaml:snakeyaml:1.23'
-    compile 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
-    compile 'org.postgresql:postgresql:42.2.18'
+    implementation project(path: ':DynmapCoreAPI', configuration: 'shadow')
+    implementation 'javax.servlet:javax.servlet-api:3.1'
+    implementation 'org.eclipse.jetty:jetty-server:9.4.26.v20200117'
+    implementation 'org.eclipse.jetty:jetty-servlet:9.4.26.v20200117'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.yaml:snakeyaml:1.23'
+    implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
+    implementation 'org.postgresql:postgresql:42.2.18'
 }
 
 processResources {
     // replace stuff in mcmod.info, nothing else
-	from('src/main/resources') {
-	    include 'core.yml'
-	    include 'lightings.txt'
-	    include 'perspectives.txt'
-	    include 'shaders.txt'
-		include 'extracted/web/version.js'
-		include 'extracted/web/index.html'
-		include 'extracted/web/login.html'
+    filesMatching([
+        'core.yml',
+        'lightings.txt',
+        'perspectives.txt',
+        'shaders.txt',
+        'extracted/web/version.js',
+        'extracted/web/index.html',
+        'extracted/web/login.html',
+    ]) {
         // replace version and mcversion
         expand(
                 buildnumber: project.parent.ext.globals.buildNumber,
