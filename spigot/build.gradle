@@ -14,7 +14,7 @@ dependencies {
     implementation 'com.nijikokun.bukkit:Permissions:3.1.6'
     implementation 'me.lucko.luckperms:luckperms-api:4.3'
     implementation 'net.luckperms:api:5.0'
-    compile('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
+    implementation('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
     compileOnly 'net.skinsrestorer:skinsrestorer:14.1.0-SNAPSHOT@jar'
     implementation project(":dynmap-api")
     implementation project(path: ":DynmapCore", configuration: "shadow")
@@ -54,8 +54,7 @@ dependencies {
 
 processResources {
     // replace stuff in mcmod.info, nothing else
-    from('src/main/resources') {
-        include "plugin.yml"
+    filesMatching('plugin.yml') {
         // replace version and mcversion
         expand(
                 buildnumber: project.parent.ext.globals.buildNumber,
