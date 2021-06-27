@@ -15,12 +15,12 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     filesMatching([
         'core.yml',
-	'lightings.txt',
-	'perspectives.txt',
-	'shaders.txt',
-	'extracted/web/version.js',
-	'extracted/web/index.html',
-	'extracted/web/login.html',
+        'lightings.txt',
+        'perspectives.txt',
+        'shaders.txt',
+        'extracted/web/version.js',
+        'extracted/web/index.html',
+        'extracted/web/login.html',
     ]) {
         // replace version and mcversion
         expand(
