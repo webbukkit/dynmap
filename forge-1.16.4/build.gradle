@@ -35,22 +35,12 @@ dependencies {
 
 processResources
 {
-    inputs.property "version", project.version + '-' + project.ext.buildNumber
-    
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-                
+    filesMatching('mods.toml') {
         // replace version and mcversion
         expand(
         	version: project.version + '-' + project.ext.buildNumber,
         	mcversion: "1.16.4"
     	)
-    }
-        
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
     }
 }
 
