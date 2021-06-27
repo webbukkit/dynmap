@@ -16,7 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-    compile project(path: ":DynmapCore", configuration: "shadow")
+    implementation project(path: ":DynmapCore", configuration: "shadow")
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
 }
 

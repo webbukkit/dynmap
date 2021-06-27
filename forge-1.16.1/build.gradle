@@ -29,7 +29,7 @@ minecraft {
 project.archivesBaseName = "${project.archivesBaseName}-forge-1.16.1"
 
 dependencies {
-    compile project(path: ":DynmapCore", configuration: "shadow")
+    implementation project(path: ":DynmapCore", configuration: "shadow")
     minecraft 'net.minecraftforge:forge:1.16.1-32.0.106'
 }
 
