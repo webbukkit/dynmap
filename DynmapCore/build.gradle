@@ -18,9 +18,9 @@ processResources {
 	'lightings.txt',
 	'perspectives.txt',
 	'shaders.txt',
-	'version.js',
-	'index.html',
-	'login.html',
+	'extracted/web/version.js',
+	'extracted/web/index.html',
+	'extracted/web/login.html',
     ]) {
         // replace version and mcversion
         expand(
