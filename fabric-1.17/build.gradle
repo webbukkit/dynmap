@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.fabricmc', name: 'fabric-loom', version: '0.6-SNAPSHOT'
+        classpath group: 'net.fabricmc', name: 'fabric-loom', version: '0.8-SNAPSHOT'
     }
 }
 apply plugin: 'fabric-loom'
