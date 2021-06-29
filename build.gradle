@@ -17,7 +17,7 @@ allprojects  {
   apply plugin: 'java'
   
   group = 'us.dynmap'
-  version = '3.2-SNAPSHOT'
+  version = '3.2-beta-2'
 
 }
 
