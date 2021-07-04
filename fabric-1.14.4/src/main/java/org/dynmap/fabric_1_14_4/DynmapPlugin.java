@@ -179,7 +179,7 @@ public class DynmapPlugin {
             int idx = bsids.getId(bs);
             if (idx >= stateByID.length) {
                 int plen = stateByID.length;
-    			stateByID = Arrays.copyOf(stateByID, idx*11/10); // grow array by 10%    			
+                stateByID = Arrays.copyOf(stateByID, idx*11/10); // grow array by 10%
                 Arrays.fill(stateByID, plen, stateByID.length, DynmapBlockState.AIR);
             }
             Block b = bs.getBlock();
@@ -330,7 +330,7 @@ public class DynmapPlugin {
 
     boolean hasPerm(PlayerEntity psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if ((psender != null) && ph.hasPermission(psender.getName().getString(), permission)) {
+        if ((ph != null) && (psender != null) && ph.hasPermission(psender.getName().getString(), permission)) {
             return true;
         }
         return permissions.has(psender, permission);
@@ -338,7 +338,7 @@ public class DynmapPlugin {
 
     boolean hasPermNode(PlayerEntity psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if ((psender != null) && ph.hasPermissionNode(psender.getName().getString(), permission)) {
+        if ((ph != null) && (psender != null) && ph.hasPermissionNode(psender.getName().getString(), permission)) {
             return true;
         }
         return permissions.hasPermissionNode(psender, permission);
