@@ -62,7 +62,7 @@ public class FabricServer extends DynmapServerInterface {
         this.biomeRegistry = server.getRegistryManager().get(Registry.BIOME_KEY);
     }
 
-    private GameProfile getProfileByName(String player) {
+    private Optional<GameProfile> getProfileByName(String player) {
         UserCache cache = server.getUserCache();
         return cache.findByName(player);
     }
@@ -191,8 +191,14 @@ public class FabricServer extends DynmapServerInterface {
 
     @Override
     public boolean isPlayerBanned(String pid) {
-        BannedPlayerList bl = server.getPlayerManager().getUserBanList();
-        return bl.contains(getProfileByName(pid));
+        PlayerManager scm = server.getPlayerManager();
+        BannedPlayerList bl = scm.getUserBanList();
+        try {
+            return bl.contains(getProfileByName(pid).get());
+        } catch (NoSuchElementException e) {
+            /* If this profile doesn't exist, default to "banned" for good measure. */
+            return true;
+        }
     }
 
     @Override
@@ -349,11 +355,7 @@ public class FabricServer extends DynmapServerInterface {
 
     @Override
     public Set<String> checkPlayerPermissions(String player, Set<String> perms) {
-        PlayerManager scm = server.getPlayerManager();
-        if (scm == null) return Collections.emptySet();
-        BannedPlayerList bl = scm.getUserBanList();
-        if (bl == null) return Collections.emptySet();
-        if (bl.contains(getProfileByName(player))) {
+        if (isPlayerBanned(player)) {
             return Collections.emptySet();
         }
         Set<String> rslt = plugin.hasOfflinePermissions(player, perms);
@@ -368,11 +370,7 @@ public class FabricServer extends DynmapServerInterface {
 
     @Override
     public boolean checkPlayerPermission(String player, String perm) {
-        PlayerManager scm = server.getPlayerManager();
-        if (scm == null) return false;
-        BannedPlayerList bl = scm.getUserBanList();
-        if (bl == null) return false;
-        if (bl.contains(getProfileByName(player))) {
+        if (isPlayerBanned(player)) {
             return false;
         }
         return plugin.hasOfflinePermission(player, perm);
