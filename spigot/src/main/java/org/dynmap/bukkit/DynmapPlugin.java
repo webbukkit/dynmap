@@ -1341,11 +1341,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 public void onBlockFromTo(BlockFromToEvent event) {
                     Block b = event.getBlock();
                     Material m = b.getType();
-                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE) && (m != null)) 
+                    String m_id = (m != null) ? m.toString() : "";
+                    boolean not_pressure_plate = (m_id != "WOOD_PLATE") && (m_id != "STONE_PLATE") && (!m_id.contains("PRESSURE_PLATE")) && (m_id != "");
+                    if (not_pressure_plate)
                         checkBlock(b, "blockfromto");
                     b = event.getToBlock();
                     m = b.getType();
-                    if((m != Material.WOOD_PLATE) && (m != Material.STONE_PLATE) && (m != null)) 
+                    if (not_pressure_plate)
                         checkBlock(b, "blockfromto");
                 }
             };
