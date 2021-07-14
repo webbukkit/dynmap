@@ -257,7 +257,7 @@ block-alias:
 #    "minecraft:quartz_ore": "stone"
 #    "diamond_ore": "coal_ore"
   
-# Default image format for HDMaps (png, jpg, jpg-q75, jpg-q80, jpg-q85, jpg-q90, jpg-q95, jpg-q100, webp, webp-q75, webp-q80, webp-q85, webp-q90, webp-q95, webp-q100, wepb-l),
+# Default image format for HDMaps (png, jpg, jpg-q75, jpg-q80, jpg-q85, jpg-q90, jpg-q95, jpg-q100, webp, webp-q75, webp-q80, webp-q85, webp-q90, webp-q95, webp-q100, webp-l),
 # Note: any webp format requires the presence of the 'webp command line tools' (cwebp, dwebp) (https://developers.google.com/speed/webp/download)
 #
 # Has no effect on maps with explicit format settings
