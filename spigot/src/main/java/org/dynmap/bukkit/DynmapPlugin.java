@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -172,6 +173,27 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
     
+    // Nonblocking thread safety
+    private static final AtomicBoolean tryNativeId = new AtomicBoolean(true);
+    @SuppressWarnings("deprecation")
+    private static final int getBlockIdFromMaterial(Material material) {
+        if (tryNativeId.get()) {
+            try {
+                return material.getId();
+            } catch (NoSuchMethodError e) {
+                // We failed once, no need to retry
+                tryNativeId.set(false);
+            }
+        }
+
+        // We're living in a world where numerical IDs have been phased out completely.
+        // Let's return *some* number, because we need one
+        return material.ordinal();
+    }
+    private static final int getBlockIdFromBlock(Block block) {
+        return getBlockIdFromMaterial(block.getType());
+    }
+    
     private class BukkitEnableCoreCallback extends DynmapCore.EnableCoreCallbacks {
         @Override
         public void configurationLoaded() {
@@ -213,7 +235,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         public int getBlockIDAt(String wname, int x, int y, int z) {
             World w = getServer().getWorld(wname);
             if((w != null) && w.isChunkLoaded(x >> 4, z >> 4)) {
-                return w.getBlockTypeIdAt(x,  y,  z);
+                return getBlockIdFromBlock(w.getBlockAt(x, y, z));
             }
             return -1;
         }
@@ -1186,7 +1208,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 World w = loc.getWorld();
                 if(!w.isChunkLoaded(loc.getBlockX()>>4, loc.getBlockZ()>>4))
                     continue;
-                int bt = w.getBlockTypeIdAt(loc);
+                int bt = getBlockIdFromBlock(w.getBlockAt(loc));
                 /* Avoid stationary and moving water churn */
                 if(bt == 9) bt = 8;
                 if(btt.typeid == 9) btt.typeid = 8;
@@ -1213,7 +1235,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private void checkBlock(Block b, String trigger) {
         BlockToCheck btt = new BlockToCheck();
         btt.loc = b.getLocation();
-        btt.typeid = b.getTypeId();
+        btt.typeid = getBlockIdFromBlock(b);
         btt.data = b.getData();
         btt.trigger = trigger;
         blocks_to_check_accum.add(btt); /* Add to accumulator */
