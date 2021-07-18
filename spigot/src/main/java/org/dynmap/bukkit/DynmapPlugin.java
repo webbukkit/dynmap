@@ -183,12 +183,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             } catch (NoSuchMethodError e) {
                 // We failed once, no need to retry
                 tryNativeId.set(false);
+            } catch (java.lang.IllegalArgumentException e) {
+                // Ignore this entirely, as modern materials throw
+                // java.lang.IllegalArgumentException: Cannot get ID of Modern Material
             }
         }
 
         // We're living in a world where numerical IDs have been phased out completely.
-        // Let's return *some* number, because we need one
-        return material.ordinal();
+        // Let's return *some* number, because we need one.
+        // Also in that case we are adding a constant to ensure we're not conflicting with the
+        // actual IDs
+        return material.ordinal() + (1 << 20);
     }
     private static final int getBlockIdFromBlock(Block block) {
         return getBlockIdFromMaterial(block.getType());
