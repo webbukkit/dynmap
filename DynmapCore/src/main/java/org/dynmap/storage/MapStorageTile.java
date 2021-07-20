@@ -57,7 +57,7 @@ public abstract class MapStorageTile {
      * @param encImage - output stream for encoded image
      * @return true if write succeeded
      */
-    public abstract boolean write(long hash, BufferOutputStream encImage);
+    public abstract boolean write(long hash, BufferOutputStream encImage, long timestamp);
     /**
      * Write tile from image
      * 
@@ -65,10 +65,10 @@ public abstract class MapStorageTile {
      * @param image - image to be encoded
      * @return true if write succeeded
      */
-    public boolean write(long hash, BufferedImage image) {
+    public boolean write(long hash, BufferedImage image, long timestamp) {
         BufferOutputStream bos = ImageIOManager.imageIOEncode(image, map.getImageFormat());
         if (bos != null) {
-            return write(hash, bos);
+            return write(hash, bos, timestamp);
         }
         return false;
     }
@@ -78,7 +78,7 @@ public abstract class MapStorageTile {
      * @return true if write succeeded
      */
     public boolean delete() {
-        return write(-1, (BufferOutputStream) null);
+        return write(-1, (BufferOutputStream) null, -1);
     }
     /**
      * Get write lock on tile

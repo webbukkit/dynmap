@@ -1178,6 +1178,7 @@ public class IsoHDPerspective implements HDPerspective {
 
     @Override
     public boolean render(MapChunkCache cache, HDMapTile tile, String mapname) {
+        final long startTimestamp = System.currentTimeMillis();
         Color rslt = new Color();
         MapIterator mapiter = cache.getIterator(0, 0, 0);
         DynmapWorld world = tile.getDynmapWorld();
@@ -1305,7 +1306,7 @@ public class IsoHDPerspective implements HDPerspective {
                 if(mtile.matchesHashCode(crc) == false) {
                     /* Wrap buffer as buffered image */
                     if(rendered[i]) {   
-                        mtile.write(crc, im[i].buf_img);
+                        mtile.write(crc, im[i].buf_img, startTimestamp);
                     }
                     else {
                         mtile.delete();
@@ -1336,7 +1337,7 @@ public class IsoHDPerspective implements HDPerspective {
                     if(mtile.matchesHashCode(crc) == false) {
                         /* Wrap buffer as buffered image */
                         if(rendered[i]) {
-                            mtile.write(crc, dayim[i].buf_img);
+                            mtile.write(crc, dayim[i].buf_img, startTimestamp);
                         }
                         else {
                             mtile.delete();
