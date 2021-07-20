@@ -149,7 +149,7 @@ public class PostgreSQLMapStorage extends MapStorage {
         }
 
         @Override
-        public boolean write(long hash, BufferOutputStream encImage) {
+        public boolean write(long hash, BufferOutputStream encImage, long timestamp) {
             if (mapkey == null) return false;
             Connection c = null;
             boolean err = false;
@@ -170,7 +170,7 @@ public class PostgreSQLMapStorage extends MapStorage {
                 else if (exists) {
                     stmt = c.prepareStatement("UPDATE " + tableTiles + " SET HashCode=?, LastUpdate=?, Format=?, Image=? WHERE MapID=? AND x=? and y=? AND zoom=?;");
                     stmt.setLong(1, hash);
-                    stmt.setLong(2, System.currentTimeMillis());
+                    stmt.setLong(2, timestamp);
                     stmt.setInt(3, map.getImageFormat().getEncoding().ordinal());
                     stmt.setBinaryStream(4, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
                     stmt.setInt(5, mapkey);
@@ -185,7 +185,7 @@ public class PostgreSQLMapStorage extends MapStorage {
                     stmt.setInt(3, y);
                     stmt.setInt(4, zoom);
                     stmt.setLong(5, hash);
-                    stmt.setLong(6, System.currentTimeMillis());
+                    stmt.setLong(6, timestamp);
                     stmt.setInt(7, map.getImageFormat().getEncoding().ordinal());
                     stmt.setBinaryStream(8, new BufferInputStream(encImage.buf, encImage.len), encImage.len);
                }
