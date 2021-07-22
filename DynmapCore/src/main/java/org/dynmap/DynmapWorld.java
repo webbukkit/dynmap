@@ -155,11 +155,12 @@ public abstract class DynmapWorld {
             }
             try {
                 MapStorageTile.TileRead tr = tile1.read();
-                mostRecentTimestamp = Math.max(mostRecentTimestamp, tr.lastModified);
                 if (tr != null) {
                     BufferedImage im = null;
                     try {
                         im = ImageIOManager.imageIODecode(tr);
+                        // Only consider the timestamp when the tile exists and isn't broken
+                        mostRecentTimestamp = Math.max(mostRecentTimestamp, tr.lastModified);
                     } catch (IOException iox) {
                         // Broken file - zap it
                         tile1.delete();
