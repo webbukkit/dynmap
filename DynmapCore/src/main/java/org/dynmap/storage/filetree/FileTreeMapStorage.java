@@ -136,7 +136,7 @@ public class FileTreeMapStorage extends MapStorage {
         }
 
         @Override
-        public boolean write(long hash, BufferOutputStream encImage) {
+        public boolean write(long hash, BufferOutputStream encImage, long timestamp) {
             File ff = getTileFile(map.getImageFormat().getEncoding());
             List<File> ffalt = getTileFilesAltFormats();
             File ffpar = ff.getParentFile();
@@ -158,7 +158,7 @@ public class FileTreeMapStorage extends MapStorage {
             if (ffpar.exists() == false) {
                 ffpar.mkdirs();
             }
-            if (replaceFile(ff, encImage.buf, encImage.len) == false) {
+            if (replaceFile(ff, encImage.buf, encImage.len, timestamp) == false) {
                 return false;
             }
             hashmap.updateHashCode(world.getName() + "." + map.getPrefix(), x, y, hash);
@@ -627,8 +627,12 @@ public class FileTreeMapStorage extends MapStorage {
     public String getTilesURI(boolean login_enabled) {
         return login_enabled?"standalone/tiles.php?tile=":"tiles/";
     }
-    
+
     private boolean replaceFile(File f, byte[] b, int len) {
+        return replaceFile(f, b, len, System.currentTimeMillis());
+    }
+    
+    private boolean replaceFile(File f, byte[] b, int len, long timestamp) {
         boolean done = false;
         File fold = new File(f.getPath() + ".old");
         File fnew = new File(f.getPath() + ".new");
@@ -649,6 +653,8 @@ public class FileTreeMapStorage extends MapStorage {
                 else {
                     fnew.renameTo(f);
                 }
+                // Use the supplied timestamp
+                f.setLastModified(timestamp);
                 done = true;
             } catch (IOException iox) {
                 if (raf != null) { try { raf.close(); } catch (IOException x) {} }

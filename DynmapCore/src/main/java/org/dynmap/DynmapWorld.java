@@ -128,6 +128,7 @@ public abstract class DynmapWorld {
     private static final int[] stepseq = { 3, 1, 2, 0 };
 
     private void processZoomFile(MapTypeState mts, MapStorageTile tile, boolean firstVariant) {
+        long mostRecentTimestamp = 0;
         int step = 1 << tile.zoom;
         MapStorageTile ztile = tile.getZoomOutTile();
         int width = 128, height = 128;
@@ -158,6 +159,8 @@ public abstract class DynmapWorld {
                     BufferedImage im = null;
                     try {
                         im = ImageIOManager.imageIODecode(tr);
+                        // Only consider the timestamp when the tile exists and isn't broken
+                        mostRecentTimestamp = Math.max(mostRecentTimestamp, tr.lastModified);
                     } catch (IOException iox) {
                         // Broken file - zap it
                         tile1.delete();
@@ -238,7 +241,7 @@ public abstract class DynmapWorld {
                 }
             }
             else /* if (!ztile.matchesHashCode(crc)) */ {
-                ztile.write(crc, zIm);
+                ztile.write(crc, zIm, (mostRecentTimestamp == 0)? System.currentTimeMillis() : mostRecentTimestamp);
                 MapManager.mapman.pushUpdate(this, new Client.Tile(ztile.getURI()));
                 enqueueZoomOutUpdate(ztile);
             }
