@@ -24,8 +24,8 @@ The following target platforms are supported, and you can find them at the links
 
 | Server type  | Version | Dynmap JAR | Where? |
 | ------------ | ------- | ---------- | ------ |
-| Spigot/PaperMC | ≤1.16.5  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
-| Spigot/PaperMC | ≤1.16.5 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Spigot/PaperMC | ≤1.17.1  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
+| Spigot/PaperMC | ≤1.17.1 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.11.2 | `Dynmap-<version>-forge-1.11.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.12.2 | `Dynmap-<version>-forge-1.12.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.13.2 | `Dynmap-<version>-forge-1.13.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
@@ -40,6 +40,8 @@ The following target platforms are supported, and you can find them at the links
 | Fabric | 1.16.1 | `Dynmap-<version>-fabric-1.16.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.16.2 | `Dynmap-<version>-fabric-1.16.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.16.4 | `Dynmap-<version>-fabric-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.17 | `Dynmap-<version>-fabric-1.17.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.17.1 | `Dynmap-<version>-fabric-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
     
 # Data Storage
 Dynmap supports the following storage backends:
