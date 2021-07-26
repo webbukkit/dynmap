@@ -1343,13 +1343,13 @@ public class DynmapPlugin
     /* Handler for generic console command sender */
     public class ForgeCommandSender implements DynmapCommandSender
     {
-        private CommandSource sender;
+        private CommandSourceStack sender;
 
         protected ForgeCommandSender() {
         	sender = null;
         }
 
-        public ForgeCommandSender(CommandSource send)
+        public ForgeCommandSender(CommandSourceStack send)
         {
             sender = send;
         }
@@ -1365,7 +1365,7 @@ public class DynmapPlugin
         {
         	if(sender != null) {
                 TextComponent ichatcomponent = new TextComponent(msg);
-                sender.sendMessage(ichatcomponent, Util.NIL_UUID);
+                sender.sendSuccess(ichatcomponent, true);
         	}
         }
 
@@ -1396,13 +1396,13 @@ public class DynmapPlugin
             if(bb != null) {
                 String id = bb.toString();
                 float tmp = bb.getBaseTemperature(), hum = bb.getDownfall();
-                int watermult = bb.getWaterColor();
-                Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
+                int watermult = bb.getWaterColor() | 0xFF000000;
+                Log.info("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
                 BiomeMap bmap = BiomeMap.byBiomeID(i);
                 if (bmap.isDefault()) {
                     bmap = new BiomeMap(i, id, tmp, hum);
-                    Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
+                    Log.info("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
                 }
                 else {
@@ -1411,7 +1411,7 @@ public class DynmapPlugin
                 }
                 if (watermult != -1) {
                     bmap.setWaterColorMultiplier(watermult);
-                	Log.verboseinfo("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
+                	Log.info("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
                 }
             }
         }
@@ -1435,7 +1435,6 @@ public class DynmapPlugin
     {
         /* Get MC version */
         String mcver = server.getServerVersion();
-
         /* Load extra biomes */
         loadExtraBiomes(mcver);
         /* Set up player login/quit event handler */
@@ -1605,7 +1604,7 @@ public class DynmapPlugin
         }
         else
         {
-            dsender = new ForgeCommandSender();
+            dsender = new ForgeCommandSender(commandSourceStack);
         }
         try {
         	core.processCommand(dsender, cmd, cmd, args);

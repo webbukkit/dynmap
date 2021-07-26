@@ -8,9 +8,9 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
 
 import org.dynmap.DynmapChunk;
@@ -18,6 +18,7 @@ import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
+import org.dynmap.Log;
 
 public class ForgeWorld extends DynmapWorld
 {
@@ -37,16 +38,26 @@ public class ForgeWorld extends DynmapWorld
     }
 
     public static String getWorldName(ServerLevelAccessor w) {
-    	return w.getLevel().serverLevelData.getLevelName();
+        ResourceKey<Level> rk = w.getLevel().dimension();
+        if (rk == Level.OVERWORLD) {    // Overworld?
+            return w.getLevel().serverLevelData.getLevelName();
+        } else if (rk == Level.END) {
+            return "DIM1";
+        } else if (rk == Level.NETHER) {
+            return "DIM-1";
+        } else {
+            return rk.getRegistryName() + "_" + rk.location();
+        }
     }
 
     public ForgeWorld(ServerLevelAccessor w)
     {
-        this(getWorldName(w), w.getLevel().getHeight(), 
+        this(getWorldName(w), 
+        	w.getLevel().getHeight(), 
     		w.getLevel().getSeaLevel(), 
     		w.getLevel().dimension() == Level.NETHER,
     		w.getLevel().dimension() == Level.END,
-			w.getLevel().serverLevelData.getLevelName());
+			getWorldName(w));
         setWorldLoaded(w);
     }
     public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle)
@@ -70,7 +81,7 @@ public class ForgeWorld extends DynmapWorld
         {
             env = "normal";
         }
-        
+        Log.info(getName() + ": skylight=" + skylight + ", height=" + this.worldheight + ", isnether=" + isnether + ", istheend=" + istheend);
     }
     /* Test if world is nether */
     @Override
@@ -141,7 +152,9 @@ public class ForgeWorld extends DynmapWorld
     	this.sealevel = w.getLevel().getSeaLevel();   // Read actual current sealevel from world
     	// Update lighting table
     	for (int i = 0; i < 16; i++) {
-    	    this.setBrightnessTableEntry(i, w.getLevel().dimensionType().brightness(i));
+    		float light = w.getLevel().dimensionType().brightness(i);
+    	    this.setBrightnessTableEntry(i, light);
+    	    Log.info(getName() + ": light " + i + " = " + light);
     	}
     }
     /* Get light level of block */

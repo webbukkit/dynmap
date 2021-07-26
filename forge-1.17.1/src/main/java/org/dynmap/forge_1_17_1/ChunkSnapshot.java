@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DataBitsPacked;
+import org.dynmap.Log;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
