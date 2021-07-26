@@ -1391,18 +1391,18 @@ public class DynmapPlugin
 
     	Biome[] list = getBiomeList();
     	
-        for(int i = 0; i < list.length; i++) {
+        for (int i = 0; i < list.length; i++) {
             Biome bb = list[i];
-            if(bb != null) {
+            if (bb != null) {
                 String id = bb.toString();
                 float tmp = bb.getBaseTemperature(), hum = bb.getDownfall();
-                int watermult = bb.getWaterColor() | 0xFF000000;
-                Log.info("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
+                int watermult = bb.getWaterColor();
+                Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
                 BiomeMap bmap = BiomeMap.byBiomeID(i);
                 if (bmap.isDefault()) {
                     bmap = new BiomeMap(i, id, tmp, hum);
-                    Log.info("Add custom biome [" + bmap.toString() + "] (" + i + ")");
+                    Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
                 }
                 else {
@@ -1411,7 +1411,7 @@ public class DynmapPlugin
                 }
                 if (watermult != -1) {
                     bmap.setWaterColorMultiplier(watermult);
-                	Log.info("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
+                	Log.verboseinfo("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
                 }
             }
         }

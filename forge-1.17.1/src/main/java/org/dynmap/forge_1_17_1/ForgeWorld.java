@@ -18,7 +18,7 @@ import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
-import org.dynmap.Log;
+//import org.dynmap.Log;
 
 public class ForgeWorld extends DynmapWorld
 {
@@ -81,7 +81,7 @@ public class ForgeWorld extends DynmapWorld
         {
             env = "normal";
         }
-        Log.info(getName() + ": skylight=" + skylight + ", height=" + this.worldheight + ", isnether=" + isnether + ", istheend=" + istheend);
+        //Log.info(getName() + ": skylight=" + skylight + ", height=" + this.worldheight + ", isnether=" + isnether + ", istheend=" + istheend);
     }
     /* Test if world is nether */
     @Override
@@ -154,7 +154,7 @@ public class ForgeWorld extends DynmapWorld
     	for (int i = 0; i < 16; i++) {
     		float light = w.getLevel().dimensionType().brightness(i);
     	    this.setBrightnessTableEntry(i, light);
-    	    Log.info(getName() + ": light " + i + " = " + light);
+    	    //Log.info(getName() + ": light " + i + " = " + light);
     	}
     }
     /* Get light level of block */
