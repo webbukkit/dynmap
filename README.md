@@ -9,15 +9,21 @@
 * [Where to go for questions and discussions](#where-to-go-for-questions-and-discussions)
 * [Where to go to make donations](#where-to-go-to-make-donations)
 # How to build
-Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory
+Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.17.x+ requirements, the developer's
+default JDK must be a JDK 16 (or later) versions - older versions will still be compiled
+to run on the default JDK for those platforms (JDK 8), as will all common libraries.
 
 To build, run:
 
-    ./gradlew clean build install
+    ./gradlew clean build
+    cd oldgradle
+    ./gradlew clean build
     
 Or (on Windows):
 
-    gradlew.bat clean build install
+    gradlew.bat clean build
+    cd oldgradle
+    gradlew.bat clean build
     
 # What platforms are supported?
 The following target platforms are supported, and you can find them at the links supplied:
@@ -36,6 +42,7 @@ The following target platforms are supported, and you can find them at the links
 | Forge | 1.16.3 | `Dynmap-<version>-forge-1.16.3.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.16.4 | `Dynmap-<version>-forge-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.16.5 | `Dynmap-<version>-forge-1.16.5.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Forge | 1.17.1 | `Dynmap-<version>-forge-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.15.2 | `Dynmap-<version>-fabric-1.15.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.16.1 | `Dynmap-<version>-fabric-1.16.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.16.2 | `Dynmap-<version>-fabric-1.16.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
