@@ -172,12 +172,9 @@ public class ChunkSnapshot
                             statestr.append(pid).append('=').append(prop.get(pid).getAsString());
                         }
                         palette[pi] = DynmapBlockState.getStateByNameAndState(pname, statestr.toString());
-                        //Log.info("getStateByNameAndState(" + pname + "," + statestr.toString() + ")=" + palette[pi]);
-                        //if (pname.contains("grass_block")) { Log.info("getStateByNameAndState(" + pname + "," + statestr.toString() + ")=" + palette[pi]); }
                     }
                     if (palette[pi] == null) {
                         palette[pi] = DynmapBlockState.getBaseStateByName(pname);
-                        //if (pname.contains("grass_block")) { Log.info("getBaseStateByName(" + pname + ")=" + palette[pi]); }
                     }
                     if (palette[pi] == null) {
                         palette[pi] = DynmapBlockState.AIR;
