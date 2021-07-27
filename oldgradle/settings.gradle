@@ -1,0 +1,11 @@
+rootProject.name = 'dynmap-common'
+include ':DynmapCore'
+include ':DynmapCoreAPI'
+include ':forge-1.12.2'
+include ':forge-1.11.2'
+
+project(':DynmapCore').projectDir = "$rootDir/../DynmapCore" as File
+project(':DynmapCoreAPI').projectDir = "$rootDir/../DynmapCoreAPI" as File
+project(':forge-1.12.2').projectDir = "$rootDir/../forge-1.12.2" as File
+project(':forge-1.11.2').projectDir = "$rootDir/../forge-1.11.2" as File
+
