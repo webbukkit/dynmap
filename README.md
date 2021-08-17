@@ -21,7 +21,7 @@ Or (on Windows):
 
     gradlew.bat clean build
     
-The Forge 1.11.2 and 1.12.2 versions (specifically ForgeGradle for these) is very sensitive to being built by JDH 8, so to build them, 
+The Forge 1.11.2 and 1.12.2 versions (specifically ForgeGradle for these) are very sensitive to being built by JDK 8, so to build them, 
 set JAVA_HOME to correspond to a JDK 8 installation, then build using the following;
 
     cd oldgradle
