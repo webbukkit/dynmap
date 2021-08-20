@@ -1159,7 +1159,6 @@ public class DynmapCore implements DynmapCommonAPI {
         "cancelrender",
         "radiusrender",
         "updaterender",
-        "reload",
         "stats",
         "triggerstats",
         "resetstats",
@@ -1590,11 +1589,11 @@ public class DynmapCore implements DynmapCommonAPI {
                 } else {
                     sender.sendMessage("World name is required");
                 }
-            } else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
+            } /*else if (c.equals("reload") && checkPlayerPermission(sender, "reload")) {
                 sender.sendMessage("Reloading Dynmap...");
                 getServer().reload();
                 sender.sendMessage("Dynmap reloaded");
-            } else if (c.equals("stats") && checkPlayerPermission(sender, "stats")) {
+            } */else if (c.equals("stats") && checkPlayerPermission(sender, "stats")) {
                 if(args.length == 1)
                     mapManager.printStats(sender, null);
                 else
