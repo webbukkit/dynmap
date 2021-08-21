@@ -821,6 +821,7 @@ public class DynmapPlugin {
                 if (!fw.isLoaded()) {
                     fw.setWorldLoaded(w);
                 }
+                fw.updateWorld(w);
                 return fw;
             }
         }
@@ -843,6 +844,7 @@ public class DynmapPlugin {
             HashMap<String, Object> vals = new HashMap<String, Object>();
             vals.put("name", fw.getRawName());
             vals.put("height", fw.worldheight);
+            vals.put("miny", fw.minY);
             vals.put("sealevel", fw.sealevel);
             vals.put("nether", fw.isNether());
             vals.put("the_end", ((FabricWorld) fw).isTheEnd());
@@ -881,12 +883,13 @@ public class DynmapPlugin {
             try {
                 String name = (String) world.get("name");
                 int height = (Integer) world.get("height");
+                Integer miny = (Integer) world.get("miny");
                 int sealevel = (Integer) world.get("sealevel");
                 boolean nether = (Boolean) world.get("nether");
                 boolean theend = (Boolean) world.get("the_end");
                 String title = (String) world.get("title");
                 if (name != null) {
-                    FabricWorld fw = new FabricWorld(this, name, height, sealevel, nether, theend, title);
+                    FabricWorld fw = new FabricWorld(this, name, height, sealevel, nether, theend, title, (miny != null) ? miny : 0);
                     fw.setWorldUnloaded();
                     core.processWorldLoad(fw);
                     worlds.put(fw.getName(), fw);

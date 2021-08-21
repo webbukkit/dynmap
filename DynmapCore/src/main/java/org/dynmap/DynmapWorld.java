@@ -52,22 +52,27 @@ public abstract class DynmapWorld {
     private MapStorage storage; // Storage handler for this world's maps
     
     /* World height data */
-    public final int worldheight;
-    public final int heightshift;
-    public final int heightmask;
+    public int worldheight;	// really maxY+1
+    public int minY;
     public int sealevel;
     
+    protected void updateWorldHeights(int worldheight, int minY, int sealevel) {
+    	this.worldheight = worldheight;
+    	this.minY = minY;
+    	this.sealevel = sealevel;
+    }
+    
     protected DynmapWorld(String wname, int worldheight, int sealevel) {
+    	this(wname, worldheight, sealevel, 0);
+    }
+    protected DynmapWorld(String wname, int worldheight, int sealevel, int miny) {
         this.raw_wname = wname;
         this.wname = normalizeWorldName(wname);
         this.hashcode = this.wname.hashCode();
         this.title = wname;
         this.worldheight = worldheight;
+        this.minY = miny;
         this.sealevel = sealevel;
-        int shift;
-        for(shift = 0; ((1 << shift) < worldheight); shift++) {}
-        heightshift = shift;
-        heightmask = (1 << shift) - 1;
         /* Generate default brightness table for surface world */
         for (int i = 0; i <= 15; ++i) {
             float f1 = 1.0F - (float)i / 15.0F;
@@ -319,7 +324,7 @@ public abstract class DynmapWorld {
         }
         title = worldconfig.getString("title", title);
         ConfigurationNode ctr = worldconfig.getNode("center");
-        int mid_y = worldheight/2;
+        int mid_y = (worldheight + minY)/2;
         if(ctr != null)
             center = new DynmapLocation(wname, ctr.getDouble("x", 0.0), ctr.getDouble("y", mid_y), ctr.getDouble("z", 0));
         else

@@ -53,6 +53,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 	private DynmapWorld dw;
 	private ServerChunkCache cps;
 	private int nsect;
+	private int sectoff;	// Offset for sake of negative section indexes
 	private List<DynmapChunk> chunks;
 	private ListIterator<DynmapChunk> iterator;
 	private int x_min, x_max, z_min, z_max;
@@ -87,6 +88,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 		private BlockStep laststep;
 		private DynmapBlockState blk;
 		private final int worldheight;
+		private final int ymin;
 		private final int x_base;
 		private final int z_base;
 
@@ -100,6 +102,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 
 			initialize(x0, y0, z0);
 			worldheight = w.getHeight();
+			ymin = dw.minY;
 		}
 
 		@Override
@@ -119,7 +122,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 
 			laststep = BlockStep.Y_MINUS;
 
-			if ((y >= 0) && (y < worldheight)) {
+			if ((y >= ymin) && (y < worldheight)) {
 				blk = null;
 			} else {
 				blk = DynmapBlockState.AIR;
@@ -481,7 +484,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 			case 4:
 				y--;
 
-				if (y < 0) {
+				if (y < ymin) {
 					blk = DynmapBlockState.AIR;
 				}
 
@@ -535,7 +538,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 
 			this.y = y;
 
-			if ((y < 0) || (y >= worldheight)) {
+			if ((y < ymin) || (y >= worldheight)) {
 				blk = DynmapBlockState.AIR;
 			} else {
 				blk = null;
@@ -560,7 +563,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 		@Override
 		public final DynmapBlockState getBlockTypeAt(BlockStep s) {
 			if (s == BlockStep.Y_MINUS) {
-				if (y > 0) {
+				if (y > ymin) {
 					return snap.getBlockType(bx, y - 1, bz);
 				}
 			} else if (s == BlockStep.Y_PLUS) {
@@ -591,17 +594,17 @@ public class ForgeMapChunkCache extends MapChunkCache {
 
 		@Override
 		public long getBlockKey() {
-			return (((chunkindex * worldheight) + y) << 8) | (bx << 4) | bz;
+			return (((chunkindex * (worldheight - ymin)) + (y - ymin)) << 8) | (bx << 4) | bz;
 		}
 
 		@Override
 		public final boolean isEmptySection() {
-			try {
-				return !isSectionNotEmpty[chunkindex][y >> 4];
-			} catch (Exception x) {
+	    	boolean[] flags = isSectionNotEmpty[chunkindex];
+	        if(flags == null) {
 				initSectionData(chunkindex);
-				return !isSectionNotEmpty[chunkindex][y >> 4];
-			}
+	            flags = isSectionNotEmpty[chunkindex];
+	        }
+	        return !flags[(y >> 4) + sectoff];
 		}
 
 		@Override
@@ -778,7 +781,7 @@ public class ForgeMapChunkCache extends MapChunkCache {
 
 		@Override
 		public boolean isSectionEmpty(int sy) {
-			return (sy < 4);
+			return (sy > 3);
 		}
 	}
 
@@ -808,7 +811,8 @@ public class ForgeMapChunkCache extends MapChunkCache {
 		} else {
 			chunks = new ArrayList<DynmapChunk>();
 		}
-		nsect = dw.worldheight >> 4;
+		nsect = (dw.worldheight - dw.minY) >> 4;
+		sectoff = (-dw.minY) >> 4;
 		this.chunks = chunks;
 
 		/* Compute range */
@@ -1227,22 +1231,22 @@ public class ForgeMapChunkCache extends MapChunkCache {
 
 		if (snaparray[idx] != EMPTY) {
 			for (int i = 0; i < nsect; i++) {
-				if (snaparray[idx].isSectionEmpty(i) == false) {
+				if (snaparray[idx].isSectionEmpty(i - sectoff) == false) {
 					isSectionNotEmpty[idx][i] = true;
 				}
 			}
 		}
 	}
 
-	public boolean isEmptySection(int sx, int sy, int sz) {
-		int idx = (sx - x_min) + (sz - z_min) * x_dim;
-
-		if (isSectionNotEmpty[idx] == null) {
-			initSectionData(idx);
-		}
-
-		return !isSectionNotEmpty[idx][sy];
-	}
+    public boolean isEmptySection(int sx, int sy, int sz) {
+        int idx = (sx - x_min) + (sz - z_min) * x_dim;
+    	boolean[] flags = isSectionNotEmpty[idx];
+        if(flags == null) {
+            initSectionData(idx);
+            flags = isSectionNotEmpty[idx];
+        }
+        return !flags[sy + sectoff];
+    }
 
 	/**
 	 * Get cache iterator

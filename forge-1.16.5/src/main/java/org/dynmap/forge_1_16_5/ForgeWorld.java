@@ -63,7 +63,7 @@ public class ForgeWorld extends DynmapWorld
     }
     public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle)
     {
-        super(name, (height > maxWorldHeight)?maxWorldHeight:height, sealevel);
+        super(name, (height > maxWorldHeight)?maxWorldHeight:height, sealevel, 0);
         world = null;
         setTitle(deftitle);
         isnether = nether;

@@ -25,7 +25,7 @@ public class FabricWorld extends DynmapWorld {
     private final boolean istheend;
     private final String env;
     private DynmapLocation spawnloc = new DynmapLocation();
-    private static int maxWorldHeight = 256;    // Maximum allows world height
+    private static int maxWorldHeight = 320;    // Maximum allows world height
 
     public static int getMaxWorldHeight() {
         return maxWorldHeight;
@@ -47,18 +47,23 @@ public class FabricWorld extends DynmapWorld {
             return rk.getValue().getNamespace() + "_" + rk.getValue().getPath();
         }
     }
+    
+    public void updateWorld(World w) {
+    	this.updateWorldHeights(w.getHeight(), w.getDimension().getMinimumY(), w.getSeaLevel());
+    }
 
     public FabricWorld(DynmapPlugin plugin, World w) {
         this(plugin, getWorldName(plugin, w), w.getHeight(),
                 w.getSeaLevel(),
                 w.getRegistryKey() == World.NETHER,
                 w.getRegistryKey() == World.END,
-                w.getRegistryKey().getValue().getPath());
+                w.getRegistryKey().getValue().getPath(),
+                w.getDimension().getMinimumY());
         setWorldLoaded(w);
     }
 
-    public FabricWorld(DynmapPlugin plugin, String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle) {
-        super(name, (height > maxWorldHeight) ? maxWorldHeight : height, sealevel);
+    public FabricWorld(DynmapPlugin plugin, String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle, int miny) {
+        super(name, (height > maxWorldHeight) ? maxWorldHeight : height, sealevel, miny);
         this.plugin = plugin;
         world = null;
         setTitle(deftitle);

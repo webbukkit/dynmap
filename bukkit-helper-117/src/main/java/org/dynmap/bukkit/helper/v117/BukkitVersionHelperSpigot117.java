@@ -2,6 +2,7 @@ package org.dynmap.bukkit.helper.v117;
 
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_17_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapChunk;
@@ -399,5 +400,10 @@ public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
     	}    	
     	return url;
     }
-
+	// Get minY for world
+	@Override
+	public int getWorldMinY(World w) {
+		CraftWorld cw = (CraftWorld) w;
+		return cw.getMinHeight();
+	}
 }

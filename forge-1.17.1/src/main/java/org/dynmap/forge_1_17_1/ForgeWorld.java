@@ -18,7 +18,6 @@ import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
-//import org.dynmap.Log;
 
 public class ForgeWorld extends DynmapWorld
 {
@@ -28,7 +27,7 @@ public class ForgeWorld extends DynmapWorld
     private final boolean istheend;
     private final String env;
     private DynmapLocation spawnloc = new DynmapLocation();
-    private static int maxWorldHeight = 256;    // Maximum allows world height
+    private static int maxWorldHeight = 320;    // Maximum allows world height
     
     public static int getMaxWorldHeight() {
         return maxWorldHeight;
@@ -50,6 +49,10 @@ public class ForgeWorld extends DynmapWorld
         }
     }
 
+    public void updateWorld(ServerLevelAccessor w) {
+    	this.updateWorldHeights(w.getLevel().getHeight(), w.getLevel().dimensionType().minY(), w.getLevel().getSeaLevel());
+    }
+
     public ForgeWorld(ServerLevelAccessor w)
     {
         this(getWorldName(w), 
@@ -57,12 +60,13 @@ public class ForgeWorld extends DynmapWorld
     		w.getLevel().getSeaLevel(), 
     		w.getLevel().dimension() == Level.NETHER,
     		w.getLevel().dimension() == Level.END,
-			getWorldName(w));
+			getWorldName(w),
+			w.getLevel().dimensionType().minY());
         setWorldLoaded(w);
     }
-    public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle)
+    public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle, int miny)
     {
-        super(name, (height > maxWorldHeight)?maxWorldHeight:height, sealevel);
+        super(name, (height > maxWorldHeight)?maxWorldHeight:height, sealevel, miny);
         world = null;
         setTitle(deftitle);
         isnether = nether;

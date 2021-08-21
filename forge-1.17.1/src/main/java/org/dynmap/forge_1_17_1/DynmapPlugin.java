@@ -1537,11 +1537,6 @@ public class DynmapPlugin
         /* Initialized the currently loaded worlds */
         for (ServerLevel world : server.getAllLevels()) {
             ForgeWorld w = this.getWorld(world);
-            /*NOTYET - need rest of forge
-            if(DimensionManager.getWorld(world.provider.getDimensionId()) == null) { // If not loaded
-                w.setWorldUnloaded();
-            }
-            */
         }
         for(ForgeWorld w : worlds.values()) {
             if (core.processWorldLoad(w)) {   /* Have core process load first - fire event listeners if good load after */
@@ -1858,6 +1853,7 @@ public class DynmapPlugin
            		if(fw.isLoaded() == false) {
        				fw.setWorldLoaded(w);
            		}
+           		fw.updateWorld(w);
     			return fw;
     		}
     	}
@@ -1880,6 +1876,7 @@ public class DynmapPlugin
             HashMap<String, Object> vals = new HashMap<String, Object>();
             vals.put("name", fw.getRawName());
             vals.put("height",  fw.worldheight);
+            vals.put("miny",  fw.minY);
             vals.put("sealevel", fw.sealevel);
             vals.put("nether",  fw.isNether());
             vals.put("the_end",  ((ForgeWorld)fw).isTheEnd());
@@ -1917,12 +1914,13 @@ public class DynmapPlugin
             try {
                 String name = (String)world.get("name");
                 int height = (Integer)world.get("height");
+                Integer miny = (Integer) world.get("miny");
                 int sealevel = (Integer)world.get("sealevel");
                 boolean nether = (Boolean)world.get("nether");
                 boolean theend = (Boolean)world.get("the_end");
                 String title = (String)world.get("title");
                 if(name != null) {
-                    ForgeWorld fw = new ForgeWorld(name, height, sealevel, nether, theend, title);
+                    ForgeWorld fw = new ForgeWorld(name, height, sealevel, nether, theend, title, (miny != null) ? miny : 0);
                     fw.setWorldUnloaded();
                     core.processWorldLoad(fw);
                     worlds.put(fw.getName(), fw);

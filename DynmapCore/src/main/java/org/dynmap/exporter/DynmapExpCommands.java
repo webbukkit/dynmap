@@ -198,7 +198,7 @@ public class DynmapExpCommands {
         ctx.xmax = (int)Math.ceil(loc.x) + radius;
         ctx.zmin = (int)Math.floor(loc.z) - radius;
         ctx.zmax = (int)Math.ceil(loc.z) + radius;
-        ctx.ymin = 0;
+        ctx.ymin = world.minY;
         ctx.ymax = world.worldheight - 1;
         ctx.world = world.getName();
         return handleInfo(sender, args, ctx, core);

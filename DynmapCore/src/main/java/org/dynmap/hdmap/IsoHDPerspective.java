@@ -136,7 +136,6 @@ public class IsoHDPerspective implements HDPerspective {
         final boolean isnether;
         boolean skiptoair;
         final int worldheight;
-        final int heightmask;
         final LightLevels llcache[];
         
         /* Cache for custom model patch lists */
@@ -147,9 +146,6 @@ public class IsoHDPerspective implements HDPerspective {
             mapiter = mi;
             this.isnether = isnether;
             worldheight = mapiter.getWorldHeight();
-            int shift;
-            for(shift = 0; (1<<shift) < worldheight; shift++) {}
-            heightmask = (1<<shift) - 1;
             llcache = new LightLevels[4];
             for(int i = 0; i < llcache.length; i++)
                 llcache[i] = new LightLevels();
@@ -627,6 +623,7 @@ public class IsoHDPerspective implements HDPerspective {
         
         /* Skip empty : return false if exited */
         private final boolean raytraceSkipEmpty(MapChunkCache cache) {
+        	int minsy = cache.getWorld().minY >> 4;
             while(cache.isEmptySection(sx, sy, sz)) {
                 /* If Y step is next best */
                 if((st_next_y <= st_next_x) && (st_next_y <= st_next_z)) {
@@ -634,7 +631,7 @@ public class IsoHDPerspective implements HDPerspective {
                     t = st_next_y;
                     st_next_y += sdt_dy;
                     laststep = stepy;
-                    if(sy < 0)
+                    if (sy < minsy)
                         return false;
                 }
                 /* If X step is next best */
@@ -658,7 +655,7 @@ public class IsoHDPerspective implements HDPerspective {
         /**
          * Step block iterator: false if done
          */
-        private final boolean raytraceStepIterator() {
+        private final boolean raytraceStepIterator(int miny, int maxy) {
             /* If Y step is next best */
             if ((t_next_y <= t_next_x) && (t_next_y <= t_next_z)) {
                 y += y_inc;
@@ -667,7 +664,7 @@ public class IsoHDPerspective implements HDPerspective {
                 laststep = stepy;
                 mapiter.stepPosition(laststep);
                 /* If outside 0-(height-1) range */
-                if((y & (~heightmask)) != 0) {
+                if ((y < miny) || (y > maxy)) {
                     return false;
                 }
             }
@@ -694,6 +691,9 @@ public class IsoHDPerspective implements HDPerspective {
          * Trace ray, based on "Voxel Tranversal along a 3D line"
          */
         private final void raytrace(MapChunkCache cache, HDShaderState[] shaderstate, boolean[] shaderdone) {
+        	int minY = cache.getWorld().minY;
+        	int height = cache.getWorld().worldheight;
+        	
             /* Initialize raytrace state variables */
             raytrace_init();
 
@@ -703,7 +703,7 @@ public class IsoHDPerspective implements HDPerspective {
             
             raytrace_section_init();
             
-            if (y < 0)
+            if (y < minY)
                 return;
             
             mapiter.initialize(x, y, z);
@@ -712,7 +712,7 @@ public class IsoHDPerspective implements HDPerspective {
         		if (visit_block(shaderstate, shaderdone)) {
                     return;
                 }
-        		if (!raytraceStepIterator()) {
+        		if (!raytraceStepIterator(minY, height)) {
         		    return;
         		}
             }
@@ -978,9 +978,7 @@ public class IsoHDPerspective implements HDPerspective {
         /* Get max and min height */
         maxheight = configuration.getInteger("maximumheight", -1);
         
-        int minh = configuration.getInteger("minimumheight", 0);
-        if(minh < 0) minh = 0;
-        minheight = minh;
+        minheight = configuration.getInteger("minimumheight", Integer.MIN_VALUE);
         /* Generate transform matrix for world-to-tile coordinate mapping */
         /* First, need to fix basic coordinate mismatches before rotation - we want zero azimuth to have north to top
          * (world -X -> tile +Y) and east to right (world -Z to tile +X), with height being up (world +Y -> tile +Z)
@@ -1129,7 +1127,9 @@ public class IsoHDPerspective implements HDPerspective {
             for(int y = t.ty; y <= (t.ty+1); y++) {
                 for(int z = 0; z <= 1; z++) {
                     corners[idx] = new Vector3D();
-                    corners[idx].x = x*tileWidth + dx; corners[idx].y = y*tileHeight + dy; corners[idx].z = z*t.getDynmapWorld().worldheight;
+                    corners[idx].x = x*tileWidth + dx;
+                    corners[idx].y = y*tileHeight + dy;
+                    corners[idx].z = (z == 1) ? t.getDynmapWorld().worldheight : t.getDynmapWorld().minY;
                     map_to_world.transform(corners[idx]);
                     /* Compute chunk coordinates of corner */
                     int cx = fastFloor(corners[idx].x / 16);
@@ -1240,13 +1240,17 @@ public class IsoHDPerspective implements HDPerspective {
             else
                 height = tile.getDynmapWorld().worldheight - 1;
         }
+        double miny = minheight;
+        if (miny == Integer.MIN_VALUE) {    /* Not set - assume world height - 1 */
+        	miny = tile.getDynmapWorld().minY;
+        }
         
         for(int x = 0; x < tileWidth * sizescale; x++) {
             ps.px = x;
             for(int y = 0; y < tileHeight * sizescale; y++) {
                 ps.top.x = ps.bottom.x = xbase + ((double)x)/sizescale + 0.5;    /* Start at center of pixel at Y=height+0.5, bottom at Y=-0.5 */
                 ps.top.y = ps.bottom.y = ybase + ((double)y)/sizescale + 0.5;
-                ps.top.z = height + 0.5; ps.bottom.z = minheight - 0.5;
+                ps.top.z = height + 0.5; ps.bottom.z = miny - 0.5;
                 map_to_world.transform(ps.top);            /* Transform to world coordinates */
                 map_to_world.transform(ps.bottom);
                 ps.direction.set(ps.bottom);

@@ -121,6 +121,10 @@ public abstract class BukkitVersionHelper {
      */
     public Polygon getWorldBorder(World world) { return null; }
     /**
+     * Get world minY
+     */
+    public int getWorldMinY(World world) { return 0; }
+    /**
      * Test if broken unloadChunk
      */
     public boolean isUnloadChunkBroken() { return false; }

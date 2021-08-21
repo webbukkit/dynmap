@@ -27,12 +27,13 @@ public class BukkitWorld extends DynmapWorld {
     private DynmapLocation spawnloc = new DynmapLocation();
     
     public BukkitWorld(World w) {
-        this(w.getName(), w.getMaxHeight(), w.getSeaLevel(), w.getEnvironment());
+        this(w.getName(), w.getMaxHeight(), w.getSeaLevel(), w.getEnvironment(),
+        	BukkitVersionHelper.helper.getWorldMinY(w));
         setWorldLoaded(w);
         new Permission("dynmap.world." + getName(), "Dynmap access for world " + getName(), PermissionDefault.OP);
     }
-    public BukkitWorld(String name, int height, int sealevel, World.Environment env) {
-        super(name, height, sealevel);
+    public BukkitWorld(String name, int height, int sealevel, World.Environment env, int miny) {
+        super(name, height, sealevel, miny);
         world = null;
         this.env = env;
         skylight = (env == World.Environment.NORMAL);
@@ -125,7 +126,7 @@ public class BukkitWorld extends DynmapWorld {
     @Override
     public int getLightLevel(int x, int y, int z) {
         if(world != null) {
-            if ((y >= 0) && (y < this.worldheight)) {
+            if ((y >= minY) && (y < this.worldheight)) {
                 return world.getBlockAt(x, y, z).getLightLevel();
             }
             return 0;
@@ -153,7 +154,7 @@ public class BukkitWorld extends DynmapWorld {
     @Override
     public int getSkyLightLevel(int x, int y, int z) {
         if(world != null) {
-            if ((y >= 0) && (y < this.worldheight)) {
+            if ((y >= minY) && (y < this.worldheight)) {
                 return world.getBlockAt(x, y, z).getLightFromSky();
             }
             else {

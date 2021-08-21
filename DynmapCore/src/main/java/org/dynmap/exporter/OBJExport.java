@@ -170,7 +170,7 @@ public class OBJExport {
         else {
             minZ = maxz; maxZ = minz;
         }
-        if (minY < 0) minY = 0;
+        if (minY < world.minY) minY = world.minY;
         if (maxY >= world.worldheight) maxY = world.worldheight - 1;
         if (centerOrigin) {
             originX = (maxX + minX) / 2.0;

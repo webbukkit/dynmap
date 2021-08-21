@@ -43,6 +43,7 @@ public class FabricMapChunkCache extends MapChunkCache {
     private DynmapWorld dw;
     private ServerChunkManager cps;
     private int nsect;
+    private int sectoff;
     private List<DynmapChunk> chunks;
     private ListIterator<DynmapChunk> iterator;
     private int x_min, x_max, z_min, z_max;
@@ -58,7 +59,6 @@ public class FabricMapChunkCache extends MapChunkCache {
     private byte[][] sameneighborbiomecnt;
     private BiomeMap[][] biomemap;
     private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
-
 
     private static final BlockStep unstep[] = {BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
             BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS
@@ -111,6 +111,7 @@ public class FabricMapChunkCache extends MapChunkCache {
         private BlockStep laststep;
         private DynmapBlockState blk;
         private final int worldheight;
+        private final int miny;
         private final int x_base;
         private final int z_base;
 
@@ -124,6 +125,7 @@ public class FabricMapChunkCache extends MapChunkCache {
 
             initialize(x0, y0, z0);
             worldheight = w.getHeight();
+            miny = dw.minY;
         }
 
         @Override
@@ -143,7 +145,7 @@ public class FabricMapChunkCache extends MapChunkCache {
 
             laststep = BlockStep.Y_MINUS;
 
-            if ((y >= 0) && (y < worldheight)) {
+            if ((y >= miny) && (y < worldheight)) {
                 blk = null;
             } else {
                 blk = DynmapBlockState.AIR;
@@ -481,7 +483,7 @@ public class FabricMapChunkCache extends MapChunkCache {
                 case 4:
                     y--;
 
-                    if (y < 0) {
+                    if (y < miny) {
                         blk = DynmapBlockState.AIR;
                     }
 
@@ -534,7 +536,7 @@ public class FabricMapChunkCache extends MapChunkCache {
 
             this.y = y;
 
-            if ((y < 0) || (y >= worldheight)) {
+            if ((y < miny) || (y >= worldheight)) {
                 blk = DynmapBlockState.AIR;
             } else {
                 blk = null;
@@ -559,7 +561,7 @@ public class FabricMapChunkCache extends MapChunkCache {
         @Override
         public final DynmapBlockState getBlockTypeAt(BlockStep s) {
             if (s == BlockStep.Y_MINUS) {
-                if (y > 0) {
+                if (y > miny) {
                     return snap.getBlockType(bx, y - 1, bz);
                 }
             } else if (s == BlockStep.Y_PLUS) {
@@ -590,18 +592,18 @@ public class FabricMapChunkCache extends MapChunkCache {
 
         @Override
         public long getBlockKey() {
-            return (((chunkindex * worldheight) + y) << 8) | (bx << 4) | bz;
+            return (((chunkindex * (worldheight - miny)) + (y - miny)) << 8) | (bx << 4) | bz;
         }
 
-        @Override
-        public final boolean isEmptySection() {
-            try {
-                return !isSectionNotEmpty[chunkindex][y >> 4];
-            } catch (Exception x) {
-                initSectionData(chunkindex);
-                return !isSectionNotEmpty[chunkindex][y >> 4];
-            }
-        }
+		@Override
+		public final boolean isEmptySection() {
+	    	boolean[] flags = isSectionNotEmpty[chunkindex];
+	        if(flags == null) {
+				initSectionData(chunkindex);
+	            flags = isSectionNotEmpty[chunkindex];
+	        }
+	        return !flags[(y >> 4) + sectoff];
+		}
 
         @Override
         public RenderPatchFactory getPatchFactory() {
@@ -778,7 +780,7 @@ public class FabricMapChunkCache extends MapChunkCache {
 
         @Override
         public boolean isSectionEmpty(int sy) {
-            return (sy < 4);
+            return (sy > 3);
         }
     }
 
@@ -836,7 +838,8 @@ public class FabricMapChunkCache extends MapChunkCache {
         } else {
             chunks = new ArrayList<DynmapChunk>();
         }
-        nsect = dw.worldheight >> 4;
+        nsect = (dw.worldheight - dw.minY) >> 4;
+        sectoff = (-dw.minY) >> 4;
         this.chunks = chunks;
 
         /* Compute range */
@@ -1261,7 +1264,7 @@ public class FabricMapChunkCache extends MapChunkCache {
 
         if (snaparray[idx] != EMPTY) {
             for (int i = 0; i < nsect; i++) {
-                if (snaparray[idx].isSectionEmpty(i) == false) {
+                if (snaparray[idx].isSectionEmpty(i - sectoff) == false) {
                     isSectionNotEmpty[idx][i] = true;
                 }
             }
@@ -1270,12 +1273,12 @@ public class FabricMapChunkCache extends MapChunkCache {
 
     public boolean isEmptySection(int sx, int sy, int sz) {
         int idx = (sx - x_min) + (sz - z_min) * x_dim;
-
-        if (isSectionNotEmpty[idx] == null) {
-            initSectionData(idx);
+    	boolean[] flags = isSectionNotEmpty[idx];
+        if (flags == null) {
+			initSectionData(idx);
+            flags = isSectionNotEmpty[idx];
         }
-
-        return !isSectionNotEmpty[idx][sy];
+        return !flags[sy + sectoff];
     }
 
     /**
