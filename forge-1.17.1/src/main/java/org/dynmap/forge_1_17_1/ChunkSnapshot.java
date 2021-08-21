@@ -1,6 +1,7 @@
 package org.dynmap.forge_1_17_1;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DataBitsPacked;
@@ -25,7 +26,8 @@ public class ChunkSnapshot
     }
 
     private final int x, z;
-    private final Section[] section;
+    private final Section[] section;	// Section, indexed by (Y/16) + sectionOffset (to handle negatives)
+    private final int sectionOffset;	// Offset - section[N] = section for Y = N-sectionOffset
     private final int[] hmap; // Height map
     private final int[] biome;
     private final long captureFulltime;
@@ -109,6 +111,7 @@ public class ChunkSnapshot
         this.sectionCnt = worldheight / 16;
         /* Allocate arrays indexed by section */
         this.section = new Section[this.sectionCnt+1];
+        this.sectionOffset = 0;
 
         /* Fill with empty data */
         for (int i = 0; i <= this.sectionCnt; i++) {
@@ -134,26 +137,34 @@ public class ChunkSnapshot
             this.inhabitedTicks = 0;
         }
         /* Allocate arrays indexed by section */
-        this.section = new Section[this.sectionCnt+1];
+        LinkedList<Section> sections = new LinkedList<Section>();
+        int sectoff = 0;	// Default to zero
+        int sectcnt = 0;
         /* Fill with empty data */
         for (int i = 0; i <= this.sectionCnt; i++) {
-            this.section[i] = empty_section;
+            sections.add(empty_section);
+            sectcnt++;
         }
         /* Get sections */
         ListTag sect = nbt.getList("Sections", 10);
         for (int i = 0; i < sect.size(); i++) {
             CompoundTag sec = sect.getCompound(i);
             int secnum = sec.getByte("Y");
-            if (secnum >= this.sectionCnt) {
-                //Log.info("Section " + (int) secnum + " above world height " + worldheight);
-                continue;
+            // Beyond end - extend up
+            while (secnum >= (sectcnt - sectoff)) {
+        		sections.addLast(empty_section);	// Pad with empty
+        		sectcnt++;
             }
-            if (secnum < 0)
-                continue;
+            // Negative - see if we need to extend sectionOffset
+        	while ((secnum + sectoff) < 0) {
+        		sections.addFirst(empty_section);	// Pad with empty
+        		sectoff++;
+        		sectcnt++;
+        	}
             //System.out.println("section(" + secnum + ")=" + sec.asString());
             // Create normal section to initialize
             StdSection cursect = new StdSection();
-            this.section[secnum] = cursect;
+            sections.set(secnum + sectoff, cursect);
             DynmapBlockState[] states = cursect.states;
             DynmapBlockState[] palette = null;
             // If we've got palette and block states list, process non-empty section
@@ -234,6 +245,9 @@ public class ChunkSnapshot
         	    }
             }
         }
+        // Finalize sections array
+        this.section = sections.toArray(new Section[sections.size()]);
+        this.sectionOffset = sectoff;
     }
     
     public int getX()
@@ -247,18 +261,24 @@ public class ChunkSnapshot
     }
     
     public DynmapBlockState getBlockType(int x, int y, int z)
-    {
-        return section[y >> 4].getBlockType(x, y, z);
+    {    	
+    	int idx = (y >> 4) + sectionOffset;
+    	if ((idx < 0) || (idx >= section.length)) return DynmapBlockState.AIR;
+        return section[idx].getBlockType(x, y, z);
     }
 
     public int getBlockSkyLight(int x, int y, int z)
     {
-        return section[y >> 4].getBlockSkyLight(x, y, z);
+    	int idx = (y >> 4) + sectionOffset;
+    	if ((idx < 0) || (idx >= section.length)) return 15;
+        return section[idx].getBlockSkyLight(x, y, z);
     }
 
     public int getBlockEmittedLight(int x, int y, int z)
     {
-        return section[y >> 4].getBlockEmittedLight(x, y, z);
+    	int idx = (y >> 4) + sectionOffset;
+    	if ((idx < 0) || (idx >= section.length)) return 0;
+        return section[idx].getBlockEmittedLight(x, y, z);
     }
 
     public int getHighestBlockYAt(int x, int z)
@@ -278,7 +298,9 @@ public class ChunkSnapshot
 
     public boolean isSectionEmpty(int sy)
     {
-        return section[sy].isEmpty();
+    	int idx = sy + sectionOffset;
+    	if ((idx < 0) || (idx >= section.length)) return true;
+        return section[idx].isEmpty();
     }
     
     public long getInhabitedTicks() {
