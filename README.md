@@ -16,14 +16,22 @@ to run on the default JDK for those platforms (JDK 8), as will all common librar
 To build, run:
 
     ./gradlew clean build
+    
+Or (on Windows):
+
+    gradlew.bat clean build
+    
+The Forge 1.11.2 and 1.12.2 versions (specifically ForgeGradle for these) are very sensitive to being built by JDK 8, so to build them, 
+set JAVA_HOME to correspond to a JDK 8 installation, then build using the following;
+
     cd oldgradle
     ./gradlew clean build
     
 Or (on Windows):
 
-    gradlew.bat clean build
     cd oldgradle
     gradlew.bat clean build
+
     
 # What platforms are supported?
 The following target platforms are supported, and you can find them at the links supplied:
