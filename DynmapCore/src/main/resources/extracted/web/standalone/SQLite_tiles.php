@@ -1,20 +1,20 @@
 <?php
+
 ob_start();
-include('dynmap_access.php');
+require 'dynmap_access.php';
 ob_end_clean();
 
 session_start();
 
-if(isset($_SESSION['userid'])) {
-  $userid = $_SESSION['userid'];
-}
-else {
-  $userid = '-guest-';
+if (isset($_SESSION['userid'])) {
+    $userid = $_SESSION['userid'];
+} else {
+    $userid = '-guest-';
 }
 
 $loggedin = false;
-if(strcmp($userid, '-guest-')) {
-  $loggedin = true;
+if (strcmp($userid, '-guest-')) {
+    $loggedin = true;
 }
 
 $path = $_REQUEST['tile'];
@@ -28,52 +28,50 @@ if ((!isset($path)) || strstr($path, "..")) {
 $parts = explode("/", $path);
 
 if (count($parts) != 4) {
-   header('Location: ../images/blank.png');
-   exit;
+    header('Location: ../images/blank.png');
+    exit;
 }
- 
+
 $uid = '[' . strtolower($userid) . ']';
 
 $world = $parts[0];
 
-if(isset($worldaccess[$world])) {
+if (isset($worldaccess[$world])) {
     $ss = stristr($worldaccess[$world], $uid);
-	if($ss === false) {
-           header('Location: ../images/blank.png');
-           exit;
-	}
+    if ($ss === false) {
+        header('Location: ../images/blank.png');
+        exit;
+    }
 }
-$variant='STANDARD';
+$variant = 'STANDARD';
 
-  $prefix = $parts[1];
-  $plen = strlen($prefix);
-  if(($plen > 4) && (substr($prefix, $plen - 4) === "_day")) {
-	$prefix = substr($prefix, 0, $plen - 4);
-        $variant = 'DAY';
-  }
-  $mapid = $world . "." . $prefix;
-  if(isset($mapaccess[$mapid])) {
+$prefix = $parts[1];
+$plen = strlen($prefix);
+if (($plen > 4) && (substr($prefix, $plen - 4) === "_day")) {
+    $prefix = substr($prefix, 0, $plen - 4);
+    $variant = 'DAY';
+}
+$mapid = $world . "." . $prefix;
+if (isset($mapaccess[$mapid])) {
     $ss = stristr($mapaccess[$mapid], $uid);
-	if($ss === false) {
-           header('Location: ../images/blank.png');
-           exit;
-	}
-  }
+    if ($ss === false) {
+        header('Location: ../images/blank.png');
+        exit;
+    }
+}
 
 $fparts = explode("_", $parts[3]);
 if (count($fparts) == 3) { // zoom_x_y
-   $zoom = strlen($fparts[0]);
-   $x = intval($fparts[1]);
-   $y = intval($fparts[2]);
-}
-else if (count($fparts) == 2) { // x_y
-   $zoom = 0;
-   $x = intval($fparts[0]);
-   $y = intval($fparts[1]);
-}
-else {
-   header('Location: ../images/blank.png');
-   exit;
+    $zoom = strlen($fparts[0]);
+    $x = intval($fparts[1]);
+    $y = intval($fparts[2]);
+} elseif (count($fparts) == 2) { // x_y
+    $zoom = 0;
+    $x = intval($fparts[0]);
+    $y = intval($fparts[1]);
+} else {
+    header('Location: ../images/blank.png');
+    exit;
 }
 
 $db = new SQLite3($dbfile, SQLITE3_OPEN_READONLY);
@@ -88,25 +86,23 @@ $stmt->bindValue(':zoom', $zoom, SQLITE3_INTEGER);
 $res = $stmt->execute();
 $row = $res->fetchArray();
 if (isset($row[1])) {
-   $format = $row[1];
-   if ($format == 0) {
-      header('Content-Type: image/png');
-   }
-   else {
-      header('Content-Type: image/jpeg');
-   }
-   header('ETag: \'' . $row[2] . '\'');
-   header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $row[3]/1000) . ' GMT'); 
-   if ($row[4] > 0) {
-      $v = substr($row[0], 0, $row[4]);
-   } else {
-      $v = rtrim($row[0], "\0");
-   }
-   header('Content-Length: ' . strlen($v));
-   echo $v;
-}
-else {
-   header('Location: ../images/blank.png');
+    $format = $row[1];
+    if ($format == 0) {
+        header('Content-Type: image/png');
+    } else {
+        header('Content-Type: image/jpeg');
+    }
+    header('ETag: \'' . $row[2] . '\'');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $row[3] / 1000) . ' GMT');
+    if ($row[4] > 0) {
+        $v = substr($row[0], 0, $row[4]);
+    } else {
+        $v = rtrim($row[0], "\0");
+    }
+    header('Content-Length: ' . strlen($v));
+    echo $v;
+} else {
+    header('Location: ../images/blank.png');
 }
 
 $res->finalize();
@@ -114,4 +110,3 @@ $stmt->close();
 $db->close();
 
 exit;
-?>
