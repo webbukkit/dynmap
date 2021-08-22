@@ -80,17 +80,6 @@ var DynmapTileLayer = L.TileLayer.extend({
 	_loadQueue: [],
 	_loadingTiles: [],
 
-	getTileUrl: function(coords) {
-		var tileName = this.getTileName(coords),
-			url = this._cachedTileUrls[tileName];
-
-		if (!url) {
-			this._cachedTileUrls[tileName] = url = this.options.dynmap.getTileUrl(tileName);
-		}
-
-		return url;
-	},
-
 	createTile: function(coords, done) {
 		var me = this,
 			tile = document.createElement('img');
@@ -188,6 +177,24 @@ var DynmapTileLayer = L.TileLayer.extend({
 		L.TileLayer.prototype._removeTile.call(this, key);
 	},
 
+	getTileUrl: function(coords, timestamp) {
+		return this.getTileUrlFromName(this.getTileName(coords), timestamp);
+	},
+
+	getTileUrlFromName(tileName, timestamp) {
+		var url = this._cachedTileUrls[tileName];
+
+		if (!url) {
+			this._cachedTileUrls[tileName] = url = this.options.dynmap.getTileUrl(tileName);
+		}
+
+		if(typeof timestamp !== 'undefined') {
+			url += (url.indexOf('?') === -1 ? '?timestamp=' + timestamp : '&timestamp=' + timestamp);
+		}
+
+		return url;
+	},
+
 	getProjection: function() {
 		return this.projection;
 	},
@@ -207,26 +214,18 @@ var DynmapTileLayer = L.TileLayer.extend({
 		next.src = next.url;
 	},
 
-	onTileUpdated: function(tile, tileName) {
-		var src = this.dynmap.getTileUrl(tileName);
-		tile.attr('src', src);
-		tile.show();
-	},
-
 	getTileName: function(coords) {
 		throw "getTileName not implemented";
 	},
 
-	updateNamedTile: function(name) {
+	updateNamedTile: function(name, timestamp) {
 		var tile = this._namedTiles[name];
-		delete this._cachedTileUrls[name];
-		if (tile) {
-			this.updateTile(tile);
-		}
-	},
 
-	updateTile: function(tile) {
-		this._loadTile(tile, tile.tilePoint, this._map.getZoom());
+		if (tile) {
+			tile.url = this.getTileUrlFromName(name, timestamp);
+			this._loadQueue.push(tile);
+			this._tickLoadQueue();
+		}
 	},
 
 	// Some helper functions.
