@@ -23,17 +23,20 @@ var HDMapType = DynmapTileLayer.extend({
 	projection: undefined,
 	options: {
 		minZoom: 0,
-		maxZoom: 0,
 		errorTileUrl: 'images/blank.png',
-		continuousWorld: true
+		tileSize: 128,
+		zoomReverse: true,
 	},
 	initialize: function(options) {
 		options.maxZoom = options.mapzoomin + options.mapzoomout;
-		L.Util.setOptions(this, options);
+		options.maxNativeZoom = options.mapzoomout;
+
 		this.projection = new HDProjection($.extend({map: this}, options));
+
+		L.Util.setOptions(this, options);
 	},
-	getTileName: function(tilePoint, zoom) {
-		var info = this.getTileInfo(tilePoint, zoom);
+	getTileName: function(coords) {
+		var info = this.getTileInfo(coords);
 		// Y is inverted for HD-map.
 		info.y = -info.y;
 		info.scaledy = info.y >> 5;

@@ -177,34 +177,12 @@ DynMap.prototype = {
 			zoomAnimation: true,
 			zoomControl: !me.nogui,
 			attributionControl: false,
-			crs: L.extend({}, L.CRS, {
-				code: 'simple',
-				projection: {
-						project: function(latlng) {
-							// Direct translation of lat -> x, lng -> y.
-							return new L.Point(latlng.lat, latlng.lng);
-						},
-						unproject: function(point) {
-							// Direct translation of x -> lat, y -> lng.
-							return new L.LatLng(point.x, point.y);
-						}
-					},
-				// a = 1; b = 2; c = 1; d = 0
-				// x = a * x + b; y = c * y + d
-				// End result is 1:1 values during transformation.
-				transformation: new L.Transformation(1, 0, 1, 0),
-				scale: function(zoom) {
-					// Equivalent to 2 raised to the power of zoom, but faster.
-					return (1 << zoom);
-				}
-			}),
-			continuousWorld: true,
+			crs: L.CRS.Simple,
 			worldCopyJump: false
 		});
 		window.map = map; // Placate Leaflet need for top-level 'map'....
 
 		map.on('zoomend', function() {
-			me.maptype.updateTileSize(me.map.getZoom());
 			$(me).trigger('zoomchanged');
 		});
 
@@ -754,7 +732,7 @@ DynMap.prototype = {
 			}
 		);
 	},
-	getTileUrl: function(tileName, always) {
+	getTileUrl: function(tileName) {
 		var me = this;
 		var tile = me.registeredTiles[tileName];
 
