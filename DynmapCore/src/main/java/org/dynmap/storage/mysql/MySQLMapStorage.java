@@ -202,6 +202,11 @@ public class MySQLMapStorage extends MapStorage {
         }
 
         @Override
+        public boolean write(long hash, BufferOutputStream encImage) {
+            return write(hash, encImage, System.currentTimeMillis());
+        }
+
+        @Override
         public boolean getWriteLock() {
             return MySQLMapStorage.this.getWriteLock(uri);
         }

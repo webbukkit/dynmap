@@ -198,6 +198,11 @@ public class SQLiteMapStorage extends MapStorage {
         }
 
         @Override
+        public boolean write(long hash, BufferOutputStream encImage) {
+            return write(hash, encImage, System.currentTimeMillis());
+        }
+
+        @Override
         public boolean getWriteLock() {
             return SQLiteMapStorage.this.getWriteLock(uri);
         }

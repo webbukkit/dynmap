@@ -55,6 +55,7 @@ public abstract class MapStorageTile {
      *
      * @param hash - hash code of uncompressed image
      * @param encImage - output stream for encoded image
+     * @param timestamp - timestamp used to prevent raceconditions for zoom out processing
      * @return true if write succeeded
      */
     public abstract boolean write(long hash, BufferOutputStream encImage, long timestamp);
@@ -63,6 +64,7 @@ public abstract class MapStorageTile {
      * 
      * @param hash - hash code of uncompressed image
      * @param image - image to be encoded
+     * @param timestamp - timestamp used to prevent raceconditions for zoom out processing
      * @return true if write succeeded
      */
     public boolean write(long hash, BufferedImage image, long timestamp) {
@@ -72,6 +74,26 @@ public abstract class MapStorageTile {
         }
         return false;
     }
+    /**
+     * Write tile
+     *
+     * @param hash - hash code of uncompressed image
+     * @param encImage - output stream for encoded image
+     * @return true if write succeeded
+     */
+    public abstract boolean write(long hash, BufferOutputStream encImage);
+
+    /**
+     * Write tile from image
+     *
+     * @param hash - hash code of uncompressed image
+     * @param image - image to be encoded
+     * @return true if write succeeded
+     */
+    public boolean write(long hash, BufferedImage image) {
+        return write(hash, image, System.currentTimeMillis());
+    }
+
     /**
      * Delete tile
      *
