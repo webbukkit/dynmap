@@ -46,7 +46,11 @@ public class HDMap extends MapType {
 
     public static final String IMGFORMAT_PNG = "png";
     public static final String IMGFORMAT_JPG = "jpg";
-    
+
+    private String renderClass;
+    public String getRenderClass(){
+        return renderClass;
+    }
     
     public HDMap(DynmapCore core, ConfigurationNode configuration) {
         this.core = core;
@@ -140,6 +144,7 @@ public class HDMap extends MapType {
         this.mapzoomin = configuration.getInteger("mapzoomin", 2);
         this.mapzoomout = configuration.getInteger("mapzoomout", this.mapzoomout);
         this.boostzoom = configuration.getInteger("boostzoom", 0);
+        this.renderClass = configuration.getString("class");
         if(this.boostzoom < 0) this.boostzoom = 0;
         if(this.boostzoom > 3) this.boostzoom = 3;
         // Map zoom in must be at least as big as boost zoom
@@ -228,6 +233,9 @@ public class HDMap extends MapType {
             if(mt instanceof HDMap) {
                 HDMap hdmt = (HDMap)mt;
                 if((hdmt.perspective == this.perspective) && (hdmt.boostzoom == this.boostzoom)) {  /* Same perspective */
+                    if(!hdmt.getRenderClass().equals(this.getRenderClass())){
+                        continue;
+                    }
                     maps.add(hdmt);
                 }
             }
@@ -242,6 +250,9 @@ public class HDMap extends MapType {
             if(mt instanceof HDMap) {
                 HDMap hdmt = (HDMap)mt;
                 if((hdmt.perspective == this.perspective)  && (hdmt.boostzoom == this.boostzoom)) {  /* Same perspective */
+                    if(!hdmt.getRenderClass().equals(this.getRenderClass())){
+                        continue;
+                    }
                     if(hdmt.lighting.isNightAndDayEnabled())
                         lst.add(hdmt.getName() + "(night/day)");
                     else

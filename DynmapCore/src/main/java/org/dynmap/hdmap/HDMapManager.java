@@ -130,6 +130,8 @@ public class HDMapManager {
                     /* If limited to one map, and this isn't it, skip */
                     if((mapname != null) && (!hdmap.getName().equals(mapname)))
                         continue;
+                    if(!hdmap.getRenderClass().startsWith("org.dynmap"))
+                        continue;
                     shaders.add(hdmap.getShader().getStateInstance(hdmap, cache, mapiter, scale));
                 }
             }
