@@ -1173,6 +1173,7 @@ public class DynmapCore implements DynmapCommonAPI {
         "add-id-for-ip",
         "del-id-for-ip",
         "webregister",
+        "dumpmemory",
         "help"}));
 
     private static class CommandInfo {
@@ -1239,6 +1240,7 @@ public class DynmapCore implements DynmapCommonAPI {
         new CommandInfo("dynmap", "webregister", "Start registration process for creating web login account"),
         new CommandInfo("dynmap", "webregister", "<player>", "Start registration process for creating web login account for player <player>"),
         new CommandInfo("dynmap", "version", "Return version information"),
+        new CommandInfo("dynmap", "dumpmemory", "Return mempry use information"),
         new CommandInfo("dmarker", "", "Manipulate map markers."),
         new CommandInfo("dmarker", "add", "<label>", "Add new marker with label <label> at current location (use double-quotes if spaces needed)."),
         new CommandInfo("dmarker", "add", "id:<id> <label>", "Add new marker with ID <id> at current location (use double-quotes if spaces needed)."),
@@ -1711,6 +1713,9 @@ public class DynmapCore implements DynmapCommonAPI {
             }
             else if(c.equals("help")) {
                 printCommandHelp(sender, cmd, (args.length > 1)?args[1]:"");
+            }
+            else if(c.equals("dumpmemory")) {
+            	TexturePack.tallyMemory(sender);
             }
             else if(c.equals("version")) {
                 sender.sendMessage("Dynmap version: core=" + this.getDynmapCoreVersion() + ", plugin=" + this.getDynmapPluginVersion());

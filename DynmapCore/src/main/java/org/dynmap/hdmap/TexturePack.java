@@ -32,6 +32,7 @@ import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.common.BiomeMap;
+import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.renderer.CustomColorMultiplier;
 import org.dynmap.renderer.DynmapBlockState;
@@ -3658,5 +3659,35 @@ public class TexturePack {
         }
 
         return id;
+    }
+    
+    public static void tallyMemory(DynmapCommandSender sender) {
+		long packcount = 0;
+		long packbytecount = 0;
+    	for (String packid : packs.keySet()) {
+    		TexturePack p = packs.get(packid);
+    		long scaledcount = 0;
+    		long scaledbytecount = 0;
+    		for (Integer scale : p.scaled_textures.keySet()) {
+    			TexturePack sp = p.scaled_textures.get(scale);
+    			long bytecount = 0;
+    			long imgcount = 0;
+    			for (int i = 0; i < sp.imgs.length; i++) {
+    				if (sp.imgs[i] != null) {
+    					if (sp.imgs[i].argb != null) {
+    						bytecount += sp.imgs[i].argb.length * 4;
+    						imgcount++;
+    					}
+    				}
+    			}
+    			sender.sendMessage("pack: " + packid + ", scale: " + scale + ", imagecount=" + imgcount + ", bytecount=" + bytecount);
+    			scaledcount += imgcount;
+    			scaledbytecount += bytecount;
+    		}
+    		sender.sendMessage("pack: " + packid + ", total: imagecount=" + scaledcount + ", bytecount=" + scaledbytecount);
+			packcount += scaledcount;
+			packbytecount += scaledbytecount;
+    	}
+    	sender.sendMessage("overall total: imagecount=" + packcount + ", bytecount=" + packbytecount + "(" + (packbytecount / 1024.0 / 1024.0) + "Mb)");
     }
 }
