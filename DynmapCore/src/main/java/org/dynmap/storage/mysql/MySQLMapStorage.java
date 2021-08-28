@@ -293,14 +293,19 @@ public class MySQLMapStorage extends MapStorage {
         connectionString = "jdbc:mysql://" + hostname + ":" + port + "/" + database + flags;
         Log.info("Opening MySQL database " + hostname + ":" + port + "/" + database + " as map store");
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            // Initialize/update tables, if needed
-            if(!initializeTables()) {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException cnfxLatestDriver){
+            Log.warning("MySQL-JDBC Did not find 'com.mysql.cj.jdbc.Driver' trying 'com.mysql.jdbc.Driver' next");
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+            } catch (ClassNotFoundException cnfx) {
+                Log.severe("MySQL-JDBC classes not found - MySQL data source not usable");
                 return false;
             }
-        } catch (ClassNotFoundException cnfx) {
-            Log.severe("MySQL-JDBC classes not found - MySQL data source not usable");
-            return false; 
+        }
+        // Initialize/update tables, if needed
+        if(!initializeTables()) {
+            return false;
         }
         return writeConfigPHP(core);
     }
