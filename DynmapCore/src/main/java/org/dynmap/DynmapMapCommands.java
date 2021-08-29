@@ -271,7 +271,7 @@ public class DynmapMapCommands {
                 		sender.sendMessage("Bad parameter for type " + type + ": " + id);
             			return false;        				
         			}
-        			radius = Double.valueOf(val);
+        			radius = Integer.valueOf(val);
         			break;
         		case "style":
         			style = HiddenChunkStyle.fromValue(val);
