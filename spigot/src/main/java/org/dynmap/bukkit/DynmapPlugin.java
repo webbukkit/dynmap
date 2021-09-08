@@ -398,6 +398,10 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                             if(p != null) dp = new BukkitPlayer(p);
                             core.listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, b.getType().name(),
                                 getWorld(l.getWorld()).getName(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), lines, dp);
+
+                            for (int i = 0; i < 4; i++) {
+                                evt.setLine(i, lines[i]);
+                            }
                         }
                     }, DynmapPlugin.this);
                     break;
