@@ -94,7 +94,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);
 			player.marker.setLatLng(markerPosition);
 			// Update health
-			if (configuration.showplayerhealth) {
+			if (configuration.showplayerhealth && player.healthContainer) {
 				if (player.health !== undefined && player.armor !== undefined) {
 					player.healthContainer.css('display','block');
 					player.healthBar.css('width', Math.ceil(player.health*2.5) + 'px');

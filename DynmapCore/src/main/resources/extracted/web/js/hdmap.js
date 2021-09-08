@@ -1,39 +1,43 @@
 var HDProjection = DynmapProjection.extend({
 	fromLocationToLatLng: function(location) {
 		var wtp = this.options.worldtomap;
-		var xx = wtp[0]*location.x + wtp[1]*location.y + wtp[2]*location.z;
-		var yy = wtp[3]*location.x + wtp[4]*location.y + wtp[5]*location.z;
+			lat = wtp[3] * location.x + wtp[4] * location.y + wtp[5] * location.z,
+			lng = wtp[0] * location.x + wtp[1] * location.y + wtp[2] * location.z;
+
 		return new L.LatLng(
-			  xx       / (1 << this.options.mapzoomout)
-			, (128-yy) / (1 << this.options.mapzoomout)
-			, true);
+			  -((128 - lat) / (1 << this.options.mapzoomout))
+			, lng / (1 << this.options.mapzoomout)
+			, location.y);
 	},
 	fromLatLngToLocation: function(latlon, y) {
-		var ptw = this.options.maptoworld;
-		var lat = latlon.lat * (1 << this.options.mapzoomout);
-		var lon = 128 - latlon.lng * (1 << this.options.mapzoomout);
-		var x = ptw[0]*lat + ptw[1]*lon + ptw[2]*y;
-		var z = ptw[6]*lat + ptw[7]*lon + ptw[8]*y;
+		var ptw = this.options.maptoworld,
+			lat = 128 + latlon.lat * (1 << this.options.mapzoomout),
+			lng = latlon.lng * (1 << this.options.mapzoomout),
+			x = ptw[0] * lng + ptw[1] * lat + ptw[2] * y,
+			z = ptw[6] * lng + ptw[7] * lat + ptw[8] * y;
+		
 		return { x: x, y: y, z: z };
 	}
-	
 });
 
 var HDMapType = DynmapTileLayer.extend({
 	projection: undefined,
 	options: {
 		minZoom: 0,
-		maxZoom: 0,
 		errorTileUrl: 'images/blank.png',
-		continuousWorld: true
+		tileSize: 128,
+		zoomReverse: true,
 	},
 	initialize: function(options) {
 		options.maxZoom = options.mapzoomin + options.mapzoomout;
-		L.Util.setOptions(this, options);
+		options.maxNativeZoom = options.mapzoomout;
+
 		this.projection = new HDProjection($.extend({map: this}, options));
+
+		L.Util.setOptions(this, options);
 	},
-	getTileName: function(tilePoint, zoom) {
-		var info = this.getTileInfo(tilePoint, zoom);
+	getTileName: function(coords) {
+		var info = this.getTileInfo(coords);
 		// Y is inverted for HD-map.
 		info.y = -info.y;
 		info.scaledy = info.y >> 5;
