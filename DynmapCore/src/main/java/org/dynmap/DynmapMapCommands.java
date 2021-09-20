@@ -158,7 +158,7 @@ public class DynmapMapCommands {
         		VisibilityLimit limit = w.visibility_limits.get(i);
         		if (limit instanceof RoundVisibilityLimit) {
         			RoundVisibilityLimit rlimit = (RoundVisibilityLimit) limit;
-        			sender.sendMessage(String.format(" %d: limittype=visible, type=round, center=%d/%d, radius=%f", i, rlimit.x_center, rlimit.z_center, rlimit.radius));
+        			sender.sendMessage(String.format(" %d: limittype=visible, type=round, center=%d/%d, radius=%d", i, rlimit.x_center, rlimit.z_center, rlimit.radius));
         		}
         		else if (limit instanceof RectangleVisibilityLimit) {
         			RectangleVisibilityLimit rlimit = (RectangleVisibilityLimit) limit;
@@ -171,7 +171,7 @@ public class DynmapMapCommands {
         		VisibilityLimit limit = w.hidden_limits.get(i);
         		if (limit instanceof RoundVisibilityLimit) {
         			RoundVisibilityLimit rlimit = (RoundVisibilityLimit) limit;
-        			sender.sendMessage(String.format(" %d: limittype=hidden, type=round, center=%d/%d, radius=%f", i + viscnt, rlimit.x_center, rlimit.z_center, rlimit.radius));
+        			sender.sendMessage(String.format(" %d: limittype=hidden, type=round, center=%d/%d, radius=%d", i + viscnt, rlimit.x_center, rlimit.z_center, rlimit.radius));
         		}
         		else if (limit instanceof RectangleVisibilityLimit) {
         			RectangleVisibilityLimit rlimit = (RectangleVisibilityLimit) limit;
@@ -205,7 +205,7 @@ public class DynmapMapCommands {
         int corner1[] = null;
         int corner2[] = null;
         int center[] = null;
-        double radius = 0.0;
+        int radius = 0;
         HiddenChunkStyle style = null;
         // Other args are field:value
         for (int argid = 2; argid < args.length; argid++) {
