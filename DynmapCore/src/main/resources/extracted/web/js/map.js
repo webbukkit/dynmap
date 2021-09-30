@@ -569,7 +569,7 @@ DynMap.prototype = {
 	},
 	selectWorldAndPan: function(world, location, completed) {
 		var me = this;
-		if (typeof(world) === 'String') { world = me.worlds[world]; }
+		if (typeof(world) === 'string') { world = me.worlds[world]; }
 		if (me.world === world) {
 			if(location) {
 				var latlng = me.maptype.getProjection().fromLocationToLatLng(location);
