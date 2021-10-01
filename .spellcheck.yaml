@@ -10,7 +10,7 @@ matrix:
   pipeline:
     - pyspelling.filters.markdown:
       markdown_extensions:
-      - markdown.extensions.extra:
+      - pymdownx.extra:
     - pyspelling.filters.html:
         comments: true
         attributes:
