@@ -784,50 +784,19 @@ block:id=red_bed,patch0=0:red_bed,patch1=1:red_bed,patch2=2:red_bed,patch3=3:red
 block:id=black_bed,patch0=0:black_bed,patch1=1:black_bed,patch2=2:black_bed,patch3=3:black_bed,patch4=4:black_bed,patch5=5:black_bed,patch6=6:black_bed,patch7=7:black_bed,patch8=8:black_bed,patch9=9:black_bed,patch10=10:black_bed,patch11=11:black_bed,patch12=12:black_bed,patch13=13:black_bed,patch14=14:black_bed,patch15=15:black_bed,patch16=16:black_bed,patch17=17:black_bed,transparency=TRANSPARENT
 
 # Powered rail - powered
-block:id=powered_rail,data=0-11,patch0=0:powered_rail_on,transparency=TRANSPARENT
+[-1.16.5]block:id=powered_rail,data=0-5,patch0=0:powered_rail_on,transparency=TRANSPARENT
+[1.17-]block:id=powered_rail,data=0-11,patch0=0:powered_rail_on,transparency=TRANSPARENT
 # Powered rail - unpowered
-block:id=powered_rail,data=12-23,patch0=0:powered_rail,transparency=TRANSPARENT
+[-1.16.5]block:id=powered_rail,data=6-11,patch0=0:powered_rail,transparency=TRANSPARENT
+[1.17-]block:id=powered_rail,data=12-23,patch0=0:powered_rail,transparency=TRANSPARENT
 
 # Detector rail - powered
-block:id=detector_rail,data=0-11,patch0=0:detector_rail_on,transparency=TRANSPARENT
+[-1.16.5]block:id=detector_rail,data=0-5,patch0=0:detector_rail_on,transparency=TRANSPARENT
+[1.17-]block:id=detector_rail,data=0-11,patch0=0:detector_rail_on,transparency=TRANSPARENT
 # Detector rail - unpowered
-block:id=detector_rail,data=12-23,patch0=0:detector_rail,transparency=TRANSPARENT
+[-1.16.5]block:id=detector_rail,data=6-11,patch0=0:detector_rail,transparency=TRANSPARENT
+[1.17-]block:id=detector_rail,data=12-23,patch0=0:detector_rail,transparency=TRANSPARENT
 
-[23:42:01] [Server thread/INFO]: [Dynmap] 1361: minecraft:detector_rail[powered=true,shape=north_south,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1362: minecraft:detector_rail[powered=true,shape=north_south,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1363: minecraft:detector_rail[powered=true,shape=east_west,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1364: minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1365: minecraft:detector_rail[powered=true,shape=ascending_east,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1366: minecraft:detector_rail[powered=true,shape=ascending_east,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1367: minecraft:detector_rail[powered=true,shape=ascending_west,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1368: minecraft:detector_rail[powered=true,shape=ascending_west,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1369: minecraft:detector_rail[powered=true,shape=ascending_north,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1370: minecraft:detector_rail[powered=true,shape=ascending_north,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1371: minecraft:detector_rail[powered=true,shape=ascending_south,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1372: minecraft:detector_rail[powered=true,shape=ascending_south,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1373: minecraft:detector_rail[powered=false,shape=north_south,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1374: minecraft:detector_rail[powered=false,shape=north_south,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1375: minecraft:detector_rail[powered=false,shape=east_west,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1376: minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1377: minecraft:detector_rail[powered=false,shape=ascending_east,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1378: minecraft:detector_rail[powered=false,shape=ascending_east,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1379: minecraft:detector_rail[powered=false,shape=ascending_west,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1380: minecraft:detector_rail[powered=false,shape=ascending_west,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1381: minecraft:detector_rail[powered=false,shape=ascending_north,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1382: minecraft:detector_rail[powered=false,shape=ascending_north,waterlogged=false]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1383: minecraft:detector_rail[powered=false,shape=ascending_south,waterlogged=true]
-[23:42:01] [Server thread/INFO]: [Dynmap] 1384: minecraft:detector_rail[powered=false,shape=ascending_south,waterlogged=false]
-
-# Rail - heading north-south
-block:id=rail,data=0,data=1,patch0=0:rail,transparency=TRANSPARENT
-# Rail - heading east-west
-block:id=rail,data=2,data=3,patch0=0:rail,transparency=TRANSPARENT
-# Rail - incline to east
-# Rail - incline to west
-block:id=rail,data=4,data=5,data=6,data=7,patch0=0:rail,transparency=TRANSPARENT
-# Rail - incline to north
-# Rail - incline to south
-block:id=rail,data=8,data=9,data=10,data=11,patch0=0:rail,transparency=TRANSPARENT
 
 # Web
 block:id=cobweb,patch0-1=0:cobweb,transparency=TRANSPARENT
@@ -968,20 +937,25 @@ block:id=oak_door,data=*,patch0=0:oak_door_top,patch1=0:oak_door_bottom,transpar
 # Ladder
 block:id=ladder,patch0=0:ladder,transparency=TRANSPARENT
 # Rail - heading north-south
-block:id=rail,data=0,data=1,patch0=0:rail,transparency=TRANSPARENT
+[-1.16.5]block:id=rail,data=0,patch0=0:rail,transparency=TRANSPARENT
+[1.17-]block:id=rail,data=0,data=1,patch0=0:rail,transparency=TRANSPARENT
 # Rail - heading east-west
-block:id=rail,data=2,data=3,patch0=0:rail,transparency=TRANSPARENT
+[-1.16.5]block:id=rail,data=1,patch0=0:rail,transparency=TRANSPARENT
+[1.17-]block:id=rail,data=2,data=3,patch0=0:rail,transparency=TRANSPARENT
 # Rail - incline to east
 # Rail - incline to west
-block:id=rail,data=4,data=5,data=6,data=7,patch0=0:rail,transparency=TRANSPARENT
+[-1.16.5]block:id=rail,data=2,data=3,patch0=0:rail,transparency=TRANSPARENT
+[1.17-]block:id=rail,data=4,data=5,data=6,data=7,patch0=0:rail,transparency=TRANSPARENT
 # Rail - incline to north
 # Rail - incline to south
-block:id=rail,data=8,data=9,data=10,data=11,patch0=0:rail,transparency=TRANSPARENT
+[-1.16.5]block:id=rail,data=4,data=5,patch0=0:rail,transparency=TRANSPARENT
+[1.17-]block:id=rail,data=8,data=9,data=10,data=11,patch0=0:rail,transparency=TRANSPARENT
 # Rails - southeast corner
 # Rails - southwest corner
 # Rails - northwest corner
 # Rails - northeast corner
-block:id=rail,data=12,data=13,data=14,data=15,data=16,data=17,data=18,data=19,patch0=0:rail_corner,transparency=TRANSPARENT
+[-1.16.5]block:id=rail,data=6,data=7,data=8,data=9,patch0=0:rail_corner,transparency=TRANSPARENT
+[1.17-]block:id=rail,data=12,data=13,data=14,data=15,data=16,data=17,data=18,data=19,patch0=0:rail_corner,transparency=TRANSPARENT
 # Cobblestone Stairs
 block:id=cobblestone_stairs,patch0-2=0:cobblestone,transparency=SEMITRANSPARENT
 # Lever
@@ -1426,9 +1400,11 @@ block:id=quartz_pillar,data=2,top=0:quartz_pillar,bottom=0:quartz_pillar,north=6
 block:id=quartz_stairs,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
 
 # Activator rail - powered
-block:id=activator_rail,data=0-11,patch0=0:activator_rail_on,transparency=TRANSPARENT
+[-1.16.5]block:id=activator_rail,data=0-5,patch0=0:activator_rail_on,transparency=TRANSPARENT
+[1.17-]block:id=activator_rail,data=0-11,patch0=0:activator_rail_on,transparency=TRANSPARENT
 # Activator rail - unpowered
-block:id=activator_rail,data=12-23,patch0=0:activator_rail,transparency=TRANSPARENT
+[-1.16.5]block:id=activator_rail,data=6-11,patch0=0:activator_rail,transparency=TRANSPARENT
+[1.17-]block:id=activator_rail,data=12-23,patch0=0:activator_rail,transparency=TRANSPARENT
 
 # (158)	Dropper
 block:id=dropper,data=0-1,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical

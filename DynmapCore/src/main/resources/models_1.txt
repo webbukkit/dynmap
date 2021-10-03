@@ -294,72 +294,67 @@ boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungl
 boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=0-3,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
 boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungle_button,id=acacia_button,id=dark_oak_button,data=4-7,xmin=0.375,xmax=0.625,ymax=0.125,zmin=0.3125,zmax=0.6875
 
-[23:27:55] [Server thread/INFO]: [Dynmap] 3702: minecraft:rail[shape=north_south,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3703: minecraft:rail[shape=north_south,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3704: minecraft:rail[shape=east_west,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3705: minecraft:rail[shape=east_west,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3706: minecraft:rail[shape=ascending_east,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3707: minecraft:rail[shape=ascending_east,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3708: minecraft:rail[shape=ascending_west,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3709: minecraft:rail[shape=ascending_west,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3710: minecraft:rail[shape=ascending_north,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3711: minecraft:rail[shape=ascending_north,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3712: minecraft:rail[shape=ascending_south,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3713: minecraft:rail[shape=ascending_south,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3714: minecraft:rail[shape=south_east,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3715: minecraft:rail[shape=south_east,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3716: minecraft:rail[shape=south_west,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3717: minecraft:rail[shape=south_west,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3718: minecraft:rail[shape=north_west,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3719: minecraft:rail[shape=north_west,waterlogged=false]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3720: minecraft:rail[shape=north_east,waterlogged=true]
-[23:27:55] [Server thread/INFO]: [Dynmap] 3721: minecraft:rail[shape=north_east,waterlogged=false]
-
 # Rails - flat - north/south
-patchblock:id=rail,data=0,data=1,patch0=HorizY001ZTop
+[-1.16.5]patchblock:id=rail,data=0,patch0=HorizY001ZTop
+[1.17-]patchblock:id=rail,data=0,data=1,patch0=HorizY001ZTop
 # Rails - flat - east/west
-patchblock:id=rail,data=2,data=3,patch0=HorizY001ZTop@90
+[-1.16.5]patchblock:id=rail,data=1,patch0=HorizY001ZTop@90
+[1.17-]patchblock:id=rail,data=2,data=3,patch0=HorizY001ZTop@90
 # Rails - ascending to east
-patchblock:id=rail,data=4,data=5,patch0=SlopeXUpZTop
+[-1.16.5]patchblock:id=rail,data=2,patch0=SlopeXUpZTop
+[1.17-]patchblock:id=rail,data=4,data=5,patch0=SlopeXUpZTop
 # Rails - ascending to west
-patchblock:id=rail,data=6,data=7,patch0=SlopeXUpZTop@180
+[-1.16.5]patchblock:id=rail,data=3,patch0=SlopeXUpZTop@180
+[1.17-]patchblock:id=rail,data=6,data=7,patch0=SlopeXUpZTop@180
 # Rails - ascending to north
-patchblock:id=rail,data=8,data=9,patch0=SlopeXUpZTop@270
+[-1.16.5]patchblock:id=rail,data=4,patch0=SlopeXUpZTop@270
+[1.17-]patchblock:id=rail,data=8,data=9,patch0=SlopeXUpZTop@270
 # Rails - ascending to south 
-patchblock:id=rail,data=10,data=11,patch0=SlopeXUpZTop@90
+[-1.16.5]patchblock:id=rail,data=5,patch0=SlopeXUpZTop@90
+[1.17-]patchblock:id=rail,data=10,data=11,patch0=SlopeXUpZTop@90
 # Rails - southeast corner
-patchblock:id=rail,data=12,data=13,patch0=HorizY001ZTop@90
+[-1.16.5]patchblock:id=rail,data=6,patch0=HorizY001ZTop@90
+[1.17-]patchblock:id=rail,data=12,data=13,patch0=HorizY001ZTop@90
 # Rails - southwest corner
-patchblock:id=rail,data=14,data=15,patch0=HorizY001ZTop@180
+[-1.16.5]patchblock:id=rail,data=7,patch0=HorizY001ZTop@180
+[1.17-]patchblock:id=rail,data=14,data=15,patch0=HorizY001ZTop@180
 # Rails - northwest corner
-patchblock:id=rail,data=16,data=17,patch0=HorizY001ZTop@270
+[-1.16.5]patchblock:id=rail,data=8,patch0=HorizY001ZTop@270
+[1.17-]patchblock:id=rail,data=16,data=17,patch0=HorizY001ZTop@270
 # Rails - northeast corner
-patchblock:id=rail,data=18,data=19,patch0=HorizY001ZTop
+[-1.16.5]patchblock:id=rail,data=9,patch0=HorizY001ZTop
+[1.17-]patchblock:id=rail,data=18,data=19,patch0=HorizY001ZTop
 
 # Powered rails - flat - east/west
 # Detector rails - flat - east/west
 # Activator Rail - flat - east/west
-patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=0,data=1,data=12,data=13,patch0=HorizY001ZTop
+[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=0,data=6,patch0=HorizY001ZTop
+[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=0,data=1,data=12,data=13,patch0=HorizY001ZTop
 # Powered rails - flat - north/south
 # Detector rails - flat - north/south
 # Activator Rail - flat - north/south
-patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=3,data=14,data=15,patch0=HorizY001ZTop@90
+[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=1,data=7,patch0=HorizY001ZTop@90
+[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=3,data=14,data=15,patch0=HorizY001ZTop@90
 # Powered rails - ascending to south 
 # Detector rails - ascending to south 
 # Activator Rail - ascending to south 
-patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=5,data=16,data=17,patch0=SlopeXUpZTop
+[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=8,patch0=SlopeXUpZTop
+[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=5,data=16,data=17,patch0=SlopeXUpZTop
 # Powered rails - ascending to north 
 # Detector rails - ascending to north 
 # Activator Rail - ascending to north 
-patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=6,data=7,data=18,data=19,patch0=SlopeXUpZTop@180
+[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=3,data=9,patch0=SlopeXUpZTop@180
+[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=6,data=7,data=18,data=19,patch0=SlopeXUpZTop@180
 # Powered rails - ascending to east 
 # Detector rails - ascending to east 
 # Activator Rail - ascending to east 
-patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=8,data=9,data=20,data=21,patch0=SlopeXUpZTop@270
+[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=10,patch0=SlopeXUpZTop@270
+[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=8,data=9,data=20,data=21,patch0=SlopeXUpZTop@270
 # Powered rails - ascending to west 
 # Detector rails - ascending to west 
 # Activator Rail - ascending to west 
-patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=10,data=11,data=22,data=23,patch0=SlopeXUpZTop@90
+[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=5,data=21,patch0=SlopeXUpZTop@90
+[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=10,data=11,data=22,data=23,patch0=SlopeXUpZTop@90
 
 # Ladder
 patchblock:id=ladder,data=0,data=1,patch0=VertX0In@270
