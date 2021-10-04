@@ -75,10 +75,17 @@ var DynmapLayerControl = L.Control.Layers.extend({
 
 
 var DynmapTileLayer = L.TileLayer.extend({
-	_namedTiles: {},
-	_cachedTileUrls: {},
-	_loadQueue: [],
-	_loadingTiles: [],
+	_namedTiles: null,
+	_cachedTileUrls: null,
+	_loadQueue: null,
+	_loadingTiles: null,
+
+	initialize: function() {
+		this._namedTiles = {};
+		this._cachedTileUrls = {};
+		this._loadQueue = [];
+		this._loadingTiles = [];
+	},
 
 	createTile: function(coords, done) {
 		var me = this,
