@@ -35,6 +35,7 @@ var HDMapType = DynmapTileLayer.extend({
 		this.projection = new HDProjection($.extend({map: this}, options));
 
 		L.Util.setOptions(this, options);
+		DynmapTileLayer.prototype.initialize.call(this, options);
 	},
 	getTileName: function(coords) {
 		var info = this.getTileInfo(coords);
