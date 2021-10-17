@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import org.dynmap.hdmap.HDBlockModels;
@@ -29,7 +29,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     private boolean published = false;
     private ArrayList<BlockModelImpl> blkModel = new ArrayList<BlockModelImpl>();
     private ArrayList<PatchDefinition> blkPatch = new ArrayList<PatchDefinition>();
-    private HashMap<String, PatchDefinition> blkPatchMap = new HashMap<String, PatchDefinition>();
+    private LinkedHashMap<String, PatchDefinition> blkPatchMap = new LinkedHashMap<String, PatchDefinition>();
     private PatchDefinitionFactory pdf;
     
     public ModModelDefinitionImpl(ModTextureDefinitionImpl txtDef) {

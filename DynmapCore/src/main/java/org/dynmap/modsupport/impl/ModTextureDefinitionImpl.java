@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.dynmap.modsupport.BigChestTextureFile;
 import org.dynmap.modsupport.BiomeTextureFile;
@@ -27,7 +27,7 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
     private final String modver;
     private ModModelDefinitionImpl modDef = null;
     private String texturePath;
-    private HashMap<String, TextureFileImpl> txtFileByID = new HashMap<String, TextureFileImpl>();
+    private LinkedHashMap<String, TextureFileImpl> txtFileByID = new LinkedHashMap<String, TextureFileImpl>();
     private ArrayList<BlockTextureRecordImpl> blkTextureRec = new ArrayList<BlockTextureRecordImpl>();
     private ArrayList<CopyBlockTextureRecordImpl> blkCopyTextureRec = new ArrayList<CopyBlockTextureRecordImpl>();
     private boolean published = false;
@@ -272,7 +272,8 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
             String s = "modname:" + this.modid;
             fw.write(s + "\n\n");
             // Loop through textures
-            for (TextureFileImpl tfi : txtFileByID.values()) {
+            for (String tid : txtFileByID.keySet()) {
+            	TextureFileImpl tfi = txtFileByID.get(tid);
                 String line = tfi.getLine();
                 if (line != null) {
                     fw.write(line + "\n");

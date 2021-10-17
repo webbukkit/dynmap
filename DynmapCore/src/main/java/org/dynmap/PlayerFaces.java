@@ -301,10 +301,7 @@ public class PlayerFaces {
             @Override
             public void playerEvent(DynmapPlayer p) {
                 Runnable job = new LoadPlayerImages(p.getName(), p.getSkinURL(), p.getUUID(), core.skinUrlProvider);
-                if(fetchskins)
-                    MapManager.scheduleDelayedJob(job, 0);
-                else
-                    job.run();
+                MapManager.scheduleDelayedJob(job, 0);
             }
         });
         storage = core.getDefaultMapStorage();

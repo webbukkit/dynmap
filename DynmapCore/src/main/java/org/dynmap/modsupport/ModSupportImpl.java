@@ -2,7 +2,7 @@ package org.dynmap.modsupport;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.dynmap.Log;
 import org.dynmap.modsupport.impl.ModModelDefinitionImpl;
@@ -12,7 +12,7 @@ import org.dynmap.modsupport.impl.ModTextureDefinitionImpl;
  * Implementation of ModSupportAPI
  */
 public class ModSupportImpl extends ModSupportAPI {
-    private HashMap<String, ModTextureDefinitionImpl> txtDefsByModID = new HashMap<String, ModTextureDefinitionImpl>();
+    private LinkedHashMap<String, ModTextureDefinitionImpl> txtDefsByModID = new LinkedHashMap<String, ModTextureDefinitionImpl>();
     
     /**
      * Initialize mod support API

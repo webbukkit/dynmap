@@ -1106,6 +1106,16 @@ public class MapManager {
             setBlockAlias(DynmapBlockState.LIT_REDSTONE_ORE_BLOCK, DynmapBlockState.STONE_BLOCK);  // Glowing Redstone ore
             setBlockAlias(DynmapBlockState.EMERALD_ORE_BLOCK, DynmapBlockState.STONE_BLOCK);  // Emerald ore
             setBlockAlias(DynmapBlockState.QUARTZ_ORE_BLOCK, DynmapBlockState.STONE_BLOCK);  // Nether quartz ore
+            setBlockAlias(DynmapBlockState.NETHER_GOLD_ORE_BLOCK, DynmapBlockState.NETHERRACK_BLOCK); // Nether Gold ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_GOLD_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate gold ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_IRON_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate iron ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_COAL_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate coal ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_LAPIS_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate lapis ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_DIAMOND_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate diamond ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_REDSTONE_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate redstone ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_EMERALD_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate emerald ore
+            setBlockAlias(DynmapBlockState.DEEPSLATE_COPPER_ORE_BLOCK, DynmapBlockState.DEEPSLATE_BLOCK); // Deepslate copper ore
+            setBlockAlias(DynmapBlockState.COPPER_ORE_BLOCK, DynmapBlockState.STONE_BLOCK);  // Copper ore
         }
         ConfigurationNode ba = configuration.getNode("block-alias");
         if (ba != null) {
