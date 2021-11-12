@@ -18,6 +18,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.CustomChart;
+import org.bstats.json.JsonObjectBuilder;
+import org.bstats.json.JsonObjectBuilder.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -1670,36 +1673,52 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     public boolean testIfPlayerInfoProtected() {
         return core.testIfPlayerInfoProtected();
     }
-    
-    private void initMetrics() {
-        metrics = new Metrics(this);
 
-        metrics.addCustomChart(new Metrics.MultiLineChart("features_used", () -> {
-            Map<String, Integer> hashMap = new HashMap<>();
-            hashMap.put("internal_web_server", core.configuration.getBoolean("disable-webserver", false) ? 0 : 1);
-            hashMap.put("login_security", core.configuration.getBoolean("login-enabled", false) ? 1 : 0);
-            hashMap.put("player_info_protected", core.player_info_protected ? 1 : 0);
+    private class FeatureChart extends CustomChart {
+    	public FeatureChart() { super("features_used"); }
+
+		@Override
+		protected JsonObject getChartData() throws Exception {
+			JsonObjectBuilder obj = new JsonObjectBuilder();
+            obj = obj.appendField("internal_web_server", core.configuration.getBoolean("disable-webserver", false) ? 0 : 1);
+            obj = obj.appendField("login_security", core.configuration.getBoolean("login-enabled", false) ? 1 : 0);
+            obj = obj.appendField("player_info_protected", core.player_info_protected ? 1 : 0);
             for (String mod : modsused)
-                hashMap.put(mod + "_blocks", 1);
-            return hashMap;
-        }));
+            	obj = obj.appendField(mod + "_blocks", 1);
+            return obj.build();
+		}
+    }
+    private class MapChart extends CustomChart {
+    	public MapChart() { super("map_data"); }
 
-        metrics.addCustomChart(new Metrics.MultiLineChart("map_data", () -> {
-            Map<String, Integer> hashMap = new HashMap<>();
-            hashMap.put("worlds", core.mapManager != null ? core.mapManager.getWorlds().size() : 0);
+		@Override
+		protected JsonObject getChartData() throws Exception {
+			JsonObjectBuilder obj = new JsonObjectBuilder();
+			
+			obj = obj.appendField("worlds", core.mapManager != null ? core.mapManager.getWorlds().size() : 0);
             int maps = 0, hdmaps = 0;
-            if (core.mapManager != null)
+            if (core.mapManager != null) {
                 for (DynmapWorld w : core.mapManager.getWorlds()) {
                     for (MapType mt : w.maps)
                         if (mt instanceof HDMap)
                             ++hdmaps;
                     maps += w.maps.size();
                 }
-            hashMap.put("maps", maps);
-            hashMap.put("hd_maps", hdmaps);
-            return hashMap;
-        }));
+                obj = obj.appendField("maps", maps);
+                obj = obj.appendField("hd_maps", hdmaps);
+            }
+            return obj.build();
+		}
     }
+    
+    private void initMetrics() {
+        metrics = new Metrics(this, 619);
+
+        metrics.addCustomChart(new FeatureChart());
+
+        metrics.addCustomChart(new MapChart());
+    }
+    
     @Override
     public void processSignChange(String material, String world, int x, int y, int z,
             String[] lines, String playerid) {
