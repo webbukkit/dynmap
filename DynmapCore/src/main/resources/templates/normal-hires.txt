@@ -20,7 +20,7 @@ templates:
         name: flat
         title: "Flat"
         prefix: flat
-        perspective: iso_S_90_lowres
+        perspective: iso_S_90_hires
         shader: stdtexture
         lighting: shadows
         mapzoomin: 1
@@ -36,7 +36,7 @@ templates:
         name: cave
         title: "Cave"
         prefix: ct
-        perspective: iso_SE_60_lowres
+        perspective: iso_SE_60_hires
         shader: cave
         lighting: default
         mapzoomin: 3
