@@ -20,7 +20,7 @@ templates:
         name: flat
         title: "Flat"
         prefix: flat
-        perspective: iso_S_90_lowres
+        perspective: iso_S_90_hires
         shader: stdtexture
         lighting: nethershadows
         # Map background color (day or night)
