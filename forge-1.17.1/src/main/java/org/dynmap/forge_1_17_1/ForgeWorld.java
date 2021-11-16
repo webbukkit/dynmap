@@ -38,15 +38,19 @@ public class ForgeWorld extends DynmapWorld
 
     public static String getWorldName(ServerLevelAccessor w) {
         ResourceKey<Level> rk = w.getLevel().dimension();
-        if (rk == Level.OVERWORLD) {    // Overworld?
+    	String id = rk.location().getNamespace() + "_" + rk.location().getPath();
+    	if (id.equals("minecraft_overworld")) {	// Overworld?
             return w.getLevel().serverLevelData.getLevelName();
-        } else if (rk == Level.END) {
-            return "DIM1";
-        } else if (rk == Level.NETHER) {
-            return "DIM-1";
-        } else {
-            return rk.getRegistryName() + "_" + rk.location();
-        }
+    	}
+    	else if (id.equals("minecraft_the_end")) {
+    		return "DIM1";
+    	}
+    	else if (id.equals("minecraft_the_nether")) {
+    		return "DIM-1";
+    	}
+    	else {
+    		return id;
+    	}
     }
 
     public void updateWorld(ServerLevelAccessor w) {

@@ -38,17 +38,18 @@ public class ForgeWorld extends DynmapWorld
 
     public static String getWorldName(IServerWorld w) {
     	RegistryKey<World> rk = w.getWorld().getDimensionKey();
-    	if (rk == World.OVERWORLD) {	// Overworld?
+    	String id = rk.getLocation().getNamespace() + "_" + rk.getLocation().getPath();
+    	if (id.equals("minecraft_overworld")) {	// Overworld?
     		return w.getWorld().getServer().getServerConfiguration().getWorldName();
     	}
-    	else if (rk == World.THE_END) {
+    	else if (id.equals("minecraft_the_end")) {
     		return "DIM1";
     	}
-    	else if (rk == World.THE_NETHER) {
+    	else if (id.equals("minecraft_the_nether")) {
     		return "DIM-1";
     	}
     	else {
-    		return rk.getRegistryName().getNamespace() + "_" + rk.getRegistryName().getPath();
+    		return id;
     	}
     }
 
@@ -58,7 +59,7 @@ public class ForgeWorld extends DynmapWorld
     		w.getWorld().getSeaLevel(), 
     		w.getWorld().getDimensionKey() == World.THE_NETHER,
     		w.getWorld().getDimensionKey() == World.THE_END,
-    		w.getWorld().getDimensionKey().getRegistryName().getPath());
+			getWorldName(w));
         setWorldLoaded(w);
     }
     public ForgeWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle)
