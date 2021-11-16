@@ -1754,7 +1754,7 @@ public class DynmapPlugin
         				int z = cp.z << 4;
         				// If not empty AND not initial scan
         				if (ymax > 0) {
-            				Log.info("New generated chunk detected at " + cp + " for " + fw.getName());
+            				//Log.info("New generated chunk detected at " + cp + " for " + fw.getName());
         					mapManager.touchVolume(fw.getName(), x, 0, z, x+15, ymax, z+16, "chunkgenerate");
         				}
 					}
