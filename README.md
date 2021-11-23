@@ -9,9 +9,9 @@
 * [Where to go for questions and discussions](#where-to-go-for-questions-and-discussions)
 * [Where to go to make donations](#where-to-go-to-make-donations)
 # How to build
-Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.17.x+ requirements, the developer's
-default JDK must be a JDK 16 (or later) versions - older versions will still be compiled
-to run on the default JDK for those platforms (JDK 8), as will all common libraries.
+Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.18.x+ requirements, the developer's
+default JDK must be a JDK 17 (or later) versions - older versions will still be compiled
+to run on the default JDK for those platforms (JDK 8, or JDK 16 for 1.17.x, and common libraries are built JDK 8.
 
 To build, run:
 
