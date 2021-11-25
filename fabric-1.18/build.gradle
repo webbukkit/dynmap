@@ -9,6 +9,11 @@ buildscript {
     }
 }
 apply plugin: 'fabric-loom'
+loom {
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
+}
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
