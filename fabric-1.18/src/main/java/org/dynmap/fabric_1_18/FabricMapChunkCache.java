@@ -1099,7 +1099,6 @@ public class FabricMapChunkCache extends MapChunkCache {
                         Log.severe("ChunkSerializer.serialize threw a NullPointerException", e);
                         continue;
                     }
-                    if (nbt != null) nbt = nbt.getCompound("Level");
                     try {
                         SnapshotCache.SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
                         ss = ssr.ss;

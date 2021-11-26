@@ -165,7 +165,7 @@ public class ChunkSnapshot {
             sectcnt++;
         }
         /* Get sections */
-        NbtList sect = nbt.getList("Sections", 10);
+        NbtList sect = nbt.getList("sections", 10);
         for (int i = 0; i < sect.size(); i++) {
             NbtCompound sec = sect.getCompound(i);
             int secnum = sec.getByte("Y");
@@ -186,10 +186,11 @@ public class ChunkSnapshot {
             sections.set(secnum + sectoff, cursect);
             DynmapBlockState[] states = cursect.states;
             DynmapBlockState[] palette = null;
-            // If we've got palette and block states list, process non-empty section
-            if (sec.contains("Palette", 9) && sec.contains("BlockStates", 12)) {
-                NbtList plist = sec.getList("Palette", 10);
-                long[] statelist = sec.getLongArray("BlockStates");
+            NbtCompound block_states = sec.getCompound("block_states");
+            // If we've block state data, process non-empty section
+            if (block_states.contains("data", 12)) {
+                long[] statelist = block_states.getLongArray("data");
+                NbtList plist = block_states.getList("palette", 10);
                 palette = new DynmapBlockState[plist.size()];
                 for (int pi = 0; pi < plist.size(); pi++) {
                     NbtCompound tc = plist.getCompound(pi);
@@ -247,6 +248,7 @@ public class ChunkSnapshot {
             }
         }
         /* Get biome data */
+        // TODO: Update to new 1.18 format (3D biomes, sectioned):
         this.biome = new int[COLUMNS_PER_CHUNK];
         if (nbt.contains("Biomes")) {
             int[] bb = nbt.getIntArray("Biomes");
