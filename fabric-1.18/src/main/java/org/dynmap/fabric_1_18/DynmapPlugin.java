@@ -21,6 +21,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.IdList;
@@ -39,7 +40,6 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
-import org.dynmap.fabric_1_18.DynmapPlugin.ChatMessage;
 import org.dynmap.fabric_1_18.command.DmapCommand;
 import org.dynmap.fabric_1_18.command.DmarkerCommand;
 import org.dynmap.fabric_1_18.command.DynmapCommand;
@@ -76,14 +76,10 @@ public class DynmapPlugin {
     public static DynmapPlugin plugin;
     ChatHandler chathandler;
     private HashMap<String, Integer> sortWeights = new HashMap<String, Integer>();
-    // Drop world load ticket after 30 seconds
-    private long worldIdleTimeoutNS = 30 * 1000000000L;
     private HashMap<String, FabricWorld> worlds = new HashMap<String, FabricWorld>();
     private WorldAccess last_world;
     private FabricWorld last_fworld;
     private Map<String, FabricPlayer> players = new HashMap<String, FabricPlayer>();
-    //TODO private ForgeMetrics metrics;
-    private HashSet<String> modsused = new HashSet<String>();
     private FabricServer fserver;
     private boolean tickregistered = false;
     // TPS calculator
@@ -93,9 +89,6 @@ public class DynmapPlugin {
     // Per tick limit, in nsec
     long perTickLimit = (50000000); // 50 ms
     private boolean useSaveFolder = true;
-
-    private static final int SIGNPOST_ID = 63;
-    private static final int WALLSIGN_ID = 68;
 
     private static final String[] TRIGGER_DEFAULTS = {"blockupdate", "chunkpopulate", "chunkgenerate"};
 
@@ -133,7 +126,6 @@ public class DynmapPlugin {
     public static DynmapBlockState[] stateByID;
 
     private Map<String, LongOpenHashSet> knownloadedchunks = new HashMap<String, LongOpenHashSet>();
-    private boolean didInitialKnownChunks = false;
 
     private void addKnownChunk(FabricWorld fw, ChunkPos pos) {
         LongOpenHashSet cset = knownloadedchunks.get(fw.getName());
@@ -227,10 +219,10 @@ public class DynmapPlugin {
                 }
             }
         }
-        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
-            DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
-            //Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
-        }
+//        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
+//            DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
+//            Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
+//        }
     }
 
     public static final Item getItemByID(int id) {
@@ -512,17 +504,6 @@ public class DynmapPlugin {
         /* Load saved world definitions */
         loadWorlds();
 
-        /* Initialized the currently loaded worlds */
-        if (server.getWorlds() != null) {
-            for (ServerWorld world : server.getWorlds()) {
-                FabricWorld w = this.getWorld(world);
-                /*NOTYET - need rest of forge
-                if(DimensionManager.getWorld(world.provider.getDimensionId()) == null) { // If not loaded
-                    w.setWorldUnloaded();
-                }
-                */
-            }
-        }
         for (FabricWorld w : worlds.values()) {
             if (core.processWorldLoad(w)) {   /* Have core process load first - fire event listeners if good load after */
                 if (w.isLoaded()) {
@@ -779,9 +760,9 @@ public class DynmapPlugin {
             for (ServerWorld world : server.getWorlds()) {
                 FabricWorld fw = getWorld(world);
                 if (fw == null) continue;
-                Long2ObjectLinkedOpenHashMap<ChunkHolder> chunks = ((ThreadedAnvilChunkStorageAccessor) world.getChunkManager().threadedAnvilChunkStorage).getChunkHolders();
+                ServerChunkManager chunkManager = world.getChunkManager();
+				Long2ObjectLinkedOpenHashMap<ChunkHolder> chunks = ((ThreadedAnvilChunkStorageAccessor) chunkManager.threadedAnvilChunkStorage).getChunkHolders();
                 for (Map.Entry<Long, ChunkHolder> k : chunks.long2ObjectEntrySet()) {
-                    long key = k.getKey();
                     ChunkHolder ch = k.getValue();
                     Chunk c = null;
                     try {

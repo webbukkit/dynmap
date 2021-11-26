@@ -130,6 +130,7 @@ public class ChunkSnapshot {
     }
 
     public static class StateListException extends Exception {
+        private static final long serialVersionUID = 1L;
         private static boolean loggedOnce = false;
 
         public StateListException(int x, int z, int actualLength, int expectedLength, int expectedLegacyLength) {

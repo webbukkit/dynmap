@@ -28,16 +28,10 @@ import java.util.*;
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
 public class FabricMapChunkCache extends MapChunkCache {
-    private final DynmapPlugin plugin;
-
     private static boolean init = false;
     private static Field updateEntityTick = null;
     /* ChunkManager fields */
     private static Field chunksToRemove = null; // Map
-
-    /* ChunjManager Pending fields */
-    private static Field chunkCoord = null;
-    private static Field nbtTag = null;
 
     private World w;
     private DynmapWorld dw;
@@ -74,8 +68,6 @@ public class FabricMapChunkCache extends MapChunkCache {
      * Construct empty cache
      */
     public FabricMapChunkCache(DynmapPlugin plugin) {
-        this.plugin = plugin;
-
         Registry<Biome> biomeRegistry = plugin.getFabricServer().getBiomeRegistry();
         Biome b[] = plugin.getFabricServer().getBiomeList(biomeRegistry);
         BiomeMap[] bm = BiomeMap.values();
@@ -880,8 +872,6 @@ public class FabricMapChunkCache extends MapChunkCache {
         isSectionNotEmpty = new boolean[snapcnt][];
 
     }
-
-    private static boolean didError = false;
 
     public NbtCompound readChunk(int x, int z) {
         try {
