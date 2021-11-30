@@ -880,7 +880,6 @@ public class FabricMapChunkCache extends MapChunkCache {
             ChunkPos coord = new ChunkPos(x, z);
             NbtCompound rslt = acl.getNbt(coord);
             if (rslt != null) {
-                rslt = rslt.getCompound("Level");
                 // Don't load uncooked chunks
                 String stat = rslt.getString("Status");
                 ChunkStatus cs = ChunkStatus.byId(stat);
