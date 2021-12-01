@@ -27,6 +27,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
 import net.minecraft.core.RegistryBlockID;
+import net.minecraft.core.RegistryBlocks;
 import net.minecraft.core.IRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.NBTTagByteArray;
@@ -39,6 +40,7 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.resources.MinecraftKey;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.biome.BiomeBase;
@@ -81,9 +83,11 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
                 baseb = b;
                 continue;
     		}
-            String bn = b.h();
+        	MinecraftKey id = RegistryBlocks.X.b(b);
+    		String bn = id.toString();
             if (bn != null) {
             	names.add(bn);
+            	System.out.println("block=" + bn);
             }
 		}
         return names.toArray(new String[0]);
@@ -97,7 +101,7 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     	}
     	return reg;
     }
-    
+
     private Object[] biomelist;
     /**
      * Get list of defined biomebase objects
@@ -138,10 +142,13 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
         Block baseb = null;
     	Iterator<IBlockData> iter = bsids.iterator();
     	ArrayList<String> names = new ArrayList<String>();
+    	
     	// Loop through block data states
 		while (iter.hasNext()) {
     		IBlockData bd = iter.next();
-    		String bname = bd.b().h();
+    		Block b = bd.b();
+        	MinecraftKey id = RegistryBlocks.X.b(b);
+    		String bname = id.toString();
     		DynmapBlockState lastbs = lastBlockState.get(bname);	// See if we have seen this one
     		int idx = 0;
     		if (lastbs != null) {	// Yes

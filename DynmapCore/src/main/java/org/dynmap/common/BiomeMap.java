@@ -1,10 +1,14 @@
 package org.dynmap.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.dynmap.hdmap.HDBlockModels;
 
 /* Generic biome mapping */
 public class BiomeMap {
     private static BiomeMap[] biome_by_index = new BiomeMap[1025];
+    private static Map<String, BiomeMap> biome_by_name = new HashMap<>();
     public static final BiomeMap NULL = new BiomeMap(-1, "NULL", 0.5, 0.5, 0xFFFFFF, 0, 0);
 
     public static final BiomeMap OCEAN = new BiomeMap(0, "OCEAN");
@@ -153,6 +157,7 @@ public class BiomeMap {
         if(idx >= 0) {
             biome_by_index[idx] = this;
         }
+        biome_by_name.put(id, this);
     }
     public BiomeMap(int idx, String id) {
         this(idx, id, 0.5, 0.5, 0xFFFFFF, 0, 0);
@@ -202,6 +207,15 @@ public class BiomeMap {
             return biome_by_index[idx];
         else
             return NULL;
+    }
+    public static final BiomeMap byBiomeName(String name) {
+        if (name.startsWith("minecraft:")) {
+            name = name.substring(10);
+        }
+        name = name.toUpperCase();
+        if (biome_by_name.containsKey(name))
+            return biome_by_name.get(name);
+        return NULL;
     }
     public int getBiomeID() {
         return index - 1;   // Index of biome in MC biome table

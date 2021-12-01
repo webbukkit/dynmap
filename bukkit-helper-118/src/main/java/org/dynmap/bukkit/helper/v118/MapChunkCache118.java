@@ -10,6 +10,7 @@ import org.dynmap.bukkit.helper.AbstractMapChunkCache;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.bukkit.helper.SnapshotCache;
 import org.dynmap.bukkit.helper.SnapshotCache.SnapshotRec;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DataBitsPacked;
 import org.dynmap.utils.DynIntHashMap;
@@ -18,6 +19,7 @@ import org.dynmap.utils.VisibilityLimit;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DataBits;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.SimpleBitStorage;
 import net.minecraft.world.level.ChunkCoordIntPair;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -39,6 +41,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        public int getBlockSkyLight(int x, int y, int z);
 	        public int getBlockEmittedLight(int x, int y, int z);
 	        public boolean isEmpty();
+	        public int getBiome(int x, int y, int z);
 	    }
 	    private final int x, z;
 	    private final Section[] section;
@@ -51,6 +54,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	    private final long inhabitedTicks;
 
 	    private static final int BLOCKS_PER_SECTION = 16 * 16 * 16;
+	    private static final int BIOMES_PER_SECTION = 4 * 4 * 4;
 	    private static final int COLUMNS_PER_CHUNK = 16 * 16;
         private static final int V1_15_BIOME_PER_CHUNK = 4 * 4 * 64;
 	    private static final byte[] emptyData = new byte[BLOCKS_PER_SECTION / 2];
@@ -87,6 +91,10 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        public boolean isEmpty() {
 	            return true;
 	        }
+	        @Override
+	        public int getBiome(int x, int y, int z) {
+	        	return BiomeMap.PLAINS.getBiomeID();
+	        }
 	    }
 	    
 	    private static final EmptySection empty_section = new EmptySection();
@@ -95,10 +103,12 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        DynmapBlockState[] states;
 	        byte[] skylight;
 	        byte[] emitlight;
-
+	        int[] biomes;
+	        
 	        public StdSection() {
 	            states = new DynmapBlockState[BLOCKS_PER_SECTION];
 	            Arrays.fill(states,  DynmapBlockState.AIR);
+	            biomes = new int[BIOMES_PER_SECTION];
 	            skylight = emptyData;
 	            emitlight = emptyData;
 	        }
@@ -121,6 +131,11 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        public boolean isEmpty() {
 	            return false;
 	        }
+	        @Override
+	        public int getBiome(int x, int y, int z) {
+	            int off = (((y & 0xF) >> 2) << 4) | ((z >> 2) << 2) | (x >> 2);
+	            return biomes[off];
+	        }	        
 	    }
 	    /**
 	     * Construct empty chunk snapshot
@@ -171,6 +186,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            sections.add(empty_section);
 	            sectcnt++;
 	        }
+	        StdSection lastsectwithbiome = null;
 	        /* Get sections */
 	        NBTTagList sect = nbt.c("Sections", 10);
 	        for (int i = 0; i < sect.size(); i++) {
@@ -240,12 +256,79 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	                    }
 	                }
 				}
+	            else if (sec.b("block_states")) {	// 1.18
+	            	NBTTagCompound block_states = sec.p("block_states");
+	            	// If we've block state data, process non-empty section
+	            	if (block_states.b("data", 12)) {
+	            		long[] statelist = block_states.o("data");
+	            		NBTTagList plist = block_states.c("palette", 10);
+	            		palette = new DynmapBlockState[plist.size()];
+	            		for (int pi = 0; pi < plist.size(); pi++) {
+	            			NBTTagCompound tc = plist.a(pi);
+	            			String pname = tc.l("Name");
+	            			if (tc.b("Properties")) {
+	            				StringBuilder statestr = new StringBuilder();
+	            				NBTTagCompound prop = tc.p("Properties");
+	            				for (String pid : prop.d()) {
+	            					if (statestr.length() > 0) statestr.append(',');
+	            					statestr.append(pid).append('=').append(prop.c(pid).e_());
+	            				}
+	            				palette[pi] = DynmapBlockState.getStateByNameAndState(pname, statestr.toString());
+	            			}
+	            			if (palette[pi] == null) {
+	            				palette[pi] = DynmapBlockState.getBaseStateByName(pname);
+	            			}
+	            			if (palette[pi] == null) {
+	            				palette[pi] = DynmapBlockState.AIR;
+	            			}
+	            		}
+            			SimpleBitStorage db = null;
+            			DataBitsPacked dbp = null;
+
+            			int bitsperblock = (statelist.length * 64) / 4096;
+            			int expectedStatelistLength = (4096 + (64 / bitsperblock) - 1) / (64 / bitsperblock);
+            			if (statelist.length == expectedStatelistLength) {
+            				db = new SimpleBitStorage(bitsperblock, 4096, statelist);
+            			}
+            			else {
+    		            	bitsperblock = (statelist.length * 64) / 4096;
+    	            		dbp = new DataBitsPacked(bitsperblock, 4096, statelist);
+            			}
+            			if (bitsperblock > 8) {    // Not palette
+            				for (int j = 0; j < 4096; j++) {
+            					int v = db != null ? db.a(j) : dbp.getAt(j);
+            					states[j] = DynmapBlockState.getStateByGlobalIndex(v);
+            				}
+            			}
+            			else {
+            				for (int j = 0; j < 4096; j++) {
+            					int v = db != null ? db.a(j) : dbp.getAt(j);
+            					states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
+            				}
+            			}
+	            	}
+	            }
+
 	            if (sec.b("BlockLight")) {
 					cursect.emitlight = dataCopy(sec.m("BlockLight"));
 	            }
 				if (sec.b("SkyLight")) {
 					cursect.skylight = dataCopy(sec.m("SkyLight"));
 				}
+				// If section biome palette
+				if (sec.b("biomes")) {
+	                NBTTagCompound nbtbiomes = sec.p("biomes");
+	                long[] bdataPacked = nbtbiomes.o("data");
+	                NBTTagList bpalette = nbtbiomes.c("palette", 8);
+	                SimpleBitStorage bdata = null;
+	                if (bdataPacked.length > 0)
+	                    bdata = new SimpleBitStorage(bdataPacked.length, 64, bdataPacked);
+	                for (int j = 0; j < 64; j++) {
+	                    int b = bdata != null ? bdata.a(j) : 0;
+	                    cursect.biomes[j] = b < bpalette.size() ? BiomeMap.byBiomeName(bpalette.j(b)).getBiomeID() : -1;
+	                }
+	                lastsectwithbiome = cursect;
+	            }
 	        }
 	        /* Get biome data */
 	        this.biome = new int[COLUMNS_PER_CHUNK];
@@ -274,6 +357,18 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
             	        }
             	    }
 	            }
+	        }
+	        else {	// Make up 2D version for now
+	        	if (lastsectwithbiome != null) {
+        	        // For now, just pad the grid with the first 16
+                    for (int i = 0; i < COLUMNS_PER_CHUNK; i++) {
+                        int off = ((i >> 4) & 0xC) + ((i >> 2) & 0x3);
+                        int bv = lastsectwithbiome.biomes[off];   // Offset to y=64
+                        if (bv < 0) bv = 0;
+                        this.biome[i] = bv;
+                        this.biomebase[i] = bbl[bv];
+                    }
+	        	}
 	        }
 	        // Finalize sections array
 	        this.section = sections.toArray(new Section[sections.size()]);
