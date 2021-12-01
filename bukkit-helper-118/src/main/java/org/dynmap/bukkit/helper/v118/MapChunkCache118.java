@@ -15,14 +15,14 @@ import org.dynmap.utils.DataBitsPacked;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.VisibilityLimit;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.util.BitStorage;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.DataBits;
 import net.minecraft.util.SimpleBitStorage;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.ChunkCoordIntPair;
 import net.minecraft.world.level.chunk.ChunkStatus;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.storage.ChunkSerializer;
+import net.minecraft.world.level.chunk.storage.ChunkRegionLoader;
+import net.minecraft.world.level.chunk.Chunk;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -150,14 +150,14 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        this.inhabitedTicks = inhabitedTime;
 	    }
 
-	    public NBTSnapshot(CompoundTag nbt, int worldheight) {
-	        this.x = nbt.getInt("xPos");
-	        this.z = nbt.getInt("zPos");
+	    public NBTSnapshot(NBTTagCompound nbt, int worldheight) {
+	        this.x = nbt.h("xPos");
+	        this.z = nbt.h("zPos");
 	        this.captureFulltime = 0;
-	        this.hmap = nbt.getIntArray("HeightMap");
+	        this.hmap = nbt.n("HeightMap");
 	        this.sectionCnt = worldheight / 16;
-	        if (nbt.contains("InhabitedTime")) {
-	            this.inhabitedTicks = nbt.getLong("InhabitedTime");
+	        if (nbt.b("InhabitedTime")) {
+	            this.inhabitedTicks = nbt.i("InhabitedTime");
 	        }
 	        else {
 	            this.inhabitedTicks = 0;
@@ -172,10 +172,10 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            sectcnt++;
 	        }
 	        /* Get sections */
-	        ListTag sect = nbt.getList("Sections", 10);
+	        NBTTagList sect = nbt.c("Sections", 10);
 	        for (int i = 0; i < sect.size(); i++) {
-	            CompoundTag sec = sect.getCompound(i);
-	            int secnum = sec.getByte("Y");
+	            NBTTagCompound sec = sect.a(i);
+	            int secnum = sec.h("Y");
 	            // Beyond end - extend up
 	            while (secnum >= (sectcnt - sectoff)) {
 	        		sections.addLast(empty_section);	// Pad with empty
@@ -194,19 +194,19 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            DynmapBlockState[] states = cursect.states;
 	            DynmapBlockState[] palette = null;
 	            // If we've got palette and block states list, process non-empty section
-	            if (sec.contains("Palette", 9) && sec.contains("BlockStates", 12)) {
-	            	ListTag plist = sec.getList("Palette", 10);
-	            	long[] statelist = sec.getLongArray("BlockStates");
+	            if (sec.b("Palette", 9) && sec.b("BlockStates", 12)) {
+	            	NBTTagList plist = sec.c("Palette", 10);
+	            	long[] statelist = sec.o("BlockStates");
 	            	palette = new DynmapBlockState[plist.size()];
 	            	for (int pi = 0; pi < plist.size(); pi++) {
-	            		CompoundTag tc = plist.getCompound(pi);
-	            		String pname = tc.getString("Name");
-                        if (tc.contains("Properties")) {
+	            		NBTTagCompound tc = plist.a(pi);
+	            		String pname = tc.l("Name");
+                        if (tc.b("Properties")) {
                             StringBuilder statestr = new StringBuilder();
-                            CompoundTag prop = tc.getCompound("Properties");
-                            for (String pid : prop.getAllKeys()) {
+                            NBTTagCompound prop = tc.p("Properties");
+                            for (String pid : prop.d()) {
                                 if (statestr.length() > 0) statestr.append(',');
-                                statestr.append(pid).append('=').append(prop.get(pid).getAsString());
+                                statestr.append(pid).append('=').append(prop.c(pid).e_());
                             }
 	            			palette[pi] = DynmapBlockState.getStateByNameAndState(pname, statestr.toString());
 	            		}
@@ -219,7 +219,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            	}
 	            	int recsperblock = (4096 + statelist.length - 1) / statelist.length;
 	            	int bitsperblock = 64 / recsperblock;
-	            	BitStorage db = null;
+	            	DataBits db = null;
 	            	DataBitsPacked dbp = null;
 	            	try {
 	            		db = new SimpleBitStorage(bitsperblock, 4096, statelist);
@@ -229,30 +229,30 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            	}
 	                if (bitsperblock > 8) {	// Not palette
 	                    for (int j = 0; j < 4096; j++) {
-	                    	int v = (dbp != null) ? dbp.getAt(j) : db.get(j);
+	                    	int v = (dbp != null) ? dbp.getAt(j) : db.a(j);
 	                        states[j] = DynmapBlockState.getStateByGlobalIndex(v);
 	                    }
 	                }
 	                else {
 	                    for (int j = 0; j < 4096; j++) {
-	                    	int v = (dbp != null) ? dbp.getAt(j) : db.get(j);
+	                    	int v = (dbp != null) ? dbp.getAt(j) : db.a(j);
 	                        states[j] = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
 	                    }
 	                }
 				}
-	            if (sec.contains("BlockLight")) {
-					cursect.emitlight = dataCopy(sec.getByteArray("BlockLight"));
+	            if (sec.b("BlockLight")) {
+					cursect.emitlight = dataCopy(sec.m("BlockLight"));
 	            }
-				if (sec.contains("SkyLight")) {
-					cursect.skylight = dataCopy(sec.getByteArray("SkyLight"));
+				if (sec.b("SkyLight")) {
+					cursect.skylight = dataCopy(sec.m("SkyLight"));
 				}
 	        }
 	        /* Get biome data */
 	        this.biome = new int[COLUMNS_PER_CHUNK];
 	        this.biomebase = new Object[COLUMNS_PER_CHUNK];
 	        Object[] bbl = BukkitVersionHelper.helper.getBiomeBaseList();
-	        if (nbt.contains("Biomes")) {
-            	int[] bb = nbt.getIntArray("Biomes");
+	        if (nbt.b("Biomes")) {
+            	int[] bb = nbt.n("Biomes");
             	if (bb != null) {
             	    // If v1.15+ format
             	    if (bb.length > COLUMNS_PER_CHUNK) {
@@ -343,21 +343,21 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 		}
 	}
 	
-    private CompoundTag fetchLoadedChunkNBT(World w, int x, int z) {
+    private NBTTagCompound fetchLoadedChunkNBT(World w, int x, int z) {
         CraftWorld cw = (CraftWorld) w;
-        CompoundTag nbt = null;
+        NBTTagCompound nbt = null;
         if (cw.isChunkLoaded(x, z)) {
-            LevelChunk c = cw.getHandle().getChunk(x,  z);
-            if ((c != null) && c.loaded) {	// c.loaded
-				nbt = ChunkSerializer.write(cw.getHandle(), c);
+            Chunk c = cw.getHandle().getChunkIfLoaded(x,  z);
+            if ((c != null) && c.o) {	// c.loaded
+				nbt = ChunkRegionLoader.a(cw.getHandle(), c);
             }
         }
         if (nbt != null) {
-            nbt = nbt.getCompound("Level");
+            nbt = nbt.p("Level");
             if (nbt != null) {
-                String stat = nbt.getString("Status");
-				ChunkStatus cs = ChunkStatus.byName(stat);
-                if ((stat == null) || (!cs.isOrAfter(ChunkStatus.LIGHT))) {	// ChunkStatus.LIGHT
+                String stat = nbt.l("Status");
+				ChunkStatus cs = ChunkStatus.a(stat);
+                if ((stat == null) || (!cs.b(ChunkStatus.l))) {	// ChunkStatus.LIGHT
                     nbt = null;
                 }
             }
@@ -365,25 +365,25 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
         return nbt;
     }
     
-    private CompoundTag loadChunkNBT(World w, int x, int z) {
+    private NBTTagCompound loadChunkNBT(World w, int x, int z) {
         CraftWorld cw = (CraftWorld) w;
-        CompoundTag nbt = null;
-        ChunkPos cc = new ChunkPos(x, z);
+        NBTTagCompound nbt = null;
+        ChunkCoordIntPair cc = new ChunkCoordIntPair(x, z);
         try {
-            nbt = cw.getHandle().getChunkSource().chunkMap.read(cc);	// playerChunkMap
+            nbt = cw.getHandle().k().a.f(cc);	// playerChunkMap
         } catch (IOException iox) {
         }
         if (nbt != null) {
-            nbt = nbt.getCompound("Level");
+            nbt = nbt.p("Level");
             if (nbt != null) {
-            	String stat = nbt.getString("Status");
+            	String stat = nbt.l("Status");
             	if ((stat == null) || (stat.equals("full") == false)) {
                     nbt = null;
                     if ((stat == null) || stat.equals("") && DynmapCore.migrateChunks()) {
-                        LevelChunk c = cw.getHandle().getChunk(x, z);
+                        Chunk c = cw.getHandle().getChunkIfLoaded(x, z);
                         if (c != null) {
                             nbt = fetchLoadedChunkNBT(w, x, z);
-                            cw.getHandle().unload(c);
+                            cw.getHandle().a(c);
                         }
                     }
             	}
@@ -457,7 +457,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
                 continue;
             }
             // Fetch NTB for chunk if loaded
-            CompoundTag nbt = fetchLoadedChunkNBT(w, chunk.x, chunk.z); 
+            NBTTagCompound nbt = fetchLoadedChunkNBT(w, chunk.x, chunk.z); 
             boolean did_load = false;
             if (nbt == null) {
                 // Load NTB for chunk, if it exists

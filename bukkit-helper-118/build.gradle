@@ -1,32 +1,10 @@
 
-plugins {
-    id "io.papermc.paperweight.userdev" version "1.2.0"
-}
-
 description = 'bukkit-helper-1.18'
 
 dependencies {
   implementation project(':bukkit-helper')
   implementation project(':dynmap-api')
   implementation project(path: ':DynmapCore', configuration: 'shadow')
-  paperDevBundle("1.17.1-R0.1-SNAPSHOT")
-}
-
-
-tasks {
-  // Run reobfJar on build
-  build {
-    dependsOn(reobfJar)
-  }
-
-  compileJava {
-    options.encoding = Charsets.UTF_8.name()
-    options.release.set(17)
-  }
-  javadoc {
-    options.encoding = Charsets.UTF_8.name()
-  }
-  processResources {
-    filteringCharset = Charsets.UTF_8.name()
-  }
+  implementation group: 'org.spigotmc', name: 'spigot-api', version:'1.18-R0.1-SNAPSHOT'
+  implementation group: 'org.spigotmc', name: 'spigot', version:'1.18-R0.1-SNAPSHOT'
 }

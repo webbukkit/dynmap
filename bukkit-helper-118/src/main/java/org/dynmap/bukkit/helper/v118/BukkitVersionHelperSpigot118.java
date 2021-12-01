@@ -26,25 +26,26 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
-import net.minecraft.core.IdMapper;
+import net.minecraft.core.RegistryBlockID;
+import net.minecraft.core.IRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.ByteArrayTag;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.LongTag;
-import net.minecraft.nbt.ShortTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NBTTagByteArray;
+import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagFloat;
+import net.minecraft.nbt.NBTTagIntArray;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagLong;
+import net.minecraft.nbt.NBTTagShort;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeBase;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.BlockFluids;
+import net.minecraft.world.level.block.entity.TileEntity;
+import net.minecraft.world.level.block.state.IBlockData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,19 +69,19 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
      */
     @Override
     public String[] getBlockNames() {
-    	IdMapper<BlockState> bsids = Block.BLOCK_STATE_REGISTRY;
+    	RegistryBlockID<IBlockData> bsids = Block.p;
         Block baseb = null;
-    	Iterator<BlockState> iter = bsids.iterator();
+    	Iterator<IBlockData> iter = bsids.iterator();
     	ArrayList<String> names = new ArrayList<String>();
 		while (iter.hasNext()) {
-			BlockState bs = iter.next();
-            Block b = bs.getBlock();
+			IBlockData bs = iter.next();
+            Block b = bs.b();
     		// If this is new block vs last, it's the base block state
     		if (b != baseb) {
                 baseb = b;
                 continue;
     		}
-            String bn = b.getDescriptionId();
+            String bn = b.h();
             if (bn != null) {
             	names.add(bn);
             }
@@ -88,11 +89,11 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
         return names.toArray(new String[0]);
     }
 
-    private static Registry<Biome> reg = null;
+    private static Registry<BiomeBase> reg = null;
 
-    private static Registry<Biome> getBiomeReg() {
+    private static Registry<BiomeBase> getBiomeReg() {
     	if (reg == null) {
-    		reg = MinecraftServer.getServer().registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
+    		reg = MinecraftServer.getServer().aV().d(IRegistry.aR);
     	}
     	return reg;
     }
@@ -104,11 +105,11 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     @Override
     public Object[] getBiomeBaseList() {
     	if (biomelist == null) {
-        	biomelist = new Biome[256];
-        	Iterator<Biome> iter = getBiomeReg().iterator();
+        	biomelist = new BiomeBase[256];
+        	Iterator<BiomeBase> iter = getBiomeReg().iterator();
         	while (iter.hasNext()) {
-                Biome b = iter.next();
-                int bidx = getBiomeReg().getId(b);
+                BiomeBase b = iter.next();
+                int bidx = getBiomeReg().a(b);
         		if (bidx >= biomelist.length) {
         			biomelist = Arrays.copyOf(biomelist, bidx + biomelist.length);
         		}
@@ -121,26 +122,26 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     /** Get ID from biomebase */
     @Override
     public int getBiomeBaseID(Object bb) {
-    	return getBiomeReg().getId((Biome)bb);
+    	return getBiomeReg().a((BiomeBase)bb);
     }
     
-    public static IdentityHashMap<BlockState, DynmapBlockState> dataToState;
+    public static IdentityHashMap<IBlockData, DynmapBlockState> dataToState;
     
     /**
      * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
      */
     @Override
     public void initializeBlockStates() {
-    	dataToState = new IdentityHashMap<BlockState, DynmapBlockState>();
+    	dataToState = new IdentityHashMap<IBlockData, DynmapBlockState>();
     	HashMap<String, DynmapBlockState> lastBlockState = new HashMap<String, DynmapBlockState>();
-    	IdMapper<BlockState> bsids = Block.BLOCK_STATE_REGISTRY;
+    	RegistryBlockID<IBlockData> bsids = Block.p;
         Block baseb = null;
-    	Iterator<BlockState> iter = bsids.iterator();
+    	Iterator<IBlockData> iter = bsids.iterator();
     	ArrayList<String> names = new ArrayList<String>();
     	// Loop through block data states
 		while (iter.hasNext()) {
-    		BlockState bd = iter.next();
-    		String bname = bd.getBlock().getDescriptionId();
+    		IBlockData bd = iter.next();
+    		String bname = bd.b().h();
     		DynmapBlockState lastbs = lastBlockState.get(bname);	// See if we have seen this one
     		int idx = 0;
     		if (lastbs != null) {	// Yes
@@ -154,21 +155,21 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     			int off2 = fname.indexOf(']');
     			sb = fname.substring(off1+1, off2);
     		}
-    		net.minecraft.world.level.material.Material mat = bd.getMaterial();
+    		net.minecraft.world.level.material.Material mat = bd.c();
             DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
-            if ((!bd.getFluidState().isEmpty()) && ((bd.getBlock() instanceof LiquidBlock) == false)) {	// Test if fluid type for block is not empty
+            if ((!bd.n().b()) && ((bd.b() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
             	bs.setWaterlogged();
             }
-            if (mat == net.minecraft.world.level.material.Material.AIR) {	// AIR
+            if (mat == net.minecraft.world.level.material.Material.a) {	// AIR
             	bs.setAir();
             }
-    		if (mat == net.minecraft.world.level.material.Material.LEAVES) {	// LEAVES
+    		if (mat == net.minecraft.world.level.material.Material.F) {	// LEAVES
     			bs.setLeaves();
     		}
-    		if (mat == net.minecraft.world.level.material.Material.WOOD) {	// WOOD
+    		if (mat == net.minecraft.world.level.material.Material.z) {	// WOOD
     			bs.setLog();
     		}
-    		if (mat.isSolid()) {
+    		if (mat.b()) {
     			bs.setSolid();
     		}
     		dataToState.put(bd,  bs);
@@ -194,20 +195,20 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
 	 */
     @Override
 	public int getBiomeBaseWaterMult(Object bb) {
-    	Biome biome = (Biome) bb;
-    	return biome.getWaterColor();	// waterColor
+    	BiomeBase biome = (BiomeBase) bb;
+    	return biome.k();	// waterColor
 	}
 
     /** Get temperature from biomebase */
     @Override
     public float getBiomeBaseTemperature(Object bb) {
-    	return ((Biome)bb).getBaseTemperature();
+    	return ((BiomeBase)bb).i();
     }
 
     /** Get humidity from biomebase */
     @Override
     public float getBiomeBaseHumidity(Object bb) {
-    	return ((Biome)bb).getDownfall(); 	
+    	return ((BiomeBase)bb).h(); 	
     }
     
     @Override
@@ -253,10 +254,10 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
 	public String[] getBiomeNames() {
     	if (biomenames == null) {
         	biomenames = new String[256];
-        	Iterator<Biome> iter = getBiomeReg().iterator();
+        	Iterator<BiomeBase> iter = getBiomeReg().iterator();
         	while (iter.hasNext()) {
-                Biome b = iter.next();
-                int bidx = getBiomeReg().getId(b);
+                BiomeBase b = iter.next();
+                int bidx = getBiomeReg().a(b);
         		if (bidx >= biomenames.length) {
         			biomenames = Arrays.copyOf(biomenames, bidx + biomenames.length);
         		}
@@ -274,7 +275,7 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
 	@Override
     /** Get ID string from biomebase */
     public String getBiomeBaseIDString(Object bb) {
-        String s = ((Biome)bb).toString();
+        String s = ((BiomeBase)bb).toString();
         if (s != null) {
         	String[] ss = s.split("\\.");
         	return ss[ss.length-1];
@@ -305,70 +306,70 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
 
 	@Override
 	public long getInhabitedTicks(Chunk c) {
-		return ((CraftChunk)c).getHandle().getInhabitedTime();
+		return ((CraftChunk)c).getHandle().u();
 	}
 
 	@Override
 	public Map<?, ?> getTileEntitiesForChunk(Chunk c) {
-		return ((CraftChunk)c).getHandle().blockEntities;
+		return ((CraftChunk)c).getHandle().i;
 	}
 
 	@Override
 	public int getTileEntityX(Object te) {
-		BlockEntity tileent = (BlockEntity) te;
-		return tileent.getBlockPos().getX();
+		TileEntity tileent = (TileEntity) te;
+		return tileent.p().u();
 	}
 
 	@Override
 	public int getTileEntityY(Object te) {
-		BlockEntity tileent = (BlockEntity) te;
-		return tileent.getBlockPos().getY();
+		TileEntity tileent = (TileEntity) te;
+		return tileent.p().v();
 	}
 
 	@Override
 	public int getTileEntityZ(Object te) {
-		BlockEntity tileent = (BlockEntity) te;
-		return tileent.getBlockPos().getZ();
+		TileEntity tileent = (TileEntity) te;
+		return tileent.p().w();
 	}
 
 	@Override
 	public Object readTileEntityNBT(Object te) {
-		BlockEntity tileent = (BlockEntity) te;
-		CompoundTag nbt = tileent.saveWithId();
+		TileEntity tileent = (TileEntity) te;
+		NBTTagCompound nbt = tileent.n();
         return nbt;
 	}
 
 	@Override
 	public Object getFieldValue(Object nbt, String field) {
-		CompoundTag rec = (CompoundTag) nbt;
-		Tag val = rec.get(field);
+		NBTTagCompound rec = (NBTTagCompound) nbt;
+		NBTBase val = rec.c(field);
         if(val == null) return null;
-        if(val instanceof ByteTag) {
-            return ((ByteTag)val).getAsByte();
+        if(val instanceof NBTTagByte) {
+            return ((NBTTagByte)val).h();
         }
-        else if(val instanceof ShortTag) {
-            return ((ShortTag)val).getAsShort();
+        else if(val instanceof NBTTagShort) {
+            return ((NBTTagShort)val).g();
         }
-        else if(val instanceof IntTag) {
-            return ((IntTag)val).getAsInt();
+        else if(val instanceof NBTTagInt) {
+            return ((NBTTagInt)val).f();
         }
-        else if(val instanceof LongTag) {
-            return ((LongTag)val).getAsLong();
+        else if(val instanceof NBTTagLong) {
+            return ((NBTTagLong)val).e();
         }
-        else if(val instanceof FloatTag) {
-            return ((FloatTag)val).getAsFloat();
+        else if(val instanceof NBTTagFloat) {
+            return ((NBTTagFloat)val).j();
         }
-        else if(val instanceof DoubleTag) {
-            return ((DoubleTag)val).getAsDouble();
+        else if(val instanceof NBTTagDouble) {
+            return ((NBTTagDouble)val).i();
         }
-        else if(val instanceof ByteArrayTag) {
-            return ((ByteArrayTag)val).getAsByteArray();
+        else if(val instanceof NBTTagByteArray) {
+            return ((NBTTagByteArray)val).d();
         }
-        else if(val instanceof StringTag) {
-            return ((StringTag)val).getAsString();
+        else if(val instanceof NBTTagString) {
+            return ((NBTTagString)val).e_();
         }
-        else if(val instanceof IntArrayTag) {
-            return ((IntArrayTag)val).getAsIntArray();
+        else if(val instanceof NBTTagIntArray) {
+            return ((NBTTagIntArray)val).f();
         }
         return null;
 	}
