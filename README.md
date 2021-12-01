@@ -57,6 +57,7 @@ The following target platforms are supported, and you can find them at the links
 | Fabric | 1.16.4 | `Dynmap-<version>-fabric-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.17 | `Dynmap-<version>-fabric-1.17.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.17.1 | `Dynmap-<version>-fabric-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.18   | `Dynmap-<version>-fabric-1.18.jar`   | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
     
 # Data Storage
 Dynmap supports the following storage backends:
