@@ -16,6 +16,7 @@ import org.dynmap.utils.DataBitsPacked;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.VisibilityLimit;
 
+import jline.internal.Log;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DataBits;
@@ -171,7 +172,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        this.captureFulltime = 0;
 	        this.hmap = nbt.n("HeightMap");
 	        this.sectionCnt = worldheight / 16;
-	        if (nbt.b("InhabitedTime")) {
+	        if (nbt.e("InhabitedTime")) {
 	            this.inhabitedTicks = nbt.i("InhabitedTime");
 	        }
 	        else {
@@ -186,9 +187,11 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            sections.add(empty_section);
 	            sectcnt++;
 	        }
+            //System.out.println("nbt.keys()=" + nbt.d().toString());
 	        StdSection lastsectwithbiome = null;
 	        /* Get sections */
-	        NBTTagList sect = nbt.c("Sections", 10);
+	        
+	        NBTTagList sect = nbt.e("sections") ? nbt.c("sections", 10) : nbt.c("Sections", 10);
 	        for (int i = 0; i < sect.size(); i++) {
 	            NBTTagCompound sec = sect.a(i);
 	            int secnum = sec.h("Y");
@@ -203,7 +206,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        		sectoff++;
 	        		sectcnt++;
 	        	}
-	            //System.out.println("section(" + secnum + ")=" + sec.asString());
+	            //System.out.println("section(" + secnum + ")=" + sec.toString());
 	            // Create normal section to initialize
 	            StdSection cursect = new StdSection();
 	            sections.set(secnum + sectoff, cursect);
@@ -217,7 +220,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            	for (int pi = 0; pi < plist.size(); pi++) {
 	            		NBTTagCompound tc = plist.a(pi);
 	            		String pname = tc.l("Name");
-                        if (tc.b("Properties")) {
+                        if (tc.e("Properties")) {
                             StringBuilder statestr = new StringBuilder();
                             NBTTagCompound prop = tc.p("Properties");
                             for (String pid : prop.d()) {
@@ -256,7 +259,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	                    }
 	                }
 				}
-	            else if (sec.b("block_states")) {	// 1.18
+	            else if (sec.e("block_states")) {	// 1.18
 	            	NBTTagCompound block_states = sec.p("block_states");
 	            	// If we've block state data, process non-empty section
 	            	if (block_states.b("data", 12)) {
@@ -266,7 +269,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            		for (int pi = 0; pi < plist.size(); pi++) {
 	            			NBTTagCompound tc = plist.a(pi);
 	            			String pname = tc.l("Name");
-	            			if (tc.b("Properties")) {
+	            			if (tc.e("Properties")) {
 	            				StringBuilder statestr = new StringBuilder();
 	            				NBTTagCompound prop = tc.p("Properties");
 	            				for (String pid : prop.d()) {
@@ -309,14 +312,14 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	            	}
 	            }
 
-	            if (sec.b("BlockLight")) {
+	            if (sec.e("BlockLight")) {
 					cursect.emitlight = dataCopy(sec.m("BlockLight"));
 	            }
-				if (sec.b("SkyLight")) {
+				if (sec.e("SkyLight")) {
 					cursect.skylight = dataCopy(sec.m("SkyLight"));
 				}
 				// If section biome palette
-				if (sec.b("biomes")) {
+				if (sec.e("biomes")) {
 	                NBTTagCompound nbtbiomes = sec.p("biomes");
 	                long[] bdataPacked = nbtbiomes.o("data");
 	                NBTTagList bpalette = nbtbiomes.c("palette", 8);
@@ -334,7 +337,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	        this.biome = new int[COLUMNS_PER_CHUNK];
 	        this.biomebase = new Object[COLUMNS_PER_CHUNK];
 	        Object[] bbl = BukkitVersionHelper.helper.getBiomeBaseList();
-	        if (nbt.b("Biomes")) {
+	        if (nbt.e("Biomes")) {
             	int[] bb = nbt.n("Biomes");
             	if (bb != null) {
             	    // If v1.15+ format
@@ -448,7 +451,9 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
             }
         }
         if (nbt != null) {
-            nbt = nbt.p("Level");
+        	if (nbt.e("Level")) {
+        		nbt = nbt.p("Level");
+        	}
             if (nbt != null) {
                 String stat = nbt.l("Status");
 				ChunkStatus cs = ChunkStatus.a(stat);
@@ -461,6 +466,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
     }
     
     private NBTTagCompound loadChunkNBT(World w, int x, int z) {
+    	//.info("loadChunkNBT(" + w.getName() + "," + x + "," + z);
         CraftWorld cw = (CraftWorld) w;
         NBTTagCompound nbt = null;
         ChunkCoordIntPair cc = new ChunkCoordIntPair(x, z);
@@ -469,7 +475,10 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
         } catch (IOException iox) {
         }
         if (nbt != null) {
-            nbt = nbt.p("Level");
+        	// See if we have Level - unwrap this if so
+        	if (nbt.e("Level")) {
+        		nbt = nbt.p("Level");
+        	}
             if (nbt != null) {
             	String stat = nbt.l("Status");
             	if ((stat == null) || (stat.equals("full") == false)) {

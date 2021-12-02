@@ -164,7 +164,7 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     		}
     		net.minecraft.world.level.material.Material mat = bd.c();
             DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
-            if ((!bd.n().b()) && ((bd.b() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
+            if ((!bd.n().c()) && ((bd.b() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
             	bs.setWaterlogged();
             }
             if (mat == net.minecraft.world.level.material.Material.a) {	// AIR
