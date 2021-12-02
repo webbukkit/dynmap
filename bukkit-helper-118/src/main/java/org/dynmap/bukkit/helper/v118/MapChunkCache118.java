@@ -327,7 +327,10 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	                    int b = bdata != null ? bdata.a(j) : 0;
 	                    cursect.biomes[j] = b < bpalette.size() ? BiomeMap.byBiomeName(bpalette.j(b)).getBiomeID() : -1;
 	                }
-	                lastsectwithbiome = cursect;
+	                // Favor the Y=64 version
+	                if ((secnum == 4) || (lastsectwithbiome == null)) {
+	                	lastsectwithbiome = cursect;
+	                }
 	            }
 	        }
 	        /* Get biome data */

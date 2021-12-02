@@ -860,7 +860,9 @@ public class ForgeMapChunkCache extends MapChunkCache {
 		try {
 			CompoundTag rslt = cps.chunkMap.readChunk(new ChunkPos(x, z));
 			if (rslt != null) {
-				rslt = rslt.getCompound("Level");
+				if (rslt.contains("Level")) {
+					rslt = rslt.getCompound("Level");
+				}
 				// Don't load uncooked chunks
 				String stat = rslt.getString("Status");
 				ChunkStatus cs = ChunkStatus.byName(stat);
@@ -1080,8 +1082,9 @@ public class ForgeMapChunkCache extends MapChunkCache {
 					DynIntHashMap tileData;
 					if (vis) { // If visible
 						CompoundTag nbt = ChunkSerializer.write(w, ch);
-						if (nbt != null)
+						if ((nbt != null) && nbt.contains("Level")) {
 							nbt = nbt.getCompound("Level");
+						}
 						SnapshotRec ssr = prepChunkSnapshot(chunk, nbt);
 						ss = ssr.ss;
 						tileData = ssr.tileData;
