@@ -28,6 +28,7 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
+import org.dynmap.fabric_1_18.event.BlockEvents;
 import org.dynmap.fabric_1_18.event.ServerChatEvents;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.VisibilityLimit;
@@ -269,22 +270,10 @@ public class FabricServer extends DynmapServerInterface {
                 break;
 
             case SIGN_CHANGE:
-                /*TODO
-                pm.registerEvents(new Listener() {
-                    @EventHandler(priority=EventPriority.MONITOR)
-                    public void onSignChange(SignChangeEvent evt) {
-                        if(evt.isCancelled()) return;
-                        Block b = evt.getBlock();
-                        Location l = b.getLocation();
-                        String[] lines = evt.getLines();
-                        DynmapPlayer dp = null;
-                        Player p = evt.getPlayer();
-                        if(p != null) dp = new BukkitPlayer(p);
-                        core.listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, b.getType().getId(),
-                                BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ(), lines, dp);
-                    }
-                }, DynmapPlugin.this);
-                */
+                BlockEvents.SIGN_CHANGE_EVENT.register((world, pos, lines, material, player) -> {
+                    plugin.core.processSignChange("fabric", FabricWorld.getWorldName(plugin, world),
+                            pos.getX(), pos.getY(), pos.getZ(), lines, player.getName().asString());
+                });
                 break;
 
             default:
