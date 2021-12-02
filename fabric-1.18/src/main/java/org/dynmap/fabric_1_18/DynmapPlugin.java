@@ -753,7 +753,7 @@ public class DynmapPlugin {
             ServerChunkEvents.CHUNK_LOAD.register((world, chunk) -> worldTracker.handleChunkLoad(world, chunk));
             ServerChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> worldTracker.handleChunkUnload(world, chunk));
             ChunkDataEvents.SAVE.register((world, chunk) -> worldTracker.handleChunkDataSave(world, chunk));
-            BlockEvents.EVENT.register((world, pos) -> worldTracker.handleBlockEvent(world, pos));
+            BlockEvents.BLOCK_EVENT.register((world, pos) -> worldTracker.handleBlockEvent(world, pos));
         }
         // Prime the known full chunks
         if (onchunkgenerate && (server.getWorlds() != null)) {
