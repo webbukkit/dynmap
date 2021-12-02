@@ -255,19 +255,7 @@ public class FabricServer extends DynmapServerInterface {
                 break;
 
             case BLOCK_BREAK:
-                /*TODO
-                pm.registerEvents(new Listener() {
-                    @EventHandler(priority=EventPriority.MONITOR)
-                    public void onBlockBreak(BlockBreakEvent evt) {
-                        if(evt.isCancelled()) return;
-                        Block b = evt.getBlock();
-                        if(b == null) return;
-                        Location l = b.getLocation();
-                        core.listenerManager.processBlockEvent(EventType.BLOCK_BREAK, b.getType().getId(),
-                                BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
-                    }
-                }, DynmapPlugin.this);
-                */
+                /* Already handled by BlockEvents logic */
                 break;
 
             case SIGN_CHANGE:
