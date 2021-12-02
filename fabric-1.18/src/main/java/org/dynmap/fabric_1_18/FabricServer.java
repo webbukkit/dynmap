@@ -3,6 +3,7 @@ package org.dynmap.fabric_1_18;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.MessageType;
@@ -17,6 +18,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCommonAPIListener;
@@ -92,9 +94,17 @@ public class FabricServer extends DynmapServerInterface {
         return -1;
     }
 
-    @Override
+    @SuppressWarnings("deprecation") /* Not much I can do... fix this if it breaks. */
+	@Override
     public int isSignAt(String wname, int x, int y, int z) {
-        return -1;
+        World world = plugin.getWorldByName(wname).getWorld();
+
+        BlockPos pos = new BlockPos(x, y, z);
+        if (!world.isChunkLoaded(pos))
+            return -1;
+
+        Block block = world.getBlockState(pos).getBlock();
+        return (block instanceof AbstractSignBlock ? 1 : 0);
     }
 
     @Override
