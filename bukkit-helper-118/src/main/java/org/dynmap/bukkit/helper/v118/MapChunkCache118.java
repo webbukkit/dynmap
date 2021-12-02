@@ -16,11 +16,9 @@ import org.dynmap.utils.DataBitsPacked;
 import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.utils.VisibilityLimit;
 
-import jline.internal.Log;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DataBits;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.SimpleBitStorage;
 import net.minecraft.world.level.ChunkCoordIntPair;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -57,7 +55,6 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	    private static final int BLOCKS_PER_SECTION = 16 * 16 * 16;
 	    private static final int BIOMES_PER_SECTION = 4 * 4 * 4;
 	    private static final int COLUMNS_PER_CHUNK = 16 * 16;
-        private static final int V1_15_BIOME_PER_CHUNK = 4 * 4 * 64;
 	    private static final byte[] emptyData = new byte[BLOCKS_PER_SECTION / 2];
 	    private static final byte[] fullData = new byte[BLOCKS_PER_SECTION / 2];
 

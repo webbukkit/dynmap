@@ -11,7 +11,6 @@ import org.dynmap.bukkit.helper.BukkitMaterial;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.bukkit.helper.BukkitWorld;
 import org.dynmap.bukkit.helper.BukkitVersionHelperGeneric.TexturesPayload;
-import org.dynmap.bukkit.helper.v118.MapChunkCache118;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;

@@ -38,24 +38,17 @@ The following target platforms are supported, and you can find them at the links
 
 | Server type  | Version | Dynmap JAR | Where? |
 | ------------ | ------- | ---------- | ------ |
-| Spigot/PaperMC | ≤1.17.1  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
-| Spigot/PaperMC | ≤1.17.1 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Spigot/PaperMC | ≤1.18  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
+| Spigot/PaperMC | ≤1.18 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.11.2 | `Dynmap-<version>-forge-1.11.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.12.2 | `Dynmap-<version>-forge-1.12.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.13.2 | `Dynmap-<version>-forge-1.13.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.14.4 | `Dynmap-<version>-forge-1.14.4.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.15.2 | `Dynmap-<version>-forge-1.15.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
-| Forge | 1.16.1 | `Dynmap-<version>-forge-1.16.1.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
-| Forge | 1.16.2 | `Dynmap-<version>-forge-1.16.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
-| Forge | 1.16.3 | `Dynmap-<version>-forge-1.16.3.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
-| Forge | 1.16.4 | `Dynmap-<version>-forge-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.16.5 | `Dynmap-<version>-forge-1.16.5.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.17.1 | `Dynmap-<version>-forge-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.15.2 | `Dynmap-<version>-fabric-1.15.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
-| Fabric | 1.16.1 | `Dynmap-<version>-fabric-1.16.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
-| Fabric | 1.16.2 | `Dynmap-<version>-fabric-1.16.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.16.4 | `Dynmap-<version>-fabric-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
-| Fabric | 1.17 | `Dynmap-<version>-fabric-1.17.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.17.1 | `Dynmap-<version>-fabric-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.18   | `Dynmap-<version>-fabric-1.18.jar`   | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
     
@@ -143,4 +136,4 @@ We also have a subreddit located at https://www.reddit.com/r/Dynmap/
 I've set up a coffee-fund jar (I believe in the theory that software developers are machines that turn caffeine into code), for anyone who wants to throw in some tips!  I've got a Patreon here - https://www.patreon.com/dynmap, and for folks just looking to for a one-time coffee buy, hit my Ko-Fi at https://ko-fi.com/michaelprimm !
 
 
-Dynmap is a registed trademark of  Michael Primm, TX USA.  All Rights Reserved.
+Dynmap is a registered trademark of  Michael Primm, TX USA.  All Rights Reserved.
