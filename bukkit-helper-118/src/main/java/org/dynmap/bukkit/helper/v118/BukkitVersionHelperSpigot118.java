@@ -92,9 +92,9 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
         return names.toArray(new String[0]);
     }
 
-    private static Registry<BiomeBase> reg = null;
+    private static IRegistry<BiomeBase> reg = null;
 
-    private static Registry<BiomeBase> getBiomeReg() {
+    private static IRegistry<BiomeBase> getBiomeReg() {
     	if (reg == null) {
     		reg = MinecraftServer.getServer().aV().d(IRegistry.aR);
     	}
@@ -288,6 +288,10 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
         }
         return null;
     }
+	@Override
+    public String getBiomeBaseResourceLocsation(Object bb) {
+        return getBiomeReg().b((BiomeBase)bb).toString();
+	}
 
 	@Override
 	public Object getUnloadQueue(World world) {

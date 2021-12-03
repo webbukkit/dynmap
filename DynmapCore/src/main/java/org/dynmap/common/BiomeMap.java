@@ -3,13 +3,14 @@ package org.dynmap.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dynmap.Log;
 import org.dynmap.hdmap.HDBlockModels;
 
 /* Generic biome mapping */
 public class BiomeMap {
     private static BiomeMap[] biome_by_index = new BiomeMap[1025];
-    private static Map<String, BiomeMap> biome_by_name = new HashMap<>();
-    public static final BiomeMap NULL = new BiomeMap(-1, "NULL", 0.5, 0.5, 0xFFFFFF, 0, 0);
+    private static Map<String, BiomeMap> biome_by_rl = new HashMap<String, BiomeMap>();
+    public static final BiomeMap NULL = new BiomeMap(-1, "NULL", 0.5, 0.5, 0xFFFFFF, 0, 0, null);
 
     public static final BiomeMap OCEAN = new BiomeMap(0, "OCEAN");
     public static final BiomeMap PLAINS = new BiomeMap(1, "PLAINS", 0.8, 0.4);
@@ -17,7 +18,7 @@ public class BiomeMap {
     public static final BiomeMap EXTREME_HILLS = new BiomeMap(3, "EXTREME_HILLS", 0.2, 0.3);
     public static final BiomeMap FOREST = new BiomeMap(4, "FOREST", 0.7, 0.8);
     public static final BiomeMap TAIGA = new BiomeMap(5, "TAIGA", 0.05, 0.8);
-    public static final BiomeMap SWAMPLAND = new BiomeMap(6, "SWAMPLAND", 0.8, 0.9, 0xE0FFAE, 0x4E0E4E, 0x4E0E4E);
+    public static final BiomeMap SWAMPLAND = new BiomeMap(6, "SWAMPLAND", 0.8, 0.9, 0xE0FFAE, 0x4E0E4E, 0x4E0E4E, null);
     public static final BiomeMap RIVER = new BiomeMap(7, "RIVER");
     public static final BiomeMap HELL = new BiomeMap(8, "HELL", 2.0, 0.0);
     public static final BiomeMap SKY = new BiomeMap(9, "SKY");
@@ -43,6 +44,7 @@ public class BiomeMap {
     private int grassmult;
     private int foliagemult;
     private final String id;
+    private final String resourcelocation;
     private final int index;
     private int biomeindex256; // Standard biome mapping index (for 256 x 256)
     private boolean isDef;
@@ -51,6 +53,11 @@ public class BiomeMap {
     
     public static void loadWellKnownByVersion(String mcver) {
         if (loadDone) return;
+        // Don't do this for 1.18 and on
+        if (HDBlockModels.checkVersionRange(mcver, "1.18.0-")) {
+        	loadDone = true;
+        	return;
+        }
         if (HDBlockModels.checkVersionRange(mcver, "1.7.0-")) {
             new BiomeMap(23, "JUNGLE_EDGE", 0.95, 0.8);
             new BiomeMap(24, "DEEP_OCEAN");
@@ -74,7 +81,7 @@ public class BiomeMap {
             new BiomeMap(131, "EXTREME_HILLS_MOUNTAINS", 0.2, 0.3);
             new BiomeMap(132, "FLOWER_FOREST", 0.7, 0.8);
             new BiomeMap(133, "TAIGA_MOUNTAINS", 0.05, 0.8);
-            new BiomeMap(134, "SWAMPLAND_MOUNTAINS", 0.8, 0.9, 0xE0FFAE, 0x4E0E4E, 0x4E0E4E);
+            new BiomeMap(134, "SWAMPLAND_MOUNTAINS", 0.8, 0.9, 0xE0FFAE, 0x4E0E4E, 0x4E0E4E, null);
             new BiomeMap(140, "ICE_PLAINS_SPIKES", 0.0, 0.5);
             new BiomeMap(149, "JUNGLE_MOUNTAINS", 1.2, 0.9);
             new BiomeMap(151, "JUNGLE_EDGE_MOUNTAINS", 0.95, 0.8);
@@ -138,7 +145,7 @@ public class BiomeMap {
         }
         return true;
     }
-    private BiomeMap(int idx, String id, double tmp, double rain, int waterColorMultiplier, int grassmult, int foliagemult) {
+    private BiomeMap(int idx, String id, double tmp, double rain, int waterColorMultiplier, int grassmult, int foliagemult, String rl) {
         /* Clamp values : we use raw values from MC code, which are clamped during color mapping only */
         setTemperature(tmp);
         setRainfall(rain);
@@ -157,14 +164,21 @@ public class BiomeMap {
         if(idx >= 0) {
             biome_by_index[idx] = this;
         }
-        biome_by_name.put(id, this);
+        this.resourcelocation = rl;
+        if (rl != null) {
+        	biome_by_rl.put(rl, this);
+        }
     }
     public BiomeMap(int idx, String id) {
-        this(idx, id, 0.5, 0.5, 0xFFFFFF, 0, 0);
+        this(idx, id, 0.5, 0.5, 0xFFFFFF, 0, 0, null);
     }
     
     public BiomeMap(int idx, String id, double tmp, double rain) {
-        this(idx, id, tmp, rain, 0xFFFFFF, 0, 0);
+        this(idx, id, tmp, rain, 0xFFFFFF, 0, 0, null);
+    }
+
+    public BiomeMap(int idx, String id, double tmp, double rain, String rl) {
+        this(idx, id, tmp, rain, 0xFFFFFF, 0, 0, rl);
     }
     
     private final int biomeLookup(int width) {
@@ -208,14 +222,9 @@ public class BiomeMap {
         else
             return NULL;
     }
-    public static final BiomeMap byBiomeName(String name) {
-        if (name.startsWith("minecraft:")) {
-            name = name.substring(10);
-        }
-        name = name.toUpperCase();
-        if (biome_by_name.containsKey(name))
-            return biome_by_name.get(name);
-        return NULL;
+    public static final BiomeMap byBiomeResourceLocation(String resloc) {
+        BiomeMap b = biome_by_rl.get(resloc);
+        return (b != null) ? b : NULL;
     }
     public int getBiomeID() {
         return index - 1;   // Index of biome in MC biome table

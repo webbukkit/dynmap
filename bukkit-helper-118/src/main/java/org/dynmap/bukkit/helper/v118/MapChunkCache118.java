@@ -325,7 +325,7 @@ public class MapChunkCache118 extends AbstractMapChunkCache {
 	                    bdata = new SimpleBitStorage(bdataPacked.length, 64, bdataPacked);
 	                for (int j = 0; j < 64; j++) {
 	                    int b = bdata != null ? bdata.a(j) : 0;
-	                    cursect.biomes[j] = b < bpalette.size() ? BiomeMap.byBiomeName(bpalette.j(b)).getBiomeID() : -1;
+	                    cursect.biomes[j] = b < bpalette.size() ? BiomeMap.byBiomeResourceLocation(bpalette.j(b)).getBiomeID() : -1;
 	                }
 	                // Favor the Y=64 version
 	                if ((secnum == 4) || (lastsectwithbiome == null)) {

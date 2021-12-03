@@ -376,13 +376,14 @@ public class DynmapPlugin {
             Biome bb = list[i];
             if (bb != null) {
                 String id = biomeRegistry.getId(bb).getPath();
+                String rl = biomeRegistry.getId(bb).toString();
                 float tmp = bb.getTemperature(), hum = bb.getDownfall();
                 int watermult = ((BiomeEffectsAccessor) bb.getEffects()).getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
                 BiomeMap bmap = BiomeMap.byBiomeID(i);
-                if (bmap.isDefault()) {
-                    bmap = new BiomeMap(i, id, tmp, hum);
+                if ((rl != null) || bmap.isDefault()) {
+                    bmap = new BiomeMap(i, id, tmp, hum, rl);
                     Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
                 } else {

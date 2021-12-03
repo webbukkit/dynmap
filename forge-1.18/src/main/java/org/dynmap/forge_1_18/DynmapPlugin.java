@@ -1394,14 +1394,15 @@ public class DynmapPlugin
         for (int i = 0; i < list.length; i++) {
             Biome bb = list[i];
             if (bb != null) {
-                String id = bb.toString();
+                String id = bb.getRegistryName().getPath();
+                String rl = bb.getRegistryName().toString();
                 float tmp = bb.getBaseTemperature(), hum = bb.getDownfall();
                 int watermult = bb.getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
                 BiomeMap bmap = BiomeMap.byBiomeID(i);
-                if (bmap.isDefault()) {
-                    bmap = new BiomeMap(i, id, tmp, hum);
+                if ((rl != null) || bmap.isDefault()) {
+                    bmap = new BiomeMap(i, id, tmp, hum, rl);
                     Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
                 }

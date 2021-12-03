@@ -298,7 +298,7 @@ public class ChunkSnapshot
                     bdata = new SimpleBitStorage(bdataPacked.length, 64, bdataPacked);
                 for (int j = 0; j < 64; j++) {
                     int b = bdata != null ? bdata.get(j) : 0;
-                    cursect.biomes[j] = b < bpalette.size() ? BiomeMap.byBiomeName(bpalette.getString(b)).getBiomeID() : -1;
+                    cursect.biomes[j] = b < bpalette.size() ? BiomeMap.byBiomeResourceLocation(bpalette.getString(b)).getBiomeID() : -1;
                 }
                 // Favor the Y=64 version
                 if ((secnum == 4) || (lastsectwithbiome == null)) {

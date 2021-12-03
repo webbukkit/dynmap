@@ -48,6 +48,10 @@ public abstract class BukkitVersionHelper {
      * Get ID string from biomebase
      */
     public abstract String getBiomeBaseIDString(Object bb);
+    /**
+     * Get resource location from biomebase (1.18+)
+     */
+    public String getBiomeBaseResourceLocsation(Object bb) { return null; }
     /** 
      * Get ID from biomebase
      */
