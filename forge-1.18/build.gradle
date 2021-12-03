@@ -33,8 +33,9 @@ project.archivesBaseName = "${project.archivesBaseName}-forge-1.18"
 dependencies {
     implementation project(path: ":DynmapCore", configuration: "shadow")
     implementation project(path: ':DynmapCoreAPI')
+    implementation "commons-codec:commons-codec:1.15"
     
-    minecraft 'net.minecraftforge:forge:1.18-38.0.8'
+    minecraft 'net.minecraftforge:forge:1.18-38.0.12'
 }
 
 processResources
@@ -51,7 +52,10 @@ processResources
 shadowJar {
     dependencies {
         include(dependency(':DynmapCore'))
+        include(dependency("commons-codec:commons-codec:"))
     }
+	relocate('org.apache.commons.codec', 'org.dynmap.forge_1_18.commons.codec')
+    
     archiveName = "Dynmap-${parent.version}-forge-1.18.jar"
     destinationDir = file '../target'
 }
