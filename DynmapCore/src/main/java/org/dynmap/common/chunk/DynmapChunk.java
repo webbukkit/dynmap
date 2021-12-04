@@ -37,23 +37,30 @@ public class DynmapChunk {
     public final DynmapBlockState getBlockType(int x, int y, int z) {    	
     	return getSection(y).blocks.getBlock(x, y, z);
     }
-
+    public final DynmapBlockState getBlockType(DynmapChunkPos pos) {    	
+    	return getSection(pos.y).blocks.getBlock(pos);
+    }
     public final int getBlockSkyLight(int x, int y, int z) {
     	return getSection(y).sky.getLight(x, y, z);
     }
-
+    public final int getBlockSkyLight(DynmapChunkPos pos) {
+    	return getSection(pos.y).sky.getLight(pos);
+    }
     public final int getBlockEmittedLight(int x, int y, int z) {
     	return getSection(y).emitted.getLight(x, y, z);
     }
-
+    public final int getBlockEmittedLight(DynmapChunkPos pos) {
+    	return getSection(pos.y).emitted.getLight(pos);
+    }
     public final BiomeMap getBiome(int x, int y, int z) {
     	return getSection(y).biomes.getBiome(x, y, z);
     }
-
-    public final boolean isSectionEmpty(int sy) {
-    	return getSection(sy << 4).isEmpty;
+    public final BiomeMap getBiome(DynmapChunkPos pos) {
+    	return getSection(pos.y).biomes.getBiome(pos);
     }
-    
+    public final boolean isSectionEmpty(int cy) {
+    	return getSection(cy << 4).isEmpty;
+    }
     public final long getInhabitedTicks() {
         return inhabitedTicks;
     }	
