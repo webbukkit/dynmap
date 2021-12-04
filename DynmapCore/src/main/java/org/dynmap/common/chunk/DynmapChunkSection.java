@@ -131,6 +131,10 @@ public class DynmapChunkSection {
 	private static BlockStateAccess defaultBlockState = new BlockStateAccessSingle(DynmapBlockState.AIR);
 	private static LightingAccess defaultSky = new LightingAccessSingle(15);
 	private static LightingAccess defaultEmit = new LightingAccessSingle(0);
+	
+	// Shared default empty section
+	public static final DynmapChunkSection EMPTY = new DynmapChunkSection(defaultBlockState, defaultBiome, defaultSky, defaultEmit, true);
+	
 	// Factory for building section
 	public static class Builder {
 		private BiomeAccess ba;
