@@ -381,12 +381,19 @@ public class DynmapPlugin {
                 int watermult = ((BiomeEffectsAccessor) bb.getEffects()).getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
-                BiomeMap bmap = BiomeMap.byBiomeID(i);
-                if ((rl != null) || bmap.isDefault()) {
-                    bmap = new BiomeMap(i, id, tmp, hum, rl);
+                BiomeMap bmap = BiomeMap.NULL;
+                if (rl != null) {	// If resource location, lookup by this
+                	bmap = BiomeMap.byBiomeResourceLocation(rl);
+                }
+                if (bmap == BiomeMap.NULL) {
+                	bmap = BiomeMap.byBiomeID(i);
+                }
+                if (bmap.isDefault()) {
+                    bmap = new BiomeMap((rl != null) ? BiomeMap.NO_INDEX : i, id, tmp, hum, rl);
                     Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
-                } else {
+                }
+                else {
                     bmap.setTemperature(tmp);
                     bmap.setRainfall(hum);
                 }

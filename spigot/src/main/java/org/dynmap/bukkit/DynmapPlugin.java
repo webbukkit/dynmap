@@ -824,13 +824,19 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 int watermult = helper.getBiomeBaseWaterMult(bb);
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
                 
-                BiomeMap bmap = BiomeMap.byBiomeID(i);
-                if ((rl != null) || bmap.isDefault()) {
+                BiomeMap bmap = BiomeMap.NULL;
+                if (rl != null) {	// If resource location, lookup by this
+                	bmap = BiomeMap.byBiomeResourceLocation(rl);
+                }
+                if (bmap == BiomeMap.NULL) {
+                	bmap = BiomeMap.byBiomeID(i);
+                }
+                if (bmap.isDefault()) {
                     String id =  helper.getBiomeBaseIDString(bb);
                     if(id == null) {
                         id = "BIOME_" + i;
                     }
-                    bmap = new BiomeMap(i, id, tmp, hum, rl);
+                    bmap = new BiomeMap((rl != null) ? BiomeMap.NO_INDEX : i, id, tmp, hum, rl);
                     Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ") rl=" + rl);
                     cnt++;
                 }
