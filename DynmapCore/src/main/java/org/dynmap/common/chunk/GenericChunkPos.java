@@ -1,7 +1,7 @@
 package org.dynmap.common.chunk;
 
 // Generic block location iterator - represents 3D position, but includes fast precomputed chunk and section offsets
-public class DynmapChunkPos {
+public class GenericChunkPos {
 	public int x, y, z;	// 3D world position
 	public int cx, cz;	// 2D chunk position (x / 16, z / 16)
 	public int cy;		// Vertical section index (Y / 16)
@@ -9,7 +9,7 @@ public class DynmapChunkPos {
 	public int soffset;	// Section offset (256 * sy) + (16 * sz) + sx
 	public int sdiv4offset;	// Subsection offset (16 * (sy / 4)) + (4 * (sz / 4)) + (sx / 4) (3D biomes)
 	
-	public DynmapChunkPos(int x, int y, int z) {
+	public GenericChunkPos(int x, int y, int z) {
 		setPos(x, y, z);
 	}
 	// Replace X value

@@ -6,7 +6,7 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.renderer.DynmapBlockState;
 
 // Generic section: represents 16 x 16 x 16 grid of blocks
-public class DynmapChunkSection {
+public class GenericChunkSection {
 	public final BiomeAccess biomes;	// Access for biome data
 	public final BlockStateAccess blocks;	// Access for block states
 	public final LightingAccess sky;	// Access for sky light data
@@ -16,7 +16,7 @@ public class DynmapChunkSection {
 	// Block state access interface
 	public interface BlockStateAccess {
 		public DynmapBlockState getBlock(int x, int y, int z);
-		public DynmapBlockState getBlock(DynmapChunkPos pos);
+		public DynmapBlockState getBlock(GenericChunkPos pos);
 	}
 	private static class BlockStateAccess3D implements BlockStateAccess {
 		private final DynmapBlockState blocks[];	// YZX order
@@ -25,9 +25,9 @@ public class DynmapChunkSection {
 			blocks = bs;
 		}
 		public final DynmapBlockState getBlock(int x, int y, int z) {
-			return blocks[(256 * y) + (16 * z) + x];
+			return blocks[(256 * (y & 0xF)) + (16 * (z & 0xF)) + (x & 0xF)];
 		}
-		public final DynmapBlockState getBlock(DynmapChunkPos pos) {
+		public final DynmapBlockState getBlock(GenericChunkPos pos) {
 			return blocks[pos.soffset];
 		}
 	}
@@ -39,14 +39,14 @@ public class DynmapChunkSection {
 		public final DynmapBlockState getBlock(int x, int y, int z) {
 			return block;
 		}
-		public final DynmapBlockState getBlock(DynmapChunkPos pos) {
+		public final DynmapBlockState getBlock(GenericChunkPos pos) {
 			return block;
 		}
 	}
 	// Biome access interface
 	public interface BiomeAccess {
 		public BiomeMap getBiome(int x, int y, int z);
-		public BiomeMap getBiome(DynmapChunkPos pos);
+		public BiomeMap getBiome(GenericChunkPos pos);
 	}
 	// For classic 2D biome map
 	private static class BiomeAccess2D implements BiomeAccess  {
@@ -58,7 +58,7 @@ public class DynmapChunkSection {
 		public final BiomeMap getBiome(int x, int y, int z) {
 			return biomes[((z & 0xF) << 4) + (x & 0xF)];
 		}
-		public final BiomeMap getBiome(DynmapChunkPos pos) {
+		public final BiomeMap getBiome(GenericChunkPos pos) {
 			return biomes[pos.soffset & 0xFF];	// Just ZX portion
 		}
 	}
@@ -72,7 +72,7 @@ public class DynmapChunkSection {
 		public final BiomeMap getBiome(int x, int y, int z) {
 			return biomes[ ((y & 0xC) << 2) | (z & 0xC) | ((x & 0xC) >> 2) ];
 		}
-		public final BiomeMap getBiome(DynmapChunkPos pos) {
+		public final BiomeMap getBiome(GenericChunkPos pos) {
 			return biomes[pos.sdiv4offset];
 		}
 	}
@@ -85,14 +85,14 @@ public class DynmapChunkSection {
 		public final BiomeMap getBiome(int x, int y, int z) {
 			return biome;
 		}
-		public final BiomeMap getBiome(DynmapChunkPos pos) {
+		public final BiomeMap getBiome(GenericChunkPos pos) {
 			return biome;
 		}
 	}
 	// Lighting access interface
 	public interface LightingAccess {
 		public int getLight(int x, int y, int z);
-		public int getLight(DynmapChunkPos pos);
+		public int getLight(GenericChunkPos pos);
 	}
 	private static class LightingAccess3D implements LightingAccess {
 		private final long[] light;		// Nibble array (16 * y) * z (nibble at << (4*x))
@@ -107,11 +107,10 @@ public class DynmapChunkSection {
 			}
 		}
 		public final int getLight(int x, int y, int z) {
-			return (int)(light[(16 * (y & 0xF)) + (z & 0xF)] >> (4 * (x & 0xF)) & 0xFL);
+			return 0xF & (int)(light[(16 * (y & 0xF)) + (z & 0xF)] >> (4 * (x & 0xF)));
 		}
-		public final int getLight(DynmapChunkPos pos) {
-			return (int)(light[pos.soffset >> 4] >> (4 * pos.sx));
-			
+		public final int getLight(GenericChunkPos pos) {
+			return 0xF & (int)(light[pos.soffset >> 4] >> (4 * pos.sx));			
 		}
 	}
 	private static class LightingAccessSingle implements LightingAccess {
@@ -122,11 +121,11 @@ public class DynmapChunkSection {
 		public final int getLight(int x, int y, int z) {
 			return light;
 		}
-		public final int getLight(DynmapChunkPos pos) {
+		public final int getLight(GenericChunkPos pos) {
 			return light;
 		}
 	}	
-	private DynmapChunkSection(BlockStateAccess blks, BiomeAccess bio, LightingAccess skyac, LightingAccess emitac, boolean empty) {
+	private GenericChunkSection(BlockStateAccess blks, BiomeAccess bio, LightingAccess skyac, LightingAccess emitac, boolean empty) {
 		blocks = blks;
 		biomes = bio;
 		sky = skyac;
@@ -135,11 +134,10 @@ public class DynmapChunkSection {
 	}
 	private static BiomeAccess defaultBiome = new BiomeAccessSingle(BiomeMap.NULL);
 	private static BlockStateAccess defaultBlockState = new BlockStateAccessSingle(DynmapBlockState.AIR);
-	private static LightingAccess defaultSky = new LightingAccessSingle(15);
-	private static LightingAccess defaultEmit = new LightingAccessSingle(0);
+	private static LightingAccess defaultLight = new LightingAccessSingle(0);
 	
 	// Shared default empty section
-	public static final DynmapChunkSection EMPTY = new DynmapChunkSection(defaultBlockState, defaultBiome, defaultSky, defaultEmit, true);
+	public static final GenericChunkSection EMPTY = new GenericChunkSection(defaultBlockState, defaultBiome, new LightingAccessSingle(15), defaultLight, true);
 	
 	// Factory for building section
 	public static class Builder {
@@ -160,8 +158,8 @@ public class DynmapChunkSection {
 			bsaccum = null;
 			baaccumsingle = BiomeMap.NULL;
 			baaccum = null;
-			sk = defaultSky;
-			em = defaultEmit;			
+			sk = defaultLight;
+			em = defaultLight;			
 			empty = true;
 		}
 		// Set sky lighting to single value
@@ -201,13 +199,13 @@ public class DynmapChunkSection {
 			return this;
 		}
 		// Set bipme to 3D style
-		public Builder xyzBiome(int x, int y, int z, BiomeMap bio) {
+		public Builder xyzBiome(int xdiv4, int ydiv4, int zdiv4, BiomeMap bio) {
 			if ((baaccum == null) || (baaccum.length != 64)) {
 				baaccum = new BiomeMap[64];
 				Arrays.fill(baaccum, BiomeMap.NULL);
 				baaccumsingle = BiomeMap.NULL;
 			}
-			baaccum[((y & 0xC) << 4) + (z & 0xC) + ((x & 0xC) >> 2)] = bio;
+			baaccum[((ydiv4 & 0x3) << 4) + ((zdiv4 & 0x3) << 2) + (xdiv4 & 0x3)] = bio;
 			return this;
 		}
 		// Set block state to single value
@@ -229,7 +227,7 @@ public class DynmapChunkSection {
 			return this;
 		}
 		// Build section based on current builder state
-		public DynmapChunkSection build() {
+		public GenericChunkSection build() {
 			// Process state access - see if we can reduce
 			if (bsaccum != null) {
 				DynmapBlockState v = bsaccum[0];	// Get first
@@ -291,7 +289,7 @@ public class DynmapChunkSection {
 				ba = new BiomeAccessSingle(baaccumsingle);
 				baaccumsingle = BiomeMap.NULL;
 			}
-			return new DynmapChunkSection(bs, ba, sk, em, empty); 
+			return new GenericChunkSection(bs, ba, sk, em, empty); 
 		}
 	}
 }
