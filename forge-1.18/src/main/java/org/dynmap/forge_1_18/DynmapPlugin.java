@@ -1400,7 +1400,7 @@ public class DynmapPlugin
                 if (rl != null) {	// If resource location, lookup by this
                 	bmap = BiomeMap.byBiomeResourceLocation(rl);
                 }
-                if (bmap == BiomeMap.NULL) {
+                else {
                 	bmap = BiomeMap.byBiomeID(i);
                 }
                 if (bmap.isDefault()) {	// If matched default, replace with new one

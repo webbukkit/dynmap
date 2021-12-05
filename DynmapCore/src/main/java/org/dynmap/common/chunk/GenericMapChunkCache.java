@@ -36,8 +36,6 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	private boolean isempty = true;
 	private int snapcnt;
 	private GenericChunk[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-	private byte[][] sameneighborbiomecnt;
-	private BiomeMap[][] biomemap;
 	private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
 
 	private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
@@ -63,8 +61,6 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		OurMapIterator(int x0, int y0, int z0) {
 			x_base = x_min << 4;
 			z_base = z_min << 4;
-
-			biomePrep();
 
 			initialize(x0, y0, z0);
 			worldheight = dw.worldheight;
@@ -113,100 +109,46 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			}
 		}
 
-		private void biomePrep() {
-			if (sameneighborbiomecnt != null) {
-				return;
-			}
-
-			int x_size = x_dim << 4;
-			int z_size = (z_max - z_min + 1) << 4;
-			sameneighborbiomecnt = new byte[x_size][];
-			biomemap = new BiomeMap[x_size][];
-
-			for (int i = 0; i < x_size; i++) {
-				sameneighborbiomecnt[i] = new byte[z_size];
-				biomemap[i] = new BiomeMap[z_size];
-			}
-
-			for (int i = 0; i < x_size; i++) {
-				for (int j = 0; j < z_size; j++) {
-					if (j == 0)
-						initialize(i + x_base, 64, z_base);
-					else
-						stepPosition(BlockStep.Z_PLUS);
-
-					BiomeMap bm = snap.getBiome(bx, y, bz);
-
-					biomemap[i][j] = bm;
-					int cnt = 0;
-
-					if (i > 0) {
-						if (bm == biomemap[i - 1][j]) /* Same as one to left */
-						{
-							cnt++;
-							sameneighborbiomecnt[i - 1][j]++;
-						}
-
-						if ((j > 0) && (bm == biomemap[i - 1][j - 1])) {
-							cnt++;
-							sameneighborbiomecnt[i - 1][j - 1]++;
-						}
-
-						if ((j < (z_size - 1)) && (bm == biomemap[i - 1][j + 1])) {
-							cnt++;
-							sameneighborbiomecnt[i - 1][j + 1]++;
-						}
-					}
-
-					if ((j > 0) && (biomemap[i][j] == biomemap[i][j - 1])) /* Same as one to above */
-					{
-						cnt++;
-						sameneighborbiomecnt[i][j - 1]++;
-					}
-
-					sameneighborbiomecnt[i][j] = (byte) cnt;
-				}
-			}
-		}
-
 		@Override
 		public final BiomeMap getBiome() {
 			try {
-				return biomemap[x - x_base][z - z_base];
+				return snap.getBiome(bx, y, bz);
 			} catch (Exception ex) {
 				return BiomeMap.NULL;
 			}
 		}
 
+		private final BiomeMap getBiomeRel(int dx, int dz) {
+			int nx = x + dx;
+			int nz = z + dz;
+			int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
+			if ((nchunkindex >= snapcnt) || (nchunkindex < 0)) {
+				return BiomeMap.NULL;
+			} else {
+				return snaparray[chunkindex].getBiome(nx, y, nz);
+			}
+		}
+		
 		@Override
 		public final int getSmoothGrassColorMultiplier(int[] colormap) {
 			int mult = 0xFFFFFF;
 
 			try {
-				int rx = x - x_base;
-				int rz = z - z_base;
-				BiomeMap bm = biomemap[rx][rz];
-
-				if (sameneighborbiomecnt[rx][rz] >= (byte) 8) /* All neighbors same? */
-				{
-					mult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
-				} else {
-					int raccum = 0;
-					int gaccum = 0;
-					int baccum = 0;
-
-					for (int xoff = -1; xoff < 2; xoff++) {
-						for (int zoff = -1; zoff < 2; zoff++) {
-							bm = biomemap[rx + xoff][rz + zoff];
-							int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
-							raccum += (rmult >> 16) & 0xFF;
-							gaccum += (rmult >> 8) & 0xFF;
-							baccum += rmult & 0xFF;
-						}
+				int raccum = 0;
+				int gaccum = 0;
+				int baccum = 0;
+				int cnt = 0;
+				for (int dx = -1; dx <= 1; dx++) {
+					for (int dz = -1; dz <= 1; dz++) {
+						BiomeMap bm = getBiomeRel(dx, dz);
+						int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
+						raccum += (rmult >> 16) & 0xFF;
+						gaccum += (rmult >> 8) & 0xFF;
+						baccum += rmult & 0xFF;
+						cnt++;
 					}
-
-					mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
 				}
+				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothGrassColorMultiplier() error: " + x);
 				mult = 0xFFFFFF;
@@ -221,30 +163,21 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			int mult = 0xFFFFFF;
 
 			try {
-				int rx = x - x_base;
-				int rz = z - z_base;
-				BiomeMap bm = biomemap[rx][rz];
-
-				if (sameneighborbiomecnt[rx][rz] >= (byte) 8) /* All neighbors same? */
-				{
-					mult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
-				} else {
-					int raccum = 0;
-					int gaccum = 0;
-					int baccum = 0;
-
-					for (int xoff = -1; xoff < 2; xoff++) {
-						for (int zoff = -1; zoff < 2; zoff++) {
-							bm = biomemap[rx + xoff][rz + zoff];
-							int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
-							raccum += (rmult >> 16) & 0xFF;
-							gaccum += (rmult >> 8) & 0xFF;
-							baccum += rmult & 0xFF;
-						}
+				int raccum = 0;
+				int gaccum = 0;
+				int baccum = 0;
+				int cnt = 0;
+				for (int dx = -1; dx <= 1; dx++) {
+					for (int dz = -1; dz <= 1; dz++) {
+						BiomeMap bm = getBiomeRel(dx, dz);
+						int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
+						raccum += (rmult >> 16) & 0xFF;
+						gaccum += (rmult >> 8) & 0xFF;
+						baccum += rmult & 0xFF;
+						cnt++;
 					}
-
-					mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
 				}
+				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothFoliageColorMultiplier() error: " + x);
 				mult = 0xFFFFFF;
@@ -259,41 +192,26 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			int mult = 0xFFFFFF;
 
 			try {
-				int rx = x - x_base;
-				int rz = z - z_base;
-				BiomeMap bm = biomemap[rx][rz];
-
-				if (sameneighborbiomecnt[rx][rz] >= (byte) 8) /* All neighbors same? */
-				{
-					if (bm == BiomeMap.SWAMPLAND) {
-						mult = swampmap[bm.biomeLookup()];
-					} else {
-						mult = colormap[bm.biomeLookup()];
-					}
-				} else {
-					int raccum = 0;
-					int gaccum = 0;
-					int baccum = 0;
-
-					for (int xoff = -1; xoff < 2; xoff++) {
-						for (int zoff = -1; zoff < 2; zoff++) {
-							bm = biomemap[rx + xoff][rz + zoff];
-							int rmult;
-
-							if (bm == BiomeMap.SWAMPLAND) {
-								rmult = swampmap[bm.biomeLookup()];
-							} else {
-								rmult = colormap[bm.biomeLookup()];
-							}
-
-							raccum += (rmult >> 16) & 0xFF;
-							gaccum += (rmult >> 8) & 0xFF;
-							baccum += rmult & 0xFF;
+				int raccum = 0;
+				int gaccum = 0;
+				int baccum = 0;
+				int cnt = 0;
+				for (int dx = -1; dx <= 1; dx++) {
+					for (int dz = -1; dz <= 1; dz++) {
+						BiomeMap bm = getBiomeRel(dx, dz);
+						int rmult;
+						if (bm == BiomeMap.SWAMPLAND) {
+							rmult = swampmap[bm.biomeLookup()];
+						} else {
+							rmult = colormap[bm.biomeLookup()];
 						}
+						raccum += (rmult >> 16) & 0xFF;
+						gaccum += (rmult >> 8) & 0xFF;
+						baccum += rmult & 0xFF;
+						cnt++;
 					}
-
-					mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
 				}
+				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothColorMultiplier() error: " + x);
 				mult = 0xFFFFFF;
@@ -307,30 +225,21 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		public final int getSmoothWaterColorMultiplier() {
 			int multv;
 			try {
-				int rx = x - x_base;
-				int rz = z - z_base;
-				BiomeMap bm = biomemap[rx][rz];
-
-				if (sameneighborbiomecnt[rx][rz] >= (byte) 8) /* All neighbors same? */
-				{
-					multv = bm.getWaterColorMult();
-				} else {
-					int raccum = 0;
-					int gaccum = 0;
-					int baccum = 0;
-
-					for (int xoff = -1; xoff < 2; xoff++) {
-						for (int zoff = -1; zoff < 2; zoff++) {
-							bm = biomemap[rx + xoff][rz + zoff];
-							int mult = bm.getWaterColorMult();
-							raccum += (mult >> 16) & 0xFF;
-							gaccum += (mult >> 8) & 0xFF;
-							baccum += mult & 0xFF;
-						}
+				int raccum = 0;
+				int gaccum = 0;
+				int baccum = 0;
+				int cnt = 0;
+				for (int dx = -1; dx <= 1; dx++) {
+					for (int dz = -1; dz <= 1; dz++) {
+						BiomeMap bm = getBiomeRel(dx, dz);
+						int rmult = bm.getWaterColorMult();
+						raccum += (rmult >> 16) & 0xFF;
+						gaccum += (rmult >> 8) & 0xFF;
+						baccum += rmult & 0xFF;
+						cnt++;
 					}
-
-					multv = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
 				}
+				multv = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothWaterColorMultiplier(nomap) error: " + x);
 
@@ -346,30 +255,21 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			int mult = 0xFFFFFF;
 
 			try {
-				int rx = x - x_base;
-				int rz = z - z_base;
-				BiomeMap bm = biomemap[rx][rz];
-
-				if (sameneighborbiomecnt[rx][rz] >= (byte) 8) /* All neighbors same? */
-				{
-					mult = colormap[bm.biomeLookup()];
-				} else {
-					int raccum = 0;
-					int gaccum = 0;
-					int baccum = 0;
-
-					for (int xoff = -1; xoff < 2; xoff++) {
-						for (int zoff = -1; zoff < 2; zoff++) {
-							bm = biomemap[rx + xoff][rz + zoff];
-							int rmult = colormap[bm.biomeLookup()];
-							raccum += (rmult >> 16) & 0xFF;
-							gaccum += (rmult >> 8) & 0xFF;
-							baccum += rmult & 0xFF;
-						}
+				int raccum = 0;
+				int gaccum = 0;
+				int baccum = 0;
+				int cnt = 0;
+				for (int dx = -1; dx <= 1; dx++) {
+					for (int dz = -1; dz <= 1; dz++) {
+						BiomeMap bm = getBiomeRel(dx, dz);
+						int rmult = colormap[bm.biomeLookup()];
+						raccum += (rmult >> 16) & 0xFF;
+						gaccum += (rmult >> 8) & 0xFF;
+						baccum += rmult & 0xFF;
+						cnt++;
 					}
-
-					mult = ((raccum / 9) << 16) | ((gaccum / 9) << 8) | (baccum / 9);
 				}
+				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothWaterColorMultiplier() error: " + x);
 				mult = 0xFFFFFF;

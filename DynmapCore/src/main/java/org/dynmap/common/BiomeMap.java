@@ -1,5 +1,6 @@
 package org.dynmap.common;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import org.dynmap.hdmap.HDBlockModels;
 /* Generic biome mapping */
 public class BiomeMap {
 	public static final int NO_INDEX = -2;
-    private static BiomeMap[] biome_by_index = new BiomeMap[1025];
+    private static BiomeMap[] biome_by_index = new BiomeMap[256];
     private static Map<String, BiomeMap> biome_by_rl = new HashMap<String, BiomeMap>();
     public static final BiomeMap NULL = new BiomeMap(-1, "NULL", 0.5, 0.5, 0xFFFFFF, 0, 0, null);
 
@@ -37,7 +38,7 @@ public class BiomeMap {
     public static final BiomeMap JUNGLE = new BiomeMap(21, "JUNGLE", 1.2, 0.9, "minecraft:jungle");
     public static final BiomeMap JUNGLE_HILLS = new BiomeMap(22, "JUNGLE_HILLS", 1.2, 0.9, "minecraft:jungle_hills");
 
-    public static final int LAST_WELL_KNOWN = 22;
+    public static final int LAST_WELL_KNOWN = 175;
     
     private double tmp;
     private double rain;
@@ -128,7 +129,7 @@ public class BiomeMap {
     }
     
     static {
-        for (int i = 0; i < 1024; i++) {
+        for (int i = 0; i < 256; i++) {
             BiomeMap bm = BiomeMap.byBiomeID(i);
             if (bm == null) {
                 bm = new BiomeMap(i, "BIOME_" + i);
@@ -145,6 +146,20 @@ public class BiomeMap {
         }
         return true;
     }
+    
+    private static void resizeIfNeeded(int idx) {
+		if ((idx >= biome_by_index.length) ) {
+			int oldlen = biome_by_index.length;
+			biome_by_index = Arrays.copyOf(biome_by_index, biome_by_index.length * 3 / 2);
+			for (int i = oldlen; i < biome_by_index.length; i++) {
+				if (biome_by_index[i] == null) {
+	                BiomeMap bm = new BiomeMap(i, "BIOME_" + i);
+	                bm.isDef = true;
+				}
+			}
+		}    	
+    }
+    
     private BiomeMap(int idx, String id, double tmp, double rain, int waterColorMultiplier, int grassmult, int foliagemult, String rl) {
         /* Clamp values : we use raw values from MC code, which are clamped during color mapping only */
         setTemperature(tmp);
@@ -159,10 +174,21 @@ public class BiomeMap {
             id = id + "_" + idx;
         }
         this.id = id;
+        // If index is NO_INDEX, find one after the well known ones
+        if (idx == NO_INDEX) {
+        	idx = LAST_WELL_KNOWN + 1;
+        	while (true) {
+        		resizeIfNeeded(idx);
+        		if (biome_by_index[idx].isDef) {
+        			break;
+        		}
+        	}
+        }
         idx++;  /* Insert one after ID value - null is zero index */
         this.index = idx;
         if (idx >= 0) {
-            biome_by_index[idx] = this;
+        	resizeIfNeeded(idx);
+        	biome_by_index[idx] = this;
         }
         this.resourcelocation = rl;
         if (rl != null) {

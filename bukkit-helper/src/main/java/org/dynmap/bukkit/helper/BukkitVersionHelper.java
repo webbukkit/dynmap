@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
+import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
@@ -20,6 +21,8 @@ import org.dynmap.utils.Polygon;
 public abstract class BukkitVersionHelper {
     public static BukkitVersionHelper helper = null;
     
+    public static GenericChunkCache gencache;
+
     public static DynmapBlockState[] stateByID;
     
     protected boolean isBlockIdNeeded() {
@@ -217,5 +220,8 @@ public abstract class BukkitVersionHelper {
     		if (title != null) p.sendMessage(title);
     		if (subtitle != null) p.sendMessage(subtitle);
     	}
+    }
+    public boolean useGenericCache() {
+    	return false;
     }
 }
