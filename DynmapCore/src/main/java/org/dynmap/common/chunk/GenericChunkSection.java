@@ -61,6 +61,9 @@ public class GenericChunkSection {
 		public final BiomeMap getBiome(GenericChunkPos pos) {
 			return biomes[pos.soffset & 0xFF];	// Just ZX portion
 		}
+		public String toString() {
+			return String.format("Biome2D(%s)", Arrays.deepToString(biomes));
+		}
 	}
 	// For 3D biome map
 	private static class BiomeAccess3D implements BiomeAccess  {
@@ -75,6 +78,9 @@ public class GenericChunkSection {
 		public final BiomeMap getBiome(GenericChunkPos pos) {
 			return biomes[pos.sdiv4offset];
 		}
+		public String toString() {
+			return String.format("Biome3D(%s)", Arrays.deepToString(biomes));
+		}
 	}
 	// For single biome map
 	private static class BiomeAccessSingle implements BiomeAccess {
@@ -87,6 +93,9 @@ public class GenericChunkSection {
 		}
 		public final BiomeMap getBiome(GenericChunkPos pos) {
 			return biome;
+		}
+		public String toString() {
+			return String.format("Biome1(%s)", biome);
 		}
 	}
 	// Lighting access interface
@@ -131,6 +140,9 @@ public class GenericChunkSection {
 		sky = skyac;
 		emitted = emitac;
 		isEmpty = empty;
+	}
+	public String toString() {
+		return String.format("sect(bip:%s)", biomes);
 	}
 	private static BiomeAccess defaultBiome = new BiomeAccessSingle(BiomeMap.NULL);
 	private static BlockStateAccess defaultBlockState = new BlockStateAccessSingle(DynmapBlockState.AIR);

@@ -388,7 +388,7 @@ public class DynmapPlugin {
                 else {
                 	bmap = BiomeMap.byBiomeID(i);
                 }
-                if (bmap.isDefault()) {
+                if (bmap.isDefault() || (bmap == BiomeMap.NULL)) {
                     bmap = new BiomeMap((rl != null) ? BiomeMap.NO_INDEX : i, id, tmp, hum, rl);
                     Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;

@@ -150,7 +150,7 @@ public class BiomeMap {
     private static void resizeIfNeeded(int idx) {
 		if ((idx >= biome_by_index.length) ) {
 			int oldlen = biome_by_index.length;
-			biome_by_index = Arrays.copyOf(biome_by_index, biome_by_index.length * 3 / 2);
+			biome_by_index = Arrays.copyOf(biome_by_index, idx * 3 / 2);
 			for (int i = oldlen; i < biome_by_index.length; i++) {
 				if (biome_by_index[i] == null) {
 	                BiomeMap bm = new BiomeMap(i, "BIOME_" + i);
@@ -176,15 +176,18 @@ public class BiomeMap {
         this.id = id;
         // If index is NO_INDEX, find one after the well known ones
         if (idx == NO_INDEX) {
-        	idx = LAST_WELL_KNOWN + 1;
+        	idx = LAST_WELL_KNOWN;
         	while (true) {
-        		resizeIfNeeded(idx);
+           		idx++;
+           		resizeIfNeeded(idx);
         		if (biome_by_index[idx].isDef) {
         			break;
         		}
         	}
         }
-        idx++;  /* Insert one after ID value - null is zero index */
+        else {
+        	idx++;  /* Insert one after ID value - null is zero index */
+        }
         this.index = idx;
         if (idx >= 0) {
         	resizeIfNeeded(idx);
@@ -262,9 +265,6 @@ public class BiomeMap {
     public int getBiomeID() {
         return index - 1;   // Index of biome in MC biome table
     }
-    public final String toString() {
-        return id;
-    }
     public static final BiomeMap[] values() {
         return biome_by_index;
     }
@@ -297,5 +297,8 @@ public class BiomeMap {
     }
     public boolean isDefault() {
         return isDef;
+    }
+    public String toString() {
+    	return String.format("%s[%d]:t%f,h%f,w%x,g%x,f%x,rl=%s", id, index, tmp, rain, watercolormult, grassmult, foliagemult, resourcelocation);
     }
 }

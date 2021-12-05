@@ -64,7 +64,10 @@ public class GenericChunk {
     public final long getInhabitedTicks() {
         return inhabitedTicks;
     }
-    
+	public String toString() {
+		return String.format("chunk(%d,%d:%s,off=%d", cx, cz, Arrays.deepToString((sections)), cy_min);
+	}
+
     // Generic empty (coordinates are wrong, but safe otherwise
     public static final GenericChunk EMPTY = new GenericChunk(0, 0, -4, new GenericChunkSection[24], 0);
     

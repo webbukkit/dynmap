@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
+import org.dynmap.Log;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -56,7 +57,9 @@ public class MapChunkCache118 extends GenericMapChunkCache {
 		if (nbt == null) return null;
 		// Start generic chunk builder
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
-		bld.coords(nbt.h("xPos"), nbt.h("zPos"));
+		int cx = nbt.h("xPos");
+		int cz = nbt.h("zPos");
+		bld.coords(cx, cz);
         if (nbt.e("InhabitedTime")) {
         	bld.inhabitedTicks(nbt.i("InhabitedTime"));
         }
@@ -213,7 +216,9 @@ public class MapChunkCache118 extends GenericMapChunkCache {
                     bdata = new SimpleBitStorage(bdataPacked.length, 64, bdataPacked);
                 for (int j = 0; j < 64; j++) {
                     int b = bdata != null ? bdata.a(j) : 0;
-                    sbld.xyzBiome(j & 0x3, (j & 0x30) >> 4, (j & 0xC) >> 2, BiomeMap.byBiomeResourceLocation(bpalette.j(b)));
+                    String rl = bpalette.j(b);
+                    BiomeMap bm = BiomeMap.byBiomeResourceLocation(rl);
+                    sbld.xyzBiome(j & 0x3, (j & 0x30) >> 4, (j & 0xC) >> 2, bm);
                 }
             }
 			else {	// Else, apply legacy biomes

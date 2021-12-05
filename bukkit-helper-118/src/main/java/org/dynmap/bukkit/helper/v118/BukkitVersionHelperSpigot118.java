@@ -56,6 +56,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -283,12 +284,7 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
 	@Override
     /** Get ID string from biomebase */
     public String getBiomeBaseIDString(Object bb) {
-        String s = ((BiomeBase)bb).toString();
-        if (s != null) {
-        	String[] ss = s.split("\\.");
-        	return ss[ss.length-1];
-        }
-        return null;
+		return getBiomeReg().b((BiomeBase)bb).a();
     }
 	@Override
     public String getBiomeBaseResourceLocsation(Object bb) {
