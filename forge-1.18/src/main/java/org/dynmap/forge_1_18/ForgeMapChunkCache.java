@@ -230,7 +230,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
             }
 			else {	// Else, apply legacy biomes
 				if (old3d != null) {
-					BiomeMap m[] = old3d.get(secnum);
+					BiomeMap m[] = old3d.get((secnum > 0) ? ((secnum < old3d.size()) ? secnum : old3d.size()-1) : 0);
 					if (m != null) {
 		                for (int j = 0; j < 64; j++) {
 		                    sbld.xyzBiome(j & 0x3, (j & 0x30) >> 4, (j & 0xC) >> 2, m[j]);
