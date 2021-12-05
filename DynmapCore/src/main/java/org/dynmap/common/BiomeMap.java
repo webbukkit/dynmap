@@ -129,10 +129,10 @@ public class BiomeMap {
     }
     
     static {
-        for (int i = 0; i < 256; i++) {
-            BiomeMap bm = BiomeMap.byBiomeID(i);
+        for (int i = 0; i < biome_by_index.length; i++) {
+            BiomeMap bm = BiomeMap.byBiomeID(i-1);
             if (bm == null) {
-                bm = new BiomeMap(i, "BIOME_" + i);
+                bm = new BiomeMap(i-1, "BIOME_" + (i-1));
                 bm.isDef = true;
             }
         }
@@ -153,7 +153,7 @@ public class BiomeMap {
 			biome_by_index = Arrays.copyOf(biome_by_index, idx * 3 / 2);
 			for (int i = oldlen; i < biome_by_index.length; i++) {
 				if (biome_by_index[i] == null) {
-	                BiomeMap bm = new BiomeMap(i, "BIOME_" + i);
+	                BiomeMap bm = new BiomeMap(i-1, "BIOME_" + (i-1));
 	                bm.isDef = true;
 				}
 			}

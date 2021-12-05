@@ -125,7 +125,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			if ((nchunkindex >= snapcnt) || (nchunkindex < 0)) {
 				return BiomeMap.NULL;
 			} else {
-				return snaparray[chunkindex].getBiome(nx, y, nz);
+				return snaparray[nchunkindex].getBiome(nx, y, nz);
 			}
 		}
 		
