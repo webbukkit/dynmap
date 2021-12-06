@@ -452,10 +452,11 @@ class MarkerSetImpl implements MarkerSet {
     boolean loadPersistentData(ConfigurationNode node) {
         label = node.getString("label", setid); /* Get label */
         ConfigurationNode markernode = node.getNode("markers");
-        if(markernode != null) {
+        if (markernode != null) {
             for(String id : markernode.keySet()) {
                 MarkerImpl marker = new MarkerImpl(id, this);   /* Make and load marker */
-                if(marker.loadPersistentData(markernode.getNode(id))) {
+                ConfigurationNode cfg = markernode.getNode(id);
+                if ((cfg != null) && marker.loadPersistentData(cfg)) {
                     markers.put(id, marker);
                 }
                 else {
@@ -465,10 +466,11 @@ class MarkerSetImpl implements MarkerSet {
             }
         }
         ConfigurationNode areamarkernode = node.getNode("areas");
-        if(areamarkernode != null) {
+        if (areamarkernode != null) {
             for(String id : areamarkernode.keySet()) {
                 AreaMarkerImpl marker = new AreaMarkerImpl(id, this);   /* Make and load marker */
-                if(marker.loadPersistentData(areamarkernode.getNode(id))) {
+                ConfigurationNode cfg = areamarkernode.getNode(id);
+                if ((cfg != null) && marker.loadPersistentData(cfg)) {
                     areamarkers.put(id, marker);
                     if(marker.getBoostFlag()) {
                         if(boostingareamarkers == null) {
@@ -490,10 +492,11 @@ class MarkerSetImpl implements MarkerSet {
             }
         }
         ConfigurationNode linemarkernode = node.getNode("lines");
-        if(linemarkernode != null) {
+        if (linemarkernode != null) {
             for(String id : linemarkernode.keySet()) {
                 PolyLineMarkerImpl marker = new PolyLineMarkerImpl(id, this);   /* Make and load marker */
-                if(marker.loadPersistentData(linemarkernode.getNode(id))) {
+                ConfigurationNode cfg = linemarkernode.getNode(id);
+                if ((cfg != null) && marker.loadPersistentData(cfg)) {
                     linemarkers.put(id, marker);
                 }
                 else {
@@ -503,10 +506,11 @@ class MarkerSetImpl implements MarkerSet {
             }
         }
         ConfigurationNode circlemarkernode = node.getNode("circles");
-        if(circlemarkernode != null) {
+        if (circlemarkernode != null) {
             for(String id : circlemarkernode.keySet()) {
                 CircleMarkerImpl marker = new CircleMarkerImpl(id, this);   /* Make and load marker */
-                if(marker.loadPersistentData(circlemarkernode.getNode(id))) {
+                ConfigurationNode cfg = circlemarkernode.getNode(id);
+                if ((cfg != null) && marker.loadPersistentData(cfg)) {
                     circlemarkers.put(id, marker);
                     if(marker.getBoostFlag()) {
                         if(boostingcirclemarkers == null) {
@@ -528,7 +532,7 @@ class MarkerSetImpl implements MarkerSet {
             }
         }
         List<String> allowed = node.getList("allowedicons");
-        if(allowed != null) {
+        if (allowed != null) {
             for(String id : allowed) {
                 MarkerIconImpl icon = MarkerAPIImpl.getMarkerIconImpl(id);
                 if(icon != null)
@@ -542,12 +546,12 @@ class MarkerSetImpl implements MarkerSet {
         minzoom = node.getInteger("minzoom", -1);
         maxzoom = node.getInteger("maxzoom", -1);
         if (minzoom == 0) minzoom = -1;
-        if(node.containsKey("showlabels"))
+        if (node.containsKey("showlabels"))
             showlabels = node.getBoolean("showlabels", false);
         else
             showlabels = null;
         String defid = node.getString("deficon");
-        if((defid != null) && (MarkerAPIImpl.api != null)) {
+        if ((defid != null) && (MarkerAPIImpl.api != null)) {
             deficon = MarkerAPIImpl.getMarkerIconImpl(defid);
         }
         else {
