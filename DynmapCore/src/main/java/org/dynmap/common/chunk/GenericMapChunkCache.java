@@ -371,7 +371,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		 * Unstep current position to previous position
 		 */
 		@Override
-		public BlockStep unstepPosition() {
+		public final BlockStep unstepPosition() {
 			BlockStep ls = laststep;
 			stepPosition(unstep[ls.ordinal()]);
 			return ls;
@@ -381,7 +381,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		 * Unstep current position in oppisite director of given step
 		 */
 		@Override
-		public void unstepPosition(BlockStep s) {
+		public final void unstepPosition(BlockStep s) {
 			stepPosition(unstep[s.ordinal()]);
 		}
 
@@ -440,17 +440,17 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 
 		@Override
-		public BlockStep getLastStep() {
+		public final BlockStep getLastStep() {
 			return laststep;
 		}
 
 		@Override
-		public int getWorldHeight() {
+		public final int getWorldHeight() {
 			return worldheight;
 		}
 
 		@Override
-		public long getBlockKey() {
+		public final long getBlockKey() {
 			return (((chunkindex * (worldheight - ymin)) + (y - ymin)) << 8) | (bx << 4) | bz;
 		}
 
@@ -465,18 +465,18 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 
 		@Override
-		public RenderPatchFactory getPatchFactory() {
+		public final RenderPatchFactory getPatchFactory() {
 			return HDBlockModels.getPatchDefinitionFactory();
 		}
 
 		@Override
-		public Object getBlockTileEntityField(String fieldId) {
+		public final Object getBlockTileEntityField(String fieldId) {
 			// TODO: handle tile entities here
 			return null;
 		}
 
 		@Override
-		public DynmapBlockState getBlockTypeAt(int xoff, int yoff, int zoff) {
+		public final DynmapBlockState getBlockTypeAt(int xoff, int yoff, int zoff) {
 			int xx = this.x + xoff;
 			int yy = this.y + yoff;
 			int zz = this.z + zoff;
@@ -489,12 +489,12 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 
 		@Override
-		public Object getBlockTileEntityFieldAt(String fieldId, int xoff, int yoff, int zoff) {
+		public final Object getBlockTileEntityFieldAt(String fieldId, int xoff, int yoff, int zoff) {
 			return null;
 		}
 
 		@Override
-		public long getInhabitedTicks() {
+		public final long getInhabitedTicks() {
 			try {
 				return snap.getInhabitedTicks();
 			} catch (Exception x) {
@@ -503,7 +503,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 
 		@Override
-		public DynmapBlockState getBlockType() {
+		public final DynmapBlockState getBlockType() {
 			if (blk == null) {
 				blk = snap.getBlockType(bx, y, bz);
 			}

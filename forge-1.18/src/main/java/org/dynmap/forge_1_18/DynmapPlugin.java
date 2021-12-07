@@ -2,7 +2,6 @@ package org.dynmap.forge_1_18;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
