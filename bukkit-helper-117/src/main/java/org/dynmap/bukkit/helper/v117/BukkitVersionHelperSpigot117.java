@@ -166,7 +166,7 @@ public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache117 c = new MapChunkCache117();
+        MapChunkCache117 c = new MapChunkCache117(gencache);
         c.setChunks(dw, chunks);
         return c;
     }
@@ -406,4 +406,8 @@ public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
 		CraftWorld cw = (CraftWorld) w;
 		return cw.getMinHeight();
 	}
+	@Override
+    public boolean useGenericCache() {
+    	return true;
+    }
 }

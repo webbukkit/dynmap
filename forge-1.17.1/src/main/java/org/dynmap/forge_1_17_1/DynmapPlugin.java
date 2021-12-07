@@ -95,6 +95,7 @@ import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.forge_1_17_1.DmapCommand;
 import org.dynmap.forge_1_17_1.DmarkerCommand;
 import org.dynmap.forge_1_17_1.DynmapCommand;
@@ -128,7 +129,7 @@ public class DynmapPlugin
     private DynmapCore core;
     private PermissionProvider permissions;
     private boolean core_enabled;
-    public SnapshotCache sscache;
+    public GenericChunkCache sscache;
     public PlayerList playerList;
     private MapManager mapManager;
     private static net.minecraft.server.MinecraftServer server;
@@ -1527,7 +1528,7 @@ public class DynmapPlugin
         }
 
         playerList = core.playerList;
-        sscache = new SnapshotCache(core.getSnapShotCacheSize(), core.useSoftRefInSnapShotCache());
+        sscache = new GenericChunkCache(core.getSnapShotCacheSize(), core.useSoftRefInSnapShotCache());
         /* Get map manager from core */
         mapManager = core.getMapManager();
 

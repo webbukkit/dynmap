@@ -215,7 +215,7 @@ public class ForgeWorld extends DynmapWorld
     public MapChunkCache getChunkCache(List<DynmapChunk> chunks)
     {
     	if(world != null) {
-    		ForgeMapChunkCache c = new ForgeMapChunkCache();
+    		ForgeMapChunkCache c = new ForgeMapChunkCache(DynmapPlugin.plugin.sscache);
     		c.setChunks(this, chunks);
     		return c;
     	}
