@@ -17,10 +17,10 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			$(div)
 				.addClass('Marker')
 				.addClass('playerMarker')
-				.append(playerImage = $('<img/>').addClass(configuration.smallplayerfaces?'playerIconSm':'playerIcon')
+				.append(playerImage = $('<img/>').addClass(configuration.smallplayerfaces?'playerIconSm':(configuration.largeplayerfaces?'playerIconLg':'playerIcon'))
 						.attr({ src: 'images/player.png' }))
 				.append(player.namefield = $('<span/>')
-					.addClass(configuration.smallplayerfaces?'playerNameSm':'playerName')
+					.addClass(configuration.smallplayerfaces?'playerNameSm':(configuration.largeplayerfaces?'playerNameLg':'playerName'))
 					.append(player.name));
 			
 			if (configuration.showplayerfaces) {
@@ -28,6 +28,14 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 					getMinecraftHead(player.account, 16, function(head) {
 						$(head)
 							.addClass('playerIconSm')
+						.prependTo(div);
+						playerImage.remove();
+					});
+				}
+				else if(configuration.largeplayerfaces) {
+					getMinecraftHead(player.account, 32, function(head) {
+						$(head)
+							.addClass('playerIconLg')
 						.prependTo(div);
 						playerImage.remove();
 					});
@@ -51,7 +59,7 @@ componentconstructors['playermarkers'] = function(dynmap, configuration) {
 			}
 			if (configuration.showplayerhealth) {
 				player.healthContainer = $('<div/>')
-					.addClass(configuration.smallplayerfaces?'healthContainerSm':'healthContainer')
+					.addClass(configuration.smallplayerfaces?'healthContainerSm':(configuration.largeplayerfaces?'healthContainerLg':'healthContainer'))
 					.appendTo(div);
 				if (player.health !== undefined && player.armor !== undefined) {
 					player.healthBar = $('<div/>')

@@ -152,10 +152,12 @@ components:
     type: playermarkers
     showplayerfaces: true
     showplayerhealth: true
-    # If true, show player body too (only valid if showplayerfaces=true
+    # If true, show player body too (only valid if showplayerfaces=true)
     showplayerbody: false
-    # Option to make player faces small - don't use with showplayerhealth
+    # Option to make player faces small - don't use with showplayerhealth or largeplayerfaces
     smallplayerfaces: false
+    # Option to make player faces larger - don't use with showplayerhealth or smallplayerfaces
+    largeplayerfaces: false
     # Optional - make player faces layer hidden by default
     hidebydefault: false
     # Optional - ordering priority in layer menu (low goes before high - default is 0)

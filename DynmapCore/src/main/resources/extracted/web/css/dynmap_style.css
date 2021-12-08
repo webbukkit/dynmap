@@ -584,6 +584,13 @@
 	height: 16px;
 }
 
+.dynmap .playerIconLg {
+	margin-top: -32px;
+	margin-left: -32px;
+	width: 64px;
+	height: 64px;
+}
+
 .dynmap .playerName {
 	position: absolute;
 	top: -19px;
@@ -604,6 +611,22 @@
 	position: absolute;
 	top: -16px;
 	left: 10px;
+
+	white-space: nowrap;
+
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.dynmap .playerNameLg {
+	position: absolute;
+	top: -19px;
+	left: 34px;
+    z-index:20;
 
 	white-space: nowrap;
 
@@ -649,6 +672,23 @@
 
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+}
+
+.dynmap .healthContainerLg {
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 34px;
+
+	width: 50px;
+
+	background: rgba(0,0,0,0.6);
+	padding: 2px;
+
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+
+	z-index: 21;
 }
 
 .dynmap .playerHealth {
