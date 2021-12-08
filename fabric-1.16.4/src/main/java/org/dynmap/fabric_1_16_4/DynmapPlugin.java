@@ -39,6 +39,7 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
+import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.fabric_1_16_4.command.DmapCommand;
 import org.dynmap.fabric_1_16_4.command.DmarkerCommand;
 import org.dynmap.fabric_1_16_4.command.DynmapCommand;
@@ -65,7 +66,7 @@ public class DynmapPlugin {
     DynmapCore core;
     private PermissionProvider permissions;
     private boolean core_enabled;
-    public SnapshotCache sscache;
+    public GenericChunkCache sscache;
     public PlayerList playerList;
     MapManager mapManager;
     /**
@@ -504,7 +505,7 @@ public class DynmapPlugin {
         }
 
         playerList = core.playerList;
-        sscache = new SnapshotCache(core.getSnapShotCacheSize(), core.useSoftRefInSnapShotCache());
+        sscache = new GenericChunkCache(core.getSnapShotCacheSize(), core.useSoftRefInSnapShotCache());
         /* Get map manager from core */
         mapManager = core.getMapManager();
 

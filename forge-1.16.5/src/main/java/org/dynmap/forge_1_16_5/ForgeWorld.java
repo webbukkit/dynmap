@@ -8,7 +8,6 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.Heightmap.Type;
 import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -206,7 +205,7 @@ public class ForgeWorld extends DynmapWorld
     public MapChunkCache getChunkCache(List<DynmapChunk> chunks)
     {
     	if(world != null) {
-    		ForgeMapChunkCache c = new ForgeMapChunkCache();
+    		ForgeMapChunkCache c = new ForgeMapChunkCache(DynmapPlugin.plugin.sscache);
     		c.setChunks(this, chunks);
     		return c;
     	}

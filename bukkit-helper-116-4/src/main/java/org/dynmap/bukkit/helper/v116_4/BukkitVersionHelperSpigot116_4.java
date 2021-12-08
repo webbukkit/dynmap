@@ -136,7 +136,7 @@ public class BukkitVersionHelperSpigot116_4 extends BukkitVersionHelperGeneric {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache116_4 c = new MapChunkCache116_4();
+        MapChunkCache116_4 c = new MapChunkCache116_4(gencache);
         c.setChunks(dw, chunks);
         return c;
     }
@@ -252,5 +252,9 @@ public class BukkitVersionHelperSpigot116_4 extends BukkitVersionHelperGeneric {
         	return ss[ss.length-1];
         }
         return null;
+    }
+	@Override
+    public boolean useGenericCache() {
+    	return true;
     }
 }
