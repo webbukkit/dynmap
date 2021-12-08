@@ -30,7 +30,7 @@ public class NBT {
 		}
 		@Override
 		public byte getByte(String s) {
-			return obj.d(s);
+			return obj.f(s);
 		}
 		@Override
 		public short getShort(String s) {
