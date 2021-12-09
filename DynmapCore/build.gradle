@@ -44,6 +44,8 @@ shadowJar {
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
         include(dependency('org.postgresql:postgresql:'))
         include(dependency(':DynmapCoreAPI'))
+        exclude("META-INF/maven/**")
+        exclude("META-INF/services/**")
 	}
 	relocate('org.json.simple', 'org.dynmap.json.simple')
 	relocate('org.yaml.snakeyaml', 'org.dynmap.snakeyaml')

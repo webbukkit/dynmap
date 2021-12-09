@@ -53,6 +53,8 @@ shadowJar {
     dependencies {
         include(dependency(':DynmapCore'))
         include(dependency("commons-codec:commons-codec:"))
+        exclude("META-INF/maven/**")
+        exclude("META-INF/services/**")
     }
 	relocate('org.apache.commons.codec', 'org.dynmap.forge_1_18.commons.codec')
     

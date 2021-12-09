@@ -51,6 +51,8 @@ processResources
 shadowJar {
     dependencies {
         include(dependency(':DynmapCore'))
+        exclude("META-INF/maven/**")
+        exclude("META-INF/services/**")
     }
     archiveName = "Dynmap-${parent.version}-forge-1.17.1.jar"
     destinationDir = file '../target'
