@@ -80,7 +80,8 @@ public class ConfigurationNode implements Map<String, Object> {
     @SuppressWarnings("unchecked")
     public boolean load() {
         initparse();
-
+        // If no file to read, just return false
+        if (!f.canRead()) { return false; }
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(f);
