@@ -5,8 +5,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.json.simple.JSONObject;
 import net.skinsrestorer.api.SkinsRestorerAPI;
-import net.skinsrestorer.bukkit.SkinsRestorer;
-import net.skinsrestorer.shared.utils.ReflectionUtil;
+import net.skinsrestorer.api.reflection.ReflectionUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -110,7 +110,6 @@ import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
-import net.skinsrestorer.bukkit.SkinsRestorer;
 
 public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
     private DynmapCore core;
@@ -959,18 +958,24 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         SkinsRestorerSkinUrlProvider skinUrlProvider = null;
 
         if (core.configuration.getBoolean("skinsrestorer-integration", false)) {
-            try {
-                SkinsRestorer skinsRestorer = (SkinsRestorer) getServer().getPluginManager().getPlugin("SkinsRestorer");
 
-                if (skinsRestorer == null) {
-                    Log.warning("SkinsRestorer integration can't be enabled because SkinsRestorer not installed");
-                } else {
+            Plugin skinsRestorer = getServer().getPluginManager().getPlugin("SkinsRestorer");
+
+            if (skinsRestorer == null) {
+                Log.warning("SkinsRestorer integration can't be enabled because SkinsRestorer is not installed");
+            } else {
+                try {
                     skinUrlProvider = new SkinsRestorerSkinUrlProvider();
-                    Log.info("SkinsRestorer API v14 integration enabled");
+                    Log.info("SkinsRestorer API integration enabled");
+                } catch (NoClassDefFoundError e) {
+                    skinUrlProvider = null;
+                    Log.warning("You are using unsupported version of SkinsRestorer. Use v14.1 or newer.");
+                    Log.warning("Disabled SkinsRestorer integration for this session");
+                } catch (Throwable e) {
+                    // SkinsRestorer probably updated its API
+                    skinUrlProvider = null;
+                    Log.warning("Error while enabling SkinsRestorer integration", e);
                 }
-            } catch(NoClassDefFoundError e) {
-                Log.warning("You are using unsupported version of SkinsRestorer. Use v14 or newer.");
-                Log.warning("Disabled SkinsRestorer integration for this session");
             }
         }
 
