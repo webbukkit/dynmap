@@ -202,10 +202,12 @@ public class TopoHDShader implements HDShader {
             if (isHidden(blocktype)) {
                 return false;
             }
+            int y = mapiter.getY();
+            if (y < 0) y = 0;	// Clamp at zero for now
             /* See if we're close to an edge */
             int[] xyz = ps.getSubblockCoord();
             // Only color lines when spacing is matched
-            Color lcolor = ((ps.getMapIterator().getY() % linespacing) == 0)?linecolor:null;
+            Color lcolor = ((y % linespacing) == 0)?linecolor:null;
             
             /* See which face we're on (only do lines on top face) */
             switch(ps.getLastBlockStep()) {
@@ -229,7 +231,7 @@ public class TopoHDShader implements HDShader {
                     }
                 }
                 else {
-                    c.setColor(fillcolor[mapiter.getY() >> heightshift]);
+                    c.setColor(fillcolor[y >> heightshift]);
                     inWater = false;
                 }
                 break;
@@ -248,7 +250,7 @@ public class TopoHDShader implements HDShader {
                     }
                 }
                 else {
-                    c.setColor(fillcolor[mapiter.getY() >> heightshift]);
+                    c.setColor(fillcolor[y >> heightshift]);
                     inWater = false;
                 }
                 break;
