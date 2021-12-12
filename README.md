@@ -15,22 +15,22 @@ to run on the default JDK for those platforms (JDK 8, or JDK 16 for 1.17.x, and 
 
 To build, run:
 
-    ./gradlew clean build
+    ./gradlew setup build
     
 Or (on Windows):
 
-    gradlew.bat clean build
+    gradlew.bat setup build
     
 The Forge 1.11.2 and 1.12.2 versions (specifically ForgeGradle for these) are very sensitive to being built by JDK 8, so to build them, 
 set JAVA_HOME to correspond to a JDK 8 installation, then build using the following;
 
     cd oldgradle
-    ./gradlew clean build
+    ./gradlew setup build
     
 Or (on Windows):
 
     cd oldgradle
-    gradlew.bat clean build
+    gradlew.bat setup build
 
     
 # What platforms are supported?
@@ -38,8 +38,8 @@ The following target platforms are supported, and you can find them at the links
 
 | Server type  | Version | Dynmap JAR | Where? |
 | ------------ | ------- | ---------- | ------ |
-| Spigot/PaperMC | ≤1.18  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
-| Spigot/PaperMC | ≤1.18 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Spigot/PaperMC | ≤1.18.1  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
+| Spigot/PaperMC | ≤1.18.1 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.11.2 | `Dynmap-<version>-forge-1.11.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.12.2 | `Dynmap-<version>-forge-1.12.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.13.2 | `Dynmap-<version>-forge-1.13.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
@@ -47,10 +47,11 @@ The following target platforms are supported, and you can find them at the links
 | Forge | 1.15.2 | `Dynmap-<version>-forge-1.15.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
 | Forge | 1.16.5 | `Dynmap-<version>-forge-1.16.5.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.17.1 | `Dynmap-<version>-forge-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Forge | 1.18.x | `Dynmap-<version>-forge-1.18.jar`   | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.15.2 | `Dynmap-<version>-fabric-1.15.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.16.4 | `Dynmap-<version>-fabric-1.16.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.17.1 | `Dynmap-<version>-fabric-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
-| Fabric | 1.18   | `Dynmap-<version>-fabric-1.18.jar`   | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.18.x | `Dynmap-<version>-fabric-1.18.jar`   | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
     
 # Data Storage
 Dynmap supports the following storage backends:
