@@ -903,7 +903,9 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		if (nbt == null) return null;
 		// Start generic chunk builder
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
-		bld.coords(nbt.getInt("xPos"), nbt.getInt("zPos"));
+		int x = nbt.getInt("xPos");
+		int z = nbt.getInt("zPos");
+		bld.coords(x, z);
         if (nbt.contains("InhabitedTime")) {
         	bld.inhabitedTicks(nbt.getLong("InhabitedTime"));
         }
@@ -972,7 +974,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
             	DataBitsPacked dbp = null;
             	try {
             		db = nbt.makeBitStorage(bitsperblock, 4096, statelist);
-            	} catch (Exception x) {	// Handle legacy encoded
+            	} catch (Exception ex) {	// Handle legacy encoded
 	            	bitsperblock = (statelist.length * 64) / 4096;
             		dbp = new DataBitsPacked(bitsperblock, 4096, statelist);
             	}
@@ -990,12 +992,12 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
                     }
                 }
             }
-            else if (sec.contains("block_states")) {	// 1.18
+            else if (sec.contains("block_states", GenericNBTCompound.TAG_COMPOUND)) {	// 1.18
             	GenericNBTCompound block_states = sec.getCompound("block_states");
-            	// If we've block state data, process non-empty section
-            	if (block_states.contains("data", 12)) {
-            		long[] statelist = block_states.getLongArray("data");
-            		GenericNBTList plist = block_states.getList("palette", 10);
+            	// If we've got palette, process non-empty section
+            	if (block_states.contains("palette", GenericNBTCompound.TAG_LIST)) {
+            		long[] statelist = block_states.contains("data", GenericNBTCompound.TAG_LONG_ARRAY) ? block_states.getLongArray("data") : new long[4096 / 64]; // Handle zero bit palette (all same)
+            		GenericNBTList plist = block_states.getList("palette", GenericNBTCompound.TAG_COMPOUND);
             		palette = new DynmapBlockState[plist.size()];
             		for (int pi = 0; pi < plist.size(); pi++) {
             			GenericNBTCompound tc = plist.getCompound(pi);
