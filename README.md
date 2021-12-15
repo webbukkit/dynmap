@@ -56,10 +56,11 @@ The following target platforms are supported, and you can find them at the links
 # Data Storage
 Dynmap supports the following storage backends:
 - Flat files: The default for a new installation
-- SQLite
-- MySQL
+- MySQL†
+- SQLite†
 - PostgreSQL (JDBC driver for this is now bundled with the Dynmap JAR)
-- MariaDB
+- MariaDB - is compatible with MySQL
+- †Note: drivers for SQL are usually included for Spigot not included with other platforms or Dynmap, but injecting driver classes into jar file will be recognized and supported
 
 # Contributing to Dynmap's Code
 The Dynmap team welcomes Pull Requests with fixes, new features, and new platform support.  That said, the following rules apply:
