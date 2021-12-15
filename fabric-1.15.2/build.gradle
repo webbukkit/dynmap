@@ -19,7 +19,7 @@ group = parent.group
 
 configurations {
     shadow
-    compile.extendsFrom(shadow)
+    implementation.extendsFrom(shadow)
 }
 
 dependencies {
