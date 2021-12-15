@@ -5,7 +5,7 @@ repositories {
         url 'https://jitpack.io'
     }
     maven {
-        url 'https://repo.codemc.org/repository/maven-snapshots'
+        url 'https://repo.codemc.org/repository/maven-releases/'
     }
 }
 
@@ -15,7 +15,7 @@ dependencies {
     implementation 'me.lucko.luckperms:luckperms-api:4.3'
     implementation 'net.luckperms:api:5.0'
     implementation('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
-    compileOnly 'net.skinsrestorer:skinsrestorer:14.1.0-SNAPSHOT@jar'
+    compileOnly 'net.skinsrestorer:skinsrestorer-api:14.1.+'
     implementation project(":dynmap-api")
     implementation project(path: ":DynmapCore", configuration: "shadow")
     implementation group: 'ru.tehkode', name: 'PermissionsEx', version: '1.19.1'
