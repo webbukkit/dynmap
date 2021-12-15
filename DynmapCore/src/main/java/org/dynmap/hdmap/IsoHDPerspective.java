@@ -1248,8 +1248,8 @@ public class IsoHDPerspective implements HDPerspective {
         for(int x = 0; x < tileWidth * sizescale; x++) {
             ps.px = x;
             for(int y = 0; y < tileHeight * sizescale; y++) {
-                ps.top.x = ps.bottom.x = xbase + ((double)x)/sizescale + 0.5;    /* Start at center of pixel at Y=height+0.5, bottom at Y=-0.5 */
-                ps.top.y = ps.bottom.y = ybase + ((double)y)/sizescale + 0.5;
+                ps.top.x = ps.bottom.x = xbase + (x + 0.5) / sizescale;    /* Start at center of pixel at Y=height+0.5, bottom at Y=-0.5 */
+                ps.top.y = ps.bottom.y = ybase + (y + 0.5) / sizescale;
                 ps.top.z = height + 0.5; ps.bottom.z = miny - 0.5;
                 map_to_world.transform(ps.top);            /* Transform to world coordinates */
                 map_to_world.transform(ps.bottom);
