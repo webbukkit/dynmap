@@ -1117,7 +1117,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
         // If no light, do simple generate
         if (!hasLight) {
-        	Log.info(String.format("generateSky(%d,%d)", x, z));
+        	//Log.info(String.format("generateSky(%d,%d)", x, z));
         	bld.generateSky();
         }
 		return bld.build();
