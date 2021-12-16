@@ -133,6 +133,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
+						if (bm == BiomeMap.NULL) continue; 
 						int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
@@ -140,6 +141,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 						cnt++;
 					}
 				}
+				cnt = (cnt > 0) ? cnt : 1;
 				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothGrassColorMultiplier() error: " + x);
@@ -162,6 +164,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
+						if (bm == BiomeMap.NULL) continue; 
 						int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
@@ -169,10 +172,10 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 						cnt++;
 					}
 				}
+				cnt = (cnt > 0) ? cnt : 1;
 				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothFoliageColorMultiplier() error: " + x);
-				mult = 0xFFFFFF;
 			}
 			//Log.info(String.format("getSmoothFoliageColorMultiplier() at %d, %d = %X", x, z, mult));
 
@@ -191,6 +194,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
+						if (bm == BiomeMap.NULL) continue; 
 						int rmult;
 						if (bm == BiomeMap.SWAMPLAND) {
 							rmult = swampmap[bm.biomeLookup()];
@@ -203,10 +207,10 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 						cnt++;
 					}
 				}
+				cnt = (cnt > 0) ? cnt : 1;
 				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothColorMultiplier() error: " + x);
-				mult = 0xFFFFFF;
 			}
 			//Log.info(String.format("getSmoothColorMultiplier() at %d, %d = %X", x, z, mult));
 
@@ -215,7 +219,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 
 		@Override
 		public final int getSmoothWaterColorMultiplier() {
-			int multv;
+			int multv = 0xFFFFFF;
 			try {
 				int raccum = 0;
 				int gaccum = 0;
@@ -224,6 +228,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
+						if (bm == BiomeMap.NULL) continue; 
 						int rmult = bm.getWaterColorMult();
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
@@ -231,11 +236,10 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 						cnt++;
 					}
 				}
+				cnt = (cnt > 0) ? cnt : 1;
 				multv = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothWaterColorMultiplier(nomap) error: " + x);
-
-				multv = 0xFFFFFF;
 			}
 			//Log.info(String.format("getSmoothWaterColorMultiplier(nomap) at %d, %d = %X", x, z, multv));
 
@@ -254,6 +258,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
+						if (bm == BiomeMap.NULL) continue; 
 						int rmult = colormap[bm.biomeLookup()];
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
@@ -261,10 +266,10 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 						cnt++;
 					}
 				}
+				cnt = (cnt > 0) ? cnt : 1;
 				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception x) {
 				//Log.info("getSmoothWaterColorMultiplier() error: " + x);
-				mult = 0xFFFFFF;
 			}
 			//Log.info(String.format("getSmoothWaterColorMultiplier() at %d, %d = %X", x, z, mult));
 
