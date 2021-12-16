@@ -10,6 +10,7 @@
     "ProtoChunkMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
+    "ThreadedAnvilChunkStorageMixin",
     "WorldChunkMixin"
   ],
   "injectors": {
