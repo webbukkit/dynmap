@@ -50,20 +50,6 @@ public class MapChunkCache118 extends GenericMapChunkCache {
 		init();
 	}
 
-	private boolean isLitChunk(NBTTagCompound nbt) {
-		if ((nbt != null) && nbt.e("Level")) {
-    		nbt = nbt.p("Level");
-    	}
-        if (nbt != null) {
-            String stat = nbt.l("Status");
-			ChunkStatus cs = ChunkStatus.a(stat);
-            if ((stat != null) && (cs.b(ChunkStatus.l) || (cs == ChunkStatus.c))) {	// ChunkStatus.LIGHT OR ChunkStatus.EMPTY (migrated use this for some reason)
-            	return true;
-            }
-        }
-        return false;
-	}
-	
 	// Load generic chunk from existing and already loaded chunk
 	protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
         CraftWorld cw = (CraftWorld) w;
@@ -73,9 +59,6 @@ public class MapChunkCache118 extends GenericMapChunkCache {
             Chunk c = cw.getHandle().getChunkIfLoaded(chunk.x,  chunk.z);
             if ((c != null) && c.o) {	// c.loaded
 				nbt = ChunkRegionLoader.a(cw.getHandle(), c);
-            }
-            if (!isLitChunk(nbt)) {
-            	nbt = null;
             }
             if (nbt != null) {
             	gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
@@ -92,9 +75,6 @@ public class MapChunkCache118 extends GenericMapChunkCache {
         try {
             nbt = cw.getHandle().k().a.f(cc);	// playerChunkMap
         } catch (IOException iox) {
-        }
-        if (!isLitChunk(nbt)) {
-        	nbt = null;
         }
         if (nbt != null) {
         	gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));

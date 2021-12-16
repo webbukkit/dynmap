@@ -60,20 +60,6 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
         super.setChunks(dw, chunks);
     }
 
-	private boolean isLitChunk(NbtCompound nbt) {
-		if ((nbt != null) && nbt.contains("Level")) {
-    		nbt = nbt.getCompound("Level");
-    	}
-        if (nbt != null) {
-            String stat = nbt.getString("Status");
-			ChunkStatus cs = ChunkStatus.byId(stat);
-            if ((stat != null) && (cs.isAtLeast(ChunkStatus.LIGHT) || (cs == ChunkStatus.EMPTY))) {	// ChunkStatus.LIGHT OR migrated EMPTY
-            	return true;
-            }
-        }
-        return false;
-	}
-
 	// Load generic chunk from existing and already loaded chunk
 	protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
 		GenericChunk gc = null;
@@ -85,9 +71,9 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
                 // TODO: find out why this is happening and why it only seems to happen since 1.16.2
                 Log.severe("ChunkSerializer.serialize threw a NullPointerException", e);
             }
-			if (isLitChunk(nbt)) {
-				gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
-			}
+            if (nbt != null) {
+            	gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
+            }
 		}
 		return gc;
 	}
@@ -109,7 +95,7 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 		GenericChunk gc = null;
         NbtCompound nbt = readChunk(chunk.x, chunk.z);
 		// If read was good
-		if (isLitChunk(nbt)) {
+		if (nbt != null) {
 			gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 		}
 		return gc;

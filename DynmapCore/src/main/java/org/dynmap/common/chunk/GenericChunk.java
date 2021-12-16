@@ -106,6 +106,35 @@ public class GenericChunk {
     		this.z = sz;
     		return this;
     	}
+    	// Generate simple sky lighting (must be after all sections have been added)
+    	public Builder generateSky() {
+    		int sky[] = new int[256]; // ZX array
+    		Arrays.fill(sky, 15);	// Start fully lit at top
+    		GenericChunkSection.Builder bld = new GenericChunkSection.Builder();
+    		// Make light array for each section, start from top
+    		for (int i = (sections.length - 1); i >= 0; i--) {
+    			if (sections[i] == null) continue;
+    			byte[] ssky = new byte[2048];
+    			for (int x = 0; x < 16; x++) {
+    				for (int z = 0; z < 16; z++) {
+    					int idx = (z << 4) + x;
+    					for (int y = 15; y >= 0; y--) {
+    						DynmapBlockState bs = sections[i].blocks.getBlock(x, y, z);	// Get block
+    						if (bs.isWater() || bs.isWaterlogged()) {	// Drop light by 1 level for water
+    							sky[idx] = sky[idx] < 1 ? 0 : sky[idx] - 1;
+    						}
+    						else if (bs.isLeaves()) {	// Drop light by 2 levels for leaves
+    							sky[idx] = sky[idx] < 2 ? 0 : sky[idx] - 2;
+    						}
+    						ssky[(y << 7) | (z << 3) | (x >> 1)] |= (sky[idx] << (4 * (x & 1)));
+    					}
+    				}
+    			}
+    			// Replace section with new one with new lighting
+    			sections[i] = bld.buildFrom(sections[i], ssky);
+    		}
+    		return this;    		
+    	}
     	// Build chunk
     	public GenericChunk build() {
     		return new GenericChunk(x, z, y_min, sections, inhabTicks);

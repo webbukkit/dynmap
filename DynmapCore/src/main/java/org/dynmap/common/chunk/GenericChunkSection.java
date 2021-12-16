@@ -238,6 +238,12 @@ public class GenericChunkSection {
 			empty = false;
 			return this;
 		}
+		// Build copy from existing section with new skylight (YZX nibble array)
+		public GenericChunkSection buildFrom(GenericChunkSection s, byte[] sky) {
+			LightingAccess skyA = new LightingAccess3D(sky);
+			return new GenericChunkSection(s.blocks, s.biomes, skyA, s.emitted, s.isEmpty); 
+		}
+		
 		// Build section based on current builder state
 		public GenericChunkSection build() {
 			// Process state access - see if we can reduce

@@ -31,27 +31,13 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		init();
 	}
 
-	private boolean isLitChunk(CompoundTag nbt) {
-		if ((nbt != null) && nbt.contains("Level")) {
-    		nbt = nbt.getCompound("Level");
-    	}
-        if (nbt != null) {
-            String stat = nbt.getString("Status");
-			ChunkStatus cs = ChunkStatus.byName(stat);
-            if ((stat != null) && (cs.isOrAfter(ChunkStatus.LIGHT) || (cs == ChunkStatus.EMPTY))) {	// ChunkStatus.LIGHT or migrated EMPTY
-            	return true;
-            }
-        }
-        return false;
-	}
-
 	// Load generic chunk from existing and already loaded chunk
 	protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
 		GenericChunk gc = null;
 		ChunkAccess ch = cps.getChunk(chunk.x, chunk.z, ChunkStatus.FULL, false);
 		if (ch != null) {
 			CompoundTag nbt = ChunkSerializer.write(w, ch);
-			if (isLitChunk(nbt)) {
+			if (nbt != null) {
 				gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 			}
 		}
@@ -62,7 +48,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		GenericChunk gc = null;
 		CompoundTag nbt = readChunk(chunk.x, chunk.z);
 		// If read was good
-		if (isLitChunk(nbt)) {
+		if (nbt != null) {
 			gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 		}
 		return gc;

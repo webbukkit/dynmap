@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
+import org.dynmap.Log;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.chunk.GenericChunkCache.ChunkCacheRec;
 import org.dynmap.hdmap.HDBlockModels;
@@ -901,17 +902,25 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		return true;
 	}
 
+	private static final String litStates[] = { "light", "spawn", "heightmaps", "full" };
+	
 	public GenericChunk parseChunkFromNBT(GenericNBTCompound nbt) {
 		if ((nbt != null) && nbt.contains("Level")) {
 			nbt = nbt.getCompound("Level");
 		}
 		if (nbt == null) return null;
+		String status = nbt.getString("Status");
 		boolean hasLight = false;
-		boolean isEmpty = nbt.getString("Status").equals("empty");	// Incomplete migration
+		if (status != null) {
+			for (int i = 0; i < litStates.length; i++) {
+				if (status.equals(litStates[i])) hasLight = true;
+			}
+		}
 		// Start generic chunk builder
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
 		int x = nbt.getInt("xPos");
 		int z = nbt.getInt("zPos");
+
 		bld.coords(x, z);
         if (nbt.contains("InhabitedTime")) {
         	bld.inhabitedTicks(nbt.getLong("InhabitedTime"));
@@ -946,6 +955,14 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
         GenericChunkSection.Builder sbld = new GenericChunkSection.Builder();
         /* Get sections */
         GenericNBTList sect = nbt.contains("sections") ? nbt.getList("sections", 10) : nbt.getList("Sections", 10);
+        // Prescan sections to see if lit
+        for (int i = 0; i < sect.size(); i++) {
+            GenericNBTCompound sec = sect.getCompound(i);
+            if (sec.contains("BlockLight") || sec.contains("SkyLight")) {
+            	hasLight = true;
+            }
+        }
+        // And process sections
         for (int i = 0; i < sect.size(); i++) {
             GenericNBTCompound sec = sect.getCompound(i);
             int secnum = sec.getByte("Y");
@@ -1054,11 +1071,12 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
             }
             if (sec.contains("BlockLight")) {
             	sbld.emittedLight(sec.getByteArray("BlockLight"));
-            	hasLight = true;
             }
             if (sec.contains("SkyLight")) {
             	sbld.skyLight(sec.getByteArray("SkyLight"));
-            	hasLight = true;
+            }
+            else if (!hasLight) {
+            	sbld.singleSkyLight(15);            	
             }
 			// If section biome palette
 			if (sec.contains("biomes")) {
@@ -1092,8 +1110,11 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			bld.addSection(secnum, sbld.build());
 			sbld.reset();
         }
-        // If isEmpty and has no light, drop it
-		return (isEmpty && (!hasLight)) ? null : bld.build();
+        // If no light, do simple generate
+        if (!hasLight) {
+        	bld.generateSky();
+        }
+		return bld.build();
 	}
 
 }
