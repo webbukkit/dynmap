@@ -57,7 +57,7 @@ public class MapChunkCache118 extends GenericMapChunkCache {
         if (nbt != null) {
             String stat = nbt.l("Status");
 			ChunkStatus cs = ChunkStatus.a(stat);
-            if ((stat != null) && cs.b(ChunkStatus.l)) {	// ChunkStatus.LIGHT
+            if ((stat != null) && (cs.b(ChunkStatus.l) || (cs == ChunkStatus.c))) {	// ChunkStatus.LIGHT OR ChunkStatus.EMPTY (migrated use this for some reason)
             	return true;
             }
         }

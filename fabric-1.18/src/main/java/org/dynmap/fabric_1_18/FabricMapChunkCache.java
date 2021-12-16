@@ -60,30 +60,6 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
         super.setChunks(dw, chunks);
     }
 
-    private NbtCompound readChunk(int x, int z) {
-        try {
-            ThreadedAnvilChunkStorage acl = cps.threadedAnvilChunkStorage;
-
-            ChunkPos coord = new ChunkPos(x, z);
-            NbtCompound rslt = acl.getNbt(coord);
-            if (rslt != null) {
-                // Don't load uncooked chunks
-                String stat = rslt.getString("Status");
-                ChunkStatus cs = ChunkStatus.byId(stat);
-                if ((stat == null) ||
-                        // Needs to be at least lighted
-                        (!cs.isAtLeast(ChunkStatus.LIGHT))) {
-                    rslt = null;
-                }
-            }
-            //Log.info(String.format("loadChunk(%d,%d)=%s", x, z, (rslt != null) ? rslt.toString() : "null"));
-            return rslt;
-        } catch (Exception exc) {
-            Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
-            return null;
-        }
-    }
-
 	private boolean isLitChunk(NbtCompound nbt) {
 		if ((nbt != null) && nbt.contains("Level")) {
     		nbt = nbt.getCompound("Level");
@@ -91,7 +67,7 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
         if (nbt != null) {
             String stat = nbt.getString("Status");
 			ChunkStatus cs = ChunkStatus.byId(stat);
-            if ((stat != null) && cs.isAtLeast(ChunkStatus.LIGHT)) {	// ChunkStatus.LIGHT
+            if ((stat != null) && (cs.isAtLeast(ChunkStatus.LIGHT) || (cs == ChunkStatus.EMPTY))) {	// ChunkStatus.LIGHT OR migrated EMPTY
             	return true;
             }
         }
@@ -115,7 +91,19 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 		}
 		return gc;
 	}
-	
+
+    private NbtCompound readChunk(int x, int z) {
+        try {
+            ThreadedAnvilChunkStorage acl = cps.threadedAnvilChunkStorage;
+
+            ChunkPos coord = new ChunkPos(x, z);
+            return acl.getNbt(coord);
+        } catch (Exception exc) {
+            Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
+            return null;
+        }
+    }
+
 	// Load generic chunk from unloaded chunk
 	protected GenericChunk loadChunk(DynmapChunk chunk) {
 		GenericChunk gc = null;

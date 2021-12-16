@@ -901,6 +901,8 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			nbt = nbt.getCompound("Level");
 		}
 		if (nbt == null) return null;
+		boolean hasLight = false;
+		boolean isEmpty = nbt.getString("Status").equals("empty");	// Incomplete migration
 		// Start generic chunk builder
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
 		int x = nbt.getInt("xPos");
@@ -1047,9 +1049,11 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
             }
             if (sec.contains("BlockLight")) {
             	sbld.emittedLight(sec.getByteArray("BlockLight"));
+            	hasLight = true;
             }
             if (sec.contains("SkyLight")) {
             	sbld.skyLight(sec.getByteArray("SkyLight"));
+            	hasLight = true;
             }
 			// If section biome palette
 			if (sec.contains("biomes")) {
@@ -1083,7 +1087,8 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			bld.addSection(secnum, sbld.build());
 			sbld.reset();
         }
-		return bld.build();
+        // If isEmpty and has no light, drop it
+		return (isEmpty && (!hasLight)) ? null : bld.build();
 	}
 
 }

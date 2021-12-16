@@ -38,7 +38,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
         if (nbt != null) {
             String stat = nbt.getString("Status");
 			ChunkStatus cs = ChunkStatus.byName(stat);
-            if ((stat != null) && cs.isOrAfter(ChunkStatus.LIGHT)) {	// ChunkStatus.LIGHT
+            if ((stat != null) && (cs.isOrAfter(ChunkStatus.LIGHT) || (cs == ChunkStatus.EMPTY))) {	// ChunkStatus.LIGHT or migrated EMPTY
             	return true;
             }
         }
