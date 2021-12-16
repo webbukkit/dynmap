@@ -29,20 +29,6 @@ public class MapChunkCache117 extends GenericMapChunkCache {
 		super(cc);
 		init();
 	}
-	
-	private boolean isLitChunk(NBTTagCompound nbt) {
-		if ((nbt != null) && nbt.hasKey("Level")) {
-    		nbt = nbt.getCompound("Level");
-    	}
-        if (nbt != null) {
-            String stat = nbt.getString("Status");
-			ChunkStatus cs = ChunkStatus.a(stat);
-            if ((stat != null) && cs.b(ChunkStatus.l)) {	// ChunkStatus.LIGHT
-            	return true;
-            }
-        }
-        return false;
-	}
 
 	// Load generic chunk from existing and already loaded chunk
 	protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
@@ -53,9 +39,6 @@ public class MapChunkCache117 extends GenericMapChunkCache {
             Chunk c = cw.getHandle().getChunkAt(chunk.x,  chunk.z);
             if ((c != null) && c.h) {	// c.loaded
                 nbt = ChunkRegionLoader.saveChunk(cw.getHandle(), c);
-            }
-            if (!isLitChunk(nbt)) {
-            	nbt = null;
             }
             if (nbt != null) {
             	gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
@@ -73,9 +56,6 @@ public class MapChunkCache117 extends GenericMapChunkCache {
         try {
             nbt = cw.getHandle().getChunkProvider().a.read(cc);	// playerChunkMap
         } catch (IOException iox) {
-        }
-        if (!isLitChunk(nbt)) {
-        	nbt = null;
         }
         if (nbt != null) {
         	gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));

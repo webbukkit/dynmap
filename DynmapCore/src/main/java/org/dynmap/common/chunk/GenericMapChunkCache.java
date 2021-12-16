@@ -910,12 +910,16 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 		if (nbt == null) return null;
 		String status = nbt.getString("Status");
-		boolean hasLight = false;
+		int version = nbt.getInt("DataVersion");
+
+		boolean hasLitState = false;
 		if (status != null) {
 			for (int i = 0; i < litStates.length; i++) {
-				if (status.equals(litStates[i])) hasLight = true;
+				if (status.equals(litStates[i])) { hasLitState = true; }
 			}
 		}
+		boolean hasLight = hasLitState;	// Assume good light in a lit state
+		
 		// Start generic chunk builder
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
 		int x = nbt.getInt("xPos");
@@ -958,7 +962,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
         // Prescan sections to see if lit
         for (int i = 0; i < sect.size(); i++) {
             GenericNBTCompound sec = sect.getCompound(i);
-            if (sec.contains("BlockLight") || sec.contains("SkyLight")) {
+            if (sec.contains("SkyLight")) { // Only consider skylight for now, since that is what we generate if needed
             	hasLight = true;
             }
         }
@@ -1075,9 +1079,6 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
             if (sec.contains("SkyLight")) {
             	sbld.skyLight(sec.getByteArray("SkyLight"));
             }
-            else if (!hasLight) {
-            	sbld.singleSkyLight(15);            	
-            }
 			// If section biome palette
 			if (sec.contains("biomes")) {
                 GenericNBTCompound nbtbiomes = sec.getCompound("biomes");
@@ -1110,8 +1111,13 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			bld.addSection(secnum, sbld.build());
 			sbld.reset();
         }
+        // If pre 1.17, assume unlit state means bad light
+		if ((version < 2724) && (!hasLitState)) {
+			hasLight = false;
+		}
         // If no light, do simple generate
         if (!hasLight) {
+        	Log.info(String.format("generateSky(%d,%d)", x, z));
         	bld.generateSky();
         }
 		return bld.build();

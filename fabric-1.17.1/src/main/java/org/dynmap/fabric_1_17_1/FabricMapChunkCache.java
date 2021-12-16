@@ -48,38 +48,12 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
             ThreadedAnvilChunkStorage acl = cps.threadedAnvilChunkStorage;
 
             ChunkPos coord = new ChunkPos(x, z);
-            NbtCompound rslt = acl.getNbt(coord);
-            if (rslt != null) {
-                // Don't load uncooked chunks
-                String stat = rslt.getString("Status");
-                ChunkStatus cs = ChunkStatus.byId(stat);
-                if ((stat == null) ||
-                        // Needs to be at least lighted
-                        (!cs.isAtLeast(ChunkStatus.LIGHT))) {
-                    rslt = null;
-                }
-            }
-            //Log.info(String.format("loadChunk(%d,%d)=%s", x, z, (rslt != null) ? rslt.toString() : "null"));
-            return rslt;
+            return acl.getNbt(coord);
         } catch (Exception exc) {
             Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
             return null;
         }
     }
-
-	private boolean isLitChunk(NbtCompound nbt) {
-		if ((nbt != null) && nbt.contains("Level")) {
-    		nbt = nbt.getCompound("Level");
-    	}
-        if (nbt != null) {
-            String stat = nbt.getString("Status");
-			ChunkStatus cs = ChunkStatus.byId(stat);
-            if ((stat != null) && cs.isAtLeast(ChunkStatus.LIGHT)) {	// ChunkStatus.LIGHT
-            	return true;
-            }
-        }
-        return false;
-	}
 
 	// Load generic chunk from existing and already loaded chunk
 	protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
@@ -92,7 +66,7 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
                 // TODO: find out why this is happening and why it only seems to happen since 1.16.2
                 Log.severe("ChunkSerializer.serialize threw a NullPointerException", e);
             }
-			if (isLitChunk(nbt)) {
+			if (nbt != null) {
 				gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 			}
 		}
@@ -104,7 +78,7 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 		GenericChunk gc = null;
         NbtCompound nbt = readChunk(chunk.x, chunk.z);
 		// If read was good
-		if (isLitChunk(nbt)) {
+		if (nbt != null) {
 			gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 		}
 		return gc;

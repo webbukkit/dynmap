@@ -31,27 +31,13 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		init();
 	}
 
-	private boolean isLitChunk(CompoundNBT nbt) {
-		if ((nbt != null) && nbt.contains("Level")) {
-    		nbt = nbt.getCompound("Level");
-    	}
-        if (nbt != null) {
-            String stat = nbt.getString("Status");
-			ChunkStatus cs = ChunkStatus.byName(stat);
-            if ((stat != null) && cs.isAtLeast(ChunkStatus.LIGHT)) {	// ChunkStatus.LIGHT
-            	return true;
-            }
-        }
-        return false;
-	}
-
 	// Load generic chunk from existing and already loaded chunk
 	protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
 		GenericChunk gc = null;
 		IChunk ch = cps.getChunk(chunk.x, chunk.z, ChunkStatus.FULL, false);
 		if (ch != null) {
 			CompoundNBT nbt = ChunkSerializer.write(w, ch);
-			if (isLitChunk(nbt)) {
+			if (nbt != null) {
 				gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 			}
 		}
@@ -62,7 +48,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		GenericChunk gc = null;
 		CompoundNBT nbt = readChunk(chunk.x, chunk.z);
 		// If read was good
-		if (isLitChunk(nbt)) {
+		if (nbt != null) {
 			gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 		}
 		return gc;
@@ -86,16 +72,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 
 	private CompoundNBT readChunk(int x, int z) {
 		try {
-			CompoundNBT rslt = cps.chunkManager.readChunk(new ChunkPos(x, z));
-			if (rslt != null) {
-				if (rslt.contains("Level")) {
-					rslt = rslt.getCompound("Level");
-				}
-			}
-			if (!isLitChunk(rslt)) {
-				rslt = null;
-			}
-			return rslt;
+			return cps.chunkManager.readChunk(new ChunkPos(x, z));
 		} catch (Exception exc) {
 			Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
 			return null;

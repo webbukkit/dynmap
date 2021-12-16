@@ -31,27 +31,13 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		init();
 	}
 
-	private boolean isLitChunk(CompoundTag nbt) {
-		if ((nbt != null) && nbt.contains("Level")) {
-    		nbt = nbt.getCompound("Level");
-    	}
-        if (nbt != null) {
-            String stat = nbt.getString("Status");
-			ChunkStatus cs = ChunkStatus.byName(stat);
-            if ((stat != null) && cs.isOrAfter(ChunkStatus.LIGHT)) {	// ChunkStatus.LIGHT
-            	return true;
-            }
-        }
-        return false;
-	}
-
 	// Load generic chunk from existing and already loaded chunk
 	protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
 		GenericChunk gc = null;
 		ChunkAccess ch = cps.getChunk(chunk.x, chunk.z, ChunkStatus.FULL, false);
 		if (ch != null) {
 			CompoundTag nbt = ChunkSerializer.write(w, ch);
-			if (isLitChunk(nbt)) {
+			if (nbt != null) {
 				gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 			}
 		}
@@ -62,7 +48,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		GenericChunk gc = null;
 		CompoundTag nbt = readChunk(chunk.x, chunk.z);
 		// If read was good
-		if (isLitChunk(nbt)) {
+		if (nbt != null) {
 			gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 		}
 		return gc;
@@ -79,23 +65,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 
 	private CompoundTag readChunk(int x, int z) {
 		try {
-			CompoundTag rslt = cps.chunkMap.readChunk(new ChunkPos(x, z));
-			if (rslt != null) {
-				if (rslt.contains("Level")) {
-					rslt = rslt.getCompound("Level");
-				}
-				// Don't load uncooked chunks
-				String stat = rslt.getString("Status");
-				ChunkStatus cs = ChunkStatus.byName(stat);
-				if ((stat == null) ||
-				// Needs to be at least lighted
-						(!cs.isOrAfter(ChunkStatus.LIGHT))) {
-					rslt = null;
-				}
-			}
-			// Log.info(String.format("loadChunk(%d,%d)=%s", x, z, (rslt != null) ?
-			// rslt.toString() : "null"));
-			return rslt;
+			return cps.chunkMap.readChunk(new ChunkPos(x, z));
 		} catch (Exception exc) {
 			Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
 			return null;
