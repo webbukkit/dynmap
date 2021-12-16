@@ -46,7 +46,6 @@ import org.dynmap.fabric_1_18.command.DmarkerCommand;
 import org.dynmap.fabric_1_18.command.DynmapCommand;
 import org.dynmap.fabric_1_18.command.DynmapExpCommand;
 import org.dynmap.fabric_1_18.event.BlockEvents;
-import org.dynmap.fabric_1_18.event.ChunkDataEvents;
 import org.dynmap.fabric_1_18.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_1_18.event.PlayerEvents;
 import org.dynmap.fabric_1_18.mixin.BiomeEffectsAccessor;
