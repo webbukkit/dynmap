@@ -7,6 +7,7 @@
     "BiomeEffectsAccessor",
     "MinecraftServerMixin",
     "PlayerManagerMixin",
+    "ProtoChunkMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ThreadedAnvilChunkStorageAccessor",
