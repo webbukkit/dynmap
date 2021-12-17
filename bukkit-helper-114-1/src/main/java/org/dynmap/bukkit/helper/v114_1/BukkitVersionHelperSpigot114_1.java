@@ -159,7 +159,7 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache114_1 c = new MapChunkCache114_1();
+        MapChunkCache114_1 c = new MapChunkCache114_1(gencache);
         c.setChunks(dw, chunks);
         return c;
     }
@@ -222,5 +222,9 @@ public class BukkitVersionHelperSpigot114_1 extends BukkitVersionHelperCB {
         }
         return biomenames;
 	}
+	@Override
+    public boolean useGenericCache() {
+    	return true;
+    }
 
 }

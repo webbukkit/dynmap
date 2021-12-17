@@ -1,16 +1,13 @@
 package org.dynmap.bukkit.helper.v116;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -19,16 +16,13 @@ import org.bukkit.entity.Player;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.bukkit.helper.BukkitMaterial;
-import org.dynmap.bukkit.helper.BukkitVersionHelperCB;
 import org.dynmap.bukkit.helper.BukkitVersionHelperGeneric;
 import org.dynmap.bukkit.helper.BukkitWorld;
-import org.dynmap.bukkit.helper.v116.MapChunkCache116;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 
 import net.minecraft.server.v1_16_R1.BiomeBase;
-import net.minecraft.server.v1_16_R1.BiomeFog;
 import net.minecraft.server.v1_16_R1.Block;
 import net.minecraft.server.v1_16_R1.BlockFluids;
 import net.minecraft.server.v1_16_R1.BlockRotatable;
@@ -141,7 +135,7 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache116 c = new MapChunkCache116();
+        MapChunkCache116 c = new MapChunkCache116(gencache);
         c.setChunks(dw, chunks);
         return c;
     }
@@ -257,5 +251,9 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
         	return ss[ss.length-1];
         }
         return null;
+    }
+	@Override
+    public boolean useGenericCache() {
+    	return true;
     }
 }

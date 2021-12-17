@@ -15,7 +15,6 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
 import org.dynmap.bukkit.helper.BukkitVersionHelperCB;
 import org.dynmap.bukkit.helper.BukkitWorld;
-import org.dynmap.bukkit.helper.v115.MapChunkCache115;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
@@ -159,7 +158,7 @@ public class BukkitVersionHelperSpigot115 extends BukkitVersionHelperCB {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache115 c = new MapChunkCache115();
+        MapChunkCache115 c = new MapChunkCache115(gencache);
         c.setChunks(dw, chunks);
         return c;
     }
@@ -222,5 +221,9 @@ public class BukkitVersionHelperSpigot115 extends BukkitVersionHelperCB {
         }
         return biomenames;
 	}
+	@Override
+    public boolean useGenericCache() {
+    	return true;
+    }
 
 }
