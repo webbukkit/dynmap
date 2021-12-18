@@ -31,6 +31,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -1378,7 +1379,7 @@ public class DynmapCore implements DynmapCommonAPI {
      * @param arg - Partial world name to filter by
      * @return List of tab completion suggestions
      */
-    List<String> getWorldSuggestions(String arg) {
+    public List<String> getWorldSuggestions(String arg) {
         return mapManager.getWorlds().stream()
                 .map(DynmapWorld::getName)
                 .filter(name -> name.startsWith(arg))
@@ -1430,6 +1431,51 @@ public class DynmapCore implements DynmapCommonAPI {
                                                              .collect(Collectors.toList())));
 
         return suggestions;
+    }
+
+    /**
+     * Returns tab completion suggestions for field:value args based on the provided arguments
+     * If the last provided argument contains a ":", values for the field will be suggested if present
+     * Otherwise fields will be suggested if they do not already exist with a value in the provided arguments
+     *
+     * @param args - Array of already provided command arguments
+     * @param fields - Map of possible field names and suppliers for values
+     * @return List of tab completion suggestions
+     */
+    public List<String> getFieldValueSuggestions(String[] args, Map<String, Supplier<String[]>> fields) {
+        if (args.length == 0 || fields == null || fields.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> suggestions = new ArrayList<>(fields.keySet());
+        String[] lastArgument = args[args.length - 1].split(":", 2);
+
+        //If last argument is an incomplete field value, suggest matching values for that field.
+        if (lastArgument.length == 2) {
+            if(fields.containsKey(lastArgument[0])) {
+                return Arrays.stream(fields.get(lastArgument[0]).get())
+                        .filter(value -> value.startsWith(lastArgument[1]))
+                        .map(value -> lastArgument[0] + ":" + value)
+                        .collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+        //Remove fields with values in previous args from suggestions
+        for (String arg : args) {
+            String[] value = arg.split(":");
+
+            if (suggestions.contains(value[0]) && value.length == 2) {
+                suggestions.remove(value[0]);
+            }
+        }
+
+        //Suggest remaining fields
+        return suggestions.stream().
+                filter(field -> field.startsWith(args[args.length - 1]))
+                .map(field -> field + ":")
+                .collect(Collectors.toList());
     }
 
     public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
@@ -1825,6 +1871,10 @@ public class DynmapCore implements DynmapCommonAPI {
 
         if (args.length == 1) {
             return getSubcommandSuggestions(sender, cmd, args[0]);
+        }
+
+        if (cmd.equalsIgnoreCase("dmap")) {
+            return dmapcmds.getTabCompletions(sender, args, this);
         }
 
         if (!cmd.equalsIgnoreCase("dynmap")) {
