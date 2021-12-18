@@ -27,9 +27,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -1370,6 +1372,66 @@ public class DynmapCore implements DynmapCommonAPI {
         return suggestions;
     }
 
+    /**
+     * Returns tab completion suggestions for world names
+     *
+     * @param arg - Partial world name to filter by
+     * @return List of tab completion suggestions
+     */
+    List<String> getWorldSuggestions(String arg) {
+        return mapManager.getWorlds().stream()
+                .map(DynmapWorld::getName)
+                .filter(name -> name.startsWith(arg))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns tab completion suggestions for map names of a specific world
+     *
+     * @param worldName      - Name of the world
+     * @param mapArg         - Partial map name to filter by
+     * @param colonSeparated - Whether to return suggestions in world:map format
+     * @return List of tab completion suggestions
+     */
+    List<String> getMapSuggestions(String worldName, String mapArg, boolean colonSeparated) {
+        DynmapWorld world = mapManager.getWorld(worldName);
+
+        if (world != null) {
+            return world.maps.stream()
+                    .filter(map -> map.getName().startsWith(mapArg))
+                    .map(map -> colonSeparated ? worldName + ":" + map.getName() : map.getName())
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * Returns tab completion suggestions for map names without a world name, in world:map format
+     *
+     * @param arg - Partial world:map name to filter by
+     * @return List of tab completion suggestions
+     */
+    List<String> getMapSuggestions(String arg) {
+        int colon = arg.indexOf(":");
+        final String worldName = (colon >= 0) ? arg.substring(0, colon) : arg;
+        String mapArg = (colon >= 0) ? arg.substring(colon + 1) : null;
+
+        if (mapArg != null) {
+            return getMapSuggestions(worldName, mapArg, true);
+        }
+
+        List<String> suggestions = new ArrayList<>();
+
+        mapManager.getWorlds().stream()
+                .filter(world -> world.getName().startsWith(worldName))
+                .forEach(world -> suggestions.addAll(world.maps.stream()
+                                                             .map(map -> world.getName() + ":" + map.getName())
+                                                             .collect(Collectors.toList())));
+
+        return suggestions;
+    }
+
     public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
         if (mapManager == null) { // Initialization faulure
             sender.sendMessage("Dynmap failed to initialize properly: commands not available");
@@ -1757,12 +1819,124 @@ public class DynmapCore implements DynmapCommonAPI {
      * @return List of tab completion suggestions
      */
     public List<String> getTabCompletions(DynmapCommandSender sender, String cmd, String[] args) {
-        if (mapManager == null) {
+        if (mapManager == null || args.length == 0) {
             return Collections.emptyList();
         }
 
-        if (args.length <= 1) {
+        if (args.length == 1) {
             return getSubcommandSuggestions(sender, cmd, args[0]);
+        }
+
+        if (!cmd.equalsIgnoreCase("dynmap")) {
+            return Collections.emptyList();
+        }
+
+        /* Re-parse args - handle double quotes */
+        args = parseArgs(args, sender);
+
+        if (args == null || args.length <= 1) {
+            return Collections.emptyList();
+        }
+
+        String subcommand = args[0];
+        DynmapPlayer player = null;
+        if (sender instanceof DynmapPlayer) {
+            player = (DynmapPlayer) sender;
+        }
+
+        if (subcommand.equals("radiusrender") && checkPlayerPermission(sender, "radiusrender")) {
+            if(args.length == 2) { // /dynmap radiusrender *<world>* <x> <z> <radius> <map>
+                return getWorldSuggestions(args[1]);
+            } if(args.length == 3 && player != null) { // /dynmap radiusrender <radius> *<mapname>*
+                Scanner sc = new Scanner(args[1]);
+
+                if(sc.hasNextInt(10)) { //Only show map suggestions if a number was entered before
+                    return getMapSuggestions(player.getLocation().world, args[2], false);
+                }
+            } else if(args.length == 6) { // /dynmap radiusrender <world> <x> <z> <radius> *<map>*
+                return getMapSuggestions(args[1], args[5], false);
+            }
+        } else if (subcommand.equals("updaterender") && checkPlayerPermission(sender, "updaterender")) {
+            if(args.length == 2) { // /dynmap updaterender *<world>* <x> <z> <map>/*<map>*
+                List<String> suggestions = getWorldSuggestions(args[1]);
+
+                if(player != null) {
+                    suggestions.addAll(getMapSuggestions(player.getLocation().world, args[1], false));
+                }
+
+                return suggestions;
+            } else if(args.length == 5) { // /dynmap updaterender <world> <x> <z> *<map>*
+                return getMapSuggestions(args[1], args[4], false);
+            }
+        } else if (subcommand.equals("hide") && checkPlayerPermission(sender, "hide.others")) {
+            if(args.length == 2) { // /dynmap hide *<player>*
+                final String arg = args[1];
+                return playerList.getVisiblePlayers().stream()
+                        .map(DynmapPlayer::getName)
+                        .filter(name -> name.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if (subcommand.equals("show") && checkPlayerPermission(sender, "show.others")) {
+            if(args.length == 2) { // /dynmap show *<player>*
+                final String arg = args[1];
+                return playerList.getHiddenPlayers().stream()
+                        .map(DynmapPlayer::getName)
+                        .filter(name -> name.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if (subcommand.equals("fullrender") && checkPlayerPermission(sender, "fullrender")) {
+            List<String> suggestions = getWorldSuggestions(args[args.length - 1]); //World suggestions
+            suggestions.addAll(getMapSuggestions(args[args.length - 1])); //world:map suggestions
+            suggestions.removeAll(Arrays.asList(args)); //Remove suggestions present in other arguments
+
+            //Add resume if previous argument wasn't resume
+            if ("resume".startsWith(args[args.length - 1])
+                    && (args.length == 2 || !args[args.length - 2].equals("resume"))) {
+                suggestions.add("resume");
+            }
+
+            return suggestions;
+        } else if ((subcommand.equals("cancelrender") && checkPlayerPermission(sender, "cancelrender"))
+                || (subcommand.equals("purgequeue") && checkPlayerPermission(sender, "purgequeue"))) {
+            List<String> suggestions = getWorldSuggestions(args[args.length - 1]);
+            suggestions.removeAll(Arrays.asList(args)); //Remove worlds present in other arguments
+
+            return suggestions;
+        } else if (subcommand.equals("purgemap") && checkPlayerPermission(sender, "purgemap")) {
+            if (args.length == 2) { // /dynmap purgemap *<world>* <map>
+                return getWorldSuggestions(args[1]);
+            } else if (args.length == 3) { // /dynmap purgemap <world> *<map>*
+                return getMapSuggestions(args[1], args[2], false);
+            }
+        } else if ((subcommand.equals("purgeworld") && checkPlayerPermission(sender, "purgeworld"))
+                || (subcommand.equals("stats") && checkPlayerPermission(sender, "stats"))
+                || (subcommand.equals("resetstats") && checkPlayerPermission(sender, "resetstats"))) {
+            if (args.length == 2) {
+                return getWorldSuggestions(args[1]);
+            }
+        } else if (subcommand.equals("pause") && checkPlayerPermission(sender, "pause")) {
+            List<String> suggestions = Arrays.asList("full", "update", "all", "none");
+
+            if (args.length == 2) {
+                final String arg = args[1];
+                return suggestions.stream().filter(suggestion -> suggestion.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if((subcommand.equals("ips-for-id") && checkPlayerPermission(sender, "ips-for-id"))
+                || (subcommand.equals("add-id-for-ip") && checkPlayerPermission(sender, "add-id-for-ip"))
+                || (subcommand.equals("del-id-for-ip") && checkPlayerPermission(sender, "del-id-for-ip"))
+                || (subcommand.equals("webregister") && checkPlayerPermission(sender, "webregister.other"))) {
+            if(args.length == 2) {
+                final String arg = args[1];
+                return Arrays.stream(playerList.getOnlinePlayers())
+                        .map(DynmapPlayer::getName)
+                        .filter(name -> name.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if(subcommand.equals("help")) {
+            if(args.length == 2) {
+                return getSubcommandSuggestions(sender, "dynmap", args[1]);
+            }
         }
 
         return Collections.emptyList();
