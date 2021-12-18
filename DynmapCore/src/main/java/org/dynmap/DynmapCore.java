@@ -1248,7 +1248,7 @@ public class DynmapCore implements DynmapCommonAPI {
         new CommandInfo("dmarker", "movehere", "id:<id>", "Move marker with ID <id> to current location."),
         new CommandInfo("dmarker", "update", "<label> icon:<icon> newlabel:<newlabel>", "Update marker with ID <id> with new label <newlabel> and new icon <icon>."),
         new CommandInfo("dmarker", "delete", "<label>", "Delete marker with label of <label>."),
-        new CommandInfo("dmarker", "delete ", "id:<id>", "Delete marker with ID of <id>."),
+        new CommandInfo("dmarker", "delete", "id:<id>", "Delete marker with ID of <id>."),
         new CommandInfo("dmarker", "list", "List details of all markers."),
         new CommandInfo("dmarker", "icons", "List details of all icons."),
         new CommandInfo("dmarker", "addset", "<label>", "Add marker set with label <label>."),
@@ -1348,7 +1348,28 @@ public class DynmapCore implements DynmapCommonAPI {
         }
         sender.sendMessage(subcmdlist);
     }
-    
+
+    /**
+     * Returns tab completion suggestions for subcommands
+     *
+     * @param sender - The command sender requesting the tab completion suggestions
+     * @param cmd    - The top level command to suggest for
+     * @param arg    - Optional partial subcommand name to filter by
+     * @return List of tab completion suggestions
+     */
+    List<String> getSubcommandSuggestions(DynmapCommandSender sender, String cmd, String arg) {
+        List<String> suggestions = new ArrayList<>();
+
+        for (CommandInfo ci : commandinfo) {
+            //TODO: Permission checks
+            if (ci.matches(cmd) && ci.subcmd.startsWith(arg) && !suggestions.contains(ci.subcmd)) {
+                suggestions.add(ci.subcmd);
+            }
+        }
+
+        return suggestions;
+    }
+
     public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
         if (mapManager == null) { // Initialization faulure
             sender.sendMessage("Dynmap failed to initialize properly: commands not available");
@@ -1726,6 +1747,27 @@ public class DynmapCore implements DynmapCommonAPI {
 
         return true;
     }
+
+    /**
+     * Returns a list of tab completion suggestions for the given sender, command and command arguments.
+     *
+     * @param sender - The sender of the tab completion, used for permission checks
+     * @param cmd - The top level command being tab completed
+     * @param args - Array of extra command arguments
+     * @return List of tab completion suggestions
+     */
+    public List<String> getTabCompletions(DynmapCommandSender sender, String cmd, String[] args) {
+        if (mapManager == null) {
+            return Collections.emptyList();
+        }
+
+        if (args.length <= 1) {
+            return getSubcommandSuggestions(sender, cmd, args[0]);
+        }
+
+        return Collections.emptyList();
+    }
+
     public boolean checkPlayerPermission(DynmapCommandSender sender, String permission) {
         if (!(sender instanceof DynmapPlayer) || sender.isOp()) {
             return true;

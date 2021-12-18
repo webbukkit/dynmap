@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -1103,6 +1104,21 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         	return false;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        DynmapCommandSender dsender;
+        if(sender instanceof Player) {
+            dsender = new BukkitPlayer((Player)sender);
+        }
+        else {
+            dsender = new BukkitCommandSender(sender);
+        }
+
+        if (core != null)
+        	return core.getTabCompletions(dsender, cmd.getName(), args);
+        else
+        	return Collections.emptyList();
+    }
     
     @Override
     public final MarkerAPI getMarkerAPI() {
