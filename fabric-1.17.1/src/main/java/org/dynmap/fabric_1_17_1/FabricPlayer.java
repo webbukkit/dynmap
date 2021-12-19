@@ -16,13 +16,13 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
-import org.apache.commons.codec.binary.Base64;
 import org.dynmap.DynmapLocation;
 import org.dynmap.common.DynmapPlayer;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.UUID;
 
 /**
@@ -49,7 +49,7 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
                 if (textureProperty != null) {
                     DynmapPlugin.TexturesPayload result = null;
                     try {
-                        String json = new String(Base64.decodeBase64(textureProperty.getValue()), StandardCharsets.UTF_8);
+                        String json = new String(Base64.getDecoder().decode(textureProperty.getValue()), StandardCharsets.UTF_8);
                         result = GSON.fromJson(json, DynmapPlugin.TexturesPayload.class);
                     } catch (JsonParseException e) {
                     }
