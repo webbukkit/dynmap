@@ -425,24 +425,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 
 		@Override
 		public final DynmapBlockState getBlockTypeAt(BlockStep s) {
-			if (s == BlockStep.Y_MINUS) {
-				if (y > ymin) {
-					return snap.getBlockType(bx, y - 1, bz);
-				}
-			} else if (s == BlockStep.Y_PLUS) {
-				if (y < (worldheight - 1)) {
-					return snap.getBlockType(bx, y + 1, bz);
-				}
-			} else {
-				BlockStep ls = laststep;
-				stepPosition(s);
-				DynmapBlockState tid = snap.getBlockType(bx, y, bz);
-				unstepPosition();
-				laststep = ls;
-				return tid;
-			}
-
-			return DynmapBlockState.AIR;
+			return getBlockTypeAt(s.xoff, s.yoff, s.zoff);
 		}
 
 		@Override
@@ -483,14 +466,14 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 
 		@Override
 		public final DynmapBlockState getBlockTypeAt(int xoff, int yoff, int zoff) {
-			int xx = this.x + xoff;
-			int yy = this.y + yoff;
-			int zz = this.z + zoff;
-			int idx = ((xx >> 4) - x_min) + (((zz >> 4) - z_min) * x_dim);
-			try {
-				return snaparray[idx].getBlockType(xx & 0xF, yy, zz & 0xF);
-			} catch (Exception x) {
+			int nx = x + xoff;
+			int ny = y + yoff;
+			int nz = z + zoff;
+			int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
+			if ((nchunkindex >= snapcnt) || (nchunkindex < 0)) {
 				return DynmapBlockState.AIR;
+			} else {
+				return snaparray[nchunkindex].getBlockType(nx & 0xF, ny, nz & 0xF);
 			}
 		}
 
