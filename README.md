@@ -11,7 +11,7 @@
 # How to build
 Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.18.x+ requirements, the developer's
 default JDK must be a JDK 17 (or later) versions - older versions will still be compiled
-to run on the default JDK for those platforms (JDK 8, or JDK 16 for 1.17.x, and common libraries are built JDK 8.
+to run on the default JDK for those platforms (JDK 8, or JDK 16 for 1.17.x), and common libraries are built JDK 8.
 
 To build, run:
 
@@ -75,7 +75,7 @@ explaining it to users, and fixing current and future problems - if we don't thi
    the code needs to be 'prettied up', it'll be done by the Dynmap team.
 - Do not make changes to core code (anything in DynmapCore or DynmapCoreAPI) unless you're ready to build and test it on all supported platforms.  Code that
 breaks building of ANY supported platform will be rejected.
-- Likewise, any Spigot related changes are expected to function correctly on all supported Spigot and PaperMC versions (currently 1.10.2 through 1.16.1).  
+- Likewise, any Spigot related changes are expected to function correctly on all supported Spigot and PaperMC versions (currently 1.10.2 through 1.18.1).  
 - Do not include any code that involves platform specific native libraries or command line behaviors.  Dynmap supports 32-bit and 64-bit, Windows, lots of
 Linux versions (both x86 and ARM), MacOS, being used in Docker environments, and more - this is all about staying as 'pure Java' as the Minecraft server itself
 is.  If your PR includes platform specific dependencies that are not coded to handle working on all the above platforms properly, the PR will be rejected.
