@@ -976,7 +976,7 @@ public class IsoHDPerspective implements HDPerspective {
         if(mscale > MAX_SCALE) mscale = MAX_SCALE;
         basemodscale = mscale;
         /* Get max and min height */
-        maxheight = configuration.getInteger("maximumheight", -1);
+        maxheight = configuration.getInteger("maximumheight", Integer.MIN_VALUE);
         
         minheight = configuration.getInteger("minimumheight", Integer.MIN_VALUE);
         /* Generate transform matrix for world-to-tile coordinate mapping */
@@ -1234,7 +1234,7 @@ public class IsoHDPerspective implements HDPerspective {
         boolean shaderdone[] = new boolean[numshaders];
         boolean rendered[] = new boolean[numshaders];
         double height = maxheight;
-        if(height < 0) {    /* Not set - assume world height - 1 */
+        if (height == Integer.MIN_VALUE) {    /* Not set - assume world height - 1 */
             if (isnether)
                 height = 127;
             else
