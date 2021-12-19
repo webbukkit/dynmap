@@ -33,7 +33,6 @@ project.archivesBaseName = "${project.archivesBaseName}-forge-1.18"
 dependencies {
     implementation project(path: ":DynmapCore", configuration: "shadow")
     implementation project(path: ':DynmapCoreAPI')
-    implementation "commons-codec:commons-codec:1.15"
     
     minecraft 'net.minecraftforge:forge:1.18-38.0.12'
 }
