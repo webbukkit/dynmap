@@ -553,15 +553,6 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
             return (((chunkindex * (worldheight - ymin)) + (y - ymin)) << 8) | (bx << 4) | bz;
         }
         @Override
-        public final boolean isEmptySection() {
-        	boolean[] flags = isSectionNotEmpty[chunkindex];
-        	if (flags == null) {
-                initSectionData(chunkindex);
-                flags = isSectionNotEmpty[chunkindex];
-        	}
-        	return !flags[(y >> 4) + sectoff];
-        }
-        @Override
         public RenderPatchFactory getPatchFactory() {
             return HDBlockModels.getPatchDefinitionFactory();
         }
@@ -604,6 +595,14 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
                 return 0;
             }
         }
+		@Override
+		public int getDataVersion() {
+			return 0;
+		}
+		@Override
+		public String getChunkStatus() {
+			return null;
+		}
      }
 
     // Special iterator for END : forces skylight to 15

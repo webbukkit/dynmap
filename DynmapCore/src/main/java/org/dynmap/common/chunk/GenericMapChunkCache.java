@@ -444,16 +444,6 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 
 		@Override
-		public final boolean isEmptySection() {
-	    	boolean[] flags = isSectionNotEmpty[chunkindex];
-	        if(flags == null) {
-				initSectionData(chunkindex);
-	            flags = isSectionNotEmpty[chunkindex];
-	        }
-	        return !flags[(y >> 4) + sectoff];
-		}
-
-		@Override
 		public final RenderPatchFactory getPatchFactory() {
 			return HDBlockModels.getPatchDefinitionFactory();
 		}
@@ -497,6 +487,16 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				blk = snap.getBlockType(bx, y, bz);
 			}
 			return blk;
+		}
+
+		@Override
+		public int getDataVersion() {
+			return (snap != null) ? snap.dataVersion : 0;
+		}
+
+		@Override
+		public String getChunkStatus() {
+			return (snap != null) ? snap.chunkStatus : null;
 		}
 	}
 
@@ -887,13 +887,14 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 
 	private static final String litStates[] = { "light", "spawn", "heightmaps", "full" };
 	
-	public GenericChunk parseChunkFromNBT(GenericNBTCompound nbt) {
-		if ((nbt != null) && nbt.contains("Level")) {
+	public GenericChunk parseChunkFromNBT(GenericNBTCompound orignbt) {
+		GenericNBTCompound nbt = orignbt;
+		if ((nbt != null) && nbt.contains("Level", GenericNBTCompound.TAG_COMPOUND)) {
 			nbt = nbt.getCompound("Level");
 		}
 		if (nbt == null) return null;
 		String status = nbt.getString("Status");
-		int version = nbt.getInt("DataVersion");
+		int version = orignbt.getInt("DataVersion");
 
 		boolean hasLitState = false;
 		if (status != null) {
@@ -907,8 +908,9 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
 		int x = nbt.getInt("xPos");
 		int z = nbt.getInt("zPos");
-
-		bld.coords(x, z);
+		// Set chunk info
+		bld.coords(x, z).chunkStatus(status).dataVersion(version);
+		
         if (nbt.contains("InhabitedTime")) {
         	bld.inhabitedTicks(nbt.getLong("InhabitedTime"));
         }

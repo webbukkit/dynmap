@@ -683,19 +683,6 @@ public class ForgeMapChunkCache extends MapChunkCache
             return (((chunkindex * worldheight) + y) << 8) | (bx << 4) | bz;
         }
         @Override
-        public final boolean isEmptySection()
-        {
-            try
-            {
-                return !isSectionNotEmpty[chunkindex][y >> 4];
-            }
-            catch (Exception x)
-            {
-                initSectionData(chunkindex);
-                return !isSectionNotEmpty[chunkindex][y >> 4];
-            }
-        }
-        @Override
         public RenderPatchFactory getPatchFactory() {
             return HDBlockModels.getPatchDefinitionFactory();
         }

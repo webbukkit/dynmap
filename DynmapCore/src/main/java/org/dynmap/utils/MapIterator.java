@@ -103,13 +103,16 @@ public interface MapIterator extends MapDataContext {
      */
     long getBlockKey();
     /**
-     * Test if current section (16 x 16 x 16) is empty (all air)
-     * @return true if empty
-     */
-    boolean isEmptySection();
-    /**
      * Get inhabited ticks for current position
      * @return ticks inhabited
      */
     long getInhabitedTicks();
+    /**
+     * Get chunk dataVersion 
+     */
+    default int getDataVersion() { return 0; }
+    /**
+     * Get chunk status
+     */
+    default String getChunkStatus() { return null; }
 }

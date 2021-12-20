@@ -559,16 +559,6 @@ public class FabricMapChunkCache extends MapChunkCache {
         }
 
         @Override
-        public final boolean isEmptySection() {
-            try {
-                return !isSectionNotEmpty[chunkindex][y >> 4];
-            } catch (Exception x) {
-                initSectionData(chunkindex);
-                return !isSectionNotEmpty[chunkindex][y >> 4];
-            }
-        }
-
-        @Override
         public RenderPatchFactory getPatchFactory() {
             return HDBlockModels.getPatchDefinitionFactory();
         }
