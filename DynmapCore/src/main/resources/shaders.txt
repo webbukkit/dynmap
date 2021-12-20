@@ -195,7 +195,7 @@ shaders:
     color3000: "#FF0000"
 
   # Chunk version shader (shades by version of data format)
-  - class: org.dynmap.hdmap.VersionHDShader
+  - class: org.dynmap.hdmap.ChunkVersionHDShader
     name: chunkversion
   # Chunk status shader (shades by chunk state)
   - class: org.dynmap.hdmap.ChunkStatusHDShader

@@ -22,7 +22,7 @@ import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
 
 // Shader for color coding by chunk data version
-public class VersionHDShader implements HDShader {
+public class ChunkVersionHDShader implements HDShader {
     private final String name;
     
     private static class DataVersionMap {
@@ -64,7 +64,7 @@ public class VersionHDShader implements HDShader {
     
     private ArrayList<Integer> unknown_vers = new ArrayList<Integer>();
     	
-    public VersionHDShader(DynmapCore core, ConfigurationNode configuration) {
+    public ChunkVersionHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
     }
     
@@ -131,7 +131,7 @@ public class VersionHDShader implements HDShader {
          * Get our shader
          */
         public HDShader getShader() {
-            return VersionHDShader.this;
+            return ChunkVersionHDShader.this;
         }
 
         /**
