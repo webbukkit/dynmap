@@ -1881,6 +1881,10 @@ public class DynmapCore implements DynmapCommonAPI {
             return markerapi.getTabCompletions(sender, args, this);
         }
 
+        if (cmd.equalsIgnoreCase("dynmapexp")) {
+            return dynmapexpcmds.getTabCompletions(sender, args, this);
+        }
+
         if (!cmd.equalsIgnoreCase("dynmap")) {
             return Collections.emptyList();
         }
