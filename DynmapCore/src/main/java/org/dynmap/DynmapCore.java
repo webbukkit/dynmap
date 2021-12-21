@@ -1117,6 +1117,11 @@ public class DynmapCore implements DynmapCommonAPI {
 
     /* Parse argument strings : handle quoted strings */
     public static String[] parseArgs(String[] args, DynmapCommandSender snd) {
+        return parseArgs(args, snd, false);
+    }
+
+    /* Parse argument strings : handle quoted strings */
+    public static String[] parseArgs(String[] args, DynmapCommandSender snd, boolean allowUnclosedQuotes) {
         ArrayList<String> rslt = new ArrayList<String>();
         /* Build command line, so we can parse our way - make sure there is trailing space */
         String cmdline = "";
@@ -1146,9 +1151,15 @@ public class DynmapCore implements DynmapCommonAPI {
                 sb.append(c);
             }
         }
-        if(inquote) {   /* If still in quote, syntax error */
-            snd.sendMessage("Error: unclosed doublequote");
-            return null;
+        if(inquote) {  // If still in quote
+            if(allowUnclosedQuotes) {
+                if(sb.length() > 1) { // Add remaining input without trailing space
+                    rslt.add(sb.substring(0, sb.length() - 1));
+                }
+            } else { // Syntax error
+                snd.sendMessage("Error: unclosed doublequote");
+                return null;
+            }
         }
         return rslt.toArray(new String[rslt.size()]);
     }
@@ -1398,9 +1409,20 @@ public class DynmapCore implements DynmapCommonAPI {
         DynmapWorld world = mapManager.getWorld(worldName);
 
         if (world != null) {
+            //Don't suggest anything if the argument contains a space as the client doesn't handle this well
+            if(mapArg.contains(" ")) {
+                return Collections.emptyList();
+            }
+
             return world.maps.stream()
                     .filter(map -> map.getName().startsWith(mapArg))
-                    .map(map -> colonSeparated ? worldName + ":" + map.getName() : map.getName())
+                    .map(map -> {
+                        if (map.getName().contains(" ")) { //Quote if map name contains a space
+                            return "\"" + (colonSeparated ? worldName + ":" + map.getName() : map.getName()) + "\"";
+                        } else {
+                            return colonSeparated ? worldName + ":" + map.getName() : map.getName();
+                        }
+                    })
                     .collect(Collectors.toList());
         }
 
@@ -1418,6 +1440,11 @@ public class DynmapCore implements DynmapCommonAPI {
         final String worldName = (colon >= 0) ? arg.substring(0, colon) : arg;
         String mapArg = (colon >= 0) ? arg.substring(colon + 1) : null;
 
+        //Don't suggest anything if the argument contains a space as the client doesn't handle this well
+        if(arg.contains(" ")) {
+            return Collections.emptyList();
+        }
+
         if (mapArg != null) {
             return getMapSuggestions(worldName, mapArg, true);
         }
@@ -1426,9 +1453,18 @@ public class DynmapCore implements DynmapCommonAPI {
 
         mapManager.getWorlds().stream()
                 .filter(world -> world.getName().startsWith(worldName))
-                .forEach(world -> suggestions.addAll(world.maps.stream()
-                                                             .map(map -> world.getName() + ":" + map.getName())
-                                                             .collect(Collectors.toList())));
+                .forEach(world -> {
+                    List<String> maps = world.maps.stream()
+                            .map(map -> {
+                                if (map.getName().contains(" ")) { //Quote if map name contains a space
+                                    return "\"" + world.getName() + ":" + map.getName() + "\"";
+                                } else {
+                                    return world.getName() + ":" + map.getName();
+                                }
+                            })
+                            .collect(Collectors.toList());
+                    suggestions.addAll(maps);
+                });
 
         return suggestions;
     }
@@ -1452,10 +1488,16 @@ public class DynmapCore implements DynmapCommonAPI {
 
         //If last argument is an incomplete field value, suggest matching values for that field.
         if (lastArgument.length == 2) {
-            if(fields.containsKey(lastArgument[0])) {
+            if (fields.containsKey(lastArgument[0])) {
+                //Don't suggest anything if the value contains a space as the client doesn't handle this well
+                if(lastArgument[1].contains(" ")) {
+                    return Collections.emptyList();
+                }
+
                 return Arrays.stream(fields.get(lastArgument[0]).get())
                         .filter(value -> value.startsWith(lastArgument[1]))
-                        .map(value -> lastArgument[0] + ":" + value)
+                        //Format suggestions as field:value, quoting the value if it contains a space
+                        .map(value -> lastArgument[0] + ":" + (value.contains(" ") ? "\"" + value + "\"" : value))
                         .collect(Collectors.toList());
             } else {
                 return Collections.emptyList();
@@ -1890,7 +1932,7 @@ public class DynmapCore implements DynmapCommonAPI {
         }
 
         /* Re-parse args - handle double quotes */
-        args = parseArgs(args, sender);
+        args = parseArgs(args, sender, true);
 
         if (args == null || args.length <= 1) {
             return Collections.emptyList();
@@ -1945,7 +1987,11 @@ public class DynmapCore implements DynmapCommonAPI {
         } else if (subcommand.equals("fullrender") && checkPlayerPermission(sender, "fullrender")) {
             List<String> suggestions = getWorldSuggestions(args[args.length - 1]); //World suggestions
             suggestions.addAll(getMapSuggestions(args[args.length - 1])); //world:map suggestions
-            suggestions.removeAll(Arrays.asList(args)); //Remove suggestions present in other arguments
+
+            //Remove suggestions present in other arguments
+            for (String arg : args) {
+                suggestions.remove(arg.contains(" ") ? "\"" + arg + "\"" : arg);
+            }
 
             //Add resume if previous argument wasn't resume
             if ("resume".startsWith(args[args.length - 1])

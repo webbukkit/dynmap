@@ -99,7 +99,7 @@ public class DynmapExpCommands {
 
     public List<String> getTabCompletions(DynmapCommandSender sender, String[] args, DynmapCore core) {
         /* Re-parse args - handle doublequotes */
-		args = DynmapCore.parseArgs(args, sender);
+		args = DynmapCore.parseArgs(args, sender, true);
 
 		if (args == null || args.length <= 1) {
 			return Collections.emptyList();
