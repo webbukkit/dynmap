@@ -902,7 +902,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				if (status.equals(litStates[i])) { hasLitState = true; }
 			}
 		}
-		boolean hasLight = hasLitState;	// Assume good light in a lit state
+		boolean hasLight = false; // pessimistic: only has light if we see it, due to WB and other flawed chunk generation hasLitState;	// Assume good light in a lit state
 		
 		// Start generic chunk builder
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
