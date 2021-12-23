@@ -315,7 +315,7 @@ public class DynmapPlugin {
 
     boolean hasPerm(PlayerEntity psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if ((psender != null) && ph.hasPermission(psender.getName().getString(), permission)) {
+        if ((ph != null) && (psender != null) && ph.hasPermission(psender.getName().getString(), permission)) {
             return true;
         }
         return permissions.has(psender, permission);
@@ -323,7 +323,7 @@ public class DynmapPlugin {
 
     boolean hasPermNode(PlayerEntity psender, String permission) {
         PermissionsHandler ph = PermissionsHandler.getHandler();
-        if ((psender != null) && ph.hasPermissionNode(psender.getName().getString(), permission)) {
+        if ((ph != null) && (psender != null) && ph.hasPermissionNode(psender.getName().getString(), permission)) {
             return true;
         }
         return permissions.hasPermissionNode(psender, permission);
