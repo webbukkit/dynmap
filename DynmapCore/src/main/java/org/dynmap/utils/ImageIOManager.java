@@ -2,6 +2,7 @@ package org.dynmap.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.image.BufferedImage;
 import java.awt.image.DirectColorModel;
@@ -59,8 +60,17 @@ public class ImageIOManager {
         fos.close();
         // Run encoder to new new temp file
         File tmpfile2 = File.createTempFile("pngToWebp", "webp");
-        String args[] = { core.getCWEBPPath(), fmt.getID().endsWith("-l")?"-lossless":"", "-q", Integer.toString((int)fmt.getQuality()), tmpfile.getAbsolutePath(), "-o", tmpfile2.getAbsolutePath() };
-        Process pr = Runtime.getRuntime().exec(args);
+        ArrayList<String> args = new ArrayList<String>();
+        args.add(core.getCWEBPPath());
+        if (fmt.getID().endsWith("-l")) {
+        	args.add("-lossless");
+        }
+        args.add("-q");
+        args.add(Integer.toString((int)fmt.getQuality()));
+        args.add(tmpfile.getAbsolutePath());
+        args.add("-o");
+        args.add(tmpfile2.getAbsolutePath());
+        Process pr = Runtime.getRuntime().exec(args.toArray(new String[0]));
         try {
         	pr.waitFor();
         } catch (InterruptedException ix) {
