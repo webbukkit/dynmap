@@ -141,6 +141,7 @@ public class DynmapCore implements DynmapCommonAPI {
     
     private boolean loginRequired;
     
+    private String hackAttemptSub = "(IaM5uchA1337Haxr-Ban Me!)";
     // WEBP support
     private String cwebpPath;
     private String dwebpPath;
@@ -599,11 +600,13 @@ public class DynmapCore implements DynmapCommonAPI {
         updateConfigHashcode(); /* Initialize/update config hashcode */
         
         loginRequired = configuration.getBoolean("login-required", false);
+        hackAttemptSub = configuration.getString("hackAttemptBlurb", "(IaM5uchA1337Haxr-Ban Me!)");
             
         // If not disabled, load and initialize the internal web server
         if (!isInternalWebServerDisabled) {
         	loadWebserver();
         }
+        
 
         enabledTriggers.clear();
         List<String> triggers = configuration.getStrings("render-triggers", new ArrayList<String>());
@@ -2297,13 +2300,60 @@ public class DynmapCore implements DynmapCommonAPI {
 
     public String getDefImageFormat() { return def_image_format; }
     
+    public String scanAndReplaceLog4JMacro(String msg) {
+    	int nestcnt = 0;
+    	int off = 0;
+    	int firsthit = -1;
+    	boolean done = false;
+    	String orig = msg;
+    	while (!done) {
+    		int idx = msg.indexOf("${", off);	// Look for next ${
+    		if (idx >= 0) {	// Hit
+    			if (nestcnt == 0) firsthit = idx;	// Record start of hit
+    			nestcnt++;
+				off = idx + 2;
+    		}
+    		else {
+    			idx = msg.indexOf("}", off);	// Next }
+    			if (idx >= 0) {
+    				if (nestcnt > 0) {
+    					nestcnt--;
+    					if ((nestcnt == 0) && (firsthit >= 0)) {	// If back to zero, time to strip it
+    						String newmsg = msg.substring(0, firsthit) + hackAttemptSub + msg.substring(idx+1);
+    						msg = newmsg;	// Switch to new version, and restart
+    						off = 0;
+    						firsthit = -1;	// And restart scan
+    					}
+    				}
+    				off = idx + 1;
+    			}
+    			else {	// At end without a close
+    				if (firsthit >= 0) {	// Open strip?
+						String newmsg = msg.substring(0, firsthit) + hackAttemptSub;	// Replace rest
+						msg = newmsg;	// Switch to new version, and restart    					
+    				}
+    				done = true;
+    			}
+    		}
+    	}
+    	return msg;
+    }
     public void webChat(final String name, final String message) {
         if(mapManager == null)
             return;
+        // Check for folks trying to exploit Log4J
+        final String cleanname = scanAndReplaceLog4JMacro(name);
+        final String cleanmsg = scanAndReplaceLog4JMacro(message);
+        if (!cleanname.equals(name)) {
+        	Log.severe("Possible hack attempt blocked: name contains Log4J macro - " + name.replaceAll("\\$", "_"));
+        }
+        if (!cleanmsg.equals(message)) {
+        	Log.severe("Possible hack attempt blocked: message contains Log4J macro (from " + cleanname + ") - " + message.replaceAll("\\$", "_"));        	
+        }
         Runnable c = new Runnable() {
             @Override
             public void run() {
-                ChatEvent event = new ChatEvent("web", name, message);
+                ChatEvent event = new ChatEvent("web", cleanname, cleanmsg);
                 events.trigger("webchat", event);
             }
         };

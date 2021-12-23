@@ -49,6 +49,8 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     private MapStorage storage;
     private File baseStandaloneDir;
 
+    private String safeString(String s) { return s.replaceAll("\\$", "_"); }
+
     private static class FileToWrite {
         String filename;
         byte[] content;
@@ -420,17 +422,17 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 							isip = false;
 							if(checkuserban) {
 								if(core.getServer().isPlayerBanned(name)) {
-									Log.info("Ignore message from '" + ip + "' - banned player (" + name + ")");
+									Log.info("Ignore message from '" + ip + "' - banned player (" + safeString(name) + ")");
 									ok = false;
 								}
 							}
 							if(chat_perms && !core.getServer().checkPlayerPermission(name, "webchat")) {
-								Log.info("Rejected web chat from " + ip + ": not permitted (" + name + ")");
+								Log.info("Rejected web chat from " + ip + ": not permitted (" + safeString(name) + ")");
 								ok = false;
 							}
 						}
 						else if(requireplayerloginip) {
-							Log.info("Ignore message from '" + name + "' - no matching player login recorded");
+							Log.info("Ignore message from '" + safeString(name) + "' - no matching player login recorded");
 							ok = false;
 						}
 					}
