@@ -299,6 +299,6 @@ public class BiomeMap {
         return isDef;
     }
     public String toString() {
-    	return String.format("%s[%d]:t%f,h%f,w%x,g%x,f%x,rl=%s", id, index, tmp, rain, watercolormult, grassmult, foliagemult, resourcelocation);
+    	return String.format("%s(%s)", id, resourcelocation);
     }
 }

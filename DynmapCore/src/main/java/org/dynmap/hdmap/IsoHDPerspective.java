@@ -1263,6 +1263,7 @@ public class IsoHDPerspective implements HDPerspective {
                     ps.raytrace(cache, shaderstate, shaderdone);
                 } catch (Exception ex) {
                     Log.severe("Error while raytracing tile: perspective=" + this.name + ", coord=" + mapiter.getX() + "," + mapiter.getY() + "," + mapiter.getZ() + ", blockid=" + mapiter.getBlockType() + ", lighting=" + mapiter.getBlockSkyLight() + ":" + mapiter.getBlockEmittedLight() + ", biome=" + mapiter.getBiome().toString(), ex);
+                    ex.printStackTrace();
                 }
                 for(int i = 0; i < numshaders; i++) {
                     if(shaderdone[i] == false) {
