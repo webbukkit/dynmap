@@ -128,12 +128,8 @@ public class GenericChunk {
     					int idx = (z << 4) + x;
     					for (int y = 15; y >= 0; y--) {
     						DynmapBlockState bs = sections[i].blocks.getBlock(x, y, z);	// Get block
-    						if (bs.isWater() || bs.isWaterlogged()) {	// Drop light by 1 level for water
-    							sky[idx] = sky[idx] < 1 ? 0 : sky[idx] - 1;
-    						}
-    						else if (bs.isLeaves()) {	// Drop light by 2 levels for leaves
-    							sky[idx] = sky[idx] < 2 ? 0 : sky[idx] - 2;
-    						}
+    						int atten = bs.lightAttenuation;
+    						sky[idx] = (sky[idx] > atten) ? (sky[idx] - atten) : 0;
     						ssky[(y << 7) | (z << 3) | (x >> 1)] |= (sky[idx] << (4 * (x & 1)));
     					}
     				}
