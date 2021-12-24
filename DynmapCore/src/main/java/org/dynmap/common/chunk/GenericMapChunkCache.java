@@ -944,13 +944,6 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
         GenericChunkSection.Builder sbld = new GenericChunkSection.Builder();
         /* Get sections */
         GenericNBTList sect = nbt.contains("sections") ? nbt.getList("sections", 10) : nbt.getList("Sections", 10);
-        // Prescan sections to see if lit
-        for (int i = 0; i < sect.size(); i++) {
-            GenericNBTCompound sec = sect.getCompound(i);
-            if (sec.contains("SkyLight")) { // Only consider skylight for now, since that is what we generate if needed
-            	hasLight = true;
-            }
-        }
         // And process sections
         for (int i = 0; i < sect.size(); i++) {
             GenericNBTCompound sec = sect.getCompound(i);
@@ -1063,6 +1056,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
             }
             if (sec.contains("SkyLight")) {
             	sbld.skyLight(sec.getByteArray("SkyLight"));
+            	hasLight = true;
             }
 			// If section biome palette
 			if (sec.contains("biomes")) {
@@ -1096,8 +1090,8 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			bld.addSection(secnum, sbld.build());
 			sbld.reset();
         }
-        // If pre 1.17, assume unlit state means bad light
-		if ((version < 2724) && (!hasLitState)) {
+        // Assume skylight is only trustworthy in a lit state
+		if (!hasLitState) {
 			hasLight = false;
 		}
         // If no light, do simple generate
