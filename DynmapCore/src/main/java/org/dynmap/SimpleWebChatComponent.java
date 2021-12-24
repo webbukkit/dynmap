@@ -45,6 +45,7 @@ public class SimpleWebChatComponent extends Component {
                 @Override
                 public void chatEvent(DynmapPlayer p, String msg) {
                     if(core.disable_chat_to_web) return;
+                    msg = core.scanAndReplaceLog4JMacro(msg);
                     if(core.mapManager != null)
                         core.mapManager.pushUpdate(new Client.ChatMessage("player", "", p.getDisplayName(), msg, p.getName()));
                 }

@@ -52,7 +52,6 @@ public class SendMessageServlet extends HttpServlet {
     public DynmapCore core;
     public HashSet<String> proxyaddress = new HashSet<String>();
 
-    private String safeString(String s) { return s.replaceAll("\\$", "_"); }
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         byte[] bytes;
@@ -66,7 +65,7 @@ public class SendMessageServlet extends HttpServlet {
         }
         else if(chat_requires_login && (!userID.equals(LoginServlet.USERID_GUEST)) && chat_perms && 
                 (!core.checkPermission(userID, "webchat"))) {
-            Log.info("Rejected web chat by " + safeString(userID) + ": not permitted");
+            Log.info("Rejected web chat by " + userID + ": not permitted");
             error = "not-permitted";
         }
         else {
@@ -119,20 +118,20 @@ public class SendMessageServlet extends HttpServlet {
                         String id = ids.get(0);
                         if (check_user_ban) {
                             if (core.getServer().isPlayerBanned(id)) {
-                                Log.info("Ignore message from '" + safeString(message.name) + "' - banned player (" + id + ")");
+                                Log.info("Ignore message from '" + message.name + "' - banned player (" + id + ")");
                                 error = "not-allowed";
                                 ok = false;
                             }
                         }
                         if (chat_perms && !core.getServer().checkPlayerPermission(id, "webchat")) {
-                            Log.info("Rejected web chat from '" + safeString(message.name) + "': not permitted (" + id + ")");
+                            Log.info("Rejected web chat from '" + message.name + "': not permitted (" + id + ")");
                             error = "not-allowed";
                             ok = false;
                         }
                         message.name = id;
                         isip = false;
                     } else if (require_player_login_ip) {
-                        Log.info("Ignore message from '" + safeString(message.name) + "' - no matching player login recorded");
+                        Log.info("Ignore message from '" + message.name + "' - no matching player login recorded");
                         error = "not-allowed";
                         ok = false;
                     }

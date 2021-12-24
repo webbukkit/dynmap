@@ -459,3 +459,6 @@ verbose: false
 #  - class: org.dynmap.debug.LogDebugger
 # Debug: dump blocks missing render data
 dump-missing-blocks: false
+
+# Log4J defense: string substituted for attempts to use macros in web chat
+hackAttemptBlurb: "(IaM5uchA1337Haxr-Ban Me!)"

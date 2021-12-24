@@ -10,6 +10,9 @@ public class Log {
     private static String prefix = "";
     private static DynmapLogger dlog = null;
     public static boolean verbose = false;
+    
+    public static String safeString(String s) { return s.replaceAll("[\\${}]", "_"); }
+
     public static void setLogger(Logger logger, String pre) {
         log = logger;
         if((pre != null) && (pre.length() > 0))
@@ -24,6 +27,7 @@ public class Log {
         log.setParent(parent);
     }
     public static void info(String msg) {
+    	msg = safeString(msg);
         if (dlog != null) {
             dlog.info(msg);
         }
@@ -33,6 +37,7 @@ public class Log {
     }
     public static void verboseinfo(String msg) {
         if(verbose) {
+        	msg = safeString(msg);
             if (dlog != null) {
                 dlog.info(msg);
             }
@@ -50,6 +55,7 @@ public class Log {
         }
     }
     public static void severe(String msg) {
+    	msg = safeString(msg);
         if (dlog != null) {
             dlog.severe(msg);
         }
@@ -58,6 +64,7 @@ public class Log {
         }
     }
     public static void severe(String msg, Throwable e) {
+    	msg = safeString(msg);
         if (dlog != null) {
             dlog.severe(msg, e);
         }
@@ -66,6 +73,7 @@ public class Log {
         }
     }
     public static void warning(String msg) {
+    	msg = safeString(msg);
         if (dlog != null) {
             dlog.warning(msg);
         }
@@ -74,6 +82,7 @@ public class Log {
         }
     }
     public static void warning(String msg, Throwable e) {
+    	msg = safeString(msg);
         if (dlog != null) {
             dlog.warning(msg, e);
         }
