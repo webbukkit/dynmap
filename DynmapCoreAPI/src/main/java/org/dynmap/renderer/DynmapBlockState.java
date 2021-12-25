@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 // This represents a distinct block state value for a simple block from the world data.
@@ -30,6 +31,7 @@ public class DynmapBlockState {
     // List of block states (only defined on base block), indexed by stateIndex (null if single state base block)
     private DynmapBlockState[] states;
     private int stateLastIdx = 0;
+    private ConcurrentHashMap<String, DynmapBlockState> lookup;
     // Full name for state (base name, or base name[state name])
     private final String fullName;
     // Material string
@@ -193,6 +195,7 @@ public class DynmapBlockState {
             	base.states = new DynmapBlockState[Math.max((stateidx+1)*3 / 2, 16)]; // Enough for us to fit
                 Arrays.fill(base.states, AIR);
                 base.states[0] = base;  // Add base state as index 0
+               	base.lookup = new ConcurrentHashMap<String, DynmapBlockState>();	// Initialize lookup cache
             }
             else if (base.states.length <= stateidx) {  // Not enough room
                 // Resize it
@@ -335,8 +338,15 @@ public class DynmapBlockState {
      */
     public static final DynmapBlockState getStateByNameAndState(String name, String statename) {
         DynmapBlockState blk = getBaseStateByName(name);
+        DynmapBlockState rslt = AIR;
         if (blk != null) {
+        	rslt = blk;
         	if (blk.states != null) {
+        		// See if we have this in cache
+        		rslt = blk.lookup.get(statename);
+        		if (rslt != null) return rslt;
+        		
+            	rslt = AIR;	// Assume miss
         	    String[] statelist = statename.toLowerCase().split(",");
         		for (DynmapBlockState bb : blk.states) {
         		    boolean match = true;
@@ -354,13 +364,14 @@ public class DynmapBlockState {
         		        }
         		    }
         			if (match) {
-        				return bb;
+        				rslt = bb;
+        				break;
         			}
-        		}
+        		}        	
+        		blk.lookup.put(statename, rslt);	// Cache the lookup
         	}
-        	blk = null;
         }
-        return (blk != null) ? blk : AIR;
+        return rslt;
     }
     /**
      * Get current top of range of block state global indexes, plus 1
