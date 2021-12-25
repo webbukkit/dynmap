@@ -30,6 +30,8 @@ import net.minecraft.server.v1_16_R2.IBlockData;
 import net.minecraft.server.v1_16_R2.IRegistry;
 import net.minecraft.server.v1_16_R2.Material;
 import net.minecraft.server.v1_16_R2.MinecraftServer;
+import net.minecraft.server.v1_16_R2.BlockAccessAir;
+import net.minecraft.server.v1_16_R2.BlockPosition;
 
 /**
  * Helper for isolation of bukkit version specific issues
@@ -98,9 +100,11 @@ public class BukkitVersionHelperSpigot116_3 extends BukkitVersionHelperGeneric {
     	HashMap<String, DynmapBlockState> lastBlockState = new HashMap<String, DynmapBlockState>();
     	
     	int cnt = Block.REGISTRY_ID.a();
+       	DynmapBlockState.Builder bld = new DynmapBlockState.Builder();
     	// Loop through block data states
     	for (int i = 0; i < cnt; i++) {
     		IBlockData bd = Block.getByCombinedId(i);
+    		Block b = bd.getBlock();
     		String bname = IRegistry.BLOCK.getKey(bd.getBlock()).toString();
     		DynmapBlockState lastbs = lastBlockState.get(bname);	// See if we have seen this one
     		int idx = 0;
@@ -116,25 +120,22 @@ public class BukkitVersionHelperSpigot116_3 extends BukkitVersionHelperGeneric {
     			sb = fname.substring(off1+1, off2);
     		}
     		Material mat = bd.getMaterial();
-            DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
+            int lightAtten = b.f(bd, BlockAccessAir.INSTANCE, BlockPosition.ZERO);	// getLightBlock
+            //Log.info("statename=" + bname + "[" + sb + "], lightAtten=" + lightAtten);
+            // Fill in base attributes
+            bld.setBaseState(lastbs).setStateIndex(idx).setBlockName(bname).setStateName(sb).setMaterial(mat.toString()).setAttenuatesLight(lightAtten);
+    		if (mat.isSolid()) { bld.setSolid(); }
+            if (mat == Material.AIR) { bld.setAir(); }
+    		if ((bd.getBlock() instanceof BlockRotatable) && (bd.getMaterial() == Material.WOOD)) { bld.setLog(); }
+            if (mat == Material.LEAVES) { bld.setLeaves(); }
             if ((!bd.getFluid().isEmpty()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
-            	bs.setWaterlogged();
-            }
-            if (mat == Material.AIR) {
-            	bs.setAir();
-            }
-    		if (mat == Material.LEAVES) {
-    			bs.setLeaves();
-    		}
-    		if ((bd.getBlock() instanceof BlockRotatable) && (bd.getMaterial() == Material.WOOD)) {
-    			bs.setLog();
-    		}
-    		if (mat.isSolid()) {
-    			bs.setSolid();
-    		}
-    		dataToState.put(bd,  bs);
-    		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
-    		Log.verboseinfo(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());
+				bld.setWaterlogged();
+			}
+            DynmapBlockState dbs = bld.build(); // Build state
+            
+    		dataToState.put(bd,  dbs);
+    		lastBlockState.put(bname, (lastbs == null) ? dbs : lastbs);
+    		Log.verboseinfo("blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + dbs.isWaterlogged());
     	}
     }
     /**

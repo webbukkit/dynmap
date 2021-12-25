@@ -26,6 +26,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
+import net.minecraft.core.BlockPosition;
 import net.minecraft.core.IRegistry;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
@@ -39,6 +40,7 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.BlockAccessAir;
 import net.minecraft.world.level.biome.BiomeBase;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BlockFluids;
@@ -120,8 +122,10 @@ public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
     	
     	int cnt = Block.p.a();
     	// Loop through block data states
+       	DynmapBlockState.Builder bld = new DynmapBlockState.Builder();
     	for (int i = 0; i < cnt; i++) {
     		IBlockData bd = Block.getByCombinedId(i);
+    		Block b = bd.getBlock();
     		String bname = IRegistry.W.getKey(bd.getBlock()).toString();
     		DynmapBlockState lastbs = lastBlockState.get(bname);	// See if we have seen this one
     		int idx = 0;
@@ -137,25 +141,23 @@ public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
     			sb = fname.substring(off1+1, off2);
     		}
     		Material mat = bd.getMaterial();
-            DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
+    		
+            int lightAtten = b.g(bd, BlockAccessAir.a, BlockPosition.b);	// getLightBlock
+            //Log.info("statename=" + bname + "[" + sb + "], lightAtten=" + lightAtten);
+            // Fill in base attributes
+            bld.setBaseState(lastbs).setStateIndex(idx).setBlockName(bname).setStateName(sb).setMaterial(mat.toString()).setAttenuatesLight(lightAtten);
+    		if (mat.isSolid()) { bld.setSolid(); }
+            if (mat == Material.a) { bld.setAir(); }
+    		if ((bd.getBlock() instanceof BlockRotatable) && (bd.getMaterial() == Material.z)) { bld.setLog(); }
+            if (mat == Material.E) { bld.setLeaves(); }
             if ((!bd.getFluid().isEmpty()) && ((bd.getBlock() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
-            	bs.setWaterlogged();
-            }
-            if (mat == Material.a) {	// AIR
-            	bs.setAir();
-            }
-    		if (mat == Material.E) {	// LEAVES
-    			bs.setLeaves();
-    		}
-    		if ((bd.getBlock() instanceof BlockRotatable) && (bd.getMaterial() == Material.z)) {	// WOOD
-    			bs.setLog();
-    		}
-    		if (mat.isSolid()) {
-    			bs.setSolid();
-    		}
-    		dataToState.put(bd,  bs);
-    		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
-    		Log.verboseinfo(i + ": blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());
+				bld.setWaterlogged();
+			}
+            DynmapBlockState dbs = bld.build(); // Build state
+            
+    		dataToState.put(bd,  dbs);
+    		lastBlockState.put(bname, (lastbs == null) ? dbs : lastbs);
+    		Log.verboseinfo("blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + dbs.isWaterlogged());
     	}
     }
     /**

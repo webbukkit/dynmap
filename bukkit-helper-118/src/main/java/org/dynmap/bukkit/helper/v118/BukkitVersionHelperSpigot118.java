@@ -27,6 +27,7 @@ import com.mojang.authlib.properties.PropertyMap;
 
 import net.minecraft.core.RegistryBlockID;
 import net.minecraft.core.RegistryBlocks;
+import net.minecraft.core.BlockPosition;
 import net.minecraft.core.IRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.NBTTagByteArray;
@@ -42,6 +43,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.resources.MinecraftKey;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.BlockAccessAir;
 import net.minecraft.world.level.biome.BiomeBase;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BlockFluids;
@@ -146,6 +148,7 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     	ArrayList<String> names = new ArrayList<String>();
     	
     	// Loop through block data states
+    	DynmapBlockState.Builder bld = new DynmapBlockState.Builder();
 		while (iter.hasNext()) {
     		IBlockData bd = iter.next();
     		Block b = bd.b();
@@ -165,25 +168,23 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     			sb = fname.substring(off1+1, off2);
     		}
     		net.minecraft.world.level.material.Material mat = bd.c();
-            DynmapBlockState bs = new DynmapBlockState(lastbs, idx, bname, sb, mat.toString());
+    		
+            int lightAtten = b.g(bd, BlockAccessAir.a, BlockPosition.b);	// getLightBlock
+            //Log.info("statename=" + bname + "[" + sb + "], lightAtten=" + lightAtten);
+            // Fill in base attributes
+            bld.setBaseState(lastbs).setStateIndex(idx).setBlockName(bname).setStateName(sb).setMaterial(mat.toString()).setAttenuatesLight(lightAtten);
+    		if (mat.b()) { bld.setSolid(); }
+            if (mat == net.minecraft.world.level.material.Material.a) { bld.setAir(); }
+            if (mat == net.minecraft.world.level.material.Material.z) { bld.setLog(); }
+            if (mat == net.minecraft.world.level.material.Material.F) { bld.setLeaves(); }
             if ((!bd.n().c()) && ((bd.b() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
-            	bs.setWaterlogged();
-            }
-            if (mat == net.minecraft.world.level.material.Material.a) {	// AIR
-            	bs.setAir();
-            }
-    		if (mat == net.minecraft.world.level.material.Material.F) {	// LEAVES
-    			bs.setLeaves();
-    		}
-    		if (mat == net.minecraft.world.level.material.Material.z) {	// WOOD
-    			bs.setLog();
-    		}
-    		if (mat.b()) {
-    			bs.setSolid();
-    		}
-    		dataToState.put(bd,  bs);
-    		lastBlockState.put(bname, (lastbs == null) ? bs : lastbs);
-    		Log.verboseinfo("blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + bs.isWaterlogged());
+				bld.setWaterlogged();
+			}
+            DynmapBlockState dbs = bld.build(); // Build state
+            
+    		dataToState.put(bd,  dbs);
+    		lastBlockState.put(bname, (lastbs == null) ? dbs : lastbs);
+    		Log.verboseinfo("blk=" + bname + ", idx=" + idx + ", state=" + sb + ", waterlogged=" + dbs.isWaterlogged());
     	}
     }
     /**
