@@ -119,23 +119,31 @@ public class GenericChunk {
     		int sky[] = new int[256]; // ZX array
     		Arrays.fill(sky, 15);	// Start fully lit at top
     		GenericChunkSection.Builder bld = new GenericChunkSection.Builder();
+    		boolean allzero = false;
     		// Make light array for each section, start from top
     		for (int i = (sections.length - 1); i >= 0; i--) {
     			if (sections[i] == null) continue;
-    			byte[] ssky = new byte[2048];
-    			for (int x = 0; x < 16; x++) {
-    				for (int z = 0; z < 16; z++) {
-    					int idx = (z << 4) + x;
-    					for (int y = 15; y >= 0; y--) {
-    						DynmapBlockState bs = sections[i].blocks.getBlock(x, y, z);	// Get block
-    						int atten = bs.lightAttenuation;
-    						sky[idx] = (sky[idx] > atten) ? (sky[idx] - atten) : 0;
-    						ssky[(y << 7) | (z << 3) | (x >> 1)] |= (sky[idx] << (4 * (x & 1)));
+				byte[] ssky = new byte[2048];
+    			if (!allzero) {
+    				for (int x = 0; x < 16; x++) {
+    					for (int z = 0; z < 16; z++) {
+    						int idx = (z << 4) + x;
+    						for (int y = 15; y >= 0; y--) {
+    							DynmapBlockState bs = sections[i].blocks.getBlock(x, y, z);	// Get block
+    							int atten = bs.getLightAttenuation();
+    							sky[idx] = (sky[idx] >= atten) ? (sky[idx] - atten) : 0;
+    							ssky[(y << 7) | (z << 3) | (x >> 1)] |= (sky[idx] << (4 * (x & 1)));
+    						}
     					}
     				}
+    				// Check if we're all dark
+    				allzero = true;
+    				for (int v = 0; v < 256; v++) {
+    					if (sky[v] > 0) { allzero = false; break; }
+    				}
     			}
-    			// Replace section with new one with new lighting
-    			sections[i] = bld.buildFrom(sections[i], ssky);
+				// Replace section with new one with new lighting
+				sections[i] = bld.buildFrom(sections[i], ssky);
     		}
     		return this;    		
     	}
