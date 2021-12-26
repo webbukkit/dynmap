@@ -1665,18 +1665,14 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             Listener chunkTrigger = new Listener() {
                 @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
                 public void onChunkPopulate(ChunkPopulateEvent event) {
+                	DynmapWorld dw = getWorld(event.getWorld());
                     Chunk c = event.getChunk();
-                    ChunkSnapshot cs = c.getChunkSnapshot();
-                    int ymax = 0;
-                    for(int i = 0; i < c.getWorld().getMaxHeight() / 16; i++) {
-                        if(!cs.isSectionEmpty(i)) {
-                            ymax = (i+1)*16;
-                        }
-                    }
                     /* Touch extreme corners */
                     int x = c.getX() << 4;
                     int z = c.getZ() << 4;
-                    mapManager.touchVolume(getWorld(event.getWorld()).getName(), x, 0, z, x+15, ymax, z+16, "chunkpopulate");
+                    int ymin = dw.minY;
+                    int ymax = dw.worldheight;
+                    mapManager.touchVolume(getWorld(event.getWorld()).getName(), x, ymin, z, x+15, ymax, z+16, "chunkpopulate");
                 }
             };
             pm.registerEvents(chunkTrigger, this);

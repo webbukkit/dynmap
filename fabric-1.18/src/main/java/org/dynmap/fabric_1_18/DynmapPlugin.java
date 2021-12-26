@@ -629,17 +629,20 @@ public class DynmapPlugin {
             FabricWorld fw = getWorld(world, false);
             ChunkPos chunkPos = chunk.getPos();
 
-            int yMax = 0;
+			int ymax = Integer.MIN_VALUE;
+			int ymin = Integer.MAX_VALUE;
             ChunkSection[] sections = chunk.getSectionArray();
             for (int i = 0; i < sections.length; i++) {
                 if ((sections[i] != null) && (!sections[i].isEmpty())) {
-                    yMax = 16 * (i + 1);
+					int sy = sections[i].getYOffset();
+					if (sy < ymin) ymin = sy;
+					if ((sy+16) > ymax) ymax = sy + 16;
                 }
             }
-            if (yMax > 0) {
+            if (ymax != Integer.MIN_VALUE) {
                 mapManager.touchVolume(fw.getName(),
-                        chunkPos.getStartX(), 0, chunkPos.getStartZ(),
-                        chunkPos.getEndX(), yMax, chunkPos.getEndZ(),
+                        chunkPos.getStartX(), ymin, chunkPos.getStartZ(),
+                        chunkPos.getEndX(), ymax, chunkPos.getEndZ(),
                         "chunkgenerate");
                 //Log.info("New generated chunk detected at %s[%s]".formatted(fw.getName(), chunkPos.getStartPos()));
             }

@@ -1723,19 +1723,22 @@ public class DynmapPlugin
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
 					if (!checkIfKnownChunk(fw, cp)) {
-        				int ymax = 0;
+        				int ymax = Integer.MIN_VALUE;
+        				int ymin = Integer.MAX_VALUE;
         				LevelChunkSection[] sections = c.getSections();
         				for(int i = 0; i < sections.length; i++) {
         					if((sections[i] != null) && (sections[i].hasOnlyAir() == false)) {
-        						ymax = 16*(i+1);
+        						int sy = sections[i].bottomBlockY();
+        						if (sy < ymin) ymin = sy;
+        						if ((sy+16) > ymax) ymax = sy + 16;
         					}
         				}
         				int x = cp.x << 4;
         				int z = cp.z << 4;
         				// If not empty AND not initial scan
-        				if (ymax > 0) {
-            				//Log.info("New generated chunk detected at " + cp + " for " + fw.getName());
-        					mapManager.touchVolume(fw.getName(), x, 0, z, x+15, ymax, z+16, "chunkgenerate");
+        				if (ymax != Integer.MIN_VALUE) {
+        					Log.info(String.format("chunkkeyerate(unload)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
+        					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
         				}
 					}
 					removeKnownChunk(fw, cp);
@@ -1754,18 +1757,22 @@ public class DynmapPlugin
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
 					if (!checkIfKnownChunk(fw, cp)) {
-        				int ymax = 0;
+        				int ymax = Integer.MIN_VALUE;
+        				int ymin = Integer.MAX_VALUE;
         				LevelChunkSection[] sections = c.getSections();
         				for(int i = 0; i < sections.length; i++) {
         					if((sections[i] != null) && (sections[i].hasOnlyAir() == false)) {
-        						ymax = 16*(i+1);
+        						int sy = sections[i].bottomBlockY();
+        						if (sy < ymin) ymin = sy;
+        						if ((sy+16) > ymax) ymax = sy + 16;
         					}
         				}
         				int x = cp.x << 4;
         				int z = cp.z << 4;
         				// If not empty AND not initial scan
-        				if (ymax > 0) {
-        					mapManager.touchVolume(fw.getName(), x, 0, z, x+15, ymax, z+16, "chunkgenerate");
+        				if (ymax != Integer.MIN_VALUE) {
+        					Log.info(String.format("chunkkeyerate(save)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
+        					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
         				}						
 						addKnownChunk(fw, cp);
 					}

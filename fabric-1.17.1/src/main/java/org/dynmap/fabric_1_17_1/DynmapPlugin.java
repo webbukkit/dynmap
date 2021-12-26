@@ -683,19 +683,22 @@ public class DynmapPlugin {
                 ChunkPos cp = chunk.getPos();
                 if (fw != null) {
                     if (!checkIfKnownChunk(fw, cp)) {
-                        int ymax = 0;
+        				int ymax = Integer.MIN_VALUE;
+        				int ymin = Integer.MAX_VALUE;
                         ChunkSection[] sections = chunk.getSectionArray();
                         for (int i = 0; i < sections.length; i++) {
                             if ((sections[i] != null) && (!sections[i].isEmpty())) {
-                                ymax = 16 * (i + 1);
+        						int sy = sections[i].getYOffset();
+        						if (sy < ymin) ymin = sy;
+        						if ((sy+16) > ymax) ymax = sy + 16;
                             }
                         }
                         int x = cp.x << 4;
                         int z = cp.z << 4;
                         // If not empty AND not initial scan
-                        if (ymax > 0) {
+                        if (ymax != Integer.MIN_VALUE) {
                             Log.info("New generated chunk detected at " + cp + " for " + fw.getName());
-                            mapManager.touchVolume(fw.getName(), x, 0, z, x + 15, ymax, z + 16, "chunkgenerate");
+                            mapManager.touchVolume(fw.getName(), x, ymin, z, x + 15, ymax, z + 15, "chunkgenerate");
                         }
                     }
                     removeKnownChunk(fw, cp);
