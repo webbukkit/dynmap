@@ -11,4 +11,4 @@ jobs:
     - name: actions/checkout
       uses: actions/checkout@v2
     - name: rojopolis/spellcheck - actually doing something
-      uses: rojopolis/spellcheck-github-actions@0.16.0
+      uses: rojopolis/spellcheck-github-actions@0.20.0
