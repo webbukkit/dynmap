@@ -1737,7 +1737,7 @@ public class DynmapPlugin
         				int z = cp.z << 4;
         				// If not empty AND not initial scan
         				if (ymax != Integer.MIN_VALUE) {
-        					Log.info(String.format("chunkkeyerate(unload)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
+        					//Log.info(String.format("chunkkeyerate(unload)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
         					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
         				}
 					}
@@ -1771,7 +1771,7 @@ public class DynmapPlugin
         				int z = cp.z << 4;
         				// If not empty AND not initial scan
         				if (ymax != Integer.MIN_VALUE) {
-        					Log.info(String.format("chunkkeyerate(save)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
+        					//Log.info(String.format("chunkkeyerate(save)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
         					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
         				}						
 						addKnownChunk(fw, cp);
