@@ -243,6 +243,11 @@ public class GenericChunkSection {
 			LightingAccess skyA = new LightingAccess3D(sky);
 			return new GenericChunkSection(s.blocks, s.biomes, skyA, s.emitted, s.isEmpty); 
 		}
+		// Build copy from existing section with new single value skylight
+		public GenericChunkSection buildFrom(GenericChunkSection s, int singlesky) {
+			LightingAccess skyA = new LightingAccessSingle(singlesky);
+			return new GenericChunkSection(s.blocks, s.biomes, skyA, s.emitted, s.isEmpty); 
+		}
 		
 		// Build section based on current builder state
 		public GenericChunkSection build() {

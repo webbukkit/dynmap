@@ -117,33 +117,99 @@ public class GenericChunk {
     	// Generate simple sky lighting (must be after all sections have been added)
     	public Builder generateSky() {
     		int sky[] = new int[256]; // ZX array
+    		boolean nonOpaque[] = new boolean[256]; // ZX array of non opaque blocks (atten < 15)
     		Arrays.fill(sky, 15);	// Start fully lit at top
     		GenericChunkSection.Builder bld = new GenericChunkSection.Builder();
     		boolean allzero = false;
     		// Make light array for each section, start from top
     		for (int i = (sections.length - 1); i >= 0; i--) {
-    			if (sections[i] == null) continue;
+    			GenericChunkSection sect = sections[i];
+    			if (sect == null) continue;
+    			if (allzero) {	// Start section with all zero already, just zero it and move on
+    				// Replace section with new all zero light
+    				sections[i] = bld.buildFrom(sect, 0);
+    				continue;
+    			}
 				byte[] ssky = new byte[2048];
-    			if (!allzero) {
-    				for (int x = 0; x < 16; x++) {
-    					for (int z = 0; z < 16; z++) {
-    						int idx = (z << 4) + x;
-    						for (int y = 15; y >= 0; y--) {
-    							DynmapBlockState bs = sections[i].blocks.getBlock(x, y, z);	// Get block
-    							int atten = bs.getLightAttenuation();
-    							sky[idx] = (sky[idx] >= atten) ? (sky[idx] - atten) : 0;
-    							ssky[(y << 7) | (z << 3) | (x >> 1)] |= (sky[idx] << (4 * (x & 1)));
-    						}
-    					}
-    				}
-    				// Check if we're all dark
-    				allzero = true;
-    				for (int v = 0; v < 256; v++) {
-    					if (sky[v] > 0) { allzero = false; break; }
-    				}
+				int allfullcnt = 0;
+				// Top to bottom 
+				for (int y = 15; (y >= 0) && (!allzero); y--) {
+					int totalval = 0;	// Use for allzero or allfull
+					int yidx = y << 7;
+					// Light next layer down
+					for (int x = 0; x < 16; x++) {
+						for (int z = 0; z < 16; z++) {
+							int idx = (z << 4) + x;
+							int val = sky[idx];
+							DynmapBlockState bs = sect.blocks.getBlock(x, y, z);	// Get block
+							int atten = bs.getLightAttenuation();
+							if ((atten > 0) && (val > 0)) {
+								val = (val >= atten) ? (val - atten) : 0;
+								sky[idx] = val;
+							}
+							nonOpaque[idx] = atten < 15;
+							totalval += val;
+						}
+					}
+					allzero = (totalval == 0);
+					boolean allfull = (totalval == (15 * 256));
+					if (allfull) allfullcnt++;
+					// If not all fully lit nor all zero, handle horizontal spread
+					if (! (allfull || allzero)) {
+						// Now do horizontal spread
+						boolean changed;
+						do {
+	    					changed = false;
+	        				for (int x = 0; x < 16; x++) {
+	        					for (int z = 0; z < 16; z++) {
+	        						int idx = (z << 4) + x;
+	        						int cur = sky[idx];
+	        						boolean curnonopaq = nonOpaque[idx];
+	        						if (x < 15) {	// If not right edge, check X spread
+	        							int right = sky[idx+1];
+	            						boolean rightnonopaq = nonOpaque[idx+1];
+	            						// If spread right
+	            						if (rightnonopaq && ((cur - 1) > right)) {
+	            							sky[idx+1] = cur - 1; changed = true;
+            							}
+	            						// If spread left
+	            						else if (curnonopaq && (cur < (right - 1))) {
+	            							sky[idx] = cur = right - 1; changed = true;
+            							}
+	        						}
+	        						if (z < 15) {	// If not bottom edge, check Z spread
+	        							int down = sky[idx+16];
+	            						boolean downnonopaq = nonOpaque[idx+16];
+	            						// If spread down
+	            						if (downnonopaq && ((cur - 1) > down)) {
+	            							sky[idx+16] = cur - 1; changed = true;
+            							}
+	            						// If spread up
+	            						else if (curnonopaq && (cur < (down - 1))) {
+	            							sky[idx] = down - 1; changed = true;
+            							}
+	        						}
+	        					}
+	        				}
+	    				} while (changed);    				
+						// Save values
+						for (int v = 0; v < 128; v++) {
+							ssky[yidx | v] = (byte)(sky[v << 1] | (sky[(v << 1) + 1] << 4));
+						}
+					}
+					else if (allfull) {	// All light, just fill it
+						for (int v = 0; v < 128; v++) {
+							ssky[yidx | v] = (byte) 0xFF;
+						}
+					}
     			}
 				// Replace section with new one with new lighting
-				sections[i] = bld.buildFrom(sections[i], ssky);
+				if (allfullcnt == 16) {	// Just full?
+					sections[i] = bld.buildFrom(sect, 15);					
+				}
+				else {
+					sections[i] = bld.buildFrom(sect, ssky);
+				}
     		}
     		return this;    		
     	}
