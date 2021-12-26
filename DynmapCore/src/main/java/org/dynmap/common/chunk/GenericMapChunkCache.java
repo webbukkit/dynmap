@@ -895,7 +895,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		if (nbt == null) return null;
 		String status = nbt.getString("Status");
 		int version = orignbt.getInt("DataVersion");
-
+		boolean lit = nbt.getBoolean("isLightOn");
 		boolean hasLitState = false;
 		if (status != null) {
 			for (int i = 0; i < litStates.length; i++) {
@@ -908,6 +908,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY,  dw.worldheight);
 		int x = nbt.getInt("xPos");
 		int z = nbt.getInt("zPos");
+
 		// Set chunk info
 		bld.coords(x, z).chunkStatus(status).dataVersion(version);
 		
@@ -1091,7 +1092,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			sbld.reset();
         }
         // Assume skylight is only trustworthy in a lit state
-		if (!hasLitState) {
+		if ((!hasLitState) || (!lit)) {
 			hasLight = false;
 		}
         // If no light, do simple generate
