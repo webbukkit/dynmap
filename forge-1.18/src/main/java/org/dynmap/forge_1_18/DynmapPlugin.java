@@ -57,6 +57,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.Vec3;
@@ -1704,7 +1705,7 @@ public class DynmapPlugin
 			LevelAccessor w = event.getWorld();
             if(!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
-			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+			if ((c != null) && (c.getStatus() == ChunkStatus.FULL) && (c instanceof LevelChunk)) {
 				ForgeWorld fw = getWorld((ServerLevel)w, false);
 				if (fw != null) {
 					addKnownChunk(fw, c.getPos());
@@ -1718,7 +1719,7 @@ public class DynmapPlugin
 			LevelAccessor w = event.getWorld();
             if(!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
-			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+			if (c != null) {
 				ForgeWorld fw = getWorld((ServerLevel)w, false);
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
@@ -1752,7 +1753,7 @@ public class DynmapPlugin
 			LevelAccessor w = event.getWorld();
             if(!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
-			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+			if (c != null) {
 				ForgeWorld fw = getWorld((ServerLevel)w, false);
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
@@ -1773,8 +1774,11 @@ public class DynmapPlugin
         				if (ymax != Integer.MIN_VALUE) {
         					//Log.info(String.format("chunkkeyerate(save)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
         					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
-        				}						
-						addKnownChunk(fw, cp);
+        				}
+        				// If cooked, add to known
+        				if ((c.getStatus() == ChunkStatus.FULL) && (c instanceof LevelChunk)) {
+        					addKnownChunk(fw, cp);
+        				}
 					}
 				}
 			}

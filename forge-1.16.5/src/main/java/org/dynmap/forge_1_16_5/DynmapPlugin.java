@@ -1732,7 +1732,7 @@ public class DynmapPlugin
 			IWorld w = event.getWorld();
             if(!(w instanceof ServerWorld)) return;
 			IChunk c = event.getChunk();
-			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+			if ((c != null) && (c.getStatus() == ChunkStatus.FULL) && (c instanceof Chunk)) {
 				ForgeWorld fw = getWorld((IServerWorld)w, false);
 				if (fw != null) {
 					addKnownChunk(fw, c.getPos());
@@ -1746,7 +1746,7 @@ public class DynmapPlugin
 			IWorld w = event.getWorld();
             if(!(w instanceof ServerWorld)) return;
 			IChunk c = event.getChunk();
-			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+			if (c != null) {
 				ForgeWorld fw = getWorld((IServerWorld)w, false);
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
@@ -1780,7 +1780,7 @@ public class DynmapPlugin
 			IWorld w = event.getWorld();
             if(!(w instanceof ServerWorld)) return;
 			IChunk c = event.getChunk();
-			if ((c != null) && (c.getStatus() == ChunkStatus.FULL)) {
+			if (c != null) {
 				ForgeWorld fw = getWorld((IServerWorld)w, false);
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
@@ -1801,7 +1801,10 @@ public class DynmapPlugin
         				if (ymax != Integer.MIN_VALUE) {
         					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
         				}						
-						addKnownChunk(fw, cp);
+    					// If cooked, add it to known
+    					if ((c.getStatus() == ChunkStatus.FULL) && (c instanceof Chunk)) {
+    						addKnownChunk(fw, cp);
+    					}
 					}
 				}
 			}
