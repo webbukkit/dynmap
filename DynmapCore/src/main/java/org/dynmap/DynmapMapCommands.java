@@ -1,11 +1,16 @@
 package org.dynmap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
@@ -22,6 +27,76 @@ import org.dynmap.utils.VisibilityLimit;
  * Handler for world and map edit commands (via /dmap)
  */
 public class DynmapMapCommands {
+	private Map<String, Map<String, Supplier<String[]>>> tabCompletions = null;
+
+	/**
+	 * Generates a map of field:value argument tab completion suggestions for every /dmap subcommand
+	 */
+	private void initTabCompletions() {
+		//Static values
+		String[] emptyValue = new String[]{};
+		String[] booleanValue = new String[]{"true", "false"};
+		String[] hideStyles = Arrays.stream(HiddenChunkStyle.values()).map(HiddenChunkStyle::getValue)
+				.toArray(String[]::new);
+		String[] perspectives = MapManager.mapman.hdmapman.perspectives.keySet().toArray(new String[0]);
+		String[] shaders = MapManager.mapman.hdmapman.shaders.keySet().toArray(new String[0]);
+		String[] lightings = MapManager.mapman.hdmapman.lightings.keySet().toArray(new String[0]);
+		String[] imageFormats = Arrays.stream(MapType.ImageFormat.values())
+				.map(MapType.ImageFormat::getID).toArray(String[]::new);
+
+		Supplier<String[]> emptySupplier = () -> emptyValue;
+		Supplier<String[]> booleanSupplier = () -> booleanValue;
+		Supplier<String[]> hideStyleSupplier = () -> hideStyles;
+		Supplier<String[]> perspectiveSupplier = () -> perspectives;
+		Supplier<String[]> shaderSupplier = () -> shaders;
+		Supplier<String[]> lightingSupplier = () -> lightings;
+		Supplier<String[]> imageFormatSupplier = () -> imageFormats;
+
+		//Arguments for /dmap worldset
+		Map<String, Supplier<String[]>> worldSetArgs = new LinkedHashMap<>();
+		worldSetArgs.put("enabled", booleanSupplier);
+		worldSetArgs.put("title", emptySupplier);
+		worldSetArgs.put("order", emptySupplier);
+		worldSetArgs.put("center", emptySupplier);
+		worldSetArgs.put("sendposition", booleanSupplier);
+		worldSetArgs.put("sendhealth", booleanSupplier);
+		worldSetArgs.put("showborder", booleanSupplier);
+		worldSetArgs.put("protected", booleanSupplier);
+		worldSetArgs.put("extrazoomout", emptySupplier);
+		worldSetArgs.put("tileupdatedelay", emptySupplier);
+
+		//Arguments for /dmap worldaddlimit
+		Map<String, Supplier<String[]>> worldAddLimitArgs = new LinkedHashMap<>();
+		worldAddLimitArgs.put("type", () -> new String[]{"round", "rect"});
+		worldAddLimitArgs.put("limittype", () -> new String[]{"visible", "hidden"});
+		worldAddLimitArgs.put("style", hideStyleSupplier);
+		worldAddLimitArgs.put("corner1", emptySupplier);
+		worldAddLimitArgs.put("corner2", emptySupplier);
+		worldAddLimitArgs.put("center", emptySupplier);
+		worldAddLimitArgs.put("radius", emptySupplier);
+
+		//Arguments for /dmap mapadd/mapset
+		Map<String, Supplier<String[]>> mapSetArgs = new LinkedHashMap<>();
+		mapSetArgs.put("title", emptySupplier);
+		mapSetArgs.put("icon", emptySupplier);
+		mapSetArgs.put("order", emptySupplier);
+		mapSetArgs.put("prefix", emptySupplier);
+		mapSetArgs.put("perspective", perspectiveSupplier);
+		mapSetArgs.put("shader", shaderSupplier);
+		mapSetArgs.put("lighting", lightingSupplier);
+		mapSetArgs.put("img-format", imageFormatSupplier);
+		mapSetArgs.put("protected", booleanSupplier);
+		mapSetArgs.put("append-to-world", emptySupplier);
+		mapSetArgs.put("mapzoomin", emptySupplier);
+		mapSetArgs.put("mapzoomout", emptySupplier);
+		mapSetArgs.put("boostzoom", emptySupplier);
+		mapSetArgs.put("tileupdatedelay", emptySupplier);
+
+		tabCompletions = new HashMap<>();
+		tabCompletions.put("worldaddlimit", worldAddLimitArgs);
+		tabCompletions.put("worldset", worldSetArgs);
+		tabCompletions.put("mapset", mapSetArgs); //Also used for mapadd
+	}
 
     private boolean checkIfActive(DynmapCore core, DynmapCommandSender sender) {
         if ((!core.getPauseFullRadiusRenders()) || (!core.getPauseUpdateRenders())) {
@@ -94,6 +169,78 @@ public class DynmapMapCommands {
         }
         return rslt;
     }
+
+	public List<String> getTabCompletions(DynmapCommandSender sender, String[] args, DynmapCore core) {
+		/* Re-parse args - handle doublequotes */
+		args = DynmapCore.parseArgs(args, sender, true);
+
+		if (args == null || args.length <= 1) {
+			return Collections.emptyList();
+		}
+
+		if (tabCompletions == null) {
+			initTabCompletions();
+		}
+
+		String cmd = args[0];
+
+		if (cmd.equalsIgnoreCase("worldlist")
+				&& core.checkPlayerPermission(sender, "dmap.worldlist")) {
+			List<String> suggestions = core.getWorldSuggestions(args[args.length - 1]);
+			suggestions.removeAll(Arrays.asList(args)); //Remove suggestions present in other arguments
+
+			return suggestions;
+		} else if ((cmd.equalsIgnoreCase("maplist")
+				&& core.checkPlayerPermission(sender, "dmap.maplist"))
+				|| (cmd.equalsIgnoreCase("worldgetlimits")
+				&& core.checkPlayerPermission(sender, "dmap.worldlist"))) {
+			if (args.length == 2) {
+				return core.getWorldSuggestions(args[1]);
+			}
+		} else if (cmd.equalsIgnoreCase("worldremovelimit")
+				&& core.checkPlayerPermission(sender, "dmap.worldset")) {
+			if (args.length == 2) {
+				return core.getWorldSuggestions(args[1]);
+			}
+		} else if (cmd.equalsIgnoreCase("worldaddlimit")
+				&& core.checkPlayerPermission(sender, "dmap.worldset")) {
+			if (args.length == 2) {
+				return core.getWorldSuggestions(args[1]);
+			} else {
+				return core.getFieldValueSuggestions(args, tabCompletions.get("worldaddlimit"));
+			}
+		} else if (cmd.equalsIgnoreCase("worldset")
+				&& core.checkPlayerPermission(sender, "dmap.worldset")) {
+			if (args.length == 2) {
+				return core.getWorldSuggestions(args[1]);
+			} else {
+				return core.getFieldValueSuggestions(args, tabCompletions.get("worldset"));
+			}
+		} else if (cmd.equalsIgnoreCase("mapdelete")
+				&& core.checkPlayerPermission(sender, "dmap.mapdelete")) {
+			if (args.length == 2) {
+				return core.getMapSuggestions(args[1]);
+			}
+		} else if (cmd.equalsIgnoreCase("worldreset")
+				&& core.checkPlayerPermission(sender, "dmap.worldreset")) {
+			if (args.length == 2) {
+				return core.getWorldSuggestions(args[1]);
+			}
+		} else if (cmd.equalsIgnoreCase("mapset")
+				&& core.checkPlayerPermission(sender, "dmap.mapset")) {
+			if (args.length == 2) {
+				return core.getMapSuggestions(args[1]);
+			} else {
+				return core.getFieldValueSuggestions(args, tabCompletions.get("mapset"));
+			}
+		} else if (cmd.equalsIgnoreCase("mapadd")) {
+			if (args.length > 2) {
+				return core.getFieldValueSuggestions(args, tabCompletions.get("mapset"));
+			}
+		}
+
+		return Collections.emptyList();
+	}
     
     private boolean handleWorldList(DynmapCommandSender sender, String[] args, DynmapCore core) {
         if(!core.checkPlayerPermission(sender, "dmap.worldlist"))

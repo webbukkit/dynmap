@@ -27,9 +27,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -1117,6 +1120,11 @@ public class DynmapCore implements DynmapCommonAPI {
 
     /* Parse argument strings : handle quoted strings */
     public static String[] parseArgs(String[] args, DynmapCommandSender snd) {
+        return parseArgs(args, snd, false);
+    }
+
+    /* Parse argument strings : handle quoted strings */
+    public static String[] parseArgs(String[] args, DynmapCommandSender snd, boolean allowUnclosedQuotes) {
         ArrayList<String> rslt = new ArrayList<String>();
         /* Build command line, so we can parse our way - make sure there is trailing space */
         String cmdline = "";
@@ -1146,9 +1154,15 @@ public class DynmapCore implements DynmapCommonAPI {
                 sb.append(c);
             }
         }
-        if(inquote) {   /* If still in quote, syntax error */
-            snd.sendMessage("Error: unclosed doublequote");
-            return null;
+        if(inquote) {  // If still in quote
+            if(allowUnclosedQuotes) {
+                if(sb.length() > 1) { // Add remaining input without trailing space
+                    rslt.add(sb.substring(0, sb.length() - 1));
+                }
+            } else { // Syntax error
+                snd.sendMessage("Error: unclosed doublequote");
+                return null;
+            }
         }
         return rslt.toArray(new String[rslt.size()]);
     }
@@ -1251,7 +1265,7 @@ public class DynmapCore implements DynmapCommonAPI {
         new CommandInfo("dmarker", "movehere", "id:<id>", "Move marker with ID <id> to current location."),
         new CommandInfo("dmarker", "update", "<label> icon:<icon> newlabel:<newlabel>", "Update marker with ID <id> with new label <newlabel> and new icon <icon>."),
         new CommandInfo("dmarker", "delete", "<label>", "Delete marker with label of <label>."),
-        new CommandInfo("dmarker", "delete ", "id:<id>", "Delete marker with ID of <id>."),
+        new CommandInfo("dmarker", "delete", "id:<id>", "Delete marker with ID of <id>."),
         new CommandInfo("dmarker", "list", "List details of all markers."),
         new CommandInfo("dmarker", "icons", "List details of all icons."),
         new CommandInfo("dmarker", "addset", "<label>", "Add marker set with label <label>."),
@@ -1351,7 +1365,164 @@ public class DynmapCore implements DynmapCommonAPI {
         }
         sender.sendMessage(subcmdlist);
     }
-    
+
+    /**
+     * Returns tab completion suggestions for subcommands
+     *
+     * @param sender - The command sender requesting the tab completion suggestions
+     * @param cmd    - The top level command to suggest for
+     * @param arg    - Optional partial subcommand name to filter by
+     * @return List of tab completion suggestions
+     */
+    List<String> getSubcommandSuggestions(DynmapCommandSender sender, String cmd, String arg) {
+        List<String> suggestions = new ArrayList<>();
+
+        for (CommandInfo ci : commandinfo) {
+            //TODO: Permission checks
+            if (ci.matches(cmd) && ci.subcmd.startsWith(arg) && !suggestions.contains(ci.subcmd)) {
+                suggestions.add(ci.subcmd);
+            }
+        }
+
+        return suggestions;
+    }
+
+    /**
+     * Returns tab completion suggestions for world names
+     *
+     * @param arg - Partial world name to filter by
+     * @return List of tab completion suggestions
+     */
+    public List<String> getWorldSuggestions(String arg) {
+        return mapManager.getWorlds().stream()
+                .map(DynmapWorld::getName)
+                .filter(name -> name.startsWith(arg))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns tab completion suggestions for map names of a specific world
+     *
+     * @param worldName      - Name of the world
+     * @param mapArg         - Partial map name to filter by
+     * @param colonSeparated - Whether to return suggestions in world:map format
+     * @return List of tab completion suggestions
+     */
+    List<String> getMapSuggestions(String worldName, String mapArg, boolean colonSeparated) {
+        DynmapWorld world = mapManager.getWorld(worldName);
+
+        if (world != null) {
+            //Don't suggest anything if the argument contains a space as the client doesn't handle this well
+            if(mapArg.contains(" ")) {
+                return Collections.emptyList();
+            }
+
+            return world.maps.stream()
+                    .filter(map -> map.getName().startsWith(mapArg))
+                    .map(map -> {
+                        if (map.getName().contains(" ")) { //Quote if map name contains a space
+                            return "\"" + (colonSeparated ? worldName + ":" + map.getName() : map.getName()) + "\"";
+                        } else {
+                            return colonSeparated ? worldName + ":" + map.getName() : map.getName();
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * Returns tab completion suggestions for map names without a world name, in world:map format
+     *
+     * @param arg - Partial world:map name to filter by
+     * @return List of tab completion suggestions
+     */
+    List<String> getMapSuggestions(String arg) {
+        int colon = arg.indexOf(":");
+        final String worldName = (colon >= 0) ? arg.substring(0, colon) : arg;
+        String mapArg = (colon >= 0) ? arg.substring(colon + 1) : null;
+
+        //Don't suggest anything if the argument contains a space as the client doesn't handle this well
+        if(arg.contains(" ")) {
+            return Collections.emptyList();
+        }
+
+        if (mapArg != null) {
+            return getMapSuggestions(worldName, mapArg, true);
+        }
+
+        List<String> suggestions = new ArrayList<>();
+
+        mapManager.getWorlds().stream()
+                .filter(world -> world.getName().startsWith(worldName))
+                .forEach(world -> {
+                    List<String> maps = world.maps.stream()
+                            .map(map -> {
+                                if (map.getName().contains(" ")) { //Quote if map name contains a space
+                                    return "\"" + world.getName() + ":" + map.getName() + "\"";
+                                } else {
+                                    return world.getName() + ":" + map.getName();
+                                }
+                            })
+                            .collect(Collectors.toList());
+                    suggestions.addAll(maps);
+                });
+
+        return suggestions;
+    }
+
+    /**
+     * Returns tab completion suggestions for field:value args based on the provided arguments
+     * If the last provided argument contains a ":", values for the field will be suggested if present
+     * Otherwise fields will be suggested if they do not already exist with a value in the provided arguments
+     *
+     * @param args - Array of already provided command arguments
+     * @param fields - Map of possible field names and suppliers for values
+     * @return List of tab completion suggestions
+     */
+    public List<String> getFieldValueSuggestions(String[] args, Map<String, Supplier<String[]>> fields) {
+        if (args.length == 0 || fields == null || fields.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> suggestions = new ArrayList<>(fields.keySet());
+        String[] lastArgument = args[args.length - 1].split(":", 2);
+
+        //If last argument is an incomplete field value, suggest matching values for that field.
+        if (lastArgument.length == 2) {
+            if (fields.containsKey(lastArgument[0])) {
+                //Don't suggest anything if the value contains a space as the client doesn't handle this well
+                if(lastArgument[1].contains(" ")) {
+                    return Collections.emptyList();
+                }
+
+                return Arrays.stream(fields.get(lastArgument[0]).get())
+                        .filter(value -> value.startsWith(lastArgument[1]))
+                        //Format suggestions as field:value, quoting the value if it contains a space
+                        .map(value -> lastArgument[0] + ":" + (value.contains(" ") ? "\"" + value + "\"" : value))
+                        .collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+        //Remove fields with values in previous args from suggestions
+        for (String arg : args) {
+            String[] value = arg.split(":");
+
+            if (suggestions.contains(value[0]) && value.length == 2) {
+                suggestions.remove(value[0]);
+            }
+        }
+
+        //Suggest remaining fields
+        return suggestions.stream().
+                filter(field -> field.startsWith(args[args.length - 1]))
+                .map(field -> field + ":")
+                .collect(Collectors.toList());
+    }
+
     public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
         if (mapManager == null) { // Initialization faulure
             sender.sendMessage("Dynmap failed to initialize properly: commands not available");
@@ -1729,6 +1900,155 @@ public class DynmapCore implements DynmapCommonAPI {
 
         return true;
     }
+
+    /**
+     * Returns a list of tab completion suggestions for the given sender, command and command arguments.
+     *
+     * @param sender - The sender of the tab completion, used for permission checks
+     * @param cmd - The top level command being tab completed
+     * @param args - Array of extra command arguments
+     * @return List of tab completion suggestions
+     */
+    public List<String> getTabCompletions(DynmapCommandSender sender, String cmd, String[] args) {
+        if (mapManager == null || args.length == 0) {
+            return Collections.emptyList();
+        }
+
+        if (args.length == 1) {
+            return getSubcommandSuggestions(sender, cmd, args[0]);
+        }
+
+        if (cmd.equalsIgnoreCase("dmap")) {
+            return dmapcmds.getTabCompletions(sender, args, this);
+        }
+
+        if (cmd.equalsIgnoreCase("dmarker")) {
+            return markerapi.getTabCompletions(sender, args, this);
+        }
+
+        if (cmd.equalsIgnoreCase("dynmapexp")) {
+            return dynmapexpcmds.getTabCompletions(sender, args, this);
+        }
+
+        if (!cmd.equalsIgnoreCase("dynmap")) {
+            return Collections.emptyList();
+        }
+
+        /* Re-parse args - handle double quotes */
+        args = parseArgs(args, sender, true);
+
+        if (args == null || args.length <= 1) {
+            return Collections.emptyList();
+        }
+
+        String subcommand = args[0];
+        DynmapPlayer player = null;
+        if (sender instanceof DynmapPlayer) {
+            player = (DynmapPlayer) sender;
+        }
+
+        if (subcommand.equals("radiusrender") && checkPlayerPermission(sender, "radiusrender")) {
+            if(args.length == 2) { // /dynmap radiusrender *<world>* <x> <z> <radius> <map>
+                return getWorldSuggestions(args[1]);
+            } if(args.length == 3 && player != null) { // /dynmap radiusrender <radius> *<mapname>*
+                Scanner sc = new Scanner(args[1]);
+
+                if(sc.hasNextInt(10)) { //Only show map suggestions if a number was entered before
+                    return getMapSuggestions(player.getLocation().world, args[2], false);
+                }
+            } else if(args.length == 6) { // /dynmap radiusrender <world> <x> <z> <radius> *<map>*
+                return getMapSuggestions(args[1], args[5], false);
+            }
+        } else if (subcommand.equals("updaterender") && checkPlayerPermission(sender, "updaterender")) {
+            if(args.length == 2) { // /dynmap updaterender *<world>* <x> <z> <map>/*<map>*
+                List<String> suggestions = getWorldSuggestions(args[1]);
+
+                if(player != null) {
+                    suggestions.addAll(getMapSuggestions(player.getLocation().world, args[1], false));
+                }
+
+                return suggestions;
+            } else if(args.length == 5) { // /dynmap updaterender <world> <x> <z> *<map>*
+                return getMapSuggestions(args[1], args[4], false);
+            }
+        } else if (subcommand.equals("hide") && checkPlayerPermission(sender, "hide.others")) {
+            if(args.length == 2) { // /dynmap hide *<player>*
+                final String arg = args[1];
+                return playerList.getVisiblePlayers().stream()
+                        .map(DynmapPlayer::getName)
+                        .filter(name -> name.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if (subcommand.equals("show") && checkPlayerPermission(sender, "show.others")) {
+            if(args.length == 2) { // /dynmap show *<player>*
+                final String arg = args[1];
+                return playerList.getHiddenPlayers().stream()
+                        .map(DynmapPlayer::getName)
+                        .filter(name -> name.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if (subcommand.equals("fullrender") && checkPlayerPermission(sender, "fullrender")) {
+            List<String> suggestions = getWorldSuggestions(args[args.length - 1]); //World suggestions
+            suggestions.addAll(getMapSuggestions(args[args.length - 1])); //world:map suggestions
+
+            //Remove suggestions present in other arguments
+            for (String arg : args) {
+                suggestions.remove(arg.contains(" ") ? "\"" + arg + "\"" : arg);
+            }
+
+            //Add resume if previous argument wasn't resume
+            if ("resume".startsWith(args[args.length - 1])
+                    && (args.length == 2 || !args[args.length - 2].equals("resume"))) {
+                suggestions.add("resume");
+            }
+
+            return suggestions;
+        } else if ((subcommand.equals("cancelrender") && checkPlayerPermission(sender, "cancelrender"))
+                || (subcommand.equals("purgequeue") && checkPlayerPermission(sender, "purgequeue"))) {
+            List<String> suggestions = getWorldSuggestions(args[args.length - 1]);
+            suggestions.removeAll(Arrays.asList(args)); //Remove worlds present in other arguments
+
+            return suggestions;
+        } else if (subcommand.equals("purgemap") && checkPlayerPermission(sender, "purgemap")) {
+            if (args.length == 2) { // /dynmap purgemap *<world>* <map>
+                return getWorldSuggestions(args[1]);
+            } else if (args.length == 3) { // /dynmap purgemap <world> *<map>*
+                return getMapSuggestions(args[1], args[2], false);
+            }
+        } else if ((subcommand.equals("purgeworld") && checkPlayerPermission(sender, "purgeworld"))
+                || (subcommand.equals("stats") && checkPlayerPermission(sender, "stats"))
+                || (subcommand.equals("resetstats") && checkPlayerPermission(sender, "resetstats"))) {
+            if (args.length == 2) {
+                return getWorldSuggestions(args[1]);
+            }
+        } else if (subcommand.equals("pause") && checkPlayerPermission(sender, "pause")) {
+            List<String> suggestions = Arrays.asList("full", "update", "all", "none");
+
+            if (args.length == 2) {
+                final String arg = args[1];
+                return suggestions.stream().filter(suggestion -> suggestion.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if((subcommand.equals("ips-for-id") && checkPlayerPermission(sender, "ips-for-id"))
+                || (subcommand.equals("add-id-for-ip") && checkPlayerPermission(sender, "add-id-for-ip"))
+                || (subcommand.equals("del-id-for-ip") && checkPlayerPermission(sender, "del-id-for-ip"))
+                || (subcommand.equals("webregister") && checkPlayerPermission(sender, "webregister.other"))) {
+            if(args.length == 2) {
+                final String arg = args[1];
+                return Arrays.stream(playerList.getOnlinePlayers())
+                        .map(DynmapPlayer::getName)
+                        .filter(name -> name.startsWith(arg))
+                        .collect(Collectors.toList());
+            }
+        } else if(subcommand.equals("help")) {
+            if(args.length == 2) {
+                return getSubcommandSuggestions(sender, "dynmap", args[1]);
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
     public boolean checkPlayerPermission(DynmapCommandSender sender, String permission) {
         if (!(sender instanceof DynmapPlayer) || sender.isOp()) {
             return true;

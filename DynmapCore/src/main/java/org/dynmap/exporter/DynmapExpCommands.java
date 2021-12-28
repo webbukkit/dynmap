@@ -1,7 +1,13 @@
 package org.dynmap.exporter;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapLocation;
@@ -89,6 +95,53 @@ public class DynmapExpCommands {
         }
 
         return rslt;
+    }
+
+    public List<String> getTabCompletions(DynmapCommandSender sender, String[] args, DynmapCore core) {
+        /* Re-parse args - handle doublequotes */
+		args = DynmapCore.parseArgs(args, sender, true);
+
+		if (args == null || args.length <= 1) {
+			return Collections.emptyList();
+		}
+
+		String cmd = args[0];
+
+        if(cmd.equalsIgnoreCase("set")) {
+            List<String> keys = new ArrayList<>(
+                    Arrays.asList("x0", "x1", "y0", "y1", "z0", "z1", "world", "shader", "byChunk",
+                                  "byBlockID", "byBlockIDData", "byTexture"));
+
+            if (args.length % 2 == 0) { // Args contain only complete key value argument pairs (plus subcommand)
+                // Remove previous used keys
+                for (int i = 1; i < args.length; i += 2) {
+                    keys.remove(args[i]);
+                }
+
+                return keys;
+            } else { // Incomplete key value argument pair, suggest values
+                final String lastKey = args[args.length - 2];
+                final String lastValue = args[args.length - 1];
+
+                switch(lastKey) {
+                    case "world":
+                        return core.getWorldSuggestions(lastValue);
+                    case "shader":
+                        return MapManager.mapman.hdmapman.shaders.keySet().stream()
+                                .filter(value -> value.startsWith(lastValue))
+                                .collect(Collectors.toList());
+                    case "byChunk":
+                    case "byBlockID":
+                    case "byBlockIDData":
+                    case "byTexture":
+                        return Stream.of("true", "false")
+                                .filter(value -> value.startsWith(lastValue))
+                                .collect(Collectors.toList());
+                }
+            }
+        }
+
+        return Collections.emptyList();
     }
 
     private boolean handleInfo(DynmapCommandSender sender, String[] args, ExportContext ctx, DynmapCore core) {
