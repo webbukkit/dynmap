@@ -140,13 +140,11 @@ public class DefaultHDShader implements HDShader {
         }
         
         protected Color[] getBlockColors(DynmapBlockState block) {
-            //TODO: this will not work right on 1.13+, but thwo whole colorscheme thing is broken anyway...
-            int blocktype = block.globalStateIndex / 16;
-            int blockdata = block.globalStateIndex & 0x0F;
-            if((blockdata != 0) && (colorScheme.datacolors[blocktype] != null))
-                return colorScheme.datacolors[blocktype][blockdata];
-            else
-                return colorScheme.colors[blocktype];
+        	int idx = block.globalStateIndex;
+        	if (colorScheme.colors.length > idx) {
+        		return colorScheme.colors[idx];
+        	}
+        	return null;
         }
         
         /**

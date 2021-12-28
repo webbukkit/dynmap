@@ -9,33 +9,24 @@ import java.util.Scanner;
 
 import org.dynmap.common.BiomeMap;
 import org.dynmap.debug.Debug;
+import org.dynmap.renderer.DynmapBlockState;
 
 public class ColorScheme {
     private static final HashMap<String, ColorScheme> cache = new HashMap<String, ColorScheme>();
 
     public String name;
     /* Switch to arrays - faster than map */
-    public Color[][] colors;    /* [blk-type][step] */
-    public Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
+    public final Color[][] colors;    /* [global-state-idx][step] */
     public final Color[][] biomecolors;   /* [Biome.ordinal][step] */
     public final Color[][] raincolors;  /* [rain * 63][step] */
     public final Color[][] tempcolors;  /* [temp * 63][step] */
 
-    public ColorScheme(String name, Color[][] colors, Color[][][] datacolors, Color[][] biomecolors, Color[][] raincolors, Color[][] tempcolors) {
+    public ColorScheme(String name, Color[][] colors, Color[][] biomecolors, Color[][] raincolors, Color[][] tempcolors) {
         this.name = name;
         this.colors = colors;
-        this.datacolors = datacolors;
         this.biomecolors = biomecolors;
         this.raincolors = raincolors;
         this.tempcolors = tempcolors;
-        //TODO: see if we can fix this for IDs vs names...
-//        for(int i = 0; i < colors.length; i++) {
-//            int id = MapManager.mapman.getBlockAlias(i);
-//            if(id != i) {
-//                this.colors[i] = this.colors[id];
-//                this.datacolors[i] = this.datacolors[id];
-//            }
-//        }
     }
 
     private static File getColorSchemeDirectory(DynmapCore core) {
@@ -55,8 +46,7 @@ public class ColorScheme {
 
     public static ColorScheme loadScheme(DynmapCore core, String name) {
         File colorSchemeFile = new File(getColorSchemeDirectory(core), name + ".txt");
-        Color[][] colors = new Color[4096][];
-        Color[][][] datacolors = new Color[4096][][];
+        Color[][] colors = new Color[DynmapBlockState.getGlobalIndexMax()][];
         Color[][] biomecolors = new Color[BiomeMap.values().length][];
         Color[][] raincolors = new Color[64][];
         Color[][] tempcolors = new Color[64][];
@@ -98,15 +88,32 @@ public class ColorScheme {
                 if (split.length < 17) {
                     continue;
                 }
-                Integer id;
+                Integer id = null;
                 Integer dat = null;
                 boolean isbiome = false;
                 boolean istemp = false;
                 boolean israin = false;
+                DynmapBlockState state = null;
                 int idx = split[0].indexOf(':');
-                if(idx > 0) {    /* ID:data - data color */
-                    id = Integer.parseInt(split[0].substring(0, idx));
-                    dat = Integer.parseInt(split[0].substring(idx+1));
+                if(idx > 0) {    /* ID:data - data color OR blockstate - data color */
+                	if (Character.isDigit(split[0].charAt(0))) {
+                		id = Integer.parseInt(split[0].substring(0, idx));
+                		dat = Integer.parseInt(split[0].substring(idx+1));
+                		state = DynmapBlockState.getStateByLegacyBlockID(id);
+                		if (state != null) {
+                			state = state.getState(dat);
+                		}
+                	}
+                	else {
+                		String[] vsplit = split[0].split("[\\[\\]]");
+                		Log.info(String.format("split[0]=%s,vsplit[0]=%s,vsplit[1]=%s", split[0], vsplit[0], vsplit.length > 1 ? vsplit[1] : ""));
+                		if (vsplit.length > 1) {
+                			state = DynmapBlockState.getStateByNameAndState(vsplit[0], vsplit[1]);
+                		}
+                		else {
+                			state = DynmapBlockState.getBaseStateByName(vsplit[0]);                			
+                		}
+                	}
                 }
                 else if(split[0].charAt(0) == '[') {    /* Biome color data */
                     String bio = split[0].substring(1);
@@ -150,14 +157,7 @@ public class ColorScheme {
                 }
                 else {
                     id = Integer.parseInt(split[0]);
-                }
-                if((!isbiome) && (id >= colors.length)) {
-                    Color[][] newcolors = new Color[id+1][];
-                    System.arraycopy(colors, 0, newcolors, 0, colors.length);
-                    colors = newcolors;
-                    Color[][][] newdatacolors = new Color[id+1][][];
-                    System.arraycopy(datacolors, 0, newdatacolors, 0, datacolors.length);
-                    datacolors = newdatacolors;
+                    state = DynmapBlockState.getStateByLegacyBlockID(id);
                 }
                 
                 Color[] c = new Color[5];
@@ -170,7 +170,7 @@ public class ColorScheme {
                 /* Blended color - for 'smooth' option on flat map */
                 c[4] = new Color((c[1].getRed()+c[3].getRed())/2, (c[1].getGreen()+c[3].getGreen())/2, (c[1].getBlue()+c[3].getBlue())/2, (c[1].getAlpha()+c[3].getAlpha())/2);
 
-                if(isbiome) {
+                if (isbiome) {
                     if(istemp) {
                         tempcolors[id] = c;
                     }
@@ -180,34 +180,21 @@ public class ColorScheme {
                     else if((id >= 0) && (id < biomecolors.length))
                         biomecolors[id] = c;
                 }
-                else if(dat != null) {
-                    Color[][] dcolor = datacolors[id];    /* Existing list? */
-                    if(dcolor == null) {
-                        dcolor = new Color[16][];            /* Make 16 index long list */
-                        datacolors[id] = dcolor;
-                    }
-                    if((dat >= 0) && (dat < 16)) {            /* Add color to list */
-                        dcolor[dat] = c;
-                    }
-                    if(dat == 0) {    /* Index zero is base color too */
-                        colors[id] = c;
-                    }
-                }
-                else {
-                    colors[id] = c;
+                else if (state != null) {
+                	int stateid = state.globalStateIndex;
+                    colors[stateid] = c;
                 }
             }
             scanner.close();
             /* Last, push base color into any open slots in data colors list */
-            for(int k = 0; k < datacolors.length; k++) {
-                Color[][] dc = datacolors[k];    /* see if data colors too */
-                if(dc != null) {
-                    Color[] c = colors[k];
-                    for(int i = 0; i < 16; i++) {
-                        if(dc[i] == null)
-                            dc[i] = c;
-                    }
-                }
+            for (int i = 0; i < colors.length; i++) {
+            	if (colors[i] == null) {
+            		DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);	// Get state
+            		DynmapBlockState bsbase = bs.baseState;
+            		if ((bsbase != null) && (colors[bsbase.globalStateIndex] != null)) {
+            			colors[i] = colors[bsbase.globalStateIndex];
+            		}
+            	}
             }
             /* And interpolate any missing rain and temperature colors */
             interpolateColorTable(tempcolors);
@@ -218,7 +205,7 @@ public class ColorScheme {
         } catch (FileNotFoundException e) {
             Log.severe("Could not load colors '" + name + "' ('" + colorSchemeFile + "'): File not found.", e);
         }
-        return new ColorScheme(name, colors, datacolors, biomecolors, raincolors, tempcolors);
+        return new ColorScheme(name, colors, biomecolors, raincolors, tempcolors);
     }
     
     public static void interpolateColorTable(Color[][] c) {
@@ -269,16 +256,6 @@ public class ColorScheme {
             return tempcolors[idx];
         else
             return null;
-    }
-    public void resizeColorArray(int idx) {
-        if(idx >= colors.length){
-            Color[][] newcolors = new Color[idx+1][];
-            System.arraycopy(colors, 0, newcolors, 0, colors.length);
-            colors = newcolors;
-            Color[][][] newdatacolors = new Color[idx+1][][];
-            System.arraycopy(datacolors, 0, newdatacolors, 0, datacolors.length);
-            datacolors = newdatacolors;
-        }
     }
     public static void reset() {
         cache.clear();
