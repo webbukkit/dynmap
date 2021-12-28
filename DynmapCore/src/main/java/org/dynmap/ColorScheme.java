@@ -106,7 +106,7 @@ public class ColorScheme {
                 	}
                 	else {
                 		String[] vsplit = split[0].split("[\\[\\]]");
-                		Log.info(String.format("split[0]=%s,vsplit[0]=%s,vsplit[1]=%s", split[0], vsplit[0], vsplit.length > 1 ? vsplit[1] : ""));
+                		//Log.info(String.format("split[0]=%s,vsplit[0]=%s,vsplit[1]=%s", split[0], vsplit[0], vsplit.length > 1 ? vsplit[1] : ""));
                 		if (vsplit.length > 1) {
                 			state = DynmapBlockState.getStateByNameAndState(vsplit[0], vsplit[1]);
                 		}
