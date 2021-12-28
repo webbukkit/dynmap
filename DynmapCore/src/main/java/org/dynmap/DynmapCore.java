@@ -678,13 +678,15 @@ public class DynmapCore implements DynmapCommonAPI {
 
         events.<Object>trigger("initialized", null);
                 
-        dumpColorMap("standard.txt", "standard");
-        dumpColorMap("dokudark.txt", "dokudark.zip");
-        dumpColorMap("dokulight.txt", "dokulight.zip");
-        dumpColorMap("dokuhigh.txt", "dokuhigh.zip");
-        dumpColorMap("misa.txt", "misa.zip");
-        dumpColorMap("sphax.txt", "sphax.zip");
-
+        if (configuration.getBoolean("dumpColorMaps", false)) {
+        	dumpColorMap("standard.txt", "standard");
+        	dumpColorMap("dokudark.txt", "dokudark.zip");
+        	dumpColorMap("dokulight.txt", "dokulight.zip");
+        	dumpColorMap("dokuhigh.txt", "dokuhigh.zip");
+        	dumpColorMap("misa.txt", "misa.zip");
+        	dumpColorMap("sphax.txt", "sphax.zip");
+        }
+        
         if (configuration.getBoolean("dumpBlockState", false)) {
         	Log.info("Block State Dump");
         	Log.info("----------------");
