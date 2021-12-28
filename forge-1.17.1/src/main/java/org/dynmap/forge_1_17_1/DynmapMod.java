@@ -106,7 +106,7 @@ public class DynmapMod
         //    ForgeChunkManager.setForcedChunkLoadingCallback(DynmapMod.instance, new LoadingCallback());
         //}
         //else {
-        //    System.out.println("[Dynmap] World loading using forced chunks is disabled");
+        //    Log.warning("[Dynmap] World loading using forced chunks is disabled");
         //}
     }
 

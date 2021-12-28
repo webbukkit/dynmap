@@ -428,14 +428,14 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
                 bb.xp[i] = v2.x;
                 bb.yp[i] = v2.y;
             }
-            //System.out.println("x=" + bb.xmin + " - " + bb.xmax + ",  y=" + bb.ymin + " - " + bb.ymax);
+            //Log.info("x=" + bb.xmin + " - " + bb.xmax + ",  y=" + bb.ymin + " - " + bb.ymax);
             bbc.put(perspective.getName(), bb);
             bb_cache = bbc;
         }
         final double tile_x2 = tile_x + tile_dim;
         final double tile_y2 = tile_y + tile_dim;
         if ((bb.xmin > tile_x2) || (bb.xmax < tile_x) || (bb.ymin > tile_y2) || (bb.ymax < tile_y)) {
-            //System.out.println("tile: " + tile_x + " / " + tile_y + " - miss");
+            //Log.info("tile: " + tile_x + " / " + tile_y + " - miss");
             return false;
         }
         final int cnt = bb.xp.length;
@@ -465,7 +465,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
         //    // Test for X=tile_x side
         //    if ((px[i] < tile_x) && (px[j] >= tile_x) && ()
         // }
-        //System.out.println("tile: " + tile_x + " / " + tile_y + " - hit");
+        //Log.info("tile: " + tile_x + " / " + tile_y + " - hit");
         return false;
     }
     @Override

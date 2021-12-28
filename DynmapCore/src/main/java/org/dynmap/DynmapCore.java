@@ -678,12 +678,12 @@ public class DynmapCore implements DynmapCommonAPI {
 
         events.<Object>trigger("initialized", null);
                 
-        //dumpColorMap("standard.txt", "standard");
-        //dumpColorMap("dokudark.txt", "dokudark.zip");
-        //dumpColorMap("dokulight.txt", "dokulight.zip");
-        //dumpColorMap("dokuhigh.txt", "dokuhigh.zip");
-        //dumpColorMap("misa.txt", "misa.zip");
-        //dumpColorMap("sphax.txt", "sphax.zip");
+        dumpColorMap("standard.txt", "standard");
+        dumpColorMap("dokudark.txt", "dokudark.zip");
+        dumpColorMap("dokulight.txt", "dokulight.zip");
+        dumpColorMap("dokuhigh.txt", "dokuhigh.zip");
+        dumpColorMap("misa.txt", "misa.zip");
+        dumpColorMap("sphax.txt", "sphax.zip");
 
         if (configuration.getBoolean("dumpBlockState", false)) {
         	Log.info("Block State Dump");
@@ -742,13 +742,13 @@ public class DynmapCore implements DynmapCommonAPI {
                     switch(idx) {
                         case 1: // grass
                         case 18: // grass
-                            System.out.println("Used grass for " + blk);
+                        	Log.info("Used grass for " + blk);
                             c.blendColor(tp.getTrivialGrassMultiplier() | 0xFF000000);
                             break;
                         case 2: // foliage
                         case 19: // foliage
                         case 22: // foliage
-                            System.out.println("Used foliage for " + blk);
+                        	Log.info("Used foliage for " + blk);
                             c.blendColor(tp.getTrivialFoliageMultiplier() | 0xFF000000);
                             break;
                         case 13: // pine
@@ -762,19 +762,19 @@ public class DynmapCore implements DynmapCommonAPI {
                             break;
                         case 3: // water
                         case 20: // water
-                            System.out.println("Used water for " + blk);
+                        	Log.info("Used water for " + blk);
                             c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
                             break;
                         case 12: // clear inside
                             if (blk.isWater()) { // special case for water
-                                System.out.println("Used water for " + blk);
+                            	Log.info("Used water for " + blk);
                                 c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
                             }
                             break;
                     }
                     int custmult = tp.getCustomBlockMultiplier(blk);
                     if (custmult != 0xFFFFFF) {
-                        System.out.println(String.format("Custom color: %06x for %s", custmult, blk));
+                    	Log.info(String.format("Custom color: %06x for %s", custmult, blk));
                         if ((custmult & 0xFF000000) == 0) {
                             custmult |= 0xFF000000;
                         }

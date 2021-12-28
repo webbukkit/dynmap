@@ -273,13 +273,13 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
             try {
                 return field.get(obj);
             } catch (IllegalArgumentException e) {
-                System.out.println(String.format("IllegalArgExc(%s,%s)", obj.toString(), field.toString()));
+                Log.warning(String.format("IllegalArgExc(%s,%s)", obj.toString(), field.toString()));
             } catch (IllegalAccessException e) {
-                System.out.println(String.format("IllegalAccessExc(%s,%s)", obj.toString(), field.toString()));
+            	Log.warning(String.format("IllegalAccessExc(%s,%s)", obj.toString(), field.toString()));
             }
         }
         else {
-            System.out.println(String.format("NullArg(%s,%s)", (obj != null)?obj.toString():"null", (field != null)?field.toString():"null"));
+        	Log.warning(String.format("NullArg(%s,%s)", (obj != null)?obj.toString():"null", (field != null)?field.toString():"null"));
         }
         return def;
     }

@@ -148,7 +148,7 @@ public class ChunkSnapshot
             }
             if (secnum < 0)
                 continue;
-            //System.out.println("section(" + secnum + ")=" + sec.asString());
+            //Log.info("section(" + secnum + ")=" + sec.asString());
             // Create normal section to initialize
             StdSection cursect = new StdSection();
             this.section[secnum] = cursect;

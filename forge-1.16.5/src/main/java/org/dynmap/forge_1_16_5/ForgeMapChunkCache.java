@@ -28,7 +28,6 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 	 */
 	public ForgeMapChunkCache(GenericChunkCache cc) {
 		super(cc);
-		init();
 	}
 
 	// Load generic chunk from existing and already loaded chunk

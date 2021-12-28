@@ -1466,7 +1466,6 @@ public class DynmapPlugin
         core.setMinecraftVersion(mcver);
         core.setDataFolder(dataDirectory);
         core.setServer(fserver);
-        ForgeMapChunkCache.init();
         core.setTriggerDefault(TRIGGER_DEFAULTS);
         core.setBiomeNames(getBiomeNames());
 
@@ -1483,7 +1482,7 @@ public class DynmapPlugin
     
     private static int test(CommandSource source) throws CommandSyntaxException
 	{
-        System.out.println(source.toString());
+    	Log.warning(source.toString());
 		return 1;
     }
     

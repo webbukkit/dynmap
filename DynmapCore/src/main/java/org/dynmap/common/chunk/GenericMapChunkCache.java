@@ -70,7 +70,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			this.bz = z & 0xF;
 
 			if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
-				snap = GenericChunk.EMPTY;
+				snap = getEmpty();
 			} else {
 				snap = snaparray[chunkindex];
 			}
@@ -294,7 +294,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					bx = 0;
 					chunkindex++;
 					if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
-						snap = GenericChunk.EMPTY;
+						snap = getEmpty();
 					} else {
 						snap = snaparray[chunkindex];
 					}
@@ -320,7 +320,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					bz = 0;
 					chunkindex += x_dim;
 					if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
-						snap = GenericChunk.EMPTY;
+						snap = getEmpty();
 					} else {
 						snap = snaparray[chunkindex];
 					}
@@ -336,7 +336,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					bx = 15;
 					chunkindex--;
 					if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
-						snap = GenericChunk.EMPTY;
+						snap = getEmpty();
 					} else {
 						snap = snaparray[chunkindex];
 					}
@@ -362,7 +362,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					bz = 15;
 					chunkindex -= x_dim;
 					if ((chunkindex >= snapcnt) || (chunkindex < 0)) {
-						snap = GenericChunk.EMPTY;
+						snap = getEmpty();
 					} else {
 						snap = snaparray[chunkindex];
 					}
@@ -511,29 +511,44 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 	}
 
-	private static final GenericChunkSection STONESECTION = (new GenericChunkSection.Builder()).singleBlockState(DynmapBlockState.getBaseStateByName(DynmapBlockState.STONE_BLOCK)).build();
-	private static final GenericChunkSection WATERSECTION = (new GenericChunkSection.Builder()).singleBlockState(DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK)).build();
-
-	// Generate generic chunks for STONE and OCEAN hidden areas
-	private static final GenericChunk STONE = (new GenericChunk.Builder(-64, 319))
-			.addSection(0, STONESECTION).addSection(1, STONESECTION).addSection(2, STONESECTION).addSection(0, STONESECTION).build();
-	private static final GenericChunk OCEAN = (new GenericChunk.Builder(-64, 319))
-			.addSection(0, WATERSECTION).addSection(1, WATERSECTION).addSection(2, WATERSECTION).addSection(0, WATERSECTION).build();
-
-	public static void init() {
-		if (!init) {
-			init = true;
-		}
-	}
+	private static final GenericChunkSection STONESECTION = (new GenericChunkSection.Builder()).singleBiome(BiomeMap.PLAINS).singleBlockState(DynmapBlockState.getBaseStateByName(DynmapBlockState.STONE_BLOCK)).build();
+	private static final GenericChunkSection WATERSECTION = (new GenericChunkSection.Builder()).singleBiome(BiomeMap.OCEAN).singleBlockState(DynmapBlockState.getBaseStateByName(DynmapBlockState.WATER_BLOCK)).build();
 
 	private GenericChunkCache cache;
+
+	// Lazy generic chunks (tailored to height of world)
+	private GenericChunk empty_chunk;
+	private GenericChunk stone_chunk;
+	private GenericChunk ocean_chunk;
+	
+	private final GenericChunk getEmpty() {
+		if (empty_chunk == null) {
+			empty_chunk = (new GenericChunk.Builder(dw.minY, dw.worldheight)).build();
+		}
+		return empty_chunk;
+	}
+	private final GenericChunk getStone() {
+		if (stone_chunk == null) {
+			GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY, dw.worldheight);
+			for (int sy = -sectoff; sy < 4; sy++) { bld.addSection(sy, STONESECTION); }
+			stone_chunk = bld.build();
+		}
+		return stone_chunk;		
+	}
+	private final GenericChunk getOcean() {
+		if (ocean_chunk == null) {
+			GenericChunk.Builder bld = new GenericChunk.Builder(dw.minY, dw.worldheight);
+			for (int sy = -sectoff; sy < 3; sy++) { bld.addSection(sy, STONESECTION); }
+			bld.addSection(3, WATERSECTION);	// Put stone with ocean on top - less expensive render
+			ocean_chunk = bld.build();
+		}
+		return ocean_chunk;		
+	}
 	/**
 	 * Construct empty cache
 	 */
 	public GenericMapChunkCache(GenericChunkCache c) {
-		cache = c;	// Save reference to cache
-		
-		init();
+		cache = c;	// Save reference to cache		
 	}
 
 	public void setChunks(DynmapWorld dw, List<DynmapChunk> chunks) {
@@ -611,11 +626,11 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			ss = ssr.ss;
 			if (!vis) {
 				if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
-					ss = STONE;
+					ss = getStone();
 				} else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
-					ss = OCEAN;
+					ss = getOcean();
 				} else {
-					ss = GenericChunk.EMPTY;
+					ss = getEmpty();;
 				}
 			}
 			int idx = (chunk.x - x_min) + (chunk.z - z_min) * x_dim;
@@ -678,13 +693,13 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					}
 					else {
 						if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
-							ss = STONE;
+							ss = getStone();
 						}
 						else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
-							ss = OCEAN;
+							ss = getOcean();
 						}
 						else {
-							ss = GenericChunk.EMPTY;
+							ss = getEmpty();
 						}
 					}
 					snaparray[chunkindex] = ss;
@@ -741,13 +756,13 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					// If hidden
 					if (!vis) {
 						if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
-							ss = STONE;
+							ss = getStone();
 						}
 						else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
-							ss = OCEAN;
+							ss = getOcean();
 						}
 						else {
-							ss = GenericChunk.EMPTY;
+							ss = getEmpty();
 						}
 					}
 					else {
@@ -772,9 +787,9 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			/* Fill missing chunks with empty dummy chunk */
 			for (int i = 0; i < snaparray.length; i++) {
 				if (snaparray[i] == null) {
-					snaparray[i] = GenericChunk.EMPTY;
+					snaparray[i] = getEmpty();
 				}
-				else if (snaparray[i] != GenericChunk.EMPTY) {
+				else if (!snaparray[i].isEmpty) {
 					isempty = false;
 				}
 			}
@@ -819,7 +834,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	private void initSectionData(int idx) {
 		isSectionNotEmpty[idx] = new boolean[nsect + 1];
 
-		if (snaparray[idx] != GenericChunk.EMPTY) {
+		if (!snaparray[idx].isEmpty) {
 			for (int i = 0; i < nsect; i++) {
 				if (snaparray[idx].isSectionEmpty(i - sectoff) == false) {
 					isSectionNotEmpty[idx][i] = true;

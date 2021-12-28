@@ -27,7 +27,6 @@ public class MapChunkCache116_3 extends GenericMapChunkCache {
 	 */
 	public MapChunkCache116_3(GenericChunkCache cc) {
 		super(cc);
-		init();
 	}
 
 	// Load generic chunk from existing and already loaded chunk

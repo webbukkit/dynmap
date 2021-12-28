@@ -91,7 +91,7 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
     		String bn = id.toString();
             if (bn != null) {
             	names.add(bn);
-            	System.out.println("block=" + bn);
+            	Log.info("block=" + bn);
             }
 		}
         return names.toArray(new String[0]);
@@ -294,21 +294,21 @@ public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
 
 	@Override
 	public Object getUnloadQueue(World world) {
-		System.out.println("getUnloadQueue not implemented yet");
+		Log.warning("getUnloadQueue not implemented yet");
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isInUnloadQueue(Object unloadqueue, int x, int z) {
-		System.out.println("isInUnloadQueue not implemented yet");
+		Log.warning("isInUnloadQueue not implemented yet");
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public Object[] getBiomeBaseFromSnapshot(ChunkSnapshot css) {
-		System.out.println("getBiomeBaseFromSnapshot not implemented yet");
+		Log.warning("getBiomeBaseFromSnapshot not implemented yet");
 		// TODO Auto-generated method stub
 		return new Object[256];
 	}

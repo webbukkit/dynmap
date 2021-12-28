@@ -1100,13 +1100,11 @@ block:id=cracked_stone_bricks,allfaces=0:cracked_stone_bricks,stdrot=true
 block:id=chiseled_stone_bricks,allfaces=0:chiseled_stone_bricks,stdrot=true
 
 # Brown Mushroom Block
-block:id=brown_mushroom_block,patch0=0:brown_mushroom_block,patch1=0:mushroom_block_inside
+block:id=brown_mushroom_block,patch1=0:brown_mushroom_block,patch0=0:mushroom_block_inside,patch3=0:brown_mushroom_block,patch2=0:mushroom_block_inside,patch5=0:brown_mushroom_block,patch4=0:mushroom_block_inside,patch7=0:brown_mushroom_block,patch6=0:mushroom_block_inside,patch9=0:brown_mushroom_block,patch8=0:mushroom_block_inside,patch11=0:brown_mushroom_block,patch10=0:mushroom_block_inside
 # Red Mushroom Block
-block:id=red_mushroom_block,patch0=0:red_mushroom_block,patch1=0:mushroom_block_inside
-
-# Brown Mushroom Block - stem
-# Red Mushroom Block - stem
-block:id=mushroom_stem,topbottom=0:mushroom_block_inside,allsides=0:mushroom_stem,stdrot=true
+block:id=red_mushroom_block,patch1=0:red_mushroom_block,patch0=0:mushroom_block_inside,patch3=0:red_mushroom_block,patch2=0:mushroom_block_inside,patch5=0:red_mushroom_block,patch4=0:mushroom_block_inside,patch7=0:red_mushroom_block,patch6=0:mushroom_block_inside,patch9=0:red_mushroom_block,patch8=0:mushroom_block_inside,patch11=0:red_mushroom_block,patch10=0:mushroom_block_inside
+# Mushroom stem
+block:id=mushroom_stem,patch1=0:mushroom_stem,patch0=0:mushroom_block_inside,patch3=0:mushroom_stem,patch2=0:mushroom_block_inside,patch5=0:mushroom_stem,patch4=0:mushroom_block_inside,patch7=0:mushroom_stem,patch6=0:mushroom_block_inside,patch9=0:mushroom_stem,patch8=0:mushroom_block_inside,patch11=0:mushroom_stem,patch10=0:mushroom_block_inside
 
 # Iron fence
 block:id=iron_bars,patch0-1=0:iron_bars,transparency=TRANSPARENT
