@@ -149,8 +149,8 @@ public class IsoHDPerspective implements HDPerspective {
             llcache = new LightLevels[4];
             for(int i = 0; i < llcache.length; i++)
                 llcache[i] = new LightLevels();
-            custom_meshes = new DynLongHashMap();
-            custom_fluid_meshes = new DynLongHashMap();
+            custom_meshes = new DynLongHashMap(4096);
+            custom_fluid_meshes = new DynLongHashMap(4096);
             modscale = basemodscale << scaled;
             scalemodels = HDBlockModels.getModelsForScale(basemodscale << scaled);
         }
@@ -158,13 +158,9 @@ public class IsoHDPerspective implements HDPerspective {
         private final void updateSemitransparentLight(LightLevels ll) {
         	int emitted = 0, sky = 0;
         	for(int i = 0; i < semi_steps.length; i++) {
-        	    BlockStep s = semi_steps[i];
-        		mapiter.stepPosition(s);
-        		int v = mapiter.getBlockEmittedLight();
-        		if(v > emitted) emitted = v;
-        		v = mapiter.getBlockSkyLight();
-        		if(v > sky) sky = v;
-        		mapiter.unstepPosition(s);
+        		int emit_sky_light = mapiter.getBlockLight(semi_steps[i]);
+        		if ((emit_sky_light >> 8) > emitted) emitted = (emit_sky_light >> 8);
+        		if ((emit_sky_light & 0xF) > sky) sky = (emit_sky_light & 0xF);
         	}
         	ll.sky = sky;
         	ll.emitted = emitted;
@@ -181,16 +177,10 @@ public class IsoHDPerspective implements HDPerspective {
             		ll.emitted = mapiter.getBlockEmittedLight();
             		break;
             	case OPAQUE:
-        			if(HDBlockStateTextureMap.getTransparency(lastblocktype) != BlockTransparency.SEMITRANSPARENT) {
-                		mapiter.unstepPosition(laststep);  /* Back up to block we entered on */
-                		if(mapiter.getY() < worldheight) {
-                		    ll.sky = mapiter.getBlockSkyLight();
-                		    ll.emitted = mapiter.getBlockEmittedLight();
-                		} else {
-                		    ll.sky = 15;
-                		    ll.emitted = 0;
-                		}
-                		mapiter.stepPosition(laststep);
+        			if (HDBlockStateTextureMap.getTransparency(lastblocktype) != BlockTransparency.SEMITRANSPARENT) {
+        				int emit_sky_light = mapiter.getBlockLight(laststep.opposite());
+            		    ll.sky = emit_sky_light & 0xF;
+            		    ll.emitted = emit_sky_light >> 8;
         			}
         			else {
                 		mapiter.unstepPosition(laststep);  /* Back up to block we entered on */

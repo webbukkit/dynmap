@@ -31,6 +31,21 @@ public class GenericChunkSection {
 			return blocks[pos.soffset];
 		}
 	}
+	private static class BlockStateAccess3DPalette implements BlockStateAccess {
+		private final DynmapBlockState palette[];
+		private final short[] blocks; // YZX order
+		// Array given to us by builder
+		BlockStateAccess3DPalette(DynmapBlockState pal[], short[] blks) {
+			blocks = blks;
+			palette = pal;
+		}
+		public final DynmapBlockState getBlock(int x, int y, int z) {
+			return palette[blocks[(256 * (y & 0xF)) + (16 * (z & 0xF)) + (x & 0xF)]];
+		}
+		public final DynmapBlockState getBlock(GenericChunkPos pos) {
+			return palette[blocks[pos.soffset]];
+		}
+	}
 	private static class BlockStateAccessSingle implements BlockStateAccess {
 		private final DynmapBlockState block;
 		BlockStateAccessSingle(DynmapBlockState bs) {
@@ -157,6 +172,8 @@ public class GenericChunkSection {
 		private LightingAccess em;
 		private DynmapBlockState bsaccumsing;	// Used for single
 		private DynmapBlockState bsaccum[];		// Use for incremental setting of 3D - YZX order
+		private short[] bsblks;					// Use for incremental setting of 3D palette - XZY order
+		private DynmapBlockState[] bspal;		// Palette for bsblks
 		private BiomeMap baaccumsingle;			// Use for single
 		private BiomeMap baaccum[];				// Use for incremental setting of 3D biome - YZX order or 2D biome (ZX order) length used to control which
 		private boolean empty;
@@ -170,6 +187,8 @@ public class GenericChunkSection {
 			bsaccum = null;
 			baaccumsingle = BiomeMap.NULL;
 			baaccum = null;
+			bsblks = null;
+			bspal = null;
 			sk = defaultLight;
 			em = defaultLight;			
 			empty = true;
@@ -224,6 +243,8 @@ public class GenericChunkSection {
 		public Builder singleBlockState(DynmapBlockState block) {
 			bsaccumsing = block;
 			bsaccum = null;
+			bsblks = null;
+			bspal = null;
 			empty = block.isAir();
 			return this;
 		}
@@ -235,6 +256,23 @@ public class GenericChunkSection {
 				bsaccumsing = DynmapBlockState.AIR;
 			}
 			bsaccum[((y & 0xF) << 8) + ((z & 0xF) << 4) + (x & 0xF)] = block;
+			empty = false;
+			return this;
+		}
+		// Set block state palette (states will be indexes vs this
+		public Builder xyzBlockStatePalette(DynmapBlockState[] bspalette) {
+			if (bsblks == null) {
+				bsblks = new short[4096];
+			}
+			bspal = Arrays.copyOf(bspalette, bspalette.length);
+			return this;
+		}
+		// Set block state using palette
+		public Builder xyzBlockStateInPalette(int x, int y, int z, short palidx) {
+			if (bsblks == null) {
+				bsblks = new short[4096];
+			}
+			bsblks[((y & 0xF) << 8) + ((z & 0xF) << 4) + (x & 0xF)] = palidx;
 			empty = false;
 			return this;
 		}
@@ -271,6 +309,17 @@ public class GenericChunkSection {
 				bs = new BlockStateAccess3D(bsaccum);
 				bsaccum = null;
 				empty = false;
+			}
+			else if (bspal != null) {	// 3D palette
+				// Only one state in palette?
+				if (bspal.length == 1) {
+					bs = new BlockStateAccessSingle(bspal[0]);	// Just single
+				}
+				else {
+					bs = new BlockStateAccess3DPalette(bspal, bsblks);
+				}
+				bspal = null;
+				bsblks = null;
 			}
 			else if (bsaccumsing == DynmapBlockState.AIR) {	// Just air?
 				bs = defaultBlockState;

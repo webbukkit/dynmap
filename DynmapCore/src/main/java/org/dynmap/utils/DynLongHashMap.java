@@ -236,6 +236,9 @@ public class DynLongHashMap
         return getEntry(key) != null;
     }
 
+    private static final int toHash(long key) {
+    	return (int)((key >>> 32) ^ key);
+    }
     /**
      * Returns the entry associated with the specified key in the
      * HashMap.  Returns null if the HashMap contains no mapping
@@ -243,7 +246,7 @@ public class DynLongHashMap
      */
     Entry getEntry(long key) {
         Entry tab[] = table;
-        int hash = (int) key;
+        int hash = toHash(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
 
         for (Entry e = tab[index]; e != null; e = e.next)
@@ -293,7 +296,7 @@ public class DynLongHashMap
      */
     public Object put(long key, Object value) {
         Entry tab[] = table;
-        int hash = (int) key;
+        int hash = toHash(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
 
         // Look for entry in hash table
@@ -340,7 +343,7 @@ public class DynLongHashMap
      */
     Entry removeEntryForKey(long key) {
         Entry tab[] = table;
-        int hash = (int) key;
+        int hash = toHash(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
 
         for (Entry e = tab[index], prev = null; e != null;

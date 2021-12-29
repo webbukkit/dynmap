@@ -101,7 +101,32 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				return 0;
 			}
 		}
-
+		@Override
+	    /**
+	     * Get block sky and emitted light, relative to current coordinate
+	     * @return (emitted light * 256) + sky light
+	     */
+	    public final int getBlockLight(BlockStep step) {
+			int emit = 0, sky = 15;
+			GenericChunkSection sect;
+			if (step.yoff != 0) {	// Y coord - snap is valid already
+				int ny = y + step.yoff;
+				sect = snap.getSection(ny);
+				emit = sect.emitted.getLight(x, ny, z);
+				sky = sect.sky.getLight(x, ny, z);
+			}
+			else {
+				int nx = x + step.xoff;
+				int nz = z + step.zoff;
+				int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
+				if ((nchunkindex < snapcnt) && (nchunkindex >= 0)) {
+					sect = snaparray[nchunkindex].getSection(y);
+					emit = sect.emitted.getLight(nx, y, nz);
+					sky = sect.sky.getLight(nx, y, nz);
+				}			
+			}
+			return (emit << 8) + sky;
+		}
 		@Override
 		public final BiomeMap getBiome() {
 			try {
@@ -1007,11 +1032,11 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
                     }
                 }
                 else {
-                    for (int j = 0; j < 4096; j++) {
-                    	int v = (dbp != null) ? dbp.getAt(j) : db.get(j);
-                        DynmapBlockState bs = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
-                    	sbld.xyzBlockState(j & 0xF, (j & 0xF00) >> 8, (j & 0xF0) >> 4, bs);
-                    }
+    				sbld.xyzBlockStatePalette(palette);	// Set palette
+    				for (int j = 0; j < 4096; j++) {
+    					int v = db != null ? db.get(j) : dbp.getAt(j);
+                    	sbld.xyzBlockStateInPalette(j & 0xF, (j & 0xF00) >> 8, (j & 0xF0) >> 4, (short)v);
+    				}
                 }
             }
             else if (sec.contains("block_states", GenericNBTCompound.TAG_COMPOUND)) {	// 1.18
@@ -1059,10 +1084,10 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
         				}
         			}
         			else {
+        				sbld.xyzBlockStatePalette(palette);	// Set palette
         				for (int j = 0; j < 4096; j++) {
         					int v = db != null ? db.get(j) : dbp.getAt(j);
-        					DynmapBlockState bs = (v < palette.length) ? palette[v] : DynmapBlockState.AIR;
-                        	sbld.xyzBlockState(j & 0xF, (j & 0xF00) >> 8, (j & 0xF0) >> 4, bs);
+                        	sbld.xyzBlockStateInPalette(j & 0xF, (j & 0xF00) >> 8, (j & 0xF0) >> 4, (short)v);
         				}
         			}
             	}

@@ -178,7 +178,31 @@ public class ForgeMapChunkCache extends MapChunkCache
                 return 0;
             }
         }
-        private void biomePrep()
+		@Override
+	    /**
+	     * Get block sky and emitted light, relative to current coordinate
+	     * @return (emitted light * 256) + sky light
+	     */
+	    public final int getBlockLight(BlockStep step) {
+			int emit = 0, sky = 15;
+			if (step.yoff != 0) {	// Y coord - snap is valid already
+				int ny = y + step.yoff;
+				emit = snap.getBlockEmittedLight(x, ny, z);
+				sky = snap.getBlockSkyLight(x, ny, z);
+			}
+			else {
+				int nx = x + step.xoff;
+				int nz = z + step.zoff;
+				int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
+				if ((nchunkindex < snapcnt) && (nchunkindex >= 0)) {
+					emit = snaparray[nchunkindex].getBlockEmittedLight(nx, y, nz);
+					sky = snaparray[nchunkindex].getBlockSkyLight(nx, y, nz);
+				}			
+			}
+			return (emit << 8) + sky;
+		}
+		
+		private void biomePrep()
         {
             if (sameneighborbiomecnt != null)
             {

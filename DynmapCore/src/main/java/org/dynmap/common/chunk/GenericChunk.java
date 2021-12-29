@@ -9,6 +9,7 @@ import org.dynmap.common.BiomeMap;
 public class GenericChunk {
 	public final int cx, cz;	// Chunk coord (world coord / 16)
 	public final GenericChunkSection[] sections;
+	public final int sectionCnt;
 	public final int cy_min;	// CY value of first section in sections list (index = (Y >> 4) - cy_min
 	public final long inhabitedTicks;
 	public final int dataVersion;	// Version of chunk data loaded
@@ -31,15 +32,16 @@ public class GenericChunk {
 				empty = empty && sections[off].isEmpty;
 			}
 		}
+		this.sectionCnt = sections.length;
 		this.isEmpty = empty;
 	}
 	// Get section for given block Y coord
 	public final GenericChunkSection getSection(int y) {
-		try {
-			return this.sections[(y >> 4) - cy_min];
-		} catch (IndexOutOfBoundsException ioobx) {	// Builder and padding should be avoiding this, but be safe
+		int idx = (y >> 4) - this.cy_min;
+		if ((idx < 0) || (idx >= sectionCnt)) {
 			return GenericChunkSection.EMPTY;
 		}
+		return this.sections[idx];
 	}
 	
     public final DynmapBlockState getBlockType(int x, int y, int z) {    	
