@@ -43,6 +43,7 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
+import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.fabric_1_15_2.command.DmapCommand;
 import org.dynmap.fabric_1_15_2.event.BlockEvents;
 import org.dynmap.fabric_1_15_2.event.ChunkDataEvents;
@@ -68,7 +69,7 @@ public class DynmapPlugin {
     DynmapCore core;
     private PermissionProvider permissions;
     private boolean core_enabled;
-    public SnapshotCache sscache;
+    public GenericChunkCache sscache;
     public PlayerList playerList;
     MapManager mapManager;
     /**
@@ -460,7 +461,6 @@ public class DynmapPlugin {
         core.setMinecraftVersion(mcver);
         core.setDataFolder(dataDirectory);
         core.setServer(fserver);
-        FabricMapChunkCache.init();
         core.setTriggerDefault(TRIGGER_DEFAULTS);
         core.setBiomeNames(getBiomeNames());
 
@@ -513,7 +513,7 @@ public class DynmapPlugin {
         }
 
         playerList = core.playerList;
-        sscache = new SnapshotCache(core.getSnapShotCacheSize(), core.useSoftRefInSnapShotCache());
+        sscache = new GenericChunkCache(core.getSnapShotCacheSize(), core.useSoftRefInSnapShotCache());
         /* Get map manager from core */
         mapManager = core.getMapManager();
 
@@ -835,7 +835,7 @@ public class DynmapPlugin {
         FabricWorld fw = null;
         if (add_if_not_found) {
             /* Add to list if not found */
-            fw = new FabricWorld(w);
+            fw = new FabricWorld(plugin, w);
             worlds.put(fw.getName(), fw);
         }
         last_world = w;
@@ -894,7 +894,7 @@ public class DynmapPlugin {
                 boolean theend = (Boolean) world.get("the_end");
                 String title = (String) world.get("title");
                 if (name != null) {
-                    FabricWorld fw = new FabricWorld(name, height, sealevel, nether, theend, title);
+                    FabricWorld fw = new FabricWorld(plugin, name, height, sealevel, nether, theend, title);
                     fw.setWorldUnloaded();
                     core.processWorldLoad(fw);
                     worlds.put(fw.getName(), fw);
