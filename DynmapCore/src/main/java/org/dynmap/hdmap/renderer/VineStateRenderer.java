@@ -52,4 +52,8 @@ public class VineStateRenderer extends CustomRenderer {
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
         return meshes[ctx.getBlockType().stateIndex];
     }    
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

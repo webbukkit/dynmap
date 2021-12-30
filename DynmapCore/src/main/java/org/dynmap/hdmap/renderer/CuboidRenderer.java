@@ -123,4 +123,8 @@ public class CuboidRenderer extends CustomRenderer {
     	int idx = ctx.getBlockType().stateIndex;
         return models[idx % models.length];
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

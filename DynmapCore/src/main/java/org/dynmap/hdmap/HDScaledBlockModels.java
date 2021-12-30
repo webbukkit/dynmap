@@ -5,14 +5,22 @@ import org.dynmap.utils.PatchDefinition;
 
 public class HDScaledBlockModels {
     private short[][] modelvectors;
-    private PatchDefinition[][] patches;
-    private CustomBlockModel[] custom;
+    // These are scale invariant - only need once
+    private static PatchDefinition[][] patches;
+    private static CustomBlockModel[] custom;
 
     public HDScaledBlockModels(int scale) {
         short[][] blockmodels = new short[DynmapBlockState.getGlobalIndexMax()][];
-        PatchDefinition[][] patches = new PatchDefinition[DynmapBlockState.getGlobalIndexMax()][];
-        CustomBlockModel[] custom = new CustomBlockModel[DynmapBlockState.getGlobalIndexMax()];
-        
+        PatchDefinition[][] newpatches = null;
+        if (patches == null) { 
+        	newpatches = new PatchDefinition[DynmapBlockState.getGlobalIndexMax()][];
+        	patches = newpatches;
+        }
+        CustomBlockModel[] newcustom = null;
+        if (custom == null) {
+        	newcustom = new CustomBlockModel[DynmapBlockState.getGlobalIndexMax()];
+        	custom = newcustom;
+        }
         for(Integer gidx : HDBlockModels.models_by_id_data.keySet()) {
             HDBlockModel m = HDBlockModels.models_by_id_data.get(gidx);
             
@@ -34,18 +42,19 @@ public class HDScaledBlockModels {
                 }
             }
             else if(m instanceof HDBlockPatchModel) {
-                HDBlockPatchModel pm = (HDBlockPatchModel)m;
-                patches[gidx] = pm.getPatches();
+            	if (newpatches != null) {
+            		HDBlockPatchModel pm = (HDBlockPatchModel)m;
+            		newpatches[gidx] = pm.getPatches();
+            	}
             }
             else if(m instanceof CustomBlockModel) {
-                CustomBlockModel cbm = (CustomBlockModel)m;
-                custom[gidx] = cbm;
+            	if (newcustom != null) {
+            		CustomBlockModel cbm = (CustomBlockModel)m;
+            		newcustom[gidx] = cbm;
+            	}
             }
         }
-        
         this.modelvectors = blockmodels;
-        this.patches = patches;
-        this.custom = custom;
     }
     
     public final short[] getScaledModel(DynmapBlockState blk) {

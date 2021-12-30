@@ -366,8 +366,8 @@ public class OBJExport {
         /* If no patches, see if custom model */
         if(patches == null) {
             CustomBlockModel cbm = models.getCustomBlockModel(blk);
-            if(cbm != null) {   /* If so, get our meshes */
-                patches = cbm.getMeshForBlock(map);
+            if (cbm != null) {   /* If so, get our meshes */
+        		patches = cbm.getMeshForBlock(map);
             }
         }
         if (patches != null) {

@@ -131,4 +131,8 @@ public class RotatedBoxRenderer extends CustomRenderer {
         Log.info("Unmatched rotation index: " + textureIdx + " for " + ctx.getBlockType());
         return models[0];
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return idx_attrib == null;
+    }
 }

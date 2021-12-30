@@ -120,5 +120,9 @@ public class FenceGateBlockStateRenderer extends CustomRenderer {
             // 32 states: meta%2=powered|unpowered, (meta/2)%2=open/closed, (meta/4)%2=in-wall/not-in-wall, (meta/8)%4=n/s/w/e
             return meshes[(meta >> 1) & 0xF];   // Don't care about powered: models are 0-15
         }    
+        @Override
+        public boolean isOnlyBlockStateSensitive() {
+        	return true;
+        }
     }
 

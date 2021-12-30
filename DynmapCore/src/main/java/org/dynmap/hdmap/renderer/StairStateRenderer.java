@@ -159,4 +159,8 @@ public class StairStateRenderer extends CustomRenderer {
     	}
     	return rp;
     }    
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

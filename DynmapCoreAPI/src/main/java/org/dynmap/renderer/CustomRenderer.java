@@ -184,4 +184,12 @@ public abstract class CustomRenderer {
     public RenderPatch getSidePatch(RenderPatchFactory rpf, int side, int rot, int textureidx) {
         return getSidePatch(rpf, side, 0.0, 0.0, 1.0, 0.0, 1.0, rot, textureidx);
     }
+    /**
+     * Test if the given renderer is purely a function of the block state of the given block (that is, not
+     * directly tied to neighbor blocks, location, or other factors).  If true, the returned model for a getRenderPatchList() is
+     * cached by block state, versus by specific block location/instance.
+     */
+    public boolean isOnlyBlockStateSensitive() {
+    	return false;
+    }
 }

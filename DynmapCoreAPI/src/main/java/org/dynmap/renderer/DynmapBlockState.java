@@ -549,4 +549,18 @@ public class DynmapBlockState {
     public String toString() {
         return fullName;
     }
+    // Equals check
+    @Override
+    public boolean equals(Object obj) {
+    	if (obj == this) return true;
+    	if (obj instanceof DynmapBlockState) {
+    		return ((DynmapBlockState)obj).globalStateIndex == this.globalStateIndex;
+    	}
+    	return false;
+    }
+    // Hashcode
+    @Override
+    public int hashCode() {
+    	return this.globalStateIndex;
+    }
 }

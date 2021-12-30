@@ -108,4 +108,8 @@ public class FenceGateBlockRenderer extends CustomRenderer {
         
         return meshes[meta & 0x7];
     }    
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

@@ -55,4 +55,8 @@ public class GlowLichenStateRenderer extends CustomRenderer {
     	int idx = ((ctx.getBlockType().stateIndex & 0x7C) >> 1) + (ctx.getBlockType().stateIndex & 0x1);	// Shift out waterlogged bit
         return meshes[idx];
     }    
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

@@ -43,6 +43,9 @@ public class CustomBlockModel extends HDBlockModel {
         return render.getMaximumTextureCount(HDBlockModels.pdf);
     }
 
+    public boolean isOnlyBlockStateSensitive() {
+    	return render.isOnlyBlockStateSensitive();
+    }
     private static final RenderPatch[] empty_list = new RenderPatch[0];
 
     public RenderPatch[] getMeshForBlock(MapDataContext ctx) {

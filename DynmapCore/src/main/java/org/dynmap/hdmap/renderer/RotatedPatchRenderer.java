@@ -154,4 +154,8 @@ public class RotatedPatchRenderer extends CustomRenderer {
             return basemodel;
         }
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return idx_attrib == null;
+    }
 }

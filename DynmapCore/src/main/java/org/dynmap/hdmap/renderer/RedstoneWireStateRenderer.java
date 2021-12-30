@@ -45,4 +45,8 @@ public class RedstoneWireStateRenderer extends RedstoneWireRenderer {
     	}
         return getMesh(pidx);
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

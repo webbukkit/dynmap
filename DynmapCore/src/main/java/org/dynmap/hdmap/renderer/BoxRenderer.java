@@ -73,4 +73,8 @@ public class BoxRenderer extends CustomRenderer {
     public RenderPatch[] getRenderPatchList(MapDataContext ctx) {
         return model;
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

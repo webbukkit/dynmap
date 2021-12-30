@@ -31,4 +31,8 @@ public class ChestStateRenderer extends ChestRenderer {
         }
         return models[byIndex[idx].ordinal()];
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

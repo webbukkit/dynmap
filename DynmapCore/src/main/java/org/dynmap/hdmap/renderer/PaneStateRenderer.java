@@ -14,4 +14,8 @@ public class PaneStateRenderer extends PaneRenderer {
         int meshidx = (((idx & 0x10) == 0) ? SIDE_XP : 0) | (((idx & 0x08) == 0) ? SIDE_ZN : 0) | (((idx & 0x04) == 0) ? SIDE_ZP : 0) | (((idx & 0x01) == 0) ? SIDE_XN : 0);
         return meshes[meshidx];
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

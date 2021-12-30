@@ -216,4 +216,8 @@ public class FenceWallBlockStateRenderer extends CustomRenderer {
         }
         return meshes[off];
     }    
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }

@@ -61,4 +61,8 @@ public class WallHeadRenderer extends CustomRenderer {
         else
             return meshes[0];
     }
+    @Override
+    public boolean isOnlyBlockStateSensitive() {
+    	return true;
+    }
 }
