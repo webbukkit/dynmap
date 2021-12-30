@@ -2181,7 +2181,8 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]texture:id=lectern_front
 [1.14-]texture:id=lectern_sides
 [1.14-]texture:id=lectern_top
-[1.14-]texturefile:id=lantern,filename=assets/minecraft/textures/block/lantern.png,format=CUSTOM,tile0=0:0/6:10/5:3,xcount=1,ycount=3
+# tile0=up/down ot first box, tile1=sides of first box, tile2=top of second box, tile3=sides of second box, tile4=n/s of first cross (unhung), tile5=e/w of second cross (unhung), tile6= n/s of first cross (hung), tile7=e/2 of second cross (hung)
+[1.14-]texturefile:id=lantern,filename=assets/minecraft/textures/block/lantern.png,format=CUSTOM,tile0=0:9/7:7/5:5,tile1=0:2/7:8/5:7,tile2=1:10/5:5/6:6,tile3=1:0/5:3/6:6,tile4=11:1/5:3/6:5,tile5=11:10/5:3/6:5,tile6=11:1/5:5/6:0,tile7=11:10/5:5/6:0,xcount=1,ycount=3
 [1.14-]texture:id=smithing_table_front
 [1.14-]texture:id=smithing_table_side
 [1.14-]texture:id=smithing_table_top
@@ -2360,7 +2361,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 # Lectern
 [1.14-]block:id=lectern,patch0=0:oak_planks,patch1=0:lectern_base,patch2=0:lectern_front,patch3=0:lectern_sides,patch4=0:lectern_top,transparency=TRANSPARENT
 # Lantern
-[1.14-]block:id=lantern,patch0=0:lantern,transparency=TRANSPARENT
+[1.14-]block:id=lantern,patch0=0:lantern,patch1=1:lantern,patch2=2:lantern,patch3=3:lantern,patch4=4:lantern,patch5=5:lantern,patch6=6:lantern,patch7=7:lantern,transparency=TRANSPARENT
 # Smithing table
 [1.14-]block:id=smithing_table,top=0:smithing_table_top,bottom=0:smithing_table_bottom,north=0:smithing_table_side,south=0:smithing_table_side,east=0:smithing_table_front,west=0:smithing_table_front,stdrot=true
 # Stonecutter
@@ -2409,7 +2410,8 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.16-]texturefile:id=chain,filename=assets/minecraft/textures/block/chain.png,format=CUSTOM,tile0=0:0/3:16/6:0,tile1=3:0/3:16/6:0,xcount=2,ycount=1
 [1.16-]texture:id=soul_campfire_log_lit
 [1.16-]texture:id=soul_campfire_fire
-[1.16-]texturefile:id=soul_lantern,filename=assets/minecraft/textures/block/soul_lantern.png,format=CUSTOM,tile0=0:0/6:10/5:3,xcount=1,ycount=3
+# tile0=up/down ot first box, tile1=sides of first box, tile2=top of second box, tile3=sides of second box, tile4=n/s of first cross (unhung), tile5=e/w of second cross (unhung), tile6= n/s of first cross (hung), tile7=e/2 of second cross (hung)
+[1.16-]texturefile:id=soul_lantern,filename=assets/minecraft/textures/block/soul_lantern.png,format=CUSTOM,tile0=0:9/7:7/5:5,tile1=0:2/7:8/5:7,tile2=1:10/5:5/6:6,tile3=1:0/5:3/6:6,tile4=11:1/5:3/6:5,tile5=11:10/5:3/6:5,tile6=11:1/5:5/6:0,tile7=11:10/5:5/6:0,xcount=1,ycount=3
 [1.16-]texture:id=warped_stem_top
 [1.16-]texture:id=warped_stem
 [1.16-]texture:id=stripped_warped_stem_top
@@ -2492,6 +2494,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.16-]block:id=chain,patch0=0:chain,patch1=1:chain,transparency=TRANSPARENT
 # Soul Lantern
 [1.16-]block:id=soul_lantern,patch0=0:soul_lantern,transparency=TRANSPARENT
+[1.16-]block:id=soul_lantern,patch0=0:soul_lantern,patch1=1:soul_lantern,patch2=2:soul_lantern,patch3=3:soul_lantern,patch4=4:soul_lantern,patch5=5:soul_lantern,patch6=6:soul_lantern,patch7=7:soul_lantern,transparency=TRANSPARENT
 # Soul Campfire
 [1.16-]block:id=soul_campfire,patch0=0:campfire_log,patch1=0:soul_campfire_log_lit,patch2=0:soul_campfire_fire,transparency=TRANSPARENT
 # Warped Stem

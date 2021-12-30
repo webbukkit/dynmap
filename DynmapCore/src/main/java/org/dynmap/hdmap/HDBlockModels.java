@@ -317,6 +317,7 @@ public class HDBlockModels {
 
     private static class BoxLimits {
         double xmin = 0.0, xmax = 1.0, ymin = 0.0, ymax = 1.0, zmin = 0.0, zmax = 1.0;
+        int yrot = 0;
         int[] patches = new int[6]; // Default all to patch0
     }
     /**
@@ -928,6 +929,9 @@ public class HDBlockModels {
                         			box.patches[p] = Integer.parseInt(pl[p]);
                         		}
                         	}
+                        	if (prms.length > 7) {
+                        		box.yrot = Integer.parseInt(prms[7]);
+                        	}
                         	boxes.add(box);
                         }
                     }
@@ -937,7 +941,7 @@ public class HDBlockModels {
                         ArrayList<RenderPatch> pd = new ArrayList<RenderPatch>();
                         
                         for (BoxLimits bl : boxes) {
-                            CustomRenderer.addBox(pdf, pd, bl.xmin, bl.xmax, bl.ymin, bl.ymax, bl.zmin, bl.zmax, bl.patches);
+                    		CustomRenderer.addBox(pdf, pd, bl.xmin, bl.xmax, bl.ymin, bl.ymax, bl.zmin, bl.zmax, bl.patches, bl.yrot);
                         }
                         PatchDefinition[] patcharray = new PatchDefinition[pd.size()];
                         for (int i = 0; i < patcharray.length; i++) {
