@@ -137,7 +137,7 @@ public class ForgeWorld extends DynmapWorld
     public long getTime()
     {
     	if(world != null)
-    		return world.getWorld().getGameTime();
+    		return world.getWorld().getDayTime();
     	else
     		return -1;
     }

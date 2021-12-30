@@ -100,7 +100,7 @@ public class FabricWorld extends DynmapWorld {
     @Override
     public long getTime() {
         if (world != null)
-            return world.getWorld().getTime();
+            return world.getWorld().getTimeOfDay();
         else
             return -1;
     }
