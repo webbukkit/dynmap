@@ -1,14 +1,6 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.fabricmc.net/' }
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.fabricmc', name: 'fabric-loom', version: '0.6-SNAPSHOT'
-    }
+plugins {
+	id 'fabric-loom' version '0.6-SNAPSHOT'
 }
-apply plugin: 'fabric-loom'
 
 archivesBaseName = project.archives_base_name
 version = parent.version
