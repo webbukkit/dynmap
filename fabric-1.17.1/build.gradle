@@ -36,7 +36,6 @@ java {
 }
 
 jar {
-    duplicatesStrategy = 'include'
     from "LICENSE"
     from {
         configurations.shadow.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
