@@ -43,8 +43,8 @@ jar {
 }
 
 remapJar {
-    archiveName = "${archivesBaseName}-${version}-fabric-${project.minecraft_version}.jar"
-    destinationDir = file '../target'
+    archiveFileName = "${archivesBaseName}-${project.version}-fabric-${project.minecraft_version}.jar"
+    destinationDirectory = file '../target'
 }
 
 remapJar.doLast {
