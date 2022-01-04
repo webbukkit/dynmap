@@ -2,7 +2,7 @@ plugins {
 	id 'fabric-loom' version '0.10.65'
 }
 
-archivesBaseName = project.archives_base_name
+archivesBaseName = "Dynmap"
 version = parent.version
 group = parent.group
 
