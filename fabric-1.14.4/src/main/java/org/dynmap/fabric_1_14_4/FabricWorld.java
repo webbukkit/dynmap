@@ -19,6 +19,7 @@ public class FabricWorld extends DynmapWorld {
     // TODO: Store this relative to World saves for integrated server
     public static final String SAVED_WORLDS_FILE = "fabricworlds.yml";
     private IWorld world;
+    private final DynmapPlugin plugin;
     private final boolean skylight;
     private final boolean isnether;
     private final boolean istheend;
@@ -47,8 +48,8 @@ public class FabricWorld extends DynmapWorld {
         }
     }
 
-    public FabricWorld(IWorld w) {
-        this(getWorldName(w), w.getWorld().getHeight(),
+    public FabricWorld(DynmapPlugin plugin, IWorld w) {
+        this(plugin, getWorldName(w), w.getWorld().getHeight(),
                 w.getWorld().getSeaLevel(),
                 w.getDimension().getType() == DimensionType.THE_NETHER,
                 w.getDimension().getType() == DimensionType.THE_END, //DimensionType
@@ -56,8 +57,9 @@ public class FabricWorld extends DynmapWorld {
         setWorldLoaded(w);
     }
 
-    public FabricWorld(String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle) {
+    public FabricWorld(DynmapPlugin plugin, String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle) {
         super(name, (height > maxWorldHeight) ? maxWorldHeight : height, sealevel);
+        this.plugin = plugin;
         world = null;
         setTitle(deftitle);
         isnether = nether;
@@ -193,7 +195,7 @@ public class FabricWorld extends DynmapWorld {
     @Override
     public MapChunkCache getChunkCache(List<DynmapChunk> chunks) {
         if (world != null) {
-            FabricMapChunkCache c = new FabricMapChunkCache();
+            FabricMapChunkCache c = new FabricMapChunkCache(plugin);
             c.setChunks(this, chunks);
             return c;
         }
