@@ -35,7 +35,7 @@ storage:
   #userid: dynmap
   #password: dynmap
   #prefix: ""
-  #flags: "?allowReconnect=true"
+  #flags: "?allowReconnect=true&autoReconnect=true"
   
 components:
   - class: org.dynmap.ClientConfigurationComponent
