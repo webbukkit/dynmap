@@ -148,8 +148,9 @@ public class FabricWorld extends DynmapWorld {
         world = w;
         this.sealevel = w.getSeaLevel();   // Read actual current sealevel from world
         // Update lighting table
+        float[] brightnessTable = FabricAdapter.VERSION_SPECIFIC.World_getBrightnessTable(w);
         for (int i = 0; i < 16; i++) {
-            this.setBrightnessTableEntry(i, w.getDimension().getBrightness(i));
+            this.setBrightnessTableEntry(i, brightnessTable[i]);
         }
     }
 
