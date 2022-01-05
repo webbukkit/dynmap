@@ -1,7 +1,12 @@
 package org.dynmap.fabric_1_17_1;
 
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.fabric_helper.FabricVersionInterface;
+
+import java.io.IOException;
 
 public class FabricVersionAdapter implements FabricVersionInterface {
 
@@ -12,6 +17,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
             brightnessTable[i] = world.getDimension().getBrightness(i);
         }
         return brightnessTable;
+    }
+
+    @Override
+    public GenericNBTCompound ThreadedAnvilChunkStorage_getNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException {
+        return new NBT.NBTCompound(tacs.getNbt(chunkPos));
     }
 
 }
