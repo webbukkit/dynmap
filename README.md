@@ -60,7 +60,7 @@ Dynmap supports the following storage backends:
 - SQLite†
 - PostgreSQL (JDBC driver for this is now bundled with the Dynmap JAR)
 - MariaDB - is compatible with MySQL
-- †Note: drivers for SQL are usually included for Spigot not included with other platforms or Dynmap, but injecting driver classes into jar file will be recognized and supported
+- †Note: drivers for SQL are usually included for Spigot and its derivatives but not included with other platforms or Dynmap. For Forge and Fabric servers we recommend @kosma's [SQLite mod](https://www.curseforge.com/minecraft/mc-mods/sqlite-jdbc) or [MySQL mod](https://www.curseforge.com/minecraft/mc-mods/mysql-jdbc) to add the needed drivers. Additionally, injecting driver classes into jar file will be recognized and supported.
 
 # Contributing to Dynmap's Code
 The Dynmap team welcomes Pull Requests with fixes, new features, and new platform support.  That said, the following rules apply:
