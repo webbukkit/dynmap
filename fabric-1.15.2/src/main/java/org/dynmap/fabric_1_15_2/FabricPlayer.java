@@ -185,8 +185,7 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
 
     @Override
     public void sendMessage(String msg) {
-        Text ichatcomponent = new LiteralText(msg);
-        player.sendMessage(ichatcomponent);
+        FabricAdapter.VERSION_SPECIFIC.ServerPlayerEntity_sendMessage(player, msg);
     }
 
     @Override

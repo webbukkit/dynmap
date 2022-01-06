@@ -1,6 +1,9 @@
 package org.dynmap.fabric_1_17_1;
 
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.dynmap.common.chunk.GenericNBTCompound;
@@ -22,6 +25,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public GenericNBTCompound ThreadedAnvilChunkStorage_getNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException {
         return new NBT.NBTCompound(tacs.getNbt(chunkPos));
+    }
+
+    @Override
+    public void ServerPlayerEntity_sendMessage(ServerPlayerEntity player, String message) {
+        player.sendSystemMessage(new LiteralText(message), Util.NIL_UUID);
     }
 
 }

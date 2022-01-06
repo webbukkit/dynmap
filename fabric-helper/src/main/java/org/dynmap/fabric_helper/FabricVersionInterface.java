@@ -1,5 +1,6 @@
 package org.dynmap.fabric_helper;
 
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -16,4 +17,5 @@ public interface FabricVersionInterface {
 
     GenericNBTCompound ThreadedAnvilChunkStorage_getNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException;
 
+    void ServerPlayerEntity_sendMessage(ServerPlayerEntity player, String message);
 }
