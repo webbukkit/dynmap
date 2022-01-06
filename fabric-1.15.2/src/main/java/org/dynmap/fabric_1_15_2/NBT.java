@@ -88,6 +88,9 @@ public class NBT {
 		public GenericBitStorage makeBitStorage(int bits, int count, long[] data) {
 			return new OurBitStorage(bits, count, data);
 		}		
+		public String toString() {
+			return obj.toString();
+		}
 	}
 	public static class NBTList implements GenericNBTList {
 		private final ListTag obj;
@@ -105,6 +108,9 @@ public class NBT {
 		@Override
 		public GenericNBTCompound getCompound(int idx) {
 			return new NBTCompound(obj.getCompound(idx));
+		}
+		public String toString() {
+			return obj.toString();
 		}
 	}
 	public static class OurBitStorage implements GenericBitStorage {
