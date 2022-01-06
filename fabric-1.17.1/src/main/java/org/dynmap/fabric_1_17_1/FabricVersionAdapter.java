@@ -93,6 +93,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     }
 
     @Override
+    public int World_getMinimumY(World world) {
+        return world.getDimension().getMinimumY();
+    }
+
+    @Override
     public int maxWorldHeight() {
         return 320;
     }

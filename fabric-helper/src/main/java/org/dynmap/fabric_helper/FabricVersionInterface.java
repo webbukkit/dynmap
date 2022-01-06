@@ -35,6 +35,8 @@ public interface FabricVersionInterface {
 
     String World_getDefaultTitle(World world);
 
+    int World_getMinimumY(World world);
+
     /* FIXME: Pull this from somewhere in vanilla server? */
     int maxWorldHeight();
 

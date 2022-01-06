@@ -39,7 +39,7 @@ public class FabricWorld extends DynmapWorld {
     }
     
     public void updateWorld(World w) {
-        this.updateWorldHeights(w.getHeight(), 0, w.getSeaLevel());
+        this.updateWorldHeights(w.getHeight(), FabricAdapter.VERSION_SPECIFIC.World_getMinimumY(w), w.getSeaLevel());
     }
 
     public FabricWorld(DynmapPlugin plugin, World w) {
@@ -48,7 +48,7 @@ public class FabricWorld extends DynmapWorld {
                 FabricAdapter.VERSION_SPECIFIC.World_isNether(w),
                 FabricAdapter.VERSION_SPECIFIC.World_isEnd(w),
                 FabricAdapter.VERSION_SPECIFIC.World_getDefaultTitle(w),
-                0);
+                FabricAdapter.VERSION_SPECIFIC.World_getMinimumY(w));
         setWorldLoaded(w);
     }
 
