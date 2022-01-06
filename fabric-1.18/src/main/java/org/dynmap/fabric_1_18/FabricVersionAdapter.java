@@ -118,7 +118,7 @@ public class FabricVersionAdapter implements FabricVersionInterface {
 
     @Override
     public int maxWorldHeight() {
-        return 320;
+        return 4064;
     }
 
     @Override
