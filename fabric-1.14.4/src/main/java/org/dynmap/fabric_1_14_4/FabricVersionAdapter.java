@@ -7,7 +7,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericNBTCompound;
@@ -86,6 +88,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public int maxWorldHeight() {
         return 256;
+    }
+
+    @Override
+    public boolean BlockState_isOpaqueFullCube(BlockState blockState) {
+        return blockState.isFullOpaque(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
     }
 
 }

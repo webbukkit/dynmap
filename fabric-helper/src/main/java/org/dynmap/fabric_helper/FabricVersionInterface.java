@@ -38,4 +38,7 @@ public interface FabricVersionInterface {
     /* FIXME: Pull this from somewhere in vanilla server? */
     int maxWorldHeight();
 
+    /* FIXME: Pull this from somewhere in vanilla server? */
+    boolean BlockState_isOpaqueFullCube(BlockState blockState);
+
 }

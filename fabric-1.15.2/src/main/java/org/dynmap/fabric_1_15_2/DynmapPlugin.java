@@ -201,7 +201,7 @@ public class DynmapPlugin {
                     }
                     statename += p.getName() + "=" + bs.get(p).toString();
                 }
-                int lightAtten = bs.isFullOpaque(EmptyBlockView.INSTANCE, BlockPos.ORIGIN) ? 15 : (bs.isTranslucent(EmptyBlockView.INSTANCE, BlockPos.ORIGIN) ? 0 : 1);
+                int lightAtten = FabricAdapter.VERSION_SPECIFIC.BlockState_isOpaqueFullCube(bs) ? 15 : (bs.isTranslucent(EmptyBlockView.INSTANCE, BlockPos.ORIGIN) ? 0 : 1);
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
                 // Fill in base attributes
                 bld.setBaseState(basebs).setStateIndex(idx - baseidx).setBlockName(bn).setStateName(statename).setMaterial(mat.toString()).setLegacyBlockID(idx).setAttenuatesLight(lightAtten);
