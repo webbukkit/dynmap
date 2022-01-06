@@ -1,5 +1,6 @@
 package org.dynmap.fabric_1_14_4;
 
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -31,6 +32,17 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public void MinecraftServer_broadcastMessage(MinecraftServer server, String message) {
         server.getPlayerManager().broadcastChatMessage(new LiteralText(message), true);
+    }
+
+    @Override
+    public void ServerPlayerEntity_sendTitleText(ServerPlayerEntity player, String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks) {
+        player.networkHandler.sendPacket(new TitleS2CPacket(fadeInTicks, stayTicks, fadeOutTicks));
+        if (title != null) {
+            player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, new LiteralText(title)));
+        }
+        if (subtitle != null) {
+            player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, new LiteralText(subtitle)));
+        }
     }
 
 }

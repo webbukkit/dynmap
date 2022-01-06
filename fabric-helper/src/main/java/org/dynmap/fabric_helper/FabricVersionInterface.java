@@ -21,4 +21,6 @@ public interface FabricVersionInterface {
     void ServerPlayerEntity_sendMessage(ServerPlayerEntity player, String message);
 
     void MinecraftServer_broadcastMessage(MinecraftServer server, String message);
+
+    void ServerPlayerEntity_sendTitleText(ServerPlayerEntity player, String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks);
 }

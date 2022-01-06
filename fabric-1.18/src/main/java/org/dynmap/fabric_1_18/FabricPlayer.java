@@ -6,14 +6,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.dynmap.DynmapLocation;
 import org.dynmap.common.DynmapPlayer;
@@ -233,18 +227,7 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
     @Override
     public void sendTitleText(String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks) {
         if (player != null) {
-            ServerPlayerEntity player = this.player;
-            TitleFadeS2CPacket times = new TitleFadeS2CPacket(fadeInTicks, stayTicks, fadeOutTicks);
-            player.networkHandler.sendPacket(times);
-            if (title != null) {
-                TitleS2CPacket titlepkt = new TitleS2CPacket(new LiteralText(title));
-                player.networkHandler.sendPacket(titlepkt);
-            }
-
-            if (subtitle != null) {
-            	SubtitleS2CPacket subtitlepkt = new SubtitleS2CPacket(new LiteralText(subtitle));
-                player.networkHandler.sendPacket(subtitlepkt);
-            }
+            FabricAdapter.VERSION_SPECIFIC.ServerPlayerEntity_sendTitleText(player, title, subtitle, fadeInTicks, stayTicks, fadeOutTicks);
         }
     }
 }
