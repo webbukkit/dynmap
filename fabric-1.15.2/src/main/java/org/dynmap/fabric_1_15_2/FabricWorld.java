@@ -34,7 +34,7 @@ public class FabricWorld extends DynmapWorld {
         maxWorldHeight = h;
     }
 
-    public static String getWorldName(World w) {
+    public static String getWorldName(DynmapPlugin plugin, World w) {
         DimensionType dimensionType = w.getDimension().getType();
         if (dimensionType == DimensionType.OVERWORLD) {    // Overworld?
             return w.getLevelProperties().getLevelName();
@@ -48,7 +48,7 @@ public class FabricWorld extends DynmapWorld {
     }
 
     public FabricWorld(DynmapPlugin plugin, World w) {
-        this(plugin, getWorldName(w), w.getHeight(),
+        this(plugin, getWorldName(plugin, w), w.getHeight(),
                 w.getSeaLevel(),
                 w.getDimension().getType() == DimensionType.THE_NETHER,
                 w.getDimension().getType() == DimensionType.THE_END, //DimensionType

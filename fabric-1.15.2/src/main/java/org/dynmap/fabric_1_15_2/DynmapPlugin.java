@@ -816,7 +816,7 @@ public class DynmapPlugin {
         if (last_world == w) {
             return last_fworld;
         }
-        String wname = FabricWorld.getWorldName(w);
+        String wname = FabricWorld.getWorldName(this, w);
 
         for (FabricWorld fw : worlds.values()) {
             if (fw.getRawName().equals(wname)) {
