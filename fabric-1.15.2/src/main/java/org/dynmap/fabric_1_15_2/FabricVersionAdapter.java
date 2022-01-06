@@ -7,6 +7,7 @@ import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.fabric_helper.FabricVersionInterface;
 
@@ -46,6 +47,20 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         }
         if (subtitle != null) {
             player.networkHandler.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, new LiteralText(subtitle)));
+        }
+    }
+
+    @Override
+    public String World_getDimensionName(World world) {
+        DimensionType dimensionType = world.getDimension().getType();
+        if (dimensionType == DimensionType.OVERWORLD) {
+            return world.getLevelProperties().getLevelName();
+        } else if (dimensionType == DimensionType.THE_END) {
+            return "DIM1";
+        } else if (dimensionType == DimensionType.THE_NETHER) {
+            return "DIM-1";
+        } else {
+            return dimensionType.toString();
         }
     }
 

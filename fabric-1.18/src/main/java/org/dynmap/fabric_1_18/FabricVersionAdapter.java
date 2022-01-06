@@ -10,6 +10,7 @@ import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.fabric_helper.FabricVersionInterface;
@@ -50,6 +51,20 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         }
         if (subtitle != null) {
             player.networkHandler.sendPacket(new SubtitleS2CPacket(new LiteralText(subtitle)));
+        }
+    }
+
+    @Override
+    public String World_getDimensionName(World world) {
+        RegistryKey<World> registryKey = world.getRegistryKey();
+        if (registryKey == World.OVERWORLD) {
+            return world.getServer().getSaveProperties().getLevelName();
+        } else if (registryKey == World.END) {
+            return "DIM1";
+        } else if (registryKey == World.NETHER) {
+            return "DIM-1";
+        } else {
+            return registryKey.getValue().getNamespace() + "_" + registryKey.getValue().getPath();
         }
     }
 

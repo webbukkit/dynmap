@@ -36,16 +36,7 @@ public class FabricWorld extends DynmapWorld {
     }
 
     public static String getWorldName(DynmapPlugin plugin, World w) {
-        RegistryKey<World> rk = w.getRegistryKey();
-        if (rk == World.OVERWORLD) {    // Overworld?
-            return w.getServer().getSaveProperties().getLevelName();
-        } else if (rk == World.END) {
-            return "DIM1";
-        } else if (rk == World.NETHER) {
-            return "DIM-1";
-        } else {
-            return rk.getValue().getNamespace() + "_" + rk.getValue().getPath();
-        }
+        return FabricAdapter.VERSION_SPECIFIC.World_getDimensionName(w);
     }
     
     public void updateWorld(World w) {

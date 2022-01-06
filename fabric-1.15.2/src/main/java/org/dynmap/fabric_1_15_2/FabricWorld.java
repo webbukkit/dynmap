@@ -36,16 +36,7 @@ public class FabricWorld extends DynmapWorld {
     }
 
     public static String getWorldName(DynmapPlugin plugin, World w) {
-        DimensionType dimensionType = w.getDimension().getType();
-        if (dimensionType == DimensionType.OVERWORLD) {    // Overworld?
-            return w.getLevelProperties().getLevelName();
-        } else if (dimensionType == DimensionType.THE_END) {
-            return "DIM1";
-        } else if (dimensionType == DimensionType.THE_NETHER) {
-            return "DIM-1";
-        } else {
-            return dimensionType.toString();
-        }
+        return FabricAdapter.VERSION_SPECIFIC.World_getDimensionName(w);
     }
     
     public void updateWorld(World w) {
