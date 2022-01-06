@@ -29,4 +29,9 @@ public interface FabricVersionInterface {
 
     int BlockState_getRawId(BlockState blockState);
 
+    boolean World_isNether(World world);
+
+    boolean World_isEnd(World world);
+
+    String World_getDefaultTitle(World world);
 }

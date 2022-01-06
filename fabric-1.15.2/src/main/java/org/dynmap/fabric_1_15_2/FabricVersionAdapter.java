@@ -71,4 +71,20 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         return Block.STATE_IDS.getId(blockState);
     }
 
+    @Override
+    public boolean World_isNether(World world) {
+        return world.getDimension().getType() == DimensionType.THE_NETHER;
+    }
+
+    @Override
+    public boolean World_isEnd(World world) {
+        return world.getDimension().getType() == DimensionType.THE_END;
+    }
+
+    @Override
+    public String World_getDefaultTitle(World world) {
+        /* FIXME: This doesn't match the newer version, use toString() instead */
+        return String.format("world%s", world.getDimension().getType().getSuffix());
+    }
+
 }

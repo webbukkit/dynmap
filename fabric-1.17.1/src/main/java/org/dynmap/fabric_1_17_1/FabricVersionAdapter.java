@@ -75,4 +75,19 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         return Block.STATE_IDS.getRawId(blockState);
     }
 
+    @Override
+    public boolean World_isNether(World world) {
+        return world.getRegistryKey() == World.NETHER;
+    }
+
+    @Override
+    public boolean World_isEnd(World world) {
+        return world.getRegistryKey() == World.END;
+    }
+
+    @Override
+    public String World_getDefaultTitle(World world) {
+        return world.getRegistryKey().getValue().getPath();
+    }
+
 }

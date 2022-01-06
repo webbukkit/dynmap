@@ -1,7 +1,6 @@
 package org.dynmap.fabric_1_17_1;
 
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
@@ -46,9 +45,9 @@ public class FabricWorld extends DynmapWorld {
     public FabricWorld(DynmapPlugin plugin, World w) {
         this(plugin, getWorldName(plugin, w), w.getHeight(),
                 w.getSeaLevel(),
-                w.getRegistryKey() == World.NETHER,
-                w.getRegistryKey() == World.END,
-                w.getRegistryKey().getValue().getPath(),
+                FabricAdapter.VERSION_SPECIFIC.World_isNether(w),
+                FabricAdapter.VERSION_SPECIFIC.World_isEnd(w),
+                FabricAdapter.VERSION_SPECIFIC.World_getDefaultTitle(w),
                 w.getDimension().getMinimumY());
         setWorldLoaded(w);
     }

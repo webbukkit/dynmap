@@ -5,7 +5,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -46,9 +45,9 @@ public class FabricWorld extends DynmapWorld {
     public FabricWorld(DynmapPlugin plugin, World w) {
         this(plugin, getWorldName(plugin, w), w.getHeight(),
                 w.getSeaLevel(),
-                w.getDimension().getType() == DimensionType.THE_NETHER,
-                w.getDimension().getType() == DimensionType.THE_END, //DimensionType
-                String.format("world%s", w.getDimension().getType().getSuffix()), //w.getRegistryKey().getValue().getPath()
+                FabricAdapter.VERSION_SPECIFIC.World_isNether(w),
+                FabricAdapter.VERSION_SPECIFIC.World_isEnd(w),
+                FabricAdapter.VERSION_SPECIFIC.World_getDefaultTitle(w),
                 0);
         setWorldLoaded(w);
     }
