@@ -831,7 +831,7 @@ public class DynmapPlugin {
         FabricWorld fw = null;
         if (add_if_not_found) {
             /* Add to list if not found */
-            fw = new FabricWorld(plugin, w);
+            fw = new FabricWorld(this, w);
             worlds.put(fw.getName(), fw);
         }
         last_world = w;
@@ -890,7 +890,7 @@ public class DynmapPlugin {
                 boolean theend = (Boolean) world.get("the_end");
                 String title = (String) world.get("title");
                 if (name != null) {
-                    FabricWorld fw = new FabricWorld(plugin, name, height, sealevel, nether, theend, title);
+                    FabricWorld fw = new FabricWorld(this, name, height, sealevel, nether, theend, title);
                     fw.setWorldUnloaded();
                     core.processWorldLoad(fw);
                     worlds.put(fw.getName(), fw);
