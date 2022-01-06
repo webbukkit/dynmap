@@ -307,8 +307,7 @@ public class FabricServer extends DynmapServerInterface {
 
     @Override
     public void broadcastMessage(String msg) {
-        Text component = new LiteralText(msg);
-        server.getPlayerManager().broadcast(component, MessageType.SYSTEM, Util.NIL_UUID);
+        FabricAdapter.VERSION_SPECIFIC.MinecraftServer_broadcastMessage(server, msg);
         Log.info(stripChatColor(msg));
     }
 

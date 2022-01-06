@@ -1,5 +1,7 @@
 package org.dynmap.fabric_1_17_1;
 
+import net.minecraft.network.MessageType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.LiteralText;
@@ -30,6 +32,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public void ServerPlayerEntity_sendMessage(ServerPlayerEntity player, String message) {
         player.sendSystemMessage(new LiteralText(message), Util.NIL_UUID);
+    }
+
+    @Override
+    public void MinecraftServer_broadcastMessage(MinecraftServer server, String message) {
+        server.getPlayerManager().broadcastChatMessage(new LiteralText(message), MessageType.SYSTEM, Util.NIL_UUID);
     }
 
 }
