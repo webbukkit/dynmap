@@ -97,7 +97,7 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
         }
 
         Vec3d pos = player.getPos();
-        return FabricAdapter.toDynmapLocation(plugin, player.getServerWorld(), pos.getX(), pos.getY(), pos.getZ());
+        return new DynmapLocation(plugin.getWorld(player.world).getName(), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
