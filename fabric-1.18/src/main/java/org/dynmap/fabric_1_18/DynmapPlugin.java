@@ -26,7 +26,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -75,7 +74,7 @@ public class DynmapPlugin {
     ChatHandler chathandler;
     private HashMap<String, Integer> sortWeights = new HashMap<String, Integer>();
     private HashMap<String, FabricWorld> worlds = new HashMap<String, FabricWorld>();
-    private WorldAccess last_world;
+    private World last_world;
     private FabricWorld last_fworld;
     private Map<String, FabricPlayer> players = new HashMap<String, FabricPlayer>();
     private FabricServer fserver;
@@ -114,7 +113,7 @@ public class DynmapPlugin {
     }
 
     public static class BlockUpdateRec {
-        WorldAccess w;
+        World w;
         String wid;
         int x, y, z;
     }

@@ -29,7 +29,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -79,7 +78,7 @@ public class DynmapPlugin {
     // Drop world load ticket after 30 seconds
     private long worldIdleTimeoutNS = 30 * 1000000000L;
     private HashMap<String, FabricWorld> worlds = new HashMap<String, FabricWorld>();
-    private WorldView last_world;
+    private World last_world;
     private FabricWorld last_fworld;
     private Map<String, FabricPlayer> players = new HashMap<String, FabricPlayer>();
     //TODO private ForgeMetrics metrics;
@@ -123,7 +122,7 @@ public class DynmapPlugin {
     }
 
     public static class BlockUpdateRec {
-        WorldView w;
+        World w;
         String wid;
         int x, y, z;
     }
