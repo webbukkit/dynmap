@@ -1,12 +1,11 @@
 package org.dynmap.fabric_1_15_2;
 
 import net.minecraft.util.math.BlockPos;
-//import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.*;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.LightType;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
