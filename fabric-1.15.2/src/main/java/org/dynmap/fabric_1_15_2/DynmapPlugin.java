@@ -28,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -810,11 +809,11 @@ public class DynmapPlugin {
         return worlds.get(name);
     }
 
-    FabricWorld getWorld(IWorld w) {
+    FabricWorld getWorld(World w) {
         return getWorld(w, true);
     }
 
-    private FabricWorld getWorld(IWorld w, boolean add_if_not_found) {
+    private FabricWorld getWorld(World w, boolean add_if_not_found) {
         if (last_world == w) {
             return last_fworld;
         }
