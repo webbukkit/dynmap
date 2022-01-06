@@ -272,10 +272,6 @@ public class DynmapPlugin {
         }
     }
 
-    public FabricServer getFabricServer() {
-        return fserver;
-    }
-
     private void serverStart(MinecraftServer server) {
         // Set the server so we don't NPE during setup
         this.server = server;
@@ -372,8 +368,8 @@ public class DynmapPlugin {
         int cnt = 0;
         BiomeMap.loadWellKnownByVersion(mcver);
 
-        Registry<Biome> biomeRegistry = getFabricServer().getBiomeRegistry();
-        Biome[] list = getFabricServer().getBiomeList(biomeRegistry);
+        Registry<Biome> biomeRegistry = fserver.getBiomeRegistry();
+        Biome[] list = fserver.getBiomeList(biomeRegistry);
 
         for (int i = 0; i < list.length; i++) {
             Biome bb = list[i];
@@ -403,8 +399,8 @@ public class DynmapPlugin {
     }
 
     private String[] getBiomeNames() {
-        Registry<Biome> biomeRegistry = getFabricServer().getBiomeRegistry();
-        Biome[] list = getFabricServer().getBiomeList(biomeRegistry);
+        Registry<Biome> biomeRegistry = fserver.getBiomeRegistry();
+        Biome[] list = fserver.getBiomeList(biomeRegistry);
         String[] lst = new String[list.length];
         for (int i = 0; i < list.length; i++) {
             Biome bb = list[i];
