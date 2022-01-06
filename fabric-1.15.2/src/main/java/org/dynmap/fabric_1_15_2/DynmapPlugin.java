@@ -22,7 +22,6 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.IdList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -165,17 +164,15 @@ public class DynmapPlugin {
         stateByID = new DynmapBlockState[512 * 32];    // Simple map - scale as needed
         Arrays.fill(stateByID, DynmapBlockState.AIR); // Default to air
 
-        IdList<BlockState> bsids = Block.STATE_IDS;
-
         DynmapBlockState basebs = null;
         Block baseb = null;
         int baseidx = 0;
 
-        Iterator<BlockState> iter = bsids.iterator();
+        Iterator<BlockState> iter = Block.STATE_IDS.iterator();
     	DynmapBlockState.Builder bld = new DynmapBlockState.Builder();
         while (iter.hasNext()) {
             BlockState bs = iter.next();
-            int idx = bsids.getId(bs);
+            int idx = FabricAdapter.VERSION_SPECIFIC.BlockState_getRawId(bs);
             if (idx >= stateByID.length) {
                 int plen = stateByID.length;
     			stateByID = Arrays.copyOf(stateByID, idx*11/10); // grow array by 10%    			

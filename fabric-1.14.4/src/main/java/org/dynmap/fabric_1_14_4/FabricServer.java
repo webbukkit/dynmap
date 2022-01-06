@@ -471,7 +471,7 @@ public class FabricServer extends DynmapServerInterface {
         while (!plugin.blockupdatequeue.isEmpty()) {
             DynmapPlugin.BlockUpdateRec r = plugin.blockupdatequeue.remove();
             BlockState bs = r.w.getBlockState(new BlockPos(r.x, r.y, r.z));
-            int idx = Block.STATE_IDS.getId(bs);
+            int idx = FabricAdapter.VERSION_SPECIFIC.BlockState_getRawId(bs);
             if (!org.dynmap.hdmap.HDBlockModels.isChangeIgnoredBlock(DynmapPlugin.stateByID[idx])) {
                 if (plugin.onblockchange_with_id)
                     plugin.mapManager.touch(r.wid, r.x, r.y, r.z, "blockchange[" + idx + "]");

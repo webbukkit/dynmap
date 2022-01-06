@@ -1,5 +1,6 @@
 package org.dynmap.fabric_helper;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -25,5 +26,7 @@ public interface FabricVersionInterface {
     void ServerPlayerEntity_sendTitleText(ServerPlayerEntity player, String title, String subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks);
 
     String World_getDimensionName(World world);
+
+    int BlockState_getRawId(BlockState blockState);
 
 }

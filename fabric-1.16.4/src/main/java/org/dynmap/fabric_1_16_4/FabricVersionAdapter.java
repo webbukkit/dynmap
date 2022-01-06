@@ -1,5 +1,7 @@
 package org.dynmap.fabric_1_16_4;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -64,6 +66,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         } else {
             return registryKey.getValue().getNamespace() + "_" + registryKey.getValue().getPath();
         }
+    }
+
+    @Override
+    public int BlockState_getRawId(BlockState blockState) {
+        return Block.STATE_IDS.getRawId(blockState);
     }
 
 }
