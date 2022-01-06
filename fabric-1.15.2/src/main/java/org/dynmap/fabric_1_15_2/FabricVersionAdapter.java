@@ -87,4 +87,9 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         return String.format("world%s", world.getDimension().getType().getSuffix());
     }
 
+    @Override
+    public int maxWorldHeight() {
+        return 256;
+    }
+
 }

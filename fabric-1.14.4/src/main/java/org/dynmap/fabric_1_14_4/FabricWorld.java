@@ -24,7 +24,7 @@ public class FabricWorld extends DynmapWorld {
     private final boolean istheend;
     private final String env;
     private DynmapLocation spawnloc = new DynmapLocation();
-    private static int maxWorldHeight = 256;    // Maximum allows world height
+    private static int maxWorldHeight = FabricAdapter.VERSION_SPECIFIC.maxWorldHeight();
 
     public static int getMaxWorldHeight() {
         return maxWorldHeight;

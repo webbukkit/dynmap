@@ -88,4 +88,9 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         return world.getRegistryKey().getValue().getPath();
     }
 
+    @Override
+    public int maxWorldHeight() {
+        return 256;
+    }
+
 }

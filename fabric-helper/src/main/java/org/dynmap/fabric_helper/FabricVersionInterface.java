@@ -34,4 +34,8 @@ public interface FabricVersionInterface {
     boolean World_isEnd(World world);
 
     String World_getDefaultTitle(World world);
+
+    /* FIXME: Pull this from somewhere in vanilla server? */
+    int maxWorldHeight();
+
 }
