@@ -17,8 +17,9 @@ import java.util.List;
 public class FabricWorld extends DynmapWorld {
     // TODO: Store this relative to World saves for integrated server
     public static final String SAVED_WORLDS_FILE = "fabricworlds.yml";
-    private World world;
+
     private final DynmapPlugin plugin;
+    private World world;
     private final boolean skylight;
     private final boolean isnether;
     private final boolean istheend;
