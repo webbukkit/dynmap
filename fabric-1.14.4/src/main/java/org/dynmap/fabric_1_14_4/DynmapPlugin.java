@@ -373,16 +373,24 @@ public class DynmapPlugin {
             Biome bb = list[i];
             if (bb != null) {
                 String id = biomeRegistry.getId(bb).getPath();
+                String rl = biomeRegistry.getId(bb).toString();
                 float tmp = bb.getTemperature(), hum = bb.getRainfall();
                 int watermult = bb.getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
-                BiomeMap bmap = BiomeMap.byBiomeID(i);
-                if (bmap.isDefault()) {
-                    bmap = new BiomeMap(i, id, tmp, hum);
+                BiomeMap bmap = BiomeMap.NULL;
+                if (rl != null) {	// If resource location, lookup by this
+                	bmap = BiomeMap.byBiomeResourceLocation(rl);
+                }
+                else {
+                	bmap = BiomeMap.byBiomeID(i);
+                }
+                if (bmap.isDefault() || (bmap == BiomeMap.NULL)) {
+                    bmap = new BiomeMap((rl != null) ? BiomeMap.NO_INDEX : i, id, tmp, hum, rl);
                     Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
-                } else {
+                }
+                else {
                     bmap.setTemperature(tmp);
                     bmap.setRainfall(hum);
                 }
