@@ -47,18 +47,23 @@ public class FabricWorld extends DynmapWorld {
             return dimensionType.toString();
         }
     }
+    
+    public void updateWorld(World w) {
+        this.updateWorldHeights(w.getHeight(), 0, w.getSeaLevel());
+    }
 
     public FabricWorld(DynmapPlugin plugin, World w) {
         this(plugin, getWorldName(plugin, w), w.getHeight(),
                 w.getSeaLevel(),
                 w.getDimension().getType() == DimensionType.THE_NETHER,
                 w.getDimension().getType() == DimensionType.THE_END, //DimensionType
-                String.format("world%s", w.getDimension().getType().getSuffix()));//w.getRegistryKey().getValue().getPath()
+                String.format("world%s", w.getDimension().getType().getSuffix()), //w.getRegistryKey().getValue().getPath()
+                0);
         setWorldLoaded(w);
     }
 
-    public FabricWorld(DynmapPlugin plugin, String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle) {
-        super(name, (height > maxWorldHeight) ? maxWorldHeight : height, sealevel);
+    public FabricWorld(DynmapPlugin plugin, String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle, int miny) {
+        super(name, (height > maxWorldHeight) ? maxWorldHeight : height, sealevel, miny);
         this.plugin = plugin;
         world = null;
         setTitle(deftitle);
