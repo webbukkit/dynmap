@@ -3,7 +3,6 @@ package org.dynmap.fabric_1_18;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.MessageType;
@@ -18,7 +17,6 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCommonAPIListener;
@@ -28,7 +26,6 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
-import org.dynmap.fabric_1_18.event.BlockEvents;
 import org.dynmap.fabric_1_18.event.ServerChatEvents;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.VisibilityLimit;
@@ -95,17 +92,9 @@ public class FabricServer extends DynmapServerInterface {
         return -1;
     }
 
-    @SuppressWarnings("deprecation") /* Not much I can do... fix this if it breaks. */
-	@Override
+    @Override
     public int isSignAt(String wname, int x, int y, int z) {
-        World world = plugin.getWorldByName(wname).getWorld();
-
-        BlockPos pos = new BlockPos(x, y, z);
-        if (!world.isChunkLoaded(pos))
-            return -1;
-
-        Block block = world.getBlockState(pos).getBlock();
-        return (block instanceof AbstractSignBlock ? 1 : 0);
+        return -1;
     }
 
     @Override
@@ -266,14 +255,38 @@ public class FabricServer extends DynmapServerInterface {
                 break;
 
             case BLOCK_BREAK:
-                /* Already handled by BlockEvents logic */
+                /*TODO
+                pm.registerEvents(new Listener() {
+                    @EventHandler(priority=EventPriority.MONITOR)
+                    public void onBlockBreak(BlockBreakEvent evt) {
+                        if(evt.isCancelled()) return;
+                        Block b = evt.getBlock();
+                        if(b == null) return;
+                        Location l = b.getLocation();
+                        core.listenerManager.processBlockEvent(EventType.BLOCK_BREAK, b.getType().getId(),
+                                BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+                    }
+                }, DynmapPlugin.this);
+                */
                 break;
 
             case SIGN_CHANGE:
-                BlockEvents.SIGN_CHANGE_EVENT.register((world, pos, lines, material, player) -> {
-                    plugin.core.processSignChange("fabric", FabricWorld.getWorldName(plugin, world),
-                            pos.getX(), pos.getY(), pos.getZ(), lines, player.getName().asString());
-                });
+                /*TODO
+                pm.registerEvents(new Listener() {
+                    @EventHandler(priority=EventPriority.MONITOR)
+                    public void onSignChange(SignChangeEvent evt) {
+                        if(evt.isCancelled()) return;
+                        Block b = evt.getBlock();
+                        Location l = b.getLocation();
+                        String[] lines = evt.getLines();
+                        DynmapPlayer dp = null;
+                        Player p = evt.getPlayer();
+                        if(p != null) dp = new BukkitPlayer(p);
+                        core.listenerManager.processSignChangeEvent(EventType.SIGN_CHANGE, b.getType().getId(),
+                                BukkitWorld.normalizeWorldName(l.getWorld().getName()), l.getBlockX(), l.getBlockY(), l.getBlockZ(), lines, dp);
+                    }
+                }, DynmapPlugin.this);
+                */
                 break;
 
             default:
