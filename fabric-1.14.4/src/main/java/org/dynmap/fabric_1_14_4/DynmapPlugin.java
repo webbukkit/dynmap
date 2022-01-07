@@ -230,24 +230,6 @@ public class DynmapPlugin {
         return Item.byRawId(id);
     }
 
-    private static Biome[] biomelist = null;
-
-    public static final Biome[] getBiomeList() {
-        if (biomelist == null) {
-            biomelist = new Biome[256];
-            Iterator<Biome> iter = Registry.BIOME.iterator();
-            while (iter.hasNext()) {
-                Biome b = iter.next();
-                int bidx = Registry.BIOME.getRawId(b);
-                if (bidx >= biomelist.length) {
-                    biomelist = Arrays.copyOf(biomelist, bidx + biomelist.length);
-                }
-                biomelist[bidx] = b;
-            }
-        }
-        return biomelist;
-    }
-
     public static final ClientConnection getNetworkManager(ServerPlayNetworkHandler nh) {
         return nh.connection;
     }
@@ -384,12 +366,13 @@ public class DynmapPlugin {
         int cnt = 0;
         BiomeMap.loadWellKnownByVersion(mcver);
 
-        Biome[] list = getBiomeList();
+        Registry<Biome> biomeRegistry = fserver.getBiomeRegistry();
+        Biome[] list = fserver.getBiomeList(biomeRegistry);
 
         for (int i = 0; i < list.length; i++) {
             Biome bb = list[i];
             if (bb != null) {
-                String id = Registry.BIOME.getId(bb).getPath();
+                String id = biomeRegistry.getId(bb).getPath();
                 float tmp = bb.getTemperature(), hum = bb.getRainfall();
                 int watermult = bb.getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
@@ -414,12 +397,13 @@ public class DynmapPlugin {
     }
 
     private String[] getBiomeNames() {
-        Biome[] list = getBiomeList();
+        Registry<Biome> biomeRegistry = fserver.getBiomeRegistry();
+        Biome[] list = fserver.getBiomeList(biomeRegistry);
         String[] lst = new String[list.length];
         for (int i = 0; i < list.length; i++) {
             Biome bb = list[i];
             if (bb != null) {
-                lst[i] = Registry.BIOME.getId(bb).getPath();
+                lst[i] = biomeRegistry.getId(bb).getPath();
             }
         }
         return lst;

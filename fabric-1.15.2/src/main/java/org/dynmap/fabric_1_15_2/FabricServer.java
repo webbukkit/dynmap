@@ -16,6 +16,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.biome.Biome;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.DynmapWorld;
@@ -48,6 +50,7 @@ public class FabricServer extends DynmapServerInterface {
     private final Object schedlock = new Object();
     private final DynmapPlugin plugin;
     private final MinecraftServer server;
+    private final Registry<Biome> biomeRegistry;
     private long cur_tick;
     private long next_id;
     private long cur_tick_starttime;
@@ -56,11 +59,34 @@ public class FabricServer extends DynmapServerInterface {
     public FabricServer(DynmapPlugin plugin, MinecraftServer server) {
         this.plugin = plugin;
         this.server = server;
+        this.biomeRegistry = Registry.BIOME;
     }
 
     private GameProfile getProfileByName(String player) {
         UserCache cache = server.getUserCache();
         return cache.findByName(player);
+    }
+
+    public final Registry<Biome> getBiomeRegistry() {
+        return biomeRegistry;
+    }
+
+    private Biome[] biomelist = null;
+
+    public final Biome[] getBiomeList(Registry<Biome> biomeRegistry) {
+        if (biomelist == null) {
+            biomelist = new Biome[256];
+            Iterator<Biome> iter = biomeRegistry.iterator();
+            while (iter.hasNext()) {
+                Biome b = iter.next();
+                int bidx = biomeRegistry.getRawId(b);
+                if (bidx >= biomelist.length) {
+                    biomelist = Arrays.copyOf(biomelist, bidx + biomelist.length);
+                }
+                biomelist[bidx] = b;
+            }
+        }
+        return biomelist;
     }
 
     @Override
