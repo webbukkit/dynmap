@@ -288,7 +288,7 @@ custom-colors-support: true
 # Control updating of player faces, once loaded (if faces are being managed by other apps or manually)
 #refreshskins: false
 
-# Customize URL used for fetching player skins (%player% is macro for name)
+# Customize URL used for fetching player skins (%player% is macro for name, %uuid% for UUID)
 skin-url: "http://skins.minecraft.net/MinecraftSkins/%player%.png"
 
 # Control behavior for new (1.0+) compass orientation (sunrise moved 90 degrees: east is now what used to be south)
