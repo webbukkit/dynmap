@@ -18,6 +18,7 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.dynmap.common.chunk.GenericNBTCompound;
+import org.dynmap.fabric_1_16_4.mixin.BiomeEffectsAccessor;
 import org.dynmap.fabric_helper.FabricVersionInterface;
 
 import java.io.IOException;
@@ -127,6 +128,16 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public Registry<Biome> MinecraftServer_getBiomeRegistry(MinecraftServer server) {
         return server.getRegistryManager().get(Registry.BIOME_KEY);
+    }
+
+    @Override
+    public float Biome_getPrecipitation(Biome biome) {
+        return biome.getDownfall();
+    }
+
+    @Override
+    public int Biome_getWaterColor(Biome biome) {
+        return ((BiomeEffectsAccessor) biome.getEffects()).getWaterColor();
     }
 
 }

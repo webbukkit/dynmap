@@ -55,4 +55,8 @@ public interface FabricVersionInterface {
 
     Registry<Biome> MinecraftServer_getBiomeRegistry(MinecraftServer server);
 
+    float Biome_getPrecipitation(Biome biome);
+
+    int Biome_getWaterColor(Biome biome);
+
 }

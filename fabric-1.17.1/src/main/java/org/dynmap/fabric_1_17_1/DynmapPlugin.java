@@ -47,7 +47,6 @@ import org.dynmap.fabric_1_17_1.event.BlockEvents;
 import org.dynmap.fabric_1_17_1.event.ChunkDataEvents;
 import org.dynmap.fabric_1_17_1.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_1_17_1.event.PlayerEvents;
-import org.dynmap.fabric_1_17_1.mixin.BiomeEffectsAccessor;
 import org.dynmap.fabric_1_17_1.mixin.ThreadedAnvilChunkStorageAccessor;
 import org.dynmap.fabric_1_17_1.permissions.FilePermissions;
 import org.dynmap.fabric_1_17_1.permissions.OpPermissions;
@@ -373,8 +372,9 @@ public class DynmapPlugin {
             if (bb != null) {
                 String id = biomeRegistry.getId(bb).getPath();
                 String rl = biomeRegistry.getId(bb).toString();
-                float tmp = bb.getTemperature(), hum = bb.getDownfall();
-                int watermult = ((BiomeEffectsAccessor) bb.getEffects()).getWaterColor();
+                float tmp = bb.getTemperature();
+                float hum = FabricAdapter.VERSION_SPECIFIC.Biome_getPrecipitation(bb);
+                int watermult = FabricAdapter.VERSION_SPECIFIC.Biome_getWaterColor(bb);
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
                 BiomeMap bmap = BiomeMap.NULL;

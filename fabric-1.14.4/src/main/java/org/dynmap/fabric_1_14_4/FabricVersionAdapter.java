@@ -124,4 +124,14 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         return Registry.BIOME;
     }
 
+    @Override
+    public float Biome_getPrecipitation(Biome biome) {
+        return biome.getRainfall();
+    }
+
+    @Override
+    public int Biome_getWaterColor(Biome biome) {
+        return biome.getWaterColor();
+    }
+
 }
