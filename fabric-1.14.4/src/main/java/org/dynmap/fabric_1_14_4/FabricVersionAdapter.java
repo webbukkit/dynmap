@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
@@ -14,12 +15,14 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.fabric_helper.FabricVersionInterface;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class FabricVersionAdapter implements FabricVersionInterface {
 
@@ -132,6 +135,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public int Biome_getWaterColor(Biome biome) {
         return biome.getWaterColor();
+    }
+
+    @Override
+    public CompletableFuture<Chunk> ChunkHolder_getSavingFuture(ChunkHolder chunk) {
+        return chunk.getFuture();
     }
 
 }

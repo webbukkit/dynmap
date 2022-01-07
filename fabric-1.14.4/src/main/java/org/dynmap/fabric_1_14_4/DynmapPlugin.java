@@ -786,7 +786,7 @@ public class DynmapPlugin {
                     ChunkHolder ch = k.getValue();
                     Chunk c = null;
                     try {
-                        c = ch.getFuture().getNow(null);
+                        c = FabricAdapter.VERSION_SPECIFIC.ChunkHolder_getSavingFuture(ch).getNow(null);
                     } catch (Exception x) {
                     }
                     if (c == null) continue;

@@ -4,15 +4,18 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
 import org.dynmap.common.chunk.GenericNBTCompound;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Abstraction interface for version-specific Minecraft logic.
@@ -58,5 +61,7 @@ public interface FabricVersionInterface {
     float Biome_getPrecipitation(Biome biome);
 
     int Biome_getWaterColor(Biome biome);
+
+    CompletableFuture<Chunk> ChunkHolder_getSavingFuture(ChunkHolder chunk);
 
 }
