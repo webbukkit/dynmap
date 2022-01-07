@@ -180,7 +180,7 @@ public class FabricServer extends DynmapServerInterface {
     @Override
     public String getServerName() {
         String sn;
-        if (server.isSingleplayer())
+        if (FabricAdapter.VERSION_SPECIFIC.MinecraftServer_isSinglePlayer(server))
             sn = "Integrated";
         else
             sn = server.getServerIp();
@@ -546,7 +546,7 @@ public class FabricServer extends DynmapServerInterface {
 
     @Override
     public String getServerIP() {
-        if (server.isSingleplayer())
+        if (FabricAdapter.VERSION_SPECIFIC.MinecraftServer_isSinglePlayer(server))
             return "0.0.0.0";
         else
             return server.getServerIp();

@@ -297,7 +297,8 @@ public class DynmapPlugin {
         }
 
         // TODO: Consider whether cheats are enabled for integrated server
-        return server.isSinglePlayer() && player.equalsIgnoreCase(server.getUserName());
+        return FabricAdapter.VERSION_SPECIFIC.MinecraftServer_isSinglePlayer(server) &&
+                player.equalsIgnoreCase(FabricAdapter.VERSION_SPECIFIC.MinecraftServer_getSinglePlayerName(server));
     }
 
     boolean hasPerm(PlayerEntity psender, String permission) {

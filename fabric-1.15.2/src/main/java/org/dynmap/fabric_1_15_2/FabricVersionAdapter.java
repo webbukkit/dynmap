@@ -111,4 +111,14 @@ public class FabricVersionAdapter implements FabricVersionInterface {
         return Optional.of(server.getUserCache().findByName(username));
     }
 
+    @Override
+    public boolean MinecraftServer_isSinglePlayer(MinecraftServer server) {
+        return server.isSinglePlayer();
+    }
+
+    @Override
+    public String MinecraftServer_getSinglePlayerName(MinecraftServer server) {
+        return server.getUserName();
+    }
+
 }

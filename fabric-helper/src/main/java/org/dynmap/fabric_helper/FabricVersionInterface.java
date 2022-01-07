@@ -46,4 +46,8 @@ public interface FabricVersionInterface {
     boolean BlockState_isOpaqueFullCube(BlockState blockState);
 
     Optional<GameProfile> MinecraftServer_getProfileByName(MinecraftServer server, String username);
+
+    boolean MinecraftServer_isSinglePlayer(MinecraftServer server);
+
+    String MinecraftServer_getSinglePlayerName(MinecraftServer server);
 }
