@@ -10,8 +10,10 @@ import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.fabric_helper.FabricVersionInterface;
@@ -115,6 +117,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public String MinecraftServer_getSinglePlayerName(MinecraftServer server) {
         return server.getUserName();
+    }
+
+    @Override
+    public Registry<Biome> MinecraftServer_getBiomeRegistry(MinecraftServer server) {
+        return Registry.BIOME;
     }
 
 }

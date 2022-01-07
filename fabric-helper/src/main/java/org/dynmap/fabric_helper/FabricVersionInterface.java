@@ -6,7 +6,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import org.dynmap.common.chunk.GenericNBTCompound;
 
 import java.io.IOException;
@@ -50,4 +52,7 @@ public interface FabricVersionInterface {
     boolean MinecraftServer_isSinglePlayer(MinecraftServer server);
 
     String MinecraftServer_getSinglePlayerName(MinecraftServer server);
+
+    Registry<Biome> MinecraftServer_getBiomeRegistry(MinecraftServer server);
+
 }
