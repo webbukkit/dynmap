@@ -63,8 +63,7 @@ public class FabricServer extends DynmapServerInterface {
     }
 
     private Optional<GameProfile> getProfileByName(String player) {
-        UserCache cache = server.getUserCache();
-        return cache.findByName(player);
+        return FabricAdapter.VERSION_SPECIFIC.MinecraftServer_getProfileByName(server, player);
     }
 
     public final Registry<Biome> getBiomeRegistry() {

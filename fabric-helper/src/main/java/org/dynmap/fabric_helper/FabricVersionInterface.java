@@ -1,5 +1,6 @@
 package org.dynmap.fabric_helper;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -9,6 +10,7 @@ import net.minecraft.world.World;
 import org.dynmap.common.chunk.GenericNBTCompound;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Abstraction interface for version-specific Minecraft logic.
@@ -43,4 +45,5 @@ public interface FabricVersionInterface {
     /* FIXME: Pull this from somewhere in vanilla server? */
     boolean BlockState_isOpaqueFullCube(BlockState blockState);
 
+    Optional<GameProfile> MinecraftServer_getProfileByName(MinecraftServer server, String username);
 }

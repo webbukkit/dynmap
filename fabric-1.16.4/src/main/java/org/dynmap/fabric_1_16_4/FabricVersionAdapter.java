@@ -1,5 +1,6 @@
 package org.dynmap.fabric_1_16_4;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.MessageType;
@@ -18,6 +19,7 @@ import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.fabric_helper.FabricVersionInterface;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class FabricVersionAdapter implements FabricVersionInterface {
 
@@ -103,6 +105,11 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     @Override
     public boolean BlockState_isOpaqueFullCube(BlockState blockState) {
         return blockState.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+    }
+
+    @Override
+    public Optional<GameProfile> MinecraftServer_getProfileByName(MinecraftServer server, String username) {
+        return Optional.of(server.getUserCache().findByName(username));
     }
 
 }
