@@ -1,0 +1,53 @@
+plugins {
+	id 'fabric-loom' version '0.10.65'
+}
+
+archivesBaseName = "Dynmap-${project.name}"
+
+configurations {
+    shadow
+    implementation.extendsFrom(shadow)
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
+    shadow project(path: ':DynmapCore', configuration: 'shadow')
+    include project(path: ':fabric-1.14.4')
+    include project(path: ':fabric-1.15.2')
+    include project(path: ':fabric-1.16.4')
+    include project(path: ':fabric-1.17.1')
+    include project(path: ':fabric-1.18')
+}
+
+processResources {
+    filesMatching('fabric.mod.json') {
+        expand "version": project.version
+    }
+}
+
+java {
+    withSourcesJar()
+}
+
+jar {
+    from "LICENSE"
+    from {
+        configurations.shadow.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+remapJar {
+    archiveFileName = "${archivesBaseName}-${project.version}.jar"
+    destinationDirectory = file '../target'
+}
+
+remapJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
+}
