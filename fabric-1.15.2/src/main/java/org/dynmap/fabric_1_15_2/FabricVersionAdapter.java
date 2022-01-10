@@ -23,7 +23,7 @@ import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericBitStorage;
 import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.common.chunk.GenericNBTList;
-import org.dynmap.fabric_helper.FabricVersionInterface;
+import org.dynmap.fabric_common.FabricVersionInterface;
 
 import java.io.IOException;
 import java.util.Optional;

@@ -20,7 +20,7 @@ dependencies {
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     shadow project(path: ':DynmapCore', configuration: 'shadow')
-    shadow project(path: ':fabric-helper', configuration: 'namedElements')
+    shadow project(path: ':fabric-common', configuration: 'namedElements')
 }
 
 processResources {

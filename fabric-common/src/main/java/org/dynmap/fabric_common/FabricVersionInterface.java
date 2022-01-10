@@ -1,4 +1,4 @@
-package org.dynmap.fabric_helper;
+package org.dynmap.fabric_common;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
