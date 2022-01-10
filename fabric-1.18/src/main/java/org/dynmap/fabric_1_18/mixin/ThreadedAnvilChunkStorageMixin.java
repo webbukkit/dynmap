@@ -3,7 +3,7 @@ package org.dynmap.fabric_1_18.mixin;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.chunk.Chunk;
-import org.dynmap.fabric_1_18.event.ChunkDataEvents;
+import org.dynmap.fabric_common.event.ChunkDataEvents;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

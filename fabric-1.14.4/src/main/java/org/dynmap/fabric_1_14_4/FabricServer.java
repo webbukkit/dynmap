@@ -26,7 +26,7 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
-import org.dynmap.fabric_1_14_4.event.ServerChatEvents;
+import org.dynmap.fabric_common.event.ServerChatEvents;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.VisibilityLimit;
 

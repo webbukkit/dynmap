@@ -3,7 +3,7 @@ package org.dynmap.fabric_1_18.mixin;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.dynmap.fabric_1_18.event.ServerChatEvents;
+import org.dynmap.fabric_common.event.ServerChatEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
