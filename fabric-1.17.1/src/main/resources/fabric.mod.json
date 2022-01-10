@@ -16,5 +16,10 @@
     "modmenu": {
       "parent": "dynmap"
     }
+  },
+  "entrypoints": {
+    "main": [
+      "org.dynmap.fabric_1_17_1.FabricVersionAdapter"
+    ]
   }
 }

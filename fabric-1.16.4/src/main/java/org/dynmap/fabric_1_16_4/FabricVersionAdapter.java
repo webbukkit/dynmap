@@ -1,6 +1,7 @@
 package org.dynmap.fabric_1_16_4;
 
 import com.mojang.authlib.GameProfile;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
@@ -34,9 +35,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class FabricVersionAdapter implements FabricVersionInterface {
+public class FabricVersionAdapter implements FabricVersionInterface, ModInitializer {
 
-    static {
+    @Override
+    public void onInitialize() {
         FabricAdapter.VERSION_SPECIFIC = new FabricVersionAdapter();
     }
 
