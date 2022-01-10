@@ -1,15 +1,8 @@
 plugins {
-	id 'fabric-loom' version '0.10.65'
+    id 'fabric-loom' version '0.10.65'
 }
 
-archivesBaseName = "Dynmap"
-version = parent.version
-group = parent.group
-
-configurations {
-    shadow
-    implementation.extendsFrom(shadow)
-}
+archivesBaseName = "Dynmap-${project.name}"
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -19,8 +12,8 @@ dependencies {
 
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
-    shadow project(path: ':DynmapCore', configuration: 'shadow')
-    shadow project(path: ':fabric-common', configuration: 'namedElements')
+    implementation project(path: ':DynmapCore', configuration: 'shadow')
+    implementation project(path: ':fabric-common', configuration: 'namedElements')
 }
 
 processResources {
@@ -30,25 +23,5 @@ processResources {
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
-}
-
-jar {
-    from "LICENSE"
-    from {
-        configurations.shadow.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
-remapJar {
-    archiveFileName = "${archivesBaseName}-${project.version}-fabric-${project.minecraft_version}.jar"
-    destinationDirectory = file '../target'
-}
-
-remapJar.doLast {
-    task ->
-        ant.checksum file: task.archivePath
 }

@@ -1,6 +1,8 @@
 plugins {
-	id 'fabric-loom' version '0.10.65'
+    id 'fabric-loom' version '0.10.65'
 }
+
+archivesBaseName = "Dynmap-${project.name}"
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -8,5 +10,17 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
     implementation project(path: ':DynmapCore', configuration: 'shadow')
+}
+
+processResources {
+    filesMatching('fabric.mod.json') {
+        expand "version": project.version
+    }
+}
+
+java {
+    withSourcesJar()
 }
