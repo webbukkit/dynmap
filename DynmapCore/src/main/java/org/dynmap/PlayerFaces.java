@@ -108,10 +108,12 @@ public class PlayerFaces {
     private class LoadPlayerImages implements Runnable {
         private SkinUrlProvider mSkinUrlProvider;
         public final String playername;
+        public final UUID playeruuid;
         public final String playerskinurl;
 
         public LoadPlayerImages(String playername, String playerskinurl, UUID playeruuid, SkinUrlProvider skinUrlProvider) {
             this.playername = playername;
+            this.playeruuid = playeruuid;
             this.playerskinurl = playerskinurl;
             mSkinUrlProvider = skinUrlProvider;
         }
@@ -131,7 +133,8 @@ public class PlayerFaces {
 
                     if (mSkinUrlProvider == null) {
                         if (!skinurl.equals("")) {
-                            url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8")));
+                            url = new URL(skinurl.replace("%player%", URLEncoder.encode(playername, "UTF-8"))
+                                                  .replace("%uuid%", playeruuid.toString()));
                         } else if (playerskinurl != null) {
                             url = new URL(playerskinurl);
                         }
