@@ -1,16 +1,17 @@
 {
   "schemaVersion": 1,
-  "id": "dynmap-1-15",
+  "id": "dynmap-common",
   "version": "${version}",
-  "name": "Dynmap-1.15",
-  "mixins": [
-    "dynmap.mixins.json"
-  ],
+  "name": "Dynmap-Commom",
   "depends": {
     "fabricloader": ">=0.12.12",
     "fabric": ">=0.28.5",
-    "minecraft": "1.15.x",
-    "dynmap-common": "*"
+    "minecraft": ">=1.14"
+  },
+  "entrypoints": {
+    "main": [
+      "org.dynmap.fabric_common.DynmapMod"
+    ]
   },
   "custom": {
     "modmenu": {
