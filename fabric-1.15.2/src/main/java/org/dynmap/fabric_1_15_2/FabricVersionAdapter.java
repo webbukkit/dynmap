@@ -23,6 +23,7 @@ import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericBitStorage;
 import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.common.chunk.GenericNBTList;
+import org.dynmap.fabric_common.FabricAdapter;
 import org.dynmap.fabric_common.FabricVersionInterface;
 
 import java.io.IOException;
@@ -31,6 +32,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class FabricVersionAdapter implements FabricVersionInterface {
+
+    static {
+        FabricAdapter.VERSION_SPECIFIC = new FabricVersionAdapter();
+    }
 
     @Override
     public float[] World_getBrightnessTable(World world) {
