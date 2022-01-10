@@ -47,7 +47,7 @@ import org.dynmap.fabric_common.event.BlockEvents;
 import org.dynmap.fabric_common.event.ChunkDataEvents;
 import org.dynmap.fabric_common.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_common.event.PlayerEvents;
-import org.dynmap.fabric_1_14_4.mixin.ThreadedAnvilChunkStorageAccessor;
+import org.dynmap.fabric_common.access.ThreadedAnvilChunkStorageAccessor;
 import org.dynmap.fabric_1_14_4.permissions.FilePermissions;
 import org.dynmap.fabric_1_14_4.permissions.OpPermissions;
 import org.dynmap.fabric_1_14_4.permissions.PermissionProvider;
