@@ -47,8 +47,13 @@ public class FabricVersionAdapter implements FabricVersionInterface {
     }
 
     @Override
-    public GenericNBTCompound ThreadedAnvilChunkStorage_getNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException {
-        return new NBTCompound(tacs.getNbt(chunkPos));
+    public GenericNBTCompound ThreadedAnvilChunkStorage_getGenericNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException {
+        return NBTCompound.newOrNull(tacs.getNbt(chunkPos));
+    }
+
+    @Override
+    public GenericNBTCompound NbtCompound_getGenericNbt(Object nbtCompound) {
+        return NBTCompound.newOrNull((NbtCompound) nbtCompound);
     }
 
     @Override
@@ -158,6 +163,9 @@ public class FabricVersionAdapter implements FabricVersionInterface {
 
     public static class NBTCompound implements GenericNBTCompound {
         private final NbtCompound obj;
+        public static NBTCompound newOrNull(NbtCompound t) {
+            return (t != null) ? new NBTCompound(t) : null;
+        }
         public NBTCompound(NbtCompound t) {
             this.obj = t;
         }

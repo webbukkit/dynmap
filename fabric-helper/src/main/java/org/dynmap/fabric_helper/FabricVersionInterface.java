@@ -24,7 +24,10 @@ public interface FabricVersionInterface {
 
     float[] World_getBrightnessTable(World world);
 
-    GenericNBTCompound ThreadedAnvilChunkStorage_getNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException;
+    GenericNBTCompound ThreadedAnvilChunkStorage_getGenericNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException;
+
+    /* Ugly "Object"-style passing because the type was renamed in Yarn 1.16.5. */
+    GenericNBTCompound NbtCompound_getGenericNbt(Object nbtCompound);
 
     void ServerPlayerEntity_sendMessage(ServerPlayerEntity player, String message);
 
