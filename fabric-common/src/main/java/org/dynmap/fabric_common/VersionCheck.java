@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_14_4;
+package org.dynmap.fabric_common;
 
 import org.dynmap.DynmapCore;
 import org.dynmap.Log;

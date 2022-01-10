@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_14_4;
+package org.dynmap.fabric_common;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -39,18 +39,18 @@ import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.chunk.GenericChunkCache;
-import org.dynmap.fabric_1_14_4.command.DmapCommand;
-import org.dynmap.fabric_1_14_4.command.DmarkerCommand;
-import org.dynmap.fabric_1_14_4.command.DynmapCommand;
-import org.dynmap.fabric_1_14_4.command.DynmapExpCommand;
+import org.dynmap.fabric_common.command.DmapCommand;
+import org.dynmap.fabric_common.command.DmarkerCommand;
+import org.dynmap.fabric_common.command.DynmapCommand;
+import org.dynmap.fabric_common.command.DynmapExpCommand;
 import org.dynmap.fabric_common.event.BlockEvents;
 import org.dynmap.fabric_common.event.ChunkDataEvents;
 import org.dynmap.fabric_common.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_common.event.PlayerEvents;
 import org.dynmap.fabric_common.access.ThreadedAnvilChunkStorageAccessor;
-import org.dynmap.fabric_1_14_4.permissions.FilePermissions;
-import org.dynmap.fabric_1_14_4.permissions.OpPermissions;
-import org.dynmap.fabric_1_14_4.permissions.PermissionProvider;
+import org.dynmap.fabric_common.permissions.FilePermissions;
+import org.dynmap.fabric_common.permissions.OpPermissions;
+import org.dynmap.fabric_common.permissions.PermissionProvider;
 import org.dynmap.permissions.PermissionsHandler;
 import org.dynmap.renderer.DynmapBlockState;
 
