@@ -14,6 +14,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.dynmap.common.chunk.GenericNBTCompound;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -66,5 +67,10 @@ public interface FabricVersionInterface {
     int Biome_getWaterColor(Biome biome);
 
     CompletableFuture<Chunk> ChunkHolder_getSavingFuture(ChunkHolder chunk);
+
+    /* This interface is needed because even though the STATE_IDS field doesn't
+       change the name throughout version, it does change its type (due to IdList
+       mapping changing). */
+    Iterator<BlockState> getBlockStateIdsIterator();
 
 }

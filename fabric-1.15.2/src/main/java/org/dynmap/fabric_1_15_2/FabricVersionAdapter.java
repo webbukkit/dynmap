@@ -28,6 +28,7 @@ import org.dynmap.fabric_common.FabricAdapter;
 import org.dynmap.fabric_common.FabricVersionInterface;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -162,6 +163,11 @@ public class FabricVersionAdapter implements FabricVersionInterface, ModInitiali
     @Override
     public CompletableFuture<Chunk> ChunkHolder_getSavingFuture(ChunkHolder chunk) {
         return chunk.getFuture();
+    }
+
+    @Override
+    public Iterator<BlockState> getBlockStateIdsIterator() {
+        return Block.STATE_IDS.iterator();
     }
 
     public static class NBTCompound implements GenericNBTCompound {

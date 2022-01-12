@@ -168,7 +168,7 @@ public class DynmapPlugin {
         Block baseb = null;
         int baseidx = 0;
 
-        Iterator<BlockState> iter = Block.STATE_IDS.iterator();
+        Iterator<BlockState> iter = FabricAdapter.VERSION_SPECIFIC.getBlockStateIdsIterator();
     	DynmapBlockState.Builder bld = new DynmapBlockState.Builder();
         while (iter.hasNext()) {
             BlockState bs = iter.next();
