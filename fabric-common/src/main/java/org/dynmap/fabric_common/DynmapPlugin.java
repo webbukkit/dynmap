@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FluidBlock;
 import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -209,7 +208,7 @@ public class DynmapPlugin {
 				if (mat == Material.AIR) { bld.setAir(); }
 				if (mat == Material.WOOD) { bld.setLog(); }
 				if (mat == Material.LEAVES) { bld.setLeaves(); }
-				if ((!bs.getFluidState().isEmpty()) && !(bs.getBlock() instanceof FluidBlock)) {
+				if (FabricAdapter.VERSION_SPECIFIC.BlockState_isWaterlogged(bs)) {
 					bld.setWaterlogged();
 				}
                 DynmapBlockState dbs = bld.build(); // Build state

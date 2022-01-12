@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.MessageType;
@@ -172,6 +173,11 @@ public class FabricVersionAdapter implements FabricVersionInterface, ModInitiali
     @Override
     public Iterator<BlockState> getBlockStateIdsIterator() {
         return Block.STATE_IDS.iterator();
+    }
+
+    @Override
+    public boolean BlockState_isWaterlogged(BlockState blockState) {
+        return ((!blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof FluidBlock));
     }
 
     public static class NBTCompound implements GenericNBTCompound {

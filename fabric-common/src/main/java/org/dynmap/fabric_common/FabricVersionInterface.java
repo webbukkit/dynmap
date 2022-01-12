@@ -73,4 +73,6 @@ public interface FabricVersionInterface {
        mapping changing). */
     Iterator<BlockState> getBlockStateIdsIterator();
 
+    boolean BlockState_isWaterlogged(BlockState blockState);
+
 }
