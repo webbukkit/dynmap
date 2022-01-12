@@ -1,8 +1,16 @@
 pluginManagement {
   repositories {
+    maven {
+        name "Paper"
+        url "https://papermc.io/repo/repository/maven-public/"
+    }
+    maven {
+        name "Fabric"
+        url "https://maven.fabricmc.net/"
+    }
+    // This entry has to be last because of intermittent problems with it;
+    // if it errors out, it can stop Gradle from trying other repositories.
     gradlePluginPortal()
-    maven { url "https://papermc.io/repo/repository/maven-public/" }
-    maven { url "https://maven.fabricmc.net/" }
   }
 }
 
