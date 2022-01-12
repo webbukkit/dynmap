@@ -180,6 +180,18 @@ public class FabricVersionAdapter implements FabricVersionInterface, ModInitiali
         return ((!blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof FluidBlock));
     }
 
+    @Override
+    public String BlockState_getStateName(BlockState blockState) {
+        String statename = "";
+        for (net.minecraft.state.property.Property<?> p : blockState.getProperties()) {
+            if (statename.length() > 0) {
+                statename += ",";
+            }
+            statename += p.getName() + "=" + blockState.get(p).toString();
+        }
+        return statename;
+    }
+
     public static class NBTCompound implements GenericNBTCompound {
         private final NbtCompound obj;
         public static NBTCompound newOrNull(NbtCompound t) {

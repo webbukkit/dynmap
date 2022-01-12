@@ -193,13 +193,7 @@ public class DynmapPlugin {
             // Only do defined names, and not "air"
             if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
                 Material mat = bs.getMaterial();
-                String statename = "";
-                for (net.minecraft.state.property.Property<?> p : bs.getProperties()) {
-                    if (statename.length() > 0) {
-                        statename += ",";
-                    }
-                    statename += p.getName() + "=" + bs.get(p).toString();
-                }
+                String statename = FabricAdapter.VERSION_SPECIFIC.BlockState_getStateName(bs);
                 int lightAtten = FabricAdapter.VERSION_SPECIFIC.BlockState_isOpaqueFullCube(bs) ? 15 : (bs.isTranslucent(EmptyBlockView.INSTANCE, BlockPos.ORIGIN) ? 0 : 1);
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
                 // Fill in base attributes

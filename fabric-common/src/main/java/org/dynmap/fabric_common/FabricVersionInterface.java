@@ -75,4 +75,6 @@ public interface FabricVersionInterface {
 
     boolean BlockState_isWaterlogged(BlockState blockState);
 
+    String BlockState_getStateName(BlockState blockState);
+
 }
