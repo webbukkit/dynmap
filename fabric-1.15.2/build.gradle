@@ -14,6 +14,7 @@ dependencies {
 
     implementation project(path: ':DynmapCore', configuration: 'shadow')
     implementation project(path: ':fabric-common', configuration: 'namedElements')
+    implementation project(path: ':fabric', configuration: 'namedElements')
 }
 
 processResources {

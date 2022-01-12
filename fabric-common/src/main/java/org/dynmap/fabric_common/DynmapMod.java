@@ -27,6 +27,14 @@ public class DynmapMod implements ModInitializer {
     public void onInitialize() {
         instance = this;
 
+        Log.setLogger(new FabricLogger());
+        org.dynmap.modsupport.ModSupportImpl.init();
+
+        // Initialize the plugin, we will enable it fully when the server starts.
+        plugin = new DynmapPlugin();
+    }
+
+    public static void acquireDynmapContainer() {
         Path path = MOD_CONTAINER.getRootPath();
         try {
             jarfile = new File(DynmapCore.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -40,11 +48,5 @@ public class DynmapMod implements ModInitializer {
         }
 
         ver = MOD_CONTAINER.getMetadata().getVersion().getFriendlyString();
-
-        Log.setLogger(new FabricLogger());
-        org.dynmap.modsupport.ModSupportImpl.init();
-
-        // Initialize the plugin, we will enable it fully when the server starts.
-        plugin = new DynmapPlugin();
     }
 }

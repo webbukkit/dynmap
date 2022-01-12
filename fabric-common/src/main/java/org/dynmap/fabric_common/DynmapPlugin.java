@@ -439,6 +439,7 @@ public class DynmapPlugin {
 
         /* Instantiate core */
         if (core == null) {
+            DynmapMod.acquireDynmapContainer();
             core = new DynmapCore();
         }
 

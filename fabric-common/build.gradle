@@ -13,6 +13,7 @@ dependencies {
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     implementation project(path: ':DynmapCore', configuration: 'shadow')
+    implementation project(path: ':fabric', configuration: 'namedElements')
 }
 
 processResources {

@@ -6,7 +6,8 @@
   "depends": {
     "fabricloader": ">=0.12.12",
     "fabric": ">=0.28.5",
-    "minecraft": ">=1.14"
+    "minecraft": ">=1.14",
+    "dynmap": "*"
   },
   "entrypoints": {
     "main": [
