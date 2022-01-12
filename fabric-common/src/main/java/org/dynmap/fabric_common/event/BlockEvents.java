@@ -9,7 +9,7 @@ public class BlockEvents {
     private BlockEvents() {
     }
 
-    public static Event<BlockCallback> EVENT = EventFactory.createArrayBacked(BlockCallback.class,
+    public static Event<BlockCallback> BLOCK_EVENT = EventFactory.createArrayBacked(BlockCallback.class,
             (listeners) -> (world, pos) -> {
                 for (BlockCallback callback : listeners) {
                     callback.onBlockEvent(world, pos);
@@ -17,6 +17,7 @@ public class BlockEvents {
             }
     );
 
+    @FunctionalInterface
     public interface BlockCallback {
         void onBlockEvent(World world, BlockPos pos);
     }
