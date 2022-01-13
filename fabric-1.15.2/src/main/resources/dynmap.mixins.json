@@ -8,7 +8,6 @@
     "PlayerManagerMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "ThreadedAnvilChunkStorageMixin",
     "WorldChunkMixin"
   ],
   "injectors": {

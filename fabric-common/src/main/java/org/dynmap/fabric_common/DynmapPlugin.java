@@ -43,7 +43,6 @@ import org.dynmap.fabric_common.command.DmarkerCommand;
 import org.dynmap.fabric_common.command.DynmapCommand;
 import org.dynmap.fabric_common.command.DynmapExpCommand;
 import org.dynmap.fabric_common.event.*;
-import org.dynmap.fabric_common.access.ThreadedAnvilChunkStorageAccessor;
 import org.dynmap.fabric_common.permissions.FilePermissions;
 import org.dynmap.fabric_common.permissions.OpPermissions;
 import org.dynmap.fabric_common.permissions.PermissionProvider;
