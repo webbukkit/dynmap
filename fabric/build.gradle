@@ -18,12 +18,12 @@ dependencies {
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     shadow project(path: ':DynmapCore', configuration: 'shadow')
+
     include project(path: ':fabric-1.14.4')
     include project(path: ':fabric-1.15.2')
     include project(path: ':fabric-1.16.4')
     include project(path: ':fabric-1.17.1')
     include project(path: ':fabric-1.18')
-    include project(path: ':fabric-common')
 }
 
 processResources {

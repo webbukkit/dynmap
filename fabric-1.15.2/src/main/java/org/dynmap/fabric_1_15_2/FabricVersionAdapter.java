@@ -25,8 +25,8 @@ import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericBitStorage;
 import org.dynmap.common.chunk.GenericNBTCompound;
 import org.dynmap.common.chunk.GenericNBTList;
-import org.dynmap.fabric_common.FabricAdapter;
-import org.dynmap.fabric_common.FabricVersionInterface;
+import org.dynmap.fabric.FabricAdapter;
+import org.dynmap.fabric.FabricVersionInterface;
 
 import java.io.IOException;
 import java.util.Iterator;

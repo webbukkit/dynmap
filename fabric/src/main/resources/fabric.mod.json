@@ -20,5 +20,13 @@
     "fabricloader": ">=0.12.12",
     "fabric": ">=0.28.5",
     "minecraft": ["1.14.x", "1.15.x", "1.16.x", "1.17.x", "1.18.x"]
-  }
+  },
+  "entrypoints": {
+    "main": [
+      "org.dynmap.fabric.DynmapMod"
+    ]
+  },
+  "mixins": [
+    "fabric.mixins.json"
+  ]
 }

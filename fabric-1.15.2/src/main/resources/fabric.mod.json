@@ -10,7 +10,7 @@
     "fabricloader": ">=0.12.12",
     "fabric": ">=0.28.5",
     "minecraft": "1.15.x",
-    "dynmap-common": "*"
+    "dynmap": "*"
   },
   "custom": {
     "modmenu": {

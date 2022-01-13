@@ -1,7 +1,7 @@
 package org.dynmap.fabric_1_16_4.mixin;
 
 import net.minecraft.server.MinecraftServer;
-import org.dynmap.fabric_common.event.CustomServerLifecycleEvents;
+import org.dynmap.fabric.event.CustomServerLifecycleEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

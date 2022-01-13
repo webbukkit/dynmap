@@ -3,7 +3,7 @@ package org.dynmap.fabric_1_18.mixin;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.dynmap.fabric_common.event.PlayerEvents;
+import org.dynmap.fabric.event.PlayerEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
