@@ -325,6 +325,9 @@ public class Client {
                 case '>':
                     str.append("&gt;");
                     break;
+                case '\'':
+                	str.append("&#39;");
+                	break;
                 default:
             		str.append(c);
             		break;

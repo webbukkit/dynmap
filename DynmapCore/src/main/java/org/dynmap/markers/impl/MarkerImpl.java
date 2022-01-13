@@ -76,8 +76,8 @@ class MarkerImpl implements Marker {
      *  @param node - configuration node
      */
     boolean loadPersistentData(ConfigurationNode node) {
-        label = node.getString("label", markerid);
         markup = node.getBoolean("markup", false);
+        label = MarkerAPIImpl.escapeForHTMLIfNeeded(node.getString("label", markerid), markup);
         x = node.getDouble("x", 0);
         y = node.getDouble("y", 64);
         z = node.getDouble("z", 0);

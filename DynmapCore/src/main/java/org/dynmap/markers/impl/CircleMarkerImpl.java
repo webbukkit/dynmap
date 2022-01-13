@@ -102,8 +102,8 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
      *  @param node - configuration node
      */
     boolean loadPersistentData(ConfigurationNode node) {
-        label = node.getString("label", markerid);
         markup = node.getBoolean("markup", false);
+        label = MarkerAPIImpl.escapeForHTMLIfNeeded(node.getString("label", markerid), markup);
         world = node.getString("world", "world");
         normalized_world = DynmapWorld.normalizeWorldName(world);
         x = node.getDouble("x", 0);

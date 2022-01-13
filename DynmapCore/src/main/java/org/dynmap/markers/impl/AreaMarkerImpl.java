@@ -120,8 +120,8 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
      *  @param node - configuration node
      */
     boolean loadPersistentData(ConfigurationNode node) {
-        label = node.getString("label", markerid);
         markup = node.getBoolean("markup", false);
+        label = MarkerAPIImpl.escapeForHTMLIfNeeded(node.getString("label", markerid), markup);
         ytop = node.getDouble("ytop", 64.0);
         ybottom = node.getDouble("ybottom", 64.0);
         List<Double> xx = node.getList("x");

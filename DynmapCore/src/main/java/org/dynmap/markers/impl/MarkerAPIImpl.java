@@ -3558,4 +3558,22 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         	ms.addEnteredMarkers(entered, worldid, x, y, z);
         }
     }
+    /**
+     * Check if loaded string needs to be escaped (if non-markup)
+     */
+    public static String escapeForHTMLIfNeeded(String txt, boolean markup) {
+    	if (markup) return txt;	// Not needed for markup
+    	// If escaped properly, these characters aren't present (all but ampersand of HTML active characrers
+    	if (txt != null) {
+    		if ((txt.indexOf('<') >= 0) || (txt.indexOf('>') >= 0) || (txt.indexOf('\'') >= 0) || (txt.indexOf('"') >= 0)) {
+    			return Client.encodeForHTML(txt);
+    		}
+    		// If ampersand without semicolon after (simplistic check for ampersand without being escape sequence)
+    		int idx = txt.lastIndexOf('&');
+    		if ((idx >= 0) && (txt.indexOf(';', idx) < 0)) {
+    			return Client.encodeForHTML(txt);    			
+    		}
+    	}
+    	return txt;
+    }
 }
