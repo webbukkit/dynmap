@@ -42,10 +42,7 @@ import org.dynmap.fabric_common.command.DmapCommand;
 import org.dynmap.fabric_common.command.DmarkerCommand;
 import org.dynmap.fabric_common.command.DynmapCommand;
 import org.dynmap.fabric_common.command.DynmapExpCommand;
-import org.dynmap.fabric_common.event.BlockEvents;
-import org.dynmap.fabric_common.event.ChunkDataEvents;
-import org.dynmap.fabric_common.event.CustomServerLifecycleEvents;
-import org.dynmap.fabric_common.event.PlayerEvents;
+import org.dynmap.fabric_common.event.*;
 import org.dynmap.fabric_common.access.ThreadedAnvilChunkStorageAccessor;
 import org.dynmap.fabric_common.permissions.FilePermissions;
 import org.dynmap.fabric_common.permissions.OpPermissions;
@@ -128,33 +125,6 @@ public class DynmapPlugin {
     ConcurrentLinkedQueue<BlockUpdateRec> blockupdatequeue = new ConcurrentLinkedQueue<BlockUpdateRec>();
 
     public static DynmapBlockState[] stateByID;
-
-    private Map<String, LongOpenHashSet> knownloadedchunks = new HashMap<String, LongOpenHashSet>();
-    private boolean didInitialKnownChunks = false;
-
-    private void addKnownChunk(FabricWorld fw, ChunkPos pos) {
-        LongOpenHashSet cset = knownloadedchunks.get(fw.getName());
-        if (cset == null) {
-            cset = new LongOpenHashSet();
-            knownloadedchunks.put(fw.getName(), cset);
-        }
-        cset.add(pos.toLong());
-    }
-
-    private void removeKnownChunk(FabricWorld fw, ChunkPos pos) {
-        LongOpenHashSet cset = knownloadedchunks.get(fw.getName());
-        if (cset != null) {
-            cset.remove(pos.toLong());
-        }
-    }
-
-    private boolean checkIfKnownChunk(FabricWorld fw, ChunkPos pos) {
-        LongOpenHashSet cset = knownloadedchunks.get(fw.getName());
-        if (cset != null) {
-            return cset.contains(pos.toLong());
-        }
-        return false;
-    }
 
     /**
      * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
@@ -657,75 +627,27 @@ public class DynmapPlugin {
             }
         }
 
-        public void handleChunkLoad(ServerWorld world, WorldChunk chunk) {
+        public void handleChunkGenerate(ServerWorld world, WorldChunk chunk) {
             if (!onchunkgenerate) return;
 
-            if ((chunk != null) && (chunk.getStatus() == ChunkStatus.FULL)) {
-                FabricWorld fw = getWorld(world, false);
-                if (fw != null) {
-                    addKnownChunk(fw, chunk.getPos());
+            FabricWorld fw = getWorld(world, false);
+            ChunkPos chunkPos = chunk.getPos();
+
+            int yMin = Integer.MIN_VALUE;
+            int yMax = Integer.MAX_VALUE;
+            ChunkSection[] sections = chunk.getSectionArray();
+            for (int i = 0; i < sections.length; i++) {
+                if ((sections[i] != null) && (!sections[i].isEmpty())) {
+                    int sectionY = sections[i].getYOffset();
+                    if (sectionY < yMax) yMax = sectionY;
+                    if ((sectionY + 16) > yMin) yMin = sectionY + 16;
                 }
             }
-        }
-
-        public void handleChunkUnload(ServerWorld world, WorldChunk chunk) {
-            if (!onchunkgenerate) return;
-
-            if ((chunk != null) && (chunk.getStatus() == ChunkStatus.FULL)) {
-                FabricWorld fw = getWorld(world, false);
-                ChunkPos cp = chunk.getPos();
-                if (fw != null) {
-                    if (!checkIfKnownChunk(fw, cp)) {
-        				int ymax = Integer.MIN_VALUE;
-        				int ymin = Integer.MAX_VALUE;
-                        ChunkSection[] sections = chunk.getSectionArray();
-                        for (int i = 0; i < sections.length; i++) {
-                            if ((sections[i] != null) && (!sections[i].isEmpty())) {
-        						int sy = sections[i].getYOffset();
-        						if (sy < ymin) ymin = sy;
-        						if ((sy+16) > ymax) ymax = sy + 16;
-                            }
-                        }
-                        int x = cp.x << 4;
-                        int z = cp.z << 4;
-                        // If not empty AND not initial scan
-                        if (ymax != Integer.MIN_VALUE) {
-                            Log.info("New generated chunk detected at " + cp + " for " + fw.getName());
-                            mapManager.touchVolume(fw.getName(), x, ymin, z, x + 15, ymax, z + 15, "chunkgenerate");
-                        }
-                    }
-                    removeKnownChunk(fw, cp);
-                }
-            }
-        }
-
-        public void handleChunkDataSave(ServerWorld world, Chunk chunk) {
-            if (!onchunkgenerate) return;
-
-            if ((chunk != null) && (chunk.getStatus() == ChunkStatus.FULL)) {
-                FabricWorld fw = getWorld(world, false);
-                ChunkPos cp = chunk.getPos();
-                if (fw != null) {
-                    if (!checkIfKnownChunk(fw, cp)) {
-        				int ymax = Integer.MIN_VALUE;
-        				int ymin = Integer.MAX_VALUE;
-                        ChunkSection[] sections = chunk.getSectionArray();
-                        for (int i = 0; i < sections.length; i++) {
-                            if ((sections[i] != null) && (!sections[i].isEmpty())) {
-        						int sy = sections[i].getYOffset();
-        						if (sy < ymin) ymin = sy;
-        						if ((sy+16) > ymax) ymax = sy + 16;
-                            }
-                        }
-                        int x = cp.x << 4;
-                        int z = cp.z << 4;
-                        // If not empty AND not initial scan
-                        if (ymax != Integer.MIN_VALUE) {
-                            mapManager.touchVolume(fw.getName(), x, ymin, z, x + 15, ymax, z + 15, "chunkgenerate");
-                        }
-                        addKnownChunk(fw, cp);
-                    }
-                }
+            if (yMin != Integer.MIN_VALUE) {
+                Log.info("New generated chunk detected at " + chunkPos + " for " + fw.getName());
+                mapManager.touchVolume(fw.getName(), chunkPos.getStartX(), yMax, chunkPos.getStartZ(),
+                        chunkPos.getEndX(), yMin, chunkPos.getEndZ(),
+                        "chunkgenerate");
             }
         }
 
@@ -760,38 +682,13 @@ public class DynmapPlugin {
         onblockchange_with_id = core.isTrigger("blockupdate-with-id");
         if (onblockchange_with_id)
             onblockchange = true;
-        if ((worldTracker == null) && (onblockchange || onchunkpopulate || onchunkgenerate)) {
+        if (worldTracker == null)
             worldTracker = new WorldTracker();
-            ServerWorldEvents.LOAD.register((server, world) -> worldTracker.handleWorldLoad(server, world));
-            ServerWorldEvents.UNLOAD.register((server, world) -> worldTracker.handleWorldUnload(server, world));
-            ServerChunkEvents.CHUNK_LOAD.register((world, chunk) -> worldTracker.handleChunkLoad(world, chunk));
-            ServerChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> worldTracker.handleChunkUnload(world, chunk));
-            ChunkDataEvents.SAVE.register((world, chunk) -> worldTracker.handleChunkDataSave(world, chunk));
-            BlockEvents.BLOCK_EVENT.register((world, pos) -> worldTracker.handleBlockEvent(world, pos));
+        if (onchunkpopulate || onchunkgenerate) {
+            CustomServerChunkEvents.CHUNK_GENERATE.register((world, chunk) -> worldTracker.handleChunkGenerate(world, chunk));
         }
-        // Prime the known full chunks
-        if (onchunkgenerate && (server.getWorlds() != null)) {
-            for (ServerWorld world : server.getWorlds()) {
-                FabricWorld fw = getWorld(world);
-                if (fw == null) continue;
-                Long2ObjectLinkedOpenHashMap<ChunkHolder> chunks = ((ThreadedAnvilChunkStorageAccessor) world.getChunkManager().threadedAnvilChunkStorage).getChunkHolders();
-                for (Map.Entry<Long, ChunkHolder> k : chunks.long2ObjectEntrySet()) {
-                    long key = k.getKey();
-                    ChunkHolder ch = k.getValue();
-                    Chunk c = null;
-                    try {
-                        c = FabricAdapter.VERSION_SPECIFIC.ChunkHolder_getSavingFuture(ch).getNow(null);
-                    } catch (Exception x) {
-                    }
-                    if (c == null) continue;
-                    ChunkStatus cs = c.getStatus();
-                    ChunkPos pos = ch.getPos();
-                    if (cs == ChunkStatus.FULL) {    // Cooked?
-                        // Add it as known
-                        addKnownChunk(fw, pos);
-                    }
-                }
-            }
+        if (onblockchange) {
+            BlockEvents.BLOCK_EVENT.register((world, pos) -> worldTracker.handleBlockEvent(world, pos));
         }
     }
 
