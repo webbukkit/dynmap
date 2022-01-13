@@ -11,16 +11,19 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.PackedIntegerArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.common.chunk.GenericBitStorage;
 import org.dynmap.common.chunk.GenericNBTCompound;
@@ -52,8 +55,8 @@ public class FabricVersionAdapter implements FabricVersionInterface, ModInitiali
     }
 
     @Override
-    public GenericNBTCompound NbtCompound_getGenericNbt(Object nbtCompound) {
-        return NBTCompound.newOrNull((CompoundTag) nbtCompound);
+    public GenericNBTCompound WorldChunk_getGenericNbt(World world, WorldChunk chunk) {
+        return NBTCompound.newOrNull(ChunkSerializer.serialize((ServerWorld) world, chunk));
     }
 
     @Override

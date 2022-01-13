@@ -12,6 +12,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.WorldChunk;
 import org.dynmap.common.chunk.GenericNBTCompound;
 
 import java.io.IOException;
@@ -28,8 +29,7 @@ public interface FabricVersionInterface {
 
     GenericNBTCompound ThreadedAnvilChunkStorage_getGenericNbt(ThreadedAnvilChunkStorage tacs, ChunkPos chunkPos) throws IOException;
 
-    /* Ugly "Object"-style passing because the type was renamed in Yarn 1.16.5. */
-    GenericNBTCompound NbtCompound_getGenericNbt(Object nbtCompound);
+    GenericNBTCompound WorldChunk_getGenericNbt(World world, WorldChunk chunk);
 
     void ServerPlayerEntity_sendMessage(ServerPlayerEntity player, String message);
 

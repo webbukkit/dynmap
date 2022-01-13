@@ -48,7 +48,7 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
             return null;
 
         try {
-            return parseChunkFromNBT(FabricAdapter.VERSION_SPECIFIC.NbtCompound_getGenericNbt(ChunkSerializer.serialize((ServerWorld) world, serverChunkManager.getWorldChunk(chunk.x, chunk.z, false))));
+            return parseChunkFromNBT(FabricAdapter.VERSION_SPECIFIC.WorldChunk_getGenericNbt(world, serverChunkManager.getWorldChunk(chunk.x, chunk.z, false)));
         } catch (NullPointerException e) {
             // TODO: find out why this is happening and why it only seems to happen since 1.16.2
             Log.severe("ChunkSerializer.serialize threw a NullPointerException", e);
