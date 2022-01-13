@@ -20,9 +20,12 @@ public abstract class ThreadedAnvilChunkStorageMixin {
     @Shadow
     ServerWorld world;
 
+    /* Mixin has some issues understanding this method's signature because it's a lambda.
+       Nevertheless, it works perfectly if we silence the spurious warning. */
+    @SuppressWarnings("target")
     @Inject(
             /* Same place as fabric-lifecycle-events-v1 event CHUNK_LOAD (we will fire before it) */
-            method = "method_17227",
+            method = "method_17227(Lnet/minecraft/server/world/ChunkHolder;Lnet/minecraft/world/chunk/Chunk;)Lnet/minecraft/world/chunk/Chunk;",
             at = @At("TAIL")
     )
     private void onChunkGenerate(ChunkHolder chunkHolder, Chunk protoChunk, CallbackInfoReturnable<Chunk> callbackInfoReturnable) {
