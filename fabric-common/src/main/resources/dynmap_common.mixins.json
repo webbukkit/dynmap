@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.dynmap.fabric_common.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "ProtoChunkMixin",
+    "ThreadedAnvilChunkStorageMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
