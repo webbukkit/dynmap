@@ -27,6 +27,6 @@
     ]
   },
   "mixins": [
-    "fabric.mixins.json"
+    "dynmap.mixins.json"
   ]
 }

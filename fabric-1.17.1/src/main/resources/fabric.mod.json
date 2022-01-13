@@ -3,9 +3,6 @@
   "id": "dynmap-1-17",
   "version": "${version}",
   "name": "Dynmap-1.17",
-  "mixins": [
-    "dynmap.mixins.json"
-  ],
   "depends": {
     "fabricloader": ">=0.12.12",
     "fabric": ">=0.45.1",
@@ -21,5 +18,8 @@
     "main": [
       "org.dynmap.fabric_1_17_1.FabricVersionAdapter"
     ]
-  }
+  },
+  "mixins": [
+    "dynmap.1.17.mixins.json"
+  ]
 }
