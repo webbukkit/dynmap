@@ -39,7 +39,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     }
 
     @Inject(
-            method = "onSignUpdate",
+            method = "onSignUpdate(Lnet/minecraft/network/packet/c2s/play/UpdateSignC2SPacket;Ljava/util/List;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/block/entity/SignBlockEntity;markDirty()V",
