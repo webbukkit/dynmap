@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Random;
 
+import javax.sound.sampled.AudioFormat.Encoding;
+
 import org.json.simple.JSONAware;
 import org.json.simple.JSONStreamAware;
+import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.dynmap.common.DynmapChatColor;
@@ -290,6 +293,43 @@ public class Client {
             s = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS).and(Sanitizers.IMAGES).and(Sanitizers.LINKS).and(Sanitizers.STYLES);
             sanitizer = s;
         }
-        return sanitizer.sanitize(html);
+        return s.sanitize(html);
     }
+    private static PolicyFactory stripper = null; 
+    public static String stripHTML(String html) {
+        PolicyFactory s = stripper;
+        if (s == null) {
+        	// Strip all taks
+        	s = new HtmlPolicyBuilder().toFactory();
+            stripper = s;
+        }
+        return s.sanitize(html);
+    }
+    // Encode plain text string for HTML presentation
+    public static String encodeForHTML(String text) {
+        String s = text != null ? text : "";
+        StringBuilder str = new StringBuilder();
+
+        for (int j = 0; j < s.length(); j++) {
+            char c = s.charAt(j);
+            switch (c) {
+            	case '"':
+            		str.append("&quot;");
+            		break;
+                case '&':
+                    str.append("&amp;");
+                    break;
+                case '<':
+                    str.append("&lt;");
+                    break;
+                case '>':
+                    str.append("&gt;");
+                    break;
+                default:
+            		str.append(c);
+            		break;
+            }
+        }
+        return str.toString();
+    }	
 }

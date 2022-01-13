@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.hdmap.HDPerspective;
@@ -64,9 +65,9 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     CircleMarkerImpl(String id, String lbl, boolean markup, String world, double x, double y, double z, double xr, double zr, boolean persistent, MarkerSetImpl set) {
         markerid = id;
         if(lbl != null)
-            label = lbl;
+            label = markup ? lbl : Client.encodeColorInHTML(lbl);
         else
-            label = id;
+            label = markup ? id : Client.encodeColorInHTML(id);
         this.markup = markup;
         this.x = x; this.y = y; this.z = z;
         this.xr = xr; this.zr = zr;
@@ -86,7 +87,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     CircleMarkerImpl(String id, MarkerSetImpl set) {
         markerid = id;
         markerset = set;
-        label = id;
+        label = Client.encodeForHTML(id);
         markup = false;
         desc = null;
         world = normalized_world = "world";
@@ -191,7 +192,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     
     @Override
     public void setLabel(String lbl, boolean markup) {
-        label = lbl;
+        label = markup ? lbl : Client.encodeForHTML(lbl);
         this.markup = markup;
         MarkerAPIImpl.circleMarkerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)

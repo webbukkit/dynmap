@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.markers.Marker;
@@ -40,9 +41,9 @@ class MarkerImpl implements Marker {
     MarkerImpl(String id, String lbl, boolean markup, String world, double x, double y, double z, MarkerIconImpl icon, boolean persistent, MarkerSetImpl set) {
         markerid = id;
         if(lbl != null)
-            label = lbl;
+            label = markup ? lbl : Client.encodeForHTML(lbl);
         else
-            label = id;
+            label = markup ? id : Client.encodeForHTML(lbl);
         this.markup = markup;
         this.x = x; this.y = y; this.z = z;
         this.world = world;
@@ -62,7 +63,7 @@ class MarkerImpl implements Marker {
     MarkerImpl(String id, MarkerSetImpl set) {
         markerid = id;
         markerset = set;
-        label = id;
+        label = Client.encodeForHTML(id);
         markup = false;
         desc = null;
         x = z = 0; y = 64; world = normalized_world = "world";
@@ -167,7 +168,7 @@ class MarkerImpl implements Marker {
     @Override
     public void setLabel(String lbl, boolean markup) {
         if(markerset == null) return;
-        label = lbl;
+    	label = markup ? lbl : Client.encodeForHTML(lbl);
         this.markup = markup;
         MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)

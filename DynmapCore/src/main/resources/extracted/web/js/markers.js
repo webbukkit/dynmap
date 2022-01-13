@@ -105,19 +105,12 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				.addClass('Marker')
 				.addClass('mapMarker')
 				.append($('<img/>').addClass('markerIcon'+marker.dim).attr({ src: url }));
-			if(marker.markup) {
+			if (marker.label != "")
 				$(div).append($('<span/>')
 					.addClass(set.showlabels?'markerName-show':'markerName')
 					.addClass('markerName_' + set.id)
 					.addClass('markerName' + marker.dim)
 					.append(marker.label));
-			}
-			else if(marker.label != "")
-				$(div).append($('<span/>')
-					.addClass(set.showlabels?'markerName-show':'markerName')
-					.addClass('markerName_' + set.id)
-					.addClass('markerName' + marker.dim)
-					.text(marker.label));
 			return div;
 		}});
 		marker.timestamp = ts;
@@ -191,9 +184,6 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			if(area.desc) {
 				$(popup).addClass('AreaPopup').append(area.desc);
 			}
-			else if(area.markup) {
-				$(popup).addClass('AreaPopup').append(area.label);
-			}
 			else {
 				$(popup).text(area.label);
 			}
@@ -223,9 +213,6 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			var popup = document.createElement('span');
 			if(line.desc) {
 				$(popup).addClass('LinePopup').append(line.desc);
-			}
-			else if(line.markup) {
-				$(popup).addClass('LinePopup').append(line.label);
 			}
 			else {
 				$(popup).text(line.label);
@@ -258,9 +245,6 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			var popup = document.createElement('span');
 			if(circle.desc) {
 				$(popup).addClass('CirclePopup').append(circle.desc);
-			}
-			else if(circle.markup) {
-				$(popup).addClass('CirclePopup').append(circle.label);
 			}
 			else {
 				$(popup).text(circle.label);

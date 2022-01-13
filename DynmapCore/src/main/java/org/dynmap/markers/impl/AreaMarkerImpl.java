@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
@@ -72,9 +73,9 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     AreaMarkerImpl(String id, String lbl, boolean markup, String world, double x[], double z[], boolean persistent, MarkerSetImpl set) {
         markerid = id;
         if(lbl != null)
-            label = lbl;
+            label = markup ? lbl : Client.encodeForHTML(lbl);
         else
-            label = id;
+            label = markup ? id : Client.encodeForHTML(id);
         this.markup = markup;
         this.corners = new ArrayList<Coord>();
         for(int i = 0; i < x.length; i++) {
@@ -104,7 +105,7 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     AreaMarkerImpl(String id, MarkerSetImpl set) {
         markerid = id;
         markerset = set;
-        label = id;
+        label = Client.encodeForHTML(id);
         markup = false;
         desc = null;
         corners = new ArrayList<Coord>();
@@ -215,7 +216,12 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     @Override
     public void setLabel(String lbl, boolean markup) {
         if(markerset == null) return;
-        label = lbl;
+        if (markup) {
+        	label = lbl;
+        }
+        else {	// If not markup, escape any HTML-active characters (<>&"')
+        	label = Client.encodeForHTML(lbl);
+        }
         this.markup = markup;
         MarkerAPIImpl.areaMarkerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)
