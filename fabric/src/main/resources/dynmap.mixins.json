@@ -4,6 +4,7 @@
   "package": "org.dynmap.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "MinecraftServerMixin",
     "ProtoChunkMixin",
     "ThreadedAnvilChunkStorageMixin"
   ],

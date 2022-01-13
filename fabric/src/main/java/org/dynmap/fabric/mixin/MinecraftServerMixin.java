@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18.mixin;
+package org.dynmap.fabric.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import org.dynmap.fabric.event.CustomServerLifecycleEvents;
