@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18.mixin;
+package org.dynmap.fabric.mixin;
 
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
@@ -23,7 +23,7 @@ public class PlayerManagerMixin {
     }
 
     @Inject(method = "respawnPlayer", at = @At("RETURN"))
-    public void respawnPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> info) {
+    public void respawnPlayer(CallbackInfoReturnable<ServerPlayerEntity> info) {
         PlayerEvents.PLAYER_RESPAWN.invoker().onPlayerRespawn(info.getReturnValue());
     }
 }
