@@ -1,9 +1,9 @@
 package org.dynmap.fabric.mixin;
 
-import org.dynmap.fabric.access.ProtoChunkAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.ProtoChunk;
+import org.dynmap.fabric.access.ProtoChunkAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

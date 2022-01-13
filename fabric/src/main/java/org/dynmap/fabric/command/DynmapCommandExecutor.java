@@ -7,8 +7,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import org.dynmap.fabric.DynmapPlugin;
 import net.minecraft.server.command.ServerCommandSource;
+import org.dynmap.fabric.DynmapPlugin;
 
 import java.util.Arrays;
 

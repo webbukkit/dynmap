@@ -12,7 +12,7 @@ import org.dynmap.Log;
 import org.dynmap.common.chunk.GenericChunk;
 import org.dynmap.common.chunk.GenericMapChunkCache;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
