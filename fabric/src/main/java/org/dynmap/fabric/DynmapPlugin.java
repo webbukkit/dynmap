@@ -639,7 +639,7 @@ public class DynmapPlugin {
                 }
             }
             if (yMin != Integer.MIN_VALUE) {
-                Log.info("New generated chunk detected at " + chunkPos + " for " + fw.getName());
+                Log.verboseinfo("New generated chunk detected at " + chunkPos + " for " + fw.getName());
                 mapManager.touchVolume(fw.getName(), chunkPos.getStartX(), yMax, chunkPos.getStartZ(),
                         chunkPos.getEndX(), yMin, chunkPos.getEndZ(),
                         "chunkgenerate");
