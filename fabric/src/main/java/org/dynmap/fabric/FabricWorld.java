@@ -85,9 +85,10 @@ public class FabricWorld extends DynmapWorld {
     @Override
     public DynmapLocation getSpawnLocation() {
         if (world != null) {
-            spawnloc.x = world.getLevelProperties().getSpawnX();
-            spawnloc.y = world.getLevelProperties().getSpawnY();
-            spawnloc.z = world.getLevelProperties().getSpawnZ();
+            BlockPos pos = FabricAdapter.VERSION_SPECIFIC.World_getSpawnPos(world);
+            spawnloc.x = pos.getX();
+            spawnloc.y = pos.getY();
+            spawnloc.z = pos.getZ();
             spawnloc.world = this.getName();
         }
         return spawnloc;

@@ -190,6 +190,13 @@ public class FabricVersionAdapter implements FabricVersionInterface, ModInitiali
         return statename;
     }
 
+    @Override
+    public BlockPos World_getSpawnPos(World world) {
+        return new BlockPos(world.getLevelProperties().getSpawnX(),
+                world.getLevelProperties().getSpawnY(),
+                world.getLevelProperties().getSpawnZ());
+    }
+
     public static class NBTCompound implements GenericNBTCompound {
         private final CompoundTag obj;
         public static NBTCompound newOrNull(CompoundTag t) {

@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -76,5 +77,7 @@ public interface FabricVersionInterface {
     boolean BlockState_isWaterlogged(BlockState blockState);
 
     String BlockState_getStateName(BlockState blockState);
+
+    BlockPos World_getSpawnPos(World world);
 
 }
