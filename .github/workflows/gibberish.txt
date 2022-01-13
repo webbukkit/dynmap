@@ -55,3 +55,10 @@ JDK
 ForgeGradle
 Kosma
 Kosma's
+IntelliJ
+MinecraftDev
+decompiled
+Gradle
+Gradle's
+modmuss
+IDEs
