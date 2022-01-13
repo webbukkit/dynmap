@@ -37,8 +37,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -209,7 +207,7 @@ public class FabricServer extends DynmapServerInterface {
 
     @Override
     public String stripChatColor(String s) {
-        return plugin.patternControlCode.matcher(s).replaceAll("");
+        return DynmapPlugin.patternControlCode.matcher(s).replaceAll("");
     }
 
     private Set<DynmapListenerManager.EventType> registered = new HashSet<DynmapListenerManager.EventType>();
@@ -268,7 +266,7 @@ public class FabricServer extends DynmapServerInterface {
 
             case SIGN_CHANGE:
                 BlockEvents.SIGN_CHANGE_EVENT.register((world, pos, lines, material, player) -> {
-                    plugin.core.processSignChange("org/dynmap/fabric", FabricWorld.getWorldName(plugin, world),
+                    plugin.core.processSignChange("fabric", FabricWorld.getWorldName(plugin, world),
                             pos.getX(), pos.getY(), pos.getZ(), lines, player.getName().asString());
                 });
                 break;
@@ -397,7 +395,7 @@ public class FabricServer extends DynmapServerInterface {
         Future<Boolean> f = this.callSyncMethod(new Callable<Boolean>() {
             public Boolean call() throws Exception {
                 // Update busy state on world
-                FabricWorld fw = (FabricWorld) cc.getWorld();
+                //FabricWorld fw = (FabricWorld) cc.getWorld();
                 //TODO
                 //setBusy(fw.getWorld());
                 cc.getLoadedChunks();
@@ -500,11 +498,6 @@ public class FabricServer extends DynmapServerInterface {
         // Check for generated chunks
         if ((cur_tick % 20) == 0) {
         }
-    }
-
-    private <T> Predicate<T> distinctByKeyAndNonNull(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> t != null && seen.add(keyExtractor.apply(t));
     }
 
     private Optional<ModContainer> getModContainerById(String id) {

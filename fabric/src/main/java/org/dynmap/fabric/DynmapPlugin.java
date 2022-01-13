@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -65,14 +66,10 @@ public class DynmapPlugin {
     public static DynmapPlugin plugin;
     ChatHandler chathandler;
     private HashMap<String, Integer> sortWeights = new HashMap<String, Integer>();
-    // Drop world load ticket after 30 seconds
-    private long worldIdleTimeoutNS = 30 * 1000000000L;
     private HashMap<String, FabricWorld> worlds = new HashMap<String, FabricWorld>();
     private World last_world;
     private FabricWorld last_fworld;
     private Map<String, FabricPlayer> players = new HashMap<String, FabricPlayer>();
-    //TODO private ForgeMetrics metrics;
-    private HashSet<String> modsused = new HashSet<String>();
     private FabricServer fserver;
     private boolean tickregistered = false;
     // TPS calculator
@@ -82,9 +79,6 @@ public class DynmapPlugin {
     // Per tick limit, in nsec
     long perTickLimit = (50000000); // 50 ms
     private boolean useSaveFolder = true;
-
-    private static final int SIGNPOST_ID = 63;
-    private static final int WALLSIGN_ID = 68;
 
     private static final String[] TRIGGER_DEFAULTS = {"blockupdate", "chunkpopulate", "chunkgenerate"};
 
@@ -175,10 +169,10 @@ public class DynmapPlugin {
                 if (basebs == null) { basebs = dbs; }
             }
         }
-        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
-            DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
-            //Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
-        }
+//        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
+//            DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(gidx);
+//            Log.info(gidx + ":" + bs.toString() + ", gidx=" + bs.globalStateIndex + ", sidx=" + bs.stateIndex);
+//        }
     }
 
     public static final Item getItemByID(int id) {
@@ -470,11 +464,6 @@ public class DynmapPlugin {
         if (server.getWorlds() != null) {
             for (ServerWorld world : server.getWorlds()) {
                 FabricWorld w = this.getWorld(world);
-                /*NOTYET - need rest of forge
-                if(DimensionManager.getWorld(world.provider.getDimensionId()) == null) { // If not loaded
-                    w.setWorldUnloaded();
-                }
-                */
             }
         }
         for (FabricWorld w : worlds.values()) {
@@ -685,6 +674,9 @@ public class DynmapPlugin {
         if (onblockchange) {
             BlockEvents.BLOCK_EVENT.register((world, pos) -> worldTracker.handleBlockEvent(world, pos));
         }
+
+        ServerWorldEvents.LOAD.register((server, world) -> worldTracker.handleWorldLoad(server, world));
+        ServerWorldEvents.UNLOAD.register((server, world) -> worldTracker.handleWorldUnload(server, world));
     }
 
     FabricWorld getWorldByName(String name) {
@@ -788,4 +780,3 @@ public class DynmapPlugin {
         }
     }
 }
-
