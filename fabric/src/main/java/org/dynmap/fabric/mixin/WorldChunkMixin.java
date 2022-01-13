@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_17_1.mixin;
+package org.dynmap.fabric.mixin;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;

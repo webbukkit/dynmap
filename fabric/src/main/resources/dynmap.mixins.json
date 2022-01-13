@@ -6,7 +6,8 @@
   "mixins": [
     "MinecraftServerMixin",
     "ProtoChunkMixin",
-    "ThreadedAnvilChunkStorageMixin"
+    "ThreadedAnvilChunkStorageMixin",
+    "WorldChunkMixin"
   ],
   "injectors": {
     "defaultRequire": 1
