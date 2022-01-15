@@ -253,6 +253,7 @@ public class DynmapPlugin
                 	lightAtten =bs.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO) ? 15 : (bs.propagatesSkylightDown(EmptyBlockGetter.INSTANCE, BlockPos.ZERO) ? 0 : 1);
                 } catch (Exception x) {
                 	Log.warning(String.format("Exception while checking lighting data for block state: %s[%s]", bn, statename));
+                	Log.verboseinfo("Exception: " + x.toString());
                 }
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
                 // Fill in base attributes
