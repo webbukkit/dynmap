@@ -251,7 +251,9 @@ public class DynmapPlugin
                 int lightAtten = 15;
                 try {	// Workaround for mods with broken block state logic...
                 	lightAtten = bs.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO) ? 15 : (bs.propagatesSkylightDown(EmptyBlockGetter.INSTANCE, BlockPos.ZERO) ? 0 : 1);
-                } catch (Exception x) {}
+                } catch (Exception x) {
+                	Log.warning(String.format("Exception while checking lighting data for block state: %s[%s]", bn, statename));                	
+                }
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
                 // Fill in base attributes
                 bld.setBaseState(basebs).setStateIndex(idx - baseidx).setBlockName(bn).setStateName(statename).setMaterial(mat.toString()).setLegacyBlockID(idx).setAttenuatesLight(lightAtten);
