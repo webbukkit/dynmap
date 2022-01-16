@@ -261,7 +261,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 	}
 	
 	function create3DBoxLayer(maxx, minx, maxy, miny, maxz, minz, style) {
-		return new L.MultiPolygon([
+		return new L.Polygon([
 			[
 				latlng(minx,miny,minz),
 				latlng(maxx,miny,minz),
@@ -333,7 +333,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 		polylist[xarray.length] = botlist;
 		polylist[xarray.length+1] = toplist;
 		
-		return new L.MultiPolygon(polylist, style);
+		return new L.Polygon(polylist, style);
 	}
 
 	function create2DOutlineLayer(xarray, maxy, miny, zarray, style) {
