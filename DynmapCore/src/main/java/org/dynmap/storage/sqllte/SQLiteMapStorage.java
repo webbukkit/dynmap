@@ -402,6 +402,7 @@ public class SQLiteMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE MarkerFiles (FileName STRING PRIMARY KEY NOT NULL, Content CLOB)");
                 doUpdate(c, "CREATE TABLE SchemaVersion (level INT PRIMARY KEY NOT NULL)");
                 doUpdate(c, "INSERT INTO SchemaVersion (level) VALUES (2)");
+                version = 2;	// Initializes to current schema
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -411,13 +412,14 @@ public class SQLiteMapStorage extends MapStorage {
                 c = null;
             }
         }
-        else if (version == 1) {	// Add ImageLen columns
+        if (version == 1) {	// Add ImageLen columns
             try {
                 c = getConnection();
                 doUpdate(c, "ALTER TABLE Tiles ADD ImageLen INT");
                 doUpdate(c, "ALTER TABLE Faces ADD ImageLen INT");
                 doUpdate(c, "ALTER TABLE MarkerIcons ADD ImageLen INT");
                 doUpdate(c, "UPDATE SchemaVersion SET level=2");
+                version = 2;
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;

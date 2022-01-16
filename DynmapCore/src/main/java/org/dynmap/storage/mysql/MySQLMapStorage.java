@@ -31,13 +31,13 @@ import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
 
 public class MySQLMapStorage extends MapStorage {
-    private String connectionString;
+    protected String connectionString;
     private String userid;
     private String password;
-    private String database;
-    private String hostname;
+    protected String database;
+    protected String hostname;
     private String prefix = "";
-    private String flags;
+    protected String flags;
     private String tableTiles;
     private String tableMaps;
     private String tableFaces;
@@ -46,7 +46,7 @@ public class MySQLMapStorage extends MapStorage {
     private String tableStandaloneFiles;
     private String tableSchemaVersion;
 
-    private int port;
+    protected int port;
     private static final int POOLSIZE = 5;
     private Connection[] cpool = new Connection[POOLSIZE];
     private int cpoolCount = 0;
@@ -270,6 +270,18 @@ public class MySQLMapStorage extends MapStorage {
     public MySQLMapStorage() {
     }
 
+    // MySQL specific driver check
+    protected boolean checkDriver() {
+        connectionString = "jdbc:mysql://" + hostname + ":" + port + "/" + database + flags;
+        Log.info("Opening MySQL database " + hostname + ":" + port + "/" + database + " as map store");
+
+        if(!hasClass("com.mysql.cj.jdbc.Driver") && !hasClass("com.mysql.jdbc.Driver")){
+            Log.severe("MySQL-JDBC classes not found - MySQL data source not usable");
+            return false;
+        }
+        return true;
+    }
+    
     @Override
     public boolean init(DynmapCore core) {
         if (!super.init(core)) {
@@ -290,13 +302,8 @@ public class MySQLMapStorage extends MapStorage {
         tableStandaloneFiles = prefix + "StandaloneFiles";
         tableSchemaVersion = prefix + "SchemaVersion";
         
-        connectionString = "jdbc:mysql://" + hostname + ":" + port + "/" + database + flags;
-        Log.info("Opening MySQL database " + hostname + ":" + port + "/" + database + " as map store");
-
-        if(!hasClass("com.mysql.cj.jdbc.Driver") && !hasClass("com.mysql.jdbc.Driver")){
-            Log.severe("MySQL-JDBC classes not found - MySQL data source not usable");
-            return false;
-        }
+        if (!checkDriver()) return false;
+        
         // Initialize/update tables, if needed
         if(!initializeTables()) {
             return false;
@@ -465,12 +472,13 @@ public class MySQLMapStorage extends MapStorage {
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableMaps + " (ID INTEGER PRIMARY KEY AUTO_INCREMENT, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
                 doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image MEDIUMBLOB, PRIMARY KEY(MapID, x, y, zoom))");
-                doUpdate(c, "CREATE TABLE " + tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image BLOB, PRIMARY KEY(PlayerName, TypeID))");
-                doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BLOB)");
+                doUpdate(c, "CREATE TABLE " + tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image MEDIUMBLOB, PRIMARY KEY(PlayerName, TypeID))");
+                doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image MEDIUMBLOB)");
                 doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (3)");
+                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (4)");
+                version = 4;	// Initial - we have all the following updates already
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -480,12 +488,13 @@ public class MySQLMapStorage extends MapStorage {
                 c = null;
             }
         }
-        else if (version == 1) {
+        if (version == 1) {
             try {
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "ALTER TABLE " + tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
-                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 1;");
+                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=2 WHERE level = 1;");
+                version = 2;
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -495,13 +504,14 @@ public class MySQLMapStorage extends MapStorage {
                 c = null;
             }
         }
-        else if (version == 2) {
+        if (version == 2) {
             try {
                 c = getConnection();
                 doUpdate(c, "DELETE FROM " + tableStandaloneFiles + ";");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " DROP COLUMN Content;");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " ADD COLUMN Content MEDIUMTEXT;");
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 2;");
+                version = 3;
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -511,12 +521,29 @@ public class MySQLMapStorage extends MapStorage {
                 c = null;
             }
         }
+        if (version == 3) {
+            try {
+                c = getConnection();
+                doUpdate(c, "ALTER TABLE " + tableTiles + " ALTER COLUMN Image MEDIUMBLOB;");
+                doUpdate(c, "ALTER TABLE " + tableFaces + " ALTER COLUMN Image MEDIUMBLOB;");
+                doUpdate(c, "ALTER TABLE " + tableMarkerIcons + " ALTER COLUMN Image MEDIUMBLOB;");
+                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=4 WHERE level = 3;");
+            } catch (SQLException x) {
+                Log.severe("Error creating tables - " + x.getMessage());
+                err = true;
+                return false;
+            } finally {
+                releaseConnection(c, err);
+                c = null;
+            }
+        	
+        }
         // Load maps table - cache results
         doLoadMaps();
         
         return true;
     }
-    
+        
     private Connection getConnection() throws SQLException {
         Connection c = null;
         synchronized (cpool) {

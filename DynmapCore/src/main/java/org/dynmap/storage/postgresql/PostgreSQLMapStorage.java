@@ -464,6 +464,7 @@ public class PostgreSQLMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content BYTEA, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
                 doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (3)");
+                version = 3;	// initialzed to current schema
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -473,12 +474,13 @@ public class PostgreSQLMapStorage extends MapStorage {
                 c = null;
             }
         }
-        else if (version == 1) {
+        if (version == 1) {
             try {
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content TEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "ALTER TABLE " + tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
-                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 1;");
+                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=2 WHERE level = 1;");
+                version = 2;
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -488,13 +490,14 @@ public class PostgreSQLMapStorage extends MapStorage {
                 c = null;
             }
         }
-        else if (version == 2) {
+        if (version == 2) {
             try {
                 c = getConnection();
                 doUpdate(c, "DELETE FROM " + tableStandaloneFiles + ";");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " DROP COLUMN Content;");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " ADD COLUMN Content BYTEA;");
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 2;");
+                version = 3;
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
