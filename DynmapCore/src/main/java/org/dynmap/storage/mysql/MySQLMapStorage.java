@@ -751,7 +751,9 @@ public class MySQLMapStorage extends MapStorage {
             c = getConnection();
             // Query tiles for given mapkey
             Statement stmt = c.createStatement();
-            stmt.executeUpdate("DELETE FROM " + tableTiles + " WHERE MapID=" + mapkey + ";");
+            // Limit delete to 1000 at a time (avoid locking whole table)
+            while (stmt.executeUpdate("DELETE FROM " + tableTiles + " WHERE MapID=" + mapkey + " LIMIT 1000;") > 0) {
+            }
             stmt.close();
         } catch (SQLException x) {
             Log.severe("Tile purge error - " + x.getMessage());
