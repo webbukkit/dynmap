@@ -469,6 +469,7 @@ public class MySQLMapStorage extends MapStorage {
         // If new, add our tables
         if (version == 0) {
             try {
+            	Log.info("Initializing database schema");
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableMaps + " (ID INTEGER PRIMARY KEY AUTO_INCREMENT, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
                 doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image MEDIUMBLOB, PRIMARY KEY(MapID, x, y, zoom))");
@@ -490,6 +491,7 @@ public class MySQLMapStorage extends MapStorage {
         }
         if (version == 1) {
             try {
+            	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "ALTER TABLE " + tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
@@ -506,6 +508,7 @@ public class MySQLMapStorage extends MapStorage {
         }
         if (version == 2) {
             try {
+            	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
                 doUpdate(c, "DELETE FROM " + tableStandaloneFiles + ";");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " DROP COLUMN Content;");
@@ -523,11 +526,13 @@ public class MySQLMapStorage extends MapStorage {
         }
         if (version == 3) {
             try {
+            	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
-                doUpdate(c, "ALTER TABLE " + tableTiles + " ALTER COLUMN Image MEDIUMBLOB;");
-                doUpdate(c, "ALTER TABLE " + tableFaces + " ALTER COLUMN Image MEDIUMBLOB;");
-                doUpdate(c, "ALTER TABLE " + tableMarkerIcons + " ALTER COLUMN Image MEDIUMBLOB;");
+                doUpdate(c, "ALTER TABLE " + tableTiles + " CHANGE COLUMN Image Image MEDIUMBLOB;");
+                doUpdate(c, "ALTER TABLE " + tableFaces + " CHANGE COLUMN Image Image MEDIUMBLOB;");
+                doUpdate(c, "ALTER TABLE " + tableMarkerIcons + " CHANGE COLUMN Image Image MEDIUMBLOB;");
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=4 WHERE level = 3;");
+                version = 4;
             } catch (SQLException x) {
                 Log.severe("Error creating tables - " + x.getMessage());
                 err = true;
@@ -536,8 +541,8 @@ public class MySQLMapStorage extends MapStorage {
                 releaseConnection(c, err);
                 c = null;
             }
-        	
         }
+    	Log.info("Schema version = " + version);
         // Load maps table - cache results
         doLoadMaps();
         

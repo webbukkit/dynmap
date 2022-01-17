@@ -394,6 +394,7 @@ public class SQLiteMapStorage extends MapStorage {
         // If new, add our tables
         if (version == 0) {
             try {
+            	Log.info("Initializing database schema");
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE Maps (ID INTEGER PRIMARY KEY AUTOINCREMENT, WorldID STRING NOT NULL, MapID STRING NOT NULL, Variant STRING NOT NULL)");
                 doUpdate(c, "CREATE TABLE Tiles (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode INT NOT NULL, LastUpdate INT NOT NULL, Format INT NOT NULL, Image BLOB, ImageLen INT, PRIMARY KEY(MapID, x, y, zoom))");
@@ -414,6 +415,7 @@ public class SQLiteMapStorage extends MapStorage {
         }
         if (version == 1) {	// Add ImageLen columns
             try {
+            	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
                 doUpdate(c, "ALTER TABLE Tiles ADD ImageLen INT");
                 doUpdate(c, "ALTER TABLE Faces ADD ImageLen INT");
@@ -429,6 +431,7 @@ public class SQLiteMapStorage extends MapStorage {
                 c = null;
             }
         }
+    	Log.info("Schema version = " + version);
         // Load maps table - cache results
         doLoadMaps();
         

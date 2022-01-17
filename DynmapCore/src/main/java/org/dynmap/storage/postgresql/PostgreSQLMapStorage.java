@@ -455,6 +455,7 @@ public class PostgreSQLMapStorage extends MapStorage {
         // If new, add our tables
         if (version == 0) {
             try {
+            	Log.info("Initializing database schema");
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableMaps + " (ID SERIAL PRIMARY KEY, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
                 doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image BYTEA, PRIMARY KEY(MapID, x, y, zoom))");
@@ -476,6 +477,7 @@ public class PostgreSQLMapStorage extends MapStorage {
         }
         if (version == 1) {
             try {
+            	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content TEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "ALTER TABLE " + tableMaps + " ADD COLUMN ServerID BIGINT NOT NULL DEFAULT 0 AFTER Variant");
@@ -492,6 +494,7 @@ public class PostgreSQLMapStorage extends MapStorage {
         }
         if (version == 2) {
             try {
+            	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
                 doUpdate(c, "DELETE FROM " + tableStandaloneFiles + ";");
                 doUpdate(c, "ALTER TABLE " + tableStandaloneFiles + " DROP COLUMN Content;");
@@ -507,6 +510,7 @@ public class PostgreSQLMapStorage extends MapStorage {
                 c = null;
             }
         }
+    	Log.info("Schema version = " + version);
         // Load maps table - cache results
         doLoadMaps();
         
