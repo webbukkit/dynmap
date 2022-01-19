@@ -3,6 +3,7 @@ package org.dynmap.common.chunk;
 import java.util.Arrays;
 
 import org.dynmap.renderer.DynmapBlockState;
+import org.dynmap.Log;
 import org.dynmap.common.BiomeMap;
 
 // Generic chunk representation
@@ -97,7 +98,7 @@ public class GenericChunk {
     		dataversion = 0;
     		chunkstatus = null;
     		int y_max = (world_ymax + 15) >> 4;	// Round up
-    		sections = new GenericChunkSection[y_max - y_min];	// Range for all potential sections
+    		sections = new GenericChunkSection[y_max - y_min + 1];	// Range for all potential sections
     	}
     	// Set inhabited ticks
     	public Builder inhabitedTicks(long inh) {
