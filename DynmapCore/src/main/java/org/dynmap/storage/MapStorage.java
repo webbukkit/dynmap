@@ -20,6 +20,7 @@ import org.dynmap.utils.BufferOutputStream;
  * Generic interface for map data storage (image tiles, and associated hash codes)
  */
 public abstract class MapStorage {
+    protected String connectionString;
     private static Object lock = new Object();
     private static HashMap<String, Integer> filelocks = new HashMap<String, Integer>();
     private static final Integer WRITELOCK = (-1);
@@ -462,6 +463,7 @@ public abstract class MapStorage {
     	Log.severe("SQLException: " + opmsg);
     	Log.severe("  ErrorCode: " + x.getErrorCode() + ", SQLState=" + x.getSQLState());
     	Log.severe("  Message: " + x.getMessage());
+    	if (connectionString != null) Log.severe("  ConnectionString: " + connectionString);
     	Throwable cause = x.getCause();
     	while (cause != null) {
     		Log.severe("  CausedBy: " + cause.getMessage());

@@ -31,7 +31,6 @@ import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
 
 public class MySQLMapStorage extends MapStorage {
-    protected String connectionString;
     private String userid;
     private String password;
     protected String database;
