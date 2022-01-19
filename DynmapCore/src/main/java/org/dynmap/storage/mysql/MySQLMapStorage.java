@@ -83,7 +83,7 @@ public class MySQLMapStorage extends MapStorage {
                 rs.close();
                 stmt.close();
             } catch (SQLException x) {
-                Log.severe("Tile exists error - " + x.getMessage());
+            	logSQLException("Tile exists error", x);
                 err = true;
             } finally {
                 releaseConnection(c, err);
@@ -108,7 +108,7 @@ public class MySQLMapStorage extends MapStorage {
                 rs.close();
                 stmt.close();
             } catch (SQLException x) {
-                Log.severe("Tile matches hash error - " + x.getMessage());
+            	logSQLException("Tile matches hash error", x);
                 err = true;
             } finally {
                 releaseConnection(c, err);
@@ -137,7 +137,7 @@ public class MySQLMapStorage extends MapStorage {
                 rs.close();
                 stmt.close();
             } catch (SQLException x) {
-                Log.severe("Tile read error - " + x.getMessage());
+            	logSQLException("Tile read error", x);
                 err = true;
             } finally {
                 releaseConnection(c, err);
@@ -193,7 +193,7 @@ public class MySQLMapStorage extends MapStorage {
                     world.enqueueZoomOutUpdate(this);
                 }
             } catch (SQLException x) {
-                Log.severe("Tile write error - " + x.getMessage());
+            	logSQLException("Tile write error", x);
                 err = true;
             } finally {
                 releaseConnection(c, err);
@@ -412,7 +412,7 @@ public class MySQLMapStorage extends MapStorage {
             rs.close();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Error loading map table - " + x.getMessage());
+        	logSQLException("Error loading map table", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -451,7 +451,7 @@ public class MySQLMapStorage extends MapStorage {
                     rs.close();
                     stmt.close();
                 } catch (SQLException x) {
-                    Log.severe("Error updating Maps table - " + x.getMessage());
+                	logSQLException("Error updating Maps table", x);
                     err = true;
                 } finally {
                     releaseConnection(c, err);
@@ -481,7 +481,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (4)");
                 version = 4;	// Initial - we have all the following updates already
             } catch (SQLException x) {
-                Log.severe("Error creating tables - " + x.getMessage());
+            	logSQLException("Error creating tables", x);
                 err = true;
                 return false;
             } finally {
@@ -498,7 +498,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=2 WHERE level = 1;");
                 version = 2;
             } catch (SQLException x) {
-                Log.severe("Error creating tables - " + x.getMessage());
+            	logSQLException("Error updating tables to version=1", x);
                 err = true;
                 return false;
             } finally {
@@ -516,7 +516,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 2;");
                 version = 3;
             } catch (SQLException x) {
-                Log.severe("Error creating tables - " + x.getMessage());
+            	logSQLException("Error updating tables to version=2", x);
                 err = true;
                 return false;
             } finally {
@@ -534,7 +534,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=4 WHERE level = 3;");
                 version = 4;
             } catch (SQLException x) {
-                Log.severe("Error creating tables - " + x.getMessage());
+            	logSQLException("Error updating tables to version=3", x);
                 err = true;
                 return false;
             } finally {
@@ -718,7 +718,7 @@ public class MySQLMapStorage extends MapStorage {
             rs.close();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Tile enum error - " + x.getMessage());
+        	logSQLException("Tile enum error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -756,7 +756,7 @@ public class MySQLMapStorage extends MapStorage {
             }
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Tile purge error - " + x.getMessage());
+        	logSQLException("Tile purge error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -795,7 +795,7 @@ public class MySQLMapStorage extends MapStorage {
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Face write error - " + x.getMessage());
+        	logSQLException("Face write error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -822,7 +822,7 @@ public class MySQLMapStorage extends MapStorage {
             rs.close();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Face read error - " + x.getMessage());
+        	logSQLException("Face reqd error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -847,7 +847,7 @@ public class MySQLMapStorage extends MapStorage {
             rs.close();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Face exists error - " + x.getMessage());
+        	logSQLException("Face exists error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -894,7 +894,7 @@ public class MySQLMapStorage extends MapStorage {
             }
             stmt.executeUpdate();
         } catch (SQLException x) {
-            Log.severe("Marker write error - " + x.getMessage());
+        	logSQLException("Marker write error", x);
             err = true;
         } finally {
             if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
@@ -921,7 +921,7 @@ public class MySQLMapStorage extends MapStorage {
             rs.close();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Marker read error - " + x.getMessage());
+        	logSQLException("Marker read error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -967,7 +967,7 @@ public class MySQLMapStorage extends MapStorage {
             }
             stmt.executeUpdate();
         } catch (SQLException x) {
-            Log.severe("Marker file write error - " + x.getMessage());
+        	logSQLException("Marker file write error", x);
             err = true;
         } finally {
             if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }
@@ -994,7 +994,7 @@ public class MySQLMapStorage extends MapStorage {
             rs.close();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Marker file read error - " + x.getMessage());
+        	logSQLException("Marker file read error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -1050,7 +1050,7 @@ public class MySQLMapStorage extends MapStorage {
             rs.close();
             stmt.close();
         } catch (SQLException x) {
-            Log.severe("Standalone file read error - " + x.getMessage());
+        	logSQLException("Standalone file read error", x);
             err = true;
         } finally {
             releaseConnection(c, err);
@@ -1100,7 +1100,7 @@ public class MySQLMapStorage extends MapStorage {
             }
             stmt.executeUpdate();
         } catch (SQLException x) {
-            Log.severe("Standalone file write error - " + x.getMessage());
+        	logSQLException("Standalone file write error", x);
             err = true;
         } finally {
             if (rs != null) { try { rs.close(); } catch (SQLException sx) {} }

@@ -3,6 +3,7 @@ package org.dynmap.storage;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.zip.CRC32;
 
@@ -455,5 +456,16 @@ public abstract class MapStorage {
     }
     public void setLoginEnabled(DynmapCore core) {
         
+    }
+    
+    public void logSQLException(String opmsg, SQLException x) {
+    	Log.severe("SQLException: " + opmsg);
+    	Log.severe("  ErrorCode: " + x.getErrorCode() + ", SQLState=" + x.getSQLState());
+    	Log.severe("  Message: " + x.getMessage());
+    	Throwable cause = x.getCause();
+    	while (cause != null) {
+    		Log.severe("  CausedBy: " + cause.getMessage());
+    		cause = cause.getCause();
+    	}
     }
 }
