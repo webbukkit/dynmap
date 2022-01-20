@@ -190,7 +190,7 @@ texture:id=detector_rail_on
 texture:id=detector_rail
 texture:id=piston_bottom
 texture:id=piston_inner
-texture:id=piston_side
+texture:id=piston_side,format=CUSTOM,tile0=0:0/16:16/0:0,tile1=0:0/12:4/4:6,tile2=12:0/4:4/0:6
 texture:id=piston_top
 texture:id=piston_top_sticky
 texture:id=dandelion
@@ -813,12 +813,12 @@ block:id=tall_seagrass,data=0,patch0-3=1000:tall_seagrass_top,transparency=TRANS
 block:id=tall_seagrass,data=1,patch0-3=1000:tall_seagrass_bottom,transparency=TRANSPARENT
 
 #  Piston
-block:id=piston,patch0=0:piston_bottom,patch1=0:piston_top,patch2=0:piston_side,patch3=0:piston_inner
+block:id=piston,patch0=0:piston_bottom,patch1=0:piston_top,patch2=0:piston_side,patch3=0:piston_inner,patch4=6002:piston_side
 # Sticky piston
-block:id=sticky_piston,patch0=0:piston_bottom,patch1=0:piston_top_sticky,patch2=0:piston_side,patch3=0:piston_inner
+block:id=sticky_piston,patch0=0:piston_bottom,patch1=0:piston_top_sticky,patch2=0:piston_side,patch3=0:piston_inner,patch4=6002:piston_side
 # Piston head
-block:id=piston_head,data=0,data=2,data=4,data=6,data=8,data=10,data=12,data=14,data=16,data=18,data=20,data=22,patch0=0:piston_bottom,patch1=0:piston_top,patch2=0:piston_side,patch3=0:piston_inner,transparency=TRANSPARENT
-block:id=piston_head,data=1,data=3,data=5,data=7,data=9,data=11,data=13,data=15,data=17,data=19,data=21,data=23,patch0=0:piston_bottom,patch1=0:piston_top_sticky,patch2=0:piston_side,patch3=0:piston_inner,transparency=TRANSPARENT
+block:id=piston_head,data=0,data=2,data=4,data=6,data=8,data=10,data=12,data=14,data=16,data=18,data=20,data=22,patch0=0:piston_bottom,patch1=0:piston_top,patch2=0:piston_side,patch3=0:piston_inner,patch4=6001:piston_side,transparency=TRANSPARENT
+block:id=piston_head,data=1,data=3,data=5,data=7,data=9,data=11,data=13,data=15,data=17,data=19,data=21,data=23,patch0=0:piston_bottom,patch1=0:piston_top_sticky,patch2=0:piston_side,patch3=0:piston_inner,patch4=6001:piston_side,transparency=TRANSPARENT
 # Moving piston (don't show)
 block:id=moving_piston
 # Wool
