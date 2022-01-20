@@ -1152,11 +1152,9 @@ block:id=brewing_stand,patch0=0:brewing_stand_base,patch1-7=0:brewing_stand,tran
 # Cauldron
 block:id=cauldron,data=*,top=0:cauldron_top,bottom=0:cauldron_bottom,allsides=0:cauldron_side,stdrot=true,transparency=TRANSPARENT
 # End portal
-block:id=end_portal,data=*,topbottom=0:endportal,stdrot=true
-# End portal frame (no eye)
-block:id=end_portal_frame,data=0,data=1,data=2,data=3,top=0:end_portal_frame_top,allsides=0:end_portal_frame_side,bottom=0:end_stone,stdrot=true
-# End portal fram (eye installed) (TODO: eye installed)
-block:id=end_portal_frame,data=4,data=5,data=6,data=7,top=0:end_portal_frame_eye,allsides=0:end_portal_frame_side,bottom=0:end_stone,stdrot=true
+block:id=end_portal,data=*,patch0=0:endportal,stdrot=true
+# End portal frame
+block:id=end_portal_frame,data=*,patch0=0:end_stone,patch1=0:end_portal_frame_top,patch2=0:end_portal_frame_side,patch3=0:end_portal_frame_eye
 # End stone
 block:id=end_stone,allfaces=0:end_stone,stdrot=true
 # Dragon Egg
