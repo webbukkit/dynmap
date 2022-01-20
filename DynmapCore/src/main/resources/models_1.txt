@@ -1437,7 +1437,7 @@ patchblock:id=bubble_column
 [1.14-]patchblock:id=smoker,id=blast_furnace,data=6,data=7
 [1.14-]patchrotate:id=smoker,data=0,roty=90
 # Grindstone
-[1.14-]boxlist:id=grindstone,data=0,box=0.75:0.875:0:0.4375:0.375:0.625:4/-1/4/4/4/4,box=0.125:0.25:0:0.4375:0.375:0.625:4/-1/4/4/4,box=0.125:0.25:0.4375:0.8325:0.3125:0.6875:0/0/0/0/0/0,box=0.25:0.75:0.25:1:0.125:0.875:1/1/2/2/1/1
+[1.14-]boxlist:id=grindstone,data=0,box=0.75:0.875:0:0.4375:0.375:0.625:4/-1/4/4/4/4,box=0.125:0.25:0:0.4375:0.375:0.625:4/-1/4/4/4,box=0.125:0.875:0.4375:0.8325:0.3125:0.6875:4/4/4/4/4/4,box=0.25:0.75:0.25:1:0.125:0.875:5/5/2/2/1/1
 [1.14-]patchblock:id=grindstone,data=1
 [1.14-]patchrotate:id=grindstone,data=0,roty=180
 [1.14-]patchblock:id=grindstone,data=2

@@ -2174,9 +2174,9 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]texture:id=sweet_berry_bush_stage1
 [1.14-]texture:id=sweet_berry_bush_stage2
 [1.14-]texture:id=sweet_berry_bush_stage3
-[1.14-]texture:id=grindstone_pivot
-[1.14-]texture:id=grindstone_round
-[1.14-]texture:id=grindstone_side
+[1.14-]texture:id=grindstone_pivot,format=CUSTOM,tile0=0:0/10:6:3:5,tile1=0:0/10:6:4:5
+[1.14-]texture:id=grindstone_round,format=CUSTOM,tile0=0:0/8:12/4:0,tile1=0:0/8:12/4:2
+[1.14-]texture:id=grindstone_side,format=CUSTOM,tile0=0:0/12:12/2:0
 [1.14-]texture:id=lectern_base
 [1.14-]texture:id=lectern_front
 [1.14-]texture:id=lectern_sides
@@ -2357,7 +2357,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]block:id=sweet_berry_bush,data=2,patch0-1=0:sweet_berry_bush_stage2,transparency=TRANSPARENT
 [1.14-]block:id=sweet_berry_bush,data=3,patch0-1=0:sweet_berry_bush_stage3,transparency=TRANSPARENT
 # Grindstone
-[1.14-]block:id=grindstone,patch0=0:grindstone_pivot,patch1=0:grindstone_round,patch2=0:grindstone_side,patch4=0:dark_oak_log,transparency=TRANSPARENT
+[1.14-]block:id=grindstone,patch0=6000:grindstone_pivot,patch1=0:grindstone_round,patch2=0:grindstone_side,patch4=0:dark_oak_log,patch5=1:grindstone_round,patch6=6001:grindstone_pivot,transparency=TRANSPARENT
 # Lectern
 [1.14-]block:id=lectern,patch0=0:oak_planks,patch1=0:lectern_base,patch2=0:lectern_front,patch3=0:lectern_sides,patch4=0:lectern_top,transparency=TRANSPARENT
 # Lantern
