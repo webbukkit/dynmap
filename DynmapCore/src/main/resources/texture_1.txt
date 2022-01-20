@@ -2143,6 +2143,8 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]texture:id=composter_top
 [1.14-]texture:id=composter_side
 [1.14-]texture:id=composter_bottom
+[1.14-]texture:id=composter_compost
+[1.14-]texture:id=composter_ready
 [1.14-]texture:id=jigsaw_bottom
 [1.14-]texture:id=jigsaw_side
 [1.14-]texture:id=jigsaw_top
@@ -2333,7 +2335,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 # Scaffolding
 [1.14-]block:id=scaffolding,patch0=0:scaffolding_top,patch1=0:scaffolding_side,patch2=0:scaffolding_bottom,transparency=TRANSPARENT
 # Composter
-[1.14-]block:id=composter,patch0=0:composter_top,patch1=0:composter_bottom,patch2=0:composter_side,patch3=0:composter_bottom,transparency=TRANSPARENT
+[1.14-]block:id=composter,patch0=0:composter_top,patch1=0:composter_bottom,patch2=0:composter_side,patch3=0:composter_bottom,patch4=0:composter_compost,patch5=0:composter_ready,transparency=TRANSPARENT
 # Jigsaw
 [1.14-]block:id=jigsaw,patch0=0:jigsaw_bottom,patch1=0:jigsaw_top,patch2=0:jigsaw_side
 # Loom
