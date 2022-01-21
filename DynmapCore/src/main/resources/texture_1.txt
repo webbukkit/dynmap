@@ -895,7 +895,7 @@ block:id=diamond_ore,allfaces=0:diamond_ore,stdrot=true
 # Diamond block
 block:id=diamond_block,allfaces=0:diamond_block,stdrot=true
 # Crafting table
-block:id=crafting_table,topbottom=0:crafting_table_top,east=0:crafting_table_front,west=0:crafting_table_front,north=0:crafting_table_side,south=0:crafting_table_side,stdrot=true
+block:id=crafting_table,face0-1=0:crafting_table_top,face2=0:crafting_table_front,face3=0:crafting_table_side,face4=0:crafting_table_front,face5=0:crafting_table_side,stdrot=true
 # Crops (size 1)
 block:id=wheat,data=0,patch0-3=0:wheat_stage0,transparency=TRANSPARENT
 # Crops (size 2)
@@ -916,22 +916,22 @@ block:id=wheat,data=7,patch0-3=0:wheat_stage7,transparency=TRANSPARENT
 block:id=farmland,data=0,top=0:farmland,allsides=0:dirt,bottom=0:dirt,stdrot=true
 # Farmland (wet)
 block:id=farmland,data=1,data=2,data=3,data=4,data=5,data=6,data=7,top=0:farmland_moist,allsides=0:dirt,bottom=0:dirt,stdrot=true
-# Furnace (facing east)
-block:id=furnace,data=1,top=0:furnace_top,east=0:furnace_front,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
-# Furnace (facing west)
-block:id=furnace,data=3,top=0:furnace_top,west=0:furnace_front,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top,stdrot=true
 # Furnace (facing north)
-block:id=furnace,data=5,top=0:furnace_top,north=0:furnace_front,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+block:id=furnace,data=1,face0-1=0:furnace_top,face2=0:furnace_front,face3-5=0:furnace_side,stdrot=true
 # Furnace (facing south)
-block:id=furnace,data=7,top=0:furnace_top,south=0:furnace_front,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
-# Burning Furnace (facing east)
-block:id=furnace,data=0,top=0:furnace_top,east=0:furnace_front_on,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
-# Burning Furnace (facing west)
-block:id=furnace,data=2,top=0:furnace_top,west=0:furnace_front_on,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top,stdrot=true
+block:id=furnace,data=3,face0-1=5000:furnace_top,face3=0:furnace_front,face2=0:furnace_side,face4-5=0:furnace_side,stdrot=true
+# Furnace (facing west)
+block:id=furnace,data=5,face0-1=4000:furnace_top,face4=0:furnace_front,face2-3=0:furnace_side,face5=0:furnace_side,west=0:furnace_side,stdrot=true
+# Furnace (facing east)
+block:id=furnace,data=7,face0-1=6000:furnace_top,face5=0:furnace_front,face2-4=0:furnace_side,stdrot=true
 # Burning Furnace (facing north)
-block:id=furnace,data=4,top=0:furnace_top,north=0:furnace_front_on,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+block:id=furnace,data=0,face0-1=0:furnace_top,face2=0:furnace_front_on,face3-5=0:furnace_side,stdrot=true
+# Burning Furnace (facing west)
+block:id=furnace,data=2,face0-1=5000:furnace_top,face3=0:furnace_front_on,face2=0:furnace_side,face4-5=0:furnace_side,stdrot=true
+# Burning Furnace (facing east)
+block:id=furnace,data=4,face0-1=4000:furnace_top,face4=0:furnace_front_on,face2-3=0:furnace_side,face5=0:furnace_side,stdrot=true
 # Burning Furnace (facing south)
-block:id=furnace,data=6,top=0:furnace_top,south=0:furnace_front_on,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+block:id=furnace,data=6,face0-1=6000:furnace_top,face5=0:furnace_front_on,face2-4=0:furnace_side,stdrot=true
 # Oak Door
 block:id=oak_door,data=*,patch0=0:oak_door_top,patch1=0:oak_door_bottom,transparency=TRANSPARENT
 # Ladder
