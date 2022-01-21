@@ -1015,22 +1015,22 @@ block:id=soul_sand,allfaces=0:soul_sand,stdrot=true
 block:id=glowstone,allfaces=0:glowstone,stdrot=true
 # Nether Portal
 block:id=nether_portal,allfaces=0:nether_portal,stdrot=true,transparency=TRANSPARENT
-# Carved Pumpkin (west)
-block:id=carved_pumpkin,data=0,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_side,west=0:carved_pumpkin,topbottom=0:pumpkin_top,stdrot=true
 # Carved Pumpkin (north)
-block:id=carved_pumpkin,data=1,north=0:carved_pumpkin,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
-# Carved Pumpkin (east)
-block:id=carved_pumpkin,data=2,north=0:pumpkin_side,south=0:pumpkin_side,east=0:carved_pumpkin,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+block:id=carved_pumpkin,data=0,face2=0:carved_pumpkin,face3=0:pumpkin_side,face4=0:pumpkin_side,face5=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
 # Carved Pumpkin (south)
-block:id=carved_pumpkin,data=3,north=0:pumpkin_side,south=0:carved_pumpkin,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
-# Jack-O-Lantern (west)
-block:id=jack_o_lantern,data=0,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_side,west=0:jack_o_lantern,topbottom=0:pumpkin_top,stdrot=true
+block:id=carved_pumpkin,data=1,face3=0:carved_pumpkin,face2=0:pumpkin_side,face4=0:pumpkin_side,face5=0:pumpkin_side,topbottom=5000:pumpkin_top,stdrot=true
+# Carved Pumpkin (west)
+block:id=carved_pumpkin,data=2,face4=0:carved_pumpkin,face2=0:pumpkin_side,face3=0:pumpkin_side,face5=0:pumpkin_side,topbottom=4000:pumpkin_top,stdrot=true
+# Carved Pumpkin (east)
+block:id=carved_pumpkin,data=3,face5=0:carved_pumpkin,face2=0:pumpkin_side,face3=0:pumpkin_side,face4=0:pumpkin_side,topbottom=6000:pumpkin_top,stdrot=true
 # Jack-O-Lantern (north)
-block:id=jack_o_lantern,data=1,north=0:jack_o_lantern,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
-# Jack-O-Lantern (east)
-block:id=jack_o_lantern,data=2,north=0:pumpkin_side,south=0:pumpkin_side,east=0:jack_o_lantern,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+block:id=jack_o_lantern,data=0,face2=0:jack_o_lantern,face3=0:pumpkin_side,face4=0:pumpkin_side,face5=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
 # Jack-O-Lantern (south)
-block:id=jack_o_lantern,data=3,north=0:pumpkin_side,south=0:jack_o_lantern,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+block:id=jack_o_lantern,data=1,face3=0:jack_o_lantern,face2=0:pumpkin_side,face4=0:pumpkin_side,face5=0:pumpkin_side,topbottom=5000:pumpkin_top,stdrot=true
+# Jack-O-Lantern (west)
+block:id=jack_o_lantern,data=2,face4=0:jack_o_lantern,face2=0:pumpkin_side,face3=0:pumpkin_side,face5=0:pumpkin_side,topbottom=4000:pumpkin_top,stdrot=true
+# Jack-O-Lantern (east)
+block:id=jack_o_lantern,data=3,face5=0:jack_o_lantern,face2=0:pumpkin_side,face3=0:pumpkin_side,face4=0:pumpkin_side,topbottom=6000:pumpkin_top,stdrot=true
 # Cake Block
 block:id=cake,allsides=0:cake_side,top=0:cake_top,bottom=0:cake_bottom,stdrot=true,transparency=TRANSPARENT
 # Repeater (on) facing east
