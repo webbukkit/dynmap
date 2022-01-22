@@ -681,11 +681,16 @@ public class DynmapCore implements DynmapCommonAPI {
                 
         if (configuration.getBoolean("dumpColorMaps", false)) {
         	dumpColorMap("standard.txt", "standard");
+        	dumpColorMap("default.txt", "standard");
         	dumpColorMap("dokudark.txt", "dokudark.zip");
         	dumpColorMap("dokulight.txt", "dokulight.zip");
         	dumpColorMap("dokuhigh.txt", "dokuhigh.zip");
         	dumpColorMap("misa.txt", "misa.zip");
         	dumpColorMap("sphax.txt", "sphax.zip");
+        	dumpColorMap("ovocean.txt", "ovocean.zip");
+        	dumpColorMap("flames.txt", "standard");	// No TP around for this
+        	dumpColorMap("sk89q.txt", "standard");	// No TP around for this
+        	dumpColorMap("amidst.txt", "standard");	// No TP around for this
         }
         
         if (configuration.getBoolean("dumpBlockState", false)) {
@@ -722,7 +727,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 BlockStep.Y_PLUS.ordinal(), BlockStep.X_MINUS.ordinal(), BlockStep.Z_MINUS.ordinal() };
         FileWriter fw = null;
         try {
-            fw = new FileWriter(id);
+            fw = new FileWriter(new File(new File(getDataFolder(), "colorschemes"), id));
             TexturePack tp = TexturePack.getTexturePack(this, name);
             if (tp == null) return;
             tp = tp.resampleTexturePack(1);
@@ -745,13 +750,13 @@ public class DynmapCore implements DynmapCommonAPI {
                     switch(idx) {
                         case 1: // grass
                         case 18: // grass
-                        	Log.info("Used grass for " + blk);
+                        	Log.verboseinfo("Used grass for " + blk);
                             c.blendColor(tp.getTrivialGrassMultiplier() | 0xFF000000);
                             break;
                         case 2: // foliage
                         case 19: // foliage
                         case 22: // foliage
-                        	Log.info("Used foliage for " + blk);
+                        	Log.verboseinfo("Used foliage for " + blk);
                             c.blendColor(tp.getTrivialFoliageMultiplier() | 0xFF000000);
                             break;
                         case 13: // pine
@@ -765,12 +770,12 @@ public class DynmapCore implements DynmapCommonAPI {
                             break;
                         case 3: // water
                         case 20: // water
-                        	Log.info("Used water for " + blk);
+                        	Log.verboseinfo("Used water for " + blk);
                             c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
                             break;
                         case 12: // clear inside
                             if (blk.isWater()) { // special case for water
-                            	Log.info("Used water for " + blk);
+                            	Log.verboseinfo("Used water for " + blk);
                                 c.blendColor(tp.getTrivialWaterMultiplier() | 0xFF000000);
                             }
                             break;
@@ -804,6 +809,7 @@ public class DynmapCore implements DynmapCommonAPI {
         } catch (IOException iox) {
         } finally {
             if (fw != null) { try { fw.close(); } catch (IOException x) {} }
+            Log.info("Dumped RP=" + name + " to " + id);
         }
     }
 

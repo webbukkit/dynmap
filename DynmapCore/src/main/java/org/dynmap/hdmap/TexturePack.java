@@ -808,7 +808,12 @@ public class TexturePack {
      */
     private void copySubimageFromImage(int img_id, int from_x, int from_y, int to_x, int to_y, int width, int height, int[] dest_argb, int dest_width) {
         for(int h = 0; h < height; h++) {
-            System.arraycopy(imgs[img_id].argb, (h+from_y)*imgs[img_id].width + from_x, dest_argb, dest_width*(h+to_y) + to_x, width);
+        	try {
+        		System.arraycopy(imgs[img_id].argb, (h+from_y)*imgs[img_id].width + from_x, dest_argb, dest_width*(h+to_y) + to_x, width);
+        	} catch (ArrayIndexOutOfBoundsException aoobx) {
+        		Log.warning(String.format("Error copying subimage: img_id=%s, from=%d,%s, to=%d,%d, size=%d,%d, dest=%d,%d", 
+    				imgs[img_id].fname, from_x, from_y, to_x, to_y, width, height, dest_width, dest_argb.length / dest_width));
+        	}
         }
     }
     /**

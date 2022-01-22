@@ -190,7 +190,7 @@ texture:id=detector_rail_on
 texture:id=detector_rail
 texture:id=piston_bottom
 texture:id=piston_inner
-texture:id=piston_side,format=CUSTOM,tile0=0:0/16:16/0:0,tile1=0:0/12:4/4:6,tile2=12:0/4:4/0:6
+texture:id=piston_side,format=CUSTOM,tile0=0:0/16:16/0:0,tile1=0:0/12:4/4:6,tile2=12:0/4:4/0:6,xcount=1,ycount=1
 texture:id=piston_top
 texture:id=piston_top_sticky
 texture:id=dandelion
@@ -2174,9 +2174,9 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]texture:id=sweet_berry_bush_stage1
 [1.14-]texture:id=sweet_berry_bush_stage2
 [1.14-]texture:id=sweet_berry_bush_stage3
-[1.14-]texture:id=grindstone_pivot,format=CUSTOM,tile0=0:0/10:6:3:5,tile1=0:0/10:6:4:5
-[1.14-]texture:id=grindstone_round,format=CUSTOM,tile0=0:0/8:12/4:0,tile1=0:0/8:12/4:2
-[1.14-]texture:id=grindstone_side,format=CUSTOM,tile0=0:0/12:12/2:0
+[1.14-]texture:id=grindstone_pivot,format=CUSTOM,tile0=0:0/10:6:3:5,tile1=0:0/10:6:4:5,xcount=1,ycount=1
+[1.14-]texture:id=grindstone_round,format=CUSTOM,tile0=0:0/8:12/4:0,tile1=0:0/8:12/4:2,xcount=1,ycount=1
+[1.14-]texture:id=grindstone_side,format=CUSTOM,tile0=0:0/12:12/2:0,xcount=1,ycount=1
 [1.14-]texture:id=lectern_base
 [1.14-]texture:id=lectern_front
 [1.14-]texture:id=lectern_sides
@@ -2194,9 +2194,9 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]texture:id=campfire_log
 [1.14-]texture:id=campfire_log_lit
 [1.14-]texture:id=campfire_fire
-[1.14-]texture:id=bell_top,format=CUSTOM,tile0=0:0/8:8/4:4
-[1.14-]texture:id=bell_side,format=CUSTOM,tile0=0:0/8:9/4:3
-[1.14-]texture:id=bell_bottom,format=CUSTOM,tile0=0:0/8:8/4:4
+[1.14-]texture:id=bell_top,format=CUSTOM,tile0=0:0/8:8/4:4,xcount=1,ycount=1
+[1.14-]texture:id=bell_side,format=CUSTOM,tile0=0:0/8:9/4:3,xcount=1,ycount=1
+[1.14-]texture:id=bell_bottom,format=CUSTOM,tile0=0:0/8:8/4:4,xcount=1,ycount=1
 
 # Signpost
 [1.14-]block:id=oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=oak_sign
