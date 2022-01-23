@@ -1,11 +1,17 @@
 description = "DynmapCoreAPI"
 
 jar {
-//	archiveName = "${project.name}-${project.version}-all.jar"
     destinationDir = file '../target'
-    classifier = "all"
 }
 
 artifacts {
     archives jar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
