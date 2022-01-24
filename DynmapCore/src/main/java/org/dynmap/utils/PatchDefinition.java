@@ -78,7 +78,7 @@ public class PatchDefinition implements RenderPatch {
      * @param rotatez - z rotation in degrees
      * @param textureindex - texture index for new patch (-1 = use same as original patch)
      */
-    PatchDefinition(PatchDefinition orig, int rotatex, int rotatey, int rotatez, int textureindex) {
+    PatchDefinition(PatchDefinition orig, double rotatex, double rotatey, double rotatez, int textureindex) {
         Vector3D vec = new Vector3D(orig.x0, orig.y0, orig.z0);
         rotate(vec, rotatex, rotatey, rotatez); /* Rotate origin */
         x0 = vec.x; y0 = vec.y; z0 = vec.z;
@@ -101,7 +101,7 @@ public class PatchDefinition implements RenderPatch {
         update();
     }
     
-    private void rotate(Vector3D vec, int xcnt, int ycnt, int zcnt) {
+    private void rotate(Vector3D vec, double xcnt, double ycnt, double zcnt) {
         vec.subtract(offsetCenter); /* Shoft to center of block */
         /* Do X rotation */
         double rot = Math.toRadians(xcnt);

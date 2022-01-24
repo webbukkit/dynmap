@@ -97,6 +97,19 @@ public interface RenderPatchFactory {
      * @param textureidx - texture index to be used for rotated patch (-1 means same as original patch)
      * @return patch requested
      */
+    public RenderPatch getRotatedPatch(RenderPatch patch, double xrot, double yrot, double zrot, int textureidx);
+    /**
+     * Get/create patch with given attributes.
+     * 
+     * Generate from existing patch, after rotating xrot degrees around the X axis then yrot degrees around the Y axis, and then zrot degrees arond Z.
+     * 
+     * @param patch - original patch
+     * @param xrot - degrees to rotate around X
+     * @param yrot - degrees to rotate around Y
+     * @param zrot - degrees to rotate around Z
+     * @param textureidx - texture index to be used for rotated patch (-1 means same as original patch)
+     * @return patch requested
+     */
     public RenderPatch getRotatedPatch(RenderPatch patch, int xrot, int yrot, int zrot, int textureidx);
     /**
      * Get named patch with given attributes.  Name can encode rotation and patch index info

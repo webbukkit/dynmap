@@ -331,6 +331,7 @@ public class HDBlockModels {
     private static class ModelBox {
     	double[] from = new double[3];
     	double[] to = new double[3];
+    	double xrot = 0, yrot = 0, zrot = 0;
     	ArrayList<ModelBoxSide> sides = new ArrayList<ModelBoxSide>();
     };
     
@@ -1017,11 +1018,11 @@ public class HDBlockModels {
                                 databits.set(getIntValue(varvals,av[1]));
                         }
                         else if(av[0].equals("box")) {
-                        	// box=fromx/y/z:tox/y/z:<side - upnsew>/<txtidx>/umin/vmin/umax/vmax>:...
+                        	// box=from-x/y/z:to-x/y/z/rotx/roty/rotz:<side - upnsew>/<txtidx>/umin/vmin/umax/vmax>:...
                         	String[] prms = av[1].split(":");
                         	
                         	ModelBox box = new ModelBox();
-                        	if (prms.length > 0) {	// Handle from
+                        	if (prms.length > 0) {	// Handle from (from-x/y/z)
                         		String[] xyz = prms[0].split("/");
                         		if (xyz.length == 3) {
                         			box.from[0] = Double.parseDouble(xyz[0]);
@@ -1032,12 +1033,17 @@ public class HDBlockModels {
                                 	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + rdr.getLineNumber());                        			
                         		}
                         	}
-                        	if (prms.length > 1) {	// Handle to
+                        	if (prms.length > 1) {	// Handle to (to-x/y/z or to-x/y/z/rotx/roty/rotz)
                         		String[] xyz = prms[1].split("/");
-                        		if (xyz.length == 3) {
+                        		if (xyz.length >= 3) {
                         			box.to[0] = Double.parseDouble(xyz[0]);
                         			box.to[1] = Double.parseDouble(xyz[1]);
                         			box.to[2] = Double.parseDouble(xyz[2]);
+                        			if (xyz.length >= 6) {	// If 6, second set are rotations (xrot/yrot/zrot)
+                            			box.xrot = Double.parseDouble(xyz[3]);
+                            			box.yrot = Double.parseDouble(xyz[4]);
+                            			box.zrot = Double.parseDouble(xyz[5]);
+                        			}
                         		}
                         		else {
                                 	Log.severe("Invalid modellist TO value (" + prms[1] + " at line " + rdr.getLineNumber());                        			
@@ -1052,7 +1058,7 @@ public class HDBlockModels {
                         			String face = flds[0];
                         			side.side = toBlockSide.get(face);
                         			if (side.side == null) {
-                                    	Log.severe("Invalid modellist side value (" + face + " at line " + rdr.getLineNumber());                        			                        				
+                                    	Log.severe("Invalid modellist side value (" + face + ") at line " + rdr.getLineNumber());                        			                        				
                                     	continue;
                         			}
                         		}
@@ -1081,6 +1087,10 @@ public class HDBlockModels {
 							for (ModelBoxSide side : bl.sides) {
 								PatchDefinition patch = pdf.getModelFace(bl.from, bl.to, side.side, side.uv, side.textureid);
 								if (patch != null) {
+									// If any rotations, apply them here
+									if ((bl.xrot != 0) || (bl.yrot != 0) || (bl.zrot != 0)) {
+										patch = pdf.getPatch(patch, bl.xrot, bl.yrot, bl.zrot, patch.textureindex);
+									}
 									pd.add(patch);
 								}
 							}

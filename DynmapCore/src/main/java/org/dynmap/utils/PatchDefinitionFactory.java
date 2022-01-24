@@ -82,13 +82,18 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
     }
     
     @Override
+    public RenderPatch getRotatedPatch(RenderPatch patch, double xrot, double yrot,
+            double zrot, int textureindex) {
+        return getPatch((PatchDefinition)patch, xrot, yrot, zrot, textureindex);
+    }
+    @Override
     public RenderPatch getRotatedPatch(RenderPatch patch, int xrot, int yrot,
             int zrot, int textureindex) {
         return getPatch((PatchDefinition)patch, xrot, yrot, zrot, textureindex);
     }
     
-    public PatchDefinition getPatch(PatchDefinition patch, int xrot, int yrot,
-            int zrot, int textureindex) {
+    public PatchDefinition getPatch(PatchDefinition patch, double xrot, double yrot,
+            double zrot, int textureindex) {
         PatchDefinition pd = new PatchDefinition(patch, xrot, yrot, zrot, textureindex);
         if(pd.validate() == false)
             return null;

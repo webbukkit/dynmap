@@ -1,5 +1,7 @@
 package org.dynmap.modsupport;
 
+import org.dynmap.modsupport.ModelBlockModel.ModelBlock;
+
 // Model for more direct translation of MC models
 //   All coordinates are 0-16 range per block, and 0-16 range for UV
 
@@ -26,7 +28,10 @@ public interface ModelBlockModel extends BlockModel {
      * 
      * @param from - vector of lower left corner of box (0-16 range for coordinates - min x, y, z)
      * @param to - vector of upper right corner of box (0-16 range for coordinates max x, y, z)
+     * @param xrot - degrees of rotation of block around X
+     * @param yrot - degrees of rotation of block around Y
+     * @param zrot - degrees of rotation of block around Z
 	 * @return model block to add faces to
      */
-    public ModelBlock addModelBlock(double[] from, double[] to);
+    public ModelBlock addModelBlock(double[] from, double[] to, double xrot, double yrot, double zrot);
 }
