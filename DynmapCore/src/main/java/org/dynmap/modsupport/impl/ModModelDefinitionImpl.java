@@ -8,11 +8,13 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import org.dynmap.hdmap.HDBlockModels;
+import org.dynmap.modsupport.BlockSide;
 import org.dynmap.modsupport.BoxBlockModel;
 import org.dynmap.modsupport.CuboidBlockModel;
 import org.dynmap.modsupport.DoorBlockModel;
 import org.dynmap.modsupport.ModModelDefinition;
 import org.dynmap.modsupport.ModTextureDefinition;
+import org.dynmap.modsupport.ModelBlockModel;
 import org.dynmap.modsupport.PaneBlockModel;
 import org.dynmap.modsupport.PatchBlockModel;
 import org.dynmap.modsupport.PlantBlockModel;
@@ -190,6 +192,19 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
         blkModel.add(mod);
         return mod;
     }
+    
+    @Override
+    public ModelBlockModel addModelBlockModel(String blockname) {
+        ModelBlockModelImpl mod = new ModelBlockModelImpl(blockname, this);
+        blkModel.add(mod);
+        return mod;    	
+    }
+    @Override
+    public ModelBlockModel addRotatedModelBlockModel(String blockname, ModelBlockModel model, int xrot, int yrot, int zrot) {
+        ModelBlockModelImpl mod = new ModelBlockModelImpl(blockname, this, model, xrot, yrot, zrot);
+        blkModel.add(mod);
+        return mod;
+    }
 
     public String getPatchID(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv, double umin,
@@ -206,6 +221,21 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
         String id = "patch" + (blkPatch.size() - 1);
         blkPatchMap.put(id, pd);
         return id;
+    }
+    
+    public String getModelFacePatchID(double[] from, double[] to, BlockSide face, double[] uv, int textureid) {
+        PatchDefinition pd = pdf.getModelFace(from, to, face, uv, textureid);
+        if (pd == null)
+            return null;    // Invalid patch
+        for (int i = 0; i < blkPatch.size(); i++) {
+            if (blkPatch.get(i) == pd) { 
+                return "patch" + i; 
+            }
+        }
+        blkPatch.add(pd);
+        String id = "patch" + (blkPatch.size() - 1);
+        blkPatchMap.put(id, pd);
+        return id;    	
     }
 
     public String getRotatedPatchID(String patchid, int xrot, int yrot, int zrot) {

@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dynmap.hdmap.TexturePack;
+import org.dynmap.modsupport.BlockSide;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory;
+import org.dynmap.renderer.RenderPatchFactory.SideVisible;
+import org.dynmap.Log;
 
 public class PatchDefinitionFactory implements RenderPatchFactory {
     private HashMap<PatchDefinition,PatchDefinition> patches = new HashMap<PatchDefinition,PatchDefinition>();
@@ -62,6 +65,22 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
         }
 
     }
+    
+    public PatchDefinition getModelFace(double[] from, double[] to, BlockSide face, double[] uv, int textureid) {
+        synchronized(lock) {
+            lookup.updateModelFace(from, to, face, uv, textureid);
+            if(lookup.validate() == false)
+                return null;
+            PatchDefinition pd2 = patches.get(lookup);  /* See if in cache already */
+            if(pd2 == null) {
+                PatchDefinition pd = new PatchDefinition(lookup);
+                patches.put(pd,  pd);
+                pd2 = pd;
+            }
+            return pd2;
+        }    	
+    }
+    
     @Override
     public RenderPatch getRotatedPatch(RenderPatch patch, int xrot, int yrot,
             int zrot, int textureindex) {
@@ -163,4 +182,30 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
         return TexturePack.getTextureMapLength(id);
     }
     
+    public static void main(String[] args) {
+    	PatchDefinitionFactory fact = new PatchDefinitionFactory();
+    	BlockSide[] faces = { BlockSide.BOTTOM, BlockSide.TOP, BlockSide.NORTH, BlockSide.SOUTH, BlockSide.WEST, BlockSide.EAST };
+    	double[] from = { 0,0,0 };
+    	double[] to = { 16,16,16 };
+    	
+    	// Do normal faces, default limits
+    	PatchDefinition pd = new PatchDefinition();
+    	for (BlockSide face : faces) {
+    		pd.updateModelFace(from,  to, face, null, 0);
+    		System.out.println("Full cube " + face + ": " + pd);
+    	}    	
+    	
+    	double[] toquarter = { 8,8,8 };
+    	for (BlockSide face : faces) {
+    		pd.updateModelFace(from,  toquarter, face, null, 0);
+    		System.out.println("8x8x8 cube " + face + ": " + pd);
+    	}    	
+    	
+
+    	for (BlockSide face : faces) {
+    		pd.updateModelFace(from,  toquarter, face, new double[] { 4, 4, 12, 12 }, 0);
+    		System.out.println("Full cube, middle half of texture " + face + ": " + pd);
+    	}    	
+
+    }
 }

@@ -22,6 +22,7 @@ import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
+import org.dynmap.modsupport.BlockSide;
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.RenderPatch;
@@ -320,6 +321,29 @@ public class HDBlockModels {
         int yrot = 0;
         int[] patches = new int[6]; // Default all to patch0
     }
+    
+    private static class ModelBoxSide {
+    	BlockSide side;
+    	int textureid;
+    	double[] uv;
+    };
+    
+    private static class ModelBox {
+    	double[] from = new double[3];
+    	double[] to = new double[3];
+    	ArrayList<ModelBoxSide> sides = new ArrayList<ModelBoxSide>();
+    };
+    
+    private static HashMap<String, BlockSide> toBlockSide = new HashMap<String, BlockSide>();
+    static {
+    	toBlockSide.put("u", BlockSide.TOP);
+    	toBlockSide.put("d", BlockSide.BOTTOM);
+    	toBlockSide.put("n", BlockSide.NORTH);
+    	toBlockSide.put("s", BlockSide.SOUTH);
+    	toBlockSide.put("w", BlockSide.WEST);
+    	toBlockSide.put("e", BlockSide.EAST);
+    };
+    
     /**
      * Load models from file
      * @param core 
@@ -962,6 +986,125 @@ public class HDBlockModels {
                     }
                     else {
                         Log.severe("Box list block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                    }
+                }
+                // Shortcur for building JSON model style 
+                else if(line.startsWith("modellist:")) {
+                    ArrayList<String> blknames = new ArrayList<String>();
+                    databits.clear();
+                    line = line.substring(10);
+                    String[] args = line.split(",");
+                    ArrayList<ModelBox> boxes = new ArrayList<ModelBox>();
+                    for(String a : args) {
+                        String[] av = a.split("=");
+                        if(av.length < 2) continue;
+                        if(av[0].equals("id")) {
+                            blknames.add(getBlockName(modname,av[1]));
+                        }
+                        else if(av[0].equals("data")) {
+                            if(av[1].equals("*")) {
+                                databits.clear();
+                            }
+                            else if (av[1].indexOf('-') > 0) {
+                                String[] sp = av[1].split("-");
+                                int m0 = getIntValue(varvals, sp[0]);
+                                int m1 = getIntValue(varvals, sp[1]);
+                                for (int m = m0; m <= m1; m++) {
+                                    databits.set(m);
+                                }
+                            }
+                            else
+                                databits.set(getIntValue(varvals,av[1]));
+                        }
+                        else if(av[0].equals("box")) {
+                        	// box=fromx/y/z:tox/y/z:<side - upnsew>/<txtidx>/umin/vmin/umax/vmax>:...
+                        	String[] prms = av[1].split(":");
+                        	
+                        	ModelBox box = new ModelBox();
+                        	if (prms.length > 0) {	// Handle from
+                        		String[] xyz = prms[0].split("/");
+                        		if (xyz.length == 3) {
+                        			box.from[0] = Double.parseDouble(xyz[0]);
+                        			box.from[1] = Double.parseDouble(xyz[1]);
+                        			box.from[2] = Double.parseDouble(xyz[2]);
+                        		}
+                        		else {
+                                	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + rdr.getLineNumber());                        			
+                        		}
+                        	}
+                        	if (prms.length > 1) {	// Handle to
+                        		String[] xyz = prms[1].split("/");
+                        		if (xyz.length == 3) {
+                        			box.to[0] = Double.parseDouble(xyz[0]);
+                        			box.to[1] = Double.parseDouble(xyz[1]);
+                        			box.to[2] = Double.parseDouble(xyz[2]);
+                        		}
+                        		else {
+                                	Log.severe("Invalid modellist TO value (" + prms[1] + " at line " + rdr.getLineNumber());                        			
+                        		}
+                        	}
+                        	// Rest are faces (<side - upnsew>/<txtidx>/umin/vmin/umax/vmax> or <<side - upnsew>/<txtidx>)
+                        	for (int faceidx = 2; faceidx < prms.length; faceidx++) {
+                        		String v = prms[faceidx];	
+                        		String[] flds = v.split("/");
+                        		ModelBoxSide side = new ModelBoxSide();
+                        		if (flds.length > 0) {
+                        			String face = flds[0];
+                        			side.side = toBlockSide.get(face);
+                        			if (side.side == null) {
+                                    	Log.severe("Invalid modellist side value (" + face + " at line " + rdr.getLineNumber());                        			                        				
+                                    	continue;
+                        			}
+                        		}
+                        		if (flds.length > 1) {
+                        			side.textureid = getIntValue(varvals, flds[1]);
+                        		}
+                        		if (flds.length >= 6) {
+                        			side.uv = new double[4];
+                        			side.uv[0] = Double.parseDouble(flds[2]);
+                        			side.uv[1] = Double.parseDouble(flds[3]);
+                        			side.uv[2] = Double.parseDouble(flds[4]);
+                        			side.uv[3] = Double.parseDouble(flds[5]);
+                        		}
+                        		box.sides.add(side);
+                        	}
+                        	boxes.add(box);
+                        }
+                    }
+                    /* If we have everything, build block */
+                    pmodlist.clear();
+                    if (blknames.size() > 0) {
+                        ArrayList<PatchDefinition> pd = new ArrayList<PatchDefinition>();
+                        
+						for (ModelBox bl : boxes) {
+							// Loop through faces
+							for (ModelBoxSide side : bl.sides) {
+								PatchDefinition patch = pdf.getModelFace(bl.from, bl.to, side.side, side.uv, side.textureid);
+								if (patch != null) {
+									pd.add(patch);
+									Log.info("patch=" + patch);
+								}
+							}
+                        }
+                        PatchDefinition[] patcharray = new PatchDefinition[pd.size()];
+                        for (int i = 0; i < patcharray.length; i++) {
+                            patcharray[i] = pd.get(i);
+                        }
+                        if (patcharray.length > max_patches)
+                            max_patches = patcharray.length;
+                        for(String nm : blknames) {
+                            DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
+                            if (bs.isNotAir()) {
+                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
+                                cnt++;
+                            }
+                            else {
+                            	Log.severe("Invalid modellist block name " + nm + " at line " + rdr.getLineNumber());
+                            }
+                        }
+                    }
+                    else {
+                        Log.severe("Model list block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
                     }
                 }
                 else if(line.startsWith("customblock:")) {

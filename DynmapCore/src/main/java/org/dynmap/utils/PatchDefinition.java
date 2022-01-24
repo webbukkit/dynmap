@@ -1,9 +1,20 @@
 package org.dynmap.utils;
 
 import org.dynmap.Log;
+import org.dynmap.modsupport.BlockSide;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory.SideVisible;
 
+//
+//          (v = 1)         umin    umax
+// x0+xv,y0+yv,z0+zv  *-----|-------|--------* (u=1, v=1)      x0,y0,z0 = lower left corner relative to cube origin (0,0,0 to 1,1,1)
+//                   |     |       |        |                  length of xu,yu,zu = width of whole texture (u=0 to u=1)
+//                  |-----+=======+--------| vmax              length of xv,yv,zv = height of whole texture (v=0 to v=1)
+//                 |     [visible]        |                    umin to umax = clipping (visible portion of texture) horizontally
+//                |-----+=======+--------| vmin                vmin to vmax = clipping (visible portion of texture) vertically
+//      (u=0,v=0)|     |       |        |
+//      x0,y0,z0 *----|-------|--------* x0+xu, y0+yu, z0+zu (u = 1)
+//
 /* Define patch in surface-based models - origin (xyz), u-vector (xyz) v-vector (xyz), u limits and v limits */
 public class PatchDefinition implements RenderPatch {
     public double x0, y0, z0;   /* Origin of patch (lower left corner of texture) */
@@ -279,5 +290,113 @@ public class PatchDefinition implements RenderPatch {
     public String toString() {
     	return String.format("xyz0=%f/%f/%f,xyzU=%f/%f/%f,xyzV=%f/%f/%f,minU=%f,maxU=%f,vMin=%f/%f,vmax=%f/%f,side=%s,txtidx=%d",
     			x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vminatumax, vmax, vmaxatumax, sidevis, textureindex);
+    }
+    
+    //
+    // Update patch relative to typical parameters found in
+    // minecraft model files.  Specifically, all coordinates are relative to 0-16 range for
+    // side of a cube, and relative to 0-16 range for U,V within a texture:
+    //
+    //   from, to in model drive 'from', 'to' inputs
+    //   face, uv of face, and texture in model drives face, uv, textureid
+    //
+    // @param from - vector of lower left corner of box (0-16 range for coordinates - min x, y, z)
+    // @param to - vector of upper right corner of box (0-16 range for coordinates max x, y, z)
+    // @param face - which face (determines use of xyz-min vs xyz-max
+    // @param uv - bounds on UV (umin, vmin, umax, vmax): if undefined, default based on face range (minecraft UV is relative to top left corner of texture)
+    // @param textureid - texture ID
+    public void updateModelFace(double[] from, double[] to, BlockSide face, double[] uv, int textureid) {
+    	// Based on face, figure out coordinates of face corner (lower left for x0, y0, z0 - lower right for xu, yu, zy - top left for xv, yv, zv)
+    	double x0 = 0, xu = 1, xv = 0, y0 = 0, yu = 0, yv = 1, z0 = 0, zu = 0, zv = 0;
+    	double umin = 0, vmin = 0, umax = 1, vmax = 1;
+    	switch (face) {
+    		case BOTTOM:
+    		case FACE_0:
+    		case Y_MINUS:
+    	    	// Bottom - Y-negative (top towards south (+Z), right towards east (+x))
+    			x0 = xv = from[0] / 16.0; xu = to[0] / 16.0;
+    			y0 = yu = yv = from[1] / 16.0;	// Bottom
+    			z0 = zu = from[2] / 16.0; zv = to[2] / 16.0;
+    			umin = x0; umax = xu;
+    			vmin = z0; vmax = zv;
+    			break;
+    		case TOP:
+    		case FACE_1:
+    		case Y_PLUS:
+    			// Top - Y-positive  (top towards north (-Z), right towards east (+x))
+    			x0 = xv = from[0] / 16.0; xu = to[0] / 16.0;
+    			y0 = yu = yv = to[1] / 16.0;	// Top
+    			z0 = zu = to[2] / 16.0; zv = from[2] / 16.0;
+    			umin = x0; umax = xu;
+    			vmin = 1 - z0; vmax = 1 - zv;
+    			break;
+    		case NORTH:
+    		case FACE_2:
+    		case Z_MINUS:    			
+    			// North - Z-negative (top towards up (+Y), right towards west (-X))
+    			x0 = xv = to[0] / 16.0; xu = from[0] / 16.0;
+    			y0 = yu = from[1] / 16.0; yv = to[1] / 16.0;
+    			z0 = zu = zv = from[2] / 16.0;
+    			umin = 1 - x0; umax = 1 - xu;
+    			vmin = y0; vmax = yv;
+    			break;
+    		case SOUTH:
+    		case FACE_3:
+    		case Z_PLUS:    			
+    			// South - Z-positive (top towards up (+Y), right towards east (+X))
+    			x0 = xv = from[0] / 16.0; xu = to[0] / 16.0;
+    			y0 = yu = from[1] / 16.0; yv = to[1] / 16.0;
+    			z0 = zu = zv = to[2] / 16.0;
+    			umin = x0; umax = xu;
+    			vmin = y0; vmax = yv;
+    			break;
+    		case WEST:
+    		case FACE_4:
+    		case X_MINUS:    			
+    			// West - X-negative (top towards up (+Y), right towards south (+Z))
+    			x0 = xu = xv = from[0] / 16.0;
+    			y0 = yu = from[1] / 16.0; yv = to[1] / 16.0;
+    			z0 = zv = from[2] / 16.0; zu = to[2] / 16.0;
+    			umin = z0; umax = zu;
+    			vmin = y0; vmax = yv;
+    			break;
+    		case EAST:
+    		case FACE_5:
+    		case X_PLUS:    			
+    			// East - X-positive (top towards up (+Y), right towards north (-Z))
+    			x0 = xu = xv = to[0] / 16.0;
+    			y0 = yu = from[1] / 16.0; yv = to[1] / 16.0;
+    			z0 = zv = to[2] / 16.0; zu = from[2] / 16.0;
+    			umin = 1 - z0; umax = 1 - zu;
+    			vmin = y0; vmax = yv;
+    			break;    		
+    		default:
+    			Log.severe("Invalid side: " + face);
+    			return;
+    	}
+    	// If uv provided, use it to override
+    	if ((uv != null) && (uv.length == 4)) {
+    		umin = uv[0] / 16.0;
+    		vmin = 1 - (uv[3] / 16.0);	// MC V is inverted from our V
+    		umax = uv[2] / 16.0;
+    		vmax = 1 - (uv[1] / 16.0);	// MC V is inverted from our V
+    	}
+    	// Compute texture origin for u,y = 0,0, based on coordinates
+    	//   x0,y0,z0 = u=umin,v=vmin; xu,yu,zu = u=umax,v=vmin; xv,yv,zv = u=umin,v=vmax 
+    	// Compute U vector (based on proportion of umax-umin versus U offset
+    	double uvectx = (xu - x0) / (umax - umin);
+    	double uvecty = (yu - y0) / (umax - umin);
+    	double uvectz = (zu - z0) / (umax - umin);
+    	// Compute V vector (based on proportion of vmax-vmin versus V offset
+    	double vvectx = (xv - x0) / (vmax - vmin);
+    	double vvecty = (yv - y0) / (vmax - vmin);
+    	double vvectz = (zv - z0) / (vmax - vmin);
+    	// Compute origin based on U vector and umin and V vector and vmin vs x0,y0,z0
+    	double ovectx = x0 - (uvectx * umin) - (vvectx * vmin);
+    	double ovecty = y0 - (uvecty * umin) - (vvecty * vmin);
+    	double ovectz = z0 - (uvectz * umin) - (vvectz * vmin);
+    	
+    	update(ovectx, ovecty, ovectz, uvectx + ovectx, uvecty + ovecty, uvectz + ovectz, vvectx + ovectx, vvecty + ovecty, vvectz + ovectz,
+    		umin, umax, vmin, vmax, SideVisible.TOP, textureid, vmin, vmax);
     }
 }

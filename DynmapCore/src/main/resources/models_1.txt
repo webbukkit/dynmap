@@ -946,66 +946,38 @@ patchrotate:id=anvil,data=1,rot=180
 # Daylight Sensor
 boxblock:id=daylight_detector,ymax=0.375
 
-# (149) Redstone Comparator (inactive)
-# (150) Redstone Comparator (active)
-block:id=comparator,data=0,data=1,data=2,data=3,scale=16
-layer:0,1
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-layer:2,3
-----------------
-----------------
-----------------
-----------------
----**-----------
----**-----------
-----------------
-------------**--
-------------**--
-----------------
----**-----------
----**-----------
-----------------
-----------------
-----------------
-----------------
-layer:4,5,6
-----------------
-----------------
-----------------
-----------------
----**-----------
----**-----------
-----------------
-----------------
-----------------
-----------------
----**-----------
----**-----------
-----------------
-----------------
-----------------
-----------------
-block:id=comparator,data=4,data=5,data=6,data=7,scale=16
-rotate:id=comparator,data=0,rot=90
-block:id=comparator,,data=8,data=9,data=10,data=11,scale=16
-rotate:id=comparator,data=0,rot=180
-block:id=comparator,data=12,data=13,data=14,data=15,scale=16
-rotate:id=comparator,data=0,rot=270
+# Comparator (compare mode, off) - slab, comparator, unlit, lit, comparator_on
+modellist:id=comparator,data=5,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=4/2/11:6/7/13:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=10/2/11:12/7/13:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=7/2/2:9/4/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/8:s/2/7/6/9/8:w/2/7/6/9/8:e/2/7/6/9/8
+patchblock:id=comparator,data=1
+patchrotate:id=comparator,data=5,rot=180
+patchblock:id=comparator,data=9
+patchrotate:id=comparator,data=5,rot=90
+patchblock:id=comparator,data=13
+patchrotate:id=comparator,data=5,rot=270
+# Comparator (compare mode, on) - slab, comparator, unlit, lit, comparator_on
+modellist:id=comparator,data=4,box=0/0/0:16/2/16:d/0/0/0/16/16:u/4/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/14/16/16:e/0/14/16/16,box=4/7/11:6/7/13:u/3/7/6/9/8,box=4/2/10:6/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=3/2/11:7/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=10/7/11:12/7/13:u/3/7/6/9/8,box=10/1/10:12/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=9/2/11:13/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=7/2/2:9/4/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/8:s/2/7/6/9/8:w/2/7/6/9/8:e/2/7/6/9/8
+patchblock:id=comparator,data=0
+patchrotate:id=comparator,data=4,rot=180
+patchblock:id=comparator,data=8
+patchrotate:id=comparator,data=4,rot=90
+patchblock:id=comparator,data=12
+patchrotate:id=comparator,data=4,rot=270
+# Comparator (subtract mode, off) - slab, comparator, unlit, lit, comparator_on
+modellist:id=comparator,data=7,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:e/0/0/14/16/16:w/0/0/14/16/16,box=4/2/11:6/7/13:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=10/2/11:12/7/13:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=7/5/2:9/5/4:u/3/7/6/9/8,box=7/2/1:9/6/5:w/3/6/5/10/9:e/3/6/5/10/9,box=6/2/2:10/6/4:n/3/6/5/10/9:s/3/6/5/10/9
+patchblock:id=comparator,data=3
+patchrotate:id=comparator,data=7,rot=180
+patchblock:id=comparator,data=11
+patchrotate:id=comparator,data=7,rot=90
+patchblock:id=comparator,data=15
+patchrotate:id=comparator,data=7,rot=270
+# Comparator (subtract mode, on) - slab, comparator, unlit, lit, comparator_on
+modellist:id=comparator,data=6,box=0/0/0:16/2/16:d/0/0/0/16/16:u/4/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=4/7/11:6/7/13:u/3/7/6/9/8,box=4/2/10:6/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=3/2/11:7/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=10/7/11:12/7/13:u/3/7/6/9/8,box=10/2/10:12/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=9/2/11:13/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=7/5/2:9/5/4:u/3/7/6/9/8,box=7/2/1:9/6/5:w/3/6/5/10/9:e/3/6/5/10/9,box=6/2/2:10/6/4:n/3/6/5/10/9:s/3/6/5/10/9
+patchblock:id=comparator,data=2
+patchrotate:id=comparator,data=6,rot=180
+patchblock:id=comparator,data=10
+patchrotate:id=comparator,data=6,rot=90
+patchblock:id=comparator,data=14
+patchrotate:id=comparator,data=6,rot=270
 
 # (154)	Hopper
 block:id=hopper,scale=16

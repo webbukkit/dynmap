@@ -88,6 +88,7 @@ texture:id=dropper_front
 texture:id=dropper_front_vertical
 texture:id=hopper_inside
 texture:id=hopper_outside
+texture:id=smooth_stone
 texture:id=black_terracotta
 texture:id=blue_terracotta
 texture:id=brown_terracotta
@@ -1358,16 +1359,8 @@ block:id=light_weighted_pressure_plate,allfaces=0:gold_block,stdrot=true,transpa
 # Heavy weighted pressure plate
 block:id=heavy_weighted_pressure_plate,allfaces=0:iron_block,stdrot=true,transparency=TRANSPARENT
 
-# Redstone Comparator (active)
-block:id=comparator,data=0,data=2,top=6000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=comparator,data=4,data=6,top=5000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=comparator,data=8,data=10,top=4000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=comparator,data=12,data=14,top=0:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Redstone Comparator (inactive)
-block:id=comparator,data=1,data=3,top=6000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=comparator,data=5,data=7,top=5000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=comparator,data=9,data=11,top=4000:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-block:id=comparator,data=13,data=15,top=0:comparator,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Comparator (on)
+block:id=comparator,data=*,patch0=0:smooth_stone,patch1=0:comparator,patch2=0:redstone_torch_off,patch3=0:redstone_torch,patch4=0:comparator_on,transparency=TRANSPARENT
 
 # Daylight Sensor
 # Inverted Daylight Sensor
@@ -2132,7 +2125,6 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]texture:id=wither_rose
 [1.14-]texture:id=lily_of_the_valley
 [1.14-]texture:id=smooth_stone_slab_side
-[1.14-]texture:id=smooth_stone
 [1.14-]texture:id=bamboo_stage0
 [1.14-]texture:id=bamboo_stalk
 [1.14-]texture:id=scaffolding_top

@@ -47,15 +47,6 @@ public class PatchBlockModelImpl extends BlockModelImpl implements PatchBlockMod
     }
 
     @Override
-    @Deprecated
-    public String addPatch(double x0, double y0, double z0, double xu, double yu,
-            double zu, double xv, double yv, double zv, double umin,
-            double umax, double vmin, double vmax, double uplusvmax,
-            SideVisible sidevis) {
-        return addPatch(x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vmin, vmax, ((uplusvmax - umax) < vmax) ? uplusvmax - umax : vmax, sidevis);
-    }
-
-    @Override
     public String addPatch(double x0, double y0, double z0, double xu, double yu,
             double zu, double xv, double yv, double zv, SideVisible sidevis) {
         return addPatch(x0, y0, z0, xu, yu, zu, xv, yv, zv, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, sidevis);
