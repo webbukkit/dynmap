@@ -1082,7 +1082,6 @@ public class HDBlockModels {
 								PatchDefinition patch = pdf.getModelFace(bl.from, bl.to, side.side, side.uv, side.textureid);
 								if (patch != null) {
 									pd.add(patch);
-									Log.info("patch=" + patch);
 								}
 							}
                         }
