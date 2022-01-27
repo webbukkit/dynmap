@@ -124,13 +124,14 @@ public class MySQLMapStorage extends MapStorage {
             try {
                 c = getConnection();
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT HashCode,LastUpdate,Format,Image FROM " + tableTiles + " WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
+                ResultSet rs = stmt.executeQuery("SELECT HashCode,LastUpdate,Format,Image,NewImage FROM " + tableTiles + " WHERE MapID=" + mapkey + " AND x=" + x + " AND y=" + y + " AND zoom=" + zoom + ";");
                 if (rs.next()) {
                     rslt = new TileRead();
                     rslt.hashCode = rs.getLong("HashCode");
                     rslt.lastModified = rs.getLong("LastUpdate");
                     rslt.format = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
-                    byte[] img = rs.getBytes("Image");
+                    byte[] img = rs.getBytes("NewImage");
+                    if (img == null) img = rs.getBytes("Image");
                     rslt.image = new BufferInputStream(img);
                 }
                 rs.close();
@@ -164,7 +165,7 @@ public class MySQLMapStorage extends MapStorage {
                     stmt.setInt(4, zoom);
                 }
                 else if (exists) {
-                    stmt = c.prepareStatement("UPDATE " + tableTiles + " SET HashCode=?, LastUpdate=?, Format=?, Image=? WHERE MapID=? AND x=? and y=? AND zoom=?;");
+                    stmt = c.prepareStatement("UPDATE " + tableTiles + " SET HashCode=?, LastUpdate=?, Format=?, NewImage=?, Image=NULL WHERE MapID=? AND x=? and y=? AND zoom=?;");
                     stmt.setLong(1, hash);
                     stmt.setLong(2, timestamp);
                     stmt.setInt(3, map.getImageFormat().getEncoding().ordinal());
@@ -175,7 +176,7 @@ public class MySQLMapStorage extends MapStorage {
                     stmt.setInt(8, zoom);
                 }
                 else {
-                    stmt = c.prepareStatement("INSERT INTO " + tableTiles + " (MapID,x,y,zoom,HashCode,LastUpdate,Format,Image) VALUES (?,?,?,?,?,?,?,?);");
+                    stmt = c.prepareStatement("INSERT INTO " + tableTiles + " (MapID,x,y,zoom,HashCode,LastUpdate,Format,NewImage,Image) VALUES (?,?,?,?,?,?,?,?,NULL);");
                     stmt.setInt(1, mapkey);
                     stmt.setInt(2, x);
                     stmt.setInt(3, y);
@@ -471,14 +472,14 @@ public class MySQLMapStorage extends MapStorage {
             	Log.info("Initializing database schema");
                 c = getConnection();
                 doUpdate(c, "CREATE TABLE " + tableMaps + " (ID INTEGER PRIMARY KEY AUTO_INCREMENT, WorldID VARCHAR(64) NOT NULL, MapID VARCHAR(64) NOT NULL, Variant VARCHAR(16) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0)");
-                doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image MEDIUMBLOB, PRIMARY KEY(MapID, x, y, zoom))");
+                doUpdate(c, "CREATE TABLE " + tableTiles + " (MapID INT NOT NULL, x INT NOT NULL, y INT NOT NULL, zoom INT NOT NULL, HashCode BIGINT NOT NULL, LastUpdate BIGINT NOT NULL, Format INT NOT NULL, Image MEDIUMBLOB, NewImage MEDIUMBLOB, PRIMARY KEY(MapID, x, y, zoom))");
                 doUpdate(c, "CREATE TABLE " + tableFaces + " (PlayerName VARCHAR(64) NOT NULL, TypeID INT NOT NULL, Image MEDIUMBLOB, PRIMARY KEY(PlayerName, TypeID))");
                 doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image MEDIUMBLOB)");
                 doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
                 doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (4)");
-                version = 4;	// Initial - we have all the following updates already
+                version = 5;	// Initial - we have all the following updates already
             } catch (SQLException x) {
             	logSQLException("Error creating tables", x);
                 err = true;
@@ -527,11 +528,27 @@ public class MySQLMapStorage extends MapStorage {
             try {
             	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
-                doUpdate(c, "ALTER TABLE " + tableTiles + " CHANGE COLUMN Image Image MEDIUMBLOB;");
+                //doUpdate(c, "ALTER TABLE " + tableTiles + " CHANGE COLUMN Image Image MEDIUMBLOB;");
                 doUpdate(c, "ALTER TABLE " + tableFaces + " CHANGE COLUMN Image Image MEDIUMBLOB;");
                 doUpdate(c, "ALTER TABLE " + tableMarkerIcons + " CHANGE COLUMN Image Image MEDIUMBLOB;");
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=4 WHERE level = 3;");
                 version = 4;
+            } catch (SQLException x) {
+            	logSQLException("Error updating tables to version=3", x);
+                err = true;
+                return false;
+            } finally {
+                releaseConnection(c, err);
+                c = null;
+            }
+        }
+        if (version == 4) {
+            try {
+            	Log.info("Updating database schema from version = " + version);
+                c = getConnection();
+                doUpdate(c, "ALTER TABLE " + tableTiles + " ADD COLUMN NewImage MEDIUMBLOB, ALGORITHM=INPLACE, LOCK=NONE");
+                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=5 WHERE level = 4;");
+                version = 5;
             } catch (SQLException x) {
             	logSQLException("Error updating tables to version=3", x);
                 err = true;
