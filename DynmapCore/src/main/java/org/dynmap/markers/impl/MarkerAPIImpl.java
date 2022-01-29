@@ -108,7 +108,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             this.z = m.getZ();
             this.set = m.getMarkerSet().getMarkerSetID();
             this.icon = m.getMarkerIcon().getMarkerIconID();
-            this.markup = m.isLabelMarkup();
+            this.markup = true;	// We are markup format all the time now
             this.desc = Client.sanitizeHTML(m.getDescription());
             this.dim = m.getMarkerIcon().getMarkerIconSize().getSize();
             this.minzoom = m.getMinZoom();
@@ -171,7 +171,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             desc = Client.sanitizeHTML(m.getDescription());
             this.minzoom = m.getMinZoom();
             this.maxzoom = m.getMaxZoom();
-            this.markup = m.isLabelMarkup();
+            this.markup = true;	// We are markup format all the time now
 
             this.set = m.getMarkerSet().getMarkerSetID();
             if(deleted) 
@@ -207,10 +207,12 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public String desc;
         public int minzoom;
         public int maxzoom;
+        public boolean markup;
         
         public PolyLineMarkerUpdated(PolyLineMarker m, boolean deleted) {
             this.id = m.getMarkerID();
             this.label = Client.sanitizeHTML(m.getLabel());
+            this.markup = true;	// We are markup format all the time now
             int cnt = m.getCornerCount();
             x = new double[cnt];
             y = new double[cnt];
@@ -265,6 +267,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         public String desc;
         public int minzoom;
         public int maxzoom;
+        public boolean markup;
         
         public CircleMarkerUpdated(CircleMarker m, boolean deleted) {
             this.id = m.getMarkerID();
@@ -274,6 +277,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             this.z = m.getCenterZ();
             this.xr = m.getRadiusX();
             this.zr = m.getRadiusZ();
+            this.markup = true;	// We are markup format all the time now
             color = String.format("#%06X", m.getLineColor());
             weight = m.getLineWeight();
             opacity = m.getLineOpacity();
