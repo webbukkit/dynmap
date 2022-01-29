@@ -6,16 +6,22 @@ import org.dynmap.modsupport.ModelBlockModel.ModelBlock;
 //   All coordinates are 0-16 range per block, and 0-16 range for UV
 
 public interface ModelBlockModel extends BlockModel {
-	
+	public enum SideRotation {
+		DEG0,	// zero degrees (default)
+		DEG90,	// 90 degrees
+		DEG180,	// 180 degrees
+		DEG270	// 270 degrees
+	};
 	public interface ModelBlock {
 	    /**
 	     * Factory method for adding a side to a model block started using addModelBlock.
 	     * 
 	     * @param face - which face (determines use of xyz-min vs xyz-max
 	     * @param uv - bounds on UV (umin, vmin, umax, vmax): if null, default based on face range
+	     * @param rot - rotation of the block side (default id DEG0)
 	     * @param textureid - texture ID
 	     */
-		public void addBlockSide(BlockSide side, double[] uv, int textureid);
+		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid);
 	}
     /**
      * Factory method to build a block of patches relative to a typical element in a MC model file.

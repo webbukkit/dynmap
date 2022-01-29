@@ -17,28 +17,41 @@ public class Vector3D {
     
     public final void setFromLocation(DynmapLocation l) { x = l.x; y = l.y; z = l.z; }
 
-    public final void set(Vector3D v) {
+    public final Vector3D set(Vector3D v) {
         x = v.x; y = v.y; z = v.z;
+    	return this;
     }
     
-    public final void subtract(Vector3D v) {
+    public final Vector3D subtract(Vector3D v) {
         x = x - v.x; y = y - v.y; z = z - v.z;
+    	return this;
     }
 
-    public final void add(Vector3D v) {
+    public final Vector3D add(Vector3D v) {
         x = x + v.x; y = y + v.y; z = z + v.z;
+    	return this;
     }
 
     public final double innerProduct(Vector3D v) {
         return (v.x * x) + (v.y * y) + (v.z * z);
     }
     
+    public final Vector3D scale(double m) {
+    	x = x * m; y = y * m; z = z * m;
+    	return this;
+    }
+    
+    public final double length() {
+    	return Math.sqrt(x*x + y*y + z*z);
+    }
+    
     /* this = this X v */
-    public final void crossProduct(Vector3D v) {
+    public final Vector3D crossProduct(Vector3D v) {
         double newx = (y*v.z) - (z*v.y);
         double newy = (z*v.x) - (x*v.z);
         double newz = (x*v.y) - (y*v.x); 
         x = newx; y = newy; z = newz;
+    	return this;
     }
     
     public String toString() {

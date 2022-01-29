@@ -223,8 +223,8 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
         return id;
     }
     
-    public String getModelFacePatchID(double[] from, double[] to, BlockSide face, double[] uv, int textureid) {
-        PatchDefinition pd = pdf.getModelFace(from, to, face, uv, textureid);
+    public String getModelFacePatchID(double[] from, double[] to, BlockSide face, double[] uv, ModelBlockModel.SideRotation rot, int textureid) {
+        PatchDefinition pd = pdf.getModelFace(from, to, face, uv, rot, textureid);
         if (pd == null)
             return null;    // Invalid patch
         for (int i = 0; i < blkPatch.size(); i++) {

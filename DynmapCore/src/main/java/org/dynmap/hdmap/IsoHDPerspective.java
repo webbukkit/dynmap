@@ -408,6 +408,7 @@ public class IsoHDPerspective implements HDPerspective {
             /* If parallel to surface, no intercept */
             switch(pd.sidevis) {
                 case TOP:
+                case TOPFLIP:
                     if (det < 0.000001) {
                         return hitcnt;
                     }
@@ -454,6 +455,9 @@ public class IsoHDPerspective implements HDPerspective {
                 patch_id[hitcnt] = pd.textureindex;
                 if(det > 0) {
                     patch_step[hitcnt] = pd.step.opposite();
+                    if (pd.sidevis == SideVisible.TOPFLIP) {
+                        patch_u[hitcnt] = 1 - u;
+                    }
                 }
                 else {
                     if (pd.sidevis == SideVisible.FLIP) {

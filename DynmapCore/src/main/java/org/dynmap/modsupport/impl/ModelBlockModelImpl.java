@@ -6,11 +6,13 @@ import java.util.HashMap;
 
 import org.dynmap.modsupport.BlockSide;
 import org.dynmap.modsupport.ModelBlockModel;
+import org.dynmap.modsupport.ModelBlockModel.SideRotation;
 
 public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockModel {
 
 	private static class ModelSide {
 		private double[] uv;
+		private SideRotation rot;
 		int textureid;
 	};
 	private static class ModelBlockImpl implements ModelBlock {
@@ -19,11 +21,14 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
 		private double[] to = { 16, 16, 16 }; 
 		private double xrot = 0, yrot = 0, zrot = 0;
 		@Override
-		public void addBlockSide(BlockSide side, double[] uv, int textureid) {
+		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid) {
 			ModelSide ms = new ModelSide();
 			ms.textureid = textureid;
 			if (uv != null) {
 				ms.uv = Arrays.copyOf(uv, uv.length);
+			}
+			if (rot != null) {
+				ms.rot = rot;
 			}
 			if (side == BlockSide.FACE_0 || side == BlockSide.Y_MINUS) side = BlockSide.BOTTOM;
 			if (side == BlockSide.FACE_1 || side == BlockSide.Y_PLUS) side = BlockSide.TOP;
@@ -89,11 +94,26 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
         			String side = fromBlockSide.get(bs);
         			ModelSide mside = mb.sides.get(bs);
         			if (mside != null) {
+        				String rval = side;
+        				switch (mside.rot) {
+	        				case DEG0:
+	        				default:
+	        					break;
+	        				case DEG90:
+	        					rval += "90";
+	        					break;
+	        				case DEG180:
+	        					rval += "180";
+	        					break;
+	        				case DEG270:
+	        					rval += "270";
+	        					break;
+        				}
         				if (mside.uv != null) {
-        					line += String.format(":%s/%d/%f/%f/%f/%f", side, mside.textureid, mside.uv[0], mside.uv[1], mside.uv[2], mside.uv[3]);
+        					line += String.format(":%s/%d/%f/%f/%f/%f", rval, mside.textureid, mside.uv[0], mside.uv[1], mside.uv[2], mside.uv[3]);
         				}
         				else {
-        					line += String.format(":%s/%d", side, mside.textureid);  					
+        					line += String.format(":%s/%d", rval, mside.textureid);  					
         				}
         			}
         		}

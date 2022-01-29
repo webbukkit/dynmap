@@ -955,7 +955,7 @@ patchrotate:id=comparator,data=5,rot=90
 patchblock:id=comparator,data=13
 patchrotate:id=comparator,data=5,rot=270
 # Comparator (compare mode, on) - slab, comparator, unlit, lit, comparator_on
-modellist:id=comparator,data=4,box=0/0/0:16/2/16:d/0/0/0/16/16:u/4/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/14/16/16:e/0/14/16/16,box=4/7/11:6/7/13:u/3/7/6/9/8,box=4/2/10:6/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=3/2/11:7/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=10/7/11:12/7/13:u/3/7/6/9/8,box=10/1/10:12/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=9/2/11:13/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=7/2/2:9/4/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/8:s/2/7/6/9/8:w/2/7/6/9/8:e/2/7/6/9/8
+modellist:id=comparator,data=4,box=0/0/0:16/2/16:d/0/0/0/16/16:u/4/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=4/7/11:6/7/13:u/3/7/6/9/8,box=4/2/10:6/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=3/2/11:7/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=10/7/11:12/7/13:u/3/7/6/9/8,box=10/1/10:12/8/14:w/3/6/5/10/11:e/3/6/5/10/11,box=9/2/11:13/8/13:n/3/6/5/10/11:s/3/6/5/10/11,box=7/2/2:9/4/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/8:s/2/7/6/9/8:w/2/7/6/9/8:e/2/7/6/9/8
 patchblock:id=comparator,data=0
 patchrotate:id=comparator,data=4,rot=180
 patchblock:id=comparator,data=8
@@ -1411,21 +1411,24 @@ patchblock:id=bubble_column
 [1.14-]patchrotate:id=stonecutter,data=0,roty=270
 [1.14-]patchblock:id=stonecutter,data=3
 [1.14-]patchrotate:id=stonecutter,data=0,roty=90
-# Campfire
-[1.14-]boxlist:id=campfire,data=0,data=1,data=2,data=3,box=0.0625:0.3125:0:0.25:0:1:0/0/1/0/0/0,box=0:1:0.1875:0.4375:0.6875:0.9375:0/1/1/1/0/0,box=0.6875:0.9375:0:0.25:0:1:0/0/0/0/1/0,box=0:1:0.1875:0.4375:0.0625:0.3125:0/1/1/1/0/0,box=0.3125:0.6875:0:0.0625:0:1:0/1/0/0/0/0,box=0.49:0.51:0:1:0:1:-1/-1/2/2/2/2,box=0:1:0:1:0.49:0.51:-1/-1/2/2/2/2
-[1.14-]boxlist:id=campfire,data=4,data=5,data=6,data=7,box=0.0625:0.3125:0:0.25:0:1:0/0/0/0/0/0,box=0:1:0.1875:0.4375:0.6875:0.9375:0/0/0/0/0/0,box=0.6875:0.9375:0:0.25:0:1:0/0/0/0/0/0,box=0:1:0.1875:0.4375:0.0625:0.3125:0/0/0/0/0/0,box=0.3125:0.6875:0:0.0625:0:1:0/0/0/0/0/0
-[1.14-]patchblock:id=campfire,data=8,data=9,data=10,data=11
-[1.14-]patchrotate:id=campfire,data=0,roty=180
-[1.14-]patchblock:id=campfire,data=12,data=13,data=14,data=15
-[1.14-]patchrotate:id=campfire,data=4,roty=180
+# Campfire (lit) (unlit log, lit log, fire)
+[1.14-]modellist:id=campfire,data=8,data=9,data=10,data=11,box=1/0/0:5/4/16:n/0/0/4/4/8:e/1/0/1/16/5:s/0/0/4/4/8:w/0/16/0/0/4:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/11:16/7/15:n/1/16/0/0/4:e/0/0/4/4/8:s/1/0/0/16/4:w/0/0/4/4/8:u180/1/0/0/16/4:d/1/0/4/16/8,box=11/0/0:15/4/16:n/0/0/4/4/8:e/0/0/0/16/4:s/0/0/4/4/8:w/1/16/1/0/5:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/1:16/7/5:n/1/0/0/16/4:e/0/0/4/4/8:s/1/16/0/0/4:w/0/0/4/4/8:u180/0/0/0/16/4:d/1/0/4/16/8,box=5/0/0:11/1/16:n/0/0/15/6/16:s/0/10/15/16/16:u90/1/0/8/16/14:d90/0/0/8/16/14,box=0.8/1/8:15.2/17/8/0/45/0:n/2/0/0/16/16:s/2/0/0/16/16,box=8/1/0.8:8/17/15.2/0/45/0:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]patchblock:id=campfire,data=0,data=1,data=2,data=3
+[1.14-]patchrotate:id=campfire,data=8,roty=180
 [1.14-]patchblock:id=campfire,data=16,data=17,data=18,data=19
-[1.14-]patchrotate:id=campfire,data=0,roty=270
-[1.14-]patchblock:id=campfire,data=20,data=21,data=22,data=23
-[1.14-]patchrotate:id=campfire,data=4,roty=270
+[1.14-]patchrotate:id=campfire,data=8,roty=270
 [1.14-]patchblock:id=campfire,data=24,data=25,data=26,data=27
-[1.14-]patchrotate:id=campfire,data=0,roty=90
+[1.14-]patchrotate:id=campfire,data=8,roty=90
+# Campfire (unlit)  (unlit log, lit log, fire)
+[1-14-]modellist:id=campfire,data=12,data=13,data=14,data=15,box=1/0/0:5/4/16:n/0/0/4/4/8:e/0/0/1/16/5:s/0/0/4/4/8:w/0/16/0/0/4:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/11:16/7/15:n/0/16/0/0/4:e/0/0/4/4/8:s/0/0/0/16/4:w/0/0/4/4/8:u180/0/0/0/16/4:d/0/0/0/16/4,box=11/0/0:15/4/16:n/0/0/4/4/8:e/0/0/0/16/4:s/0/0/4/4/8:w/0/16/1/0/5:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/1:16/7/5:n/0/0/0/16/4:e/0/0/4/4/8:s/0/16/0/0/4:w/0/0/4/4/8:u180/0/0/0/16/4:d/0/0/0/16/4,box=5/0/0:11/1/16:n/0/0/15/6/16:s/0/10/15/16/16:u90/0/0/8/16/14:d90/0/0/8/16/14
+[1.14-]patchblock:id=campfire,data=4,data=5,data=6,data=7
+[1.14-]patchrotate:id=campfire,data=12,roty=180
+[1.14-]patchblock:id=campfire,data=20,data=21,data=22,data=23
+[1.14-]patchrotate:id=campfire,data=12,roty=270
 [1.14-]patchblock:id=campfire,data=28,data=29,data=30,data=31
-[1.14-]patchrotate:id=campfire,data=4,roty=90
+[1.14-]patchrotate:id=campfire,data=12,roty=90
+
+
 # Bell (1.14.x)
 [1.14-1.14.4]boxlist:id=bell,data=2,box=0.125:0.875:0.8125:0.9375:0.4375:0.5625:0/0/0/0/0/0,box=0.875:1:0:1:0.375:0.625:1/1/1/1/1/1,box=0:0.125:0:1:0.375:0.625:1/1/1/1/1/1,box=0.3125:0.6875:0.375:0.8175:0.3125:0.6875:2/3/4/4/4/4,box=0.25:0.75:0.25:0.375:0.25:0.75:2/3/4/4/4/4
 [1.14-1.14.4]patchblock:id=bell,data=3
@@ -1444,7 +1447,7 @@ patchblock:id=bubble_column
 [1.14-1.14.4]boxlist:id=bell,data=10,box=0.1875:1:0.8125:0.9375:0.4375:0.5625:0/0/0/0/0/0,box=0.3125:0.6875:0.375:0.8175:0.3125:0.6875:2/3/4/4/4/4,box=0.25:0.75:0.25:0.375:0.25:0.75:2/3/4/4/4/4
 [1.14-1.14.4]patchblock:id=bell,data=11
 [1.14-1.14.4]patchrotate:id=bell,data=10,roty=180
-[1.14-1.14.4]patchblock:id=bell,data=8
+[1.14-1.14.4]patchblock:id=bell,data=8d
 [1.14-1.14.4]patchrotate:id=bell,data=10,roty=270
 [1.14-1.14.4]patchblock:id=bell,data=9
 [1.14-1.14.4]patchrotate:id=bell,data=10,roty=90

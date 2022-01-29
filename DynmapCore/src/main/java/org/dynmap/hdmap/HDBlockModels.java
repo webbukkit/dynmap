@@ -23,6 +23,7 @@ import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.debug.Debug;
 import org.dynmap.modsupport.BlockSide;
+import org.dynmap.modsupport.ModelBlockModel;
 import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.RenderPatch;
@@ -326,6 +327,7 @@ public class HDBlockModels {
     	BlockSide side;
     	int textureid;
     	double[] uv;
+    	ModelBlockModel.SideRotation rot;
     };
     
     private static class ModelBox {
@@ -1054,12 +1056,31 @@ public class HDBlockModels {
                         		String v = prms[faceidx];	
                         		String[] flds = v.split("/");
                         		ModelBoxSide side = new ModelBoxSide();
+                        		side.rot = null;
+                        		if ((flds.length != 2) && (flds.length != 6)) {
+                                	Log.severe("Invalid modellist face '" + v + "' at line " + rdr.getLineNumber());                        			                        				
+                                	continue;
+                        		}
                         		if (flds.length > 0) {
                         			String face = flds[0];
-                        			side.side = toBlockSide.get(face);
+                        			side.side = toBlockSide.get(face.substring(0, 1));
                         			if (side.side == null) {
-                                    	Log.severe("Invalid modellist side value (" + face + ") at line " + rdr.getLineNumber());                        			                        				
+                                    	Log.severe("Invalid modellist side value (" + face + ") in '" + v + "' at line " + rdr.getLineNumber());                        			                        				
                                     	continue;
+                        			}
+                        			if (flds[0].length() > 1) {
+                        				String r = flds[0].substring(1);
+                        				switch (r) {
+	                        				case "90":
+	                        					side.rot = ModelBlockModel.SideRotation.DEG90;
+	                        					break;
+	                        				case "180":
+	                        					side.rot = ModelBlockModel.SideRotation.DEG180;
+	                        					break;
+	                        				case "270":
+	                        					side.rot = ModelBlockModel.SideRotation.DEG270;
+	                        					break;
+                        				}
                         			}
                         		}
                         		if (flds.length > 1) {
@@ -1085,13 +1106,16 @@ public class HDBlockModels {
 						for (ModelBox bl : boxes) {
 							// Loop through faces
 							for (ModelBoxSide side : bl.sides) {
-								PatchDefinition patch = pdf.getModelFace(bl.from, bl.to, side.side, side.uv, side.textureid);
+								PatchDefinition patch = pdf.getModelFace(bl.from, bl.to, side.side, side.uv, side.rot, side.textureid);
 								if (patch != null) {
 									// If any rotations, apply them here
 									if ((bl.xrot != 0) || (bl.yrot != 0) || (bl.zrot != 0)) {
 										patch = pdf.getPatch(patch, bl.xrot, bl.yrot, bl.zrot, patch.textureindex);
 									}
 									pd.add(patch);
+								}
+								else {
+	                            	Log.severe(String.format("Invalid modellist patch for box %f/%f/%f:%f/%f/%f side %s at line %d", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, rdr.getLineNumber()));
 								}
 							}
                         }
