@@ -699,7 +699,7 @@ public class DynmapCore implements DynmapCommonAPI {
         	for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); i++) {
         		DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
         		if (bs != null) {
-        			Log.info(String.format("%d: %s", i, bs.toString()));
+        			Log.info(String.format("%d: %s (index %d)", i, bs.toString(), bs.stateIndex));
         		}
         	}
         	Log.info("----------------");

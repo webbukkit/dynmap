@@ -1034,22 +1034,8 @@ block:id=jack_o_lantern,data=2,face4=0:jack_o_lantern,face2=0:pumpkin_side,face3
 block:id=jack_o_lantern,data=3,face5=0:jack_o_lantern,face2=0:pumpkin_side,face3=0:pumpkin_side,face4=0:pumpkin_side,topbottom=6000:pumpkin_top,stdrot=true
 # Cake Block
 block:id=cake,allsides=0:cake_side,top=0:cake_top,bottom=0:cake_bottom,stdrot=true,transparency=TRANSPARENT
-# Repeater (on) facing east
-block:id=repeater,data=0,data=2,data=16,data=18,data=32,data=34,data=48,data=50,top=6000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (off) facing east
-block:id=repeater,data=1,data=3,data=17,data=19,data=33,data=35,data=49,data=51,top=6000:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (on) facing south
-block:id=repeater,data=4,data=6,data=20,data=22,data=36,data=38,data=52,data=54,,top=5000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (off) facing south
-block:id=repeater,data=5,data=7,data=21,data=23,data=37,data=39,data=53,data=55,top=5000:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (on) facing west
-block:id=repeater,data=8,data=10,data=24,data=26,data=40,data=42,data=56,data=58,top=4000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (off) facing west
-block:id=repeater,data=9,data=11,data=25,data=27,data=41,data=43,data=57,data=59,top=4000:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (on) facing north
-block:id=repeater,data=12,data=14,data=28,data=30,data=44,data=46,data=60,data=62,top=0:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
-# Repeater (off) facing north
-block:id=repeater,data=13,data=15,data=29,data=31,data=45,data=47,data=61,data=63,top=0:repeater,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater
+block:id=repeater,data=*,patch0=0:smooth_stone,patch1=0:repeater,patch2=0:redstone_torch_off,patch3=0:redstone_torch,patch4=0:bedrock,patch5=0:repeater_on,transparency=TRANSPARENT
 # Stained Glass (95)
 block:id=white_stained_glass,allfaces=12000:white_stained_glass,stdrot=true,transparency=TRANSPARENT
 block:id=orange_stained_glass,allfaces=12000:orange_stained_glass,stdrot=true,transparency=TRANSPARENT

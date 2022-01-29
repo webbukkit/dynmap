@@ -570,55 +570,137 @@ patchblock:id=lever,data=8
 patchrotate:id=lever,data=14,rotx=180
 # Cactus
 patchblock:id=cactus,patch0=VertX00625,patch1=VertX00625@90,patch2=VertX00625@180,patch3=VertX00625@270,patch4=HorizY100ZTop,patch5=HorizY100ZTop@180/0/0
-# Redstone repeater (on) facing east
-# Redstone repeater (off) facing east
-block:id=repeater,data=0,data=1,data=2,data=3,data=16,data=17,data=18,data=19,data=32,data=33,data=34,data=35,data=48,data=49,data=50,data=51,scale=16
-layer:0,1
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-layer:2,3,4,5,6,7,8,9
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
---------**--**--
---------**--**--
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-# Redstone repeater (on) facing south
-# Redstone repeater (off) facing south
-block:id=repeater,data=4,data=5,data=6,data=7,data=20,data=21,data=22,data=23,data=36,data=37,data=38,data=39,data=52,data=53,data=54,data=55,scale=16
-rotate:id=repeater,data=0,rot=90
-# Redstone repeater (on) facing west
-# Redstone repeater (off) facing west
-block:id=repeater,data=8,data=9,data=10,data=11,data=24,data=25,data=26,data=27,data=40,data=41,data=42,data=43,data=56,data=57,data=58,data=59,scale=16
-rotate:id=repeater,data=0,rot=180
-# Redstone repeater (on) facing north
-# Redstone repeater (off) facing north
-block:id=repeater,data=12,data=13,data=14,data=15,data=28,data=29,data=30,data=31,data=44,data=45,data=46,data=47,data=60,data=61,data=62,data=63,scale=16
-rotate:id=repeater,data=0,rot=270
+# Redstone repeater (smooth_stone, repeater, redstone_torch_off, redstone_torch, bedrock, repeater_on)
+#   1 tick (unlocked, unpowered)
+modellist:id=repeater,data=7,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/2/6:9/7/8:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=3
+patchrotate:id=repeater,data=7,roty=180
+patchblock:id=repeater,data=11
+patchrotate:id=repeater,data=7,roty=90
+patchblock:id=repeater,data=15
+patchrotate:id=repeater,data=7,roty=270
+#   1 tick (locked, unpowered)
+modellist:id=repeater,data=5,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/6:14/4/8:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=1
+patchrotate:id=repeater,data=5,roty=180
+patchblock:id=repeater,data=9
+patchrotate:id=repeater,data=5,roty=90
+patchblock:id=repeater,data=13
+patchrotate:id=repeater,data=5,roty=270
+#   1 tick (unlocked, powered)
+modellist:id=repeater,data=6,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/7/6:9/7/8:u/3/7/6/9/8,box=7/2/5:9/8/9:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/6:10/8/8:n/3/6/5/10/11:s/3/6/5/10/11,box=7/7/2:9/7/2:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=2
+patchrotate:id=repeater,data=6,roty=180
+patchblock:id=repeater,data=10
+patchrotate:id=repeater,data=6,roty=90
+patchblock:id=repeater,data=14
+patchrotate:id=repeater,data=6,roty=270
+#   1 tick (locked, powered)
+modellist:id=repeater,data=4,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/6:14/4/8:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/7/2:9/7/4:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=0
+patchrotate:id=repeater,data=4,roty=180
+patchblock:id=repeater,data=8
+patchrotate:id=repeater,data=4,roty=90
+patchblock:id=repeater,data=12
+patchrotate:id=repeater,data=4,roty=270
+#   2 tick (unlocked, unpowered)
+modellist:id=repeater,data=23,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/2/8:9/7/10:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=19
+patchrotate:id=repeater,data=23,roty=180
+patchblock:id=repeater,data=27
+patchrotate:id=repeater,data=23,roty=90
+patchblock:id=repeater,data=31
+patchrotate:id=repeater,data=23,roty=270
+#   2 tick (locked, unpowered)
+modellist:id=repeater,data=21,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/8:14/4/10:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=17
+patchrotate:id=repeater,data=21,roty=180
+patchblock:id=repeater,data=25
+patchrotate:id=repeater,data=21,roty=90
+patchblock:id=repeater,data=29
+patchrotate:id=repeater,data=21,roty=270
+#   2 tick (unlocked, powered)
+modellist:id=repeater,data=22,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/7/8:9/7/10:u/3/7/6/9/8,box=7/2/7:9/8/11:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/8:10/8/10:n/3/6/5/10/11:s/3/6/5/10/11,box=7/7/2:9/7/2:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=18
+patchrotate:id=repeater,data=22,roty=180
+patchblock:id=repeater,data=26
+patchrotate:id=repeater,data=22,roty=90
+patchblock:id=repeater,data=30
+patchrotate:id=repeater,data=22,roty=270
+#   2 tick (locked, powered)
+modellist:id=repeater,data=20,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/8:14/4/10:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/7/2:9/7/4:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=16
+patchrotate:id=repeater,data=20,roty=180
+patchblock:id=repeater,data=24
+patchrotate:id=repeater,data=20,roty=90
+patchblock:id=repeater,data=28
+patchrotate:id=repeater,data=20,roty=270
+#   3 tick (unlocked, unpowered)
+modellist:id=repeater,data=39,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/2/10:9/7/12:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=35
+patchrotate:id=repeater,data=39,roty=180
+patchblock:id=repeater,data=43
+patchrotate:id=repeater,data=39,roty=90
+patchblock:id=repeater,data=47
+patchrotate:id=repeater,data=39,roty=270
+#   3 tick (locked, unpowered)
+modellist:id=repeater,data=37,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/10:14/4/12:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=33
+patchrotate:id=repeater,data=37,roty=180
+patchblock:id=repeater,data=41
+patchrotate:id=repeater,data=37,roty=90
+patchblock:id=repeater,data=45
+patchrotate:id=repeater,data=37,roty=270
+#   3 tick (unlocked, powered)
+modellist:id=repeater,data=38,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/7/10:9/7/12:u/3/7/6/9/8,box=7/2/9:9/8/13:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/10:10/8/12:n/3/6/5/10/11:s/3/6/5/10/11,box=7/7/2:9/7/2:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=34
+patchrotate:id=repeater,data=38,roty=180
+patchblock:id=repeater,data=42
+patchrotate:id=repeater,data=38,roty=90
+patchblock:id=repeater,data=46
+patchrotate:id=repeater,data=38,roty=270
+#   3 tick (locked, powered)
+modellist:id=repeater,data=36,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/10:14/4/12:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/7/2:9/7/4:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=32
+patchrotate:id=repeater,data=36,roty=180
+patchblock:id=repeater,data=40
+patchrotate:id=repeater,data=36,roty=90
+patchblock:id=repeater,data=44
+patchrotate:id=repeater,data=36,roty=270
+#   4 tick (unlocked, unpowered)
+modellist:id=repeater,data=55,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/2/12:9/7/14:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=51
+patchrotate:id=repeater,data=55,roty=180
+patchblock:id=repeater,data=59
+patchrotate:id=repeater,data=55,roty=90
+patchblock:id=repeater,data=63
+patchrotate:id=repeater,data=55,roty=270
+#   4 tick (locked, unpowered)
+modellist:id=repeater,data=53,box=0/0/0:16/2/16:d/0/0/0/16/16:u/1/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/12:14/4/14:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/2/2:9/7/4:d/2/7/13/9/15:u/2/7/6/9/8:n/2/7/6/9/11:s/2/7/6/9/11:w/2/7/6/9/11:e/2/7/6/9/11
+patchblock:id=repeater,data=49
+patchrotate:id=repeater,data=53,roty=180
+patchblock:id=repeater,data=57
+patchrotate:id=repeater,data=53,roty=90
+patchblock:id=repeater,data=61
+patchrotate:id=repeater,data=53,roty=270
+#   4 tick (unlocked, powered)
+modellist:id=repeater,data=54,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=7/7/12:9/7/14:u/3/7/6/9/8,box=7/2/11:9/8/15:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/12:10/8/14:n/3/6/5/10/11:s/3/6/5/10/11,box=7/7/2:9/7/2:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=50
+patchrotate:id=repeater,data=54,roty=180
+patchblock:id=repeater,data=58
+patchrotate:id=repeater,data=54,roty=90
+patchblock:id=repeater,data=62
+patchrotate:id=repeater,data=54,roty=270
+#   4 tick (locked, powered)
+modellist:id=repeater,data=52,box=0/0/0:16/2/16:d/0/0/0/16/16:u/5/0/0/16/16:n/0/0/14/16/16:s/0/0/14/16/16:w/0/0/14/16/16:e/0/0/14/16/16,box=2/2/12:14/4/14:d90/4/7/2/9/14:u90/4/7/2/9/14:n/4/2/7/14/9:s/4/2/7/14/9:w/4/6/7/8/9:e/4/6/7/8/9,box=7/7/2:9/7/4:u/3/7/6/9/8,box=7/2/1:9/8/5:w/3/6/5/10/11:e/3/6/5/10/11,box=6/2/2:10/8/4:n/3/6/5/10/11:s/3/6/5/10/11
+patchblock:id=repeater,data=48
+patchrotate:id=repeater,data=52,roty=180
+patchblock:id=repeater,data=56
+patchrotate:id=repeater,data=52,roty=90
+patchblock:id=repeater,data=60
+patchrotate:id=repeater,data=52,roty=270
+
+
 # Sticky piston
 # Piston:
 boxlist:id=piston,id=sticky_piston,data=4,box=0:1:0:0.75:0:1:0/3/2/2/2/2,box=0.375:0.625:0.75:1.0:0.375:0.625:3/3/4/4/4/4
