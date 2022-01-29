@@ -185,7 +185,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				$(popup).addClass('AreaPopup').append(area.desc);
 			}
 			else {
-				$(popup).append(area.label);
+				$(popup).addClass('AreaPopup').append(area.label);
 			}
 			area.our_layer.bindPopup($(popup).html(), {});
 		}
@@ -215,7 +215,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				$(popup).addClass('LinePopup').append(line.desc);
 			}
 			else {
-				$(popup).append(line.label);
+				$(popup).addClass('LinePopup').append(line.label);
 			}
 			line.our_layer.bindPopup($(popup).html(), {});
 		}
@@ -247,7 +247,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 				$(popup).addClass('CirclePopup').append(circle.desc);
 			}
 			else {
-				$(popup).append(circle.label);
+				$(popup).addClass('CirclePopup').append(circle.label);
 			}
 			circle.our_layer.bindPopup($(popup).html(), {});
 		}
