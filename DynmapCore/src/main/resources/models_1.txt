@@ -2320,11 +2320,12 @@ patchblock:id=bubble_column
 [1.17-]patchblock:id=%small_dripleaf,data=12,data=13,patch0=patch922,patch1=patch923,patch2=patch924,patch3=patch925,patch4=patch926,patch5=patch927,patch6=patch928,patch7=patch929,patch8=patch930,patch9=patch931,patch10=patch932,patch11=patch933,patch12=patch934,patch13=patch935,patch14=patch936,patch15=patch937,patch16=patch938,patch17=patch939,patch18=patch914,patch19=patch915,patch20=patch916,patch21=patch917
 [1.17-]patchblock:id=%small_dripleaf,data=14,data=15,patch0=patch918,patch1=patch919,patch2=patch920,patch3=patch921
 
-modellist:id=magenta_glazed_terracotta,data=1,box=0/0/0:16/16/16:d/0:u/0:n90/0:s270/0:w/0:e180/0
-patchblock:id=magenta_glazed_terracotta,data=0
+
+modellist:id=white_glazed_terracotta,id=orange_glazed_terracotta,id=magenta_glazed_terracotta,id=light_blue_glazed_terracotta,id=yellow_glazed_terracotta,id=lime_glazed_terracotta,id=pink_glazed_terracotta,id=gray_glazed_terracotta,id=light_gray_glazed_terracotta,id=cyan_glazed_terracotta,id=purple_glazed_terracotta,id=blue_glazed_terracotta,id=brown_glazed_terracotta,id=green_glazed_terracotta,id=red_glazed_terracotta,id=black_glazed_terracotta,data=1,box=0/0/0:16/16/16:d/0:u/0:n90/0:s270/0:w/0:e180/0
+patchblock:id=white_glazed_terracotta,id=orange_glazed_terracotta,id=magenta_glazed_terracotta,id=light_blue_glazed_terracotta,id=yellow_glazed_terracotta,id=lime_glazed_terracotta,id=pink_glazed_terracotta,id=gray_glazed_terracotta,id=light_gray_glazed_terracotta,id=cyan_glazed_terracotta,id=purple_glazed_terracotta,id=blue_glazed_terracotta,id=brown_glazed_terracotta,id=green_glazed_terracotta,id=red_glazed_terracotta,id=black_glazed_terracotta,data=0
 patchrotate:id=magenta_glazed_terracotta,data=1,roty=180
-patchblock:id=magenta_glazed_terracotta,data=2
+patchblock:id=white_glazed_terracotta,id=orange_glazed_terracotta,id=magenta_glazed_terracotta,id=light_blue_glazed_terracotta,id=yellow_glazed_terracotta,id=lime_glazed_terracotta,id=pink_glazed_terracotta,id=gray_glazed_terracotta,id=light_gray_glazed_terracotta,id=cyan_glazed_terracotta,id=purple_glazed_terracotta,id=blue_glazed_terracotta,id=brown_glazed_terracotta,id=green_glazed_terracotta,id=red_glazed_terracotta,id=black_glazed_terracotta,data=2
 patchrotate:id=magenta_glazed_terracotta,data=1,roty=90
-patchblock:id=magenta_glazed_terracotta,data=3
+patchblock:id=white_glazed_terracotta,id=orange_glazed_terracotta,id=magenta_glazed_terracotta,id=light_blue_glazed_terracotta,id=yellow_glazed_terracotta,id=lime_glazed_terracotta,id=pink_glazed_terracotta,id=gray_glazed_terracotta,id=light_gray_glazed_terracotta,id=cyan_glazed_terracotta,id=purple_glazed_terracotta,id=blue_glazed_terracotta,id=brown_glazed_terracotta,id=green_glazed_terracotta,id=red_glazed_terracotta,id=black_glazed_terracotta,data=3
 patchrotate:id=magenta_glazed_terracotta,data=1,roty=270
 
