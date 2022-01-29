@@ -216,28 +216,25 @@ boxblock:id=snow,data=6,ymax=0.875
 
 # Torch
 # Redstone torch
-patchblock:id=torch,id=redstone_torch,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
-# Torch - pointing south
-patchblock:id=wall_torch,data=3,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
-# Torch - pointing north
-patchblock:id=wall_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
-# Torch - pointing west
-patchblock:id=wall_torch,data=1,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
-# Torch - pointing east
-patchblock:id=wall_torch,data=0,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+modellist:id=torch,id=redstone_torch,box=7/0/7:9/10/9:d/0/7/13/9/15:u/0/7/6/9/8,box=7/0/0:9/16/16:w/0:e/0,box=0/0/7:16/16/9:n/0:s/0
+# Wall Torch
+modellist:id=wall_torch,data=3,box=-1/3.5/7:1/13.5/9/0/0/-22.5/0/3.5/8:d/0/7/13/9/15,u/0/7/6/9/8,box=-1/3.5/0:1/19.5/16/0/0/-22.5/0/3.5/8:w/0:e/0,box=-8/3.5/7:8/19.5/9/0/0/-22.5/0/3.5/8:n/0:s/0
+patchblock:id=wall_torch,data=0
+patchrotate:id=wall_torch,data=3,roty=270
+patchblock:id=wall_torch,data=1
+patchrotate:id=wall_torch,data=3,roty=90
+patchblock:id=wall_torch,data=2
+patchrotate:id=wall_torch,data=3,roty=180
 
-# Redstone torch on - pointing south
-# Redstone torch off - pointing south
-patchblock:id=redstone_wall_torch,data=6,data=7,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
-# Redstone torch on - pointing north
-# Redstone torch off - pointing north
-patchblock:id=redstone_wall_torch,data=4,data=5,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
-# Redstone torch on - pointing west
-# Redstone torch off - pointing west
-patchblock:id=redstone_wall_torch,data=2,data=3,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
-# Redstone torch on - pointing east
-# Redstone torch off - pointing east
-patchblock:id=redstone_wall_torch,data=0,data=1,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+# Redstone torch
+patchblock:id=redstone_wall_torch,data=0,data=1
+patchrotate:id=wall_torch,data=3,roty=270
+patchblock:id=redstone_wall_torch,data=2,data=3
+patchrotate:id=wall_torch,data=3,roty=90
+patchblock:id=redstone_wall_torch,data=4,data=5
+patchrotate:id=wall_torch,data=3,roty=180
+patchblock:id=redstone_wall_torch,data=6,data=7
+patchrotate:id=wall_torch,data=3,roty=0
 
 ignore-updates:id=redstone_wall_torch,id=redstone_torch
 
@@ -1586,32 +1583,39 @@ patchblock:id=bubble_column
 # Soul Fire
 [1.16-]patchblock:id=soul_fire,patch0=VertX0,patch1=VertX0@90,patch2=VertX0@180,patch3=VertX0@270,patch4=SlopeXUpZTop675,patch5=SlopeXUpZTop675@90,patch6=SlopeXUpZTop675@180,patch4=SlopeXUpZTop675@270
 # Soul Torch
-[1.16-]patchblock:id=soul_torch,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
+[1.16-]patchblock:id=soul_torch
+[1.16-]patchrotate:id=torch,data=0,roty=0
 # Soul wall torch
-[1.16-]patchblock:id=soul_wall_torch,data=3,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
-[1.16-]patchblock:id=soul_wall_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
-[1.16-]patchblock:id=soul_wall_torch,data=1,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
-[1.16-]patchblock:id=soul_wall_torch,data=0,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+[1.16-]patchblock:id=soul_wall_torch,data=3
+[1.16-]patchrotate:id=wall_torch,data=3,roty=0
+[1.16-]patchblock:id=soul_wall_torch,data=0
+[1.16-]patchrotate:id=wall_torch,data=3,roty=270
+[1.16-]patchblock:id=soul_wall_torch,data=1
+[1.16-]patchrotate:id=wall_torch,data=3,roty=90
+[1.16-]patchblock:id=soul_wall_torch,data=2
+[1.16-]patchrotate:id=wall_torch,data=3,roty=180
 # Chain
 [1.16-]patchblock:id=chain,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 # Soul Lantern (hanging, then not hanging)
 [1.16-]boxlist:id=soul_lantern,data=0,data=1,box=0.3125:0.6875:0:0.4375:0.3125:0.6875:0/0/1/1/1/1,box=0.375:0.625:0.4375:0.5625:0.375:0.625:-1/2/3/3/3/3,box=0.4:0.6:0.5625:0.6875:0.5:0.5:-1/-1/-1/-1/4/4:45,box=0.5:0.5:0.5625:0.6875:0.4:0.6:-1/-1/5/5/-1/-1:45
 [1.16-]boxlist:id=soul_lantern,data=2,data=3,box=0.3125:0.6875:0.0625:0.5:0.3125:0.6875:0/0/1/1/1/1,box=0.375:0.625:0.5:0.625:0.375:0.625:2/2/3/3/3/3,box=0.4:0.6:0.6875:0.9375:0.5:0.5:-1/-1/-1/-1/6/6:45,box=0.5:0.5:0.6875:0.9375:0.4:0.6:-1/-1/6/6/-1/-1:45
 # Soul Campfire
-[1.16-]boxlist:id=soul_campfire,data=0,data=1,data=2,data=3,box=0.0625:0.3125:0:0.25:0:1:0/0/1/0/0/0,box=0:1:0.1875:0.4375:0.6875:0.9375:0/1/1/1/0/0,box=0.6875:0.9375:0:0.25:0:1:0/0/0/0/1/0,box=0:1:0.1875:0.4375:0.0625:0.3125:0/1/1/1/0/0,box=0.3125:0.6875:0:0.0625:0:1:0/1/0/0/0/0,box=0.49:0.51:0:1:0:1:-1/-1/2/2/2/2,box=0:1:0:1:0.49:0.51:-1/-1/2/2/2/2
-[1.16-]boxlist:id=soul_campfire,data=4,data=5,data=6,data=7,box=0.0625:0.3125:0:0.25:0:1:0/0/0/0/0/0,box=0:1:0.1875:0.4375:0.6875:0.9375:0/0/0/0/0/0,box=0.6875:0.9375:0:0.25:0:1:0/0/0/0/0/0,box=0:1:0.1875:0.4375:0.0625:0.3125:0/0/0/0/0/0,box=0.3125:0.6875:0:0.0625:0:1:0/0/0/0/0/0
 [1.16-]patchblock:id=soul_campfire,data=8,data=9,data=10,data=11
-[1.16-]patchrotate:id=soul_campfire,data=0,roty=180
-[1.16-]patchblock:id=soul_campfire,data=12,data=13,data=14,data=15
-[1.16-]patchrotate:id=soul_campfire,data=4,roty=180
+[1.16-]patchrotate:id=campfire,data=8,roty=0
+[1.16-]patchblock:id=soul_campfire,data=0,data=1,data=2,data=3
+[1.16-]patchrotate:id=campfire,data=8,roty=180
 [1.16-]patchblock:id=soul_campfire,data=16,data=17,data=18,data=19
-[1.16-]patchrotate:id=soul_campfire,data=0,roty=270
-[1.16-]patchblock:id=soul_campfire,data=20,data=21,data=22,data=23
-[1.16-]patchrotate:id=soul_campfire,data=4,roty=270
+[1.16-]patchrotate:id=campfire,data=8,roty=270
 [1.16-]patchblock:id=soul_campfire,data=24,data=25,data=26,data=27
-[1.16-]patchrotate:id=soul_campfire,data=0,roty=90
+[1.16-]patchrotate:id=campfire,data=8,roty=90
+[1.16-]patchblock:id=soul_campfire,data=12,data=13,data=14,data=15
+[1.16-]patchrotate:id=campfire,data=12,roty=0
+[1.16-]patchblock:id=soul_campfire,data=4,data=5,data=6,data=7
+[1.16-]patchrotate:id=campfire,data=12,roty=180
+[1.16-]patchblock:id=soul_campfire,data=20,data=21,data=22,data=23
+[1.16-]patchrotate:id=campfire,data=12,roty=270
 [1.16-]patchblock:id=soul_campfire,data=28,data=29,data=30,data=31
-[1.16-]patchrotate:id=soul_campfire,data=4,roty=90
+[1.16-]patchrotate:id=campfire,data=12,roty=90
 # Warped Fungus
 # Warped Roots
 # Nether Sprouts
@@ -2315,3 +2319,12 @@ patchblock:id=bubble_column
 [1.17-]patchblock:id=%small_dripleaf,data=10,data=11,patch0=patch918,patch1=patch919,patch2=patch920,patch3=patch921
 [1.17-]patchblock:id=%small_dripleaf,data=12,data=13,patch0=patch922,patch1=patch923,patch2=patch924,patch3=patch925,patch4=patch926,patch5=patch927,patch6=patch928,patch7=patch929,patch8=patch930,patch9=patch931,patch10=patch932,patch11=patch933,patch12=patch934,patch13=patch935,patch14=patch936,patch15=patch937,patch16=patch938,patch17=patch939,patch18=patch914,patch19=patch915,patch20=patch916,patch21=patch917
 [1.17-]patchblock:id=%small_dripleaf,data=14,data=15,patch0=patch918,patch1=patch919,patch2=patch920,patch3=patch921
+
+modellist:id=magenta_glazed_terracotta,data=1,box=0/0/0:16/16/16:d/0:u/0:n90/0:s270/0:w/0:e180/0
+patchblock:id=magenta_glazed_terracotta,data=0
+patchrotate:id=magenta_glazed_terracotta,data=1,roty=180
+patchblock:id=magenta_glazed_terracotta,data=2
+patchrotate:id=magenta_glazed_terracotta,data=1,roty=90
+patchblock:id=magenta_glazed_terracotta,data=3
+patchrotate:id=magenta_glazed_terracotta,data=1,roty=270
+

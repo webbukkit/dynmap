@@ -31,6 +31,7 @@ import org.dynmap.renderer.RenderPatchFactory.SideVisible;
 import org.dynmap.utils.ForgeConfigFile;
 import org.dynmap.utils.PatchDefinition;
 import org.dynmap.utils.PatchDefinitionFactory;
+import org.dynmap.utils.Vector3D;
 
 /**
  * Custom block models - used for non-cube blocks to represent the physical volume associated with the block
@@ -334,6 +335,7 @@ public class HDBlockModels {
     	double[] from = new double[3];
     	double[] to = new double[3];
     	double xrot = 0, yrot = 0, zrot = 0;
+    	double xrotorig = 8, yrotorig = 8, zrotorig = 8;
     	ArrayList<ModelBoxSide> sides = new ArrayList<ModelBoxSide>();
     };
     
@@ -841,6 +843,7 @@ public class HDBlockModels {
                     line = line.substring(9);
                     String[] args = line.split(",");
                     double xmin = 0.0, xmax = 1.0, ymin = 0.0, ymax = 1.0, zmin = 0.0, zmax = 1.0;
+                    int[] patchlist = boxPatchList;
                     for(String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
@@ -880,12 +883,19 @@ public class HDBlockModels {
                         else if(av[0].equals("zmax")) {
                             zmax = Double.parseDouble(av[1]);
                         }
+                        else if(av[0].equals("patches")) {
+                        	String[] v = av[1].split("/");
+                        	patchlist = new int[6];
+                        	for (int vidx = 0; (vidx < v.length) && (vidx < patchlist.length); vidx++) {
+                        		patchlist[vidx] = getIntValue(varvals, v[vidx]);
+                        	}
+                        }
                     }
                     /* If we have everything, build block */
                     pmodlist.clear();
                     if (blknames.size() > 0) {
                         ArrayList<RenderPatch> pd = new ArrayList<RenderPatch>();
-                        CustomRenderer.addBox(pdf, pd, xmin, xmax, ymin, ymax, zmin, zmax, boxPatchList);
+                        CustomRenderer.addBox(pdf, pd, xmin, xmax, ymin, ymax, zmin, zmax, patchlist);
                         PatchDefinition[] patcharray = new PatchDefinition[pd.size()];
                         for (int i = 0; i < patcharray.length; i++) {
                             patcharray[i] = (PatchDefinition) pd.get(i);
@@ -1035,7 +1045,7 @@ public class HDBlockModels {
                                 	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + rdr.getLineNumber());                        			
                         		}
                         	}
-                        	if (prms.length > 1) {	// Handle to (to-x/y/z or to-x/y/z/rotx/roty/rotz)
+                        	if (prms.length > 1) {	// Handle to (to-x/y/z or to-x/y/z/rotx/roty/rotz) or to-x/y/z/rotx/roty/rotz/rorigx/rorigy/rorigz
                         		String[] xyz = prms[1].split("/");
                         		if (xyz.length >= 3) {
                         			box.to[0] = Double.parseDouble(xyz[0]);
@@ -1045,6 +1055,11 @@ public class HDBlockModels {
                             			box.xrot = Double.parseDouble(xyz[3]);
                             			box.yrot = Double.parseDouble(xyz[4]);
                             			box.zrot = Double.parseDouble(xyz[5]);
+                        			}
+                        			if (xyz.length >= 9) {	// If 9, third set is rotation origin (xrot/yrot/zrot)
+                            			box.xrotorig = Double.parseDouble(xyz[6]);
+                            			box.yrotorig = Double.parseDouble(xyz[7]);
+                            			box.zrotorig = Double.parseDouble(xyz[8]);
                         			}
                         		}
                         		else {
@@ -1110,7 +1125,9 @@ public class HDBlockModels {
 								if (patch != null) {
 									// If any rotations, apply them here
 									if ((bl.xrot != 0) || (bl.yrot != 0) || (bl.zrot != 0)) {
-										patch = pdf.getPatch(patch, bl.xrot, bl.yrot, bl.zrot, patch.textureindex);
+										patch = pdf.getPatch(patch, -bl.xrot, -bl.yrot, -bl.zrot, 
+											new Vector3D(bl.xrotorig / 16, bl.yrotorig / 16, bl.zrotorig / 16),
+											patch.textureindex);
 									}
 									pd.add(patch);
 								}

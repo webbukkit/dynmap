@@ -88,24 +88,34 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
         return getPatch((PatchDefinition)patch, xrot, yrot, zrot, textureindex);
     }
     @Override
+    public RenderPatch getRotatedPatch(RenderPatch patch, double xrot, double yrot,
+            double zrot, double rotorigx, double rotorigy, double rotorigz, int textureindex) {
+        return getPatch((PatchDefinition)patch, xrot, yrot, zrot, 
+        		new Vector3D(rotorigx, rotorigy, rotorigz), textureindex);
+    }
+    @Override
     public RenderPatch getRotatedPatch(RenderPatch patch, int xrot, int yrot,
             int zrot, int textureindex) {
         return getPatch((PatchDefinition)patch, xrot, yrot, zrot, textureindex);
     }
-    
+
     public PatchDefinition getPatch(PatchDefinition patch, double xrot, double yrot,
-            double zrot, int textureindex) {
-        PatchDefinition pd = new PatchDefinition(patch, xrot, yrot, zrot, textureindex);
-        if(pd.validate() == false)
+            double zrot, Vector3D rotorig, int textureindex) {
+        PatchDefinition pd = new PatchDefinition((PatchDefinition)patch, xrot, yrot, zrot, rotorig, textureindex);
+        if (pd.validate() == false)
             return null;
         synchronized(lock) {
             PatchDefinition pd2 = patches.get(pd);  /* See if in cache already */
-            if(pd2 == null) {
+            if (pd2 == null) {
                 patches.put(pd,  pd);
                 pd2 = pd;
             }
             return pd2;
         }
+    }
+    public PatchDefinition getPatch(PatchDefinition patch, double xrot, double yrot,
+            double zrot, int textureindex) {
+    	return getPatch(patch, xrot, yrot, zrot, null, textureindex);
     }
     /**
      * Get named patch with given attributes.  Name can encode rotation and patch index info

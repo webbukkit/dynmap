@@ -880,7 +880,7 @@ block:id=obsidian,allfaces=0:obsidian,stdrot=true
 # Torch
 block:id=torch,patch0=0:torch,transparency=TRANSPARENT
 # Wall torch
-block:id=wall_torch,data=0,data=1,data=2,data=3,patch0=0:torch,transparency=TRANSPARENT
+block:id=wall_torch,data=*,patch0=0:torch,transparency=TRANSPARENT
 # Fire
 block:id=fire,patch0-3=0:fire_0,patch4-7=0:fire_1,transparency=TRANSPARENT
 # Monster spawner
@@ -1786,10 +1786,7 @@ block:id=orange_glazed_terracotta,data=0,stdrot=true,topbottom=0:orange_glazed_t
 block:id=orange_glazed_terracotta,data=1,stdrot=true,topbottom=6000:orange_glazed_terracotta,east=0:orange_glazed_terracotta,west=5000:orange_glazed_terracotta,north=4000:orange_glazed_terracotta,south=6000:orange_glazed_terracotta
 block:id=orange_glazed_terracotta,data=2,stdrot=true,topbottom=5000:orange_glazed_terracotta,south=0:orange_glazed_terracotta,north=5000:orange_glazed_terracotta,east=4000:orange_glazed_terracotta,west=6000:orange_glazed_terracotta
 block:id=orange_glazed_terracotta,data=3,stdrot=true,topbottom=4000:orange_glazed_terracotta,west=0:orange_glazed_terracotta,east=5000:orange_glazed_terracotta,south=4000:orange_glazed_terracotta,north=6000:orange_glazed_terracotta
-block:id=magenta_glazed_terracotta,data=0,stdrot=true,topbottom=0:magenta_glazed_terracotta,north=0:magenta_glazed_terracotta,south=5000:magenta_glazed_terracotta,west=4000:magenta_glazed_terracotta,east=6000:magenta_glazed_terracotta
-block:id=magenta_glazed_terracotta,data=1,stdrot=true,topbottom=6000:magenta_glazed_terracotta,east=0:magenta_glazed_terracotta,west=5000:magenta_glazed_terracotta,north=4000:magenta_glazed_terracotta,south=6000:magenta_glazed_terracotta
-block:id=magenta_glazed_terracotta,data=2,stdrot=true,topbottom=5000:magenta_glazed_terracotta,south=0:magenta_glazed_terracotta,north=5000:magenta_glazed_terracotta,east=4000:magenta_glazed_terracotta,west=6000:magenta_glazed_terracotta
-block:id=magenta_glazed_terracotta,data=3,stdrot=true,topbottom=4000:magenta_glazed_terracotta,west=0:magenta_glazed_terracotta,east=5000:magenta_glazed_terracotta,south=4000:magenta_glazed_terracotta,north=6000:magenta_glazed_terracotta
+block:id=magenta_glazed_terracotta,data=*,patch0=0:magenta_glazed_terracotta
 block:id=light_blue_glazed_terracotta,data=0,stdrot=true,topbottom=0:light_blue_glazed_terracotta,north=0:light_blue_glazed_terracotta,south=5000:light_blue_glazed_terracotta,west=4000:light_blue_glazed_terracotta,east=6000:light_blue_glazed_terracotta
 block:id=light_blue_glazed_terracotta,data=1,stdrot=true,topbottom=6000:light_blue_glazed_terracotta,east=0:light_blue_glazed_terracotta,west=5000:light_blue_glazed_terracotta,north=4000:light_blue_glazed_terracotta,south=6000:light_blue_glazed_terracotta
 block:id=light_blue_glazed_terracotta,data=2,stdrot=true,topbottom=5000:light_blue_glazed_terracotta,south=0:light_blue_glazed_terracotta,north=5000:light_blue_glazed_terracotta,east=4000:light_blue_glazed_terracotta,west=6000:light_blue_glazed_terracotta
@@ -2474,7 +2471,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.16-]block:id=soul_lantern,patch0=0:soul_lantern,transparency=TRANSPARENT
 [1.16-]block:id=soul_lantern,patch0=0:soul_lantern,patch1=1:soul_lantern,patch2=2:soul_lantern,patch3=3:soul_lantern,patch4=4:soul_lantern,patch5=5:soul_lantern,patch6=6:soul_lantern,patch7=7:soul_lantern,transparency=TRANSPARENT
 # Soul Campfire
-[1.16-]block:id=soul_campfire,patch0=0:campfire_log,patch1=0:soul_campfire_log_lit,patch2=0:soul_campfire_fire,transparency=TRANSPARENT
+[1.16-]block:id=soul_campfire,data=*,patch0=0:campfire_log,patch1=0:soul_campfire_log_lit,patch2=0:soul_campfire_fire,transparency=TRANSPARENT
 # Warped Stem
 [1.16-]block:id=warped_stem,data=1,allsides=0:warped_stem,topbottom=0:warped_stem_top,stdrot=true
 [1.16-]block:id=warped_stem,data=0,north=0:warped_stem_top,south=0:warped_stem_top,east=4000:warped_stem,west=4000:warped_stem,top=0:warped_stem,bottom=0:warped_stem

@@ -80,16 +80,30 @@ public class PatchDefinition implements RenderPatch {
      * @param textureindex - texture index for new patch (-1 = use same as original patch)
      */
     PatchDefinition(PatchDefinition orig, double rotatex, double rotatey, double rotatez, int textureindex) {
+    	this(orig, rotatex, rotatey, rotatez, null, textureindex);
+    }
+    /**
+     * Construct patch, based on rotation of existing patch clockwise by N
+     * 90 degree steps
+     * @param orig - original patch to copy and rotate
+     * @param rotatex - x rotation in degrees
+     * @param rotatey - y rotation in degrees
+     * @param rotatez - z rotation in degrees
+     * @param rotorigin - rotation origin (x, y, z)
+     * @param textureindex - texture index for new patch (-1 = use same as original patch)
+     */
+    PatchDefinition(PatchDefinition orig, double rotatex, double rotatey, double rotatez, Vector3D rotorigin, int textureindex) {
+    	if (rotorigin == null) rotorigin = offsetCenter;
         Vector3D vec = new Vector3D(orig.x0, orig.y0, orig.z0);
-        rotate(vec, rotatex, rotatey, rotatez); /* Rotate origin */
+        rotate(vec, rotatex, rotatey, rotatez, rotorigin); /* Rotate origin */
         x0 = vec.x; y0 = vec.y; z0 = vec.z;
         /* Rotate U */
         vec.x = orig.xu; vec.y = orig.yu; vec.z = orig.zu;
-        rotate(vec, rotatex, rotatey, rotatez); /* Rotate origin */
+        rotate(vec, rotatex, rotatey, rotatez, rotorigin); /* Rotate origin */
         xu = vec.x; yu = vec.y; zu = vec.z;
         /* Rotate V */
         vec.x = orig.xv; vec.y = orig.yv; vec.z = orig.zv;
-        rotate(vec, rotatex, rotatey, rotatez); /* Rotate origin */
+        rotate(vec, rotatex, rotatey, rotatez, rotorigin); /* Rotate origin */
         xv = vec.x; yv = vec.y; zv = vec.z;
         umin = orig.umin; vmin = orig.vmin;
         umax = orig.umax; vmax = orig.vmax;
@@ -102,8 +116,10 @@ public class PatchDefinition implements RenderPatch {
         update();
     }
     
-    private void rotate(Vector3D vec, double xcnt, double ycnt, double zcnt) {
-        vec.subtract(offsetCenter); /* Shoft to center of block */
+    private void rotate(Vector3D vec, double xcnt, double ycnt, double zcnt, Vector3D origin) {
+    	// If no rotation, skip
+    	if ((xcnt == 0) && (ycnt == 0) && (zcnt == 0)) return;
+        vec.subtract(origin); /* Shoft to center of block */
         /* Do X rotation */
         double rot = Math.toRadians(xcnt);
         double nval = vec.z * Math.sin(rot) + vec.y * Math.cos(rot);
@@ -119,7 +135,7 @@ public class PatchDefinition implements RenderPatch {
         nval = vec.y * Math.sin(rot) + vec.x * Math.cos(rot);
         vec.y = vec.y * Math.cos(rot) - vec.x * Math.sin(rot);
         vec.x = nval;
-        vec.add(offsetCenter); /* Shoft back to corner */
+        vec.add(origin); /* Shoft back to corner */
     }
     public void update(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv, double umin,
@@ -387,8 +403,8 @@ public class PatchDefinition implements RenderPatch {
 				return;
     	}    	
     	// If rotation, rotate face corners
-    	if (rot == ModelBlockModel.SideRotation.DEG90) {
-    		// 90 degrees CW - origin is now upper left (V), V is now upper right (U+V-O), U is lower left (O)
+    	if (rot == ModelBlockModel.SideRotation.DEG270) {
+    		// 270 degrees CCW - origin is now upper left (V), V is now upper right (U+V-O), U is lower left (O)
     		Vector3D save = lowleft;
     		lowleft = lowright;
     		lowright = upright;
@@ -396,7 +412,7 @@ public class PatchDefinition implements RenderPatch {
     		upleft = save;
     	}
     	else if (rot == ModelBlockModel.SideRotation.DEG180) {
-    		// 180 degrees CW - origin is now upper right, U is now upper left (V), V is lower right (U)
+    		// 180 degrees CCW - origin is now upper right, U is now upper left (V), V is lower right (U)
     		Vector3D save = lowleft;
     		lowleft = upright;
     		upright = save;
@@ -404,8 +420,8 @@ public class PatchDefinition implements RenderPatch {
     		lowright = upleft;
     		upleft = save;
     	}
-    	else if (rot == ModelBlockModel.SideRotation.DEG270) {
-    		// 270 degrees CW - origin is now lower right (V), U is now upper right (topright), V is lower right (O)
+    	else if (rot == ModelBlockModel.SideRotation.DEG90) {
+    		// 90 degrees CCW - origin is now lower right (V), U is now upper right (topright), V is lower right (O)
     		Vector3D save = lowright;
     		lowright = lowleft;
     		lowleft = upleft;
