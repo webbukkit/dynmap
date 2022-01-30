@@ -333,15 +333,12 @@ public class PatchDefinition implements RenderPatch {
     	Vector3D upleft;
     	Vector3D upright;
     	// Default UV, if not defined
-    	double[] patchuv;
+    	double[] patchuv = null;
     	boolean flipU = false, flipV = false;
     	if (uv != null) {	// MC V is top down, so flip
     		patchuv = new double[] { uv[0] / 16.0, 1 - uv[3] / 16.0, uv[2] / 16.0, 1 - uv[1] / 16.0 }; 
     		if (patchuv[0] > patchuv[2]) { flipU = true; double save = patchuv[0]; patchuv[0] = patchuv[2]; patchuv[2] = save; }
     		if (patchuv[1] > patchuv[3]) { flipV = true; double save = patchuv[1]; patchuv[1] = patchuv[3]; patchuv[3] = save; }
-    	}
-    	else {
-    		patchuv = new double[] { 0, 0, 1, 1 };
     	}
     	switch (face) {
     		case BOTTOM:
@@ -352,6 +349,9 @@ public class PatchDefinition implements RenderPatch {
 				lowright = new Vector3D(to[0] / 16.0, from[1] / 16.0, from[2] / 16.0);
 				upleft = new Vector3D(from[0] / 16.0, from[1] / 16.0, to[2] / 16.0);
 				upright = new Vector3D(to[0] / 16.0, from[1] / 16.0, to[2] / 16.0);
+				if (patchuv == null) {
+					patchuv = new double[] { from[0] / 16.0, from[2] / 16.0, to[0] / 16.0, to[2] / 16.0 };
+				}
 				break;
 			case TOP:
 			case FACE_1:
@@ -361,6 +361,9 @@ public class PatchDefinition implements RenderPatch {
 				lowright = new Vector3D(to[0] / 16.0, to[1] / 16.0, to[2] / 16.0);
 				upleft = new Vector3D(from[0] / 16.0, to[1] / 16.0, from[2] / 16.0);
 				upright = new Vector3D(to[0] / 16.0, to[1] / 16.0, from[2] / 16.0);
+				if (patchuv == null) {
+					patchuv = new double[] { from[0] / 16.0, 1 - to[2] / 16.0, to[0] / 16.0, 1 - from[2] / 16.0 };
+				}
 				break;
 			case NORTH:
 			case FACE_2:
@@ -370,6 +373,9 @@ public class PatchDefinition implements RenderPatch {
 				lowright = new Vector3D(from[0] / 16.0, from[1] / 16.0, from[2] / 16.0);
 				upleft = new Vector3D(to[0] / 16.0, to[1] / 16.0, from[2] / 16.0);
 				upright = new Vector3D(from[0] / 16.0, to[1] / 16.0, from[2] / 16.0);
+				if (patchuv == null) {
+					patchuv = new double[] { 1 - to[0] / 16.0, from[1] / 16.0, 1 - from[0] / 16.0, to[1] / 16.0 };
+				}
 				break;
 			case SOUTH:
 			case FACE_3:
@@ -379,6 +385,9 @@ public class PatchDefinition implements RenderPatch {
 				lowright = new Vector3D(to[0] / 16.0, from[1] / 16.0,to[2] / 16.0);
 				upleft = new Vector3D(from[0] / 16.0, to[1] / 16.0, to[2] / 16.0);
 				upright = new Vector3D(to[0] / 16.0, to[1] / 16.0, to[2] / 16.0);
+				if (patchuv == null) {
+					patchuv = new double[] { from[0] / 16.0, from[1] / 16.0, to[0] / 16.0, to[1] / 16.0 };
+				}
 				break;
 			case WEST:
 			case FACE_4:
@@ -388,6 +397,9 @@ public class PatchDefinition implements RenderPatch {
 				lowright = new Vector3D(from[0] / 16.0, from[1] / 16.0, to[2] / 16.0);
 				upleft = new Vector3D(from[0] / 16.0, to[1] / 16.0, from[2] / 16.0);
 				upright = new Vector3D(from[0] / 16.0, to[1] / 16.0, to[2] / 16.0);
+				if (patchuv == null) {
+					patchuv = new double[] { from[2] / 16.0, from[1] / 16.0, to[2] / 16.0, to[1] / 16.0 };
+				}
 				break;
 			case EAST:
 			case FACE_5:
@@ -397,11 +409,19 @@ public class PatchDefinition implements RenderPatch {
 				lowright = new Vector3D(to[0] / 16.0, from[1] / 16.0, from[2] / 16.0);
 				upleft = new Vector3D(to[0] / 16.0, to[1] / 16.0, to[2] / 16.0);
 				upright = new Vector3D(to[0] / 16.0, to[1] / 16.0, from[2] / 16.0);
+				if (patchuv == null) {
+					patchuv = new double[] { 1 - to[2] / 16.0, from[1] / 16.0, 1 - from[2] / 16.0, to[1] / 16.0 };
+				}
 				break;    		
 			default:
 				Log.severe("Invalid side: " + face);
 				return;
-    	}    	
+    	}
+    	// Clamp patchuv to avoid extending off of patch, while maintaining width and height of patch area
+    	if (patchuv[0] < 0) { patchuv[2] -= patchuv[0]; patchuv[0] = 0.0; }
+    	if (patchuv[1] < 0) { patchuv[3] -= patchuv[1]; patchuv[1] = 0.0; }
+    	if (patchuv[2] > 1) { patchuv[0] -= (patchuv[2] - 1); patchuv[2] = 1; }
+    	if (patchuv[3] > 1) { patchuv[1] -= (patchuv[3] - 1); patchuv[3] = 1; }
     	// If rotation, rotate face corners
     	if (rot == ModelBlockModel.SideRotation.DEG270) {
     		// 270 degrees CCW - origin is now upper left (V), V is now upper right (U+V-O), U is lower left (O)

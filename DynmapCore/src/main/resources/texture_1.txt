@@ -1034,7 +1034,7 @@ block:id=jack_o_lantern,data=2,face4=0:jack_o_lantern,face2=0:pumpkin_side,face3
 # Jack-O-Lantern (east)
 block:id=jack_o_lantern,data=3,face5=0:jack_o_lantern,face2=0:pumpkin_side,face3=0:pumpkin_side,face4=0:pumpkin_side,topbottom=6000:pumpkin_top,stdrot=true
 # Cake Block
-block:id=cake,allsides=0:cake_side,top=0:cake_top,bottom=0:cake_bottom,stdrot=true,transparency=TRANSPARENT
+block:id=cake,patch0=0:cake_bottom,patch1=0:cake_top,patch2=0:cake_side,patch3=0:cake_inner,transparency=TRANSPARENT
 # Repeater
 block:id=repeater,data=*,patch0=0:smooth_stone,patch1=0:repeater,patch2=0:redstone_torch_off,patch3=0:redstone_torch,patch4=0:bedrock,patch5=0:repeater_on,transparency=TRANSPARENT
 # Stained Glass (95)

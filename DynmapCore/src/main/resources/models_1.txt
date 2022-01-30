@@ -902,25 +902,14 @@ layer:3,4
 # Trap Chest - single or double
 customblock:id=chest,id=trapped_chest,class=org.dynmap.hdmap.renderer.ChestStateRenderer,doublechest=true
 
-# Cake Block
-block:id=cake,scale=16
-layer:0,1,2,3,4,5,6,7
-----------------
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
--**************-
-----------------
+# Cake Block (cake_bottom, cake_top, cake_side, cake_inside)
+modellist:id=cake,data=0,box=1/0/1:15/8/15:d/0:u/1:n/2:s/2:e/2:w/2
+modellist:id=cake,data=1,box=3/0/1:15/8/15:d/0:u/1:n/2:s/2:e/2:w/3
+modellist:id=cake,data=2,box=5/0/1:15/8/15:d/0:u/1:n/2:s/2:e/2:w/3
+modellist:id=cake,data=3,box=7/0/1:15/8/15:d/0:u/1:n/2:s/2:e/2:w/3
+modellist:id=cake,data=4,box=9/0/1:15/8/15:d/0:u/1:n/2:s/2:e/2:w/3
+modellist:id=cake,data=5,box=11/0/1:15/8/15:d/0:u/1:n/2:s/2:e/2:w/3
+modellist:id=cake,data=6,box=13/0/1:15/8/15:d/0:u/1:n/2:s/2:e/2:w/3
 # Tripwire Hook
 patch:id=HookBoxSide1,Ox=0.0,Oy=0.0,Oz=0.375,Ux=1.0,Uy=0.0,Uz=0.375,Vx=0.0,Vy=1.0,Vz=0.375,Umin=0.875,Umax=1.0,Vmin=0.0625,Vmax=0.5625,visibility=bottom
 patch:id=HookBoxSide2,Ox=0.0,Oy=0.0,Oz=0.625,Ux=1.0,Uy=0.0,Uz=0.625,Vx=0.0,Vy=1.0,Vz=0.625,Umin=0.875,Umax=1.0,Vmin=0.0625,Vmax=0.5625,visibility=top
