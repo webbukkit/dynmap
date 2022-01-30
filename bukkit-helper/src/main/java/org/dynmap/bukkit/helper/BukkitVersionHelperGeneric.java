@@ -3,7 +3,8 @@ package org.dynmap.bukkit.helper;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -16,9 +17,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.dynmap.Log;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ForwardingMultimap;
 import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
@@ -566,7 +565,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     				if (val != null) {
     					TexturesPayload result = null;
     					try {
-    						String json = new String(Base64Coder.decode(val), Charsets.UTF_8);
+                            String json = new String(Base64.getDecoder().decode(val), StandardCharsets.UTF_8);
     						result = gson.fromJson(json, TexturesPayload.class);
     					} catch (JsonParseException e) {
     					} catch (IllegalArgumentException x) {

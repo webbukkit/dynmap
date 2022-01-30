@@ -11,13 +11,10 @@ import org.dynmap.bukkit.helper.BukkitMaterial;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.bukkit.helper.BukkitWorld;
 import org.dynmap.bukkit.helper.BukkitVersionHelperGeneric.TexturesPayload;
-import org.dynmap.bukkit.helper.v117.MapChunkCache117;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,8 +46,8 @@ import net.minecraft.world.level.block.entity.TileEntity;
 import net.minecraft.world.level.block.state.IBlockData;
 import net.minecraft.world.level.material.Material;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -387,7 +384,7 @@ public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
     				if (val != null) {
     					TexturesPayload result = null;
     					try {
-    						String json = new String(Base64Coder.decode(val), Charsets.UTF_8);
+                            String json = new String(Base64.getDecoder().decode(val), StandardCharsets.UTF_8);
     						result = gson.fromJson(json, TexturesPayload.class);
     					} catch (JsonParseException e) {
     					} catch (IllegalArgumentException x) {
