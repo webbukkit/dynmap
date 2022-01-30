@@ -451,6 +451,7 @@ texture:id=spruce_door_bottom
 texture:id=spruce_door_top
 texture:id=observer_front
 texture:id=observer_back
+texture:id=observer_back_on
 texture:id=observer_side
 texture:id=observer_top
 texture:id=end_rod
@@ -1654,13 +1655,9 @@ block:id=structure_block,data=3,stdrot=true,allfaces=0:structure_block_data
 # Structure void
 block:id=structure_void,transparency=TRANSPARENT
 
-# Observer Block
-block:id=observer,data=0-1,top=4000:observer_back,east=0:observer_top,south=4000:observer_side,north=4000:observer_side,west=0:observer_top,bottom=4000:observer_front
-block:id=observer,data=2-3,top=4000:observer_front,east=5000:observer_top,south=4000:observer_side,north=4000:observer_side,west=5000:observer_top,bottom=4000:observer_back
-block:id=observer,data=4-5,top=4000:observer_top,east=0:observer_front,south=0:observer_side,north=0:observer_side,west=0:observer_back,bottom=4000:observer_top
-block:id=observer,data=6-7,top=6000:observer_top,east=0:observer_back,south=0:observer_side,north=0:observer_side,west=0:observer_front,bottom=6000:observer_top
-block:id=observer,data=8-9,top=5000:observer_top,east=0:observer_side,south=0:observer_back,north=0:observer_front,west=0:observer_side,bottom=5000:observer_top
-block:id=observer,data=10-11,top=0:observer_top,east=0:observer_side,south=0:observer_front,north=0:observer_back,west=0:observer_side,bottom=0:observer_top
+# Observer Block (top, front, bottom, side)
+block:id=observer,data=0,data=2,data=4,data=6,data=8,data=10,patch0=0:observer_top,patch1=0:observer_front,patch2=0:observer_back_on,patch3=0:observer_side
+block:id=observer,data=1,data=3,data=5,data=7,data=9,data=11,patch0=0:observer_top,patch1=0:observer_front,patch2=0:observer_back,patch3=0:observer_side
 
 # Shulker Blocks (facing bottom)
 block:id=shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker

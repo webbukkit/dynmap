@@ -2329,3 +2329,17 @@ patchrotate:id=magenta_glazed_terracotta,data=1,roty=90
 patchblock:id=white_glazed_terracotta,id=orange_glazed_terracotta,id=magenta_glazed_terracotta,id=light_blue_glazed_terracotta,id=yellow_glazed_terracotta,id=lime_glazed_terracotta,id=pink_glazed_terracotta,id=gray_glazed_terracotta,id=light_gray_glazed_terracotta,id=cyan_glazed_terracotta,id=purple_glazed_terracotta,id=blue_glazed_terracotta,id=brown_glazed_terracotta,id=green_glazed_terracotta,id=red_glazed_terracotta,id=black_glazed_terracotta,data=3
 patchrotate:id=magenta_glazed_terracotta,data=1,roty=270
 
+
+# Observer Block (top, front, bottom, side)
+modellist:id=observer,data=0,data=1,box=0/0/0:16/16/16:d/0/0/0/16/16:u/0/0/16/16/0:n/1:s/2:w/3:e/3
+patchblock:id=observer,data=2,data=3
+patchrotate:id=observer,data=0,roty=90
+patchblock:id=observer,data=4,data=5
+patchrotate:id=observer,data=0,roty=180
+patchblock:id=observer,data=6,data=7
+patchrotate:id=observer,data=0,roty=270
+patchblock:id=observer,data=8,data=9
+patchrotate:id=observer,data=0,rotx=270
+patchblock:id=observer,data=10,data=11
+patchrotate:id=observer,data=0,rotx=90
+
