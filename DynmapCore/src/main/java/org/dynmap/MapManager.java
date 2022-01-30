@@ -1635,6 +1635,12 @@ public class MapManager {
             render_pool.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException ix) {
         }
+        render_pool.shutdownNow();	// Force hard shutdown
+        try {
+            render_pool.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException ix) {
+        }
+        
         mapman = null;
         hdmapman = null;
         did_start = false;
