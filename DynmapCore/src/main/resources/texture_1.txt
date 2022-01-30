@@ -2766,9 +2766,9 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 # Deepslate copper ore
 [1.17-]block:id=deepslate_copper_ore,allfaces=0:deepslate_copper_ore,stdrot=true
 # Leaves (azalea)
-[1.17-]block:id=azalea_leaves,allfaces=2000:azalea_leaves,stdrot=true,transparency=LEAVES
+[1.17-]block:id=azalea_leaves,allfaces=0:azalea_leaves,stdrot=true,transparency=LEAVES
 # Leaves (flowering azalea)
-[1.17-]block:id=flowering_azalea_leaves,allfaces=2000:flowering_azalea_leaves,stdrot=true,transparency=LEAVES
+[1.17-]block:id=flowering_azalea_leaves,allfaces=0:flowering_azalea_leaves,stdrot=true,transparency=LEAVES
 # Glow lichens
 [1.17-]block:id=glow_lichen,patch0-4=0:glow_lichen,transparency=TRANSPARENT
 # Calcite
