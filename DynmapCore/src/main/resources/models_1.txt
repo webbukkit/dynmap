@@ -2153,25 +2153,8 @@ patchblock:id=bubble_column
 [1.17-]*------*
 [1.17-]*------*
 [1.17-]********
-# Scolk Sensor
-[1.17-]patch:id=patch554,Ox=0.000000,Oy=0.000000,Oz=0.000000,Ux=1.000000,Uy=0.000000,Uz=0.000000,Vx=0.000000,Vy=0.000000,Vz=1.000000,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch799,Ox=1.000000,Oy=0.000000,Oz=0.000000,Ux=0.000000,Uy=0.000000,Uz=0.000000,Vx=1.000000,Vy=0.500000,Vz=0.000000,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch800,Ox=1.000000,Oy=0.000000,Oz=1.000000,Ux=1.000000,Uy=0.000000,Uz=0.000000,Vx=1.000000,Vy=0.500000,Vz=1.000000,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch801,Ox=0.000000,Oy=0.000000,Oz=0.000000,Ux=0.000000,Uy=0.000000,Uz=1.000000,Vx=0.000000,Vy=0.500000,Vz=0.000000,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch802,Ox=0.000000,Oy=0.000000,Oz=1.000000,Ux=1.000000,Uy=0.000000,Uz=1.000000,Vx=0.000000,Vy=0.500000,Vz=1.000000,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch803,Ox=0.000000,Oy=0.500000,Oz=1.000000,Ux=1.000000,Uy=0.500000,Uz=1.000000,Vx=0.000000,Vy=0.500000,Vz=0.000000,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch804,Ox=0.364277,Oy=0.500000,Oz=0.364277,Ux=0.010723,Uy=0.500000,Uz=0.010723,Vx=0.364277,Vy=1.000000,Vz=0.364277,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch805,Ox=0.010723,Oy=0.500000,Oz=0.010723,Ux=0.364277,Uy=0.500000,Uz=0.364277,Vx=0.010723,Vy=1.000000,Vz=0.010723,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch806,Ox=0.989277,Oy=0.500000,Oz=0.010723,Ux=0.635723,Uy=0.500000,Uz=0.364277,Vx=0.989277,Vy=1.000000,Vz=0.010723,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch807,Ox=0.635723,Oy=0.500000,Oz=0.364277,Ux=0.989277,Uy=0.500000,Uz=0.010723,Vx=0.635723,Vy=1.000000,Vz=0.364277,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch808,Ox=0.989277,Oy=0.500000,Oz=0.989277,Ux=0.635723,Uy=0.500000,Uz=0.635723,Vx=0.989277,Vy=1.000000,Vz=0.989277,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch809,Ox=0.635723,Oy=0.500000,Oz=0.635723,Ux=0.989277,Uy=0.500000,Uz=0.989277,Vx=0.635723,Vy=1.000000,Vz=0.635723,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch810,Ox=0.364277,Oy=0.500000,Oz=0.635723,Ux=0.010723,Uy=0.500000,Uz=0.989277,Vx=0.364277,Vy=1.000000,Vz=0.635723,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-[1.17-]patch:id=patch811,Ox=0.010723,Oy=0.500000,Oz=0.989277,Ux=0.364277,Uy=0.500000,Uz=0.635723,Vx=0.010723,Vy=1.000000,Vz=0.989277,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
-
-[1.17-]patchblock:id=%sculk_sensor,data=0,data=1,data=6,data=7,data=12,data=13,patch0=patch799,patch1=patch800,patch2=patch554,patch3=patch801,patch4=patch802,patch5=patch803,patch6=patch804,patch7=patch805,patch8=patch806,patch9=patch807,patch10=patch808,patch11=patch809,patch12=patch810,patch13=patch811
-[1.17-]patchblock:id=%sculk_sensor,data=2,data=3,data=8,data=9,data=14,data=15,patch0=patch799,patch1=patch800,patch2=patch554,patch3=patch801,patch4=patch802,patch5=patch803,patch6=patch804,patch7=patch805,patch8=patch806,patch9=patch807,patch10=patch808,patch11=patch809,patch12=patch810,patch13=patch811
-[1.17-]patchblock:id=%sculk_sensor,data=4,data=5,data=10,data=11,patch0=patch799,patch1=patch800,patch2=patch554,patch3=patch801,patch4=patch802,patch5=patch803,patch6=patch804,patch7=patch805,patch8=patch806,patch9=patch807,patch10=patch808,patch11=patch809,patch12=patch810,patch13=patch811
+# Scolk Sensor (inactive) (sculk_sensor_bottom, sculk_sensor_side, sculk_sensor_tendril_inactive/active, sculk_sensor_top)
+[1.17-]modellist:id=sculk_sensor,data=*,box=0/0/0:16/8/16:n/1/0/8/16/16:e/1/0/8/16/16:s/1/0/8/16/16:w/1/0/8/16/16:u/3/0/0/16/16:d/0/0/0/16/16,box=-1/8/3:7/16/3/0/45/0/3/12/3:n/2/4/8/12/16:s/2/12/8/4/16,box=9/8/3:17/16/3/0/-45/0/13/12/3:n/2/12/8/4/16:s/2/4/8/12/16,box=9/8/13:17/16/13/0/45/0/13/12/13:n/2/12/8/4/16:s/2/4/8/12/16,box=-1/8/13:7/16/13/0/-45/0/3/12/13:n/2/4/8/12/16:s/2/12/8/4/16
 # Spore Blossom
 [1.17-]patch:id=patch812,Ox=0.062500,Oy=0.993750,Oz=0.062500,Ux=0.937500,Uy=0.993750,Uz=0.062500,Vx=0.062500,Vy=0.993750,Vz=0.937500,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top
 [1.17-]patch:id=patch813,Ox=0.062500,Oy=0.993750,Oz=0.937500,Ux=0.937500,Uy=0.993750,Uz=0.937500,Vx=0.062500,Vy=0.993750,Vz=0.062500,Umin=0.000000,Umax=1.000000,Vmin=0.000000,Vmax=1.000000,VmaxAtUMax=1.000000,VminAtUMax=0.000000,visibility=top

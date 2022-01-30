@@ -3075,16 +3075,18 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.17-]block:id=powder_snow_cauldron,data=*,top=0:cauldron_top,bottom=0:cauldron_bottom,allsides=0:cauldron_side,stdrot=true,transparency=TRANSPARENT
 # Budding amethyst
 [1.17-]block:id=budding_amethyst,allfaces=0:budding_amethyst,stdrot=true
-# Sculk Sensor
+# Sculk Sensor (sculk_sensor_bottom, sculk_sensor_side, sculk_sensor_tendril_inactive/active, sculk_sensor_top)
 [1.17-]texture:id=sculk_sensor_side
 [1.17-]texture:id=sculk_sensor_bottom
 [1.17-]texture:id=sculk_sensor_top
 [1.17-]texture:id=sculk_sensor_tendril_inactive
 [1.17-]texture:id=sculk_sensor_tendril_active
-
-[1.17-]block:id=%sculk_sensor,data=0,data=1,data=6,data=7,data=12,data=13,patch0=0:sculk_sensor_side,patch1=0:sculk_sensor_side,patch2=0:sculk_sensor_bottom,patch3=0:sculk_sensor_side,patch4=0:sculk_sensor_side,patch5=0:sculk_sensor_top,patch6=0:sculk_sensor_tendril_inactive,patch7=0:sculk_sensor_tendril_inactive,patch8=0:sculk_sensor_tendril_inactive,patch9=0:sculk_sensor_tendril_inactive,patch10=0:sculk_sensor_tendril_inactive,patch11=0:sculk_sensor_tendril_inactive,patch12=0:sculk_sensor_tendril_inactive,patch13=0:sculk_sensor_tendril_inactive,transparency=SEMITRANSPARENT,stdrot=true
-[1.17-]block:id=%sculk_sensor,data=2,data=3,data=8,data=9,data=14,data=15,patch0=0:sculk_sensor_side,patch1=0:sculk_sensor_side,patch2=0:sculk_sensor_bottom,patch3=0:sculk_sensor_side,patch4=0:sculk_sensor_side,patch5=0:sculk_sensor_top,patch6=0:sculk_sensor_tendril_active,patch7=0:sculk_sensor_tendril_active,patch8=0:sculk_sensor_tendril_active,patch9=0:sculk_sensor_tendril_active,patch10=0:sculk_sensor_tendril_active,patch11=0:sculk_sensor_tendril_active,patch12=0:sculk_sensor_tendril_active,patch13=0:sculk_sensor_tendril_active,transparency=SEMITRANSPARENT,stdrot=true
-[1.17-]block:id=%sculk_sensor,data=4,data=5,data=10,data=11,patch0=0:sculk_sensor_side,patch1=0:sculk_sensor_side,patch2=0:sculk_sensor_bottom,patch3=0:sculk_sensor_side,patch4=0:sculk_sensor_side,patch5=0:sculk_sensor_top,patch6=0:sculk_sensor_tendril_inactive,patch7=0:sculk_sensor_tendril_inactive,patch8=0:sculk_sensor_tendril_inactive,patch9=0:sculk_sensor_tendril_inactive,patch10=0:sculk_sensor_tendril_inactive,patch11=0:sculk_sensor_tendril_inactive,patch12=0:sculk_sensor_tendril_inactive,patch13=0:sculk_sensor_tendril_inactive,transparency=SEMITRANSPARENT,stdrot=true
+# Sculk Sensor (inactive)
+[1.17-]block:id=sculk_sensor,data=0,data=1,data=6,data=7,data=10,data=11,data=14,data=15,data=18,data=19,data=22,data=23,data=26,data=27,data=30,data=31,data=34,data=35,data=38,data=39,data=42,data=43,data=46,data=47,data=50,data=51,data=54,data=55,data=58,data=59,data=62,data=63,data=66,data=67,data=70,data=71,data=74,data=75,data=78,data=79,data=82,data=83,data=86,data=87,data=90,data=91,patch0=0:sculk_sensor_bottom,patch1=0:sculk_sensor_side,patch2=0:sculk_sensor_tendril_inactive,patch3=0:sculk_sensor_top
+# Sculk Sensor (active)
+[1.17-]block:id=sculk_sensor,data=2,data=3,data=8,data=9,data=12,data=13,data=16,data=17,data=20,data=21,data=24,data=25,data=28,data=29,data=32,data=33,data=36,data=37,data=40,data=41,data=44,data=45,data=48,data=49,data=52,data=53,data=56,data=57,data=60,data=61,data=64,data=65,data=68,data=69,data=72,data=73,data=76,data=77,data=80,data=81,data=84,data=85,data=88,data=89,data=92,data=93,patch0=0:sculk_sensor_bottom,patch1=0:sculk_sensor_side,patch2=0:sculk_sensor_tendril_active,patch3=0:sculk_sensor_top
+# Sculk Sensor (cooldown)
+[1.17-]block:id=sculk_sensor,data=4,data=5,data=10,data=11,data=14,data=15,data=18,data=19,data=22,data=23,data=26,data=27,data=30,data=31,data=34,data=35,data=38,data=39,data=42,data=43,data=46,data=47,data=50,data=51,data=54,data=55,data=58,data=59,data=62,data=63,data=66,data=67,data=70,data=71,data=70,data=71,data=78,data=79,data=82,data=83,data=86,data=87,data=90,data=91,data=94,data=95,patch0=0:sculk_sensor_bottom,patch1=0:sculk_sensor_side,patch2=0:sculk_sensor_tendril_inactive,patch3=0:sculk_sensor_top
 # Spore blossom
 [1.17-]texture:id=spore_blossom_base
 [1.17-]texture:id=spore_blossom
