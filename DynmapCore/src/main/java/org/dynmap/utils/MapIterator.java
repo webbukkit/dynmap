@@ -32,6 +32,14 @@ public interface MapIterator extends MapDataContext {
      */
     int getBlockLight(BlockStep step);
     /**
+     * Get block sky and emitted light, relative to current coordinate
+     * @param xoff - x offset from current position
+     * @param yoff - y offset from current position
+     * @param zoff - z offset from current position
+     * @return (emitted light * 256) + sky light
+     */
+    int getBlockLight(int xoff, int yoff, int zoff);
+    /**
      * Get biome at coordinates
      * @return biome
      */

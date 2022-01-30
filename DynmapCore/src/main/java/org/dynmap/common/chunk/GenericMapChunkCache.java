@@ -128,6 +128,26 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			return (emit << 8) + sky;
 		}
 		@Override
+	    /**
+	     * Get block sky and emitted light, relative to current coordinate
+	     * @return (emitted light * 256) + sky light
+	     */
+	    public final int getBlockLight(int xoff, int yoff, int zoff) {
+			int emit = 0, sky = 15;
+			int nx = x + xoff;
+			int ny = y + yoff;
+			int nz = z + zoff;
+			GenericChunkSection sect;
+			int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
+			if ((nchunkindex < snapcnt) && (nchunkindex >= 0)) {
+				sect = snaparray[nchunkindex].getSection(ny);
+				emit = sect.emitted.getLight(nx, ny, nz);
+				sky = sect.sky.getLight(nx, ny, nz);
+			}			
+			return (emit << 8) + sky;
+		}
+
+		@Override
 		public final BiomeMap getBiome() {
 			try {
 				return snap.getBiome(bx, y, bz);

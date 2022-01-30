@@ -14,9 +14,6 @@ import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
-import org.dynmap.bukkit.helper.BukkitVersionHelper;
-import org.dynmap.bukkit.helper.BukkitWorld;
-import org.dynmap.bukkit.helper.SnapshotCache;
 import org.dynmap.bukkit.helper.SnapshotCache.SnapshotRec;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.hdmap.HDBlockModels;
@@ -179,6 +176,23 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
 					sky = snaparray[nchunkindex].getBlockSkyLight(nx, y, nz);
 				}			
 			}
+			return (emit << 8) + sky;
+		}
+		@Override
+	    /**
+	     * Get block sky and emitted light, relative to current coordinate
+	     * @return (emitted light * 256) + sky light
+	     */
+	    public final int getBlockLight(int xoff, int yoff, int zoff) {
+			int emit = 0, sky = 15;
+			int nx = x + xoff;
+			int ny = y + yoff;
+			int nz = z + zoff;
+			int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
+			if ((nchunkindex < snapcnt) && (nchunkindex >= 0)) {
+				emit = snaparray[nchunkindex].getBlockEmittedLight(nx, ny, nz);
+				sky = snaparray[nchunkindex].getBlockSkyLight(nx, ny, nz);
+			}			
 			return (emit << 8) + sky;
 		}
 		
