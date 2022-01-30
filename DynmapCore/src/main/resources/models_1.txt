@@ -537,34 +537,55 @@ rotate:id=white_bed,data=0,rot=270
 # Iron Door
 customblock:id=oak_door,id=iron_door,class=org.dynmap.hdmap.renderer.DoorStateRenderer
 
-# Wall lever, facing south
-patchblock:id=lever,data=1,patch0=WLeverBase1@270,patch1=WLeverBase2@270,patch2=WLeverBase3@270,patch3=WLeverBase4@270,patch4=WLeverBase5@270,patch5=WLeverSide1@270,patch6=WLeverSide2@270,patch7=WLeverSide3@270,patch8=WLeverSide4@270
-patchblock:id=lever,data=9,patch0=WLeverBase1@270,patch1=WLeverBase2@270,patch2=WLeverBase3@270,patch3=WLeverBase4@270,patch4=WLeverBase5@270,patch5=WLeverSide1@0/90/180,patch6=WLeverSide2@0/90/180,patch7=WLeverSide3@0/90/180,patch8=WLeverSide4@0/90/180
-# Wall lever, facing north
-patchblock:id=lever,data=2,patch0=WLeverBase1@90,patch1=WLeverBase2@90,patch2=WLeverBase3@90,patch3=WLeverBase4@90,patch4=WLeverBase5@90,patch5=WLeverSide1@90,patch6=WLeverSide2@90,patch7=WLeverSide3@90,patch8=WLeverSide4@90
-patchblock:id=lever,data=10,patch0=WLeverBase1@90,patch1=WLeverBase2@90,patch2=WLeverBase3@90,patch3=WLeverBase4@90,patch4=WLeverBase5@90,patch5=WLeverSide1@0/270/180,patch6=WLeverSide2@0/270/180,patch7=WLeverSide3@0/270/180,patch8=WLeverSide4@0/270/180
-# Wall lever, facing west
-patchblock:id=lever,data=3,patch0=WLeverBase1,patch1=WLeverBase2,patch2=WLeverBase3,patch3=WLeverBase4,patch4=WLeverBase5,patch5=WLeverSide1,patch6=WLeverSide2,patch7=WLeverSide3,patch8=WLeverSide4
-patchblock:id=lever,data=11,patch0=WLeverBase1,patch1=WLeverBase2,patch2=WLeverBase3,patch3=WLeverBase4,patch4=WLeverBase5,patch5=WLeverSide1@0/0/180,patch6=WLeverSide2@0/0/180,patch7=WLeverSide3@0/0/180,patch8=WLeverSide4@0/0/180
-# Wall lever, facing east
-patchblock:id=lever,data=4,patch0=WLeverBase1@180,patch1=WLeverBase2@180,patch2=WLeverBase3@180,patch3=WLeverBase4@180,patch4=WLeverBase5@180,patch5=WLeverSide1@180,patch6=WLeverSide2@180,patch7=WLeverSide3@180,patch8=WLeverSide4@180
-patchblock:id=lever,data=12,patch0=WLeverBase1@180,patch1=WLeverBase2@180,patch2=WLeverBase3@180,patch3=WLeverBase4@180,patch4=WLeverBase5@180,patch5=WLeverSide1@0/180/180,patch6=WLeverSide2@0/180/180,patch7=WLeverSide3@0/180/180,patch8=WLeverSide4@0/180/180
-# Ground lever, off tp south
-patchblock:id=lever,data=6,patch0=LeverBase1@270,patch1=LeverBase1@90,patch2=LeverBase2@270,patch3=LeverBase2@90,patch4=LeverBase3@270,patch5=LeverSide1@270,patch6=LeverSide2@270,patch7=LeverSide3@270,patch8=LeverSide4@270
-patchblock:id=lever,data=14,patch0=LeverBase1@270,patch1=LeverBase1@90,patch2=LeverBase2@270,patch3=LeverBase2@90,patch4=LeverBase3@270,patch5=LeverSide1@90,patch6=LeverSide2@90,patch7=LeverSide3@90,patch8=LeverSide4@90
-# Ground lever, off tp west
-patchblock:id=lever,data=5,patch0=LeverBase1,patch1=LeverBase1@180,patch2=LeverBase2,patch3=LeverBase2@180,patch4=LeverBase3,patch5=LeverSide1,patch6=LeverSide2,patch7=LeverSide3,patch8=LeverSide4
-patchblock:id=lever,data=13,patch0=LeverBase1,patch1=LeverBase1@180,patch2=LeverBase2,patch3=LeverBase2@180,patch4=LeverBase3,patch5=LeverSide1@180,patch6=LeverSide2@180,patch7=LeverSide3@180,patch8=LeverSide4@180
-# Ceiling lever, off tp west
-patchblock:id=lever,data=7
-patchrotate:id=lever,data=5,rotz=180
-patchblock:id=lever,data=15
-patchrotate:id=lever,data=13,rotz=180
-# Ceiling lever, off tp south
-patchblock:id=lever,data=0
-patchrotate:id=lever,data=6,rotx=180
+# Lever (on) (base, lever)
+modellist:id=lever,data=0,box=5/0/4:11/3/12:d/0/5/4/11/12:u/0/5/4/11/12:n/0/5/0/11/3:s/0/5/0/11/3:w/0/4/0/12/3:e/0/4/0/12/3,box=7/1/7:9/11/9/45/0/0/8/1/8:u/1/7/6/9/8:n/1/7/6/9/16:s/1/7/6/9/16:w/1/7/6/9/16:e/1/7/6/9/16
+patchblock:id=lever,data=2
+patchrotate:id=lever,data=0,roty=180
+patchblock:id=lever,data=4
+patchrotate:id=lever,data=0,roty=270
+patchblock:id=lever,data=6
+patchrotate:id=lever,data=0,roty=90
 patchblock:id=lever,data=8
-patchrotate:id=lever,data=14,rotx=180
+patchrotate:id=lever,data=0,rotx=90
+patchblock:id=lever,data=10
+patchrotate:id=lever,data=0,rotx=90,roty=180
+patchblock:id=lever,data=12
+patchrotate:id=lever,data=0,rotx=90,roty=270
+patchblock:id=lever,data=14
+patchrotate:id=lever,data=0,rotx=90,roty=90
+patchblock:id=lever,data=16
+patchrotate:id=lever,data=0,rotx=180
+patchblock:id=lever,data=18
+patchrotate:id=lever,data=0,rotx=180,roty=180
+patchblock:id=lever,data=20
+patchrotate:id=lever,data=0,rotx=180,roty=270
+patchblock:id=lever,data=24
+patchrotate:id=lever,data=0,rotx=180,roty=90
+# Lever (off) (base, lever)
+modellist:id=lever,data=1,box=5/0/4:11/3/12:d/0/5/4/11/12:u/0/5/4/11/12:n/0/5/0/11/3:s/0/5/0/11/3:w/0/4/0/12/3:e/0/4/0/12/3,box=7/1/7:9/11/9/-45/0/0/8/1/8:u/1/7/6/9/8:n/1/7/6/9/16:s/1/7/6/9/16:w/1/7/6/9/16:e/1/7/6/9/16
+patchblock:id=lever,data=3
+patchrotate:id=lever,data=1,roty=180
+patchblock:id=lever,data=5
+patchrotate:id=lever,data=1,roty=270
+patchblock:id=lever,data=7
+patchrotate:id=lever,data=1,roty=90
+patchblock:id=lever,data=9
+patchrotate:id=lever,data=1,rotx=90
+patchblock:id=lever,data=11
+patchrotate:id=lever,data=1,rotx=90,roty=180
+patchblock:id=lever,data=13
+patchrotate:id=lever,data=1,rotx=90,roty=270
+patchblock:id=lever,data=15
+patchrotate:id=lever,data=1,rotx=90,roty=90
+patchblock:id=lever,data=17
+patchrotate:id=lever,data=1,rotx=180
+patchblock:id=lever,data=19
+patchrotate:id=lever,data=1,rotx=180,roty=180
+patchblock:id=lever,data=21
+patchrotate:id=lever,data=1,rotx=180,roty=270
+patchblock:id=lever,data=23
+patchrotate:id=lever,data=1,rotx=180,roty=90
+
 # Cactus
 patchblock:id=cactus,patch0=VertX00625,patch1=VertX00625@90,patch2=VertX00625@180,patch3=VertX00625@270,patch4=HorizY100ZTop,patch5=HorizY100ZTop@180/0/0
 # Redstone repeater (smooth_stone, repeater, redstone_torch_off, redstone_torch, bedrock, repeater_on)

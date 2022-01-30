@@ -961,7 +961,7 @@ block:id=ladder,patch0=0:ladder,transparency=TRANSPARENT
 # Cobblestone Stairs
 block:id=cobblestone_stairs,patch0-2=0:cobblestone,transparency=SEMITRANSPARENT
 # Lever
-block:id=lever,patch0-4=0:cobblestone,patch5-8=0:lever,transparency=TRANSPARENT
+block:id=lever,patch0=0:cobblestone,patch1=0:lever,transparency=TRANSPARENT
 # Stone pressure plate
 block:id=stone_pressure_plate,allfaces=0:stone,stdrot=true,transparency=TRANSPARENT
 # Iron Door
