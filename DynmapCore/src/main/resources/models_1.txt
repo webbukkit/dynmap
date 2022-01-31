@@ -2336,3 +2336,27 @@ patchrotate:id=observer,data=0,rotx=270
 patchblock:id=observer,data=10,data=11
 patchrotate:id=observer,data=0,rotx=90
 
+# Cocoa stage 0
+modellist:id=cocoa,data=1,box=6/7/11:10/12/15:d/0/0/0/4/4:u/0/0/0/4/4:n/0/11/4/15/9:s/0/11/4/15/9:w/0/11/4/15/9:e/0/11/4/15/9,box=8/12/12:8/16/16:w/0/12/0/16/4:e/0/16/0/12/4
+patchblock:id=cocoa,data=0
+patchrotate:id=cocoa,data=1,roty=180
+patchblock:id=cocoa,data=2
+patchrotate:id=cocoa,data=1,roty=90
+patchblock:id=cocoa,data=3
+patchrotate:id=cocoa,data=1,roty=270
+# Cocoa state 1
+modellist:id=cocoa,data=5,box=5/5/9:11/12/15:d/0/0/0/6/6:u/0/0/0/6/6:n/0/9/4/15/11:s/0/9/4/15/11:w/0/9/4/15/11:e/0/9/4/15/11,box=8/12/12:8/16/16:w/0/12/0/16/4:e/0/16/0/12/4
+patchblock:id=cocoa,data=4
+patchrotate:id=cocoa,data=5,roty=180
+patchblock:id=cocoa,data=6
+patchrotate:id=cocoa,data=5,roty=90
+patchblock:id=cocoa,data=7
+patchrotate:id=cocoa,data=5,roty=270
+# Cocoa state 2
+modellist:id=cocoa,data=9,box=4/3/7:12/12/15:d/0/0/0/7/7:u/0/0/0/7/7:n/0/7/4/15/13:s/0/7/4/15/13:w/0/7/4/15/13:e/0/7/4/15/13,box=8/12/12:8/16/16:w/0/12/0/16/4:e/0/16/0/12/4
+patchblock:id=cocoa,data=8
+patchrotate:id=cocoa,data=9,roty=180
+patchblock:id=cocoa,data=10
+patchrotate:id=cocoa,data=9,roty=90
+patchblock:id=cocoa,data=11
+patchrotate:id=cocoa,data=9,roty=270

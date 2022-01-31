@@ -336,6 +336,8 @@ texture:id=emerald_ore
 texture:id=emerald_block
 texture:id=repeater
 texture:id=repeater_on
+texture:id=cocoa_stage0
+texture:id=cocoa_stage1
 texture:id=cocoa_stage2
 texture:id=command_block
 texture:id=beacon
@@ -1034,7 +1036,7 @@ block:id=jack_o_lantern,data=2,face4=0:jack_o_lantern,face2=0:pumpkin_side,face3
 # Jack-O-Lantern (east)
 block:id=jack_o_lantern,data=3,face5=0:jack_o_lantern,face2=0:pumpkin_side,face3=0:pumpkin_side,face4=0:pumpkin_side,topbottom=6000:pumpkin_top,stdrot=true
 # Cake Block
-block:id=cake,patch0=0:cake_bottom,patch1=0:cake_top,patch2=0:cake_side,patch3=0:cake_inner,transparency=TRANSPARENT
+block:id=cake,data=0,data=1,data=2,data=3,data=4,data=5,data=6,patch0=0:cake_bottom,patch1=0:cake_top,patch2=0:cake_side,patch3=0:cake_inner,transparency=TRANSPARENT
 # Repeater
 block:id=repeater,data=*,patch0=0:smooth_stone,patch1=0:repeater,patch2=0:redstone_torch_off,patch3=0:redstone_torch,patch4=0:bedrock,patch5=0:repeater_on,transparency=TRANSPARENT
 # Stained Glass (95)
@@ -1151,8 +1153,10 @@ block:id=dragon_egg,data=*,allfaces=0:dragon_egg,stdrot=true
 block:id=redstone_lamp,data=0,allfaces=0:redstone_lamp_on,stdrot=true
 # Redstone lamp (off)
 block:id=redstone_lamp,data=1,allfaces=0:redstone_lamp,stdrot=true
-# Cocoa Plant (TODO: handle different stages, orientations)
-block:id=cocoa,allsides=0:cocoa_stage2
+# Cocoa Plant
+block:id=cocoa,data=0,data=1,data=2,data=3,patch0=0:cocoa_stage0,transparency=TRANSPARENT
+block:id=cocoa,data=4,data=5,data=6,data=7,patch0=0:cocoa_stage1,transparency=TRANSPARENT
+block:id=cocoa,data=8,data=9,data=10,data=11,patch0=0:cocoa_stage2,transparency=TRANSPARENT
 # Sandstone stairs
 block:id=sandstone_stairs,patch0=0:sandstone,patch1=0:sandstone_top,patch2=0:sandstone_bottom,transparency=SEMITRANSPARENT
 # Emerald Ore
