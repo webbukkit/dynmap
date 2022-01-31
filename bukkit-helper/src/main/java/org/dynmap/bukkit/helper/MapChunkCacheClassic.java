@@ -46,15 +46,15 @@ public class MapChunkCacheClassic extends AbstractMapChunkCache {
     	public final DynmapBlockState getBlockType(int x, int y, int z) {
     		if ((sectionmask & (1 << (y >> 4))) != 0)
     			return DynmapBlockState.AIR;
-            return BukkitVersionHelper.stateByID[(ss.getBlockTypeId(x, y, z) << 4) | ss.getBlockData(x, y, z)];
+            return BukkitVersionHelper.stateByID[(ss.getBlockTypeId(x & 0xF, y, z & 0xF) << 4) | ss.getBlockData(x & 0xF, y, z & 0xF)];
     	}
 		@Override
         public final int getBlockSkyLight(int x, int y, int z) {
-        	return ss.getBlockSkyLight(x, y, z);
+        	return ss.getBlockSkyLight(x & 0xF, y, z & 0xF);
         }
 		@Override
         public final int getBlockEmittedLight(int x, int y, int z) {
-        	return ss.getBlockEmittedLight(x, y, z);
+        	return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
         }
 		@Override
         public final int getHighestBlockYAt(int x, int z) {
@@ -62,7 +62,7 @@ public class MapChunkCacheClassic extends AbstractMapChunkCache {
         }
 		@Override
         public final Biome getBiome(int x, int z) {
-        	return ss.getBiome(x, z);
+        	return ss.getBiome(x & 0xF, z & 0xF);
         }
 		@Override
         public final boolean isSectionEmpty(int sy) {
