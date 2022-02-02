@@ -883,7 +883,7 @@ block:id=obsidian,allfaces=0:obsidian,stdrot=true
 # Torch
 block:id=torch,patch0=0:torch,transparency=TRANSPARENT
 # Wall torch
-block:id=wall_torch,data=*,patch0=0:torch,transparency=TRANSPARENT
+block:id=wall_torch,state=*,patch0=0:torch,transparency=TRANSPARENT
 # Fire
 block:id=fire,patch0-3=0:fire_0,patch4-7=0:fire_1,transparency=TRANSPARENT
 # Monster spawner
