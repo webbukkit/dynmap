@@ -187,8 +187,8 @@ customblock:id=oak_stairs,id=cobblestone_stairs,id=brick_stairs,id=stone_brick_s
 # Jungle slab
 # Acacia slab
 # Dark oak slab
-boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,id=dark_oak_slab,data=0,data=1,ymin=0.5
-boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,id=dark_oak_slab,data=2,data=3,ymax=0.5
+boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,id=dark_oak_slab,state=type:top,ymin=0.5
+boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,id=dark_oak_slab,state=type:bottom,ymax=0.5
 # Stone slab
 # Sandstone slab
 # Petified oak slab
@@ -202,8 +202,8 @@ boxblock:id=oak_slab,id=spruce_slab,id=birch_slab,id=jungle_slab,id=acacia_slab,
 # Prismarine slab
 # Prismarine brick slab
 # Dark prismarine slab
-boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,id=prismarine_slab,id=prismarine_brick_slab,id=dark_prismarine_slab,data=0,data=1,ymin=0.5
-boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,id=prismarine_slab,id=prismarine_brick_slab,id=dark_prismarine_slab,data=2,data=3,ymax=0.5
+boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,id=prismarine_slab,id=prismarine_brick_slab,id=dark_prismarine_slab,state=type:top,ymin=0.5
+boxblock:id=stone_slab,id=sandstone_slab,id=petrified_oak_slab,id=cobblestone_slab,id=brick_slab,id=stone_brick_slab,id=nether_brick_slab,id=quartz_slab,id=red_sandstone_slab,id=purpur_slab,id=prismarine_slab,id=prismarine_brick_slab,id=dark_prismarine_slab,state=type:bottom,ymax=0.5
 
 # Snow
 boxblock:id=snow,data=0,ymax=0.125
@@ -559,7 +559,7 @@ patchblock:id=lever,data=18
 patchrotate:id=lever,data=0,rotx=180,roty=180
 patchblock:id=lever,data=20
 patchrotate:id=lever,data=0,rotx=180,roty=270
-patchblock:id=lever,data=24
+patchblock:id=lever,data=22
 patchrotate:id=lever,data=0,rotx=180,roty=90
 # Lever (off) (base, lever)
 modellist:id=lever,data=1,box=5/0/4:11/3/12:d/0/5/4/11/12:u/0/5/4/11/12:n/0/5/0/11/3:s/0/5/0/11/3:w/0/4/0/12/3:e/0/4/0/12/3,box=7/1/7:9/11/9/-45/0/0/8/1/8:u/1/7/6/9/8:n/1/7/6/9/16:s/1/7/6/9/16:w/1/7/6/9/16:e/1/7/6/9/16
@@ -1024,12 +1024,12 @@ patch:id=AnvilTopSide1,Ox=0.0,Oy=0.0,Oz=0.1825,Ux=1.0,Uy=0.0,Uz=0.1825,Vx=0.0,Vy
 patch:id=AnvilTopSide2,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=0.0,Umin=0.1825,Umax=0.8175,Vmin=0.625,Vmax=1.0,visibility=both
 patch:id=AnvilTopTop,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,Umin=0.0,Umax=1.0,Vmin=0.1825,Vmax=0.8175,visibility=bottom
 patch:id=AnvilTopBottom,Ox=0.0,Oy=0.625,Oz=0.0,Ux=1.0,Uy=0.625,Uz=0.0,Vx=0.0,Vy=0.625,Vz=1.0,Umin=0.0,Umax=1.0,Vmin=0.1825,Vmax=0.8175,visibility=top
-patchblock:id=anvil,data=1,data=5,data=9,data=13,patch0=AnvilBaseTop,patch1=AnvilBaseBottom,patch2=AnvilBaseSide,patch3=AnvilBaseSide@90,patch4=AnvilBaseSide@180,patch5=AnvilBaseSide@270,patch6=AnvilStepTop,patch7=AnvilStepSide1,patch8=AnvilStepSide2@90,patch9=AnvilStepSide1@180,patch10=AnvilStepSide2@270,patch11=AnvilStandSide1,patch12=AnvilStandSide2@90,patch13=AnvilStandSide1@180,patch14=AnvilStandSide2@270,patch15=AnvilTopBottom,patch16=AnvilTopSide1,patch17=AnvilTopSide2@90,patch18=AnvilTopSide1@180,patch19=AnvilTopSide2@270,patch20=AnvilTopTop
-patchblock:id=anvil,data=0,data=4,data=8,data=12
+patchblock:id=anvil,data=1,patch0=AnvilBaseTop,patch1=AnvilBaseBottom,patch2=AnvilBaseSide,patch3=AnvilBaseSide@90,patch4=AnvilBaseSide@180,patch5=AnvilBaseSide@270,patch6=AnvilStepTop,patch7=AnvilStepSide1,patch8=AnvilStepSide2@90,patch9=AnvilStepSide1@180,patch10=AnvilStepSide2@270,patch11=AnvilStandSide1,patch12=AnvilStandSide2@90,patch13=AnvilStandSide1@180,patch14=AnvilStandSide2@270,patch15=AnvilTopBottom,patch16=AnvilTopSide1,patch17=AnvilTopSide2@90,patch18=AnvilTopSide1@180,patch19=AnvilTopSide2@270,patch20=AnvilTopTop
+patchblock:id=anvil,data=0
 patchrotate:id=anvil,data=1,rot=270
-patchblock:id=anvil,data=2,data=6,data=10,data=14
+patchblock:id=anvil,data=2
 patchrotate:id=anvil,data=1,rot=90
-patchblock:id=anvil,data=3,data=7,data=11,data=15
+patchblock:id=anvil,data=3
 patchrotate:id=anvil,data=1,rot=180
 
 # Daylight Sensor
@@ -1354,8 +1354,8 @@ patchblock:id=bubble_column
 [1.14-]patchblock:id=potted_lily_of_the_valley,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
 # Smooth stone slab
 # Cut sandstone slab
-[1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,data=0,data=1,ymin=0.5
-[1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,data=2,data=3,ymax=0.5
+[1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,state=type:top,ymin=0.5
+[1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,state=type:bottom,ymax=0.5
 # Bamboo
 [1.14-]boxblock:id=bamboo,data=0-5,xmin=0.4275,xmax=0.5625,zmin=0.4275,zmax=0.5625
 [1.14-]boxblock:id=bamboo,data=6-11,xmin=0.38,xmax=0.62,zmin=0.38,zmax=0.62
@@ -1389,8 +1389,8 @@ patchblock:id=bubble_column
 # Red nether brick slab
 # Polished andesite slab
 # Diorite slab
-[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quartz_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=0,data=1,ymin=0.5
-[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quartz_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,data=2,data=3,ymax=0.5
+[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quartz_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,state=type:top,ymin=0.5
+[1.14-]boxblock:id=polished_granite_slab,id=smooth_red_sandstone_slab,id=mossy_stone_brick_slab,id=polished_diorite_slab,id=mossy_cobblestone_slab,id=end_stone_brick_slab,id=smooth_sandstone_slab,id=smooth_quartz_slab,id=granite_slab,id=andesite_slab,id=red_nether_brick_slab,id=polished_andesite_slab,id=diorite_slab,state=type:bottom,ymax=0.5
 # Brick wall
 # Prismarine wall
 # Red sandstone wall
@@ -1641,8 +1641,8 @@ patchblock:id=bubble_column
 # Blackstone Slab
 # Polished Blackstone slab
 # Polished Blackstone Brick slab
-[1.16-]boxblock:id=crimson_slab,id=warped_slab,id=blackstone_slab,id=polished_blackstone_brick_slab,id=polished_blackstone_slab,data=0,data=1,ymin=0.5
-[1.16-]boxblock:id=crimson_slab,id=warped_slab,id=blackstone_slab,id=polished_blackstone_brick_slab,id=polished_blackstone_slab,data=2,data=3,ymax=0.5
+[1.16-]boxblock:id=crimson_slab,id=warped_slab,id=blackstone_slab,id=polished_blackstone_brick_slab,id=polished_blackstone_slab,state=type:top,ymin=0.5
+[1.16-]boxblock:id=crimson_slab,id=warped_slab,id=blackstone_slab,id=polished_blackstone_brick_slab,id=polished_blackstone_slab,state=type:bottom,ymax=0.5
 # Warped pressure plate
 # Crimson pressure plate
 # Polished Blackstone pressure plate
@@ -1743,8 +1743,8 @@ patchblock:id=bubble_column
 # Waxed exposed cut copper slab
 # Waxed weathered cut copper slab
 # Waxed oxidized cut copper slab
-[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,id=cut_copper_slab,id=exposed_cut_copper_slab,id=weathered_cut_copper_slab,id=oxidized_cut_copper_slab,id=waxed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,id=waxed_weathered_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,data=0,data=1,ymin=0.5
-[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,id=cut_copper_slab,id=exposed_cut_copper_slab,id=weathered_cut_copper_slab,id=oxidized_cut_copper_slab,id=waxed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,id=waxed_weathered_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,data=2,data=3,ymax=0.5
+[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,id=cut_copper_slab,id=exposed_cut_copper_slab,id=weathered_cut_copper_slab,id=oxidized_cut_copper_slab,id=waxed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,id=waxed_weathered_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,state=type:top,ymin=0.5
+[1.17-]boxblock:id=cobbled_deepslate_slab,id=deepslate_brick_slab,id=deepslate_tile_slab,id=polished_deepslate_slab,id=cut_copper_slab,id=exposed_cut_copper_slab,id=weathered_cut_copper_slab,id=oxidized_cut_copper_slab,id=waxed_cut_copper_slab,id=waxed_exposed_cut_copper_slab,id=waxed_weathered_cut_copper_slab,id=waxed_oxidized_cut_copper_slab,state=type:bottom,ymax=0.5
 # Cobbled deepslate wall
 # Deepslate brick wall
 # Deepslate tile wall

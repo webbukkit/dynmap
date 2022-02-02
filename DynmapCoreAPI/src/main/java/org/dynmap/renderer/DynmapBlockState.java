@@ -542,6 +542,17 @@ public class DynmapBlockState {
     	}
     	return lightAttenuation;    	
     }
+    /*
+     * Test if matches attrib=value pair
+     */
+    public final boolean isStateMatch(String attrib, String value) {
+    	String v = attrib + "=" + value;
+    	v = v.toLowerCase();
+    	for (String state : stateList) {
+    		if (state.equals(v)) return true;
+    	}
+    	return false;
+    }
     /**
      * To printable string
      */

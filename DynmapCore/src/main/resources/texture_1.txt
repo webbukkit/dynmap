@@ -1287,62 +1287,62 @@ block:id=trapped_chest,patch0=0:trapchest,patch1=1:trapchest,patch2=2:trapchest,
 ############
 
 # Oak slab
-block:id=oak_slab,data=0,data=1,data=2,data=3,allfaces=0:oak_planks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=oak_slab,data=4,data=5,allfaces=0:oak_planks,stdrot=true
+block:id=oak_slab,state=type:top,state=type:bottom,allfaces=0:oak_planks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=oak_slab,state=type:double,allfaces=0:oak_planks,stdrot=true
 # Spruce slab
-block:id=spruce_slab,data=0,data=1,data=2,data=3,allfaces=0:spruce_planks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=spruce_slab,data=4,data=5,allfaces=0:spruce_planks,stdrot=true
+block:id=spruce_slab,state=type:top,state=type:bottom,allfaces=0:spruce_planks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=spruce_slab,state=type:double,allfaces=0:spruce_planks,stdrot=true
 # Birch slab
-block:id=birch_slab,data=0,data=1,data=2,data=3,allfaces=0:birch_planks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=birch_slab,data=4,data=5,allfaces=0:birch_planks,stdrot=true
+block:id=birch_slab,state=type:top,state=type:bottom,allfaces=0:birch_planks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=birch_slab,state=type:double,allfaces=0:birch_planks,stdrot=true
 # Jungle slab
-block:id=jungle_slab,data=0,data=1,data=2,data=3,allfaces=0:jungle_planks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=jungle_slab,data=4,data=5,allfaces=0:jungle_planks,stdrot=true
+block:id=jungle_slab,state=type:top,state=type:bottom,allfaces=0:jungle_planks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=jungle_slab,state=type:double,allfaces=0:jungle_planks,stdrot=true
 # Acacia slab
-block:id=acacia_slab,data=0,data=1,data=2,data=3,allfaces=0:acacia_planks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=acacia_slab,data=4,data=5,allfaces=0:acacia_planks,stdrot=true
+block:id=acacia_slab,state=type:top,state=type:bottom,allfaces=0:acacia_planks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=acacia_slab,state=type:double,allfaces=0:acacia_planks,stdrot=true
 # Dark oak slab
-block:id=dark_oak_slab,data=0,data=1,data=2,data=3,allfaces=0:dark_oak_planks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=dark_oak_slab,data=4,data=5,allfaces=0:dark_oak_planks,stdrot=true
+block:id=dark_oak_slab,state=type:top,state=type:bottom,allfaces=0:dark_oak_planks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=dark_oak_slab,state=type:double,allfaces=0:dark_oak_planks,stdrot=true
 # Stone slab
-block:id=stone_slab,data=0,data=1,data=2,data=3,allsides=0:stone,topbottom=0:stone,stdrot=true,transparency=SEMITRANSPARENT
-block:id=stone_slab,data=4,data=5,allsides=0:stone,topbottom=0:stone,stdrot=true
+block:id=stone_slab,state=type:top,state=type:bottom,allsides=0:stone,topbottom=0:stone,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_slab,state=type:double,allsides=0:stone,topbottom=0:stone,stdrot=true
 # Sandstone slab
-block:id=sandstone_slab,data=0,data=1,data=2,data=3,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true,transparency=SEMITRANSPARENT
-block:id=sandstone_slab,data=4,data=5,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true
+block:id=sandstone_slab,state=type:top,state=type:bottom,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true,transparency=SEMITRANSPARENT
+block:id=sandstone_slab,state=type:double,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone,stdrot=true
 # Petified oak slab
-block:id=petrified_oak_slab,data=0,data=1,data=2,data=3,allfaces=0:oak_planks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=petrified_oak_slab,data=4,data=5,allfaces=0:oak_planks,stdrot=true
+block:id=petrified_oak_slab,state=type:top,state=type:bottom,allfaces=0:oak_planks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=petrified_oak_slab,state=type:double,allfaces=0:oak_planks,stdrot=true
 # Cobblestone slab
-block:id=cobblestone_slab,data=0,data=1,data=2,data=3,allfaces=0:cobblestone,stdrot=true,transparency=SEMITRANSPARENT
-block:id=cobblestone_slab,data=4,data=5,allfaces=0:cobblestone,stdrot=true
+block:id=cobblestone_slab,state=type:top,state=type:bottom,allfaces=0:cobblestone,stdrot=true,transparency=SEMITRANSPARENT
+block:id=cobblestone_slab,state=type:double,allfaces=0:cobblestone,stdrot=true
 # Brick slab
-block:id=brick_slab,data=0,data=1,data=2,data=3,allfaces=0:bricks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=brick_slab,data=4,data=5,allfaces=0:bricks,stdrot=true
+block:id=brick_slab,state=type:top,state=type:bottom,allfaces=0:bricks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=brick_slab,state=type:double,allfaces=0:bricks,stdrot=true
 # Stone brick slab
-block:id=stone_brick_slab,data=0,data=1,data=2,data=3,allfaces=0:stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=stone_brick_slab,data=4,data=5,allfaces=0:stone_bricks,stdrot=true
+block:id=stone_brick_slab,state=type:top,state=type:bottom,allfaces=0:stone_bricks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=stone_brick_slab,state=type:double,allfaces=0:stone_bricks,stdrot=true
 # Nether brick slab
-block:id=nether_brick_slab,data=0,data=1,data=2,data=3,allfaces=0:nether_bricks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=nether_brick_slab,data=4,data=5,allfaces=0:nether_bricks,stdrot=true
+block:id=nether_brick_slab,state=type:top,state=type:bottom,allfaces=0:nether_bricks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=nether_brick_slab,state=type:double,allfaces=0:nether_bricks,stdrot=true
 # Quartz slab
-block:id=quartz_slab,data=0,data=1,data=2,data=3,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true,transparency=SEMITRANSPARENT
-block:id=quartz_slab,data=4,data=5,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side
+block:id=quartz_slab,state=type:top,state=type:bottom,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true,transparency=SEMITRANSPARENT
+block:id=quartz_slab,state=type:double,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side
 # Red sandstone slab
-block:id=red_sandstone_slab,data=0,data=1,data=2,data=3,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true,transparency=SEMITRANSPARENT
-block:id=red_sandstone_slab,data=4,data=5,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true
+block:id=red_sandstone_slab,state=type:top,state=type:bottom,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true,transparency=SEMITRANSPARENT
+block:id=red_sandstone_slab,state=type:double,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone,stdrot=true
 # Purpur slab
-block:id=purpur_slab,data=0,data=1,data=2,data=3,allfaces=0:purpur_block,stdrot=true,transparency=SEMITRANSPARENT
-block:id=purpur_slab,data=4,data=5,allfaces=0:purpur_block,stdrot=true
+block:id=purpur_slab,state=type:top,state=type:bottom,allfaces=0:purpur_block,stdrot=true,transparency=SEMITRANSPARENT
+block:id=purpur_slab,state=type:double,allfaces=0:purpur_block,stdrot=true
 # Prismarine slab
-block:id=prismarine_slab,data=0,data=1,data=2,data=3,allfaces=0:prismarine,stdrot=true,transparency=SEMITRANSPARENT
-block:id=prismarine_slab,data=4,data=5,allfaces=0:prismarine,stdrot=true
+block:id=prismarine_slab,state=type:top,state=type:bottom,allfaces=0:prismarine,stdrot=true,transparency=SEMITRANSPARENT
+block:id=prismarine_slab,state=type:double,allfaces=0:prismarine,stdrot=true
 # Prismarine brick slab
-block:id=prismarine_brick_slab,data=0,data=1,data=2,data=3,allfaces=0:prismarine_bricks,stdrot=true,transparency=SEMITRANSPARENT
-block:id=prismarine_brick_slab,data=4,data=5,allfaces=0:prismarine_bricks,stdrot=true
+block:id=prismarine_brick_slab,state=type:top,state=type:bottom,allfaces=0:prismarine_bricks,stdrot=true,transparency=SEMITRANSPARENT
+block:id=prismarine_brick_slab,state=type:double,allfaces=0:prismarine_bricks,stdrot=true
 # Dsrk prismarine slab
-block:id=dark_prismarine_slab,data=0,data=1,data=2,data=3,allfaces=0:dark_prismarine,stdrot=true,transparency=SEMITRANSPARENT
-block:id=dark_prismarine_slab,data=4,data=5,allfaces=0:dark_prismarine,stdrot=true
+block:id=dark_prismarine_slab,state=type:top,state=type:bottom,allfaces=0:dark_prismarine,stdrot=true,transparency=SEMITRANSPARENT
+block:id=dark_prismarine_slab,state=type:double,allfaces=0:dark_prismarine,stdrot=true
 
 
 # Light weighted pressure plate

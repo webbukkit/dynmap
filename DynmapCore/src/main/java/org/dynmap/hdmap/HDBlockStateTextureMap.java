@@ -3,6 +3,7 @@ package org.dynmap.hdmap;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.Log;
@@ -82,40 +83,25 @@ public class HDBlockStateTextureMap {
     }
     
     // Add block state to table, with given block IDs and state indexes
-    public void addToTable(List<String> blocknames, BitSet stateidx) {
+    public void addToTable(Map<DynmapBlockState, BitSet> states) {
         /* Add entries to lookup table */
-        for (String blkname : blocknames) {
-            DynmapBlockState baseblk = DynmapBlockState.getBaseStateByName(blkname);
+        for (DynmapBlockState baseblk : states.keySet()) {
             if (baseblk.isNotAir()) {
-                if (stateidx != null) {
-                	for (int stateid = stateidx.nextSetBit(0); stateid >= 0; stateid = stateidx.nextSetBit(stateid+1)) {
-                        DynmapBlockState bs = baseblk.getState(stateid);
-                        if (bs.isAir()) {
-                        	Log.warning("Invalid texture block state: " + blkname + ":" + stateid);
-                        	continue;
-                        }
-                        if ((this.blockset != null) && (this.blockset.equals("core") == false)) {
-                            HDBlockModels.resetIfNotBlockSet(bs, this.blockset);
-                        }
-                        copyToStateIndex(bs, this, null);
+            	BitSet stateidx = states.get(baseblk);
+            	for (int stateid = stateidx.nextSetBit(0); stateid >= 0; stateid = stateidx.nextSetBit(stateid+1)) {
+                    DynmapBlockState bs = baseblk.getState(stateid);
+                    if (bs.isAir()) {
+                    	Log.warning("Invalid texture block state: " + baseblk.blockName + ":" + stateid);
+                    	continue;
                     }
-                }
-                else {  // Else, loop over all state IDs for given block
-                    for (int stateid = 0; stateid < baseblk.getStateCount(); stateid++) {
-                        DynmapBlockState bs = baseblk.getState(stateid);
-                        if (bs.isAir()) {
-                        	Log.warning("Invalid texture block state: " + blkname + ":" + stateid);
-                        	continue;
-                        }
-                        if ((this.blockset != null) && (this.blockset.equals("core") == false)) {
-                            HDBlockModels.resetIfNotBlockSet(bs, this.blockset);
-                        }
-                        copyToStateIndex(bs, this, null);
+                    if ((this.blockset != null) && (this.blockset.equals("core") == false)) {
+                        HDBlockModels.resetIfNotBlockSet(bs, this.blockset);
                     }
+                    copyToStateIndex(bs, this, null);
                 }
             }
             else {
-            	Log.warning("Invalid texture block name: " + blkname);
+            	Log.warning("Invalid texture block name: " + baseblk.blockName);
             }
         }
     }

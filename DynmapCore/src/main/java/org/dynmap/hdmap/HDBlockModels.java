@@ -28,6 +28,7 @@ import org.dynmap.renderer.CustomRenderer;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.renderer.RenderPatch;
 import org.dynmap.renderer.RenderPatchFactory.SideVisible;
+import org.dynmap.utils.BlockStateParser;
 import org.dynmap.utils.ForgeConfigFile;
 import org.dynmap.utils.PatchDefinition;
 import org.dynmap.utils.PatchDefinitionFactory;
@@ -295,26 +296,6 @@ public class HDBlockModels {
         }
     }
 
-    private static String getBlockName(String modid, String val) throws NumberFormatException {
-        char c = val.charAt(0);
-        if(Character.isLetter(c) || (c == '%') || (c == '&')) {
-            if ((c == '%') || (c == '&')) {
-                val = val.substring(1);
-            }
-            int off = val.indexOf('+');
-            if (off > 0) {
-                val = val.substring(0,  off);
-            }
-            if (val.indexOf(':') < 0) {
-                val = modid + ":" + val;
-            }
-            return val;
-        }
-        else {
-            throw new NumberFormatException("invalid ID - " + val);
-        }
-    }
-
     // Patch index ordering, corresponding to BlockStep ordinal order
     public static final int boxPatchList[] = { 1, 4, 0, 3, 2, 5 };
 
@@ -358,10 +339,11 @@ public class HDBlockModels {
         int cnt = 0;
         boolean need_mod_cfg = false;
         boolean mod_cfg_loaded = false;
-        BitSet databits = new BitSet();
         String modname = "minecraft";
         String modversion = null;
         final String mcver = core.getDynmapPluginPlatformVersion();
+        BlockStateParser bsp = new BlockStateParser();
+        Map<DynmapBlockState, BitSet> bsprslt;
         try {
             String line;
             ArrayList<HDBlockVolumetricModel> modlist = new ArrayList<HDBlockVolumetricModel>();
@@ -373,12 +355,13 @@ public class HDBlockModels {
             int rownum = 0;
             int scale = 0;
             rdr = new LineNumberReader(new InputStreamReader(in));
-            while((line = rdr.readLine()) != null) {
+            while ((line = rdr.readLine()) != null) {
                 boolean skip = false;
+                int lineNum = rdr.getLineNumber();
                 if ((line.length() > 0) && (line.charAt(0) == '[')) {    // If version constrained like
                     int end = line.indexOf(']');    // Find end
                     if (end < 0) {
-                        Log.severe("Format error - line " + rdr.getLineNumber() + " of " + fname + ": bad version limit");
+                        Log.severe("Format error - line " + lineNum + " of " + fname + ": bad version limit");
                         return;
                     }
                     String vertst = line.substring(1, end);
@@ -392,62 +375,52 @@ public class HDBlockModels {
                     }
                     line = line.substring(end+1);
                 }
-                // If we're skipping due to version restriction
-                if (skip) {
-                    
+                // Comment line
+                if(line.startsWith("#") || line.startsWith(";")) {
+                	skip = true;
                 }
-                else if(line.startsWith("block:")) {
-                    ArrayList<String> blknames = new ArrayList<String>();
-                    databits.clear();
+                // If we're skipping due to version restriction
+                if (skip) continue;
+                // Split off <type>:
+                int typeend = line.indexOf(':');
+                String typeid = "";
+                if (typeend >= 0) {
+                	typeid = line.substring(0, typeend);
+                	line = line.substring(typeend+1).trim();
+                }
+                if (typeid.equals("block")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+
                     scale = 0;
-                    line = line.substring(6);
                     String[] args = line.split(",");
                     for(String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            blknames.add(getBlockName(modname,av[1]));
-                        }
-                        else if(av[0].equals("data")) {
-                            if(av[1].equals("*")) {
-                                databits.clear();
-                            }
-                            else if (av[1].indexOf('-') > 0) {
-                                String[] sp = av[1].split("-");
-                                int m0 = getIntValue(varvals, sp[0]);
-                                int m1 = getIntValue(varvals, sp[1]);
-                                for (int m = m0; m <= m1; m++) {
-                                    databits.set(m);
-                                }
-                            }
-                            else
-                                databits.set(getIntValue(varvals,av[1]));
-                        }
-                        else if(av[0].equals("scale")) {
+                        if(av[0].equals("scale")) {
                             scale = Integer.parseInt(av[1]);
                         }
                     }
+                    bsprslt = bsp.getMatchingStates();
                     /* If we have everything, build block */
-                    if((blknames.size() > 0) && (scale > 0)) {
+                    if ((bsprslt.size() > 0) && (scale > 0)) {
                         modlist.clear();
-                        for(String bname : blknames) {
-                            DynmapBlockState bblk = DynmapBlockState.getBaseStateByName(bname);
+                        for (DynmapBlockState bblk : bsprslt.keySet()) {
                             if (bblk.isNotAir()) {
-                                modlist.add(new HDBlockVolumetricModel(bblk, databits, scale, new long[0], blockset));
+                                modlist.add(new HDBlockVolumetricModel(bblk, bsprslt.get(bblk), scale, new long[0], blockset));
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid model block name " + bname + " at line " + rdr.getLineNumber());
+                            	Log.severe("Invalid model block name " + bblk.blockName + " at line " + lineNum);
                             }
                         }
                     }
                     else {
-                        Log.severe("Block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                        Log.severe("Block model missing required parameters = line " + lineNum + " of " + fname);
                     }
                     layerbits = 0;
                 }
-                else if(line.startsWith("layer:")) {
-                    line = line.substring(6);
+                else if (typeid.equals("layer")) {
                     String args[] = line.split(",");
                     layerbits = 0;
                     rownum = 0;
@@ -455,28 +428,31 @@ public class HDBlockModels {
                         layerbits |= (1 << Integer.parseInt(a));
                     }
                 }
-                else if(line.startsWith("rotate:")) {
-                    line = line.substring(7);
+                else if (typeid.equals("rotate")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+                	
                     String args[] = line.split(",");
-                    String id = null;
-                    int data = -1;
                     int rot = -1;
                     for(String a : args) {
                         String[] av = a.split("=");
-                        if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            id = getBlockName(modname,av[1]);
-                        }
-                        if(av[0].equals("data")) { data = getIntValue(varvals,av[1]); }
-                        if(av[0].equals("rot")) { rot = Integer.parseInt(av[1]); }
+                        if (av.length < 2) continue;
+                        if (av[0].equals("rot")) { rot = Integer.parseInt(av[1]); }
                     }
-                    /* get old model to be rotated */
-                    DynmapBlockState bs = DynmapBlockState.getStateByNameAndIndex(id, (data > 0)?data:0);
-                    if (bs.isAir()) {
-                    	Log.severe("Invalid rotate ID: " + id + " on line " + rdr.getLineNumber());
-                    	return;
+                    bsprslt = bsp.getMatchingStates();
+                    if (bsprslt.size() != 1) {
+                    	Log.severe("Missing rotate source on line " + lineNum);                    	
+                    	continue;
                     }
-                    HDBlockModel mod = models_by_id_data.get(bs.globalStateIndex);
+                	DynmapBlockState basebs = bsprslt.keySet().iterator().next();
+                	BitSet bits = bsprslt.get(basebs);
+                	/* get old model to be rotated */
+                	DynmapBlockState bs = basebs.getState(bits.nextSetBit(0));
+                	if (bs.isAir()) {
+                		Log.severe("Invalid rotate ID: " + bs + " on line " + lineNum);
+                		continue;
+                	}
+                	HDBlockModel mod = models_by_id_data.get(bs.globalStateIndex);
                     if (modlist.isEmpty()) {
                     }
                     else if ((mod != null) && ((rot%90) == 0) && (mod instanceof HDBlockVolumetricModel)) {
@@ -512,124 +488,100 @@ public class HDBlockModels {
                         }
                     }
                     else {
-                        Log.severe("Invalid rotate error - line " + rdr.getLineNumber() + " of " + fname);
-                        return;
+                        Log.severe("Invalid rotate error - line " + lineNum + " of " + fname);
+                        continue;
                     }
                 }
-                else if(line.startsWith("patchrotate:")) {
-                    line = line.substring(12);
+                else if (typeid.equals("patchrotate")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+                	
                     String args[] = line.split(",");
-                    String id = null;
-                    int data = -1;
                     int rotx = 0;
                     int roty = 0;
                     int rotz = 0;
                     for(String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            id = getBlockName(modname, av[1]);
-                        }
-                        if(av[0].equals("data")) { data = getIntValue(varvals,av[1]); }
                         if(av[0].equals("rot")) { roty = Integer.parseInt(av[1]); }
                         if(av[0].equals("roty")) { roty = Integer.parseInt(av[1]); }
                         if(av[0].equals("rotx")) { rotx = Integer.parseInt(av[1]); }
                         if(av[0].equals("rotz")) { rotz = Integer.parseInt(av[1]); }
                     }
-                    /* get old model to be rotated */
-                    DynmapBlockState bs = DynmapBlockState.getStateByNameAndIndex(id, (data > 0)?data:0);
-                    if (bs.isAir()) {
-                    	Log.severe("Invalid patchrotate id: " + id + " on line " + rdr.getLineNumber());
-                    	return;
+                    bsprslt = bsp.getMatchingStates();
+                    if (bsprslt.size() != 1) {
+                    	Log.severe("Missing rotate source on line " + lineNum);                    	
+                    	continue;
                     }
+                	DynmapBlockState basebs = bsprslt.keySet().iterator().next();
+                	BitSet bits = bsprslt.get(basebs);
+                	/* get old model to be rotated */
+                	DynmapBlockState bs = basebs.getState(bits.nextSetBit(0));
+                	if (bs.isAir()) {
+                		Log.severe("Invalid patchrotate ID: " + bs + " on line " + lineNum);
+                		continue;
+                	}
                     HDBlockModel mod = models_by_id_data.get(bs.globalStateIndex);
-                    if(pmodlist.isEmpty()) {
+                    if (pmodlist.isEmpty()) {
                     }
-                    else if((mod != null) && (mod instanceof HDBlockPatchModel)) {
+                    else if ((mod != null) && (mod instanceof HDBlockPatchModel)) {
                         HDBlockPatchModel pmod = (HDBlockPatchModel)mod;
                         PatchDefinition patches[] = pmod.getPatches();
                         PatchDefinition newpatches[] = new PatchDefinition[patches.length];
-                        for(int i = 0; i < patches.length; i++) {
+                        for (int i = 0; i < patches.length; i++) {
                             newpatches[i] = (PatchDefinition)pdf.getRotatedPatch(patches[i], rotx, roty, rotz, patches[i].textureindex);
                         }
-                        if(patches.length > max_patches)
+                        if (patches.length > max_patches)
                             max_patches = patches.length;
-                        for(HDBlockPatchModel patchmod : pmodlist) {
+                        for (HDBlockPatchModel patchmod : pmodlist) {
                             patchmod.setPatches(newpatches);
                         }
                     }
                     else {
-                        Log.severe("Invalid rotate error - line " + rdr.getLineNumber() + " of " + fname);
+                        Log.severe("Invalid rotate error - line " + lineNum + " of " + fname);
                         return;
                     }
                 }
-                else if(line.startsWith("ignore-updates:")) {
-                    ArrayList<String> blknames = new ArrayList<String>();
-                    databits.clear();
-                    line = line.substring(line.indexOf(':')+1);
-                    String[] args = line.split(",");
-                    for(String a : args) {
-                        String[] av = a.split("=");
-                        if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            blknames.add(getBlockName(modname,av[1]));
-                        }
-                        else if(av[0].equals("data")) {
-                            if(av[1].equals("*")) {
-                                databits.clear();
-                            }
-                            else if (av[1].indexOf('-') > 0) {
-                                String[] sp = av[1].split("-");
-                                int m0 = getIntValue(varvals, sp[0]);
-                                int m1 = getIntValue(varvals, sp[1]);
-                                for (int m = m0; m <= m1; m++) {
-                                    databits.set(m);
-                                }
-                            }
-                            else
-                                databits.set(getIntValue(varvals,av[1]));
-                        }
-                    }
-                    for (String nm : blknames) {
-                    	DynmapBlockState bbs = DynmapBlockState.getBaseStateByName(nm);
+                else if (typeid.equals("ignore-updates")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+
+                    bsprslt = bsp.getMatchingStates();
+
+                    for (DynmapBlockState bbs : bsprslt.keySet()) {
                     	if (bbs.isNotAir()) {
-                    		for (int i = 0; i < bbs.getStateCount(); i++) {
+                    		BitSet bits = bsprslt.get(bbs);
+                    		for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
                     			DynmapBlockState bs = bbs.getState(i);
-                    			if (databits.isEmpty() || databits.get(i)) {
-                    				changeIgnoredBlocks.set(bs.globalStateIndex);
-                    			}
+                				changeIgnoredBlocks.set(bs.globalStateIndex);
                     		}
                     	}
                     	else {
-                        	Log.severe("Invalid update ignore block name " + nm + " at line " + rdr.getLineNumber());
+                        	Log.severe("Invalid update ignore block name " + bbs + " at line " + lineNum);
                     	}
                     }
                 }
-                else if(line.startsWith("#") || line.startsWith(";")) {
-                }
-                else if(line.startsWith("enabled:")) {  /* Test if texture file is enabled */
-                    line = line.substring(8).trim();
-                    if(line.startsWith("true")) {   /* We're enabled? */
+                else if (typeid.equals("enabled")) {  /* Test if texture file is enabled */
+                    if (line.startsWith("true")) {   /* We're enabled? */
                         /* Nothing to do - keep processing */
                     }
-                    else if(line.startsWith("false")) { /* Disabled */
+                    else if (line.startsWith("false")) { /* Disabled */
                         return; /* Quit */
                     }
                     /* If setting is not defined or false, quit */
-                    else if(config.getBoolean(line, false) == false) {
+                    else if (config.getBoolean(line, false) == false) {
                         return;
                     }
                     else {
                         Log.info(line + " models enabled");
                     }
                 }
-                else if(line.startsWith("var:")) {  /* Test if variable declaration */
-                    line = line.substring(4).trim();
+                else if (typeid.equals("var")) {  /* Test if variable declaration */
                     String args[] = line.split(",");
                     for(int i = 0; i < args.length; i++) {
                         String[] v = args[i].split("=");
                         if(v.length < 2) {
-                            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + fname);
+                            Log.severe("Format error - line " + lineNum + " of " + fname);
                             return;
                         }
                         try {
@@ -637,13 +589,13 @@ public class HDBlockModels {
                             int parmval = config.getInteger(v[0], val); /* Read value, with applied default */
                             varvals.put(v[0], parmval); /* And save value */
                         } catch (NumberFormatException nfx) {
-                            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + fname);
+                            Log.severe("Format error - line " + lineNum + " of " + fname);
                             return;
                         }
                     }
                 }
-                else if(line.startsWith("cfgfile:")) { /* If config file */
-                    File cfgfile = new File(line.substring(8).trim());
+                else if (typeid.equals("cfgfile")) { /* If config file */
+                    File cfgfile = new File(line);
                     ForgeConfigFile cfg = new ForgeConfigFile(cfgfile);
                     if (!mod_cfg_loaded) {
                         need_mod_cfg = true;
@@ -654,9 +606,8 @@ public class HDBlockModels {
                         mod_cfg_loaded = true;
                     }
                 }
-                else if(line.startsWith("patch:")) {
+                else if (typeid.equals("patch")) {
                     String patchid = null;
-                    line = line.substring(6);
                     String[] args = line.split(",");
                     double p_x0 = 0.0, p_y0 = 0.0, p_z0 = 0.0;
                     double p_xu = 0.0, p_yu = 1.0, p_zu = 0.0;
@@ -714,7 +665,7 @@ public class HDBlockModels {
                             p_vmax = Double.parseDouble(av[1]);
                         }
                         else if(av[0].equals("UplusVmax")) {
-                            Log.warning("UplusVmax deprecated - use VmaxAtUMax - line " + rdr.getLineNumber() + " of " + fname);
+                            Log.warning("UplusVmax deprecated - use VmaxAtUMax - line " + lineNum + " of " + fname);
                             p_uplusvmax = Double.parseDouble(av[1]);
                         }
                         else if(av[0].equals("VmaxAtUMax")) {
@@ -756,58 +707,40 @@ public class HDBlockModels {
                         }
                     }
                 }
-                else if(line.startsWith("patchblock:")) {
-                    ArrayList<String> blknames = new ArrayList<String>();
-                    databits.clear();
-                    line = line.substring(11);
+                else if (typeid.equals("patchblock")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+
                     String[] args = line.split(",");
                     ArrayList<PatchDefinition> patches = new ArrayList<PatchDefinition>();
                     for(String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            blknames.add(getBlockName(modname,av[1]));
-                        }
-                        else if(av[0].equals("data")) {
-                            if(av[1].equals("*")) {
-                                databits.clear();
-                            }
-                            else if (av[1].indexOf('-') > 0) {
-                                String[] sp = av[1].split("-");
-                                int m0 = getIntValue(varvals, sp[0]);
-                                int m1 = getIntValue(varvals, sp[1]);
-                                for (int m = m0; m <= m1; m++) {
-                                    databits.set(m);
-                                }
-                            }
-                            else
-                                databits.set(getIntValue(varvals,av[1]));
-                        }
-                        else if(av[0].startsWith("patch")) {
+                        if(av[0].startsWith("patch")) {
                             int patchnum0, patchnum1;
                             String ids = av[0].substring(5);
                             String[] ids2 = ids.split("-");
-                            if(ids2.length == 1) {
+                            if (ids2.length == 1) {
                                 patchnum0 = patchnum1 = Integer.parseInt(ids2[0]);
                             }
                             else {
                                 patchnum0 = Integer.parseInt(ids2[0]);
                                 patchnum1 = Integer.parseInt(ids2[1]);
                             }
-                            if(patchnum0 < 0) {
-                                Log.severe("Invalid patch index " + patchnum0 + " - line " + rdr.getLineNumber() + " of " + fname);
+                            if (patchnum0 < 0) {
+                                Log.severe("Invalid patch index " + patchnum0 + " - line " + lineNum + " of " + fname);
                                 return;
                             }
-                            if(patchnum1 < patchnum0) {
-                                Log.severe("Invalid patch index " + patchnum1 + " - line " + rdr.getLineNumber() + " of " + fname);
+                            if (patchnum1 < patchnum0) {
+                                Log.severe("Invalid patch index " + patchnum1 + " - line " + lineNum + " of " + fname);
                                 return;
                             }
                             String patchid = av[1];
                             /* Look up patch by name */
-                            for(int i = patchnum0; i <= patchnum1; i++) {
+                            for (int i = patchnum0; i <= patchnum1; i++) {
                                 PatchDefinition pd = pdf.getPatchByName(patchid, i);
-                                if(pd == null) {
-                                    Log.severe("Invalid patch ID " + patchid + " - line " + rdr.getLineNumber() + " of " + fname);
+                                if (pd == null) {
+                                    Log.severe("Invalid patch ID " + patchid + " - line " + lineNum + " of " + fname);
                                     return;
                                 }
                                 patches.add(i,  pd);
@@ -815,57 +748,38 @@ public class HDBlockModels {
                         }
                     }
                     /* If we have everything, build block */
+                    bsprslt = bsp.getMatchingStates();
                     pmodlist.clear();
-                    if (blknames.size() > 0) {
+                    if (bsprslt.size() > 0) {
                         PatchDefinition[] patcharray = patches.toArray(new PatchDefinition[patches.size()]);
                         if(patcharray.length > max_patches)
                             max_patches = patcharray.length;
-
-                        for(String nm : blknames) {
-                            DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
+                        for (DynmapBlockState bs : bsprslt.keySet()) {
                             if (bs.isNotAir()) {
-                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
+                                pmodlist.add(new HDBlockPatchModel(bs, bsprslt.get(bs), patcharray, blockset));
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid patchmodel block name " + nm + " at line " + rdr.getLineNumber());
+                            	Log.severe("Invalid patchmodel block name " + bs + " at line " + lineNum);
                             }
                         }
                     }
                     else {
-                        Log.severe("Patch block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                        Log.severe("Patch block model missing required parameters = line " + lineNum + " of " + fname);
                     }
                 }
                 // Shortcut for defining a patchblock that is a simple rectangular prism, with sidex corresponding to full block sides
-                else if(line.startsWith("boxblock:")) {
-                    ArrayList<String> blknames = new ArrayList<String>();
-                    databits.clear();
-                    line = line.substring(9);
-                    String[] args = line.split(",");
+                else if (typeid.equals("boxblock")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+
+                	String[] args = line.split(",");
                     double xmin = 0.0, xmax = 1.0, ymin = 0.0, ymax = 1.0, zmin = 0.0, zmax = 1.0;
                     int[] patchlist = boxPatchList;
                     for(String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            blknames.add(getBlockName(modname,av[1]));
-                        }
-                        else if(av[0].equals("data")) {
-                            if(av[1].equals("*")) {
-                                databits.clear();
-                            }
-                            else if (av[1].indexOf('-') > 0) {
-                                String[] sp = av[1].split("-");
-                                int m0 = getIntValue(varvals, sp[0]);
-                                int m1 = getIntValue(varvals, sp[1]);
-                                for (int m = m0; m <= m1; m++) {
-                                    databits.set(m);
-                                }
-                            }
-                            else
-                                databits.set(getIntValue(varvals,av[1]));
-                        }
-                        else if(av[0].equals("xmin")) {
+                        if(av[0].equals("xmin")) {
                             xmin = Double.parseDouble(av[1]);
                         }
                         else if(av[0].equals("xmax")) {
@@ -893,59 +807,41 @@ public class HDBlockModels {
                     }
                     /* If we have everything, build block */
                     pmodlist.clear();
-                    if (blknames.size() > 0) {
+                    bsprslt = bsp.getMatchingStates();
+                    if (bsprslt.size() > 0) {
                         ArrayList<RenderPatch> pd = new ArrayList<RenderPatch>();
                         CustomRenderer.addBox(pdf, pd, xmin, xmax, ymin, ymax, zmin, zmax, patchlist);
                         PatchDefinition[] patcharray = new PatchDefinition[pd.size()];
                         for (int i = 0; i < patcharray.length; i++) {
                             patcharray[i] = (PatchDefinition) pd.get(i);
                         }
-                        if(patcharray.length > max_patches)
+                        if (patcharray.length > max_patches)
                             max_patches = patcharray.length;
-                        for(String nm : blknames) {
-                            DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
+                        for (DynmapBlockState bs : bsprslt.keySet()) {
                             if (bs.isNotAir()) {
-                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
+                                pmodlist.add(new HDBlockPatchModel(bs, bsprslt.get(bs), patcharray, blockset));
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid boxmodel block name " + nm + " at line " + rdr.getLineNumber());
+                            	Log.severe("Invalid boxmodel block name " + bs + " at line " + lineNum);
                             }
                         }
                     }
                     else {
-                        Log.severe("Box block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                        Log.severe("Box block model missing required parameters = line " + lineNum + " of " + fname);
                     }
                 }
                 // Shortcut for defining a patchblock that is a simple rectangular prism, with sidex corresponding to full block sides
-                else if(line.startsWith("boxlist:")) {
-                    ArrayList<String> blknames = new ArrayList<String>();
-                    databits.clear();
-                    line = line.substring(8);
+                else if (typeid.equals("boxlist")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+                	
                     String[] args = line.split(",");
                     ArrayList<BoxLimits> boxes = new ArrayList<BoxLimits>();
-                    for(String a : args) {
+                    for (String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            blknames.add(getBlockName(modname,av[1]));
-                        }
-                        else if(av[0].equals("data")) {
-                            if(av[1].equals("*")) {
-                                databits.clear();
-                            }
-                            else if (av[1].indexOf('-') > 0) {
-                                String[] sp = av[1].split("-");
-                                int m0 = getIntValue(varvals, sp[0]);
-                                int m1 = getIntValue(varvals, sp[1]);
-                                for (int m = m0; m <= m1; m++) {
-                                    databits.set(m);
-                                }
-                            }
-                            else
-                                databits.set(getIntValue(varvals,av[1]));
-                        }
-                        else if(av[0].equals("box")) {
+                        if (av[0].equals("box")) {
                         	String[] prms = av[1].split(":");
                         	BoxLimits box = new BoxLimits();
                         	if (prms.length > 0)
@@ -973,8 +869,9 @@ public class HDBlockModels {
                         }
                     }
                     /* If we have everything, build block */
+                    bsprslt = bsp.getMatchingStates();
                     pmodlist.clear();
-                    if (blknames.size() > 0) {
+                    if (bsprslt.size() > 0) {
                         ArrayList<RenderPatch> pd = new ArrayList<RenderPatch>();
                         
                         for (BoxLimits bl : boxes) {
@@ -984,52 +881,33 @@ public class HDBlockModels {
                         for (int i = 0; i < patcharray.length; i++) {
                             patcharray[i] = (PatchDefinition) pd.get(i);
                         }
-                        if(patcharray.length > max_patches)
+                        if (patcharray.length > max_patches)
                             max_patches = patcharray.length;
-                        for(String nm : blknames) {
-                            DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
+                        for (DynmapBlockState bs : bsprslt.keySet()) {
                             if (bs.isNotAir()) {
-                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
+                                pmodlist.add(new HDBlockPatchModel(bs, bsprslt.get(bs), patcharray, blockset));
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid boxlist block name " + nm + " at line " + rdr.getLineNumber());
+                            	Log.severe("Invalid boxlist block name " + bs + " at line " + lineNum);
                             }
                         }
                     }
                     else {
-                        Log.severe("Box list block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                        Log.severe("Box list block model missing required parameters = line " + lineNum + " of " + fname);
                     }
                 }
                 // Shortcur for building JSON model style 
-                else if(line.startsWith("modellist:")) {
-                    ArrayList<String> blknames = new ArrayList<String>();
-                    databits.clear();
-                    line = line.substring(10);
+                else if (typeid.equals("modellist")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+
                     String[] args = line.split(",");
                     ArrayList<ModelBox> boxes = new ArrayList<ModelBox>();
-                    for(String a : args) {
+                    for (String a : args) {
                         String[] av = a.split("=");
                         if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            blknames.add(getBlockName(modname,av[1]));
-                        }
-                        else if(av[0].equals("data")) {
-                            if(av[1].equals("*")) {
-                                databits.clear();
-                            }
-                            else if (av[1].indexOf('-') > 0) {
-                                String[] sp = av[1].split("-");
-                                int m0 = getIntValue(varvals, sp[0]);
-                                int m1 = getIntValue(varvals, sp[1]);
-                                for (int m = m0; m <= m1; m++) {
-                                    databits.set(m);
-                                }
-                            }
-                            else
-                                databits.set(getIntValue(varvals,av[1]));
-                        }
-                        else if(av[0].equals("box")) {
+                        if (av[0].equals("box")) {
                         	// box=from-x/y/z:to-x/y/z/rotx/roty/rotz:<side - upnsew>/<txtidx>/umin/vmin/umax/vmax>:...
                         	String[] prms = av[1].split(":");
                         	
@@ -1042,7 +920,7 @@ public class HDBlockModels {
                         			box.from[2] = Double.parseDouble(xyz[2]);
                         		}
                         		else {
-                                	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + rdr.getLineNumber());                        			
+                                	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + lineNum);                        			
                         		}
                         	}
                         	if (prms.length > 1) {	// Handle to (to-x/y/z or to-x/y/z/rotx/roty/rotz) or to-x/y/z/rotx/roty/rotz/rorigx/rorigy/rorigz
@@ -1063,7 +941,7 @@ public class HDBlockModels {
                         			}
                         		}
                         		else {
-                                	Log.severe("Invalid modellist TO value (" + prms[1] + " at line " + rdr.getLineNumber());                        			
+                                	Log.severe("Invalid modellist TO value (" + prms[1] + " at line " + lineNum);                        			
                         		}
                         	}
                         	// Rest are faces (<side - upnsew>/<txtidx>/umin/vmin/umax/vmax> or <<side - upnsew>/<txtidx>)
@@ -1073,14 +951,14 @@ public class HDBlockModels {
                         		ModelBoxSide side = new ModelBoxSide();
                         		side.rot = null;
                         		if ((flds.length != 2) && (flds.length != 6)) {
-                                	Log.severe("Invalid modellist face '" + v + "' at line " + rdr.getLineNumber());                        			                        				
+                                	Log.severe("Invalid modellist face '" + v + "' at line " + lineNum);                        			                        				
                                 	continue;
                         		}
                         		if (flds.length > 0) {
                         			String face = flds[0];
                         			side.side = toBlockSide.get(face.substring(0, 1));
                         			if (side.side == null) {
-                                    	Log.severe("Invalid modellist side value (" + face + ") in '" + v + "' at line " + rdr.getLineNumber());                        			                        				
+                                    	Log.severe("Invalid modellist side value (" + face + ") in '" + v + "' at line " + lineNum);                        			                        				
                                     	continue;
                         			}
                         			if (flds[0].length() > 1) {
@@ -1114,8 +992,9 @@ public class HDBlockModels {
                         }
                     }
                     /* If we have everything, build block */
+                    bsprslt = bsp.getMatchingStates();
                     pmodlist.clear();
-                    if (blknames.size() > 0) {
+                    if (bsprslt.size() > 0) {
                         ArrayList<PatchDefinition> pd = new ArrayList<PatchDefinition>();
                         
 						for (ModelBox bl : boxes) {
@@ -1132,7 +1011,7 @@ public class HDBlockModels {
 									pd.add(patch);
 								}
 								else {
-	                            	Log.severe(String.format("Invalid modellist patch for box %f/%f/%f:%f/%f/%f side %s at line %d", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, rdr.getLineNumber()));
+	                            	Log.severe(String.format("Invalid modellist patch for box %f/%f/%f:%f/%f/%f side %s at line %d", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, lineNum));
 								}
 							}
                         }
@@ -1142,50 +1021,34 @@ public class HDBlockModels {
                         }
                         if (patcharray.length > max_patches)
                             max_patches = patcharray.length;
-                        for(String nm : blknames) {
-                            DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
+                        for (DynmapBlockState bs : bsprslt.keySet()) {
                             if (bs.isNotAir()) {
-                                pmodlist.add(new HDBlockPatchModel(bs, databits, patcharray, blockset));
+                                pmodlist.add(new HDBlockPatchModel(bs, bsprslt.get(bs), patcharray, blockset));
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid modellist block name " + nm + " at line " + rdr.getLineNumber());
+                            	Log.severe("Invalid modellist block name " + bs + " at line " + lineNum);
                             }
                         }
                     }
                     else {
-                        Log.severe("Model list block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                        Log.severe("Model list block model missing required parameters = line " + lineNum + " of " + fname);
                     }
                 }
-                else if(line.startsWith("customblock:")) {
-                    ArrayList<String> blknames = new ArrayList<String>();
-                    HashMap<String,String> custargs = new HashMap<String,String>();
-                    databits.clear();
-                    line = line.substring(12);
+                else if (typeid.equals("customblock")) {
+                	// Parse block states
+                	bsp.processLine(modname, line, lineNum, varvals);
+
+                	HashMap<String,String> custargs = new HashMap<String,String>();
                     String[] args = line.split(",");
                     String cls = null;
-                    for(String a : args) {
+                    for (String a : args) {
                         String[] av = a.split("=");
-                        if(av.length < 2) continue;
-                        if(av[0].equals("id")) {
-                            blknames.add(getBlockName(modname, av[1]));
+                        if (av.length < 2) continue;
+                        if (av[0].equals("id") || av[0].equals("data") || av[0].equals("state")) {
+                        	// Skip block state args - should not be bassed to custom block handler
                         }
-                        else if(av[0].equals("data")) {
-                            if(av[1].equals("*")) {
-                                databits.clear();
-                            }
-                            else if (av[1].indexOf('-') > 0) {
-                                String[] sp = av[1].split("-");
-                                int m0 = getIntValue(varvals, sp[0]);
-                                int m1 = getIntValue(varvals, sp[1]);
-                                for (int m = m0; m <= m1; m++) {
-                                    databits.set(m);
-                                }
-                            }
-                            else
-                                databits.set(getIntValue(varvals,av[1]));
-                        }
-                        else if(av[0].equals("class")) {
+                        else if (av[0].equals("class")) {
                             cls = av[1];
                         }
                         else {
@@ -1198,13 +1061,13 @@ public class HDBlockModels {
                         }
                     }
                     /* If we have everything, build block */
-                    if ((blknames.size() > 0) && (cls != null)) {
-                        for (String nm : blknames) {
-                            DynmapBlockState bs = DynmapBlockState.getBaseStateByName(nm);
+                    bsprslt = bsp.getMatchingStates();
+                    if ((bsprslt.size() > 0) && (cls != null)) {
+                        for (DynmapBlockState bs : bsprslt.keySet()) {
                             if (bs.isNotAir()) {
-                                CustomBlockModel cbm = new CustomBlockModel(bs, databits, cls, custargs, blockset);
+                                CustomBlockModel cbm = new CustomBlockModel(bs, bsprslt.get(bs), cls, custargs, blockset);
                                 if(cbm.render == null) {
-                                    Log.severe("Custom block model failed to initialize = line " + rdr.getLineNumber() + " of " + fname);
+                                    Log.severe("Custom block model failed to initialize = line " + lineNum + " of " + fname);
                                 }
                                 else {
                                     /* Update maximum texture count */
@@ -1216,16 +1079,16 @@ public class HDBlockModels {
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid custommodel block name " + nm + " at line " + rdr.getLineNumber());
+                            	Log.severe("Invalid custommodel block name " + bs + " at line " + lineNum);
                             }
                         }
                     }
                     else {
-                        Log.severe("Custom block model missing required parameters = line " + rdr.getLineNumber() + " of " + fname);
+                        Log.severe("Custom block model missing required parameters = line " + lineNum + " of " + fname);
                     }
                 }
-                else if(line.startsWith("modname:")) {
-                    String[] names = line.substring(8).split(",");
+                else if (typeid.equals("modname")) {
+                    String[] names = line.split(",");
                     boolean found = false;
                     for(String n : names) {
                         String[] ntok = n.split("[\\[\\]]");
@@ -1254,8 +1117,7 @@ public class HDBlockModels {
                         return;
                     }
                 }
-                else if(line.startsWith("version:")) {
-                    line = line.substring(line.indexOf(':')+1);
+                else if (typeid.equals("version")) {
                     if (!checkVersionRange(mcver, line)) {
                         return;
                     }
@@ -1281,10 +1143,9 @@ public class HDBlockModels {
                     }
                 }
             }
-            if(need_mod_cfg) {
+            if (need_mod_cfg) {
                 Log.severe("Error loading configuration file for " + modname);
             }
-
             Log.verboseinfo("Loaded " + cnt + " block models from " + fname);
         } catch (IOException iox) {
             Log.severe("Error reading models.txt - " + iox.toString());
