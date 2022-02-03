@@ -88,6 +88,8 @@ $stmt->bind_result($tnewimage, $timage, $format, $thash, $tlast);
 if ($stmt->fetch()) {
     if ($format == 0) {
         header('Content-Type: image/png');
+    } else if ($format == 2) {
+    	header('Content-Type: image/webp');
     } else {
         header('Content-Type: image/jpeg');
     }

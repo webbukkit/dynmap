@@ -89,6 +89,8 @@ if (isset($row[1])) {
     $format = $row[1];
     if ($format == 0) {
         header('Content-Type: image/png');
+    } else if ($format == 2) {
+        header('Content-Type: image/webp');
     } else {
         header('Content-Type: image/jpeg');
     }

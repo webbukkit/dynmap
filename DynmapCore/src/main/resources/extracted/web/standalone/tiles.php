@@ -74,6 +74,8 @@ if (strstr($path, ".png")) {
     header("Content-Type: image/png");
 } elseif (strstr($path, ".jpg")) {
     header("Content-Type: image/jpeg");
+} elseif (strstr($path, ".webp")) {
+    header("Content-Type: image/webp");
 } else {
     header("Content-Type: application/text");
 }
