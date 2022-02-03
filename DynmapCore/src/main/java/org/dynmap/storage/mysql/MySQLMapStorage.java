@@ -478,7 +478,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (4)");
+                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (5)");
                 version = 5;	// Initial - we have all the following updates already
             } catch (SQLException x) {
             	logSQLException("Error creating tables", x);
@@ -546,7 +546,18 @@ public class MySQLMapStorage extends MapStorage {
             try {
             	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
-                doUpdate(c, "ALTER TABLE " + tableTiles + " ADD COLUMN NewImage MEDIUMBLOB, ALGORITHM=INPLACE, LOCK=NONE");
+                // See if we are recovering from bug where version was still set to 4 when NewImage was added initialli
+                PreparedStatement stmt = c.prepareStatement("SHOW COLUMNS FROM " + tableTiles + " WHERE Field = 'NewImage';");
+                ResultSet rs = stmt.executeQuery();
+                boolean inplace = false;
+                if (rs.next()) {	// Got nothing?
+                	inplace = true;
+                }
+                rs.close();
+                stmt.close();
+                if (!inplace) {
+                	doUpdate(c, "ALTER TABLE " + tableTiles + " ADD COLUMN NewImage MEDIUMBLOB, ALGORITHM=INPLACE, LOCK=NONE");
+                }
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=5 WHERE level = 4;");
                 version = 5;
             } catch (SQLException x) {
