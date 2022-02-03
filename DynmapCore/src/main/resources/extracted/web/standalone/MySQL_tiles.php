@@ -81,7 +81,7 @@ if (count($fparts) == 3) { // zoom_x_y
 }
 initDbIfNeeded();
 
-$stmt = $db->prepare('SELECT t.newImage,t.Image,t.Format,t.HashCode,t.LastUpdate FROM ' . $dbprefix . 'Maps m JOIN ' . $dbprefix . 'Tiles t WHERE m.WorldID=? AND m.MapID=? AND m.Variant=? AND m.ID=t.MapID AND t.x=? AND t.y=? and t.zoom=?');
+$stmt = $db->prepare('SELECT t.NewImage,t.Image,t.Format,t.HashCode,t.LastUpdate FROM ' . $dbprefix . 'Maps m JOIN ' . $dbprefix . 'Tiles t WHERE m.WorldID=? AND m.MapID=? AND m.Variant=? AND m.ID=t.MapID AND t.x=? AND t.y=? and t.zoom=?');
 $stmt->bind_param('sssiii', $world, $prefix, $variant, $x, $y, $zoom);
 $res = $stmt->execute();
 $stmt->bind_result($tnewimage, $timage, $format, $thash, $tlast);
@@ -94,7 +94,7 @@ if ($stmt->fetch()) {
     header('ETag: \'' . $thash . '\'');
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $tlast / 1000) . ' GMT');
     if ($tnewimage) {
-        echo $tnewimage
+        echo $tnewimage;
     } else {
         echo $timage;
     }
