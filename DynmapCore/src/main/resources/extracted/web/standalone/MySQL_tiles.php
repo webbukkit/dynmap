@@ -81,7 +81,7 @@ if (count($fparts) == 3) { // zoom_x_y
 }
 initDbIfNeeded();
 
-$stmt = $db->prepare('SELECT t.Image,t.Format,t.HashCode,t.LastUpdate FROM ' . $dbprefix . 'Maps m JOIN ' . $dbprefix . 'Tiles t WHERE m.WorldID=? AND m.MapID=? AND m.Variant=? AND m.ID=t.MapID AND t.x=? AND t.y=? and t.zoom=?');
+$stmt = $db->prepare('SELECT t.newImage,t.Format,t.HashCode,t.LastUpdate FROM ' . $dbprefix . 'Maps m JOIN ' . $dbprefix . 'Tiles t WHERE m.WorldID=? AND m.MapID=? AND m.Variant=? AND m.ID=t.MapID AND t.x=? AND t.y=? and t.zoom=?');
 $stmt->bind_param('sssiii', $world, $prefix, $variant, $x, $y, $zoom);
 $res = $stmt->execute();
 $stmt->bind_result($timage, $format, $thash, $tlast);
