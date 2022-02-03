@@ -81,10 +81,10 @@ if (count($fparts) == 3) { // zoom_x_y
 }
 initDbIfNeeded();
 
-$stmt = $db->prepare('SELECT t.newImage,t.Format,t.HashCode,t.LastUpdate FROM ' . $dbprefix . 'Maps m JOIN ' . $dbprefix . 'Tiles t WHERE m.WorldID=? AND m.MapID=? AND m.Variant=? AND m.ID=t.MapID AND t.x=? AND t.y=? and t.zoom=?');
+$stmt = $db->prepare('SELECT t.newImage,t.Image,t.Format,t.HashCode,t.LastUpdate FROM ' . $dbprefix . 'Maps m JOIN ' . $dbprefix . 'Tiles t WHERE m.WorldID=? AND m.MapID=? AND m.Variant=? AND m.ID=t.MapID AND t.x=? AND t.y=? and t.zoom=?');
 $stmt->bind_param('sssiii', $world, $prefix, $variant, $x, $y, $zoom);
 $res = $stmt->execute();
-$stmt->bind_result($timage, $format, $thash, $tlast);
+$stmt->bind_result($tnewimage, $timage, $format, $thash, $tlast);
 if ($stmt->fetch()) {
     if ($format == 0) {
         header('Content-Type: image/png');
@@ -93,7 +93,11 @@ if ($stmt->fetch()) {
     }
     header('ETag: \'' . $thash . '\'');
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $tlast / 1000) . ' GMT');
-    echo $timage;
+    if ($tnewimage) {
+        echo $tnewimage
+    } else {
+        echo $timage;
+    }
 } else {
     header('Location: ../images/blank.png');
 }
