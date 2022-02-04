@@ -95,10 +95,10 @@ if ($stmt->fetch()) {
     }
     header('ETag: \'' . $thash . '\'');
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $tlast / 1000) . ' GMT');
-    if ($tnewimage) {
-        echo $tnewimage;
-    } else {
+    if (is_null($tnewimage)) {
         echo $timage;
+    } else {
+        echo $tnewimage;
     }
 } else {
     header('Location: ../images/blank.png');
