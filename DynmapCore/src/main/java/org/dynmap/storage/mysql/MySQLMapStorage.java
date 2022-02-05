@@ -326,6 +326,10 @@ public class MySQLMapStorage extends MapStorage {
     		cfgfile.delete();	// Zap file (in case we left junk from last time)
     		return true;
     	}
+    	// During initial startup, this can happen before baseStandaloneDir is setup
+    	if (!baseStandaloneDir.exists()) {
+    		baseStandaloneDir.mkdirs();
+    	}
         FileWriter fw = null;
         try {
             fw = new FileWriter(cfgfile);
