@@ -1619,7 +1619,11 @@ patchblock:id=bubble_column
 [1.16-]patchblock:id=soul_wall_torch,data=2
 [1.16-]patchrotate:id=wall_torch,data=3,roty=180
 # Chain
-[1.16-]patchblock:id=chain,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+[1.16-]modellist:id=chain,state=axis:y,box=6.5/0/8:9.5/16/8/0/45/0:n/0/3/0/0/16:s/0/0/0/3/16,box=8/0/6.5:8/16/9.5/0/45/0:w/0/6/0/3/16:e/0/3/0/6/16
+[1.16-]patchblock:id=chain,state=axis:x
+[1.16-]patchrotate:id=chain,state=axis:y/waterlogged:true,rotx=90,roty=90
+[1.16-]patchblock:id=chain,state=axis:z
+[1.16-]patchrotate:id=chain,state=axis:y/waterlogged:true,rotx=90
 # Soul Lantern (hanging, then not hanging)
 [1.16-]boxlist:id=soul_lantern,data=0,data=1,box=0.3125:0.6875:0:0.4375:0.3125:0.6875:0/0/1/1/1/1,box=0.375:0.625:0.4375:0.5625:0.375:0.625:-1/2/3/3/3/3,box=0.4:0.6:0.5625:0.6875:0.5:0.5:-1/-1/-1/-1/4/4:45,box=0.5:0.5:0.5625:0.6875:0.4:0.6:-1/-1/5/5/-1/-1:45
 [1.16-]boxlist:id=soul_lantern,data=2,data=3,box=0.3125:0.6875:0.0625:0.5:0.3125:0.6875:0/0/1/1/1/1,box=0.375:0.625:0.5:0.625:0.375:0.625:2/2/3/3/3/3,box=0.4:0.6:0.6875:0.9375:0.5:0.5:-1/-1/-1/-1/6/6:45,box=0.5:0.5:0.6875:0.9375:0.4:0.6:-1/-1/6/6/-1/-1:45

@@ -2339,7 +2339,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.16-]texture:id=polished_basalt_side
 [1.16-]texture:id=polished_basalt_top
 [1.16-]texture:id=soul_torch
-[1.16-]texturefile:id=chain,filename=assets/minecraft/textures/block/chain.png,format=CUSTOM,tile0=0:0/3:16/6:0,tile1=3:0/3:16/6:0,xcount=2,ycount=1
+[1.16-]texture:id=chain
 [1.16-]texture:id=soul_campfire_log_lit
 [1.16-]texture:id=soul_campfire_fire
 # tile0=up/down ot first box, tile1=sides of first box, tile2=top of second box, tile3=sides of second box, tile4=n/s of first cross (unhung), tile5=e/w of second cross (unhung), tile6= n/s of first cross (hung), tile7=e/2 of second cross (hung)
@@ -2423,7 +2423,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 # Soul Wall torch
 [1.16-]block:id=soul_wall_torch,data=0,data=1,data=2,data=3,patch0=0:soul_torch,transparency=TRANSPARENT
 # Chain
-[1.16-]block:id=chain,patch0=0:chain,patch1=1:chain,transparency=TRANSPARENT
+[1.16-]block:id=chain,patch0=0:chain,transparency=TRANSPARENT
 # Soul Lantern
 [1.16-]block:id=soul_lantern,patch0=0:soul_lantern,transparency=TRANSPARENT
 [1.16-]block:id=soul_lantern,patch0=0:soul_lantern,patch1=1:soul_lantern,patch2=2:soul_lantern,patch3=3:soul_lantern,patch4=4:soul_lantern,patch5=5:soul_lantern,patch6=6:soul_lantern,patch7=7:soul_lantern,transparency=TRANSPARENT
