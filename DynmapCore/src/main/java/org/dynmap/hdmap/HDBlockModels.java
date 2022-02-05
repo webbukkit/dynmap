@@ -677,6 +677,10 @@ public class HDBlockModels {
                         else if(av[0].equals("visibility")) {
                             if(av[1].equals("top"))
                                 p_sidevis = SideVisible.TOP;
+                            else if(av[1].equals("topflip"))
+                                p_sidevis = SideVisible.TOPFLIP;
+                            else if(av[1].equals("topflipv"))
+                                p_sidevis = SideVisible.TOPFLIPV;
                             else if(av[1].equals("bottom"))
                                 p_sidevis = SideVisible.BOTTOM;
                             else if(av[1].equals("flip"))
