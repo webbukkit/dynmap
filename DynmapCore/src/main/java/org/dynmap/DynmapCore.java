@@ -163,6 +163,11 @@ public class DynmapCore implements DynmapCommonAPI {
     private String plugin_ver;
     private MapStorage defaultStorage;
     
+    // Read web path
+    private String webpath;
+    // And whether to disable web file update
+    private boolean updatewebpathfiles = true;
+
     private String[] deftriggers = { };
 
     private Boolean webserverCompConfigWarn = false;
@@ -399,6 +404,11 @@ public class DynmapCore implements DynmapCommonAPI {
         configuration = new ConfigurationNode(f);
         configuration.load();
 
+        // Read web path
+        webpath = configuration.getString("webpath", "web");
+        // And whether to disable web file update
+        updatewebpathfiles = configuration.getBoolean("update-webpath-files", true);
+        
         // Check if we are disabling the internal web server (implies external)
         isInternalWebServerDisabled = configuration.getBoolean("disable-webserver", false);
 
@@ -2152,7 +2162,7 @@ public class DynmapCore implements DynmapCommonAPI {
     
     
     public String getWebPath() {
-        return configuration.getString("webpath", "web");
+        return webpath;
     }
     
     public static void setIgnoreChunkLoads(boolean ignore) {
@@ -2800,8 +2810,10 @@ public class DynmapCore implements DynmapCommonAPI {
         File df = this.getDataFolder();
         if(df.exists() == false) df.mkdirs();
         File ver = new File(df, "version.txt");
+        File webver = new File(this.getWebPath(), "version.txt");
         String prevver = "1.6";
-        if(ver.exists()) {
+        String prevwebver = "1.6";
+        if (ver.exists()) {
             Reader ir = null;
             try {
                 ir = new FileReader(ver);
@@ -2817,17 +2829,34 @@ public class DynmapCore implements DynmapCommonAPI {
                 }
             }
         }
-        else {  // First time, delete old external texture pack
-            deleteDirectory(new File(df, "texturepacks/standard"));
+        if (webver.exists()) {
+            Reader ir = null;
+            try {
+                ir = new FileReader(webver);
+                prevwebver = "";
+                int c;
+                while((c = ir.read()) >= 0) {
+                    prevwebver += (char)c;
+                }
+            } catch (IOException iox) {
+            } finally {
+                if(ir != null) {
+                    try { ir.close(); } catch (IOException iox) {}
+                }
+            }
         }
         String curver = this.getDynmapCoreVersion();
         /* If matched, we're good */
-        if (prevver.equals(curver) && (!curver.endsWith(("-Dev")))) {
+        if (prevver.equals(curver) && prevwebver.equals(curver) && (!curver.endsWith(("-Dev")))) {
             return;
+        }
+        // If doing update and web path update is disabled, send warning
+        if (!this.updatewebpathfiles) {
+        	Log.warning("Update of web interface is disabled, and update is available - UI may not function without updates");
         }
         /* Get deleted file list */
         InputStream in = getClass().getResourceAsStream("/deleted.txt");
-        if(in != null) {
+        if (in != null) {
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(in));
                 String line;
@@ -2843,7 +2872,6 @@ public class DynmapCore implements DynmapCommonAPI {
                 try { in.close(); } catch (IOException x) {}
             }
         }
-
         /* Open JAR as ZIP */
         ZipFile zf = null;
         FileOutputStream fos = null;
@@ -2857,13 +2885,26 @@ public class DynmapCore implements DynmapCommonAPI {
             while (e.hasMoreElements()) {
                 ZipEntry ze = e.nextElement();
                 n = ze.getName();
-                if(!n.startsWith("extracted/")) continue;
+                if (!n.startsWith("extracted/")) {
+                	continue;
+                }
                 n = n.substring("extracted/".length());
-                f = new File(df, n);
+                // If file is going to web path, redirect it to the configured web
+                if (n.startsWith("web/")) {
+                	// Don't update unless we are allowed to
+                	if (!updatewebpathfiles) {
+                		continue;
+                	}
+            		f = new File(this.getWebPath(), n.substring("web/".length()));            
+                }
+                else {
+                	f = new File(df, n);
+                }
                 if(ze.isDirectory()) {
                     f.mkdirs();
                 }
                 else {
+                	try {
                     f.getParentFile().mkdirs();
                     fos = new FileOutputStream(f);
                     ins = zf.getInputStream(ze);
@@ -2871,10 +2912,18 @@ public class DynmapCore implements DynmapCommonAPI {
                     while ((len = ins.read(buf)) >= 0) {
                         fos.write(buf,  0,  len);
                     }
-                    ins.close();
-                    ins = null;
-                    fos.close();
-                    fos = null;
+                	} catch(IOException io) {
+                        Log.severe("Error updating file - " + f.getPath(), io);                		
+                	} finally {
+                		if (ins != null) {
+                			ins.close();
+                			ins = null;
+                		}
+                		if (fos != null) {
+                			fos.close();
+                			fos = null;
+                		}
+                	}
                 }
             }
         } catch (IOException iox) {
@@ -2894,7 +2943,7 @@ public class DynmapCore implements DynmapCommonAPI {
             }
         }
         
-        /* Finally, write new version cookie */
+        /* Finally, write new version cookie to both data folder and web folder*/
         Writer out = null;
         try {
             out = new FileWriter(ver);
@@ -2905,7 +2954,21 @@ public class DynmapCore implements DynmapCommonAPI {
                 try { out.close(); } catch (IOException iox) {}
             }
         }
-        Log.info("Extracted files upgraded");
+        if (this.updatewebpathfiles) {
+	        try {
+	            out = new FileWriter(webver);
+	            out.write(this.getDynmapCoreVersion());
+	        } catch (IOException iox) {
+	        } finally {
+	            if(out != null) {
+	                try { out.close(); } catch (IOException iox) {}
+	            }
+	        }
+	        Log.info("Extracted files upgraded");
+        }
+        else {
+            Log.info("Extracted files upgraded (excluding webpath files)");
+        }
     }
     // Server thread tick : nominally, once per 20 Hz tick
     public void serverTick(double tps) {

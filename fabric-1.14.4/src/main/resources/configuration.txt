@@ -307,6 +307,10 @@ tilespath: web/tiles
 # The path where the web-files are located.
 webpath: web
 
+# If set to false, disable extraction of webpath content (good if using custom web UI or 3rd party web UI)
+# Note: web interface is unsupported in this configuration - you're on your own
+update-webpath-files: true
+
 # The path were the /dynmapexp command exports OBJ ZIP files
 exportpath: export
 
