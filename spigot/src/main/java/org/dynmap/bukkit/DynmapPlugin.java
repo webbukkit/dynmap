@@ -543,6 +543,8 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     delay = f.get();
                 } catch (CancellationException cx) {
                     return null;
+                } catch (InterruptedException cx) {
+                    return null;
                 } catch (ExecutionException ex) {
                     Log.severe("Exception while fetching chunks: ", ex.getCause());
                     return null;
