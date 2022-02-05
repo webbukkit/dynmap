@@ -1,7 +1,5 @@
 package org.dynmap.modsupport;
 
-import org.dynmap.modsupport.ModelBlockModel.ModelBlock;
-
 // Model for more direct translation of MC models
 //   All coordinates are 0-16 range per block, and 0-16 range for UV
 
