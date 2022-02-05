@@ -286,12 +286,12 @@ public class Client {
     }
 
     private static PolicyFactory sanitizer = null; 
-    private static PolicyFactory OLDTAGS = new HtmlPolicyBuilder().allowElements("center", "basefont").toFactory();
+    private static PolicyFactory OLDTAGS = new HtmlPolicyBuilder().allowElements("center", "basefont", "hr").toFactory();
     public static String sanitizeHTML(String html) {
         PolicyFactory s = sanitizer;
         if (s == null) {
             // Generous but safe html formatting allowances
-            s = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS).and(Sanitizers.IMAGES).and(Sanitizers.LINKS).and(Sanitizers.STYLES).and(OLDTAGS);
+            s = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS).and(Sanitizers.IMAGES).and(Sanitizers.LINKS).and(Sanitizers.STYLES).and(Sanitizers.TABLES).and(OLDTAGS);
             sanitizer = s;
         }
         return s.sanitize(html);
