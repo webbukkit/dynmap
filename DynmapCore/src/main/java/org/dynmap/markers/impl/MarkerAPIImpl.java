@@ -3328,10 +3328,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                     mi = MarkerAPIImpl.getMarkerIconImpl(MarkerIcon.DEFAULT);
                 mdata.put("icon", mi.getMarkerIconID());
                 mdata.put("dim", mi.getMarkerIconSize().getSize());
-                mdata.put("label", m.getLabel());
+                mdata.put("label", Client.sanitizeHTML(m.getLabel()));
                 mdata.put("markup", m.isLabelMarkup());
                 if(m.getDescription() != null)
-                    mdata.put("desc", m.getDescription());
+                    mdata.put("desc", Client.sanitizeHTML(m.getDescription()));
                 if (m.getMinZoom() >= 0) {
                     mdata.put("minzoom", m.getMinZoom());
                 }
@@ -3364,10 +3364,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 mdata.put("opacity", m.getLineOpacity());
                 mdata.put("fillopacity", m.getFillOpacity());
                 mdata.put("weight", m.getLineWeight());
-                mdata.put("label", m.getLabel());
+                mdata.put("label", Client.sanitizeHTML(m.getLabel()));
                 mdata.put("markup", m.isLabelMarkup());
                 if(m.getDescription() != null)
-                    mdata.put("desc", m.getDescription());
+                    mdata.put("desc", Client.sanitizeHTML(m.getDescription()));
                 if (m.getMinZoom() >= 0) {
                     mdata.put("minzoom", m.getMinZoom());
                 }
@@ -3399,10 +3399,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 mdata.put("color", String.format("#%06X", m.getLineColor()));
                 mdata.put("opacity", m.getLineOpacity());
                 mdata.put("weight", m.getLineWeight());
-                mdata.put("label", m.getLabel());
+                mdata.put("label", Client.sanitizeHTML(m.getLabel()));
                 mdata.put("markup", m.isLabelMarkup());
                 if(m.getDescription() != null)
-                    mdata.put("desc", m.getDescription());
+                    mdata.put("desc", Client.sanitizeHTML(m.getDescription()));
                 if (m.getMinZoom() >= 0) {
                     mdata.put("minzoom", m.getMinZoom());
                 }
@@ -3429,10 +3429,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 mdata.put("opacity", m.getLineOpacity());
                 mdata.put("fillopacity", m.getFillOpacity());
                 mdata.put("weight", m.getLineWeight());
-                mdata.put("label", m.getLabel());
+                mdata.put("label", Client.sanitizeHTML(m.getLabel()));
                 mdata.put("markup", m.isLabelMarkup());
                 if(m.getDescription() != null)
-                    mdata.put("desc", m.getDescription());
+                    mdata.put("desc", Client.sanitizeHTML(m.getDescription()));
                 if (m.getMinZoom() >= 0) {
                     mdata.put("minzoom", m.getMinZoom());
                 }
