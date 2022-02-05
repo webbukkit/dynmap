@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import org.dynmap.modsupport.BlockSide;
 import org.dynmap.modsupport.ModelBlockModel;
-import org.dynmap.modsupport.ModelBlockModel.SideRotation;
 
 public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockModel {
 

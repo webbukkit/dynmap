@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Random;
 
-import javax.sound.sampled.AudioFormat.Encoding;
-
 import org.json.simple.JSONAware;
 import org.json.simple.JSONStreamAware;
 import org.owasp.html.HtmlPolicyBuilder;

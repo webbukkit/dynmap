@@ -11,7 +11,6 @@ import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.markers.CircleMarker;
 import org.dynmap.markers.EnterExitMarker;
 import org.dynmap.markers.MarkerSet;
-import org.dynmap.markers.EnterExitMarker.EnterExitText;
 import org.dynmap.markers.impl.MarkerAPIImpl.MarkerUpdate;
 import org.dynmap.utils.Vector3D;
 

@@ -6,7 +6,7 @@ public class DataBitsPacked {
     private final long[] values;
     private final int bitsperrec;
     private final long valuemask;
-    private final int length;
+    public final int length;
 
     public static int calcLongCount(int i, int j) {
         if (j == 0) {

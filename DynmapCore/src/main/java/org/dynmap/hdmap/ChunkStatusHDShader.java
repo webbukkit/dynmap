@@ -33,21 +33,21 @@ public class ChunkStatusHDShader implements HDShader {
     };
     private static HashMap<String, ChunkStatusMap> statusmap = new HashMap<String, ChunkStatusMap>();
     
-    private static ChunkStatusMap[] statusvals = {
-		new ChunkStatusMap("empty", 0xFF0000),
-		new ChunkStatusMap("structure_starts", 0xFF1493),
-		new ChunkStatusMap("structure_references", 0xFF7F50),
-		new ChunkStatusMap("biomes", 0xFFA500),
-		new ChunkStatusMap("noise", 0xFFD700),
-		new ChunkStatusMap("surface", 0xFFFF00),
-		new ChunkStatusMap("carvers", 0xFFEFD5),
-		new ChunkStatusMap("liquid_carvers", 0xF0E68C),
-		new ChunkStatusMap("features", 0xBDB76B),
-		new ChunkStatusMap("light", 0xDDA0DD),
-		new ChunkStatusMap("spawn", 0xFF00FF),
-		new ChunkStatusMap("heightmaps", 0x9370DB),
-		new ChunkStatusMap("full", 0x32CD32),
-    };
+    static {
+		new ChunkStatusMap("empty", 0xFF0000);
+		new ChunkStatusMap("structure_starts", 0xFF1493);
+		new ChunkStatusMap("structure_references", 0xFF7F50);
+		new ChunkStatusMap("biomes", 0xFFA500);
+		new ChunkStatusMap("noise", 0xFFD700);
+		new ChunkStatusMap("surface", 0xFFFF00);
+		new ChunkStatusMap("carvers", 0xFFEFD5);
+		new ChunkStatusMap("liquid_carvers", 0xF0E68C);
+		new ChunkStatusMap("features", 0xBDB76B);
+		new ChunkStatusMap("light", 0xDDA0DD);
+		new ChunkStatusMap("spawn", 0xFF00FF);
+		new ChunkStatusMap("heightmaps", 0x9370DB);
+		new ChunkStatusMap("full", 0x32CD32);
+    }
 
     final static Color unknown_color = new Color(255, 255, 255);
     

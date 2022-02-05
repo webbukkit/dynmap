@@ -287,6 +287,12 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
                     case TOP:
                         line += ",visibility=top";
                         break;
+                    case TOPFLIP:
+                        line += ",visibility=topflip";
+                        break;
+                    case TOPFLIPV:
+                        line += ",visibility=topflipv";
+                        break;
                     case FLIP:
                         line += ",visibility=flip";
                         break;

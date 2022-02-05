@@ -75,7 +75,6 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 import org.yaml.snakeyaml.Yaml;
 
@@ -913,12 +912,13 @@ public class DynmapCore implements DynmapCommonAPI {
         return config_hashcode;
     }
 
-    private FileResource createFileResource(String path) {
+    @SuppressWarnings("deprecation")
+	private org.eclipse.jetty.util.resource.FileResource createFileResource(String path) {
         try {
         	File f = new File(path);
         	URI uri = f.toURI();
         	URL url = uri.toURL();
-            return new FileResource(url);
+            return new org.eclipse.jetty.util.resource.FileResource(url);
         } catch(Exception e) {
             Log.info("Could not create file resource");
             return null;
@@ -1970,11 +1970,11 @@ public class DynmapCore implements DynmapCommonAPI {
             if(args.length == 2) { // /dynmap radiusrender *<world>* <x> <z> <radius> <map>
                 return getWorldSuggestions(args[1]);
             } if(args.length == 3 && player != null) { // /dynmap radiusrender <radius> *<mapname>*
-                Scanner sc = new Scanner(args[1]);
-
-                if(sc.hasNextInt(10)) { //Only show map suggestions if a number was entered before
-                    return getMapSuggestions(player.getLocation().world, args[2], false);
-                }
+            	try (Scanner sc = new Scanner(args[1])) {
+            		if(sc.hasNextInt(10)) { //Only show map suggestions if a number was entered before
+            			return getMapSuggestions(player.getLocation().world, args[2], false);
+            		}
+            	}
             } else if(args.length == 6) { // /dynmap radiusrender <world> <x> <z> <radius> *<map>*
                 return getMapSuggestions(args[1], args[5], false);
             }
@@ -2644,7 +2644,6 @@ public class DynmapCore implements DynmapCommonAPI {
     	int off = 0;
     	int firsthit = -1;
     	boolean done = false;
-    	String orig = msg;
     	while (!done) {
     		int idx = msg.indexOf("${", off);	// Look for next ${
     		if (idx >= 0) {	// Hit
@@ -2790,7 +2789,7 @@ public class DynmapCore implements DynmapCommonAPI {
         return platformVersion;
     }
     
-    private static boolean deleteDirectory(File dir) {
+    public static boolean deleteDirectory(File dir) {
         File[] files = dir.listFiles();
         if (files != null) {
             for (File f : files) {

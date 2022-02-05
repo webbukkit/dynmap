@@ -7,7 +7,6 @@ import java.util.ListIterator;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.chunk.GenericChunkCache.ChunkCacheRec;
 import org.dynmap.hdmap.HDBlockModels;
@@ -24,7 +23,6 @@ import org.dynmap.utils.VisibilityLimit;
  * Abstract container for handling map cache and map iterator, using DynmapChunks
  */
 public abstract class GenericMapChunkCache extends MapChunkCache {
-	private static boolean init = false;
 	protected DynmapWorld dw;
 	private int nsect;
 	private int sectoff;	// Offset for sake of negative section indexes

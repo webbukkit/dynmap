@@ -2,7 +2,6 @@ package org.dynmap.servlet;
 
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
-import org.dynmap.MapType.ImageEncoding;
 import org.dynmap.PlayerFaces;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.MapStorageTile;

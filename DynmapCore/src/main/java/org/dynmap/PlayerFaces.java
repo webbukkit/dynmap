@@ -174,7 +174,6 @@ public class PlayerFaces {
             // Copy face and overlay to icon
             copyLayersToTarget(img, 8*scale, 8*scale, 40*scale, 8*scale, 8*scale, 8*scale, faceOriginal, 0, 8*scale);
 
-            int[] faceaccessory = new int[64];  /* 8x8 of face accessory */
             /* Get buffered image for face at 8x8 */
             DynmapBufferedImage face8x8 = DynmapBufferedImage.allocateBufferedImage(8, 8);
             Image face8x8_image =  faceOriginal.getScaledInstance(8,8,BufferedImage.SCALE_SMOOTH);

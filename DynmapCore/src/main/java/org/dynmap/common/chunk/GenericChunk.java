@@ -3,7 +3,6 @@ package org.dynmap.common.chunk;
 import java.util.Arrays;
 
 import org.dynmap.renderer.DynmapBlockState;
-import org.dynmap.Log;
 import org.dynmap.common.BiomeMap;
 
 // Generic chunk representation

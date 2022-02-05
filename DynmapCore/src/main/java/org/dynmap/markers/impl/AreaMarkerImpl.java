@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.dynmap.Client;
 import org.dynmap.ConfigurationNode;
 import org.dynmap.DynmapWorld;
-import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.hdmap.HDPerspective;
 import org.dynmap.markers.AreaMarker;

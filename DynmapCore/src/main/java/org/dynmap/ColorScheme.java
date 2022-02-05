@@ -105,7 +105,6 @@ public class ColorScheme {
 						continue;
 					}
 					Integer id = null;
-					Integer dat = null;
 					boolean isbiome = false;
 					boolean istemp = false;
 					boolean israin = false;

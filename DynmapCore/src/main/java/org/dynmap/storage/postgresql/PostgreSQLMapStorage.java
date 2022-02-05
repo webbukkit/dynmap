@@ -27,7 +27,6 @@ import org.dynmap.storage.MapStorageBaseTileEnumCB;
 import org.dynmap.storage.MapStorageTile;
 import org.dynmap.storage.MapStorageTileEnumCB;
 import org.dynmap.storage.MapStorageTileSearchEndCB;
-import org.dynmap.storage.mysql.MySQLMapStorage.StorageTile;
 import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
 

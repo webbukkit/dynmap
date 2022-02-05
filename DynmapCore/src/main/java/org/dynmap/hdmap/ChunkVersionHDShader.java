@@ -4,8 +4,6 @@ import static org.dynmap.JSONUtils.s;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeSet;
 
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
@@ -27,11 +25,11 @@ public class ChunkVersionHDShader implements HDShader {
     
     private static class DataVersionMap {
     	int dataVersion;
-    	String version;
+    	//String version;
     	Color defcolor;
     	DataVersionMap(int dv, String v, int c) {
     		dataVersion = dv;
-    		version = v;
+    		//version = v;
     		defcolor = new Color((c>>16)&0xFF, (c>>8)&0xFF, c&0xFF);
 
     	}

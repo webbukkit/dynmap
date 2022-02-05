@@ -2,7 +2,6 @@ package org.dynmap.modsupport.impl;
 
 import java.util.Arrays;
 
-import org.dynmap.DynmapCore;
 import org.dynmap.modsupport.CopyBlockTextureRecord;
 import org.dynmap.modsupport.TransparencyMode;
 
