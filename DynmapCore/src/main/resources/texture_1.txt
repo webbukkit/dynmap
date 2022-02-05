@@ -2065,6 +2065,8 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.14-]texture:id=smooth_stone_slab_side
 [1.14-]texture:id=bamboo_stage0
 [1.14-]texture:id=bamboo_stalk
+[1.14-]texture:id=bamboo_small_leaves
+[1.14-]texture:id=bamboo_large_leaves
 [1.14-]texture:id=scaffolding_top
 [1.14-]texture:id=scaffolding_side
 [1.14-]texture:id=scaffolding_bottom
@@ -2166,7 +2168,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 # Bamboo Sapling
 [1.14-]block:id=bamboo_sapling,patch0-1=0:bamboo_stage0,transparency=TRANSPARENT
 # Bamboo
-[1.14-]block:id=bamboo,data=0-11,patch0-5=0:bamboo_stalk,transparency=TRANSPARENT
+[1.14-]block:id=bamboo,data=0-11,patch0=0:bamboo_stalk,patch1=0:bamboo_small_leaves,patch2=0:bamboo_large_leaves,transparency=TRANSPARENT
 # Potted bamboo
 [1.14-]block:id=potted_bamboo,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:bamboo_stage0,transparency=TRANSPARENT
 # Polished Granite Stairs

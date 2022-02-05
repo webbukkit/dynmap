@@ -1359,6 +1359,20 @@ patchblock:id=bubble_column
 # Bamboo
 [1.14-]boxblock:id=bamboo,data=0-5,xmin=0.4275,xmax=0.5625,zmin=0.4275,zmax=0.5625
 [1.14-]boxblock:id=bamboo,data=6-11,xmin=0.38,xmax=0.62,zmin=0.38,zmax=0.62
+# Bamboo (bamboo_stalk, bamboo_small_leaves, bamboo_large_leaves
+[1.14-]modellist:id=bamboo,state=age:0/leaves:none/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:none/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:small/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:small/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:large/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:large/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:none/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:none/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:small/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:small/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:large/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:large/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+
 # Potted Bamboo
 [1.14-]patchblock:id=potted_bamboo,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
 # Polished granite stairs
