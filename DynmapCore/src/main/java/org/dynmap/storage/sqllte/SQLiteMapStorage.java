@@ -31,7 +31,7 @@ import org.dynmap.utils.BufferOutputStream;
 public class SQLiteMapStorage extends MapStorage {
     private String connectionString;
     private String databaseFile;
-    private static final int POOLSIZE = 5;
+    private static final int POOLSIZE = 1;	// SQLite is really not thread safe... 1 at a time works best
     private Connection[] cpool = new Connection[POOLSIZE];
     private int cpoolCount = 0;
     private static final Charset UTF8 = Charset.forName("UTF-8");
