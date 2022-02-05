@@ -427,6 +427,8 @@ public class FabricServer extends DynmapServerInterface {
             f.get();
         } catch (CancellationException cx) {
             return null;
+        } catch (InterruptedException cx) {
+            return null;
         } catch (ExecutionException xx) {
             Log.severe("Exception while loading chunks", xx.getCause());
             return null;
