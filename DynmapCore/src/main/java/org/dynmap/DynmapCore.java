@@ -2810,7 +2810,8 @@ public class DynmapCore implements DynmapCommonAPI {
         File df = this.getDataFolder();
         if(df.exists() == false) df.mkdirs();
         File ver = new File(df, "version.txt");
-        File webver = new File(this.getWebPath(), "version.txt");
+        File wpath = this.getFile(this.getWebPath());
+        File webver = new File(wpath, "version.txt");
         String prevver = "1.6";
         String prevwebver = "1.6";
         if (ver.exists()) {
@@ -2895,7 +2896,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 	if (!updatewebpathfiles) {
                 		continue;
                 	}
-            		f = new File(this.getWebPath(), n.substring("web/".length()));            
+            		f = new File(wpath, n.substring("web/".length()));            
                 }
                 else {
                 	f = new File(df, n);
