@@ -499,3 +499,11 @@ perspectives:
     inclination: 90
     scale: 16
     
+  # Old style compass (sun rise in the North...)    
+  - class: org.dynmap.hdmap.IsoHDPerspective 
+    name: oldnorth
+    azimuth: 0
+    compassazimuth: 90
+    inclination: 90
+    scale: 4
+    

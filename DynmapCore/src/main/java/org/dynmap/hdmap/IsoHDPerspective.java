@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.dynmap.Client;
 import org.dynmap.Color;
@@ -28,7 +27,6 @@ import org.dynmap.renderer.RenderPatchFactory.SideVisible;
 import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.MapStorageTile;
 import org.dynmap.utils.BlockStep;
-import org.dynmap.utils.DynIntHashMap;
 import org.dynmap.hdmap.TexturePack.BlockTransparency;
 import org.dynmap.utils.DynmapBufferedImage;
 import org.dynmap.utils.LightLevels;
@@ -47,6 +45,7 @@ public class IsoHDPerspective implements HDPerspective {
     private final int hashcode;
     /* View angles */
     public final double azimuth;  /* Angle in degrees from looking north (0), east (90), south (180), or west (270) */
+    public final double compassazimuth;	// Angle in degrees from looking north (0), east (90), for the compass (default same as azimuth)
     public final double inclination;  /* Angle in degrees from horizontal (0) to vertical (90) */
     public final double maxheight;
     public final double minheight;
@@ -988,10 +987,17 @@ public class IsoHDPerspective implements HDPerspective {
             hashcode = name.hashCode();
         }
         double az = 90.0 + configuration.getDouble("azimuth", 135.0);    /* Get azimuth (default to classic kzed POV) */
-        if(az >= 360.0) {
+        if (az >= 360.0) {
             az = az - 360.0;
         }
         azimuth = az;
+        // Get compass azimuth - default to same as true azimuth, but allows for override
+        az = 90.0 + configuration.getDouble("compassazimuth", az - 90.0);    /* Get azimuth (default to classic kzed POV) */
+        if (az >= 360.0) {
+            az = az - 360.0;
+        }
+        compassazimuth = az;
+        
         double inc;
         inc = configuration.getDouble("inclination", 60.0);
         if(inc > MAX_INCLINATION) inc = MAX_INCLINATION;
@@ -1436,7 +1442,7 @@ public class IsoHDPerspective implements HDPerspective {
         s(mapObject, "scale", basemodscale);
         s(mapObject, "worldtomap", world_to_map.toJSON());
         s(mapObject, "maptoworld", map_to_world.toJSON());
-        int dir = (((360 + (int)(22.5+azimuth)) / 45) + 6) % 8;
+        int dir = (((360 + (int)(22.5+compassazimuth)) / 45) + 6) % 8;
         s(mapObject, "compassview", directions[dir]);
     }
     
