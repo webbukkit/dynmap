@@ -64,10 +64,10 @@ public class PatchDefinitionFactory implements RenderPatchFactory {
         }
 
     }
-    
-    public PatchDefinition getModelFace(double[] from, double[] to, BlockSide face, double[] uv, ModelBlockModel.SideRotation rot, int textureid) {
+
+    public PatchDefinition getModelFace(double[] from, double[] to, BlockSide face, double[] uv, ModelBlockModel.SideRotation rot, boolean shade, int textureid) {
         synchronized(lock) {
-            lookup.updateModelFace(from, to, face, uv, rot, textureid);
+            lookup.updateModelFace(from, to, face, uv, rot, shade, textureid);
             if(lookup.validate() == false)
                 return null;
             PatchDefinition pd2 = patches.get(lookup);  /* See if in cache already */

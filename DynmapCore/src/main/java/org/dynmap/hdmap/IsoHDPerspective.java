@@ -128,12 +128,14 @@ public class IsoHDPerspective implements HDPerspective {
         double patch_t[] = new double[2*HDBlockModels.getMaxPatchCount()];
         double patch_u[] = new double[2*HDBlockModels.getMaxPatchCount()];
         double patch_v[] = new double[2*HDBlockModels.getMaxPatchCount()];
+        boolean patch_shade[] = new boolean[2*HDBlockModels.getMaxPatchCount()];
         BlockStep patch_step[] = new BlockStep[2*HDBlockModels.getMaxPatchCount()];
         int patch_id[] = new int[2*HDBlockModels.getMaxPatchCount()];
         int cur_patch = -1;
         double cur_patch_u;
         double cur_patch_v;
         double cur_patch_t;
+        boolean cur_shade;
         
         int[] subblock_xyz = new int[3];
         final MapIterator mapiter;
@@ -452,6 +454,7 @@ public class IsoHDPerspective implements HDPerspective {
                 patch_t[hitcnt] = t;
                 patch_u[hitcnt] = u;
                 patch_v[hitcnt] = v;
+                patch_shade[hitcnt] = pd.shade;
                 patch_id[hitcnt] = pd.textureindex;
                 if(det > 0) {
                     patch_step[hitcnt] = pd.step.opposite();
@@ -514,6 +517,7 @@ public class IsoHDPerspective implements HDPerspective {
                 cur_patch = patch_id[best_patch]; /* Mark this as current patch */
                 cur_patch_u = patch_u[best_patch];
                 cur_patch_v = patch_v[best_patch];
+                cur_shade = patch_shade[best_patch];
                 laststep = patch_step[best_patch];
                 cur_patch_t = best_t;
                 // If the water patch, switch to water state and patch index
@@ -905,7 +909,7 @@ public class IsoHDPerspective implements HDPerspective {
          * Get current texture index
          */
         @Override
-        public int getTextureIndex() {
+        public final int getTextureIndex() {
             return cur_patch;
         }
 
@@ -913,7 +917,7 @@ public class IsoHDPerspective implements HDPerspective {
          * Get current U of patch intercept
          */
         @Override
-        public double getPatchU() {
+        public final double getPatchU() {
             return cur_patch_u;
         }
 
@@ -921,10 +925,19 @@ public class IsoHDPerspective implements HDPerspective {
          * Get current V of patch intercept
          */
         @Override
-        public double getPatchV() {
+        public final double getPatchV() {
             return cur_patch_v;
         }
+
         /**
+         * Get current patch noShadow setting (true = no shadows/lighting)
+         */
+        @Override
+        public final boolean getShade() {
+        	// Shade if shade set OR not patch
+            return cur_shade || (cur_patch < 0);    /* If patch hit */
+        }
+/**
          * Light level cache
          * @param index of light level (0-3)
          */

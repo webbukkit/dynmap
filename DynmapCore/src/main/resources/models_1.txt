@@ -216,9 +216,9 @@ boxblock:id=snow,data=6,ymax=0.875
 
 # Torch
 # Redstone torch
-modellist:id=torch,id=redstone_torch,box=7/0/7:9/10/9:d/0/7/13/9/15:u/0/7/6/9/8,box=7/0/0:9/16/16:w/0:e/0,box=0/0/7:16/16/9:n/0:s/0
+modellist:id=torch,id=redstone_torch,box=7/0/7/false:9/10/9:d/0/7/13/9/15:u/0/7/6/9/8,box=7/0/0/false:9/16/16:w/0:e/0,box=0/0/7/false:16/16/9:n/0:s/0
 # Wall Torch
-modellist:id=wall_torch,state=facing:east,box=-1/3.5/7:1/13.5/9/0/0/-22.5/0/3.5/8:d/0/7/13/9/15,u/0/7/6/9/8,box=-1/3.5/0:1/19.5/16/0/0/-22.5/0/3.5/8:w/0:e/0,box=-8/3.5/7:8/19.5/9/0/0/-22.5/0/3.5/8:n/0:s/0
+modellist:id=wall_torch,state=facing:east,box=-1/3.5/7/false:1/13.5/9/0/0/-22.5/0/3.5/8:d/0/7/13/9/15,u/0/7/6/9/8,box=-1/3.5/0/false:1/19.5/16/0/0/-22.5/0/3.5/8:w/0:e/0,box=-8/3.5/7/false:8/19.5/9/0/0/-22.5/0/3.5/8:n/0:s/0
 patchblock:id=wall_torch,state=facing:north
 patchrotate:id=wall_torch,state=facing:east,roty=270
 patchblock:id=wall_torch,state=facing:south
@@ -424,7 +424,8 @@ ignore-updates:id=redstone_wire
 [-1.13.2]patchblock:id=sign,data=22-23,patch0=SignFront@67,patch1=SignBack@67,patch2=SignTop@67,patch3=SignBottom@67,patch4=SignLeft@67,patch5=SignRight@67,patch6=PostFront@67,patch7=PostBack@67,patch8=PostLeft@67,patch9=PostRight@67
 [1.14-]patchblock:id=oak_sign,id=spruce_sign,id=birch_sign,id=acacia_sign,id=jungle_sign,id=dark_oak_sign,data=22-23,patch0=SignFront@67,patch1=SignBack@67,patch2=SignTop@67,patch3=SignBottom@67,patch4=SignLeft@67,patch5=SignRight@67,patch6=PostFront@67,patch7=PostBack@67,patch8=PostLeft@67,patch9=PostRight@67
 # Fire
-patchblock:id=fire,patch0=VertX0,patch1=VertX0@90,patch2=VertX0@180,patch3=VertX0@270,patch4=SlopeXUpZTop675,patch5=SlopeXUpZTop675@90,patch6=SlopeXUpZTop675@180,patch4=SlopeXUpZTop675@270
+modellist:id=fire,box=0/0/8.8/false:16/16/8.8/-22.5/0/0:s/0/0/0/16/16,box=0/0/7.2/false:16/16/7.2/22.5/0/0:n/0/0/0/16/16,box=8.8/0/0/false:8.8/16/16/0/0/-22/5:w/0/0/0/16/16,box=7.2/0/0/false:7.2/16/16/0/0/22.5:e/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01:s/0/0/0/16/16:n/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01/0/90/0:s/0/0/0/16/16:n/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01/0/180/0:s/0/0/0/16/16:n/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01/0/270/0:s/0/0/0/16/16:n/0/0/0/16/16
+
 # Bed - head - pointing west
 block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=8,scale=16
 layer:0,1,2
@@ -1356,22 +1357,19 @@ patchblock:id=bubble_column
 # Cut sandstone slab
 [1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,state=type:top,ymin=0.5
 [1.14-]boxblock:id=smooth_stone_slab,id=cut_sandstone_slab,id=cut_red_sandstone_slab,state=type:bottom,ymax=0.5
-# Bamboo
-[1.14-]boxblock:id=bamboo,data=0-5,xmin=0.4275,xmax=0.5625,zmin=0.4275,zmax=0.5625
-[1.14-]boxblock:id=bamboo,data=6-11,xmin=0.38,xmax=0.62,zmin=0.38,zmax=0.62
 # Bamboo (bamboo_stalk, bamboo_small_leaves, bamboo_large_leaves
 [1.14-]modellist:id=bamboo,state=age:0/leaves:none/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16
 [1.14-]modellist:id=bamboo,state=age:0/leaves:none/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16
-[1.14-]modellist:id=bamboo,state=age:0/leaves:small/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
-[1.14-]modellist:id=bamboo,state=age:0/leaves:small/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
-[1.14-]modellist:id=bamboo,state=age:0/leaves:large/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
-[1.14-]modellist:id=bamboo,state=age:0/leaves:large/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:small/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16,box=0.8/0/8/false:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:small/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16,box=0.8/0/8/false:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:large/stage:0,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/0/0/2/16:s/0/0/0/2/16:w/0/0/0/2/16:e/0/0/0/2/16,box=0.8/0/8/false:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:0/leaves:large/stage:1,box=7/0/7:9/16/9:d/0/13/4/15/6:u/0/13/0/15/2:n/0/3/0/5/16:s/0/3/0/5/16:w/0/3/0/5/16:e/0/3/0/5/16,box=0.8/0/8/false:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
 [1.14-]modellist:id=bamboo,state=age:1/leaves:none/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16
 [1.14-]modellist:id=bamboo,state=age:1/leaves:none/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16
-[1.14-]modellist:id=bamboo,state=age:1/leaves:small/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
-[1.14-]modellist:id=bamboo,state=age:1/leaves:small/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16,box=0.8/0/8:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
-[1.14-]modellist:id=bamboo,state=age:1/leaves:large/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
-[1.14-]modellist:id=bamboo,state=age:1/leaves:large/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16,box=0.8/0/8:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:small/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16,box=0.8/0/8/false:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:small/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16,box=0.8/0/8/false:15.2/16/8:n/1/0/0/16/16:s/1/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/1/0/0/16/16:e/1/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:large/stage:0,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/0/0/3/16:s/0/0/0/3/16:w/0/0/0/3/16:e/0/0/0/3/16,box=0.8/0/8/false:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=bamboo,state=age:1/leaves:large/stage:1,box=6.5/0/6.5:9.5/16/9.5:d/0/13/4/16/7:u/0/13/0/16/3:n/0/3/0/6/16:s/0/3/0/6/16:w/0/3/0/6/16:e/0/3/0/6/16,box=0.8/0/8/false:15.2/16/8:n/2/0/0/16/16:s/2/0/0/16/16,box=8/0/0.8/false:8/16/15.2:w/2/0/0/16/16:e/2/0/0/16/16
 
 # Potted Bamboo
 [1.14-]patchblock:id=potted_bamboo,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
@@ -1516,7 +1514,7 @@ patchblock:id=bubble_column
 [1.14-]patchblock:id=stonecutter,data=3
 [1.14-]patchrotate:id=stonecutter,data=0,roty=90
 # Campfire (lit) (unlit log, lit log, fire)
-[1.14-]modellist:id=campfire,data=8,data=9,data=10,data=11,box=1/0/0:5/4/16:n/0/0/4/4/8:e/1/0/1/16/5:s/0/0/4/4/8:w/0/16/0/0/4:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/11:16/7/15:n/1/16/0/0/4:e/0/0/4/4/8:s/1/0/0/16/4:w/0/0/4/4/8:u180/1/0/0/16/4:d/1/0/4/16/8,box=11/0/0:15/4/16:n/0/0/4/4/8:e/0/0/0/16/4:s/0/0/4/4/8:w/1/16/1/0/5:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/1:16/7/5:n/1/0/0/16/4:e/0/0/4/4/8:s/1/16/0/0/4:w/0/0/4/4/8:u180/0/0/0/16/4:d/1/0/4/16/8,box=5/0/0:11/1/16:n/0/0/15/6/16:s/0/10/15/16/16:u90/1/0/8/16/14:d90/0/0/8/16/14,box=0.8/1/8:15.2/17/8/0/45/0:n/2/0/0/16/16:s/2/0/0/16/16,box=8/1/0.8:8/17/15.2/0/45/0:w/2/0/0/16/16:e/2/0/0/16/16
+[1.14-]modellist:id=campfire,data=8,data=9,data=10,data=11,box=1/0/0:5/4/16:n/0/0/4/4/8:e/1/0/1/16/5:s/0/0/4/4/8:w/0/16/0/0/4:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/11:16/7/15:n/1/16/0/0/4:e/0/0/4/4/8:s/1/0/0/16/4:w/0/0/4/4/8:u180/1/0/0/16/4:d/1/0/4/16/8,box=11/0/0:15/4/16:n/0/0/4/4/8:e/0/0/0/16/4:s/0/0/4/4/8:w/1/16/1/0/5:u90/0/0/0/16/4:d90/0/0/0/16/4,box=0/3/1:16/7/5:n/1/0/0/16/4:e/0/0/4/4/8:s/1/16/0/0/4:w/0/0/4/4/8:u180/0/0/0/16/4:d/1/0/4/16/8,box=5/0/0:11/1/16:n/0/0/15/6/16:s/0/10/15/16/16:u90/1/0/8/16/14:d90/0/0/8/16/14,box=0.8/1/8/false:15.2/17/8/0/45/0:n/2/0/0/16/16:s/2/0/0/16/16,box=8/1/0.8/false:8/17/15.2/0/45/0:w/2/0/0/16/16:e/2/0/0/16/16
 [1.14-]patchblock:id=campfire,data=0,data=1,data=2,data=3
 [1.14-]patchrotate:id=campfire,data=8,roty=180
 [1.14-]patchblock:id=campfire,data=16,data=17,data=18,data=19
@@ -1606,7 +1604,8 @@ patchblock:id=bubble_column
 
 # 1.16 blocks
 # Soul Fire
-[1.16-]patchblock:id=soul_fire,patch0=VertX0,patch1=VertX0@90,patch2=VertX0@180,patch3=VertX0@270,patch4=SlopeXUpZTop675,patch5=SlopeXUpZTop675@90,patch6=SlopeXUpZTop675@180,patch4=SlopeXUpZTop675@270
+[1.16-]patchblock:id=soul_fire
+[1.16-]patchrotate:id=fire,data=0,roty=0
 # Soul Torch
 [1.16-]patchblock:id=soul_torch
 [1.16-]patchrotate:id=torch,data=0,roty=0
@@ -1620,7 +1619,7 @@ patchblock:id=bubble_column
 [1.16-]patchblock:id=soul_wall_torch,data=2
 [1.16-]patchrotate:id=wall_torch,data=3,roty=180
 # Chain
-[1.16-]modellist:id=chain,state=axis:y,box=6.5/0/8:9.5/16/8/0/45/0:n/0/3/0/0/16:s/0/0/0/3/16,box=8/0/6.5:8/16/9.5/0/45/0:w/0/6/0/3/16:e/0/3/0/6/16
+[1.16-]modellist:id=chain,state=axis:y,box=6.5/0/8/false:9.5/16/8/0/45/0:n/0/3/0/0/16:s/0/0/0/3/16,box=8/0/6.5/false:8/16/9.5/0/45/0:w/0/6/0/3/16:e/0/3/0/6/16
 [1.16-]patchblock:id=chain,state=axis:x
 [1.16-]patchrotate:id=chain,state=axis:y/waterlogged:true,rotx=90,roty=90
 [1.16-]patchblock:id=chain,state=axis:z

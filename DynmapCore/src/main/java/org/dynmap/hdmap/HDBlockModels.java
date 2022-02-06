@@ -317,6 +317,7 @@ public class HDBlockModels {
     	double[] to = new double[3];
     	double xrot = 0, yrot = 0, zrot = 0;
     	double xrotorig = 8, yrotorig = 8, zrotorig = 8;
+    	boolean shade = true;
     	ArrayList<ModelBoxSide> sides = new ArrayList<ModelBoxSide>();
     };
     
@@ -916,12 +917,15 @@ public class HDBlockModels {
                         	String[] prms = av[1].split(":");
                         	
                         	ModelBox box = new ModelBox();
-                        	if (prms.length > 0) {	// Handle from (from-x/y/z)
+                        	if (prms.length > 0) {	// Handle from (from-x/y/z or from-x/y/z/shadow)
                         		String[] xyz = prms[0].split("/");
-                        		if (xyz.length == 3) {
+                        		if ((xyz.length == 3) || (xyz.length == 4)) {
                         			box.from[0] = Double.parseDouble(xyz[0]);
                         			box.from[1] = Double.parseDouble(xyz[1]);
                         			box.from[2] = Double.parseDouble(xyz[2]);
+                            		if ((xyz.length >= 4) && (xyz[3].equals("false"))) {
+                        				box.shade = false;
+                            		}
                         		}
                         		else {
                                 	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + lineNum);                        			
@@ -1004,7 +1008,7 @@ public class HDBlockModels {
 						for (ModelBox bl : boxes) {
 							// Loop through faces
 							for (ModelBoxSide side : bl.sides) {
-								PatchDefinition patch = pdf.getModelFace(bl.from, bl.to, side.side, side.uv, side.rot, side.textureid);
+								PatchDefinition patch = pdf.getModelFace(bl.from, bl.to, side.side, side.uv, side.rot, bl.shade, side.textureid);
 								if (patch != null) {
 									// If any rotations, apply them here
 									if ((bl.xrot != 0) || (bl.yrot != 0) || (bl.zrot != 0)) {

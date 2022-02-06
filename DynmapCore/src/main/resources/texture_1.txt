@@ -885,7 +885,7 @@ block:id=torch,patch0=0:torch,transparency=TRANSPARENT
 # Wall torch
 block:id=wall_torch,state=*,patch0=0:torch,transparency=TRANSPARENT
 # Fire
-block:id=fire,patch0-3=0:fire_0,patch4-7=0:fire_1,transparency=TRANSPARENT
+block:id=fire,patch0=0:fire_0,transparency=TRANSPARENT
 # Monster spawner
 block:id=spawner,allfaces=0:spawner,stdrot=true,transparency=TRANSPARENT
 # Wooden stairs
@@ -2407,7 +2407,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 # Nether gold ore
 [1.16-]block:id=nether_gold_ore,allfaces=0:nether_gold_ore,stdrot=true
 # Soul Fire
-[1.16-]block:id=soul_fire,patch0-3=0:soul_fire_0,patch4-7=0:soul_fire_1,transparency=TRANSPARENT
+[1.16-]block:id=soul_fire,patch0=0:soul_fire_0,transparency=TRANSPARENT
 # Soul soil
 [1.16-]block:id=soul_soil,allfaces=0:soul_soil,stdrot=true
 # Basalt

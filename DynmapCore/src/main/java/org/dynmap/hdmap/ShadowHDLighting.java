@@ -217,8 +217,8 @@ public class ShadowHDLighting extends DefaultHDLighting {
         
     /* Apply lighting to given pixel colors (1 outcolor if normal, 2 if night/day) */
     public void    applyLighting(HDPerspectiveState ps, HDShaderState ss, Color incolor, Color[] outcolor) {
-        int[] shadowscale = null;
-        if(smooth) {
+    	int[] shadowscale = null;
+        if (smooth && ps.getShade()) {
             shadowscale = ss.getLightingTable();
             if (shadowscale == null) {
                 shadowscale = defLightingTable;

@@ -54,6 +54,10 @@ public interface HDPerspectiveState {
      */
     int getPixelY();
     /**
+     * Get current patch shade setting (false = no shadows)
+     */
+    boolean getShade();
+    /**
      * Return submodel alpha value (-1 if no submodel rendered)
      * @return alpha value
      */

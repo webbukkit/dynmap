@@ -35,7 +35,11 @@ public interface ModelBlockModel extends BlockModel {
      * @param xrot - degrees of rotation of block around X
      * @param yrot - degrees of rotation of block around Y
      * @param zrot - degrees of rotation of block around Z
+     * @param shade - shade setting for model
 	 * @return model block to add faces to
      */
-    public ModelBlock addModelBlock(double[] from, double[] to, double xrot, double yrot, double zrot);
+    public ModelBlock addModelBlock(double[] from, double[] to, double xrot, double yrot, double zrot, boolean shade);
+    default public ModelBlock addModelBlock(double[] from, double[] to, double xrot, double yrot, double zrot) {
+    	return addModelBlock(from, to, xrot, yrot, zrot, true);
+    }
 }

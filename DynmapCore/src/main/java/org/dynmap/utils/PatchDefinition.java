@@ -29,6 +29,7 @@ public class PatchDefinition implements RenderPatch {
     public SideVisible sidevis;  /* Which side is visible */
     public int textureindex;
     public BlockStep step; /* Best approximation of orientation of surface, from top (positive determinent) */
+    public boolean shade;	// If false, patch is not shaded
     private int hc;
     /* Offset vector of middle of block */
     private static final Vector3D offsetCenter = new Vector3D(0.5,0.5,0.5);
@@ -45,6 +46,7 @@ public class PatchDefinition implements RenderPatch {
         v = new Vector3D();
         sidevis = SideVisible.BOTH;
         textureindex = 0;
+        shade = true;
         update();
     }
     PatchDefinition(PatchDefinition pd) {
@@ -68,6 +70,7 @@ public class PatchDefinition implements RenderPatch {
         this.sidevis = pd.sidevis;
         this.textureindex = pd.textureindex;
         this.step = pd.step;
+        this.shade = pd.shade;
         this.hc = pd.hc;
     }
     /**
@@ -110,6 +113,7 @@ public class PatchDefinition implements RenderPatch {
         vmaxatumax = orig.vmaxatumax;
         vminatumax = orig.vminatumax;
         sidevis = orig.sidevis;
+        shade = orig.shade;
         this.textureindex = (textureindex < 0) ? orig.textureindex : textureindex;
         u = new Vector3D();
         v = new Vector3D();
@@ -291,7 +295,8 @@ public class PatchDefinition implements RenderPatch {
                     (umin == p.umin) && (umax == p.umax) &&
                     (vmin == p.vmin) && (vmax == p.vmax) &&
                     (vmaxatumax == p.vmaxatumax) && 
-                    (vminatumax == p.vminatumax) && (sidevis == p.sidevis)) {
+                    (vminatumax == p.vminatumax) && (sidevis == p.sidevis) &&
+                    (shade == p.shade)) {
                 return true;
             }
         }
@@ -307,8 +312,8 @@ public class PatchDefinition implements RenderPatch {
     }
     @Override
     public String toString() {
-    	return String.format("xyz0=%f/%f/%f,xyzU=%f/%f/%f,xyzV=%f/%f/%f,minU=%f,maxU=%f,vMin=%f/%f,vmax=%f/%f,side=%s,txtidx=%d",
-    			x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vminatumax, vmax, vmaxatumax, sidevis, textureindex);
+    	return String.format("xyz0=%f/%f/%f,xyzU=%f/%f/%f,xyzV=%f/%f/%f,minU=%f,maxU=%f,vMin=%f/%f,vmax=%f/%f,side=%s,txtidx=%d,shade=%b",
+    			x0, y0, z0, xu, yu, zu, xv, yv, zv, umin, umax, vmin, vminatumax, vmax, vmaxatumax, sidevis, textureindex, shade);
     }
     
     //
@@ -324,9 +329,11 @@ public class PatchDefinition implements RenderPatch {
     // @param face - which face (determines use of xyz-min vs xyz-max
     // @param uv - bounds on UV (umin, vmin, umax, vmax): if undefined, default based on face range (minecraft UV is relative to top left corner of texture)
     // @param rot - texture rotation (default 0 - DEG0, DEG90, DEG180, DEG270)
+    // @param shade - if false, no shadows on patch
     // @param textureid - texture ID
-    public void updateModelFace(double[] from, double[] to, BlockSide face, double[] uv, ModelBlockModel.SideRotation rot, int textureid) {
+    public void updateModelFace(double[] from, double[] to, BlockSide face, double[] uv, ModelBlockModel.SideRotation rot, boolean shade, int textureid) {
     	if (rot == null) rot = ModelBlockModel.SideRotation.DEG0;
+    	this.shade = shade;
     	// Compute corners of the face
     	Vector3D lowleft;
     	Vector3D lowright;
