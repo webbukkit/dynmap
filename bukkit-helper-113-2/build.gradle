@@ -1,3 +1,10 @@
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "Dynmap(Spigot-1.13.2)"
+    }
+}
 
 description = 'bukkit-helper-1.13.2'
 

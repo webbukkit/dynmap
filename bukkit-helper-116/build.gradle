@@ -1,3 +1,8 @@
+eclipse {
+    project {
+        name = "Dynmap(Spigot-1.16)"
+    }
+}
 
 description = 'bukkit-helper-1.16'
 

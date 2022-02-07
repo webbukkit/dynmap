@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>bukkit-helper</name>
+	<name>Dynmap(Spigot-Common)</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -28,7 +28,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1627430303020</id>
+			<id>0</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

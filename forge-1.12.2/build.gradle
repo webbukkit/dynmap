@@ -12,6 +12,13 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "Dynmap(Forge-1.12.2)"
+    }
+}
 
 dependencies {
     implementation project(path: ":DynmapCore", configuration: "shadow")

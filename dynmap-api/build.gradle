@@ -1,3 +1,10 @@
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "Dynmap(dynmap-api)"
+    }
+}
 
 description = "dynmap-api"
 

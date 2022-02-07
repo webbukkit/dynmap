@@ -1,5 +1,13 @@
 description = "DynmapCore"
 
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "Dynmap(DynmapCore)"
+    }
+}
+
 dependencies {
     implementation project(path: ':DynmapCoreAPI', configuration: 'shadow')
     implementation 'javax.servlet:javax.servlet-api:3.1'

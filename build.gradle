@@ -4,6 +4,14 @@ plugins {
     id  'maven-publish'
 }
 
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "Dynmap"
+    }
+}
+
 allprojects  {
   repositories {
      mavenLocal()

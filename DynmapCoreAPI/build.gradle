@@ -1,3 +1,12 @@
+
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "Dynmap(DynmapCoreAPI)"
+    }
+}
+
 description = "DynmapCoreAPI"
 
 jar {
