@@ -20,6 +20,7 @@ public class CuboidBlockModelImpl extends BlockModelImpl implements CuboidBlockM
     private ArrayList<Cuboid> cuboids = new ArrayList<Cuboid>();
     private ArrayList<Crossed> crosseds = new ArrayList<Crossed>();
     
+    @Deprecated
     public CuboidBlockModelImpl(int blkid, ModModelDefinitionImpl mdf) {
         super(blkid, mdf);
     }

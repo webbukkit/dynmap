@@ -25,6 +25,7 @@ public interface ModModelDefinition {
      * @param scale - grid scale (subblock array is scale x scale x scale) : from 1 to 16
      * @return block model: use methods to set occupied subblocks
      */
+    @Deprecated
     public VolumetricBlockModel addVolumetricModel(int blockid, int scale);
     /**
      * Add volumetric model : default assumes all metadata values are matching
@@ -32,12 +33,14 @@ public interface ModModelDefinition {
      * @param scale - grid scale (subblock array is scale x scale x scale) : from 1 to 16
      * @return block model: use methods to set occupied subblocks
      */
+    @Deprecated
     public VolumetricBlockModel addVolumetricModel(String blockname, int scale);
     /**
      * Add standard stair model : default assumes all metadata values are matching
      * @param blockid - block ID
      * @return block model record
      */
+    @Deprecated
     public StairBlockModel addStairModel(int blockid);
     /**
      * Add standard stair model : default assumes all metadata values are matching
@@ -51,6 +54,7 @@ public interface ModModelDefinition {
      * @param type - type of wall or fence
      * @return block model record
      */
+    @Deprecated
     public WallFenceBlockModel addWallFenceModel(int blockid, WallFenceBlockModel.FenceType type);
     /**
      * Add wall or fence model : default assumes all metadata values are matching
@@ -64,6 +68,7 @@ public interface ModModelDefinition {
      * @param blockid - block ID
      * @return block model record
      */
+    @Deprecated
     public CuboidBlockModel addCuboidModel(int blockid);
     /**
      * Add cuboid model : default assumes all metadata values are matching
@@ -76,6 +81,7 @@ public interface ModModelDefinition {
      * @param blockid - block ID
      * @return block model record
      */
+    @Deprecated
     public PaneBlockModel addPaneModel(int blockid);
     /**
      * Add pane model : default assumes all metadata values are matching
@@ -88,6 +94,7 @@ public interface ModModelDefinition {
      * @param blockid - block ID
      * @return block model record
      */
+    @Deprecated
     public PlantBlockModel addPlantModel(int blockid);
     /**
      * Add standard plant model : default assumes all metadata values are matching
@@ -100,6 +107,7 @@ public interface ModModelDefinition {
      * @param blockid - block ID
      * @return block model record
      */
+    @Deprecated
     public BoxBlockModel addBoxModel(int blockid);
     /**
      * Add standard box model : default assumes all metadata values are matching
@@ -112,6 +120,7 @@ public interface ModModelDefinition {
      * @param blockid - block ID
      * @return block model record
      */
+    @Deprecated
     public DoorBlockModel addDoorModel(int blockid);
     /**
      * Add door model
@@ -124,6 +133,7 @@ public interface ModModelDefinition {
      * @param blockid - block ID
      * @return block model record
      */
+    @Deprecated
     public PatchBlockModel addPatchModel(int blockid);
     /**
      * Add patch box model : default assumes all metadata values are matching
@@ -140,6 +150,7 @@ public interface ModModelDefinition {
      * @param zrot - z rotation in degrees (0, 90, 180, 270)
      * @return block model record
      */
+    @Deprecated
     public PatchBlockModel addRotatedPatchModel(int blockid, PatchBlockModel model, int xrot, int yrot, int zrot);
     /**
      * Add rotated patch box model, based on existing model : default assumes all metadata values are matching

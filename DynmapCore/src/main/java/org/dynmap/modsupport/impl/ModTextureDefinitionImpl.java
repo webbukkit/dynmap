@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.dynmap.modsupport.BigChestTextureFile;
 import org.dynmap.modsupport.BiomeTextureFile;
@@ -227,6 +228,7 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
      * @return block texture record: use methods to set texture use on faces/patches
      */
     @Override
+    @Deprecated
     public BlockTextureRecord addBlockTextureRecord(int blockID) {
         BlockTextureRecordImpl btr = new BlockTextureRecordImpl(blockID);
         blkTextureRec.add(btr);
@@ -245,6 +247,7 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
     }
     
     @Override
+    @Deprecated
     public CopyBlockTextureRecord addCopyBlockTextureRecord(int blockID,
             int srcBlockID, int srcMeta) {
         CopyBlockTextureRecordImpl btr = new CopyBlockTextureRecordImpl(blockID, srcBlockID, srcMeta);
@@ -252,12 +255,22 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
         return btr;
     }
     @Override
+    @Deprecated
     public CopyBlockTextureRecord addCopyBlockTextureRecord(String blockname,
             String srcBlockName, int srcMeta) {
         CopyBlockTextureRecordImpl btr = new CopyBlockTextureRecordImpl(blockname, srcBlockName, srcMeta);
         blkCopyTextureRec.add(btr);
         return btr;
     }
+
+    @Override
+    public CopyBlockTextureRecord addCopyBlockTextureRecord(String blockname,
+            String srcBlockName, Map<String, String> srcStateMap) {
+        CopyBlockTextureRecordImpl btr = new CopyBlockTextureRecordImpl(blockname, srcBlockName, srcStateMap);
+        blkCopyTextureRec.add(btr);
+        return btr;
+    }
+
 
     public boolean isPublished() {
         return published;

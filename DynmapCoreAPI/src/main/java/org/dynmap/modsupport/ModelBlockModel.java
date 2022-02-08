@@ -18,7 +18,9 @@ public interface ModelBlockModel extends BlockModel {
 	     * @param uv - bounds on UV (umin, vmin, umax, vmax): if null, default based on face range
 	     * @param rot - rotation of the block side (default id DEG0)
 	     * @param textureid - texture ID
+	     * @param tintidx - tintindex (-1 if none)
 	     */
+		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid, int tintidx);
 		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid);
 	}
     /**

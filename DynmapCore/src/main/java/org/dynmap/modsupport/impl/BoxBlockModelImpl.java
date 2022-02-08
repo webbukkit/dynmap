@@ -12,6 +12,7 @@ public class BoxBlockModelImpl extends BlockModelImpl implements BoxBlockModel {
     private double zmin = 0.0;
     private double zmax = 1.0;
     
+    @Deprecated
     public BoxBlockModelImpl(int blkid, ModModelDefinitionImpl mdf) {
         super(blkid, mdf);
     }

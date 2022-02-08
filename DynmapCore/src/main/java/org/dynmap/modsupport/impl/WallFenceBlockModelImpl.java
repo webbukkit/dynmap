@@ -8,6 +8,7 @@ public class WallFenceBlockModelImpl extends BlockModelImpl implements WallFence
     private final FenceType type;
     private int[] linked = new int[0];
     
+    @Deprecated
     public WallFenceBlockModelImpl(int blkid, ModModelDefinitionImpl mdf, FenceType type) {
         super(blkid, mdf);
         this.type = type;
@@ -23,6 +24,7 @@ public class WallFenceBlockModelImpl extends BlockModelImpl implements WallFence
     }
 
     @Override
+    @Deprecated
     public void addLinkedBlockID(int blkid) {
         int len = linked.length;
         linked = Arrays.copyOf(linked,  len+1);
@@ -30,6 +32,7 @@ public class WallFenceBlockModelImpl extends BlockModelImpl implements WallFence
     }
 
     @Override
+    @Deprecated
     public int[] getLinkedBlockIDs() {
         return linked;
     }

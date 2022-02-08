@@ -2,6 +2,7 @@ package org.dynmap.modsupport.impl;
 
 import org.dynmap.modsupport.VolumetricBlockModel;
 
+@Deprecated
 public class VolumetricBlockModelImpl extends BlockModelImpl implements VolumetricBlockModel {
     private boolean[][][] grid;
     

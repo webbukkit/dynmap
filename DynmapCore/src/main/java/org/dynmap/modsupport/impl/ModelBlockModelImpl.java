@@ -3,6 +3,8 @@ package org.dynmap.modsupport.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.dynmap.modsupport.BlockSide;
 import org.dynmap.modsupport.ModelBlockModel;
@@ -21,7 +23,7 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
 		private double xrot = 0, yrot = 0, zrot = 0;
 		private boolean shade;
 		@Override
-		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid) {
+		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid, int tintidx) {
 			ModelSide ms = new ModelSide();
 			ms.textureid = textureid;
 			if (uv != null) {
@@ -38,11 +40,15 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
 			if (side == BlockSide.FACE_5 || side == BlockSide.X_PLUS) side = BlockSide.EAST;
 			
 			sides.put(side,  ms);
-		}		
+		}
+		@Override
+		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid) {
+			addBlockSide(side, uv, rot, textureid, -1);
+		}
 	}
 	private ArrayList<ModelBlockImpl> boxes = new ArrayList<ModelBlockImpl>();    
 	private String rotsourceblockname;
-	private int rotsourcemetaindex;
+	private Map<String, String> rotsourcestatemap;
 	private int xrot, yrot, zrot;
     
     public ModelBlockModelImpl(String blkname, ModModelDefinitionImpl mdf) {
@@ -52,7 +58,8 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
     public ModelBlockModelImpl(String blkname, ModModelDefinitionImpl mdf, ModelBlockModel mod, int xrot, int yrot, int zrot) {
         super(blkname, mdf);
         this.rotsourceblockname = mod.getBlockNames()[0];
-        this.rotsourcemetaindex = Integer.numberOfTrailingZeros(mod.getMetaValueMask());
+        this.rotsourcestatemap = new HashMap<String, String>();
+        this.rotsourcestatemap.putAll(mod.getBlockStateMappings().get(0));
         this.xrot = xrot; this.yrot = yrot; this.zrot = zrot;
     }
     
@@ -73,7 +80,20 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
         String line = String.format("patchblock:%s", ids);
         // If rotating another model
         if (rotsourceblockname != null) {
-        	line += "\npatchrotate:id=" + rotsourceblockname + ",data=" + rotsourcemetaindex;
+        	line += "\npatchrotate:id=" + rotsourceblockname;
+        	if (rotsourcestatemap != null) {
+	    		line += ",state=";
+	    		boolean first = true;
+	    		for (Entry<String, String> r : rotsourcestatemap.entrySet()) {
+	    			if (first) {
+	    				first = false;
+	    			}
+	    			else {
+	    				line += '/';
+	    			}
+	    			line += r.getKey() + ":" + r.getValue();
+	    		}
+        	}
         	if (xrot != 0) {
         		line += ",rotx=" + xrot;
         	}

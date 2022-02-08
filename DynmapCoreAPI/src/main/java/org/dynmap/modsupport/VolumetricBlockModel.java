@@ -3,6 +3,7 @@ package org.dynmap.modsupport;
 /**
  * Volumetric block model - uses standard 6 sides texture indices 
  */
+@Deprecated
 public interface VolumetricBlockModel extends BlockModel {
     /**
      * Set subblock to be filled

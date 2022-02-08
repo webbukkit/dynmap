@@ -61,12 +61,14 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public VolumetricBlockModel addVolumetricModel(int blockid, int scale) {
         VolumetricBlockModelImpl mod = new VolumetricBlockModelImpl(blockid, this, scale);
         blkModel.add(mod);
         return null;
     }
     @Override
+    @Deprecated
     public VolumetricBlockModel addVolumetricModel(String blockname, int scale) {
         VolumetricBlockModelImpl mod = new VolumetricBlockModelImpl(blockname, this, scale);
         blkModel.add(mod);
@@ -74,6 +76,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public StairBlockModel addStairModel(int blockid) {
         StairBlockModelImpl mod = new StairBlockModelImpl(blockid, this);
         blkModel.add(mod);
@@ -87,6 +90,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public WallFenceBlockModel addWallFenceModel(int blockid, FenceType type) {
         WallFenceBlockModelImpl mod = new WallFenceBlockModelImpl(blockid, this, type);
         blkModel.add(mod);
@@ -100,6 +104,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public CuboidBlockModel addCuboidModel(int blockid) {
         CuboidBlockModelImpl mod = new CuboidBlockModelImpl(blockid, this);
         blkModel.add(mod);
@@ -114,6 +119,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public PaneBlockModel addPaneModel(int blockid) {
         PaneBlockModelImpl mod = new PaneBlockModelImpl(blockid, this);
         blkModel.add(mod);
@@ -127,6 +133,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public PlantBlockModel addPlantModel(int blockid) {
         PlantBlockModelImpl mod = new PlantBlockModelImpl(blockid, this);
         blkModel.add(mod);
@@ -140,6 +147,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public BoxBlockModel addBoxModel(int blockid) {
         BoxBlockModelImpl mod = new BoxBlockModelImpl(blockid, this);
         blkModel.add(mod);
@@ -153,6 +161,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public DoorBlockModel addDoorModel(int blockid) {
         DoorBlockModelImpl mod = new DoorBlockModelImpl(blockid, this);
         blkModel.add(mod);
@@ -166,6 +175,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
     
     @Override
+    @Deprecated
     public PatchBlockModel addPatchModel(int blockid) {
         PatchBlockModelImpl mod = new PatchBlockModelImpl(blockid, this);
         blkModel.add(mod);
@@ -179,6 +189,7 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
     }
 
     @Override
+    @Deprecated
     public PatchBlockModel addRotatedPatchModel(int blockid,
         PatchBlockModel model, int xrot, int yrot, int zrot) {
         PatchBlockModelImpl mod = new PatchBlockModelImpl(blockid, this, model, xrot, yrot, zrot);

@@ -4,6 +4,7 @@ import org.dynmap.modsupport.PaneBlockModel;
 
 public class PaneBlockModelImpl extends BlockModelImpl implements PaneBlockModel {
     
+    @Deprecated
     public PaneBlockModelImpl(int blkid, ModModelDefinitionImpl mdf) {
         super(blkid, mdf);
     }

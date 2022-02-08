@@ -27,10 +27,12 @@ public interface WallFenceBlockModel extends BlockModel {
      * Add block IDs linked with (beyond normal self and opaque blocks)
      * @param blkid - block ID to link to
      */
+    @Deprecated
     public void addLinkedBlockID(int blkid);
     /**
      * Get linked block IDs
      * @return linked block ids
      */
+    @Deprecated
     public int[] getLinkedBlockIDs();
 }

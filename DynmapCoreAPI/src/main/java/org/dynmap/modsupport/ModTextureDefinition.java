@@ -1,5 +1,7 @@
 package org.dynmap.modsupport;
 
+import java.util.Map;
+
 /**
  * Interface for texture definition for a given mod
  */
@@ -120,6 +122,7 @@ public interface ModTextureDefinition {
      * @param blockID - block ID 
      * @return block texture record: use methods to set texture use on faces/patches
      */
+    @Deprecated
     public BlockTextureRecord addBlockTextureRecord(int blockID);
     /**
      * Add block texture record : default assumes all metadata values are matching
@@ -134,6 +137,7 @@ public interface ModTextureDefinition {
      * @param srcMeta - source meta (definition copied from)
      * @return block texture record: use methods to set texture use on faces/patches
      */
+    @Deprecated
     public CopyBlockTextureRecord addCopyBlockTextureRecord(int blockID, int srcBlockID, int srcMeta);
     /**
      * Add block texture record, based on copying a record : default assumes all metadata values are matching
@@ -142,5 +146,14 @@ public interface ModTextureDefinition {
      * @param srcMeta - source meta (definition copied from)
      * @return block texture record: use methods to set texture use on faces/patches
      */
+    @Deprecated
     public CopyBlockTextureRecord addCopyBlockTextureRecord(String blockname, String srcBlockname, int srcMeta);
+    /**
+     * Add block texture record, based on copying a record : default assumes all state values match
+     * @param blockname - block name 
+     * @param srcBlockname - source block name (definition copied from)
+     * @param srcStateMap - source block state mapping (definition copied from)
+     * @return block texture record: use methods to set texture use on faces/patches
+     */
+    public CopyBlockTextureRecord addCopyBlockTextureRecord(String blockname, String srcBlockname, Map<String,String> srcStateMap);
 }

@@ -4,6 +4,7 @@ import org.dynmap.modsupport.DoorBlockModel;
 
 public class DoorBlockModelImpl extends BlockModelImpl implements DoorBlockModel {
     
+    @Deprecated
     public DoorBlockModelImpl(int blkid, ModModelDefinitionImpl mdf) {
         super(blkid, mdf);
     }

@@ -8,6 +8,7 @@ import org.dynmap.renderer.RenderPatchFactory.SideVisible;
 public class PatchBlockModelImpl extends BlockModelImpl implements PatchBlockModel {
     private ArrayList<String> patches = new ArrayList<String>();
     
+    @Deprecated
     public PatchBlockModelImpl(int blkid, ModModelDefinitionImpl mdf) {
         super(blkid, mdf);
     }
@@ -15,6 +16,7 @@ public class PatchBlockModelImpl extends BlockModelImpl implements PatchBlockMod
         super(blkname, mdf);
     }
 
+    @Deprecated
     public PatchBlockModelImpl(int blkid, ModModelDefinitionImpl mdf, PatchBlockModel mod, int xrot, int yrot, int zrot) {
         super(blkid, mdf);
         PatchBlockModelImpl m = (PatchBlockModelImpl) mod;

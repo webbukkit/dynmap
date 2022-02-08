@@ -1,6 +1,12 @@
 package org.dynmap.modsupport.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.dynmap.modsupport.CopyBlockTextureRecord;
 import org.dynmap.modsupport.TransparencyMode;
@@ -8,10 +14,12 @@ import org.dynmap.modsupport.TransparencyMode;
 public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
     private int[] ids = new int[0];
     private String[] names = new String[0];
-    private int metaMask = -1;
+    private BitSet meta = null;
+    private List<Map<String, String>> blockstates = null;
     private final int srcid;
     private final String srcname;
     private final int srcmeta;
+    private final Map<String, String> srcstatemap;
     private TransparencyMode mode = null;
 
     private int isNumber(String v) {
@@ -27,6 +35,7 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
         this.srcid = srcid;
         this.srcname = null;
         this.srcmeta = srcmeta;
+        this.srcstatemap = null;
     }
 
     public CopyBlockTextureRecordImpl(String blkname, String srcname, int srcmeta) {
@@ -41,6 +50,23 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
             this.srcid = id;
         }
         this.srcmeta = srcmeta;
+        this.srcstatemap = null;
+    }
+
+    public CopyBlockTextureRecordImpl(String blkname, String srcname, Map<String, String> srcstatemap) {
+        addBlockName(blkname);
+        int id = isNumber(srcname);
+        if (id < 0) {
+            this.srcname = srcname;
+            this.srcid = 0;
+        }
+        else {
+            this.srcname = null;
+            this.srcid = id;
+        }
+        this.srcmeta = -1;
+        this.srcstatemap = new HashMap<String, String>();
+        this.srcstatemap.putAll(srcstatemap);
     }
 
     /**
@@ -98,16 +124,12 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
      * @param data - value to match (-1 = all, 0-15 is meta value to match)
      */
     @Override
+    @Deprecated
     public void setMetaValue(int data) {
-        if (data < 0) { // Setting to all
-            metaMask = METAMASK_ALL;
-        }
-        else if (data < 16) {
-            if (metaMask == METAMASK_ALL) {
-                metaMask = 0;
-            }
-            metaMask |= (1 << data);
-        }
+    	if (meta == null) {
+    		meta = new BitSet();
+    	}
+    	meta.set(data);
     }
 
     /**
@@ -115,8 +137,32 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
      * @return matching metadata mask: bit N is set if given metadata value matches
      */
     @Override
+    @Deprecated
     public int getMetaValueMask() {
-        return metaMask;
+    	if (meta == null) { return METAMASK_ALL; }
+        return (int) meta.toLongArray()[0];	// Only works for 32 flags
+    }
+
+    /**
+     * Set matching block state mapping
+     * Any key-value pairs included must match, while any not included are assumed to match unconditionall
+     * @param statemap - map of attribute value pairs
+     */
+    @Override
+    public void setBlockStateMapping(Map<String, String> statemap) {
+    	if (blockstates == null) {
+    		blockstates = new ArrayList<Map<String, String>>();
+    	}
+    	Map<String, String> nmap = new HashMap<String, String>();
+    	nmap.putAll(statemap);
+    	blockstates.add(nmap);
+    }
+    /**
+     * Get all state mappings accumulated for the block model
+     */
+    @Override
+    public List<Map<String, String>> getBlockStateMappings() {
+    	return blockstates;
     }
     
     public String getLine() {
@@ -142,23 +188,56 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
             s += "id=%" + names[i];
             idcnt++;
         }
-        // Add meta
-        if (this.metaMask == METAMASK_ALL) {
-            s += ",data=*";
+        // If we have state data, favor this
+        if (this.blockstates != null) {
+        	for (Map<String, String> rec : this.blockstates) {
+        		s += ",state=";
+        		boolean first = true;
+        		for (Entry<String, String> r : rec.entrySet()) {
+        			if (first) {
+        				first = false;
+        			}
+        			else {
+        				s += '/';
+        			}
+        			s += r.getKey() + ":" + r.getValue();
+        		}
+        	}
         }
-        else {
-            for (int i = 0; i < 16; i++) {
-                if ((metaMask & (1 << i)) != 0) {
-                    s += ",data=" + i;
-                }
-            }
+        // If we have meta data, add this next
+        if (this.meta != null) {
+        	for (int i = meta.nextSetBit(0); i != -1; i = meta.nextSetBit(i + 1)) {
+        		s += ",data=" + i;
+        	}
+        }
+        // If neither, just state=*
+        if ((this.meta == null) && (this.blockstates == null)) {
+        	s += ",state=*";
         }
         if (srcname != null) {
-            s += ",srcid=%" + srcname + ",srcmeta=" + srcmeta;
+            s += ",srcid=%" + srcname;
         }
         else {
-            s += ",srcid=" + srcid + ",srcmeta=" + srcmeta;
+            s += ",srcid=" + srcid;
         }
+        // If source state, use it
+        if (this.srcstatemap != null) {
+    		s += ",srcstate=";
+    		boolean first = true;
+    		for (Entry<String, String> r : this.srcstatemap.entrySet()) {
+    			if (first) {
+    				first = false;
+    			}
+    			else {
+    				s += '/';
+    			}
+    			s += r.getKey() + ":" + r.getValue();
+    		}
+        }
+        else {
+        	s += ",srcmeta=" + srcmeta;
+        }
+
         switch (this.mode) {
             case TRANSPARENT:
                 s += ",transparency=TRANSPARENT";
@@ -173,13 +252,23 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
     }
 
     @Override
+    @Deprecated
     public int getSourceBlockID() {
         return srcid;
     }
 
     @Override
+    @Deprecated
     public int getSourceMeta() {
         return srcmeta;
+    }
+
+    /**
+     * Get sourc state mappings accumulated for the block model
+     */
+    @Override
+    public Map<String, String> getSourceBlockStateMapping() {
+    	return srcstatemap;
     }
 
     @Override
@@ -191,4 +280,8 @@ public class CopyBlockTextureRecordImpl implements CopyBlockTextureRecord {
     public TransparencyMode getTransparencyMode() {
         return mode;
     }
+	@Override
+	public String getSourceBlockName() {
+		return srcname;
+	}
 }
