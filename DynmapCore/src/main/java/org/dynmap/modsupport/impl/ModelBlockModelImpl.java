@@ -22,6 +22,7 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
 		private double[] to = { 16, 16, 16 }; 
 		private double xrot = 0, yrot = 0, zrot = 0;
 		private boolean shade;
+		private double[] rotorigin;
 		@Override
 		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid, int tintidx) {
 			ModelSide ms = new ModelSide();
@@ -77,9 +78,10 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
     public String getLine() {
         String ids = this.getIDsAndMeta();
         if (ids == null) return null;
-        String line = String.format("patchblock:%s", ids);
+        String line;
         // If rotating another model
         if (rotsourceblockname != null) {
+            line = String.format("patchblock:%s", ids);
         	line += "\npatchrotate:id=" + rotsourceblockname;
         	if (rotsourcestatemap != null) {
 	    		line += ",state=";
@@ -105,6 +107,7 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
         	}
         }
         else {
+        	line = String.format("modellist:%s", ids);
         	for (ModelBlockImpl mb: boxes) {
         		line += String.format(",box=%f/%f/%f", mb.from[0], mb.from[1], mb.from[2]);
         		if (!mb.shade) {	// if shade=false
@@ -113,6 +116,10 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
         		line += String.format(":%f/%f/%f", mb.to[0], mb.to[1], mb.to[2]);
         		if ((mb.xrot != 0) || (mb.yrot != 0) || (mb.zrot != 0)) {	// If needed, add rotation
         			line += String.format("/%f/%f/%f", mb.xrot, mb.yrot, mb.zrot);
+        			// If origin also defined, add it
+        			if (mb.rotorigin != null) {
+            			line += String.format("/%f/%f/%f", mb.rotorigin[0], mb.rotorigin[1], mb.rotorigin[2]);        				
+        			}
         		}
         		for (BlockSide bs : fromBlockSide.keySet()) {
         			String side = fromBlockSide.get(bs);
@@ -160,16 +167,20 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
      * @param yrot - degrees of rotation of block around Y
      * @param zrot - degrees of rotation of block around Z
      * @param shade - shade setting for model
+     * @param rotorigin - rotation origin, if any (default [ 8, 8, 8 ](
 	 * @return model block to add faces to
      */
     @Override
     public ModelBlock addModelBlock(double[] from, double[] to, double xrot, double yrot, double zrot,
-    	boolean shade) {
+    	boolean shade, double[] rotorigin) {
     	ModelBlockImpl mbi = new ModelBlockImpl();
     	if (from != null) { mbi.from[0] = from[0]; mbi.from[1] = from[1]; mbi.from[2] = from[2]; }
     	if (to != null) { mbi.to[0] = to[0]; mbi.to[1] = to[1]; mbi.to[2] = to[2]; }    	
     	mbi.xrot = xrot; mbi.yrot = yrot; mbi.zrot = zrot;
     	mbi.shade = shade;
+    	if (rotorigin != null) {
+    		mbi.rotorigin = Arrays.copyOf(rotorigin, 3);
+    	}
     	boxes.add(mbi);
     	return mbi;
     }

@@ -533,6 +533,7 @@ public class BlockTextureRecordImpl implements BlockTextureRecord {
         // If we have state data, favor this
         if (this.blockstates != null) {
         	for (Map<String, String> rec : this.blockstates) {
+        		if (rec.size() == 0) { continue; }	// Skip if none
         		s += ",state=";
         		boolean first = true;
         		for (Entry<String, String> r : rec.entrySet()) {

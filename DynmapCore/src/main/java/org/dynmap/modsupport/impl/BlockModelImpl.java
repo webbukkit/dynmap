@@ -150,6 +150,8 @@ public abstract class BlockModelImpl implements BlockModel {
         // If we have state data, favor this
         if (this.blockstates != null) {
         	for (Map<String, String> rec : this.blockstates) {
+        		// If no state, skip
+        		if (rec.size() == 0) { continue; }
         		s += ",state=";
         		boolean first = true;
         		for (Entry<String, String> r : rec.entrySet()) {
