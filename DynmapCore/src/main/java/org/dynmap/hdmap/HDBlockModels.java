@@ -317,6 +317,7 @@ public class HDBlockModels {
     	double[] to = new double[3];
     	double xrot = 0, yrot = 0, zrot = 0;
     	double xrotorig = 8, yrotorig = 8, zrotorig = 8;
+    	int modrotx = 0, modroty = 0, modrotz = 0;	// Model level rotation
     	boolean shade = true;
     	ArrayList<ModelBoxSide> sides = new ArrayList<ModelBoxSide>();
     };
@@ -953,9 +954,17 @@ public class HDBlockModels {
                         		}
                         	}
                         	// Rest are faces (<side - upnsew>/<txtidx>/umin/vmin/umax/vmax> or <<side - upnsew>/<txtidx>)
+                        	// OR R/mrx/mry/mrz for model rotation
                         	for (int faceidx = 2; faceidx < prms.length; faceidx++) {
                         		String v = prms[faceidx];	
                         		String[] flds = v.split("/");
+                        		// If rotation
+                        		if (flds[0].equals("R") && (flds.length == 4)) {
+                        			box.modrotx = Integer.parseInt(flds[1]);
+                        			box.modroty = Integer.parseInt(flds[2]);
+                        			box.modrotz = Integer.parseInt(flds[3]);
+                        			continue;
+                        		}
                         		ModelBoxSide side = new ModelBoxSide();
                         		side.rot = null;
                         		if ((flds.length != 2) && (flds.length != 6)) {
@@ -1016,6 +1025,10 @@ public class HDBlockModels {
 											new Vector3D(bl.xrotorig / 16, bl.yrotorig / 16, bl.zrotorig / 16),
 											patch.textureindex);
 									}
+									// If model rotation, apply too
+		                            if ((bl.modrotx != 0) || (bl.modroty != 0) || (bl.modrotz != 0)) {
+		                            	patch = pdf.getPatch(patch, bl.modrotx, bl.modroty, bl.modrotz, patch.textureindex);
+		                            }									
 									pd.add(patch);
 								}
 								else {
@@ -1025,7 +1038,7 @@ public class HDBlockModels {
                         }
                         PatchDefinition[] patcharray = new PatchDefinition[pd.size()];
                         for (int i = 0; i < patcharray.length; i++) {
-                            patcharray[i] = pd.get(i);
+                        	patcharray[i] = pd.get(i);                            	
                         }
                         if (patcharray.length > max_patches)
                             max_patches = patcharray.length;

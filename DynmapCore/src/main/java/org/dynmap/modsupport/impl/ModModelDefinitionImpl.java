@@ -210,12 +210,6 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
         blkModel.add(mod);
         return mod;    	
     }
-    @Override
-    public ModelBlockModel addRotatedModelBlockModel(String blockname, ModelBlockModel model, int xrot, int yrot, int zrot) {
-        ModelBlockModelImpl mod = new ModelBlockModelImpl(blockname, this, model, xrot, yrot, zrot);
-        blkModel.add(mod);
-        return mod;
-    }
 
     public String getPatchID(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv, double umin,

@@ -215,67 +215,35 @@ public class PatchDefinition implements RenderPatch {
             }
         }        
     }
+    private boolean outOfRange(double v) {
+    	return (v < -1.0) || (v > 2.0);
+    }
     public boolean validate() {
         boolean good = true;
-        if((x0 < -1.0) || (x0 > 2.0)) {
-            Log.severe("Invalid x0=" + x0);
-            good = false;
+        // Compute visible corners to see if we're inside cube
+        double xx0 = x0 + (xu - x0) * umin;
+        double xx1 = x0 + (xv - x0) * vmin;
+        double xx2 = x0 + (xu - x0) * umax;
+        double xx3 = x0 + (xv - x0) * vmax;
+        if (outOfRange(xx0) || outOfRange(xx1) || outOfRange(xx2) || outOfRange(xx3)) {
+            Log.severe(String.format("Invalid visible range xu=[%f:%f], xv=[%f:%f]", xx0, xx2, xx1, xx3));
+            good = false;        	
         }
-        if((y0 < -1.0) || (y0 > 2.0)) {
-            Log.severe("Invalid y0=" + y0);
-            good = false;
+        double yy0 = y0 + (yu - y0) * umin;
+        double yy1 = y0 + (yv - y0) * vmin;
+        double yy2 = y0 + (yu - y0) * umax;
+        double yy3 = y0 + (yv - y0) * vmax;
+        if (outOfRange(yy0) || outOfRange(yy1) || outOfRange(yy2) || outOfRange(yy3)) {
+            Log.severe(String.format("Invalid visible range yu=[%f:%f], yv=[%f:%f]", yy0, yy2, yy1, yy3));
+            good = false;        	
         }
-        if((z0 < -1.0) || (z0 > 2.0)) {
-            Log.severe("Invalid z0=" + z0);
-            good = false;
-        }
-        if((xu < -1.0) || (xu > 2.0)) {
-            Log.severe("Invalid xu=" + xu);
-            good = false;
-        }
-        if((yu < -1.0) || (yu > 2.0)) {
-            Log.severe("Invalid yu=" + yu);
-            good = false;
-        }
-        if((zu < -1.0) || (zu > 2.0)) {
-            Log.severe("Invalid zu=" + zu);
-            good = false;
-        }
-        if((xv < -1.0) || (xv > 2.0)) {
-            Log.severe("Invalid xv=" + xv);
-            good = false;
-        }
-        if((yv < -1.0) || (yv > 2.0)) {
-            Log.severe("Invalid yv=" + yv);
-            good = false;
-        }
-        if((zv < -1.0) || (zv > 2.0)) {
-            Log.severe("Invalid zv=" + zv);
-            good = false;
-        }
-        if((umin < 0.0) || (umin > umax)) {
-            Log.severe("Invalid umin=" + umin);
-            good = false;
-        }
-        if((vmin < 0.0) || (vmin > vmax)) {
-            Log.severe("Invalid vmin=" + vmin);
-            good = false;
-        }
-        if(umax > 1.0) {
-            Log.severe("Invalid umax=" + umax);
-            good = false;
-        }
-        if(vmax > 1.0) {
-            Log.severe("Invalid vmax=" + vmax);
-            good = false;
-        }
-        if ((vminatumax < 0.0) || (vminatumax > vmaxatumax)) {
-            Log.severe("Invalid vminatumax=" + vminatumax);
-            good = false;
-        }
-        if(vmaxatumax > 1.0) {
-            Log.severe("Invalid vmaxatumax=" + vmaxatumax);
-            good = false;
+        double zz0 = z0 + (zu - z0) * umin;
+        double zz1 = z0 + (zv - z0) * vmin;
+        double zz2 = z0 + (zu - z0) * umax;
+        double zz3 = z0 + (zv - z0) * vmax;
+        if (outOfRange(zz0) || outOfRange(zz1) || outOfRange(zz2) || outOfRange(zz3)) {
+            Log.severe(String.format("Invalid visible range zu=[%f:%f], zv=[%f:%f]", zz0, zz2, zz1, zz3));
+            good = false;        	
         }
         if (!good) {
         	Log.warning("Patch not valid: " + toString());

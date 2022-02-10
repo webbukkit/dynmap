@@ -23,6 +23,7 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
 		private double xrot = 0, yrot = 0, zrot = 0;
 		private boolean shade;
 		private double[] rotorigin;
+		private int modrotx = 0, modroty = 0, modrotz = 0;
 		@Override
 		public void addBlockSide(BlockSide side, double[] uv, SideRotation rot, int textureid, int tintidx) {
 			ModelSide ms = new ModelSide();
@@ -48,20 +49,9 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
 		}
 	}
 	private ArrayList<ModelBlockImpl> boxes = new ArrayList<ModelBlockImpl>();    
-	private String rotsourceblockname;
-	private Map<String, String> rotsourcestatemap;
-	private int xrot, yrot, zrot;
     
     public ModelBlockModelImpl(String blkname, ModModelDefinitionImpl mdf) {
         super(blkname, mdf);
-    }
-
-    public ModelBlockModelImpl(String blkname, ModModelDefinitionImpl mdf, ModelBlockModel mod, int xrot, int yrot, int zrot) {
-        super(blkname, mdf);
-        this.rotsourceblockname = mod.getBlockNames()[0];
-        this.rotsourcestatemap = new HashMap<String, String>();
-        this.rotsourcestatemap.putAll(mod.getBlockStateMappings().get(0));
-        this.xrot = xrot; this.yrot = yrot; this.zrot = zrot;
     }
     
     private static HashMap<BlockSide, String> fromBlockSide = new HashMap<BlockSide, String>();
@@ -79,76 +69,50 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
         String ids = this.getIDsAndMeta();
         if (ids == null) return null;
         String line;
-        // If rotating another model
-        if (rotsourceblockname != null) {
-            line = String.format("patchblock:%s", ids);
-        	line += "\npatchrotate:id=" + rotsourceblockname;
-        	if (rotsourcestatemap != null) {
-	    		line += ",state=";
-	    		boolean first = true;
-	    		for (Entry<String, String> r : rotsourcestatemap.entrySet()) {
-	    			if (first) {
-	    				first = false;
-	    			}
-	    			else {
-	    				line += '/';
-	    			}
-	    			line += r.getKey() + ":" + r.getValue();
-	    		}
-        	}
-        	if (xrot != 0) {
-        		line += ",rotx=" + xrot;
-        	}
-        	if (yrot != 0) {
-        		line += ",roty=" + yrot;
-        	}
-        	if (zrot != 0) {
-        		line += ",rotz=" + yrot;
-        	}
-        }
-        else {
-        	line = String.format("modellist:%s", ids);
-        	for (ModelBlockImpl mb: boxes) {
-        		line += String.format(",box=%f/%f/%f", mb.from[0], mb.from[1], mb.from[2]);
-        		if (!mb.shade) {	// if shade=false
-            		line += "/false";
-        		}
-        		line += String.format(":%f/%f/%f", mb.to[0], mb.to[1], mb.to[2]);
-        		if ((mb.xrot != 0) || (mb.yrot != 0) || (mb.zrot != 0)) {	// If needed, add rotation
-        			line += String.format("/%f/%f/%f", mb.xrot, mb.yrot, mb.zrot);
-        			// If origin also defined, add it
-        			if (mb.rotorigin != null) {
-            			line += String.format("/%f/%f/%f", mb.rotorigin[0], mb.rotorigin[1], mb.rotorigin[2]);        				
-        			}
-        		}
-        		for (BlockSide bs : fromBlockSide.keySet()) {
-        			String side = fromBlockSide.get(bs);
-        			ModelSide mside = mb.sides.get(bs);
-        			if (mside != null) {
-        				String rval = side;
-        				switch (mside.rot) {
-	        				case DEG0:
-	        				default:
-	        					break;
-	        				case DEG90:
-	        					rval += "90";
-	        					break;
-	        				case DEG180:
-	        					rval += "180";
-	        					break;
-	        				case DEG270:
-	        					rval += "270";
-	        					break;
-        				}
-        				if (mside.uv != null) {
-        					line += String.format(":%s/%d/%f/%f/%f/%f", rval, mside.textureid, mside.uv[0], mside.uv[1], mside.uv[2], mside.uv[3]);
-        				}
-        				else {
-        					line += String.format(":%s/%d", rval, mside.textureid);  					
-        				}
-        			}
-        		}
-        	}
+    	line = String.format("modellist:%s", ids);
+    	for (ModelBlockImpl mb: boxes) {
+    		line += String.format(",box=%f/%f/%f", mb.from[0], mb.from[1], mb.from[2]);
+    		if (!mb.shade) {	// if shade=false
+        		line += "/false";
+    		}
+    		line += String.format(":%f/%f/%f", mb.to[0], mb.to[1], mb.to[2]);
+    		if ((mb.xrot != 0) || (mb.yrot != 0) || (mb.zrot != 0)) {	// If needed, add rotation
+    			line += String.format("/%f/%f/%f", mb.xrot, mb.yrot, mb.zrot);
+    			// If origin also defined, add it
+    			if (mb.rotorigin != null) {
+        			line += String.format("/%f/%f/%f", mb.rotorigin[0], mb.rotorigin[1], mb.rotorigin[2]);        				
+    			}
+    		}
+    		for (BlockSide bs : fromBlockSide.keySet()) {
+    			String side = fromBlockSide.get(bs);
+    			ModelSide mside = mb.sides.get(bs);
+    			if (mside != null) {
+    				String rval = side;
+    				switch (mside.rot) {
+        				case DEG0:
+        				default:
+        					break;
+        				case DEG90:
+        					rval += "90";
+        					break;
+        				case DEG180:
+        					rval += "180";
+        					break;
+        				case DEG270:
+        					rval += "270";
+        					break;
+    				}
+    				if (mside.uv != null) {
+    					line += String.format(":%s/%d/%f/%f/%f/%f", rval, mside.textureid, mside.uv[0], mside.uv[1], mside.uv[2], mside.uv[3]);
+    				}
+    				else {
+    					line += String.format(":%s/%d", rval, mside.textureid);  					
+    				}
+    			}
+    		}
+    		if ((mb.modrotx != 0) || (mb.modroty != 0) || (mb.modrotz != 0)) {
+    			line += String.format(":R/%d/%d/%d", mb.modrotx, mb.modroty, mb.modrotz);
+    		}
         }
         return line;
     }
@@ -168,11 +132,14 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
      * @param zrot - degrees of rotation of block around Z
      * @param shade - shade setting for model
      * @param rotorigin - rotation origin, if any (default [ 8, 8, 8 ](
+     * @param modrotx - model level rotation in degrees (0, 90, 180, 270)
+     * @param modroty - model level rotation in degrees (0, 90, 180, 270)
+     * @param modrotz - model level rotation in degrees (0, 90, 180, 270)
 	 * @return model block to add faces to
      */
     @Override
     public ModelBlock addModelBlock(double[] from, double[] to, double xrot, double yrot, double zrot,
-    	boolean shade, double[] rotorigin) {
+    	boolean shade, double[] rotorigin, int modrotx, int modroty, int modrotz) {
     	ModelBlockImpl mbi = new ModelBlockImpl();
     	if (from != null) { mbi.from[0] = from[0]; mbi.from[1] = from[1]; mbi.from[2] = from[2]; }
     	if (to != null) { mbi.to[0] = to[0]; mbi.to[1] = to[1]; mbi.to[2] = to[2]; }    	
@@ -181,6 +148,9 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
     	if (rotorigin != null) {
     		mbi.rotorigin = Arrays.copyOf(rotorigin, 3);
     	}
+    	mbi.modrotx = modrotx;
+    	mbi.modroty = modroty;
+    	mbi.modrotz = modrotz;
     	boxes.add(mbi);
     	return mbi;
     }

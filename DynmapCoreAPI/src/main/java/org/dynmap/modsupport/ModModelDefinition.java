@@ -169,16 +169,6 @@ public interface ModModelDefinition {
      */
     public ModelBlockModel addModelBlockModel(String blockname);
     /**
-     * Add rotated model block model, based on existing model : default assumes all metadata values are matching
-     * @param blockname - block name
-     * @param model - existing model to be rotated
-     * @param xrot - x rotation in degrees (0, 90, 180, 270)
-     * @param yrot - y rotation in degrees (0, 90, 180, 270)
-     * @param zrot - z rotation in degrees (0, 90, 180, 270)
-     * @return block model record
-     */
-    public ModelBlockModel addRotatedModelBlockModel(String blockname, ModelBlockModel model, int xrot, int yrot, int zrot);    
-    /**
      * Final call for model definition: publishes definiiton to Dynmap to be used for the mod
      * @return true if successful, false if error
      */
