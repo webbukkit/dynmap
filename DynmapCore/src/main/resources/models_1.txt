@@ -325,33 +325,27 @@ boxblock:id=stone_button,id=oak_button,id=spruce_button,id=birch_button,id=jungl
 # Powered rails - flat - east/west
 # Detector rails - flat - east/west
 # Activator Rail - flat - east/west
-[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=0,data=6,patch0=HorizY001ZTop
-[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=0,data=1,data=12,data=13,patch0=HorizY001ZTop
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,state=shape:north_south,patch0=HorizY001ZTop
 # Powered rails - flat - north/south
 # Detector rails - flat - north/south
 # Activator Rail - flat - north/south
-[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=1,data=7,patch0=HorizY001ZTop@90
-[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=3,data=14,data=15,patch0=HorizY001ZTop@90
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,state=shape:east_west,patch0=HorizY001ZTop@90
 # Powered rails - ascending to south 
 # Detector rails - ascending to south 
 # Activator Rail - ascending to south 
-[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=2,data=8,patch0=SlopeXUpZTop
-[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=5,data=16,data=17,patch0=SlopeXUpZTop
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,state=shape:ascending_east,patch0=SlopeXUpZTop
 # Powered rails - ascending to north 
 # Detector rails - ascending to north 
 # Activator Rail - ascending to north 
-[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=3,data=9,patch0=SlopeXUpZTop@180
-[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=6,data=7,data=18,data=19,patch0=SlopeXUpZTop@180
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,state=shape:ascending_west,patch0=SlopeXUpZTop@180
 # Powered rails - ascending to east 
 # Detector rails - ascending to east 
 # Activator Rail - ascending to east 
-[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=4,data=10,patch0=SlopeXUpZTop@270
-[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=8,data=9,data=20,data=21,patch0=SlopeXUpZTop@270
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,state=shape:ascending_north,patch0=SlopeXUpZTop@270
 # Powered rails - ascending to west 
 # Detector rails - ascending to west 
 # Activator Rail - ascending to west 
-[-1.16.5]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=5,data=21,patch0=SlopeXUpZTop@90
-[1.17-]patchblock:id=powered_rail,id=detector_rail,id=activator_rail,data=10,data=11,data=22,data=23,patch0=SlopeXUpZTop@90
+patchblock:id=powered_rail,id=detector_rail,id=activator_rail,state=shape:ascending_south,patch0=SlopeXUpZTop@90
 
 # Ladder
 patchblock:id=ladder,data=0,data=1,patch0=VertX0In@270
