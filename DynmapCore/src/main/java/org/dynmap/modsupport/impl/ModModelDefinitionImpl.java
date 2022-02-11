@@ -26,6 +26,7 @@ import org.dynmap.renderer.RenderPatchFactory.SideVisible;
 import org.dynmap.utils.PatchDefinition;
 import org.dynmap.utils.PatchDefinitionFactory;
 
+@SuppressWarnings("deprecation")
 public class ModModelDefinitionImpl implements ModModelDefinition {
     private final ModTextureDefinitionImpl txtDef;
     private boolean published = false;

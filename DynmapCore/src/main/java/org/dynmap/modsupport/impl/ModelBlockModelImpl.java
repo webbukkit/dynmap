@@ -3,8 +3,6 @@ package org.dynmap.modsupport.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.dynmap.modsupport.BlockSide;
 import org.dynmap.modsupport.ModelBlockModel;
@@ -60,8 +58,8 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
     	fromBlockSide.put(BlockSide.BOTTOM, "d");
     	fromBlockSide.put(BlockSide.NORTH, "n");
     	fromBlockSide.put(BlockSide.SOUTH, "s");
-    	fromBlockSide.put(BlockSide.WEST, "e");
-    	fromBlockSide.put(BlockSide.EAST, "w");
+    	fromBlockSide.put(BlockSide.WEST, "w");
+    	fromBlockSide.put(BlockSide.EAST, "e");
     };
 
     @Override

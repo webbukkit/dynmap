@@ -221,26 +221,26 @@ public class PatchDefinition implements RenderPatch {
     public boolean validate() {
         boolean good = true;
         // Compute visible corners to see if we're inside cube
-        double xx0 = x0 + (xu - x0) * umin;
-        double xx1 = x0 + (xv - x0) * vmin;
-        double xx2 = x0 + (xu - x0) * umax;
-        double xx3 = x0 + (xv - x0) * vmax;
+        double xx0 = x0 + (xu - x0) * umin + (xv - x0) * vmin;
+        double xx1 = x0 + (xu - x0) * vmin + (xv - x0) * vmax;
+        double xx2 = x0 + (xu - x0) * umax + (xv - x0) * vmin;
+        double xx3 = x0 + (xu - x0) * vmax + (xv - x0) * vmax;;
         if (outOfRange(xx0) || outOfRange(xx1) || outOfRange(xx2) || outOfRange(xx3)) {
             Log.severe(String.format("Invalid visible range xu=[%f:%f], xv=[%f:%f]", xx0, xx2, xx1, xx3));
             good = false;        	
         }
-        double yy0 = y0 + (yu - y0) * umin;
-        double yy1 = y0 + (yv - y0) * vmin;
-        double yy2 = y0 + (yu - y0) * umax;
-        double yy3 = y0 + (yv - y0) * vmax;
+        double yy0 = y0 + (yu - y0) * umin + (yv - y0) * vmin;
+        double yy1 = y0 + (yu - y0) * vmin + (yv - y0) * vmax;
+        double yy2 = y0 + (yu - y0) * umax + (yv - y0) * vmin;
+        double yy3 = y0 + (yu - y0) * vmax + (yv - y0) * vmax;;
         if (outOfRange(yy0) || outOfRange(yy1) || outOfRange(yy2) || outOfRange(yy3)) {
             Log.severe(String.format("Invalid visible range yu=[%f:%f], yv=[%f:%f]", yy0, yy2, yy1, yy3));
             good = false;        	
         }
-        double zz0 = z0 + (zu - z0) * umin;
-        double zz1 = z0 + (zv - z0) * vmin;
-        double zz2 = z0 + (zu - z0) * umax;
-        double zz3 = z0 + (zv - z0) * vmax;
+        double zz0 = z0 + (zu - z0) * umin + (zv - z0) * vmin;
+        double zz1 = z0 + (zu - z0) * vmin + (zv - z0) * vmax;
+        double zz2 = z0 + (zu - z0) * umax + (zv - z0) * vmin;
+        double zz3 = z0 + (zu - z0) * vmax + (zv - z0) * vmax;
         if (outOfRange(zz0) || outOfRange(zz1) || outOfRange(zz2) || outOfRange(zz3)) {
             Log.severe(String.format("Invalid visible range zu=[%f:%f], zv=[%f:%f]", zz0, zz2, zz1, zz3));
             good = false;        	
@@ -315,6 +315,7 @@ public class PatchDefinition implements RenderPatch {
     		if (patchuv[0] > patchuv[2]) { flipU = true; double save = patchuv[0]; patchuv[0] = patchuv[2]; patchuv[2] = save; }
     		if (patchuv[1] > patchuv[3]) { flipV = true; double save = patchuv[1]; patchuv[1] = patchuv[3]; patchuv[3] = save; }
     	}
+    	
     	switch (face) {
     		case BOTTOM:
 			case FACE_0:
@@ -423,7 +424,6 @@ public class PatchDefinition implements RenderPatch {
     		upleft = upright;
     		upright = save;
     	}
-    	//System.out.println(String.format("ll=%s, lr=%s, ul=%s, ur=%s", lowleft, lowright, upleft, upright));
     	// Compute texture origin, based on corners and patchuv
     	Vector3D txtorig = new Vector3D();
     	Vector3D txtU = new Vector3D();
@@ -435,12 +435,12 @@ public class PatchDefinition implements RenderPatch {
         	double du = patchuv[2] - patchuv[0];
         	txtU.set(lowright).subtract(lowleft);	// vector along U 
         	double uScale = txtU.length() / du;
-        	txtU.scale(uScale / du);	// Compute full U vect
+        	txtU.scale(uScale / txtU.length());	// Compute full U vect
         	// Compute V axis
         	double dv = patchuv[3] - patchuv[1];
         	txtV.set(upleft).subtract(lowleft);	// vector along V
         	double vScale = txtV.length() / dv;
-        	txtV.scale(vScale / dv);	// Compute full V vect
+        	txtV.scale(vScale / txtV.length());	// Compute full V vect
         	// Compute texture origin
         	txtorig.set(txtU).scale(-patchuv[0]).add(lowleft);
         	wrk.set(txtV).scale(-patchuv[1]);
@@ -449,8 +449,6 @@ public class PatchDefinition implements RenderPatch {
         	txtU.add(txtorig);	// And add it for full U
         	txtV.add(txtorig);	// And add it to compute full V 	
     	}
-//    	System.out.println(String.format("txtO=%s, txtU=%s, txtV=%s, uv=%f/%f/%f/%f", txtorig, txtU, txtV, patchuv[0], patchuv[1], patchuv[2], 
-//    			patchuv[3]));
     	update(txtorig.x, txtorig.y, txtorig.z, txtU.x, txtU.y, txtU.z, txtV.x, txtV.y, txtV.z,
     		patchuv[0], patchuv[2], patchuv[1], patchuv[3], flipU ? SideVisible.TOPFLIP : (flipV ? SideVisible.TOPFLIPV : SideVisible.TOP), textureid, patchuv[1], patchuv[3]);
     }

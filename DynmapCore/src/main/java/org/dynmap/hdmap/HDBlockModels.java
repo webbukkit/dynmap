@@ -1033,6 +1033,7 @@ public class HDBlockModels {
 								}
 								else {
 	                            	Log.severe(String.format("Invalid modellist patch for box %f/%f/%f:%f/%f/%f side %s at line %d", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, lineNum));
+	                            	Log.severe(String.format("line = %s:%s", typeid, line));
 								}
 							}
                         }
