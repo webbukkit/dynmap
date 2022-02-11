@@ -226,7 +226,7 @@ public class PatchDefinition implements RenderPatch {
         double xx2 = x0 + (xu - x0) * umax + (xv - x0) * vmin;
         double xx3 = x0 + (xu - x0) * vmax + (xv - x0) * vmax;;
         if (outOfRange(xx0) || outOfRange(xx1) || outOfRange(xx2) || outOfRange(xx3)) {
-            Log.severe(String.format("Invalid visible range xu=[%f:%f], xv=[%f:%f]", xx0, xx2, xx1, xx3));
+            Log.verboseinfo(String.format("Invalid visible range xu=[%f:%f], xv=[%f:%f]", xx0, xx2, xx1, xx3));
             good = false;        	
         }
         double yy0 = y0 + (yu - y0) * umin + (yv - y0) * vmin;
@@ -234,7 +234,7 @@ public class PatchDefinition implements RenderPatch {
         double yy2 = y0 + (yu - y0) * umax + (yv - y0) * vmin;
         double yy3 = y0 + (yu - y0) * vmax + (yv - y0) * vmax;;
         if (outOfRange(yy0) || outOfRange(yy1) || outOfRange(yy2) || outOfRange(yy3)) {
-            Log.severe(String.format("Invalid visible range yu=[%f:%f], yv=[%f:%f]", yy0, yy2, yy1, yy3));
+            Log.verboseinfo(String.format("Invalid visible range yu=[%f:%f], yv=[%f:%f]", yy0, yy2, yy1, yy3));
             good = false;        	
         }
         double zz0 = z0 + (zu - z0) * umin + (zv - z0) * vmin;
@@ -242,11 +242,11 @@ public class PatchDefinition implements RenderPatch {
         double zz2 = z0 + (zu - z0) * umax + (zv - z0) * vmin;
         double zz3 = z0 + (zu - z0) * vmax + (zv - z0) * vmax;
         if (outOfRange(zz0) || outOfRange(zz1) || outOfRange(zz2) || outOfRange(zz3)) {
-            Log.severe(String.format("Invalid visible range zu=[%f:%f], zv=[%f:%f]", zz0, zz2, zz1, zz3));
+            Log.verboseinfo(String.format("Invalid visible range zu=[%f:%f], zv=[%f:%f]", zz0, zz2, zz1, zz3));
             good = false;        	
         }
         if (!good) {
-        	Log.warning("Patch not valid: " + toString());
+        	Log.verboseinfo("Bad patch: " + this);
         }
         return good;
     }

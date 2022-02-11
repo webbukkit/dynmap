@@ -1032,8 +1032,8 @@ public class HDBlockModels {
 									pd.add(patch);
 								}
 								else {
-	                            	Log.severe(String.format("Invalid modellist patch for box %f/%f/%f:%f/%f/%f side %s at line %d", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, lineNum));
-	                            	Log.severe(String.format("line = %s:%s", typeid, line));
+	                            	Log.severe(String.format("Invalid modellist patch for box %.02f/%.02f/%.02f:%.02f/%.02f/%.02f side %s at line %d", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, lineNum));
+	                            	Log.verboseinfo(String.format("line = %s:%s", typeid, line));
 								}
 							}
                         }
