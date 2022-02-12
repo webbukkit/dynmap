@@ -42,6 +42,7 @@ commands:
            /<command> add-id-for-ip <playerid> <ipaddress> - Add player ID to given IP address
            /<command> del-id-for-ip <playerid> <ipaddress> - Delete player ID from given IP address
            /<command> webregister - Start registration process for creating web login account
+           /<command> url - Returns public URL for dynmap, if published
                        
   dmarker:
     description: Manipulate map markers
@@ -153,6 +154,8 @@ permissions:
       dynmap.ips-for-id: true
       dynmap.webregister: true
       dynmap.webregister.other: true
+      dynmap.dumpmemory: true
+      dynmap.url: true
       dynmap.pause: true
       dynmap.marker.add: true
       dynmap.marker.update: true
@@ -258,6 +261,12 @@ permissions:
   dynmap.webregister.other:
     description: Allows /dynmap webregister userid
     default: op
+  dynmap.dumpmemory:
+    description: Allows /dynmap dumpmemory
+    default: op
+  dynmap.url:
+    description: Allows /dynmap url
+    default: true
   dynmap.marker.add:
     description: Allows /dmarker add
     default: op

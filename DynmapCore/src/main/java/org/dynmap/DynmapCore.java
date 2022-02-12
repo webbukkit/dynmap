@@ -131,6 +131,7 @@ public class DynmapCore implements DynmapCommonAPI {
     private int     config_hashcode;    /* Used to signal need to reload web configuration (world changes, config update, etc) */
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
     private int updateplayerlimit;  /* Number of online players that will cause update processing to pause */
+    private String publicURL;	// If set, public HRL for accessing dynmap (declared by administrator)
     private boolean didfullpause;
     private boolean didupdatepause;
     private Map<String, LinkedList<String>> ids_by_ip = new HashMap<String, LinkedList<String>>();
@@ -556,6 +557,8 @@ public class DynmapCore implements DynmapCommonAPI {
         migrate_chunks = configuration.getBoolean("migrate-chunks",  false);
         if (migrate_chunks)
             Log.info("EXPERIMENTAL: chunk migration enabled");
+        
+        publicURL = configuration.getString("publicURL", "");
         
         /* Load preupdate/postupdate commands */
         ImageIOManager.preUpdateCommand = configuration.getString("custom-commands/image-updates/preupdatecommand", "");
@@ -1210,6 +1213,7 @@ public class DynmapCore implements DynmapCommonAPI {
         "del-id-for-ip",
         "webregister",
         "dumpmemory",
+        "url",
         "help"}));
 
     private static class CommandInfo {
@@ -1277,6 +1281,7 @@ public class DynmapCore implements DynmapCommonAPI {
         new CommandInfo("dynmap", "webregister", "<player>", "Start registration process for creating web login account for player <player>"),
         new CommandInfo("dynmap", "version", "Return version information"),
         new CommandInfo("dynmap", "dumpmemory", "Return mempry use information"),
+        new CommandInfo("dynmap", "url", "Return confgured URL for Dynmap web"),
         new CommandInfo("dmarker", "", "Manipulate map markers."),
         new CommandInfo("dmarker", "add", "<label>", "Add new marker with label <label> at current location (use double-quotes if spaces needed)."),
         new CommandInfo("dmarker", "add", "id:<id> <label>", "Add new marker with ID <id> at current location (use double-quotes if spaces needed)."),
@@ -1584,7 +1589,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 printCommandHelp(sender, cmd, "");
                 return true;
             }
-
+            
             if (c.equals("render") && checkPlayerPermission(sender,"render")) {
                 if (player != null) {
                     DynmapLocation loc = player.getLocation();
@@ -1907,11 +1912,19 @@ public class DynmapCore implements DynmapCommonAPI {
             else if(c.equals("help")) {
                 printCommandHelp(sender, cmd, (args.length > 1)?args[1]:"");
             }
-            else if(c.equals("dumpmemory")) {
+            else if(c.equals("dumpmemory") && checkPlayerPermission(sender, "dumpmemory")) {
             	TexturePack.tallyMemory(sender);
             }
             else if(c.equals("version")) {
                 sender.sendMessage("Dynmap version: core=" + this.getDynmapCoreVersion() + ", plugin=" + this.getDynmapPluginVersion());
+            }
+            else if (c.equals("url")) {
+            	if (publicURL.length() > 0) {
+            		sender.sendMessage("Dynmap URL for this server is: " + publicURL);
+            	}
+            	else {
+            		sender.sendMessage("URL of Dynmap not configured");
+            	}
             }
             return true;
         }
