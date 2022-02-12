@@ -1593,7 +1593,7 @@ block:id=beetroots,data=2,patch0-3=0:beetroots_stage2,transparency=TRANSPARENT
 block:id=beetroots,data=3,patch0-3=0:beetroots_stage3,transparency=TRANSPARENT
 
 # Grass Path (replaced with dirt path in 1.17
-[-1.16.5]block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
+[-1.16.5]block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true, transparency=SEMITRANSPARENT
 
 # End Gateway
 block:id=end_gateway,data=*,stdrot=true,allfaces=0:endportal
@@ -2694,7 +2694,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.17-]texture:id=budding_amethyst
 
 # Dirt path
-[1.17-]block:id=dirt_path,allsides=0:dirt_path_side,top=0:dirt_path_top,bottom=0:dirt,stdrot=true, transparency=TRANSPARENT
+[1.17-]block:id=dirt_path,allsides=0:dirt_path_side,top=0:dirt_path_top,bottom=0:dirt,stdrot=true, transparency=SEMITRANSPARENT
 # Deepslate
 [1.17-]block:id=deepslate,data=1,allsides=0:deepslate,topbottom=0:deepslate_top,stdrot=true
 [1.17-]block:id=deepslate,data=0,north=0:deepslate_top,south=0:deepslate_top,east=4000:deepslate,west=4000:deepslate,top=0:deepslate,bottom=0:deepslate
