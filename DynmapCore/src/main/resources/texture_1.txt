@@ -1099,14 +1099,6 @@ block:id=%glass_pane,patch0=0:glass_pane_top,patch1=0:glass,transparency=TRANSPA
 
 # Watermellon
 block:id=melon,allsides=0:melon_side,topbottom=0:melon_top,stdrot=true
-# Attached Pumpkin stem 
-block:id=attached_pumpkin_stem,allsides=1000:attached_pumpkin_stem,stdrot=true,transparency=TRANSPARENT
-# Attached Melon stem
-block:id=attached_melon_stem,allsides=1000:attached_melon_stem,stdrot=true,transparency=TRANSPARENT
-# Pumpkin stem 
-block:id=pumpkin_stem,allsides=1000:pumpkin_stem,stdrot=true,transparency=TRANSPARENT
-# Melon stem
-block:id=melon_stem,allsides=1000:melon_stem,stdrot=true,transparency=TRANSPARENT
 # Vines
 block:id=vine,patch0-4=2000:vine,transparency=TRANSPARENT
 # Fence gate
@@ -1126,12 +1118,11 @@ block:id=nether_bricks,allfaces=0:nether_bricks,stdrot=true
 block:id=nether_brick_fence,patch0-2=0:nether_bricks,transparency=TRANSPARENT
 # Nether brick stairs
 block:id=nether_brick_stairs,patch0-2=0:nether_bricks,transparency=SEMITRANSPARENT
-# Nether Wart (small)
-block:id=nether_wart,data=0,patch0-1=0:nether_wart_stage0,transparency=TRANSPARENT
-# Nether Wart (medium)
-block:id=nether_wart,data=1,data=2,patch0-1=0:nether_wart_stage1,transparency=TRANSPARENT
-# Nether Wart (large)
-block:id=nether_wart,data=3,patch0-1=0:nether_wart_stage2,transparency=TRANSPARENT
+# Nether Wart
+block:id=%nether_wart,state=age:0,patch0=0:nether_wart_stage0,transparency=TRANSPARENT,stdrot=true
+block:id=%nether_wart,state=age:1,patch0=0:nether_wart_stage1,transparency=TRANSPARENT,stdrot=true
+block:id=%nether_wart,state=age:2,patch0=0:nether_wart_stage1,transparency=TRANSPARENT,stdrot=true
+block:id=%nether_wart,state=age:3,patch0=0:nether_wart_stage2,transparency=TRANSPARENT,stdrot=true
 # Enchantment table
 block:id=enchanting_table,top=0:enchanting_table_top,allsides=0:enchanting_table_side,bottom=0:enchanting_table_bottom,stdrot=true,transparency=TRANSPARENT
 # Brewing stand
@@ -3117,3 +3108,12 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.17-]block:id=%small_dripleaf,data=10,data=11,patch0=0:small_dripleaf_stem_bottom,patch1=0:small_dripleaf_stem_bottom,patch2=0:small_dripleaf_stem_bottom,patch3=0:small_dripleaf_stem_bottom,transparency=TRANSPARENT,stdrot=true
 [1.17-]block:id=%small_dripleaf,data=12,data=13,patch0=4000:small_dripleaf_top,patch1=6000:small_dripleaf_top,patch2=4000:small_dripleaf_top,patch3=6000:small_dripleaf_top,patch4=5000:small_dripleaf_top,patch5=0:small_dripleaf_top,patch6=0:small_dripleaf_side,patch7=0:small_dripleaf_side,patch8=0:small_dripleaf_side,patch9=0:small_dripleaf_side,patch10=0:small_dripleaf_side,patch11=0:small_dripleaf_side,patch12=0:small_dripleaf_side,patch13=0:small_dripleaf_side,patch14=0:small_dripleaf_side,patch15=0:small_dripleaf_side,patch16=0:small_dripleaf_side,patch17=0:small_dripleaf_side,patch18=0:small_dripleaf_stem_top,patch19=0:small_dripleaf_stem_top,patch20=0:small_dripleaf_stem_top,patch21=0:small_dripleaf_stem_top,transparency=TRANSPARENT,stdrot=true
 [1.17-]block:id=%small_dripleaf,data=14,data=15,patch0=0:small_dripleaf_stem_bottom,patch1=0:small_dripleaf_stem_bottom,patch2=0:small_dripleaf_stem_bottom,patch3=0:small_dripleaf_stem_bottom,transparency=TRANSPARENT,stdrot=true
+
+# Attached pumpkin stem
+block:id=%attached_pumpkin_stem,patch0=1000:pumpkin_stem,patch1=1000:attached_pumpkin_stem,transparency=TRANSPARENT,stdrot=true
+# Attached melon stem
+block:id=%attached_melon_stem,patch0=1000:melon_stem,patch1=1000:attached_melon_stem,transparency=TRANSPARENT,stdrot=true
+# Pumpkin stem
+block:id=%pumpkin_stem,patch0=1000:pumpkin_stem,transparency=TRANSPARENT,stdrot=true
+# Melon stem
+block:id=%melon_stem,patch0=1000:melon_stem,transparency=TRANSPARENT,stdrot=true
