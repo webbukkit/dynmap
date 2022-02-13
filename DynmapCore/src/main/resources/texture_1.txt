@@ -6,6 +6,8 @@ version:1.13-
 #      5xxx=rotate texture 180, 6xxx=rotate texture 270, 7xxx=flip texture horizontally, 8xxx=shift down 1/2 block, 9=shift down 1/2,flip horiz,
 #      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block,3xxx=biome tint from watercolor.png, 13xxx=pine tone, 14xxx=birch tone, 15xxx=lily tone,
 #      264=air portal with eye, 265=fire texture
+texture:id=foliagebiome,filename=assets/minecraft/textures/colormap/foliage.png,xcount=1,ycount=1,format=BIOME
+texture:id=grassbiome,filename=assets/minecraft/textures/colormap/grass.png,xcount=1,ycount=1,format=BIOME
 texturefile:id=chest,filename=assets/minecraft/textures/entity/chest/normal.png,format=CHEST
 texturefile:id=enderchest,filename=assets/minecraft/textures/entity/chest/ender.png,format=CHEST
 texturefile:id=bigchest,filename=assets/minecraft/textures/entity/chest/normal_double.png,format=BIGCHEST
@@ -3110,10 +3112,10 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.17-]block:id=%small_dripleaf,data=14,data=15,patch0=0:small_dripleaf_stem_bottom,patch1=0:small_dripleaf_stem_bottom,patch2=0:small_dripleaf_stem_bottom,patch3=0:small_dripleaf_stem_bottom,transparency=TRANSPARENT,stdrot=true
 
 # Attached pumpkin stem
-block:id=%attached_pumpkin_stem,patch0=1000:pumpkin_stem,patch1=1000:attached_pumpkin_stem,transparency=TRANSPARENT,stdrot=true
+block:id=%attached_pumpkin_stem,patch0=0:pumpkin_stem,patch1=0:attached_pumpkin_stem,blockcolor=foliagebiome,transparency=TRANSPARENT,stdrot=true
 # Attached melon stem
-block:id=%attached_melon_stem,patch0=1000:melon_stem,patch1=1000:attached_melon_stem,transparency=TRANSPARENT,stdrot=true
+block:id=%attached_melon_stem,patch0=0:melon_stem,patch1=0:attached_melon_stem,blockcolor=foliagebiome,transparency=TRANSPARENT,stdrot=true
 # Pumpkin stem
-block:id=%pumpkin_stem,patch0=1000:pumpkin_stem,transparency=TRANSPARENT,stdrot=true
+block:id=%pumpkin_stem,patch0=0:pumpkin_stem,blockcolor=foliagebiome,transparency=TRANSPARENT,stdrot=true
 # Melon stem
-block:id=%melon_stem,patch0=1000:melon_stem,transparency=TRANSPARENT,stdrot=true
+block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TRANSPARENT,stdrot=true
