@@ -1558,11 +1558,11 @@ block:id=dark_oak_door,data=*,patch0=0:dark_oak_door_top,patch1=0:dark_oak_door_
 block:id=end_rod,data=*,patch0=0:end_rod,transparency=TRANSPARENT
 
 # Chorus Plant
-block:id=chorus_plant,data=*,patch0-2=0:chorus_plant,transparency=TRANSPARENT
+block:id=%chorus_plant,patch0=0:chorus_plant,transparency=TRANSPARENT
 
 # Chorus Flower
-block:id=chorus_flower,data=0,data=1,data=2,data=3,data=4,stdrot=true,allfaces=0:chorus_flower,transparency=TRANSPARENT
-block:id=chorus_flower,data=5,stdrot=true,allfaces=0:chorus_flower_dead,transparency=TRANSPARENT
+block:id=%chorus_flower,state=age:0,state=age:1,state=age:2,state=age:3,state=age:4,patch0=0:chorus_flower,patch1=0:chorus_plant,transparency=TRANSPARENT,stdrot=true
+block:id=%chorus_flower,state=age:5,patch0=0:chorus_flower_dead,patch1=0:chorus_plant,transparency=TRANSPARENT,stdrot=true
 
 # Purpur Block
 block:id=purpur_block,data=*,stdrot=true,allfaces=0:purpur_block
