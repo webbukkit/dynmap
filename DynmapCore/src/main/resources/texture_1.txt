@@ -1093,9 +1093,10 @@ block:id=red_mushroom_block,patch1=0:red_mushroom_block,patch0=0:mushroom_block_
 block:id=mushroom_stem,patch1=0:mushroom_stem,patch0=0:mushroom_block_inside,patch3=0:mushroom_stem,patch2=0:mushroom_block_inside,patch5=0:mushroom_stem,patch4=0:mushroom_block_inside,patch7=0:mushroom_stem,patch6=0:mushroom_block_inside,patch9=0:mushroom_stem,patch8=0:mushroom_block_inside,patch11=0:mushroom_stem,patch10=0:mushroom_block_inside
 
 # Iron fence
-block:id=iron_bars,patch0-1=0:iron_bars,transparency=TRANSPARENT
+block:id=%iron_bars,patch0=0:iron_bars,transparency=TRANSPARENT
 # Glass pane
-block:id=glass_pane,patch0=12000:glass,patch1=12000:glass_pane_top,transparency=TRANSPARENT
+block:id=%glass_pane,patch0=0:glass_pane_top,patch1=0:glass,transparency=TRANSPARENT
+
 # Watermellon
 block:id=melon,allsides=0:melon_side,topbottom=0:melon_top,stdrot=true
 # Attached Pumpkin stem 
@@ -1408,22 +1409,22 @@ block:id=magenta_terracotta,stdrot=true,allfaces=0:magenta_terracotta
 block:id=orange_terracotta,stdrot=true,allfaces=0:orange_terracotta
 block:id=white_terracotta,stdrot=true,allfaces=0:white_terracotta
 # (160) Stained Glass Pane
-block:id=white_stained_glass_pane,patch0=12000:white_stained_glass,patch1=12000:white_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=orange_stained_glass_pane,patch0=12000:orange_stained_glass,patch1=12000:orange_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=magenta_stained_glass_pane,patch0=12000:magenta_stained_glass,patch1=12000:magenta_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=light_blue_stained_glass_pane,patch0=12000:light_blue_stained_glass,patch1=12000:light_blue_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=yellow_stained_glass_pane,patch0=12000:yellow_stained_glass,patch1=12000:yellow_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=lime_stained_glass_pane,patch0=12000:lime_stained_glass,patch1=12000:lime_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=pink_stained_glass_pane,patch0=12000:pink_stained_glass,patch1=12000:pink_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=gray_stained_glass_pane,patch0=12000:gray_stained_glass,patch1=12000:gray_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=light_gray_stained_glass_pane,patch0=12000:light_gray_stained_glass,patch1=12000:light_gray_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=cyan_stained_glass_pane,patch0=12000:cyan_stained_glass,patch1=12000:cyan_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=purple_stained_glass_pane,patch0=12000:purple_stained_glass,patch1=12000:purple_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=blue_stained_glass_pane,patch0=12000:blue_stained_glass,patch1=12000:blue_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=brown_stained_glass_pane,patch0=12000:brown_stained_glass,patch1=12000:brown_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=green_stained_glass_pane,patch0=12000:green_stained_glass,patch1=12000:green_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=red_stained_glass_pane,patch0=12000:red_stained_glass,patch1=12000:red_stained_glass_pane_top,transparency=TRANSPARENT
-block:id=black_stained_glass_pane,patch0=12000:black_stained_glass,patch1=12000:black_stained_glass_pane_top,transparency=TRANSPARENT
+block:id=%white_stained_glass_pane,patch0=0:white_stained_glass_pane_top,patch1=0:white_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%orange_stained_glass_pane,patch0=0:orange_stained_glass_pane_top,patch1=0:orange_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%magenta_stained_glass_pane,patch0=0:magenta_stained_glass_pane_top,patch1=0:magenta_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%light_blue_stained_glass_pane,patch0=0:light_blue_stained_glass_pane_top,patch1=0:light_blue_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%yellow_stained_glass_pane,patch0=0:yellow_stained_glass_pane_top,patch1=0:yellow_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%lime_stained_glass_pane,patch0=0:lime_stained_glass_pane_top,patch1=0:lime_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%pink_stained_glass_pane,patch0=0:pink_stained_glass_pane_top,patch1=0:pink_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%gray_stained_glass_pane,patch0=0:gray_stained_glass_pane_top,patch1=0:gray_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%light_gray_stained_glass_pane,patch0=0:light_gray_stained_glass_pane_top,patch1=0:light_gray_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%cyan_stained_glass_pane,patch0=0:cyan_stained_glass_pane_top,patch1=0:cyan_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%purple_stained_glass_pane,patch0=0:purple_stained_glass_pane_top,patch1=0:purple_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%blue_stained_glass_pane,patch0=0:blue_stained_glass_pane_top,patch1=0:blue_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%brown_stained_glass_pane,patch0=0:brown_stained_glass_pane_top,patch1=0:brown_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%green_stained_glass_pane,patch0=0:green_stained_glass_pane_top,patch1=0:green_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%red_stained_glass_pane,patch0=0:red_stained_glass_pane_top,patch1=0:red_stained_glass,transparency=TRANSPARENT,stdrot=true
+block:id=%black_stained_glass_pane,patch0=0:black_stained_glass_pane_top,patch1=0:black_stained_glass,transparency=TRANSPARENT,stdrot=true
 
 # Acacia Stairs (163)
 block:id=acacia_stairs,data=*,patch0-2=0:acacia_planks,transparency=SEMITRANSPARENT
