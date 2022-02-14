@@ -1558,7 +1558,7 @@ block:id=dark_oak_door,data=*,patch0=0:dark_oak_door_top,patch1=0:dark_oak_door_
 
 
 # End rod
-block:id=end_rod,data=*,patch0=0:end_rod,transparency=TRANSPARENT
+block:id=%end_rod,patch0=0:end_rod,transparency=TRANSPARENT,stdrot=true
 
 # Chorus Plant
 block:id=%chorus_plant,patch0=0:chorus_plant,transparency=TRANSPARENT
@@ -3062,7 +3062,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 [1.17-]block:id=%black_candle_cake,data=1,patch0=0:cake_side,patch1=0:cake_side,patch2=0:cake_bottom,patch3=0:cake_side,patch4=0:cake_top,patch5=0:cake_side,patch6=0:black_candle,patch7=0:black_candle,patch8=0:black_candle,patch9=0:black_candle,patch10=0:black_candle,patch11=0:black_candle,patch12=0:black_candle,patch13=0:black_candle,patch14=0:black_candle,patch15=0:black_candle,transparency=SEMITRANSPARENT,stdrot=true
 
 # Water Cauldron
-[1.17-]block:id=%water_cauldron,patch0=0:cauldron_side,patch1=0:cauldron_inner,patch2=0:cauldron_top,patch3=0:cauldron_bottom,patch4=12000:water_still,transparency=TRANSPARENT,stdrot=true
+[1.17-]block:id=%water_cauldron,patch0=0:cauldron_side,patch1=0:cauldron_inner,patch2=0:cauldron_top,patch3=0:cauldron_bottom,patch4=3000:water_still,transparency=TRANSPARENT,stdrot=true
 # Lava Cauldron
 [1.17-]block:id=%lava_cauldron,patch0=0:cauldron_side,patch1=0:cauldron_inner,patch2=0:cauldron_top,patch3=0:cauldron_bottom,patch4=0:lava_still,transparency=TRANSPARENT,stdrot=true
 # Powder Snow Cauldron
