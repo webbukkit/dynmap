@@ -2,6 +2,7 @@ package org.dynmap.servlet;
 
 import static org.dynmap.JSONUtils.s;
 
+import org.apache.commons.net.util.SubnetUtils;
 import org.dynmap.DynmapCore;
 import org.dynmap.Event;
 import org.dynmap.Log;
@@ -50,7 +51,16 @@ public class SendMessageServlet extends HttpServlet {
     public boolean chat_perms = false;
     public int lengthlimit = 256;
     public DynmapCore core;
-    public HashSet<String> proxyaddress = new HashSet<String>();
+    public HashSet<SubnetUtils.SubnetInfo> proxyaddress = new HashSet<SubnetUtils.SubnetInfo>();
+
+    private boolean addressIsTrustedProxy(String address) {
+        for (SubnetUtils.SubnetInfo subnetInfo : proxyaddress) {
+            if (subnetInfo.isInRange(address)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -92,13 +102,13 @@ public class SendMessageServlet extends HttpServlet {
                 if ((message.name == null) || message.name.equals("")) {
                     /* If from trusted proxy, check for client */
                     String rmtaddr = request.getRemoteAddr(); 
-                    if (this.proxyaddress.contains(rmtaddr)) {
+                    if (addressIsTrustedProxy(rmtaddr)) {
                         /* If proxied client address, get original IP */
                         if (request.getHeader("X-Forwarded-For") != null) {
                             /* If trusted proxies were chained, we get next client address till non-trusted proxy met */
                             String[] proxyAddrs = request.getHeader("X-Forwarded-For").split(", ");
                             for(int i = proxyAddrs.length - 1; i >= 0; i--){
-                                if (!this.proxyaddress.contains(proxyAddrs[i])) {
+                                if (!addressIsTrustedProxy(proxyAddrs[i])) {
                                     /* use remaining addresses as name (maybe we can use the last or the first non-trusted one?) */
                                     message.name = proxyAddrs[0]; // 0 .. i
                                     for(int j = 1; j <= i; j++) message.name += ", " + proxyAddrs[j];
