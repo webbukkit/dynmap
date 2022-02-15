@@ -450,6 +450,6 @@ public class PatchDefinition implements RenderPatch {
         	txtV.add(txtorig);	// And add it to compute full V 	
     	}
     	update(txtorig.x, txtorig.y, txtorig.z, txtU.x, txtU.y, txtU.z, txtV.x, txtV.y, txtV.z,
-    		patchuv[0], patchuv[2], patchuv[1], patchuv[3], flipU ? SideVisible.TOPFLIP : (flipV ? SideVisible.TOPFLIPV : SideVisible.TOP), textureid, patchuv[1], patchuv[3]);
+    		patchuv[0], patchuv[2], patchuv[1], patchuv[3], flipU ? (flipV ? SideVisible.TOP : SideVisible.TOPFLIP) : (flipV ? SideVisible.TOPFLIPV : SideVisible.TOP), textureid, patchuv[1], patchuv[3]);
     }
 }
