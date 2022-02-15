@@ -1,11 +1,22 @@
 # Mapping of texture resources to block ID and data values (v1.13-)
 version:1.13-
 # block:id=<block-id>,data=<data-val|*>,top=<index>,bottom=<index>,north=<index>,south=<index>,east=<index>,west=<index>,allfaces=<index>,allsides=<index>
-# <index>=0-255 (index of patch in terrain.png), -1=clear, 1xxx=biome tint from grasscolor.png,257=stationary water,258=moving water,
-#      259=stationary lava,260=moving lava,261=extended piston side,262=piston side while extended,263=glass pane top,2xxx=biome tint from foliagecolor.png,4xxx=rotate texture 90,
-#      5xxx=rotate texture 180, 6xxx=rotate texture 270, 7xxx=flip texture horizontally, 8xxx=shift down 1/2 block, 9=shift down 1/2,flip horiz,
-#      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block,3xxx=biome tint from watercolor.png, 13xxx=pine tone, 14xxx=birch tone, 15xxx=lily tone,
-#      264=air portal with eye, 265=fire texture
+# <index>=0-255 (index of patch in terrain.png), -1=clear, 
+#	1xxx=biome tint from grasscolor.png,
+#   2xxx=biome tint from foliagecolor.png,
+#   3xxx=biome tint from watercolor.png
+#   4xxx=rotate texture 90,
+#   5xxx=rotate texture 180,
+#   6xxx=rotate texture 270,
+#   7xxx=flip texture horizontally, 
+#   8xxx=shift down 1/2 block, 
+#   9xxx=shift down 1/2,flip horiz,
+#  10xxx=inclined-torch,
+#  11xxx=grass-side,
+#  12xxx=clear if same block,
+#  13xxx=pine tone, 
+#  14xxx=birch tone, 
+#  15xxx=lily tone,
 texture:id=foliagebiome,filename=assets/minecraft/textures/colormap/foliage.png,xcount=1,ycount=1,format=BIOME
 texture:id=grassbiome,filename=assets/minecraft/textures/colormap/grass.png,xcount=1,ycount=1,format=BIOME
 texturefile:id=chest,filename=assets/minecraft/textures/entity/chest/normal.png,format=CHEST
@@ -1866,13 +1877,13 @@ texture:id=sea_pickle
 texture:id=conduit
 
 # Kelp
-block:id=kelp,patch0-1=1000:kelp,transparency=TRANSPARENT
+block:id=%kelp,patch0=3000:kelp,transparency=SEMITRANSPARENT,stdrot=true
 
 # Kelp plant
-block:id=kelp_plant,patch0-1=1000:kelp_plant,transparency=TRANSPARENT
+block:id=%kelp_plant,patch0=3000:kelp_plant,transparency=SEMITRANSPARENT,stdrot=true
 
 # Dried kelp block
-block:id=dried_kelp_block,allsides=0:dried_kelp_side,top=0:dried_kelp_top,bottom=0:dried_kelp_bottom,stdrot=true
+block:id=%dried_kelp_block,patch0=0:dried_kelp_side,patch1=0:dried_kelp_bottom,patch2=0:dried_kelp_top,stdrot=true
 
 # Turtle egg
 block:id=turtle_egg,data=0,data=3,data=6,data=9,patch0-5=0:turtle_egg,transparency=TRANSPARENT
@@ -3085,7 +3096,7 @@ block:id=black_banner,id=black_wall_banner,data=*,patch0=0:oak_planks,patch1=0:b
 # Spore blossom
 [1.17-]texture:id=spore_blossom_base
 [1.17-]texture:id=spore_blossom
-[1.17-]block:id=%spore_blossom,data=0,patch0=0:spore_blossom_base,patch1=0:spore_blossom_base,patch2=4000:spore_blossom,patch3=6000:spore_blossom,patch4=6000:spore_blossom,patch5=4000:spore_blossom,patch6=0:spore_blossom,patch7=0:spore_blossom,patch8=0:spore_blossom,patch9=0:spore_blossom,transparency=TRANSPARENT,stdrot=true
+[1.17-]block:id=%spore_blossom,patch0=0:spore_blossom_base,patch1=0:spore_blossom,transparency=TRANSPARENT,stdrot=true
 # Azalea
 [1.17-]texture:id=azalea_top
 [1.17-]texture:id=azalea_side
