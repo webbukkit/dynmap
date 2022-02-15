@@ -1389,12 +1389,12 @@ block:id=quartz_stairs,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patc
 [1.17-]block:id=activator_rail,data=12-23,patch0=0:activator_rail,transparency=TRANSPARENT
 
 # (158)	Dropper
-block:id=dropper,data=0-1,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical
-block:id=dropper,data=2-3,top=6000:dropper_front_vertical,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=0:furnace_top
-block:id=dropper,data=4-5,top=0:furnace_top,east=0:dropper_front,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=6-7,top=0:furnace_top,west=0:dropper_front,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=8-9,top=0:furnace_top,north=0:dropper_front,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
-block:id=dropper,data=10-11,top=0:furnace_top,south=0:dropper_front,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=%dropper,state=facing:north,patch0=0:furnace_side,patch1=0:furnace_top,patch2=0:dropper_front,patch3=0:furnace_side,patch4=0:furnace_top,patch5=0:furnace_side,stdrot=true
+block:id=%dropper,state=facing:east,patch0=0:dropper_front,patch1=0:furnace_side,patch2=0:furnace_top,stdrot=true
+block:id=%dropper,state=facing:south,patch0=0:dropper_front,patch1=0:furnace_side,patch2=0:furnace_top,stdrot=true
+block:id=%dropper,state=facing:west,patch0=0:dropper_front,patch1=0:furnace_side,patch2=0:furnace_top,stdrot=true
+block:id=%dropper,state=facing:up,patch0=0:furnace_top,patch1=0:furnace_top,patch2=0:furnace_top,patch3=0:furnace_top,patch4=0:dropper_front_vertical,patch5=0:furnace_top,stdrot=true
+block:id=%dropper,state=facing:down,patch0=0:furnace_top,patch1=0:dropper_front_vertical,stdrot=true
 
 # (159) Colored clay
 block:id=black_terracotta,stdrot=true,allfaces=0:black_terracotta

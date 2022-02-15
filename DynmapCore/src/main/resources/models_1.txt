@@ -2346,3 +2346,9 @@ modellist:id=%command_block,state=conditional:false/facing:south,box=0.000000/0.
 modellist:id=%command_block,state=conditional:false/facing:west,box=0.000000/0.000000/0.000000:16.000000/16.000000/16.000000:u/1:n/2:w270/1:e90/1:d180/1:s/0:R/0/270/0
 modellist:id=%command_block,state=conditional:false/facing:up,box=0.000000/0.000000/0.000000:16.000000/16.000000/16.000000:u/1:n/2:w270/1:e90/1:d180/1:s/0:R/270/0/0
 modellist:id=%command_block,state=conditional:false/facing:down,box=0.000000/0.000000/0.000000:16.000000/16.000000/16.000000:u/1:n/2:w270/1:e90/1:d180/1:s/0:R/90/0/0
+# Dropper
+modellist:id=%dropper,state=facing:east,box=0.000000/0.000000/0.000000:16.000000/16.000000/16.000000:d/2:w/1:e/1:n/0:u/2:s/1:R/0/90/0
+modellist:id=%dropper,state=facing:south,box=0.000000/0.000000/0.000000:16.000000/16.000000/16.000000:d/2:w/1:e/1:n/0:u/2:s/1:R/0/180/0
+modellist:id=%dropper,state=facing:west,box=0.000000/0.000000/0.000000:16.000000/16.000000/16.000000:d/2:w/1:e/1:n/0:u/2:s/1:R/0/270/0
+modellist:id=%dropper,state=facing:down,box=0.000000/0.000000/0.000000:16.000000/16.000000/16.000000:d/0:w/0:e/0:n/0:u/1:s/0:R/180/0/0
+
