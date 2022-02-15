@@ -3,6 +3,8 @@ package org.dynmap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import inet.ipaddr.AddressStringException;
+import inet.ipaddr.IPAddressString;
 import org.dynmap.servlet.ClientUpdateServlet;
 import org.dynmap.servlet.SendMessageServlet;
 import org.json.simple.JSONObject;
@@ -65,12 +67,16 @@ public class InternalClientUpdateComponent extends ClientUpdateComponent {
                 this.core = dcore;
                 if(trustedproxy != null) {
                     for(String s : trustedproxy) {
-                        this.proxyaddress.add(s.trim());
+                        try {
+                            this.proxyaddress.add(new IPAddressString(s).toAddress());
+                        } catch (AddressStringException e) {
+                            throw new IllegalArgumentException("Trusted proxy address " + s + " is not valid");
+                        }
                     }
                 }
                 else {
-                    this.proxyaddress.add("127.0.0.1");
-                    this.proxyaddress.add("0:0:0:0:0:0:0:1");
+                    this.proxyaddress.add(new IPAddressString("127.0.0.1").getAddress());
+                    this.proxyaddress.add(new IPAddressString("0:0:0:0:0:0:0:1").getAddress());
                 }
                 onMessageReceived.addListener(new Event.Listener<Message> () {
                     @Override

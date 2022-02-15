@@ -2,7 +2,8 @@ package org.dynmap.servlet;
 
 import static org.dynmap.JSONUtils.s;
 
-import org.apache.commons.net.util.SubnetUtils;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 import org.dynmap.DynmapCore;
 import org.dynmap.Event;
 import org.dynmap.Log;
@@ -51,11 +52,11 @@ public class SendMessageServlet extends HttpServlet {
     public boolean chat_perms = false;
     public int lengthlimit = 256;
     public DynmapCore core;
-    public HashSet<SubnetUtils.SubnetInfo> proxyaddress = new HashSet<SubnetUtils.SubnetInfo>();
+    public HashSet<IPAddress> proxyaddress = new HashSet<IPAddress>();
 
     private boolean addressIsTrustedProxy(String address) {
-        for (SubnetUtils.SubnetInfo subnetInfo : proxyaddress) {
-            if (subnetInfo.isInRange(address)) {
+        for (IPAddress addr : proxyaddress) {
+            if (addr.contains(new IPAddressString(address).getAddress())) {
                 return true;
             }
         }
