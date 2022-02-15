@@ -1454,8 +1454,8 @@ block:id=coal_block,data=*,stdrot=true,allfaces=0:coal_block
 # (174) Packed Ice
 block:id=packed_ice,allfaces=0:packed_ice,stdrot=true
 # Sunflower
-block:id=sunflower,data=0,patch0-1=0:sunflower_top,transparency=TRANSPARENT
-block:id=sunflower,data=1,patch0-1=0:sunflower_bottom,transparency=TRANSPARENT
+block:id=%sunflower,state=half:upper,patch0=0:sunflower_top,patch1=0:sunflower_back,patch2=0:sunflower_front,transparency=TRANSPARENT,stdrot=true
+block:id=%sunflower,state=half:lower,patch0=0:sunflower_bottom,transparency=TRANSPARENT,stdrot=true
 # Lilac
 block:id=lilac,data=0,patch0-1=0:lilac_top,transparency=TRANSPARENT
 block:id=lilac,data=1,patch0-1=0:lilac_bottom,transparency=TRANSPARENT

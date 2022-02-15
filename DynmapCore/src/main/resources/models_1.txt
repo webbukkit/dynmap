@@ -817,12 +817,14 @@ patchblock:id=tall_seagrass,id=seagrass,patch0=VertX075,patch1=VertX075@90,patch
 patchblock:id=dandelion,id=poppy,id=blue_orchid,id=allium,id=azure_bluet,id=red_tulip,id=orange_tulip,id=white_tulip,id=pink_tulip,id=oxeye_daisy,id=brown_mushroom,id=red_mushroom,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
 # Sunflower
+modellist:id=%sunflower,state=half:upper,box=0.800000/0.000000/8.000000/false:15.200000/8.000000/8.000000/0.000000/45.000000/0.000000/8.000000/8.000000/8.000000:n/0/0.000000/8.000000/16.000000/16.000000:s/0/0.000000/8.000000/16.000000/16.000000,box=8.000000/0.000000/0.800000/false:8.000000/8.000000/15.200000/0.000000/45.000000/0.000000/8.000000/8.000000/8.000000:w/0/0.000000/8.000000/16.000000/16.000000:e/0/0.000000/8.000000/16.000000/16.000000,box=9.600000/-1.000000/1.000000/false:9.600000/15.000000/15.000000/0.000000/0.000000/22.500000/8.000000/8.000000/8.000000:w/1/0.000000/0.000000/16.000000/16.000000:e/2/0.000000/0.000000/16.000000/16.000000
+modellist:id=%sunflower,state=half:lower,box=0.800000/0.000000/8.000000/false:15.200000/16.000000/8.000000/0.000000/45.000000/0.000000/8.000000/8.000000/8.000000:n/0/0.000000/0.000000/16.000000/16.000000:s/0/0.000000/0.000000/16.000000/16.000000,box=8.000000/0.000000/0.800000/false:8.000000/16.000000/15.200000/0.000000/45.000000/0.000000/8.000000/8.000000/8.000000:w/0/0.000000/0.000000/16.000000/16.000000:e/0/0.000000/0.000000/16.000000/16.000000
 # Lilac
 # Rose bush
 # Peony
 # Tall grass
 # Large fern
-patchblock:id=sunflower,id=lilac,id=rose_bush,id=peony,id=tall_grass,id=large_fern,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+patchblock:id=lilac,id=rose_bush,id=peony,id=tall_grass,id=large_fern,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
 # Sapling (oak, spruce, birch, jungle, acacia, dark oak)
 patchblock:id=oak_sapling,id=spruce_sapling,id=birch_sapling,id=jungle_sapling,id=acacia_sapling,id=dark_oak_sapling,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
