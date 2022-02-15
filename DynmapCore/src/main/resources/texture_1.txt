@@ -1167,18 +1167,18 @@ block:id=birch_stairs,patch0-2=0:birch_planks,transparency=SEMITRANSPARENT
 # Jungle Wooden stairs
 block:id=jungle_stairs,patch0-2=0:jungle_planks,transparency=SEMITRANSPARENT
 # Command Block
-block:id=command_block,data=0,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_conditional,north=5000:command_block_conditional,east=5000:command_block_conditional,west=5000:command_block_conditional
-block:id=command_block,data=1,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_conditional,north=0:command_block_conditional,east=0:command_block_conditional,west=0:command_block_conditional
-block:id=command_block,data=2,top=6000:command_block_conditional,bottom=6000:command_block_conditional,south=6000:command_block_conditional,north=6000:command_block_conditional,east=0:command_block_front,west=0:command_block_back
-block:id=command_block,data=3,top=4000:command_block_conditional,bottom=4000:command_block_conditional,south=4000:command_block_conditional,north=4000:command_block_conditional,east=0:command_block_back,west=0:command_block_front
-block:id=command_block,data=4,top=0:command_block_conditional,bottom=0:command_block_conditional,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_conditional,west=4000:command_block_conditional
-block:id=command_block,data=5,top=5000:command_block_conditional,bottom=5000:command_block_conditional,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_conditional,west=6000:command_block_conditional
-block:id=command_block,data=6,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_side,north=5000:command_block_side,east=5000:command_block_side,west=5000:command_block_side
-block:id=command_block,data=7,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_side,north=0:command_block_side,east=0:command_block_side,west=0:command_block_side
-block:id=command_block,data=8,top=6000:command_block_side,bottom=6000:command_block_side,south=6000:command_block_side,north=6000:command_block_side,east=0:command_block_front,west=0:command_block_back
-block:id=command_block,data=9,top=4000:command_block_side,bottom=4000:command_block_side,south=4000:command_block_side,north=4000:command_block_side,east=0:command_block_back,west=0:command_block_front
-block:id=command_block,data=10,top=0:command_block_side,bottom=0:command_block_side,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_side,west=4000:command_block_side
-block:id=command_block,data=11,top=5000:command_block_side,bottom=5000:command_block_side,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_side,west=6000:command_block_side
+block:id=%command_block,state=conditional:true/facing:north,patch0=4000:command_block_conditional,patch1=5000:command_block_conditional,patch2=0:command_block_front,patch3=6000:command_block_conditional,patch4=0:command_block_conditional,patch5=0:command_block_back,stdrot=true
+block:id=%command_block,state=conditional:true/facing:east,patch0=0:command_block_back,patch1=0:command_block_conditional,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:true/facing:south,patch0=0:command_block_back,patch1=0:command_block_conditional,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:true/facing:west,patch0=0:command_block_back,patch1=0:command_block_conditional,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:true/facing:up,patch0=0:command_block_back,patch1=0:command_block_conditional,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:true/facing:down,patch0=0:command_block_back,patch1=0:command_block_conditional,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:false/facing:north,patch0=4000:command_block_side,patch1=5000:command_block_side,patch2=0:command_block_front,patch3=6000:command_block_side,patch4=0:command_block_side,patch5=0:command_block_back,stdrot=true
+block:id=%command_block,state=conditional:false/facing:east,patch0=0:command_block_back,patch1=0:command_block_side,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:false/facing:south,patch0=0:command_block_back,patch1=0:command_block_side,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:false/facing:west,patch0=0:command_block_back,patch1=0:command_block_side,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:false/facing:up,patch0=0:command_block_back,patch1=0:command_block_side,patch2=0:command_block_front,stdrot=true
+block:id=%command_block,state=conditional:false/facing:down,patch0=0:command_block_back,patch1=0:command_block_side,patch2=0:command_block_front,stdrot=true
 # Beacon
 block:id=beacon,patch0-5=12000:glass,patch6-9=0:obsidian,patch10=6000:obsidian,patch11-14=0:beacon,patch15=6000:beacon,transparency=TRANSPARENT
 # Cobblestone wall
@@ -1594,32 +1594,32 @@ block:id=beetroots,data=3,patch0-3=0:beetroots_stage3,transparency=TRANSPARENT
 block:id=end_gateway,data=*,stdrot=true,allfaces=0:endportal
 
 # Repeating Command Block
-block:id=repeating_command_block,data=0,top=4000:repeating_command_block_back,bottom=4000:repeating_command_block_front,south=5000:repeating_command_block_side,north=5000:repeating_command_block_side,east=5000:repeating_command_block_side,west=5000:repeating_command_block_side
-block:id=repeating_command_block,data=1,top=4000:repeating_command_block_front,bottom=4000:repeating_command_block_back,south=0:repeating_command_block_side,north=0:repeating_command_block_side,east=0:repeating_command_block_side,west=0:repeating_command_block_side
-block:id=repeating_command_block,data=2,top=6000:repeating_command_block_side,bottom=6000:repeating_command_block_side,south=6000:repeating_command_block_side,north=6000:repeating_command_block_side,east=0:repeating_command_block_front,west=0:repeating_command_block_back
-block:id=repeating_command_block,data=3,top=4000:repeating_command_block_side,bottom=4000:repeating_command_block_side,south=4000:repeating_command_block_side,north=4000:repeating_command_block_side,east=0:repeating_command_block_back,west=0:repeating_command_block_front
-block:id=repeating_command_block,data=4,top=0:repeating_command_block_side,bottom=0:repeating_command_block_side,south=0:repeating_command_block_back,north=0:repeating_command_block_front,east=4000:repeating_command_block_side,west=4000:repeating_command_block_side
-block:id=repeating_command_block,data=5,top=5000:repeating_command_block_side,bottom=5000:repeating_command_block_side,south=0:repeating_command_block_front,north=0:repeating_command_block_back,east=6000:repeating_command_block_side,west=6000:repeating_command_block_side
-block:id=repeating_command_block,data=6,top=4000:repeating_command_block_back,bottom=4000:repeating_command_block_front,south=5000:repeating_command_block_conditional,north=5000:repeating_command_block_conditional,east=5000:repeating_command_block_conditional,west=5000:repeating_command_block_conditional
-block:id=repeating_command_block,data=7,top=4000:repeating_command_block_front,bottom=4000:repeating_command_block_back,south=0:repeating_command_block_conditional,north=0:repeating_command_block_conditional,east=0:repeating_command_block_conditional,west=0:repeating_command_block_conditional
-block:id=repeating_command_block,data=8,top=6000:repeating_command_block_conditional,bottom=6000:repeating_command_block_conditional,south=6000:repeating_command_block_conditional,north=6000:repeating_command_block_conditional,east=0:repeating_command_block_front,west=0:repeating_command_block_back
-block:id=repeating_command_block,data=9,top=4000:repeating_command_block_conditional,bottom=4000:repeating_command_block_conditional,south=4000:repeating_command_block_conditional,north=4000:repeating_command_block_conditional,east=0:repeating_command_block_back,west=0:repeating_command_block_front
-block:id=repeating_command_block,data=10,top=0:repeating_command_block_conditional,bottom=0:repeating_command_block_conditional,south=0:repeating_command_block_back,north=0:repeating_command_block_front,east=4000:repeating_command_block_conditional,west=4000:repeating_command_block_conditional
-block:id=repeating_command_block,data=11,top=5000:repeating_command_block_conditional,bottom=5000:repeating_command_block_conditional,south=0:repeating_command_block_front,north=0:repeating_command_block_back,east=6000:repeating_command_block_conditional,west=6000:repeating_command_block_conditional
+block:id=%repeating_command_block,state=conditional:true/facing:north,patch0=4000:repeating_command_block_conditional,patch1=5000:repeating_command_block_conditional,patch2=0:repeating_command_block_front,patch3=6000:repeating_command_block_conditional,patch4=0:repeating_command_block_conditional,patch5=0:repeating_command_block_back,stdrot=true
+block:id=%repeating_command_block,state=conditional:true/facing:east,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_conditional,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:true/facing:south,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_conditional,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:true/facing:west,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_conditional,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:true/facing:up,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_conditional,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:true/facing:down,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_conditional,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:false/facing:north,patch0=4000:repeating_command_block_side,patch1=5000:repeating_command_block_side,patch2=0:repeating_command_block_front,patch3=6000:repeating_command_block_side,patch4=0:repeating_command_block_side,patch5=0:repeating_command_block_back,stdrot=true
+block:id=%repeating_command_block,state=conditional:false/facing:east,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_side,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:false/facing:south,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_side,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:false/facing:west,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_side,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:false/facing:up,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_side,patch2=0:repeating_command_block_front,stdrot=true
+block:id=%repeating_command_block,state=conditional:false/facing:down,patch0=0:repeating_command_block_back,patch1=0:repeating_command_block_side,patch2=0:repeating_command_block_front,stdrot=true
 
 # Chain Command Block
-block:id=chain_command_block,data=0,top=4000:chain_command_block_back,bottom=4000:chain_command_block_front,south=5000:chain_command_block_side,north=5000:chain_command_block_side,east=5000:chain_command_block_side,west=5000:chain_command_block_side
-block:id=chain_command_block,data=1,top=4000:chain_command_block_front,bottom=4000:chain_command_block_back,south=0:chain_command_block_side,north=0:chain_command_block_side,east=0:chain_command_block_side,west=0:chain_command_block_side
-block:id=chain_command_block,data=2,top=6000:chain_command_block_side,bottom=6000:chain_command_block_side,south=6000:chain_command_block_side,north=6000:chain_command_block_side,east=0:chain_command_block_front,west=0:chain_command_block_back
-block:id=chain_command_block,data=3,top=4000:chain_command_block_side,bottom=4000:chain_command_block_side,south=4000:chain_command_block_side,north=4000:chain_command_block_side,east=0:chain_command_block_back,west=0:chain_command_block_front
-block:id=chain_command_block,data=4,top=0:chain_command_block_side,bottom=0:chain_command_block_side,south=0:chain_command_block_back,north=0:chain_command_block_front,east=4000:chain_command_block_side,west=4000:chain_command_block_side
-block:id=chain_command_block,data=5,top=5000:chain_command_block_side,bottom=5000:chain_command_block_side,south=0:chain_command_block_front,north=0:chain_command_block_back,east=6000:chain_command_block_side,west=6000:chain_command_block_side
-block:id=chain_command_block,data=6,top=4000:chain_command_block_back,bottom=4000:chain_command_block_front,south=5000:chain_command_block_conditional,north=5000:chain_command_block_conditional,east=5000:chain_command_block_conditional,west=5000:chain_command_block_conditional
-block:id=chain_command_block,data=7,top=4000:chain_command_block_front,bottom=4000:chain_command_block_back,south=0:chain_command_block_conditional,north=0:chain_command_block_conditional,east=0:chain_command_block_conditional,west=0:chain_command_block_conditional
-block:id=chain_command_block,data=8,top=6000:chain_command_block_conditional,bottom=6000:chain_command_block_conditional,south=6000:chain_command_block_conditional,north=6000:chain_command_block_conditional,east=0:chain_command_block_front,west=0:chain_command_block_back
-block:id=chain_command_block,data=9,top=4000:chain_command_block_conditional,bottom=4000:chain_command_block_conditional,south=4000:chain_command_block_conditional,north=4000:chain_command_block_conditional,east=0:chain_command_block_back,west=0:chain_command_block_front
-block:id=chain_command_block,data=10,top=0:chain_command_block_conditional,bottom=0:chain_command_block_conditional,south=0:chain_command_block_back,north=0:chain_command_block_front,east=4000:chain_command_block_conditional,west=4000:chain_command_block_conditional
-block:id=chain_command_block,data=11,top=5000:chain_command_block_conditional,bottom=5000:chain_command_block_conditional,south=0:chain_command_block_front,north=0:chain_command_block_back,east=6000:chain_command_block_conditional,west=6000:chain_command_block_conditional
+block:id=%chain_command_block,state=conditional:true/facing:north,patch0=4000:chain_command_block_conditional,patch1=5000:chain_command_block_conditional,patch2=0:chain_command_block_front,patch3=6000:chain_command_block_conditional,patch4=0:chain_command_block_conditional,patch5=0:chain_command_block_back,stdrot=true
+block:id=%chain_command_block,state=conditional:true/facing:east,patch0=0:chain_command_block_back,patch1=0:chain_command_block_conditional,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:true/facing:south,patch0=0:chain_command_block_back,patch1=0:chain_command_block_conditional,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:true/facing:west,patch0=0:chain_command_block_back,patch1=0:chain_command_block_conditional,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:true/facing:up,patch0=0:chain_command_block_back,patch1=0:chain_command_block_conditional,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:true/facing:down,patch0=0:chain_command_block_back,patch1=0:chain_command_block_conditional,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:false/facing:north,patch0=4000:chain_command_block_side,patch1=5000:chain_command_block_side,patch2=0:chain_command_block_front,patch3=6000:chain_command_block_side,patch4=0:chain_command_block_side,patch5=0:chain_command_block_back,stdrot=true
+block:id=%chain_command_block,state=conditional:false/facing:east,patch0=0:chain_command_block_back,patch1=0:chain_command_block_side,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:false/facing:south,patch0=0:chain_command_block_back,patch1=0:chain_command_block_side,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:false/facing:west,patch0=0:chain_command_block_back,patch1=0:chain_command_block_side,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:false/facing:up,patch0=0:chain_command_block_back,patch1=0:chain_command_block_side,patch2=0:chain_command_block_front,stdrot=true
+block:id=%chain_command_block,state=conditional:false/facing:down,patch0=0:chain_command_block_back,patch1=0:chain_command_block_side,patch2=0:chain_command_block_front,stdrot=true
 
 # Frosted Ice
 block:id=frosted_ice,data=0,allfaces=12000:frosted_ice_0,stdrot=true,transparency=TRANSPARENT
