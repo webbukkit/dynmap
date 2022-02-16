@@ -1139,7 +1139,7 @@ block:id=%nether_wart,state=age:3,patch0=0:nether_wart_stage2,transparency=TRANS
 # Enchantment table
 block:id=enchanting_table,top=0:enchanting_table_top,allsides=0:enchanting_table_side,bottom=0:enchanting_table_bottom,stdrot=true,transparency=TRANSPARENT
 # Brewing stand
-block:id=brewing_stand,patch0=0:brewing_stand_base,patch1-7=0:brewing_stand,transparency=TRANSPARENT
+block:id=%brewing_stand,patch0=0:brewing_stand,patch1=0:brewing_stand_base,transparency=TRANSPARENT,stdrot=true
 # Cauldron
 block:id=%cauldron,patch0=0:cauldron_side,patch1=0:cauldron_inner,patch2=0:cauldron_top,patch3=0:cauldron_bottom,transparency=TRANSPARENT,stdrot=true
 
