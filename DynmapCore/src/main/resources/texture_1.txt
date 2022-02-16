@@ -1653,10 +1653,10 @@ block:id=bone_block,data=0,north=0:bone_block_top,south=0:bone_block_top,east=40
 block:id=bone_block,data=2,north=4000:bone_block_side,south=4000:bone_block_side,east=0:bone_block_top,west=0:bone_block_top,top=4000:bone_block_side,bottom=4000:bone_block_side
 
 # Structure Block
-block:id=structure_block,data=0,stdrot=true,allfaces=0:structure_block_save
-block:id=structure_block,data=1,stdrot=true,allfaces=0:structure_block_load
-block:id=structure_block,data=2,stdrot=true,allfaces=0:structure_block_corner
-block:id=structure_block,data=3,stdrot=true,allfaces=0:structure_block_data
+block:id=%structure_block,state=mode:save,patch0=0:structure_block_save,patch1=0:structure_block_save,patch2=0:structure_block_save,patch3=0:structure_block_save,patch4=0:structure_block_save,patch5=0:structure_block_save,stdrot=true
+block:id=%structure_block,state=mode:load,patch0=0:structure_block_load,patch1=0:structure_block_load,patch2=0:structure_block_load,patch3=0:structure_block_load,patch4=0:structure_block_load,patch5=0:structure_block_load,stdrot=true
+block:id=%structure_block,state=mode:corner,patch0=0:structure_block_corner,patch1=0:structure_block_corner,patch2=0:structure_block_corner,patch3=0:structure_block_corner,patch4=0:structure_block_corner,patch5=0:structure_block_corner,stdrot=true
+block:id=%structure_block,state=mode:data,patch0=0:structure_block_data,patch1=0:structure_block_data,patch2=0:structure_block_data,patch3=0:structure_block_data,patch4=0:structure_block_data,patch5=0:structure_block_data,stdrot=true
 
 # Structure void
 block:id=structure_void,transparency=TRANSPARENT
