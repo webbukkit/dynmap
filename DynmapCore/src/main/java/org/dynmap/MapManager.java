@@ -228,8 +228,10 @@ public class MapManager {
                         try {
                             r.run();
                         } catch (Exception x) {
-                            Log.severe("Exception during render job: " + r);
-                            x.printStackTrace();                        
+                        	if (!(x instanceof InterruptedException)) {	// Avoid shutdown noise
+                        		Log.severe("Exception during render job: " + r);
+                        		x.printStackTrace();                        
+                        	}
                         }
                     }
                 });
@@ -244,8 +246,10 @@ public class MapManager {
                         try {
                             command.run();
                         } catch (Exception x) {
-                            Log.severe("Exception during render job: " + command);
-                            x.printStackTrace();                        
+                        	if (!(x instanceof InterruptedException)) {	// Avoid shutdown noise
+                        		Log.severe("Exception during render job: " + command);
+                        		x.printStackTrace();                    
+                        	}
                         }
                     }
                 }, delay, unit);
