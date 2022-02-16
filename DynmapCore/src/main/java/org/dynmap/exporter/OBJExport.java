@@ -529,6 +529,9 @@ public class OBJExport {
             case TOPFLIPV:
                 f.faceLine = String.format("f %d/%d %d/%d %d/%d %d/%d\n", v[0], uv[0], v[1], uv[1], v[2], uv[2], v[3], uv[3]); 
                 break;
+            case TOPFLIPHV:
+                f.faceLine = String.format("f %d/%d %d/%d %d/%d %d/%d\n", v[0], uv[0], v[1], uv[1], v[2], uv[2], v[3], uv[3]); 
+                break;
             case BOTTOM:
                 f.faceLine = String.format("f %d/%d %d/%d %d/%d %d/%d\n", v[3], uv[3], v[2], uv[2], v[1], uv[1], v[0], uv[0]); 
                 break;

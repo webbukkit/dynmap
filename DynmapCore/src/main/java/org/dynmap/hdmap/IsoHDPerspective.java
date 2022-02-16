@@ -411,6 +411,7 @@ public class IsoHDPerspective implements HDPerspective {
                 case TOP:
                 case TOPFLIP:
                 case TOPFLIPV:
+                case TOPFLIPHV:
                     if (det < 0.000001) {
                         return hitcnt;
                     }
@@ -462,6 +463,10 @@ public class IsoHDPerspective implements HDPerspective {
                         patch_u[hitcnt] = 1 - u;
                     }
                     else if (pd.sidevis == SideVisible.TOPFLIPV) {
+                        patch_v[hitcnt] = 1 - v;                    	
+                    }
+                    else if (pd.sidevis == SideVisible.TOPFLIPHV) {
+                        patch_u[hitcnt] = 1 - u;
                         patch_v[hitcnt] = 1 - v;                    	
                     }
                 }

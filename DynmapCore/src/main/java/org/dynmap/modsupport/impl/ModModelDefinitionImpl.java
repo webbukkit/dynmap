@@ -299,6 +299,9 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
                     case TOPFLIPV:
                         line += ",visibility=topflipv";
                         break;
+                    case TOPFLIPHV:
+                        line += ",visibility=topfliphv";
+                        break;
                     case FLIP:
                         line += ",visibility=flip";
                         break;

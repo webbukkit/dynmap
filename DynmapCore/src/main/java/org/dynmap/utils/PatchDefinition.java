@@ -312,8 +312,10 @@ public class PatchDefinition implements RenderPatch {
     	boolean flipU = false, flipV = false;
     	if (uv != null) {	// MC V is top down, so flip
     		patchuv = new double[] { uv[0] / 16.0, 1 - uv[3] / 16.0, uv[2] / 16.0, 1 - uv[1] / 16.0 }; 
-    		if (patchuv[0] > patchuv[2]) { flipU = true; double save = patchuv[0]; patchuv[0] = patchuv[2]; patchuv[2] = save; }
-    		if (patchuv[1] > patchuv[3]) { flipV = true; double save = patchuv[1]; patchuv[1] = patchuv[3]; patchuv[3] = save; }
+//    		if (patchuv[0] > patchuv[2]) { flipU = true; double save = patchuv[0]; patchuv[0] = patchuv[2]; patchuv[2] = save; }
+//    		if (patchuv[1] > patchuv[3]) { flipV = true; double save = patchuv[1]; patchuv[1] = patchuv[3]; patchuv[3] = save; }
+    		if (patchuv[0] > patchuv[2]) { flipU = true; patchuv[0] = 1.0 - patchuv[0]; patchuv[2] = 1.0 - patchuv[2]; }
+    		if (patchuv[1] > patchuv[3]) { flipV = true; patchuv[1] = 1.0 - patchuv[1]; patchuv[3] = 1.0 - patchuv[3]; }
     	}
     	
     	switch (face) {
@@ -450,6 +452,6 @@ public class PatchDefinition implements RenderPatch {
         	txtV.add(txtorig);	// And add it to compute full V 	
     	}
     	update(txtorig.x, txtorig.y, txtorig.z, txtU.x, txtU.y, txtU.z, txtV.x, txtV.y, txtV.z,
-    		patchuv[0], patchuv[2], patchuv[1], patchuv[3], flipU ? (flipV ? SideVisible.TOP : SideVisible.TOPFLIP) : (flipV ? SideVisible.TOPFLIPV : SideVisible.TOP), textureid, patchuv[1], patchuv[3]);
+    		patchuv[0], patchuv[2], patchuv[1], patchuv[3], flipU ? (flipV ? SideVisible.TOPFLIPHV : SideVisible.TOPFLIP) : (flipV ? SideVisible.TOPFLIPV : SideVisible.TOP), textureid, patchuv[1], patchuv[3]);
     }
 }
