@@ -5,13 +5,13 @@ var HDProjection = DynmapProjection.extend({
 			lng = wtp[0] * location.x + wtp[1] * location.y + wtp[2] * location.z;
 
 		return new L.LatLng(
-			  -((128 - lat) / (1 << this.options.mapzoomout))
+			  -(((128 << this.options.tilescale) - lat) / (1 << this.options.mapzoomout))
 			, lng / (1 << this.options.mapzoomout)
 			, location.y);
 	},
 	fromLatLngToLocation: function(latlon, y) {
 		var ptw = this.options.maptoworld,
-			lat = 128 + latlon.lat * (1 << this.options.mapzoomout),
+			lat = (128 << this.options.tilescale) + latlon.lat * (1 << this.options.mapzoomout),
 			lng = latlon.lng * (1 << this.options.mapzoomout),
 			x = ptw[0] * lng + ptw[1] * lat + ptw[2] * y,
 			z = ptw[6] * lng + ptw[7] * lat + ptw[8] * y;
@@ -25,12 +25,12 @@ var HDMapType = DynmapTileLayer.extend({
 	options: {
 		minZoom: 0,
 		errorTileUrl: 'images/blank.png',
-		tileSize: 128,
 		zoomReverse: true,
 	},
 	initialize: function(options) {
 		options.maxZoom = options.mapzoomin + options.mapzoomout;
 		options.maxNativeZoom = options.mapzoomout;
+		options.tileSize = 128 << (options.tilescale || 0);
 
 		this.projection = new HDProjection($.extend({map: this}, options));
 

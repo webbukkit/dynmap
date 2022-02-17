@@ -12,6 +12,7 @@ public abstract class MapTile {
     public abstract boolean render(MapChunkCache cache, String mapname);
     public abstract List<DynmapChunk> getRequiredChunks();
     public abstract MapTile[] getAdjecentTiles();
+    public abstract int getTileSize();
 
     public DynmapWorld getDynmapWorld() {
         return world;

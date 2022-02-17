@@ -12,29 +12,32 @@ public class HDMapTile extends MapTile {
     public final HDPerspective perspective;
     public final int tx, ty;  /* Tile X and Tile Y are in tile coordinates (pixels/tile-size) */
     public final int boostzoom;
+    public final int tilescale;
     
-    public HDMapTile(DynmapWorld world, HDPerspective perspective, int tx, int ty, int boostzoom) {
+    public HDMapTile(DynmapWorld world, HDPerspective perspective, int tx, int ty, int boostzoom, int tilescale) {
         super(world);
         this.perspective = perspective;
         this.tx = tx;
         this.ty = ty;
         this.boostzoom = boostzoom;
+        this.tilescale = tilescale;
     }
 
-    public HDMapTile(DynmapWorld world, String parm) throws Exception {
-        super(world);
-        
-        String[] parms = parm.split(",");
-        if(parms.length < 3) throw new Exception("wrong parameter count");
-        this.tx = Integer.parseInt(parms[0]);
-        this.ty = Integer.parseInt(parms[1]);
-        this.perspective = MapManager.mapman.hdmapman.perspectives.get(parms[2]);
-        if(this.perspective == null) throw new Exception("invalid perspective");
-        if(parms.length > 3) 
-            this.boostzoom = Integer.parseInt(parms[3]);
-        else
-            this.boostzoom = 0;
-    }
+//    public HDMapTile(DynmapWorld world, String parm) throws Exception {
+//        super(world);
+//        
+//        String[] parms = parm.split(",");
+//        if(parms.length < 3) throw new Exception("wrong parameter count");
+//        this.tx = Integer.parseInt(parms[0]);
+//        this.ty = Integer.parseInt(parms[1]);
+//        this.perspective = MapManager.mapman.hdmapman.perspectives.get(parms[2]);
+//        if(this.perspective == null) throw new Exception("invalid perspective");
+//        if(parms.length > 3) 
+//            this.boostzoom = Integer.parseInt(parms[3]);
+//        else
+//            this.boostzoom = 0;
+//        this.tilescale = 0;
+//    }
     
     @Override
     protected String saveTileData() {
@@ -63,6 +66,9 @@ public class HDMapTile extends MapTile {
         return world.getName() + ":" + perspective.getName() + "," + tx + "," + ty + ":" + boostzoom;
     }
     
+    @Override
+    public int getTileSize() { return 128 << tilescale; }
+
     @Override
     public boolean isBiomeDataNeeded() { return MapManager.mapman.hdmapman.isBiomeDataNeeded(this); }
     

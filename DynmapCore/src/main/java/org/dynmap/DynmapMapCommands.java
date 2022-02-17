@@ -90,6 +90,7 @@ public class DynmapMapCommands {
 		mapSetArgs.put("mapzoomin", emptySupplier);
 		mapSetArgs.put("mapzoomout", emptySupplier);
 		mapSetArgs.put("boostzoom", emptySupplier);
+		mapSetArgs.put("tilescale", emptySupplier);
 		mapSetArgs.put("tileupdatedelay", emptySupplier);
 
 		tabCompletions = new HashMap<>();
@@ -695,7 +696,7 @@ public class DynmapMapCommands {
                 sb.append(", lighting=").append(hdmt.getLighting().getName()).append(", mapzoomin=").append(hdmt.getMapZoomIn()).append(", mapzoomout=").append(hdmt.getMapZoomOutLevels());
                 sb.append(", img-format=").append(hdmt.getImageFormatSetting()).append(", icon=").append(hdmt.getIcon());
                 sb.append(", append-to-world=").append(hdmt.getAppendToWorld()).append(", boostzoom=").append(hdmt.getBoostZoom());
-                sb.append(", protected=").append(hdmt.isProtected());
+                sb.append(", protected=").append(hdmt.isProtected()).append(", tilescale=").append(hdmt.getTileScale());
                 if(hdmt.tileupdatedelay > 0) {
                     sb.append(", tileupdatedelay=").append(hdmt.tileupdatedelay);
                 }
@@ -912,6 +913,18 @@ public class DynmapMapCommands {
                     return true;
                 }
                 did_update |= mt.setBoostZoom(mzi);
+            }
+            else if(tok[0].equalsIgnoreCase("tilescale")) {
+                int mzi = -1;
+                try {
+                    mzi = Integer.valueOf(tok[1]);
+                } catch (NumberFormatException nfx) {
+                }
+                if((mzi < 0) || (mzi > 4)) {
+                    sender.sendMessage("Invalid tilescale value: " + tok[1]);
+                    return true;
+                }
+                did_update |= mt.setTileScale(mzi);
             }
             else if(tok[0].equalsIgnoreCase("tileupdatedelay")) {
                 int tud = -1;

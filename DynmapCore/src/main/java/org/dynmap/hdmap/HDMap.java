@@ -34,6 +34,7 @@ public class HDMap extends MapType {
     private MapType.ImageFormat imgformat;
     private int bgcolornight;
     private int bgcolorday;
+    private int tilescale;
     private String title;
     private String icon;
     private String bg_cfg;
@@ -140,6 +141,9 @@ public class HDMap extends MapType {
         this.mapzoomin = configuration.getInteger("mapzoomin", 2);
         this.mapzoomout = configuration.getInteger("mapzoomout", this.mapzoomout);
         this.boostzoom = configuration.getInteger("boostzoom", 0);
+        this.tilescale = configuration.getInteger("tilescale", core.getMapManager().getDefaultTileScale());	// 0 = 128, 1 = 256, ...
+        if (this.tilescale <= 0) this.tilescale = 0;
+        if (this.tilescale >= 4) this.tilescale = 4;	// Limit to 2k x 2k
         if(this.boostzoom < 0) this.boostzoom = 0;
         if(this.boostzoom > 3) this.boostzoom = 3;
         // Map zoom in must be at least as big as boost zoom
@@ -167,6 +171,7 @@ public class HDMap extends MapType {
         cn.put("mapzoomin", mapzoomin);
         cn.put("mapzoomout", mapzoomout);
         cn.put("boostzoom", boostzoom);
+        cn.put("tilescale", tilescale);
         if(bg_cfg != null)
             cn.put("background", bg_cfg);
         if(bg_day_cfg != null)
@@ -185,15 +190,17 @@ public class HDMap extends MapType {
     public final HDPerspective getPerspective() { return perspective; }
     public final HDLighting getLighting() { return lighting; }
     public final int getBoostZoom() { return boostzoom; }
+    public final int getTileSize() { return 128 << tilescale; }
+    public final int getTileScale() { return tilescale; }
     
     @Override
     public List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int x, int y, int z) {
-        return perspective.getTileCoords(w, x, y, z);
+        return perspective.getTileCoords(w, x, y, z, tilescale);
     }
 
     @Override
     public List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
-        return perspective.getTileCoords(w, minx, miny, minz, maxx, maxy, maxz);
+        return perspective.getTileCoords(w, minx, miny, minz, maxx, maxy, maxz, tilescale);
     }
 
     @Override
@@ -270,6 +277,7 @@ public class HDMap extends MapType {
         s(o, "mapzoomout", (world.getExtraZoomOutLevels()+mapzoomout));
         s(o, "mapzoomin", mapzoomin);
         s(o, "boostzoom", boostzoom);
+        s(o, "tilescale", tilescale);        
         s(o, "protected", isProtected());
         s(o, "image-format", imgformat.getFileExt());
         if(append_to_world.length() > 0)
@@ -403,6 +411,13 @@ public class HDMap extends MapType {
         }
         return false;
     }
+    public boolean setTileScale(int mzi) {
+        if(mzi != this.tilescale) {
+            this.tilescale = mzi;
+            return true;
+        }
+        return false;
+    }
     public boolean setPerspective(HDPerspective p) {
         if(perspective != p) {
             perspective = p;
@@ -450,7 +465,7 @@ public class HDMap extends MapType {
 
     @Override
     public void addMapTiles(List<MapTile> list, DynmapWorld w, int tx, int ty) {
-        list.add(new HDMapTile(w, this.perspective, tx, ty, boostzoom));
+        list.add(new HDMapTile(w, this.perspective, tx, ty, boostzoom, tilescale));
     }
     
     private static final ImageVariant[] dayVariant = { ImageVariant.STANDARD, ImageVariant.DAY };

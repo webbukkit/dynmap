@@ -14,9 +14,9 @@ public interface HDPerspective {
     /* Get name of perspective */
     String getName();
     /* Get tiles invalidated by change at given location */
-    List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int x, int y, int z);
+    List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int x, int y, int z, int tilescale);
     /* Get tiles invalidated by change at given volume, defined by 2 opposite corner locations */
-    List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int minx, int miny, int minz, int maxx, int maxy, int maxz);
+    List<TileFlags.TileCoord> getTileCoords(DynmapWorld w, int minx, int miny, int minz, int maxx, int maxy, int maxz, int tilescale);
     /* Get tiles adjacent to given tile */
     MapTile[] getAdjecentTiles(MapTile tile);
     /* Get chunks needed for given tile */

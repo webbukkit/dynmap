@@ -15,6 +15,10 @@
 #   The definitions of these templates are in normal-hi_boost_xhi.txt, nether-hi_boost_xhi.txt, and the_end-hi_boost_xhi.txt
 deftemplatesuffix: hires
 
+# Set default tile scale (0 = 128px x 128x, 1 = 256px x 256px, 2 = 512px x 512px, 3 = 1024px x 1024px, 4 = 2048px x 2048px) - 0 is default
+# Note: changing this value will result in all maps that use the default value being required to be fully rendered
+#defaulttilescale: 0
+
 # Map storage scheme: only uncomment one 'type' value
 #  filetree: classic and default scheme: tree of files, with all map data under the directory indicated by 'tilespath' setting
 #  sqlite: single SQLite database file (this can get VERY BIG), located at 'dbfile' setting (default is file dynmap.db in data directory)
