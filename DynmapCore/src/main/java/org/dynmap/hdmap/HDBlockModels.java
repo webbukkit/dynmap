@@ -1026,10 +1026,12 @@ public class HDBlockModels {
 										patch = pdf.getPatch(patch, -bl.xrot, -bl.yrot, -bl.zrot, 
 											new Vector3D(bl.xrotorig / 16, bl.yrotorig / 16, bl.zrotorig / 16),
 											patch.textureindex);
+										if (patch == null) continue;
 									}
 									// If model rotation, apply too
 		                            if ((bl.modrotx != 0) || (bl.modroty != 0) || (bl.modrotz != 0)) {
 		                            	patch = pdf.getPatch(patch, bl.modrotx, bl.modroty, bl.modrotz, patch.textureindex);
+										if (patch == null) continue;
 		                            }									
 									pd.add(patch);
 								}
