@@ -926,6 +926,8 @@ public class MapManager {
                 f.get();
             } catch (CancellationException cx) {
                 return;
+            } catch (InterruptedException cx) {
+                return;
             } catch (ExecutionException ex) {
                 Log.severe("Error while checking world times: ", ex.getCause());
             } catch (Exception ix) {
