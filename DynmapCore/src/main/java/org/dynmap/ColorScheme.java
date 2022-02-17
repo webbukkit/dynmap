@@ -128,7 +128,7 @@ public class ColorScheme {
 						id = -1;
 						BiomeMap[] bm = BiomeMap.values();
 						for (int i = 0; i < bm.length; i++) {
-							if (bm[i].toString().equalsIgnoreCase(bio)) {
+							if (bm[i].getId().equalsIgnoreCase(bio)) {
 								id = i;
 								break;
 							} else if (bio.equalsIgnoreCase("BIOME_" + i)) {
