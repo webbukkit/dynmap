@@ -22,6 +22,7 @@ public class MapTypeState {
     private TileFlags.Iterator zoomOutInvIter = null;
     private int zoomOutInvIterLevel = -1;
     private final int zoomOutLevels;
+    public final int tileSize;
     
     public MapTypeState(DynmapWorld world, MapType mt) {
         type = mt;
@@ -32,6 +33,7 @@ public class MapTypeState {
             zoomOutInv.add(null);
             zoomOutInvAccum.add(null);
         }
+        tileSize = mt.getTileSize();
     }
     public void setInvalidatePeriod(long inv_per_in_secs) {
         invTSPeriod = inv_per_in_secs * NANOS_PER_SECOND;

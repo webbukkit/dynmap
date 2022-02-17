@@ -190,6 +190,7 @@ public class HDMap extends MapType {
     public final HDPerspective getPerspective() { return perspective; }
     public final HDLighting getLighting() { return lighting; }
     public final int getBoostZoom() { return boostzoom; }
+    @Override
     public final int getTileSize() { return 128 << tilescale; }
     public final int getTileScale() { return tilescale; }
     

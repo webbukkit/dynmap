@@ -115,6 +115,8 @@ public abstract class MapType {
 
     public abstract List<DynmapChunk> getRequiredChunks(MapTile tile);
     
+    public abstract int getTileSize();
+
     public void buildClientConfiguration(JSONObject worldObject, DynmapWorld w) {
     }
 

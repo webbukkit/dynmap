@@ -136,7 +136,7 @@ public abstract class DynmapWorld {
         long mostRecentTimestamp = 0;
         int step = 1 << tile.zoom;
         MapStorageTile ztile = tile.getZoomOutTile();
-        int width = 128, height = 128;
+        int width = mts.tileSize, height = mts.tileSize;
         BufferedImage zIm = null;
         DynmapBufferedImage kzIm = null;
         boolean blank = true;
