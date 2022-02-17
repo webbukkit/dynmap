@@ -178,7 +178,7 @@ public abstract class DynmapWorld {
                         if ((iwidth == width) && (iheight == height)) {
                             im.getRGB(0, 0, width, height, argb, 0, width);    /* Read data */
                             im.flush();
-                            /* Do binlinear scale to 64x64 */
+                            /* Do binlinear scale to width/2 x height/2 */
                             int off = 0;
                             for(int y = 0; y < height; y += 2) {
                                 off = y*width;
