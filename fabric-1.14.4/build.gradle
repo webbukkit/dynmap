@@ -2,6 +2,14 @@ plugins {
 	id 'fabric-loom' version '0.10.65'
 }
 
+apply plugin: 'eclipse'
+
+eclipse {
+    project {
+        name = "Dynmap(Fabric-1.14.4)"
+    }
+}
+
 archivesBaseName = "Dynmap"
 version = parent.version
 group = parent.group

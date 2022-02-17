@@ -6,6 +6,12 @@ archivesBaseName = "Dynmap"
 version = parent.version
 group = parent.group
 
+eclipse {
+    project {
+        name = "Dynmap(Fabric-1.18)"
+    }
+}
+
 configurations {
     shadow
     implementation.extendsFrom(shadow)

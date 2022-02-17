@@ -1,12 +1,11 @@
-apply plugin: 'eclipse'
+
+description = 'dynmap'
 
 eclipse {
     project {
-        name = "Dynmap(Spigot/PaperMC)"
+        name = "Dynmap(Spigot)"
     }
 }
-
-description = 'dynmap'
 
 repositories {
     maven {
