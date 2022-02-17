@@ -126,7 +126,8 @@ public class HDMapManager {
         for(MapType map : w.maps) {
             if(map instanceof HDMap) {
                 HDMap hdmap = (HDMap)map;
-                if((hdmap.getPerspective() == tile.perspective) && (hdmap.getBoostZoom() == tile.boostzoom)) {
+                // If same perspective, at same scale (tile and boost), render together
+                if((hdmap.getPerspective() == tile.perspective) && (hdmap.getBoostZoom() == tile.boostzoom) && (hdmap.getTileScale() == tile.tilescale)) {
                     /* If limited to one map, and this isn't it, skip */
                     if((mapname != null) && (!hdmap.getName().equals(mapname)))
                         continue;
