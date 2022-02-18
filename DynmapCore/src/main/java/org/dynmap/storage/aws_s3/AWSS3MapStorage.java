@@ -1,13 +1,6 @@
 package org.dynmap.storage.aws_s3;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,19 +21,25 @@ import org.dynmap.storage.MapStorageTileSearchEndCB;
 import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Delete;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.GetBucketAclRequest;
+import software.amazon.awssdk.services.s3.model.GetBucketAclResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectAclRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectAclResponse;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class AWSS3MapStorage extends MapStorage {
     public class StorageTile extends MapStorageTile {
@@ -62,10 +61,11 @@ public class AWSS3MapStorage extends MapStorage {
         public boolean exists() {
         	boolean exists = false;
         	try {
-        		AccessControlList rslt = s3.getObjectAcl(bucketname, baseKey);
+        		GetObjectAclRequest req = GetObjectAclRequest.builder().bucket(bucketname).key(baseKey).build();
+        	    GetObjectAclResponse rslt = s3.getObjectAcl(req);
         		if (rslt != null)
         			exists = true;
-            } catch (AmazonServiceException x) {
+            } catch (AwsServiceException x) {
             	Log.severe("AWS Exception", x);
         	}
             return exists;
@@ -80,23 +80,20 @@ public class AWSS3MapStorage extends MapStorage {
         public TileRead read() {
         	AWSS3MapStorage.this.getWriteLock(baseKey);
         	try {
-    			S3Object obj = s3.getObject(bucketname, baseKey);
+        		GetObjectRequest req = GetObjectRequest.builder().bucket(bucketname).key(baseKey).build();
+    			ResponseBytes<GetObjectResponse> obj = s3.getObjectAsBytes(req);
     			if (obj != null) {
-    				ObjectMetadata md = obj.getObjectMetadata();
+    				GetObjectResponse rsp = obj.response();
                     TileRead tr = new TileRead();
-                    byte[] buf = new byte[(int) md.getContentLength()];
-                    InputStream fis = obj.getObjectContent();
-                    fis.read(buf, 0, buf.length);   // Read whole thing
+                    byte[] buf = obj.asByteArray();
                     tr.image = new BufferInputStream(buf);
-                    tr.format = ImageEncoding.fromContentType(md.getContentType());
-                    tr.hashCode = md.getContentMD5().hashCode();
-                    tr.lastModified = md.getLastModified().getTime();
+                    tr.format = ImageEncoding.fromContentType(rsp.contentType());
+                    tr.hashCode = rsp.eTag().hashCode();
+                    tr.lastModified = rsp.lastModified().toEpochMilli();
                     
                     return tr;
     			}
-            } catch (IOException x) {
-            	Log.severe("AWS Exception", x);
-            } catch (AmazonServiceException x) {
+            } catch (AwsServiceException x) {
             	Log.severe("AWS Exception", x);
         	} finally {
         		AWSS3MapStorage.this.releaseWriteLock(baseKey);
@@ -110,15 +107,15 @@ public class AWSS3MapStorage extends MapStorage {
         	AWSS3MapStorage.this.getWriteLock(baseKey);
         	try {
         		if (encImage == null) { // Delete?
-        			s3.deleteObject(bucketname, baseKey);
+        			DeleteObjectRequest req = DeleteObjectRequest.builder().bucket(bucketname).key(baseKey).build();
+        			s3.deleteObject(req);
         		}
         		else {
-        			ObjectMetadata md = new ObjectMetadata();
-        			md.setContentType(map.getImageFormat().getEncoding().getContentType());
-        			s3.putObject(bucketname, baseKey, new ByteArrayInputStream(encImage.buf), md);
+        			PutObjectRequest req = PutObjectRequest.builder().bucket(bucketname).key(baseKey).contentType(map.getImageFormat().getEncoding().getContentType()).build();
+        			s3.putObject(req, RequestBody.fromBytes(encImage.buf));
         		}
     			done = true;
-            } catch (AmazonServiceException x) {
+            } catch (AwsServiceException x) {
             	Log.severe("AWS Exception", x);
         	} finally {
         		AWSS3MapStorage.this.releaseWriteLock(baseKey);
@@ -200,7 +197,7 @@ public class AWSS3MapStorage extends MapStorage {
     private String bucketname;
     private String region;
     private String profile_id;
-    private AmazonS3 s3;
+    private S3Client s3;
 
     public AWSS3MapStorage() {
     }
@@ -217,24 +214,22 @@ public class AWSS3MapStorage extends MapStorage {
         // Get our settings
         bucketname = core.configuration.getString("storage/bucketname", "dynmap");
         region = core.configuration.getString("storage/region", "us-east-1");
-        profile_id = core.configuration.getString("storage/aws_profile_id", System.getenv("AWS_PROFILE"));
         try {
 	        // Now creste the access client for the S3 service
 	        Log.info("Using AWS S3 storage: web site at S3 bucket " + bucketname + " in region " + region + " using AWS_PROFILE_ID=" + profile_id);
-	        s3 = AmazonS3ClientBuilder.standard().withRegion(region)
-	                //.withCredentials(new ProfileCredentialsProvider("profile " + profile_id))
-	                .build();        
+	        s3 = S3Client.builder().region(Region.of(region)).build();        
 	        if (s3 == null) {
 	        	Log.severe("Error creating S3 access client");      
 	        	return false;
 	        }
 	        // Make sure bucket exists and get ACL
-	        AccessControlList bucketACL = s3.getBucketAcl(bucketname);
+	        GetBucketAclRequest baclr = GetBucketAclRequest.builder().bucket(bucketname).build();
+	        GetBucketAclResponse bucketACL = s3.getBucketAcl(baclr);
 	        if (bucketACL == null) {
 	        	Log.severe("Error: cannot find or access S3 bucket");
 	        	return false;
 	        }
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
         	return false;
         }
@@ -296,10 +291,11 @@ public class AWSS3MapStorage extends MapStorage {
     private void processEnumMapTiles(DynmapWorld world, MapType map, ImageVariant var, MapStorageTileEnumCB cb, MapStorageBaseTileEnumCB cbBase, MapStorageTileSearchEndCB cbEnd) {
     	String basekey = "tiles/" + world.getName() + "/" + map.getPrefix() + var.variantSuffix + "/";
     	try {
-    		ListObjectsV2Result result = s3.listObjectsV2(bucketname, basekey);
-    		List<S3ObjectSummary> objects = result.getObjectSummaries();
-    		for (S3ObjectSummary os : objects) { 
-    			String key = os.getKey();
+    		ListObjectsV2Request req = ListObjectsV2Request.builder().bucket(bucketname).prefix(basekey).build();
+    		ListObjectsV2Response result = s3.listObjectsV2(req);
+    		List<S3Object> objects = result.contents();
+    		for (S3Object os : objects) { 
+    			String key = os.key();
     			key = key.substring(basekey.length());	// Strip off base
     			// Parse the extension
                 String ext = null;
@@ -341,7 +337,7 @@ public class AWSS3MapStorage extends MapStorage {
                     }
                 }
     		}
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
         }
         if(cbEnd != null) {
@@ -388,25 +384,26 @@ public class AWSS3MapStorage extends MapStorage {
     private void processPurgeMapTiles(DynmapWorld world, MapType map, ImageVariant var) {
     	String basekey = "tiles/" + world.getName() + "/" + map.getPrefix() + var.variantSuffix + "/";
     	try {
-    		ListObjectsV2Result result = s3.listObjectsV2(bucketname, basekey);
-    		List<S3ObjectSummary> objects = result.getObjectSummaries();
-    		ArrayList<String> keys = new ArrayList<String>();
-    		for (S3ObjectSummary os : objects) { 
-    			String key = os.getKey();
-    			keys.add(key);
+    		ListObjectsV2Request req = ListObjectsV2Request.builder().bucket(bucketname).prefix(basekey).build();
+    		ListObjectsV2Response result = s3.listObjectsV2(req);
+    		List<S3Object> objects = result.contents();
+    		ArrayList<ObjectIdentifier> keys = new ArrayList<ObjectIdentifier>();
+    		for (S3Object os : objects) { 
+    			String key = os.key();
+    			keys.add(ObjectIdentifier.builder().key(key).build());
     			if (keys.size() >= 100) {
-    				DeleteObjectsRequest dor = new DeleteObjectsRequest(bucketname).withKeys(keys.toArray(new String[0]));
-    			    s3.deleteObjects(dor);
+    				DeleteObjectsRequest delreq = DeleteObjectsRequest.builder().bucket(bucketname).delete(Delete.builder().objects(keys).build()).build();
+    			    s3.deleteObjects(delreq);
     			    keys.clear();
     			}
     		}
     		// Any left?
 			if (keys.size() > 0) {
-				DeleteObjectsRequest dor = new DeleteObjectsRequest(bucketname).withKeys(keys.toArray(new String[0]));
-			    s3.deleteObjects(dor);
+				DeleteObjectsRequest delreq = DeleteObjectsRequest.builder().bucket(bucketname).delete(Delete.builder().objects(keys).build()).build();
+			    s3.deleteObjects(delreq);
 			    keys.clear();
 			}
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
         }
     }
@@ -437,15 +434,15 @@ public class AWSS3MapStorage extends MapStorage {
         getWriteLock(baseKey);
     	try {
     		if (encImage == null) { // Delete?
-    			s3.deleteObject(bucketname, baseKey);
+				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucket(bucketname).key(baseKey).build();
+			    s3.deleteObject(delreq);
     		}
     		else {
-    			ObjectMetadata md = new ObjectMetadata();
-    			md.setContentType("image/png");
-    			s3.putObject(bucketname, baseKey, new ByteArrayInputStream(encImage.buf), md);
+    			PutObjectRequest req = PutObjectRequest.builder().bucket(bucketname).key(baseKey).contentType("image/png").build();
+    			s3.putObject(req, RequestBody.fromBytes(encImage.buf));
     		}
 			done = true;
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
     	} finally {
 	        releaseWriteLock(baseKey);
@@ -464,10 +461,11 @@ public class AWSS3MapStorage extends MapStorage {
     	String baseKey = "faces/" + facetype.id + "/" + playername + ".png";
     	boolean exists = false;
     	try {
-    		AccessControlList rslt = s3.getObjectAcl(bucketname, baseKey);
+    		GetObjectAclRequest req = GetObjectAclRequest.builder().bucket(bucketname).key(baseKey).build();
+    	    GetObjectAclResponse rslt = s3.getObjectAcl(req);
     		if (rslt != null)
     			exists = true;
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
     	}
         return exists;
@@ -480,15 +478,15 @@ public class AWSS3MapStorage extends MapStorage {
         getWriteLock(baseKey);
     	try {
     		if (encImage == null) { // Delete?
-    			s3.deleteObject(bucketname, baseKey);
+				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucket(bucketname).key(baseKey).build();
+			    s3.deleteObject(delreq);
     		}
     		else {
-    			ObjectMetadata md = new ObjectMetadata();
-    			md.setContentType("image/png");
-    			s3.putObject(bucketname, baseKey, new ByteArrayInputStream(encImage.buf), md);
+       			PutObjectRequest req = PutObjectRequest.builder().bucket(bucketname).key(baseKey).contentType("image/png").build();
+    			s3.putObject(req, RequestBody.fromBytes(encImage.buf));
     		}
 			done = true;
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
     	} finally {
 	        releaseWriteLock(baseKey);
@@ -508,15 +506,15 @@ public class AWSS3MapStorage extends MapStorage {
         getWriteLock(baseKey);
     	try {
     		if (content == null) { // Delete?
-    			s3.deleteObject(bucketname, baseKey);
+				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucket(bucketname).key(baseKey).build();
+			    s3.deleteObject(delreq);
     		}
     		else {
-    			ObjectMetadata md = new ObjectMetadata();
-    			md.setContentType("application/json");
-    			s3.putObject(bucketname, baseKey, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), md);
+       			PutObjectRequest req = PutObjectRequest.builder().bucket(bucketname).key(baseKey).contentType("application/json").build();
+    			s3.putObject(req, RequestBody.fromBytes(content.getBytes(StandardCharsets.UTF_8)));
     		}
 			done = true;
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
     	} finally {
 	        releaseWriteLock(baseKey);
@@ -571,15 +569,15 @@ public class AWSS3MapStorage extends MapStorage {
         getWriteLock(baseKey);
     	try {
     		if (content == null) { // Delete?
-    			s3.deleteObject(bucketname, baseKey);
+				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucket(bucketname).key(baseKey).build();
+			    s3.deleteObject(delreq);
     		}
     		else {
-    			ObjectMetadata md = new ObjectMetadata();
-    			md.setContentType("text/plain");
-    			s3.putObject(bucketname, baseKey, new ByteArrayInputStream(content.buf), md);
+       			PutObjectRequest req = PutObjectRequest.builder().bucket(bucketname).key(baseKey).contentType("text/plain").build();
+    			s3.putObject(req, RequestBody.fromBytes(content.buf));
     		}
 			done = true;
-        } catch (AmazonServiceException x) {
+        } catch (AwsServiceException x) {
         	Log.severe("AWS Exception", x);
     	} finally {
 	        releaseWriteLock(baseKey);

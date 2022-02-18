@@ -45,8 +45,6 @@ storage:
   #type: aws_s3
   #bucketname: dynmap
   #region: us-east-1
-  #aws_access_key_id: <access-key>
-  #aws_secret_access_key: <secret-access-key>
   
   
 components:
