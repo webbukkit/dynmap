@@ -40,6 +40,14 @@ storage:
   #password: dynmap
   #prefix: ""
   #flags: "?allowReconnect=true&autoReconnect=true"
+  #
+  # AWS S3 backet web site
+  #type: aws_s3
+  #bucketname: dynmap
+  #region: us-east-1
+  #aws_access_key_id: <access-key>
+  #aws_secret_access_key: <secret-access-key>
+  
   
 components:
   - class: org.dynmap.ClientConfigurationComponent

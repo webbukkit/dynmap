@@ -47,6 +47,15 @@ public abstract class MapType {
                 return v[ix];
             return null;
         }
+        public static ImageEncoding fromContentType(String ct) {
+            ImageEncoding[] v = values();
+            for (int i = 0; i < v.length; i++) {
+                if (v[i].mimetype.equalsIgnoreCase(ct)) {
+                    return v[i];
+                }
+            }
+            return null;
+        }
         public static ImageEncoding fromExt(String x) {
             ImageEncoding[] v = values();
             for (int i = 0; i < v.length; i++) {
