@@ -1,6 +1,9 @@
 package org.dynmap;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -61,6 +64,7 @@ import org.dynmap.storage.mariadb.MariaDBMapStorage;
 import org.dynmap.storage.sqllte.SQLiteMapStorage;
 import org.dynmap.storage.postgresql.PostgreSQLMapStorage;
 import org.dynmap.utils.BlockStep;
+import org.dynmap.utils.BufferOutputStream;
 import org.dynmap.utils.ImageIOManager;
 import org.dynmap.web.BanIPFilter;
 import org.dynmap.web.CustomHeaderFilter;
@@ -490,7 +494,10 @@ public class DynmapCore implements DynmapCommonAPI {
             authmgr = new WebAuthManager(this);
             defaultStorage.setLoginEnabled(this);
         }
-
+        // If storage serves web files, extract and publsh them
+        if (defaultStorage.needsStaticWebFiles()) {
+        	updateStaticWebToStorage();
+        }
         /* Load control for leaf transparency (spout lighting bug workaround) */
         transparentLeaves = configuration.getBoolean("transparent-leaves", true);
         
@@ -2821,6 +2828,63 @@ public class DynmapCore implements DynmapCommonAPI {
         }
         return dir.delete();
     }
+    private void updateStaticWebToStorage() {
+        if(jarfile == null) return;
+        // If doing update and web path update is disabled, send warning
+        if (!this.updatewebpathfiles) {
+        	return;
+        }
+        Log.info("Publishing web files to storage");
+        /* Open JAR as ZIP */
+        ZipFile zf = null;
+        InputStream ins = null;
+        byte[] buf = new byte[2048];
+        String n = null;
+        try {
+            zf = new ZipFile(jarfile);
+            Enumeration<? extends ZipEntry> e = zf.entries();
+            while (e.hasMoreElements()) {
+                ZipEntry ze = e.nextElement();
+                n = ze.getName();
+                if (!n.startsWith("extracted/web/")) {
+                	continue;
+                }
+                n = n.substring("extracted/web/".length());
+                // If file is going to web path, redirect it to the configured web
+                if (ze.isDirectory()) {
+                    continue;
+                }
+                try {
+	                ins = zf.getInputStream(ze);
+	                BufferOutputStream buffer = new BufferOutputStream();
+                    int len;
+                    while ((len = ins.read(buf)) >= 0) {
+                    	buffer.write(buf,  0,  len);
+                    }
+	                defaultStorage.setStaticWebFile(n, buffer);
+            	} catch(IOException io) {
+                    Log.severe("Error updating file in storage - " + n, io);                		
+            	} finally {
+            		if (ins != null) {
+            			ins.close();
+            			ins = null;
+            		}
+            	}
+            }
+        } catch (IOException iox) {
+            Log.severe("Error extracting file - " + n);
+        } finally {
+            if (ins != null) {
+                try { ins.close(); } catch (IOException iox) {}
+                ins = null;
+            }
+            if (zf != null) {
+                try { zf.close(); } catch (IOException iox) {}
+                zf = null;
+            }
+        }
+    }
+
     private void updateExtractedFiles() {
         if(jarfile == null) return;
         File df = this.getDataFolder();
@@ -2922,13 +2986,13 @@ public class DynmapCore implements DynmapCommonAPI {
                 }
                 else {
                 	try {
-                    f.getParentFile().mkdirs();
-                    fos = new FileOutputStream(f);
-                    ins = zf.getInputStream(ze);
-                    int len;
-                    while ((len = ins.read(buf)) >= 0) {
-                        fos.write(buf,  0,  len);
-                    }
+	                    f.getParentFile().mkdirs();
+	                    fos = new FileOutputStream(f);
+	                    ins = zf.getInputStream(ze);
+	                    int len;
+	                    while ((len = ins.read(buf)) >= 0) {
+	                        fos.write(buf,  0,  len);
+	                    }
                 	} catch(IOException io) {
                         Log.severe("Error updating file - " + f.getPath(), io);                		
                 	} finally {

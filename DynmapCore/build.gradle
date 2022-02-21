@@ -17,17 +17,15 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.23'	// DON'T UPDATE - NEWER ONE TRIPS ON WINDOWS ENCODED FILES
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
     implementation 'org.postgresql:postgresql:42.2.18'
-    implementation 'software.amazon.awssdk:s3:2.17.132'
-    implementation 'software.amazon.awssdk:aws-core:2.17.132'
-    implementation 'software.amazon.awssdk:sdk-core:2.17.132'
-    implementation 'software.amazon.awssdk:utils:2.17.132'
-    implementation 'software.amazon.awssdk:http-client-spi:2.17.132'
-    implementation 'software.amazon.awssdk:profiles:2.17.132'
-    implementation 'software.amazon.awssdk:regions:2.17.132'
-    implementation 'software.amazon.awssdk:auth:2.17.132'
-    implementation 'software.amazon.awssdk:metrics-spi:2.17.132'
-    implementation 'software.amazon.awssdk:aws-xml-protocol:2.17.132'
-    implementation 'software.amazon.awssdk:protocol-core:2.17.132'
+    implementation 'io.github.linktosriram:s3-lite-core:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-api:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-http-client-url-connection:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-http-client-spi:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-http-client-apache:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-util:0.2.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.9'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 }
 
 processResources {
@@ -62,17 +60,13 @@ shadowJar {
         include(dependency('org.eclipse.jetty::'))
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
         include(dependency('org.postgresql:postgresql:'))
-    	include(dependency('software.amazon.awssdk:s3:'))      
-    	include(dependency('software.amazon.awssdk:aws-core:'))      
-    	include(dependency('software.amazon.awssdk:sdk-core:'))      
-    	include(dependency('software.amazon.awssdk:utils:'))
-    	include(dependency('software.amazon.awssdk:http-client-spi:'))      
-    	include(dependency('software.amazon.awssdk:profiles:'))      
-    	include(dependency('software.amazon.awssdk:regions:'))      
-    	include(dependency('software.amazon.awssdk:auth:'))      
-    	include(dependency('software.amazon.awssdk:metrics-spi:'))      
-    	include(dependency('software.amazon.awssdk:aws-xml-protocol:'))      
-    	include(dependency('software.amazon.awssdk:protocol-core:'))      
+        include(dependency('io.github.linktosriram:s3-lite-core:'))
+        include(dependency('io.github.linktosriram:s3-lite-api:'))
+        include(dependency('io.github.linktosriram:s3-lite-http-client-url-connection:'))
+        include(dependency('io.github.linktosriram:s3-lite-http-client-spi:'))
+	    include(dependency('io.github.linktosriram:s3-lite-http-client-apache:'))
+	    include(dependency('io.github.linktosriram:s3-lite-util:'))
+        include(dependency('org.apache.httpcomponents:httpclient:'))
         include(dependency(':DynmapCoreAPI'))
         exclude("META-INF/maven/**")
         exclude("META-INF/services/**")
@@ -83,7 +77,8 @@ shadowJar {
 	relocate('org.owasp.html', 'org.dynmap.org.owasp.html')
 	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
 	relocate('org.postgresql', 'org.dynmap.org.postgresql')
-	relocate('software.amazon.awssdk', 'org.dynmap.software.amazon.awssdk')        
+	relocate('io.github.linktosriram.s3lite', 'org.dynmap.s3lite')    
+	
     destinationDir = file '../target'
     classifier = ''
 }
