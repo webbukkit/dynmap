@@ -272,21 +272,28 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         byte[] outputBytes = sb.toString().getBytes(cs_utf8);
         MapManager.scheduleDelayedJob(new Runnable() {
         	public void run() {
-                File f = new File(baseStandaloneDir, "config.js");
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(f);
-                    fos.write(outputBytes);
-                } catch (IOException iox) {
-                    Log.severe("Exception while writing " + f.getPath(), iox);
-                } finally {
-                    if(fos != null) {
-                        try {
-                            fos.close();
-                        } catch (IOException x) {}
-                        fos = null;
-                    }
-                }        		
+        		if (core.getDefaultMapStorage().needsStaticWebFiles()) {
+        			BufferOutputStream os = new BufferOutputStream();
+        			os.write(outputBytes);
+        			core.getDefaultMapStorage().setStaticWebFile("standalone/config.js", os);
+        		}
+        		else {
+	                File f = new File(baseStandaloneDir, "config.js");
+	                FileOutputStream fos = null;
+	                try {
+	                    fos = new FileOutputStream(f);
+	                    fos.write(outputBytes);
+	                } catch (IOException iox) {
+	                    Log.severe("Exception while writing " + f.getPath(), iox);
+	                } finally {
+	                    if(fos != null) {
+	                        try {
+	                            fos.close();
+	                        } catch (IOException x) {}
+	                        fos = null;
+	                    }
+	                }        	
+        		}
         	}
         }, 0);
     }

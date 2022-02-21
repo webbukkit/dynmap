@@ -17,6 +17,15 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.23'	// DON'T UPDATE - NEWER ONE TRIPS ON WINDOWS ENCODED FILES
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20180219.1'
     implementation 'org.postgresql:postgresql:42.2.18'
+    implementation 'io.github.linktosriram:s3-lite-core:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-api:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-http-client-url-connection:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-http-client-spi:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-http-client-apache:0.2.0'
+    implementation 'io.github.linktosriram:s3-lite-util:0.2.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.9'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 }
 
 processResources {
@@ -51,6 +60,13 @@ shadowJar {
         include(dependency('org.eclipse.jetty::'))
         include(dependency('org.eclipse.jetty.orbit:javax.servlet:'))
         include(dependency('org.postgresql:postgresql:'))
+        include(dependency('io.github.linktosriram:s3-lite-core:'))
+        include(dependency('io.github.linktosriram:s3-lite-api:'))
+        include(dependency('io.github.linktosriram:s3-lite-http-client-url-connection:'))
+        include(dependency('io.github.linktosriram:s3-lite-http-client-spi:'))
+	    include(dependency('io.github.linktosriram:s3-lite-http-client-apache:'))
+	    include(dependency('io.github.linktosriram:s3-lite-util:'))
+        include(dependency('org.apache.httpcomponents:httpclient:'))
         include(dependency(':DynmapCoreAPI'))
         exclude("META-INF/maven/**")
         exclude("META-INF/services/**")
@@ -61,6 +77,8 @@ shadowJar {
 	relocate('org.owasp.html', 'org.dynmap.org.owasp.html')
 	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
 	relocate('org.postgresql', 'org.dynmap.org.postgresql')
+	relocate('io.github.linktosriram.s3lite', 'org.dynmap.s3lite')    
+	
     destinationDir = file '../target'
     classifier = ''
 }

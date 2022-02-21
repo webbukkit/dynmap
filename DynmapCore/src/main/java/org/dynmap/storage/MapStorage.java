@@ -1,5 +1,6 @@
 package org.dynmap.storage;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -457,6 +458,20 @@ public abstract class MapStorage {
     }
     public void setLoginEnabled(DynmapCore core) {
         
+    }
+    
+    // Test if storage needs static web files
+    public boolean needsStaticWebFiles() {
+    	return false;
+    }
+    /**
+     * Set static web file content
+     * @param fileid - file path
+     * @param buffer - content for file
+     * @return true if successful
+     */
+    public boolean setStaticWebFile(String fileid, BufferOutputStream buffer) {
+    	return false;
     }
     
     public void logSQLException(String opmsg, SQLException x) {
