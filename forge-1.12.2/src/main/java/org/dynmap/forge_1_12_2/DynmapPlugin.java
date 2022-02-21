@@ -188,7 +188,7 @@ public class DynmapPlugin
                 Log.warning("Exception caught reading unique ID for block " + i);
             }
             if (ui != null) {
-            	String bn = ui.getResourceDomain() + ":" + ui.getResourcePath();
+            	String bn = ui.getNamespace() + ":" + ui.getPath();
                 // Only do defined names, and not "air"
                 if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
                     DynmapBlockState basebs = null;
@@ -251,7 +251,7 @@ public class DynmapPlugin
         return Item.getItemById(id);
     }
     public static final String getBlockUnlocalizedName(Block b) {
-        String s = b.getUnlocalizedName();
+        String s = b.getTranslationKey();
         if (s.startsWith("tile.")) {
             s = s.substring(5);
         }
@@ -1057,7 +1057,7 @@ public class DynmapPlugin
         		int i = Block.getIdFromBlock(b);
                 ResourceLocation ui = Block.REGISTRY.getNameForObject(b);
                 if (ui != null) {
-                    map.put(i, ui.getResourceDomain() + ":" + ui.getResourcePath());
+                    map.put(i, ui.getNamespace() + ":" + ui.getPath());
                 }
             }
             return map;
@@ -1103,7 +1103,7 @@ public class DynmapPlugin
                     Log.warning("Exception caught reading unique ID for block " + i);
                 }
                 if (ui != null) {
-                    map.put(ui.getResourceDomain() + ":" + ui.getResourcePath(), i);
+                    map.put(ui.getNamespace() + ":" + ui.getPath(), i);
                 }
             }
             return map;
@@ -1124,7 +1124,7 @@ public class DynmapPlugin
                     Log.warning("Exception caught reading unique ID for item " + i);
                 }
                 if (ui != null) {
-                    map.put(ui.getResourceDomain() + ":" + ui.getResourcePath(), i - 256);
+                    map.put(ui.getNamespace() + ":" + ui.getPath(), i - 256);
                 }
             }
             return map;
@@ -1756,7 +1756,7 @@ public class DynmapPlugin
 			if(!onchunkpopulate) return;
 			World w = event.getWorld();
             if(!(w instanceof WorldServer)) return;
-            Chunk c = w.getChunkFromChunkCoords(event.getChunkX(), event.getChunkZ());
+            Chunk c = w.getChunk(event.getChunkX(), event.getChunkZ());
 			int ymin = 0, ymax = 0;
 			if(c != null) {
                 ForgeWorld fw = getWorld(event.getWorld(), false);

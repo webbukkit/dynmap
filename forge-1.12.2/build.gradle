@@ -1,9 +1,7 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
-        mavenCentral()        
-        maven {url = "https://oss.sonatype.org/content/repositories/snapshots/"}
+        mavenCentral()
+        maven { url = "https://repo.spongepowered.org/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -16,7 +14,7 @@ apply plugin: 'eclipse'
 
 eclipse {
     project {
-        name = "Dynmap(Forge-1.12.2)"
+        name = "Dynmap(Forge-Legacy-1.12.2)"
     }
 }
 
@@ -32,18 +30,14 @@ targetCompatibility = 1.8
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
 repositories {
-    maven {
-        name = 'forge'
-        url = 'http://files.minecraftforge.net/maven'
-    }
-    maven {
-    	name = 'sponge'
-    	url = 'https://repo.spongepowered.org/maven'
-    }    	
+    mavenCentral()                                          // Maven Central
+    maven { url = 'https://repo.spongepowered.org/maven' }  // SpongePowered
+    maven { url = 'https://jitpack.io/' }                   // JitPack
 }
+
 minecraft {
-    version = "1.12.2-14.23.4.2705"
-    mappings = "snapshot_20171031"
+    version = "1.12.2-14.23.5.2847"
+    mappings = "snapshot_20180814"
     runDir = 'run'
     replaceIn "Version.java"
     replace "@VERSION@", project.version + '-' + project.ext.buildNumber
