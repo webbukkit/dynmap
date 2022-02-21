@@ -1250,7 +1250,7 @@ public class IsoHDPerspective implements HDPerspective {
         DynmapBufferedImage dayim[] = new DynmapBufferedImage[numshaders];
         int[][] argb_buf = new int[numshaders][];
         int[][] day_argb_buf = new int[numshaders][];
-        boolean isjpg[] = new boolean[numshaders];
+        boolean isOpaque[] = new boolean[numshaders];
         int bgday[] = new int[numshaders];
         int bgnight[] = new int[numshaders];
         
@@ -1262,7 +1262,7 @@ public class IsoHDPerspective implements HDPerspective {
                 dayim[i] = DynmapBufferedImage.allocateBufferedImage(tileSize * sizescale, tileSize * sizescale);
                 day_argb_buf[i] = dayim[i].argb_buf;
             }
-            isjpg[i] = shaderstate[i].getMap().getImageFormat() != ImageFormat.FORMAT_PNG;
+            isOpaque[i] = !shaderstate[i].getMap().getImageFormat().getEncoding().hasAlpha;
             bgday[i] = shaderstate[i].getMap().getBackgroundARGBDay();
             bgnight[i] = shaderstate[i].getMap().getBackgroundARGBNight();
         }
@@ -1325,17 +1325,17 @@ public class IsoHDPerspective implements HDPerspective {
                     }
                     shaderstate[i].getRayColor(rslt, 0);
                     int c_argb = rslt.getARGB();
-                    if(c_argb != 0) rendered[i] = true;
-                    if(isjpg[i] && (c_argb == 0)) {
+                    if (c_argb != 0) rendered[i] = true;
+                    if (isOpaque[i] && (c_argb == 0)) {
                         argb_buf[i][(tileSize*sizescale-y-1)*tileSize*sizescale + x] = bgnight[i];
                     }
                     else {
                         argb_buf[i][(tileSize*sizescale-y-1)*tileSize*sizescale + x] = c_argb;
                     }
-                    if(day_argb_buf[i] != null) {
+                    if (day_argb_buf[i] != null) {
                         shaderstate[i].getRayColor(rslt, 1);
                         c_argb = rslt.getARGB();
-                        if(isjpg[i] && (c_argb == 0)) {
+                        if (isOpaque[i] && (c_argb == 0)) {
                             day_argb_buf[i][(tileSize*sizescale-y-1)*tileSize*sizescale + x] = bgday[i];
                         }
                         else {

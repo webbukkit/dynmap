@@ -30,13 +30,15 @@ public abstract class MapType {
     }
     
     public enum ImageEncoding {
-        PNG("png", "image/png"), JPG("jpg", "image/jpeg"), WEBP("webp", "image/webp");
+        PNG("png", "image/png", true), JPG("jpg", "image/jpeg", false), WEBP("webp", "image/webp", true);
         public final String ext;
         public final String mimetype;
+        public final boolean hasAlpha;
         
-        ImageEncoding(String ext, String mime) {
+        ImageEncoding(String ext, String mime, boolean has_alpha) {
             this.ext = ext;
             this.mimetype = mime;
+            this.hasAlpha = has_alpha;
         }
         public String getFileExt() { return ext; }
         public String getContentType() { return mimetype; }
