@@ -469,7 +469,7 @@ public class AWSS3MapStorage extends MapStorage {
     public boolean setPlayerFaceImage(String playername, FaceType facetype,
             BufferOutputStream encImage) {
     	boolean done = false;
-    	String baseKey = prefix + "faces/" + facetype.id + "/" + playername + ".png";
+    	String baseKey = prefix + "tiles/faces/" + facetype.id + "/" + playername + ".png";
     	try {
     		if (encImage == null) { // Delete?
 				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucketName(bucketname).key(baseKey).build();
@@ -494,7 +494,7 @@ public class AWSS3MapStorage extends MapStorage {
     
     @Override
     public boolean hasPlayerFaceImage(String playername, FaceType facetype) {
-    	String baseKey = prefix + "faces/" + facetype.id + "/" + playername + ".png";
+    	String baseKey = prefix + "tiles/faces/" + facetype.id + "/" + playername + ".png";
     	boolean exists = false;
     	try {
     		ListObjectsV2Request req = ListObjectsV2Request.builder().bucketName(bucketname).prefix(baseKey).maxKeys(1).build();
