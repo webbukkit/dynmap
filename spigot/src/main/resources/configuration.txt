@@ -43,9 +43,10 @@ storage:
   #
   # AWS S3 backet web site
   #type: aws_s3
-  #bucketname: dynmap
+  #bucketname: "dynmap-bucket-name"
   #region: us-east-1
-  
+  #aws_access_key_id: "<aws-access-key-id>"
+  #aws_secret_access_key: "<aws-secret-access-key>"  
   
 components:
   - class: org.dynmap.ClientConfigurationComponent

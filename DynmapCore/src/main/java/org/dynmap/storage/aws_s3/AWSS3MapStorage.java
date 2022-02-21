@@ -60,7 +60,7 @@ public class AWSS3MapStorage extends MapStorage {
                 baseURI = map.getPrefix() + var.variantSuffix + "/"+ (x >> 5) + "_" + (y >> 5) + "/" + x + "_" + y;
             }
             uri = baseURI + "." + map.getImageFormat().getFileExt();
-            baseKey = "tiles/" + world.getName() + "/" + uri;
+            baseKey = AWSS3MapStorage.this.prefix + "tiles/" + world.getName() + "/" + uri;
         }
         @Override
         public boolean exists() {
@@ -200,6 +200,7 @@ public class AWSS3MapStorage extends MapStorage {
     private String access_key_id;
     private String secret_access_key;
     private S3Client s3;
+    private String prefix;
 
     public AWSS3MapStorage() {
     }
@@ -222,6 +223,10 @@ public class AWSS3MapStorage extends MapStorage {
         region = core.configuration.getString("storage/region", "us-east-1");
         access_key_id = core.configuration.getString("storage/aws_access_key_id", System.getenv("AWS_ACCESS_KEY_ID"));
         secret_access_key = core.configuration.getString("storage/aws_secret_access_key", System.getenv("AWS_SECRET_ACCESS_KEY"));
+        prefix = core.configuration.getString("storage/prefix", "");
+        if ((prefix.length() > 0) && (prefix.charAt(prefix.length()-1) != '/')) {
+        	prefix += '/';
+        }
         // Now creste the access client for the S3 service
         Log.info("Using AWS S3 storage: web site at S3 bucket " + bucketname + " in region " + region);
         s3 = new DefaultS3ClientBuilder()
@@ -237,6 +242,7 @@ public class AWSS3MapStorage extends MapStorage {
         ListObjectsV2Request listreq = ListObjectsV2Request.builder()
         		.bucketName(bucketname)
         		.maxKeys(1)
+        		.prefix(prefix)
         		.build();
         try {
 	        ListObjectsV2Response rslt = s3.listObjectsV2(listreq);
@@ -245,13 +251,10 @@ public class AWSS3MapStorage extends MapStorage {
 	        	return false;
 	        }
 	        List<S3Object> content = rslt.getContents();
-	        Log.info("content=" + content.size());
         } catch (S3Exception s3x) {
-        	if (!s3x.getCode().equals("SignatureDoesNotMatch")) {	// S3 behavior when no object match....
-        		Log.severe("AWS Exception", s3x);
-        		Log.severe("req=" + listreq);
-        		return false;
-        	}
+    		Log.severe("AWS Exception", s3x);
+    		Log.severe("req=" + listreq);
+    		return false;
         }
         return true;
     }
@@ -310,7 +313,7 @@ public class AWSS3MapStorage extends MapStorage {
 
     private void processEnumMapTiles(DynmapWorld world, MapType map, ImageVariant var, MapStorageTileEnumCB cb, MapStorageBaseTileEnumCB cbBase, 
 		MapStorageTileSearchEndCB cbEnd) {
-    	String basekey = "tiles/" + world.getName() + "/" + map.getPrefix() + var.variantSuffix + "/";
+    	String basekey = prefix + "tiles/" + world.getName() + "/" + map.getPrefix() + var.variantSuffix + "/";
     	ListObjectsV2Request req = ListObjectsV2Request.builder().bucketName(bucketname).prefix(basekey).maxKeys(1000).build();
     	boolean done = false;
     	try {
@@ -416,7 +419,7 @@ public class AWSS3MapStorage extends MapStorage {
     }
 
     private void processPurgeMapTiles(DynmapWorld world, MapType map, ImageVariant var) {
-    	String basekey = "tiles/" + world.getName() + "/" + map.getPrefix() + var.variantSuffix + "/";
+    	String basekey = prefix + "tiles/" + world.getName() + "/" + map.getPrefix() + var.variantSuffix + "/";
 		ListObjectsV2Request req = ListObjectsV2Request.builder().bucketName(bucketname).prefix(basekey).delimiter("").maxKeys(1000).encodingType("url").requestPayer("requester").build();
     	try {
     		boolean done = false;
@@ -466,7 +469,7 @@ public class AWSS3MapStorage extends MapStorage {
     public boolean setPlayerFaceImage(String playername, FaceType facetype,
             BufferOutputStream encImage) {
     	boolean done = false;
-    	String baseKey = "faces/" + facetype.id + "/" + playername + ".png";
+    	String baseKey = prefix + "faces/" + facetype.id + "/" + playername + ".png";
     	try {
     		if (encImage == null) { // Delete?
 				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucketName(bucketname).key(baseKey).build();
@@ -491,7 +494,7 @@ public class AWSS3MapStorage extends MapStorage {
     
     @Override
     public boolean hasPlayerFaceImage(String playername, FaceType facetype) {
-    	String baseKey = "faces/" + facetype.id + "/" + playername + ".png";
+    	String baseKey = prefix + "faces/" + facetype.id + "/" + playername + ".png";
     	boolean exists = false;
     	try {
     		ListObjectsV2Request req = ListObjectsV2Request.builder().bucketName(bucketname).prefix(baseKey).maxKeys(1).build();
@@ -509,7 +512,7 @@ public class AWSS3MapStorage extends MapStorage {
     @Override
     public boolean setMarkerImage(String markerid, BufferOutputStream encImage) {
     	boolean done = false;
-    	String baseKey = "_markers_/" + markerid + ".png";
+    	String baseKey = prefix + "tiles/_markers_/" + markerid + ".png";
     	try {
     		if (encImage == null) { // Delete?
 				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucketName(bucketname).key(baseKey).build();
@@ -534,7 +537,7 @@ public class AWSS3MapStorage extends MapStorage {
     @Override
     public boolean setMarkerFile(String world, String content) {
     	boolean done = false;
-    	String baseKey = "_markers_/marker_" + world + ".json";
+    	String baseKey = prefix + "tiles/_markers_/marker_" + world + ".json";
     	try {
     		if (content == null) { // Delete?
 				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucketName(bucketname).key(baseKey).build();
@@ -628,6 +631,7 @@ public class AWSS3MapStorage extends MapStorage {
     public boolean setStaticWebFile(String fileid, BufferOutputStream content) {
     	
     	boolean done = false;
+    	String baseKey = prefix + fileid;
     	try {
     		byte[] cacheval = standalone_cache.get(fileid);
     		
@@ -635,7 +639,7 @@ public class AWSS3MapStorage extends MapStorage {
     			if ((cacheval != null) && (cacheval.length == 0)) {	// Delete cached?
     				return true;
     			}
-				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucketName(bucketname).key(fileid).build();
+				DeleteObjectRequest delreq = DeleteObjectRequest.builder().bucketName(bucketname).key(baseKey).build();
 			    s3.deleteObject(delreq);
 			    standalone_cache.put(fileid, new byte[0]);	// Mark in cache
     		}
@@ -668,7 +672,7 @@ public class AWSS3MapStorage extends MapStorage {
     			else if (fileid.endsWith(".js")) {
     				ct = "application/x-javascript";
     			}
-       			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(fileid).contentType(ct).build();
+       			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(baseKey).contentType(ct).build();
     			s3.putObject(req, RequestBody.fromBytes(content.buf, content.len));
         		standalone_cache.put(fileid, digest);
     		}
