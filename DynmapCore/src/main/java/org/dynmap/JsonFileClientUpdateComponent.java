@@ -484,8 +484,10 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     					jsonMsgs = (JSONArray) parser.parse(inputFileReader);
     				} catch (IOException ex) {
     					Log.severe("Exception while reading JSON-file.", ex);
+    					storage.setStandaloneFile("dynmap_webchat.json", null);	// Delete it
     				} catch (ParseException ex) {
     					Log.severe("Exception while parsing JSON-file.", ex);
+    					storage.setStandaloneFile("dynmap_webchat.json", null);	// Delete it
     				} finally {
     					if(inputFileReader != null) {
     						try {
