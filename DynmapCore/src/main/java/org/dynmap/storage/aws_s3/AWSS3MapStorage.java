@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dynmap.DynmapCore;
@@ -98,9 +99,15 @@ public class AWSS3MapStorage extends MapStorage {
                     byte[] buf = obj.getBytes();
                     tr.image = new BufferInputStream(buf);
                     tr.format = ImageEncoding.fromContentType(rsp.getContentType());
-                    tr.hashCode = rsp.geteTag().hashCode();
-                    tr.lastModified = rsp.getLastModified().toEpochMilli();
-                    
+                    Map<String, String> meta = rsp.getMetadata();
+                    String v = meta.get("x-dynmap-hash");
+                    if (v != null) {
+                    	tr.hashCode = Long.parseLong(v, 16);
+                    }
+                    v = meta.get("x-dynmap-ts");
+                    if (v != null) {
+                    	tr.lastModified = Long.parseLong(v);
+                    }
                     return tr;
     			}
         	} catch (NoSuchKeyException nskx) {
@@ -123,7 +130,8 @@ public class AWSS3MapStorage extends MapStorage {
         			s3.deleteObject(req);
         		}
         		else {
-        			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(baseKey).contentType(map.getImageFormat().getEncoding().getContentType()).build();
+        			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(baseKey).contentType(map.getImageFormat().getEncoding().getContentType())
+        					.addMetadata("x-dynmap-hash", Long.toHexString(hash)).addMetadata("x-dynmap-ts", Long.toString(timestamp)).build();
         			s3.putObject(req, RequestBody.fromBytes(encImage.buf, encImage.len));
         		}
     			done = true;
@@ -163,7 +171,7 @@ public class AWSS3MapStorage extends MapStorage {
         
         @Override
         public String getURI() {
-            return baseKey;
+            return uri;
         }
         
         @Override
@@ -605,7 +613,7 @@ public class AWSS3MapStorage extends MapStorage {
      * @return URI
      */
     public String getConfigurationJSONURI(boolean login_enabled) {
-        return "standalone/dynmap_config.json";
+        return "standalone/dynmap_config.json?_={timestamp}";
     }
     /**
      * URI to use for loading update JSON files (for external web server only)
@@ -613,7 +621,7 @@ public class AWSS3MapStorage extends MapStorage {
      * @return URI
      */
     public String getUpdateJSONURI(boolean login_enabled) {
-        return "standalone/dynmap_{world}.json";
+        return "standalone/dynmap_{world}.json?_={timestamp}";
     }
 
     @Override
