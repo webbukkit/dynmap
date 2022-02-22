@@ -297,6 +297,9 @@ public class BiomeMap {
     public boolean isDefault() {
         return isDef;
     }
+    public String getId() {
+        return id;
+    }
     public String toString() {
     	return String.format("%s(%s)", id, resourcelocation);
     }
