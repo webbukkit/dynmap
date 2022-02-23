@@ -391,6 +391,7 @@ grayplayerswhenhidden: true
 #    X-Custom-Header-Of-Mine: "MyHeaderValue"
 
 # Trusted proxies for web server - which proxy addresses are trusted to supply valid X-Forwarded-For fields
+#   This now supports both IP address, and subnet ranges (e.g. 192.168.1.0/24 or 202.24.0.0/14 )
 trusted-proxies:
   - "127.0.0.1"
   - "0:0:0:0:0:0:0:1"

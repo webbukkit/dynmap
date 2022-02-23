@@ -19,12 +19,15 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.dynmap.utils.IpAddressMatcher;;
 
 @SuppressWarnings("serial")
 public class SendMessageServlet extends HttpServlet {
@@ -50,8 +53,16 @@ public class SendMessageServlet extends HttpServlet {
     public boolean chat_perms = false;
     public int lengthlimit = 256;
     public DynmapCore core;
-    public HashSet<String> proxyaddress = new HashSet<String>();
+    public ArrayList<IpAddressMatcher> proxyaddress = new ArrayList<IpAddressMatcher>();
 
+    private boolean trustedProxy(String ip) {
+    	for (IpAddressMatcher m : proxyaddress) {
+    		if (m.matches(ip)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         byte[] bytes;
@@ -92,19 +103,13 @@ public class SendMessageServlet extends HttpServlet {
                 if ((message.name == null) || message.name.equals("")) {
                     /* If from trusted proxy, check for client */
                     String rmtaddr = request.getRemoteAddr(); 
-                    if (this.proxyaddress.contains(rmtaddr)) {
+                    if (this.trustedProxy(rmtaddr)) {	// If remote address is valid trusted proxy
                         /* If proxied client address, get original IP */
                         if (request.getHeader("X-Forwarded-For") != null) {
-                            /* If trusted proxies were chained, we get next client address till non-trusted proxy met */
-                            String[] proxyAddrs = request.getHeader("X-Forwarded-For").split(", ");
-                            for(int i = proxyAddrs.length - 1; i >= 0; i--){
-                                if (!this.proxyaddress.contains(proxyAddrs[i])) {
-                                    /* use remaining addresses as name (maybe we can use the last or the first non-trusted one?) */
-                                    message.name = proxyAddrs[0]; // 0 .. i
-                                    for(int j = 1; j <= i; j++) message.name += ", " + proxyAddrs[j];
-                                    break;
-                                }
-                            }
+                        	// Split list, since addresses after first are proxy chain
+                            String[] proxyAddrs = request.getHeader("X-Forwarded-For").split(",");
+                            // We only want first - any others are proxies that our local proxy was willing to pass to us
+                            message.name = proxyAddrs[0].trim();
                         } else {
                             message.name = String.valueOf(o.get("name"));
                         }
