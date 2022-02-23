@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $lastchat < time()) {
         }
     }
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $data->ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        $proxy = array_map('trim', explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+        $data->ip = $proxy[0];
     }
     if (is_readable('dynmap_webchat.json')) {
         $old_messages = json_decode(file_get_contents('dynmap_webchat.json'), true);
