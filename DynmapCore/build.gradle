@@ -78,6 +78,7 @@ shadowJar {
 	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
 	relocate('org.postgresql', 'org.dynmap.org.postgresql')
 	relocate('io.github.linktosriram.s3lite', 'org.dynmap.s3lite')    
+	relocate('org.apache', 'org.dynmap.apache')
 	
     destinationDir = file '../target'
     classifier = ''
