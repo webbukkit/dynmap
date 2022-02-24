@@ -21,11 +21,7 @@ dependencies {
     implementation 'io.github.linktosriram:s3-lite-api:0.2.0'
     implementation 'io.github.linktosriram:s3-lite-http-client-url-connection:0.2.0'
     implementation 'io.github.linktosriram:s3-lite-http-client-spi:0.2.0'
-    implementation 'io.github.linktosriram:s3-lite-http-client-apache:0.2.0'
     implementation 'io.github.linktosriram:s3-lite-util:0.2.0'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.9'
-    implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 }
 
 processResources {
@@ -64,9 +60,7 @@ shadowJar {
         include(dependency('io.github.linktosriram:s3-lite-api:'))
         include(dependency('io.github.linktosriram:s3-lite-http-client-url-connection:'))
         include(dependency('io.github.linktosriram:s3-lite-http-client-spi:'))
-	    include(dependency('io.github.linktosriram:s3-lite-http-client-apache:'))
 	    include(dependency('io.github.linktosriram:s3-lite-util:'))
-        include(dependency('org.apache.httpcomponents:httpclient:'))
         include(dependency(':DynmapCoreAPI'))
         exclude("META-INF/maven/**")
         exclude("META-INF/services/**")
@@ -78,7 +72,6 @@ shadowJar {
 	relocate('javax.servlet', 'org.dynmap.javax.servlet' )
 	relocate('org.postgresql', 'org.dynmap.org.postgresql')
 	relocate('io.github.linktosriram.s3lite', 'org.dynmap.s3lite')    
-	relocate('org.apache', 'org.dynmap.apache')
 	
     destinationDir = file '../target'
     classifier = ''
