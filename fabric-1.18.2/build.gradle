@@ -8,7 +8,7 @@ group = parent.group
 
 eclipse {
     project {
-        name = "Dynmap(Fabric-1.18)"
+        name = "Dynmap(Fabric-1.18.2)"
     }
 }
 
