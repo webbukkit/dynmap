@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18.mixin;
+package org.dynmap.fabric_1_18_2.mixin;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,8 +13,8 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
-import org.dynmap.fabric_1_18.event.BlockEvents;
-import org.dynmap.fabric_1_18.event.ServerChatEvents;
+import org.dynmap.fabric_1_18_2.event.BlockEvents;
+import org.dynmap.fabric_1_18_2.event.ServerChatEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

@@ -1,6 +1,6 @@
-package org.dynmap.fabric_1_18.command;
+package org.dynmap.fabric_1_18_2.command;
 
-import org.dynmap.fabric_1_18.DynmapPlugin;
+import org.dynmap.fabric_1_18_2.DynmapPlugin;
 
 public class DynmapCommand extends DynmapCommandExecutor {
     public DynmapCommand(DynmapPlugin p) {

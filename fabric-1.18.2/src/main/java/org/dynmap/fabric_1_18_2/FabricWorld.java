@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18;
+package org.dynmap.fabric_1_18_2;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;

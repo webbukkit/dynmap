@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18;
+package org.dynmap.fabric_1_18_2;
 
 import org.dynmap.common.chunk.GenericBitStorage;
 import org.dynmap.common.chunk.GenericNBTCompound;

@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18;
+package org.dynmap.fabric_1_18_2;
 
 import net.minecraft.nbt.*;
 import net.minecraft.server.world.ServerChunkManager;

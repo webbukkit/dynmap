@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18;
+package org.dynmap.fabric_1_18_2;
 
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.loader.api.FabricLoader;
@@ -28,8 +28,8 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
-import org.dynmap.fabric_1_18.event.BlockEvents;
-import org.dynmap.fabric_1_18.event.ServerChatEvents;
+import org.dynmap.fabric_1_18_2.event.BlockEvents;
+import org.dynmap.fabric_1_18_2.event.ServerChatEvents;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.VisibilityLimit;
 

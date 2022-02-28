@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18;
+package org.dynmap.fabric_1_18_2;
 
 import com.google.common.collect.Iterables;
 import com.google.gson.Gson;

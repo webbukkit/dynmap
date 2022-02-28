@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_18;
+package org.dynmap.fabric_1_18_2;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
