@@ -342,7 +342,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     }
     
     private boolean stop = false;
-    private Set<String> dirty_worlds = new HashSet<String>();
+    private ConcurrentHashMap<String, String> dirty_worlds = new ConcurrentHashMap<String, String>();
     private boolean dirty_markers = false;
     
     private class DoFileWrites implements Runnable {
@@ -350,18 +350,19 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             if(stop)
                 return;
             lock.readLock().lock();
+            Set<String> dirty = new HashSet<String>(dirty_worlds.keySet());
+            dirty_worlds.clear();            
             try {
                 /* Write markers first - drives JSON updates too */
-                if(dirty_markers) {
+                if (dirty_markers) {
                     doSaveMarkers();
                     dirty_markers = false;
                 }
                 /* Process any dirty worlds */
-                if(!dirty_worlds.isEmpty()) {
-                    for(String world : dirty_worlds) {
+                if (!dirty.isEmpty()) {
+                    for(String world : dirty) {
                         writeMarkersFile(world);
                     }
-                    dirty_worlds.clear();
                 }
             } finally {
                 lock.readLock().unlock();
@@ -872,7 +873,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     private void freshenMarkerFiles() {
         if(MapManager.mapman != null) {
             for(DynmapWorld w : MapManager.mapman.worlds) {
-                dirty_worlds.add(w.getName());
+                dirty_worlds.put(w.getName(),"");
             }
         }
     }
@@ -931,7 +932,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     static void markerUpdated(MarkerImpl marker, MarkerUpdate update) {
         /* Freshen marker file for the world for this marker */
         if(api != null)
-            api.dirty_worlds.add(marker.getNormalizedWorld());
+            api.dirty_worlds.put(marker.getNormalizedWorld(),"");
         /* Enqueue client update */
         if(MapManager.mapman != null)
             MapManager.mapman.pushUpdate(marker.getNormalizedWorld(), new MarkerUpdated(marker, update == MarkerUpdate.DELETED));
@@ -944,7 +945,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     static void areaMarkerUpdated(AreaMarkerImpl marker, MarkerUpdate update) {
         /* Freshen marker file for the world for this marker */
         if(api != null)
-            api.dirty_worlds.add(marker.getNormalizedWorld());
+            api.dirty_worlds.put(marker.getNormalizedWorld(),"");
         /* Enqueue client update */
         if(MapManager.mapman != null)
             MapManager.mapman.pushUpdate(marker.getNormalizedWorld(), new AreaMarkerUpdated(marker, update == MarkerUpdate.DELETED));
@@ -957,7 +958,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     static void polyLineMarkerUpdated(PolyLineMarkerImpl marker, MarkerUpdate update) {
         /* Freshen marker file for the world for this marker */
         if(api != null)
-            api.dirty_worlds.add(marker.getNormalizedWorld());
+            api.dirty_worlds.put(marker.getNormalizedWorld(),"");
         /* Enqueue client update */
         if(MapManager.mapman != null)
             MapManager.mapman.pushUpdate(marker.getNormalizedWorld(), new PolyLineMarkerUpdated(marker, update == MarkerUpdate.DELETED));
@@ -970,7 +971,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     static void circleMarkerUpdated(CircleMarkerImpl marker, MarkerUpdate update) {
         /* Freshen marker file for the world for this marker */
         if(api != null)
-            api.dirty_worlds.add(marker.getNormalizedWorld());
+            api.dirty_worlds.put(marker.getNormalizedWorld(),"");
         /* Enqueue client update */
         if(MapManager.mapman != null)
             MapManager.mapman.pushUpdate(marker.getNormalizedWorld(), new CircleMarkerUpdated(marker, update == MarkerUpdate.DELETED));
@@ -3458,7 +3459,7 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
     @Override
     public void triggered(DynmapWorld t) {
         /* Update markers for now-active world */
-        dirty_worlds.add(t.getName());
+        dirty_worlds.put(t.getName(),"");
     }
 
     /* Remove icon */
