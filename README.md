@@ -32,7 +32,7 @@ Or (on Windows):
     cd oldgradle
     gradlew.bat setup build
 
-If you are familiar with gradle you can save time by specifing which build you want (or comment out unwanted builds from settings.gradle):
+If you are familiar with gradle you can save time by specifying which build you want (or comment out unwanted builds from settings.gradle):
 
     ./gradlew :fabric-1.18:build
 
