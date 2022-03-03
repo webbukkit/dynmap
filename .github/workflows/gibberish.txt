@@ -36,6 +36,8 @@ ko
 patreon
 README
 Gradle
+gradlew
+gradle
 Curseforge
 SpigotMC
 PaperMC
