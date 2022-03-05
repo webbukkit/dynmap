@@ -947,6 +947,7 @@ public class DynmapCore implements DynmapCommonAPI {
         }
         webhostname = configuration.getString("webserver-bindaddress", ip);
         webport = configuration.getInteger("webserver-port", 8123);
+        webroot = configuration.getString("webserver-root", "/");
 
         int maxconnections = configuration.getInteger("max-sessions", 30);
         if(maxconnections < 2) maxconnections = 2;
@@ -1023,7 +1024,7 @@ public class DynmapCore implements DynmapCommonAPI {
 
         FilterHandler fh = new FilterHandler(router, filters);
         ContextHandler contextHandler = new ContextHandler();
-        contextHandler.setContextPath("/");
+        contextHandler.setContextPath(webroot);
         contextHandler.setHandler(fh);
         HandlerList hlist = new HandlerList();
         hlist.setHandlers(new org.eclipse.jetty.server.Handler[] { new SessionHandler(), contextHandler });
