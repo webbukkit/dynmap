@@ -32,7 +32,10 @@ Or (on Windows):
     cd oldgradle
     gradlew.bat setup build
 
-If you are familiar with gradle you can save time by specifying which build you want (or comment out unwanted builds from settings.gradle):
+Those familiar with gradle can save time by specifying a build (or commenting in settings.gradle) BUT this is not suitable for uploading DEV code changes.
+
+NOTE: PR code submissions MUST be built and TESTED for ALL platforms (including oldgradle), or be rejected and negatively influence future approvals. 
+For more check [contributing rules](#contributing-to-dynmaps-code).
 
     ./gradlew :fabric-1.18:build
 
