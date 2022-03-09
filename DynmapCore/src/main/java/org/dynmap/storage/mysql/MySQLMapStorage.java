@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -370,6 +371,8 @@ public class MySQLMapStorage extends MapStorage {
         Connection c = null;
         try {
             c = getConnection();    // Get connection (create DB if needed)
+        	DatabaseMetaData md = c.getMetaData();
+        	Log.info("Connected to " + md.getDatabaseProductName() + " v" + md.getDatabaseMajorVersion() + "." + md.getDatabaseMinorVersion());
             Statement stmt = c.createStatement();
             ResultSet rs = stmt.executeQuery( "SELECT level FROM " + tableSchemaVersion + ";");
             if (rs.next()) {
@@ -502,7 +505,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=2 WHERE level = 1;");
                 version = 2;
             } catch (SQLException x) {
-            	logSQLException("Error updating tables to version=1", x);
+            	logSQLException("Error updating tables to version=2", x);
                 err = true;
                 return false;
             } finally {
@@ -520,7 +523,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=3 WHERE level = 2;");
                 version = 3;
             } catch (SQLException x) {
-            	logSQLException("Error updating tables to version=2", x);
+            	logSQLException("Error updating tables to version=3", x);
                 err = true;
                 return false;
             } finally {
@@ -538,7 +541,7 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=4 WHERE level = 3;");
                 version = 4;
             } catch (SQLException x) {
-            	logSQLException("Error updating tables to version=3", x);
+            	logSQLException("Error updating tables to version=4", x);
                 err = true;
                 return false;
             } finally {
@@ -550,6 +553,7 @@ public class MySQLMapStorage extends MapStorage {
             try {
             	Log.info("Updating database schema from version = " + version);
                 c = getConnection();
+            	DatabaseMetaData md = c.getMetaData();
                 // See if we are recovering from bug where version was still set to 4 when NewImage was added initialli
                 PreparedStatement stmt = c.prepareStatement("SHOW COLUMNS FROM " + tableTiles + " WHERE Field = 'NewImage';");
                 ResultSet rs = stmt.executeQuery();
@@ -560,12 +564,18 @@ public class MySQLMapStorage extends MapStorage {
                 rs.close();
                 stmt.close();
                 if (!inplace) {
-                	doUpdate(c, "ALTER TABLE " + tableTiles + " ADD COLUMN NewImage MEDIUMBLOB, ALGORITHM=INPLACE, LOCK=NONE");
+                	try {
+                    	doUpdate(c, "ALTER TABLE " + tableTiles + " ADD COLUMN NewImage MEDIUMBLOB, ALGORITHM=INPLACE, LOCK=NONE");
+                	} catch (SQLException x) {
+                    	Log.info("Updating tiles table using legacy method - this might take a while and may need a lot of database space...");
+                    	doUpdate(c, "ALTER TABLE " + tableTiles + " ADD COLUMN NewImage MEDIUMBLOB");                		
+                    	Log.info("Legacy tile update completed");
+                	}
                 }
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=5 WHERE level = 4;");
                 version = 5;
             } catch (SQLException x) {
-            	logSQLException("Error updating tables to version=3", x);
+            	logSQLException("Error updating tables to version=5", x);
                 err = true;
                 return false;
             } finally {
