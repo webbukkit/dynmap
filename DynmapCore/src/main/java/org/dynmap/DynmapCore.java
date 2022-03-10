@@ -1,9 +1,6 @@
 package org.dynmap;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -60,6 +57,7 @@ import org.dynmap.storage.MapStorage;
 import org.dynmap.storage.aws_s3.AWSS3MapStorage;
 import org.dynmap.storage.filetree.FileTreeMapStorage;
 import org.dynmap.storage.mysql.MySQLMapStorage;
+import org.dynmap.storage.mssql.MicrosoftSQLMapStorage;
 import org.dynmap.storage.mariadb.MariaDBMapStorage;
 import org.dynmap.storage.sqllte.SQLiteMapStorage;
 import org.dynmap.storage.postgresql.PostgreSQLMapStorage;
@@ -446,6 +444,9 @@ public class DynmapCore implements DynmapCommonAPI {
         }
         else if (storetype.equals("aws_s3")) {
             defaultStorage = new AWSS3MapStorage();
+        }
+        else if (storetype.equals("microsoftsql")) {
+            defaultStorage = new MicrosoftSQLMapStorage();
         }
         else {
             Log.severe("Invalid storage type for map data: " + storetype);
