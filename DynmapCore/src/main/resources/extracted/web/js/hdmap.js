@@ -48,7 +48,7 @@ var HDMapType = DynmapTileLayer.extend({
 		// amount == 0 -> ''
 		// amount == 1 -> 'z_'
 		// amount == 2 -> 'zz_'
-		return 'zzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount) + (amount === 0 ? '' : '_');
+		return 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount) + (amount === 0 ? '' : '_');
 	}
 });
 

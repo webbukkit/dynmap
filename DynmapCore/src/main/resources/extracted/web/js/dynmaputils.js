@@ -237,7 +237,7 @@ var DynmapTileLayer = L.TileLayer.extend({
 
 	// Some helper functions.
 	zoomprefix: function(amount) {
-		return 'zzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount);
+		return 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount);
 	},
 
 	getTileInfo: function(coords) {
