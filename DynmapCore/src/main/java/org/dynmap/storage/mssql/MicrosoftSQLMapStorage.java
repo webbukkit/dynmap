@@ -293,7 +293,7 @@ public class MicrosoftSQLMapStorage extends MapStorage {
         userid = core.configuration.getString("storage/userid", "dynmap");
         password = core.configuration.getString("storage/password", "dynmap");
         prefix = core.configuration.getString("storage/prefix", "");
-        flags = core.configuration.getString("storage/flags", ";integratedSecurity=true");
+        flags = core.configuration.getString("storage/flags", ";trustServerCertificate=true");
         tableTiles = prefix + "Tiles";
         tableMaps = prefix + "Maps";
         tableFaces = prefix + "Faces";
