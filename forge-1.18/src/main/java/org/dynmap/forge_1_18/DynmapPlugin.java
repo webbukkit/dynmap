@@ -1797,6 +1797,7 @@ public class DynmapPlugin
         	if(!onblockchange) return;
         	BlockUpdateRec r = new BlockUpdateRec();
         	r.w = event.getWorld();
+            if(!(r.w instanceof ServerLevel)) return;  // band-aid to prevent errors in unsupported 'running in client' scenario
 			ForgeWorld fw = getWorld((ServerLevel)r.w, false);
 			if (fw == null) return;
 			r.wid = fw.getName();
