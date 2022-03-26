@@ -76,7 +76,7 @@ if (count($fparts) == 3) { // zoom_x_y
 
 $db = new SQLite3($dbfile, SQLITE3_OPEN_READONLY);
 
-$stmt = $db->prepare('SELECT Tiles.Image,Tiles.Format,Tiles.HashCode,Tiles.LastUpdate,Tiles.ImageLen FROM Maps JOIN Tiles WHERE Maps.WorldID=:wid AND Maps.MapID=:mapid AND Maps.Variant=:var AND Maps.ID=Tiles.MapID AND Tiles.x=:x AND Tiles.y=:y and Tiles.zoom=:zoom');
+$stmt = $db->prepare('SELECT Tiles.Image,Tiles.Format,Tiles.HashCode,Tiles.LastUpdate,Tiles.ImageLen FROM Maps JOIN Tiles ON Maps.ID=Tiles.MapID WHERE Maps.WorldID=:wid AND Maps.MapID=:mapid AND Maps.Variant=:var AND Tiles.x=:x AND Tiles.y=:y and Tiles.zoom=:zoom');
 $stmt->bindValue(':wid', $world, SQLITE3_TEXT);
 $stmt->bindValue(':mapid', $prefix, SQLITE3_TEXT);
 $stmt->bindValue(':var', $variant, SQLITE3_TEXT);
