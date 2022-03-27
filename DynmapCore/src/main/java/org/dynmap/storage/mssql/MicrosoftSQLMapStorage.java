@@ -483,9 +483,10 @@ public class MicrosoftSQLMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image varbinary(MAX))");
                 doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content varchar(MAX))");
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content varchar(MAX), PRIMARY KEY (FileName, ServerID))");
+                doUpdate(c, "CREATE INDEX " + tableMaps + "_idx ON " + tableMaps + "(WorldID, MapID, Variant, ServerID)");  
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (5)");
-                version = 5;	// Initial - we have all the following updates already
+                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (6)");
+                version = 6;	// Initial - we have all the following updates already
             } catch (SQLException x) {
             	logSQLException("Error creating tables", x);
                 err = true;
@@ -494,6 +495,23 @@ public class MicrosoftSQLMapStorage extends MapStorage {
                 releaseConnection(c, err);
                 c = null;
             }
+        }
+        // Skip 1-5 - goofed up and released with 5 as initial version
+        if (version == 5) {
+            try {
+            	Log.info("Updating database schema from version = " + version);
+                c = getConnection();
+                doUpdate(c, "CREATE INDEX " + tableMaps + "_idx ON " + tableMaps + "(WorldID, MapID, Variant, ServerID)");  
+                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=6 WHERE level = 5;");
+                version = 2;
+            } catch (SQLException x) {
+            	logSQLException("Error updating tables to version=6", x);
+                err = true;
+                return false;
+            } finally {
+                releaseConnection(c, err);
+                c = null;
+            }        	
         }
     	Log.info("Schema version = " + version);
         // Load maps table - cache results

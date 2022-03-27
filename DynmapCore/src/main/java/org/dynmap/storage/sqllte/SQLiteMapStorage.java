@@ -401,9 +401,11 @@ public class SQLiteMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE Faces (PlayerName STRING NOT NULL, TypeID INT NOT NULL, Image BLOB, ImageLen INT, PRIMARY KEY(PlayerName, TypeID))");
                 doUpdate(c, "CREATE TABLE MarkerIcons (IconName STRING PRIMARY KEY NOT NULL, Image BLOB, ImageLen INT)");
                 doUpdate(c, "CREATE TABLE MarkerFiles (FileName STRING PRIMARY KEY NOT NULL, Content CLOB)");
+                // Add index, since SQLite execution planner is stupid and scans Tiles table instead of using short Maps table...
+                doUpdate(c, "CREATE INDEX MapIndex ON Maps(WorldID, MapID, Variant)");
                 doUpdate(c, "CREATE TABLE SchemaVersion (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO SchemaVersion (level) VALUES (2)");
-                version = 2;	// Initializes to current schema
+                doUpdate(c, "INSERT INTO SchemaVersion (level) VALUES (3)");
+                version = 3;	// Initializes to current schema
             } catch (SQLException x) {
             	logSQLException("Error creating tables", x);
                 err = true;
@@ -424,6 +426,23 @@ public class SQLiteMapStorage extends MapStorage {
                 version = 2;
             } catch (SQLException x) {
             	logSQLException("Error updating tables to version=2", x);
+                err = true;
+                return false;
+            } finally {
+                releaseConnection(c, err);
+                c = null;
+            }
+        }
+        if (version == 2) {
+            try {
+            	Log.info("Updating database schema from version = " + version);
+                c = getConnection();
+                // Add index, since SQLite execution planner is stupid and scans Tiles table instead of using short Maps table...
+                doUpdate(c, "CREATE INDEX MapIndex ON Maps(WorldID, MapID, Variant)");
+                doUpdate(c, "UPDATE SchemaVersion SET level=3");
+                version = 2;
+            } catch (SQLException x) {
+            	logSQLException("Error updating tables to version=3", x);
                 err = true;
                 return false;
             } finally {

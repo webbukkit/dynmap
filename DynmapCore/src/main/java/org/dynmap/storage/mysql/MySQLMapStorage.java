@@ -484,9 +484,10 @@ public class MySQLMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image MEDIUMBLOB)");
                 doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content MEDIUMTEXT)");
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content MEDIUMTEXT, PRIMARY KEY (FileName, ServerID))");
+                doUpdate(c, "CREATE INDEX " + tableMaps + "_idx ON " + tableMaps + "(WorldID, MapID, Variant, ServerID)");  
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (5)");
-                version = 5;	// Initial - we have all the following updates already
+                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (6)");
+                version = 6;	// Initial - we have all the following updates already
             } catch (SQLException x) {
             	logSQLException("Error creating tables", x);
                 err = true;
@@ -574,6 +575,22 @@ public class MySQLMapStorage extends MapStorage {
                 }
                 doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=5 WHERE level = 4;");
                 version = 5;
+            } catch (SQLException x) {
+            	logSQLException("Error updating tables to version=5", x);
+                err = true;
+                return false;
+            } finally {
+                releaseConnection(c, err);
+                c = null;
+            }
+        }
+        if (version == 5) {
+            try {
+            	Log.info("Updating database schema from version = " + version);
+                c = getConnection();
+                doUpdate(c, "CREATE INDEX " + tableMaps + "_idx ON " + tableMaps + "(WorldID, MapID, Variant, ServerID)");  
+                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=6 WHERE level = 5;");
+                version = 6;
             } catch (SQLException x) {
             	logSQLException("Error updating tables to version=5", x);
                 err = true;

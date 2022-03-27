@@ -466,9 +466,10 @@ public class PostgreSQLMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE " + tableMarkerIcons + " (IconName VARCHAR(128) PRIMARY KEY NOT NULL, Image BYTEA)");
                 doUpdate(c, "CREATE TABLE " + tableMarkerFiles + " (FileName VARCHAR(128) PRIMARY KEY NOT NULL, Content BYTEA)");
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content BYTEA, PRIMARY KEY (FileName, ServerID))");
+                doUpdate(c, "CREATE INDEX " + tableMaps + "_idx ON " + tableMaps + "(WorldID, MapID, Variant, ServerID)");  
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
                 doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (3)");
-                version = 3;	// initialzed to current schema
+                version = 4;	// initialzed to current schema
             } catch (SQLException x) {
             	logSQLException("Error creating tables", x);
                 err = true;
@@ -506,6 +507,22 @@ public class PostgreSQLMapStorage extends MapStorage {
                 version = 3;
             } catch (SQLException x) {
             	logSQLException("Error upgrading tables to version=3", x);
+                err = true;
+                return false;
+            } finally {
+                releaseConnection(c, err);
+                c = null;
+            }
+        }
+        if (version == 3) {
+            try {
+            	Log.info("Updating database schema from version = " + version);
+                c = getConnection();
+                doUpdate(c, "CREATE INDEX " + tableMaps + "_idx ON " + tableMaps + "(WorldID, MapID, Variant, ServerID)");  
+                doUpdate(c, "UPDATE " + tableSchemaVersion + " SET level=4 WHERE level = 3;");
+                version = 4;
+            } catch (SQLException x) {
+            	logSQLException("Error upgrading tables to version=4", x);
                 err = true;
                 return false;
             } finally {
