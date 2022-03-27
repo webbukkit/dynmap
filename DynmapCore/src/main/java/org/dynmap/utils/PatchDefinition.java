@@ -144,7 +144,7 @@ public class PatchDefinition implements RenderPatch {
     public void update(double x0, double y0, double z0, double xu,
             double yu, double zu, double xv, double yv, double zv, double umin,
             double umax, double vmin, double vmax, SideVisible sidevis,
-            int textureids, double vminatumax, double vmaxatumax) {
+            int textureids, double vminatumax, double vmaxatumax, boolean shade) {
         this.x0 = x0;
         this.y0 = y0;
         this.z0 = z0;
@@ -162,6 +162,7 @@ public class PatchDefinition implements RenderPatch {
         this.vminatumax = vminatumax;
         this.sidevis = sidevis;
         this.textureindex = textureids;
+        this.shade = shade;
         update();
     }
     public void update() {
@@ -301,7 +302,6 @@ public class PatchDefinition implements RenderPatch {
     // @param textureid - texture ID
     public void updateModelFace(double[] from, double[] to, BlockSide face, double[] uv, ModelBlockModel.SideRotation rot, boolean shade, int textureid) {
     	if (rot == null) rot = ModelBlockModel.SideRotation.DEG0;
-    	this.shade = shade;
     	// Compute corners of the face
     	Vector3D lowleft;
     	Vector3D lowright;
@@ -452,6 +452,7 @@ public class PatchDefinition implements RenderPatch {
         	txtV.add(txtorig);	// And add it to compute full V 	
     	}
     	update(txtorig.x, txtorig.y, txtorig.z, txtU.x, txtU.y, txtU.z, txtV.x, txtV.y, txtV.z,
-    		patchuv[0], patchuv[2], patchuv[1], patchuv[3], flipU ? (flipV ? SideVisible.TOPFLIPHV : SideVisible.TOPFLIP) : (flipV ? SideVisible.TOPFLIPV : SideVisible.TOP), textureid, patchuv[1], patchuv[3]);
+    		patchuv[0], patchuv[2], patchuv[1], patchuv[3], flipU ? (flipV ? SideVisible.TOPFLIPHV : SideVisible.TOPFLIP) : (flipV ? SideVisible.TOPFLIPV : SideVisible.TOP), textureid,
+			patchuv[1], patchuv[3], shade);
     }
 }
