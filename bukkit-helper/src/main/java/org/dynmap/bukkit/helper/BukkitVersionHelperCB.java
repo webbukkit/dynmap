@@ -54,6 +54,12 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         isBadUnload = HDBlockModels.checkVersionRange(mcver, "1.9-");
         Log.verboseinfo("MCVER=" + mcver + ", isBadUnload=" + isBadUnload);
     }
+
+    @Override
+    public boolean isUnsafeAsync() {
+        return true;
+    }
+
     @Override
     protected String getNMSPackage() {
         Server srv = Bukkit.getServer();

@@ -1,0 +1,56 @@
+package org.dynmap.bukkit.helper.v118_2;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.level.WorldServer;
+import net.minecraft.world.level.World;
+import net.minecraft.world.level.chunk.Chunk;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+/**
+ * The provider used to work with paper libs
+ * Because paper libs need java 17 we can't interact with them directly
+ */
+public class AsyncChunkProvider118_2 {
+    private static final Thread ioThread;
+    private static final Method getChunk;
+    private static final Predicate<NBTTagCompound> ifFailed;
+    static {
+        try {
+            Predicate<NBTTagCompound> ifFailed1 = null;
+            Method getChunk1 = null;
+            Thread ioThread1 = null;
+            try {
+                Class<?> threadClass = Class.forName("com.destroystokyo.paper.io.PaperFileIOThread");
+                Class<?>[] classes = threadClass.getClasses();
+                Class<?> holder = Arrays.stream(classes).filter(aClass -> aClass.getSimpleName().equals("Holder")).findAny().orElseThrow(RuntimeException::new);
+                ioThread1 = (Thread) holder.getField("INSTANCE").get(null);
+                getChunk1 = threadClass.getMethod("loadChunkDataAsync", WorldServer.class, int.class, int.class, int.class, Consumer.class, boolean.class, boolean.class, boolean.class);
+                NBTTagCompound failure = (NBTTagCompound) threadClass.getField("FAILURE_VALUE").get(null);
+                ifFailed1 = nbtTagCompound -> nbtTagCompound == failure;
+            } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+            ifFailed = Objects.requireNonNull(ifFailed1);
+            getChunk = Objects.requireNonNull(getChunk1);
+            ioThread = Objects.requireNonNull(ioThread1);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+    public NBTTagCompound getChunk(WorldServer world, int x, int y) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+        CompletableFuture<Object> future = new CompletableFuture<>();
+        getChunk.invoke(ioThread,world,x,y,5,(Consumer<Object>) future::complete, false, true, true);
+        Object resultFuture = future.join();
+        if (resultFuture == null) return null;
+        NBTTagCompound result = (NBTTagCompound) resultFuture.getClass().getField("chunkData").get(resultFuture);
+        return ifFailed.test(result) ? null : result;
+    }
+}
