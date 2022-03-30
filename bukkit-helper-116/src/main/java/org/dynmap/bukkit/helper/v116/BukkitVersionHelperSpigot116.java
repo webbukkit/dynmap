@@ -42,8 +42,8 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
     public BukkitVersionHelperSpigot116() {
 		Class biomefog =  getNMSClass("net.minecraft.server.BiomeFog");
 		watercolorfield = getPrivateField(biomefog, new String[] { "c" }, int.class);
-    this.unsafeAsync = true;
-	  }
+	        this.unsafeAsync = true;
+    }
     
     /**
      * Get block short name list
@@ -62,12 +62,12 @@ public class BukkitVersionHelperSpigot116 extends BukkitVersionHelperGeneric {
     
     private Object[] biomelist;
 
-	  @Override
-	  public boolean isUnsafeAsync() {
-		return unsafeAsync;
-	}
+    @Override
+    public boolean isUnsafeAsync() {
+        return unsafeAsync;
+    }
 
-	  /**
+     /**
      * Get list of defined biomebase objects
      */
     @Override
