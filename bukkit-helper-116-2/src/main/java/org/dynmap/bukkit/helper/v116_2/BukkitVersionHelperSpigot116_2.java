@@ -72,12 +72,12 @@ public class BukkitVersionHelperSpigot116_2 extends BukkitVersionHelperGeneric {
     
     private Object[] biomelist;
 
-	  @Override
-	  public boolean isUnsafeAsync() {
-		return unsafeAsync;
-	}
+    @Override
+    public boolean isUnsafeAsync() {
+        return unsafeAsync;
+    }
 
-	  /**
+    /**
      * Get list of defined biomebase objects
      */
     @Override
