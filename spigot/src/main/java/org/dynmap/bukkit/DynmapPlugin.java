@@ -104,6 +104,7 @@ import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.chunk.GenericMapChunkCache;
 import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.modsupport.ModSupportImpl;
@@ -562,17 +563,17 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         }
                     }
                 } else {
-                    try {
-                        synchronized (lock) {
-                            if (prev_tick != cur_tick) {
-                                prev_tick = cur_tick;
-                                cur_tick_starttime = System.nanoTime();
-                            }
-                            cc.loadChunks(Integer.MAX_VALUE);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+//                    synchronized (lock) {
+                    if (prev_tick != cur_tick) {
+                        prev_tick = cur_tick;
+                        cur_tick_starttime = System.nanoTime();
                     }
+                    if (cc instanceof GenericMapChunkCache) {
+                        ((GenericMapChunkCache) cc).loadChunksAsync();
+                    } else {
+                        cc.loadChunks(Integer.MAX_VALUE);
+                    }
+//                    }
                 }
             }
             /* If cancelled due to world unload return nothing */

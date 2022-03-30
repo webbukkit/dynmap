@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -36,23 +37,43 @@ public class MapChunkCache118_2 extends GenericMapChunkCache {
 
     // Load generic chunk from existing and already loaded chunk
     protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
-        CraftWorld cw = (CraftWorld) w;
-        NBTTagCompound nbt = null;
-        GenericChunk gc = null;
-        if (cw.isChunkLoaded(chunk.x, chunk.z)) {
-            Chunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z); //already safe async on vanilla
-            if ((c != null) && c.o) {    // c.loaded
-                if (provider == null) { //idk why, but paper uses this only sync, so I won't be smarter
-                    nbt = ChunkRegionLoader.a(cw.getHandle(), c);
-                } else {
-                    nbt = CompletableFuture.supplyAsync(() -> ChunkRegionLoader.a(cw.getHandle(), c), ((CraftServer) Bukkit.getServer()).getServer()).join();
-                }
-            }
-            if (nbt != null) {
-                gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
-            }
+        return getLoadedChunk(chunk, false).get();
+    }
+    @Override
+    protected Supplier<GenericChunk> getLoadedChunkAsync(DynmapChunk ch) {
+        return getLoadedChunk(ch, true);
+    }
+
+    @Override
+    protected Supplier<GenericChunk> loadChunkAsync(DynmapChunk chunk){
+        try {
+            CompletableFuture<NBTTagCompound> nbt = provider.getChunk(((CraftWorld) w).getHandle(), chunk.x, chunk.z);
+            return () -> {
+                NBTTagCompound compound = nbt.join();
+                return compound == null ? null : parseChunkFromNBT(new NBT.NBTCompound(compound));
+            };
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
         }
-        return gc;
+        return () -> null;
+    }
+
+    private Supplier<GenericChunk> getLoadedChunk(DynmapChunk chunk, boolean async) {
+        CraftWorld cw = (CraftWorld) w;
+        if (!cw.isChunkLoaded(chunk.x, chunk.z)) return () -> null;
+        Chunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z); //already safe async on vanilla
+        if ((c == null) || c.o) return () -> null;    // c.loaded
+        if (async) { //idk why, but paper uses this only sync, so I won't be smarter
+            CompletableFuture<NBTTagCompound> nbt = CompletableFuture.supplyAsync(() -> ChunkRegionLoader.a(cw.getHandle(), c), ((CraftServer) Bukkit.getServer()).getServer());
+            return () -> parseChunkFromNBT(new NBT.NBTCompound(nbt.join()));
+        } else {
+            NBTTagCompound nbt = ChunkRegionLoader.a(cw.getHandle(), c);
+            GenericChunk genericChunk;
+            if (nbt != null) genericChunk = parseChunkFromNBT(new NBT.NBTCompound(nbt));
+            else genericChunk = null;
+            return () -> genericChunk;
+        }
+
     }
     // Load generic chunk from unloaded chunk
     protected GenericChunk loadChunk(DynmapChunk chunk) {
@@ -61,12 +82,9 @@ public class MapChunkCache118_2 extends GenericMapChunkCache {
         ChunkCoordIntPair cc = new ChunkCoordIntPair(chunk.x, chunk.z);
         GenericChunk gc = null;
         try {
-            if (provider == null){
-                nbt = cw.getHandle().k().a.f(cc);	// playerChunkMap
-            } else {
-                nbt = provider.getChunk(cw.getHandle(),chunk.x, chunk.z);
-            }
-        } catch (IOException | InvocationTargetException | IllegalAccessException | NoSuchFieldException ignored) {}
+            nbt = cw.getHandle().k().a.f(cc);	// playerChunkMap
+        } catch (IOException iox) {
+        }
         if (nbt != null) {
             gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
         }

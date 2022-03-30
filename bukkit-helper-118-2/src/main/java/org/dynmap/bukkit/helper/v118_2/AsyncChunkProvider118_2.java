@@ -45,12 +45,17 @@ public class AsyncChunkProvider118_2 {
             throw new RuntimeException(e);
         }
     }
-    public NBTTagCompound getChunk(WorldServer world, int x, int y) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public CompletableFuture<NBTTagCompound> getChunk(WorldServer world, int x, int y) throws InvocationTargetException, IllegalAccessException {
         CompletableFuture<Object> future = new CompletableFuture<>();
         getChunk.invoke(ioThread,world,x,y,5,(Consumer<Object>) future::complete, false, true, true);
-        Object resultFuture = future.join();
-        if (resultFuture == null) return null;
-        NBTTagCompound result = (NBTTagCompound) resultFuture.getClass().getField("chunkData").get(resultFuture);
-        return ifFailed.test(result) ? null : result;
+        return future.thenApply((resultFuture) -> {
+            if (resultFuture == null) return null;
+            try {
+                return (NBTTagCompound) resultFuture.getClass().getField("chunkData").get(resultFuture);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
     }
 }
