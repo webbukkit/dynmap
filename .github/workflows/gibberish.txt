@@ -36,6 +36,9 @@ ko
 patreon
 README
 Gradle
+gradlew
+gradle
+oldgradle
 Curseforge
 SpigotMC
 PaperMC
@@ -55,3 +58,4 @@ JDK
 ForgeGradle
 Kosma
 Kosma's
+DEV

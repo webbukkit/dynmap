@@ -905,15 +905,15 @@
 
     color: #fff;
     background: rgba(0,0,0,0.6);
-    padding: 2px;
+    padding: 2px 6px;
 
     -moz-border-radius: 3px;
     border-radius: 3px;
 }
 
 .dynmap .mapMarker .markerName16x16 {
-	top: -6px;
-	left: 10px;
+	top: -12px;
+	left: 12px;
 }
 
 .dynmap .mapMarker .markerName8x8 {

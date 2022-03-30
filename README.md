@@ -13,7 +13,7 @@ Dynmap 3.x+ uses Gradle for building support for all platforms, with all resulti
 default JDK must be a JDK 17 (or later) versions - older versions will still be compiled
 to run on the default JDK for those platforms (JDK 8, or JDK 16 for 1.17.x), and common libraries are built JDK 8.
 
-To build, run:
+To build and get all jars in `target/`, run:
 
     ./gradlew setup build
     
@@ -31,6 +31,13 @@ Or (on Windows):
 
     cd oldgradle
     gradlew.bat setup build
+
+Those familiar with gradle can save time by specifying a build (or commenting in settings.gradle) BUT this is not suitable for uploading DEV code changes.
+
+NOTE: PR code submissions MUST be built and TESTED for ALL platforms (including oldgradle), or be rejected and negatively influence future approvals. 
+For more check [contributing rules](#contributing-to-dynmaps-code).
+
+    ./gradlew :fabric-1.18:build
 
     
 # What platforms are supported?
