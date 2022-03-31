@@ -700,13 +700,13 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	protected abstract GenericChunk getLoadedChunk(DynmapChunk ch);
 	// Load generic chunk from unloaded chunk
 	protected abstract GenericChunk loadChunk(DynmapChunk ch);
-	// Load generic chunk from existing and already loaded chunk
+	// Load generic chunk from existing and already loaded chunk async
 	protected Supplier<GenericChunk> getLoadedChunkAsync(DynmapChunk ch) {
-		throw new RuntimeException("Not implemeted");
+		throw new IllegalStateException("Not implemeted");
 	}
 	// Load generic chunks from unloaded chunk async
 	protected Supplier<GenericChunk> loadChunkAsync(DynmapChunk ch){
-		throw new RuntimeException("Not implemeted");
+		throw new IllegalStateException("Not implemeted");
 	}
 	
 	/**
@@ -764,8 +764,13 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 		return cnt;
 	}
+
+	/**
+	 * Read NBT data from loaded chunks - do not needs to be called from server/world
+	 * Will throw {@link IllegalStateException} if not supporting
+	 */
 	public void getLoadedChunksAsync() {
-		class SimplePair{ //simple pair of the supplier that finishes read async, and a consumer that also finish his work async
+		class SimplePair { //simple pair of the supplier that finishes read async, and a consumer that also finish his work async
 			final Supplier<GenericChunk> supplier;
 			final BiConsumer<GenericChunk, Long> consumer;
 
@@ -830,6 +835,9 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		return getLoadedChunks() + readChunks(max_to_load);
 	}
 
+	/**
+	 * Prepare the chunks async
+	 */
 	public void loadChunksAsync() {
 		getLoadedChunksAsync();
 		readChunksAsync();
@@ -916,6 +924,15 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	}
 
 	public void readChunksAsync() {
+		class SimplePair {
+			private final Supplier<GenericChunk> supplier;
+			private final DynmapChunk chunk;
+
+			SimplePair(DynmapChunk chunk) {
+				this.chunk = chunk;
+				this.supplier = loadChunkAsync(chunk);
+			}
+		}
 		if (!dw.isLoaded()) {
 			isempty = true;
 			unloadChunks();
@@ -937,14 +954,14 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 
 		try {
 			List<DynmapChunk> cached = new ArrayList<>();
-			List<Map.Entry<Supplier<GenericChunk>, DynmapChunk>> notCached = new ArrayList<>();
+			List<SimplePair> notCached = new ArrayList<>();
 
 			iterator.forEachRemaining(chunks::add);
 			chunks.stream()
 					.filter(chunk -> snaparray[(chunk.x - x_min) + (chunk.z - z_min) * x_dim] == null)
 					.forEach(chunk -> {
 						if (cache.getSnapshot(dw.getName(), chunk.x, chunk.z) == null) {
-							notCached.add(new AbstractMap.SimpleEntry<>(loadChunkAsync(chunk), chunk));
+							notCached.add(new SimplePair(chunk));
 						} else {
 							cached.add(chunk);
 						}
@@ -957,8 +974,8 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			});
 			notCached.forEach(chunkSupplier -> {
 				long startTime = System.nanoTime();
-				GenericChunk chunk = chunkSupplier.getKey().get();
-				DynmapChunk dynmapChunk = chunkSupplier.getValue();
+				GenericChunk chunk = chunkSupplier.supplier.get();
+				DynmapChunk dynmapChunk = chunkSupplier.chunk;
 				if (chunk != null) {
 					// If hidden
 					if (isChunkVisible(dynmapChunk)) {

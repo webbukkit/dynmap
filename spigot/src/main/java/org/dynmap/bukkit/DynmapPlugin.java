@@ -563,7 +563,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         }
                     }
                 } else {
-//                    synchronized (lock) {
                     if (prev_tick != cur_tick) {
                         prev_tick = cur_tick;
                         cur_tick_starttime = System.nanoTime();
@@ -573,7 +572,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                     } else {
                         cc.loadChunks(Integer.MAX_VALUE);
                     }
-//                    }
                 }
             }
             /* If cancelled due to world unload return nothing */
