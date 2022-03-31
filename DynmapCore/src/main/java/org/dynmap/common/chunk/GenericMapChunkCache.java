@@ -1,6 +1,7 @@
 package org.dynmap.common.chunk;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -38,6 +39,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	private int snapcnt;
 	private GenericChunk[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
 	private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
+	private AtomicInteger loadingChunks = new AtomicInteger(0); //the amount of threads loading threads at this moment, used by async loading
 
 	private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
 			BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
@@ -928,64 +930,70 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			chunks = new ArrayList<>();
 			iterator.forEachRemaining(chunks::add);
 		}
-//		DynmapCore.setIgnoreChunkLoads(true);
-
-		List<DynmapChunk> cached = new ArrayList<>();
-		List<Map.Entry<Supplier<GenericChunk>,DynmapChunk>> notCached = new ArrayList<>();
-
-		iterator.forEachRemaining(chunks::add);
-		chunks.stream()
-				.filter(chunk -> snaparray[(chunk.x - x_min) + (chunk.z - z_min) * x_dim] == null)
-				.forEach(chunk -> {
-					if (cache.getSnapshot(dw.getName(),chunk.x, chunk.z) == null) {
-						notCached.add(new AbstractMap.SimpleEntry<>(loadChunkAsync(chunk),chunk));
-					} else {
-						cached.add(chunk);
-					}
-				});
-
-		cached.forEach(chunk -> {
-			long startTime = System.nanoTime();
-			tryChunkCache(chunk, isChunkVisible(chunk));
-			endChunkLoad(startTime, ChunkStats.CACHED_SNAPSHOT_HIT);
-		});
-		notCached.forEach(chunkSupplier -> {
-			long startTime = System.nanoTime();
-			GenericChunk chunk = chunkSupplier.getKey().get();
-			DynmapChunk dynmapChunk = chunkSupplier.getValue();
-			if (chunk != null) {
-				// If hidden
-				if (isChunkVisible(dynmapChunk)) {
-					// Prep snapshot
-					prepChunkSnapshot(dynmapChunk, chunk);
-				} else {
-					if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
-						chunk = getStone();
-					} else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
-						chunk = getOcean();
-					} else {
-						chunk = getEmpty();
-					}
-				}
-				snaparray[(dynmapChunk.x - x_min) + (dynmapChunk.z - z_min) * x_dim] = chunk;
-				endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
-			} else {
-				endChunkLoad(startTime, ChunkStats.UNGENERATED_CHUNKS);
-			}
-		});
-
-//		DynmapCore.setIgnoreChunkLoads(false);
-
-		isempty = true;
-		/* Fill missing chunks with empty dummy chunk */
-		for (int i = 0; i < snaparray.length; i++) {
-			if (snaparray[i] == null) {
-				snaparray[i] = getEmpty();
-			} else if (!snaparray[i].isEmpty) {
-				isempty = false;
-			}
+		//if before increent was 0, means that we are the first, so we need to set this
+		if (loadingChunks.getAndIncrement() == 0) {
+			DynmapCore.setIgnoreChunkLoads(true);
 		}
 
+		try {
+			List<DynmapChunk> cached = new ArrayList<>();
+			List<Map.Entry<Supplier<GenericChunk>, DynmapChunk>> notCached = new ArrayList<>();
+
+			iterator.forEachRemaining(chunks::add);
+			chunks.stream()
+					.filter(chunk -> snaparray[(chunk.x - x_min) + (chunk.z - z_min) * x_dim] == null)
+					.forEach(chunk -> {
+						if (cache.getSnapshot(dw.getName(), chunk.x, chunk.z) == null) {
+							notCached.add(new AbstractMap.SimpleEntry<>(loadChunkAsync(chunk), chunk));
+						} else {
+							cached.add(chunk);
+						}
+					});
+
+			cached.forEach(chunk -> {
+				long startTime = System.nanoTime();
+				tryChunkCache(chunk, isChunkVisible(chunk));
+				endChunkLoad(startTime, ChunkStats.CACHED_SNAPSHOT_HIT);
+			});
+			notCached.forEach(chunkSupplier -> {
+				long startTime = System.nanoTime();
+				GenericChunk chunk = chunkSupplier.getKey().get();
+				DynmapChunk dynmapChunk = chunkSupplier.getValue();
+				if (chunk != null) {
+					// If hidden
+					if (isChunkVisible(dynmapChunk)) {
+						// Prep snapshot
+						prepChunkSnapshot(dynmapChunk, chunk);
+					} else {
+						if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
+							chunk = getStone();
+						} else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
+							chunk = getOcean();
+						} else {
+							chunk = getEmpty();
+						}
+					}
+					snaparray[(dynmapChunk.x - x_min) + (dynmapChunk.z - z_min) * x_dim] = chunk;
+					endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
+				} else {
+					endChunkLoad(startTime, ChunkStats.UNGENERATED_CHUNKS);
+				}
+			});
+
+			isempty = true;
+			/* Fill missing chunks with empty dummy chunk */
+			for (int i = 0; i < snaparray.length; i++) {
+				if (snaparray[i] == null) {
+					snaparray[i] = getEmpty();
+				} else if (!snaparray[i].isEmpty) {
+					isempty = false;
+				}
+			}
+		} finally {
+			if (loadingChunks.decrementAndGet() == 0) {
+				DynmapCore.setIgnoreChunkLoads(false);
+			}
+		}
 	}
 
 	/**

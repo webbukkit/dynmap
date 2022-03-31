@@ -54,8 +54,8 @@ public class MapChunkCache118_2 extends GenericMapChunkCache {
             };
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
+            return () -> loadChunk(chunk);
         }
-        return () -> null;
     }
 
     private Supplier<GenericChunk> getLoadedChunk(DynmapChunk chunk, boolean async) {

@@ -2,8 +2,6 @@ package org.dynmap.bukkit.helper.v118_2;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.level.WorldServer;
-import net.minecraft.world.level.World;
-import net.minecraft.world.level.chunk.Chunk;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,7 +49,8 @@ public class AsyncChunkProvider118_2 {
         return future.thenApply((resultFuture) -> {
             if (resultFuture == null) return null;
             try {
-                return (NBTTagCompound) resultFuture.getClass().getField("chunkData").get(resultFuture);
+                NBTTagCompound compound =  (NBTTagCompound) resultFuture.getClass().getField("chunkData").get(resultFuture);
+                return ifFailed.test(compound) ? null : compound;
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 e.printStackTrace();
             }
