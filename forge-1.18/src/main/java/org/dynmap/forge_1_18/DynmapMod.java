@@ -11,6 +11,7 @@ import org.dynmap.forge_1_18.DynmapPlugin.OurLog;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -113,7 +114,7 @@ public class DynmapMod
     private MinecraftServer server;
     
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
+    public void onServerStarting(ServerAboutToStartEvent event) {
         server = event.getServer();
         if(plugin == null)
             plugin = proxy.startServer(server);
