@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
 public class MapChunkCache118_2 extends GenericMapChunkCache {
-    private final AsyncChunkProvider118_2 provider = BukkitVersionHelper.helper.isUnsafeAsync() ? null : new AsyncChunkProvider118_2();
+    private static final AsyncChunkProvider118_2 provider = BukkitVersionHelper.helper.isUnsafeAsync() ? null : new AsyncChunkProvider118_2();
     private World w;
     /**
      * Construct empty cache
@@ -52,9 +52,8 @@ public class MapChunkCache118_2 extends GenericMapChunkCache {
                 NBTTagCompound compound = nbt.join();
                 return compound == null ? null : parseChunkFromNBT(new NBT.NBTCompound(compound));
             };
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-            return () -> loadChunk(chunk);
+        } catch (InvocationTargetException | IllegalAccessException ignored) {
+            return () -> null;
         }
     }
 
@@ -63,9 +62,12 @@ public class MapChunkCache118_2 extends GenericMapChunkCache {
         if (!cw.isChunkLoaded(chunk.x, chunk.z)) return () -> null;
         Chunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z); //already safe async on vanilla
         if ((c == null) || c.o) return () -> null;    // c.loaded
-        if (async) { //idk why, but paper uses this only sync, so I won't be smarter
+        if (async) { //the data of the chunk may change while we write, better to write it sync
             CompletableFuture<NBTTagCompound> nbt = CompletableFuture.supplyAsync(() -> ChunkRegionLoader.a(cw.getHandle(), c), ((CraftServer) Bukkit.getServer()).getServer());
-            return () -> parseChunkFromNBT(new NBT.NBTCompound(nbt.join()));
+            return () -> {
+                    NBTTagCompound compound = nbt.join();
+                    return compound == null ? null : parseChunkFromNBT(new NBT.NBTCompound(compound));
+            };
         } else {
             NBTTagCompound nbt = ChunkRegionLoader.a(cw.getHandle(), c);
             GenericChunk genericChunk;

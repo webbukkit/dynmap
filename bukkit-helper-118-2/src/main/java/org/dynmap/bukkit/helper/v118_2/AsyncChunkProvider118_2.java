@@ -16,10 +16,10 @@ import java.util.function.Predicate;
  * Because paper libs need java 17 we can't interact with them directly
  */
 public class AsyncChunkProvider118_2 {
-    private static final Thread ioThread;
-    private static final Method getChunk;
-    private static final Predicate<NBTTagCompound> ifFailed;
-    static {
+    private final Thread ioThread;
+    private final Method getChunk;
+    private final Predicate<NBTTagCompound> ifFailed;
+    AsyncChunkProvider118_2 () {
         try {
             Predicate<NBTTagCompound> ifFailed1 = null;
             Method getChunk1 = null;

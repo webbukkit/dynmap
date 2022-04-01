@@ -482,7 +482,6 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             boolean rslt = permissions.hasOfflinePermission(player, perm);
             return rslt;
         }
-        private final Object[] lock = {};
         /**
          * Render processor helper - used by code running on render threads to request chunk snapshot cache from server/sync thread
          */

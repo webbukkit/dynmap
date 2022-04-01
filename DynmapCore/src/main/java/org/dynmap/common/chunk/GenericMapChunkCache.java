@@ -39,7 +39,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	private int snapcnt;
 	private GenericChunk[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
 	private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
-	private AtomicInteger loadingChunks = new AtomicInteger(0); //the amount of threads loading threads at this moment, used by async loading
+	private AtomicInteger loadingChunks = new AtomicInteger(0); //the amount of threads loading chunks at this moment, used by async loading
 
 	private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
 			BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
@@ -924,7 +924,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	}
 
 	public void readChunksAsync() {
-		class SimplePair {
+		class SimplePair { //pair of the chunk and the data which is readed async
 			private final Supplier<GenericChunk> supplier;
 			private final DynmapChunk chunk;
 
