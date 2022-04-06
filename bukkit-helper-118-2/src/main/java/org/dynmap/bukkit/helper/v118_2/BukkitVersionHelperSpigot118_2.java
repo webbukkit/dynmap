@@ -64,12 +64,25 @@ import java.util.Set;
  * Helper for isolation of bukkit version specific issues
  */
 public class BukkitVersionHelperSpigot118_2 extends BukkitVersionHelper { 
-		
+    private final boolean unsafeAsync;
+
     public BukkitVersionHelperSpigot118_2() {
-    	
+        boolean unsafeAsync1;
+        try {
+            Class.forName("com.destroystokyo.paper.io.PaperFileIOThread");
+            unsafeAsync1 = false;
+        } catch (ClassNotFoundException e) {
+            unsafeAsync1 = true;
+        }
+        this.unsafeAsync = unsafeAsync1;
     }
-    
-    /**
+
+    @Override
+    public boolean isUnsafeAsync() {
+        return unsafeAsync;
+    }
+
+     /**
      * Get block short name list
      */
     @Override

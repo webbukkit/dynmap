@@ -37,11 +37,13 @@ import net.minecraft.server.v1_16_R2.BlockPosition;
  * Helper for isolation of bukkit version specific issues
  */
 public class BukkitVersionHelperSpigot116_3 extends BukkitVersionHelperGeneric {
+    private final boolean unsafeAsync;
     private Field watercolorfield;
     
     public BukkitVersionHelperSpigot116_3() {
-		Class biomefog =  getNMSClass("net.minecraft.server.BiomeFog");
-		watercolorfield = getPrivateField(biomefog, new String[] { "c" }, int.class);
+        Class biomefog =  getNMSClass("net.minecraft.server.BiomeFog");
+        watercolorfield = getPrivateField(biomefog, new String[] { "c" }, int.class);
+        this.unsafeAsync = true;
     }
     
     /**
@@ -69,6 +71,12 @@ public class BukkitVersionHelperSpigot116_3 extends BukkitVersionHelperGeneric {
     }
     
     private Object[] biomelist;
+
+    @Override
+    public boolean isUnsafeAsync() {
+        return unsafeAsync;
+    }
+
     /**
      * Get list of defined biomebase objects
      */
