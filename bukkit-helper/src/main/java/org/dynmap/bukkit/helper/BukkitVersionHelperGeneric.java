@@ -397,7 +397,7 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     /**
      * Get inhabited ticks count from chunk
      */
-    private static final Long zero = new Long(0);
+    private static final Long zero = Long.valueOf(0);
     public long getInhabitedTicks(Chunk c) {
         if (nmsc_inhabitedticks == null) {
             return 0;
@@ -557,25 +557,25 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     	if (profile != null) {
     		Object propmap = callMethod(profile, cmaprofile_getproperties, nullargs, null);
     		if ((propmap != null) && (propmap instanceof ForwardingMultimap)) {
-    			ForwardingMultimap<String, Object> fmm = (ForwardingMultimap<String, Object>) propmap;
-    			Collection<Object> txt = fmm.get("textures");
-    	        Object textureProperty = Iterables.getFirst(fmm.get("textures"), null);
-    	        if (textureProperty != null) {
-    				String val = (String) callMethod(textureProperty, cmaproperty_getvalue, nullargs, null);
-    				if (val != null) {
-    					TexturesPayload result = null;
-    					try {
+                ForwardingMultimap<String, Object> fmm = (ForwardingMultimap<String, Object>) propmap;
+                Collection<Object> txt = fmm.get("textures");
+                Object textureProperty = Iterables.getFirst(fmm.get("textures"), null);
+                if (textureProperty != null) {
+                    String val = (String) callMethod(textureProperty, cmaproperty_getvalue, nullargs, null);
+                    if (val != null) {
+                        TexturesPayload result = null;
+                        try {
                             String json = new String(Base64.getDecoder().decode(val), StandardCharsets.UTF_8);
-    						result = gson.fromJson(json, TexturesPayload.class);
-    					} catch (JsonParseException e) {
-    					} catch (IllegalArgumentException x) {
-    						Log.warning("Malformed response from skin URL check: " + val);
-    					}
-    					if ((result != null) && (result.textures != null) && (result.textures.containsKey("SKIN"))) {
-    						url = result.textures.get("SKIN").url;
-    					}
-    				}
-    			}
+                            result = gson.fromJson(json, TexturesPayload.class);
+                        } catch (JsonParseException e) {
+                        } catch (IllegalArgumentException x) {
+                            Log.warning("Malformed response from skin URL check: " + val);
+                        }
+                        if ((result != null) && (result.textures != null) && (result.textures.containsKey("SKIN"))) {
+                            url = result.textures.get("SKIN").url;
+                        }
+                    }
+                }
     		}
     	}
     	

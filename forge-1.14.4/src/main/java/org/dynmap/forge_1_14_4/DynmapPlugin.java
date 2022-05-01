@@ -6,20 +6,8 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -253,7 +241,10 @@ public class DynmapPlugin
                 	if (statename.length() > 0) {
                 		statename += ",";
                 	}
-                	statename += p.getName() + "=" + bs.get(p).toString();
+                    try {
+                        statename += p.getName() + "=" + bs.get(p).toString();
+                    } catch (IllegalFormatConversionException e){
+                    }
                 }
                 int lightAtten = bs.isOpaqueCube(EmptyBlockReader.INSTANCE, BlockPos.ZERO) ? 15 : (bs.propagatesSkylightDown(EmptyBlockReader.INSTANCE, BlockPos.ZERO) ? 0 : 1);
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
