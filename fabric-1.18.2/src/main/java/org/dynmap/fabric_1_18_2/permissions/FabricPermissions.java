@@ -34,7 +34,10 @@ public class FabricPermissions implements PermissionProvider {
     @Override
     public boolean has(PlayerEntity player, String permission) {
         Log.info("Requesting privilege: " + permission);
-        return player != null && Permissions.check(player, permissionKey(permission));
+        if (player == null) return false;
+        String name = player.getName().getString().toLowerCase();
+        if (DynmapPlugin.plugin.isOp(name)) return true;
+        return Permissions.check(player, permissionKey(permission));
     }
 
     @Override
