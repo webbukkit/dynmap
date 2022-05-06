@@ -49,10 +49,7 @@ import org.dynmap.fabric_1_18_2.event.CustomServerChunkEvents;
 import org.dynmap.fabric_1_18_2.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_1_18_2.event.PlayerEvents;
 import org.dynmap.fabric_1_18_2.mixin.BiomeEffectsAccessor;
-import org.dynmap.fabric_1_18_2.permissions.FabricPermissions;
-import org.dynmap.fabric_1_18_2.permissions.FilePermissions;
-import org.dynmap.fabric_1_18_2.permissions.OpPermissions;
-import org.dynmap.fabric_1_18_2.permissions.PermissionProvider;
+import org.dynmap.fabric_1_18_2.permissions.*;
 import org.dynmap.permissions.PermissionsHandler;
 import org.dynmap.renderer.DynmapBlockState;
 
@@ -405,7 +402,11 @@ public class DynmapPlugin {
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
 
-        if (FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0")) {
+        if (FabricLoader.getInstance().isModLoaded("luckperms")) {
+            Log.info("Using luckperms for access control");
+            permissions = new LuckPermissions();
+        }
+        else if (FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0")) {
             Log.info("Using fabric-permissions-api for access control");
             permissions = new FabricPermissions();
         } else {

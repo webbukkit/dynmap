@@ -18,6 +18,7 @@ configurations {
 }
 
 repositories {
+    mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
@@ -32,6 +33,7 @@ dependencies {
     shadow project(path: ':DynmapCore', configuration: 'shadow')
 
     modCompileOnly "me.lucko:fabric-permissions-api:0.1-SNAPSHOT"
+    compileOnly 'net.luckperms:api:5.4'
 }
 
 processResources {

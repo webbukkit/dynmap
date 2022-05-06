@@ -2,15 +2,16 @@ package org.dynmap.fabric_1_18_2.permissions;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.entity.player.PlayerEntity;
-import org.dynmap.DynmapCore;
 import org.dynmap.Log;
-import org.dynmap.fabric_1_18_2.DynmapMod;
 import org.dynmap.fabric_1_18_2.DynmapPlugin;
+import org.dynmap.json.simple.parser.JSONParser;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FabricPermissions implements PermissionProvider {
+
+    private final JSONParser parser = new JSONParser();
 
     private String permissionKey(String perm) {
         return "dynmap." + perm;
