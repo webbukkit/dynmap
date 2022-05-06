@@ -17,6 +17,10 @@ configurations {
     implementation.extendsFrom(shadow)
 }
 
+repositories {
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -26,6 +30,8 @@ dependencies {
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     shadow project(path: ':DynmapCore', configuration: 'shadow')
+
+    modCompileOnly "me.lucko:fabric-permissions-api:0.1-SNAPSHOT"
 }
 
 processResources {

@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
@@ -48,6 +49,7 @@ import org.dynmap.fabric_1_18_2.event.CustomServerChunkEvents;
 import org.dynmap.fabric_1_18_2.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_1_18_2.event.PlayerEvents;
 import org.dynmap.fabric_1_18_2.mixin.BiomeEffectsAccessor;
+import org.dynmap.fabric_1_18_2.permissions.FabricPermissions;
 import org.dynmap.fabric_1_18_2.permissions.FilePermissions;
 import org.dynmap.fabric_1_18_2.permissions.OpPermissions;
 import org.dynmap.fabric_1_18_2.permissions.PermissionProvider;
@@ -137,13 +139,13 @@ public class DynmapPlugin {
         int baseidx = 0;
 
         Iterator<BlockState> iter = bsids.iterator();
-    	DynmapBlockState.Builder bld = new DynmapBlockState.Builder();
+        DynmapBlockState.Builder bld = new DynmapBlockState.Builder();
         while (iter.hasNext()) {
             BlockState bs = iter.next();
             int idx = bsids.getRawId(bs);
             if (idx >= stateByID.length) {
                 int plen = stateByID.length;
-    			stateByID = Arrays.copyOf(stateByID, idx*11/10); // grow array by 10%    			
+                stateByID = Arrays.copyOf(stateByID, idx * 11 / 10); // grow array by 10%
                 Arrays.fill(stateByID, plen, stateByID.length, DynmapBlockState.AIR);
             }
             Block b = bs.getBlock();
@@ -173,16 +175,26 @@ public class DynmapPlugin {
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
                 // Fill in base attributes
                 bld.setBaseState(basebs).setStateIndex(idx - baseidx).setBlockName(bn).setStateName(statename).setMaterial(mat.toString()).setLegacyBlockID(idx).setAttenuatesLight(lightAtten);
-				if (mat.isSolid()) { bld.setSolid(); }
-				if (mat == Material.AIR) { bld.setAir(); }
-				if (mat == Material.WOOD) { bld.setLog(); }
-				if (mat == Material.LEAVES) { bld.setLeaves(); }
-				if ((!bs.getFluidState().isEmpty()) && !(bs.getBlock() instanceof FluidBlock)) {
-					bld.setWaterlogged();
-				}
+                if (mat.isSolid()) {
+                    bld.setSolid();
+                }
+                if (mat == Material.AIR) {
+                    bld.setAir();
+                }
+                if (mat == Material.WOOD) {
+                    bld.setLog();
+                }
+                if (mat == Material.LEAVES) {
+                    bld.setLeaves();
+                }
+                if ((!bs.getFluidState().isEmpty()) && !(bs.getBlock() instanceof FluidBlock)) {
+                    bld.setWaterlogged();
+                }
                 DynmapBlockState dbs = bld.build(); // Build state
                 stateByID[idx] = dbs;
-                if (basebs == null) { basebs = dbs; }
+                if (basebs == null) {
+                    basebs = dbs;
+                }
             }
         }
 //        for (int gidx = 0; gidx < DynmapBlockState.getGlobalIndexMax(); gidx++) {
@@ -348,18 +360,16 @@ public class DynmapPlugin {
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
                 BiomeMap bmap = BiomeMap.NULL;
-                if (rl != null) {	// If resource location, lookup by this
-                	bmap = BiomeMap.byBiomeResourceLocation(rl);
-                }
-                else {
-                	bmap = BiomeMap.byBiomeID(i);
+                if (rl != null) {    // If resource location, lookup by this
+                    bmap = BiomeMap.byBiomeResourceLocation(rl);
+                } else {
+                    bmap = BiomeMap.byBiomeID(i);
                 }
                 if (bmap.isDefault() || (bmap == BiomeMap.NULL)) {
                     bmap = new BiomeMap((rl != null) ? BiomeMap.NO_INDEX : i, id, tmp, hum, rl);
                     Log.verboseinfo("Add custom biome [" + bmap.toString() + "] (" + i + ")");
                     cnt++;
-                }
-                else {
+                } else {
                     bmap.setTemperature(tmp);
                     bmap.setRainfall(hum);
                 }
@@ -395,11 +405,17 @@ public class DynmapPlugin {
         /* Set up player login/quit event handler */
         registerPlayerLoginListener();
 
-        /* Initialize permissions handler */
-        permissions = FilePermissions.create();
-        if (permissions == null) {
-            permissions = new OpPermissions(new String[]{"webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self"});
+        if (FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0")) {
+            Log.info("Using fabric-permissions-api for access control");
+            permissions = new FabricPermissions();
+        } else {
+            /* Initialize permissions handler */
+            permissions = FilePermissions.create();
+            if (permissions == null) {
+                permissions = new OpPermissions(new String[]{"webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self"});
+            }
         }
+
         /* Get and initialize data folder */
         File dataDirectory = new File("dynmap");
 
@@ -628,14 +644,14 @@ public class DynmapPlugin {
             FabricWorld fw = getWorld(world, false);
             ChunkPos chunkPos = chunk.getPos();
 
-			int ymax = Integer.MIN_VALUE;
-			int ymin = Integer.MAX_VALUE;
+            int ymax = Integer.MIN_VALUE;
+            int ymin = Integer.MAX_VALUE;
             ChunkSection[] sections = chunk.getSectionArray();
             for (int i = 0; i < sections.length; i++) {
                 if ((sections[i] != null) && (!sections[i].isEmpty())) {
-					int sy = sections[i].getYOffset();
-					if (sy < ymin) ymin = sy;
-					if ((sy+16) > ymax) ymax = sy + 16;
+                    int sy = sections[i].getYOffset();
+                    if (sy < ymin) ymin = sy;
+                    if ((sy + 16) > ymax) ymax = sy + 16;
                 }
             }
             if (ymax != Integer.MIN_VALUE) {
