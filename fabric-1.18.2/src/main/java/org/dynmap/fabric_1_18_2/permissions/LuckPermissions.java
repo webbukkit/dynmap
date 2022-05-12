@@ -47,7 +47,6 @@ public class LuckPermissions implements PermissionProvider {
                 JSONObject user = (JSONObject) it;
                 if (user.get("name").toString().equalsIgnoreCase(username)) {
                     String uuid = user.get("uuid").toString();
-                    Log.info("Found cached UUID for " + username + ": " + uuid);
                     return Optional.of(UUID.fromString(uuid));
                 }
             }
@@ -66,7 +65,6 @@ public class LuckPermissions implements PermissionProvider {
 
     @Override
     public Set<String> hasOfflinePermissions(String player, Set<String> perms) {
-        Log.info("Requesting offline permissions: " + String.join(",", perms) + " for " + player);
         return perms.stream()
                 .filter(perm -> hasOfflinePermission(player, perm))
                 .collect(Collectors.toSet());
@@ -74,7 +72,6 @@ public class LuckPermissions implements PermissionProvider {
 
     @Override
     public boolean hasOfflinePermission(String player, String perm) {
-        Log.info("Requesting offline permission: " + perm + " for " + player);
         if (DynmapPlugin.plugin.isOp(player.toLowerCase())) return true;
         Optional<LuckPerms> api = getApi();
         Optional<UUID> uuid = cachedUUID(player);
@@ -87,7 +84,6 @@ public class LuckPermissions implements PermissionProvider {
 
     @Override
     public boolean has(PlayerEntity player, String permission) {
-        Log.info("Requesting privilege: " + permission);
         if (player == null) return false;
         String name = player.getName().getString().toLowerCase();
         if (DynmapPlugin.plugin.isOp(name)) return true;
@@ -98,10 +94,8 @@ public class LuckPermissions implements PermissionProvider {
     public boolean hasPermissionNode(PlayerEntity player, String permission) {
         if (player != null) {
             String name = player.getName().getString().toLowerCase();
-            Log.info("Requesting permission node: " + permission + " for " + name);
             return DynmapPlugin.plugin.isOp(name);
         }
-        Log.info("Requesting permission node: " + permission);
         return false;
     }
 
