@@ -8,7 +8,7 @@ import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -61,6 +61,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
         // Put the (possibly updated) texts in the sign. Ignore filtering (is this OK?).
         for (int i=0; i<signText.size(); i++)
-            signBlockEntity.setTextOnRow(i, new LiteralText(rawTexts[i]));
+            signBlockEntity.setTextOnRow(i, new LiteralTextContent(rawTexts[i]));
     }
 }

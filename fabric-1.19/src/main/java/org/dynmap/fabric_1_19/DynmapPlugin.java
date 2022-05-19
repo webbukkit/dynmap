@@ -527,7 +527,7 @@ public class DynmapPlugin {
 
         // getPlayer throws a CommandSyntaxException, so getEntity and instanceof for safety
         if (commandSource.getEntity() instanceof ServerPlayerEntity) {
-            psender = commandSource.getPlayer();
+            psender = commandSource.getPlayerOrThrow();
         }
 
         if (psender != null) {

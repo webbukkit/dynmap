@@ -12,7 +12,7 @@ import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
@@ -188,7 +188,7 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
 
     @Override
     public void sendMessage(String msg) {
-        Text ichatcomponent = new LiteralText(msg);
+        Text ichatcomponent = new LiteralTextContent(msg);
         player.sendSystemMessage(ichatcomponent, Util.NIL_UUID);
     }
 
@@ -239,12 +239,12 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
             TitleFadeS2CPacket times = new TitleFadeS2CPacket(fadeInTicks, stayTicks, fadeOutTicks);
             player.networkHandler.sendPacket(times);
             if (title != null) {
-                TitleS2CPacket titlepkt = new TitleS2CPacket(new LiteralText(title));
+                TitleS2CPacket titlepkt = new TitleS2CPacket(new LiteralTextContent(title));
                 player.networkHandler.sendPacket(titlepkt);
             }
 
             if (subtitle != null) {
-            	SubtitleS2CPacket subtitlepkt = new SubtitleS2CPacket(new LiteralText(subtitle));
+            	SubtitleS2CPacket subtitlepkt = new SubtitleS2CPacket(new LiteralTextContent(subtitle));
                 player.networkHandler.sendPacket(subtitlepkt);
             }
         }
