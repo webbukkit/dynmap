@@ -188,8 +188,8 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
 
     @Override
     public void sendMessage(String msg) {
-        Text ichatcomponent = new LiteralTextContent(msg);
-        player.sendSystemMessage(ichatcomponent, Util.NIL_UUID);
+        Text ichatcomponent = Text.literal(msg);
+        player.sendMessage(ichatcomponent);
     }
 
     @Override
@@ -239,12 +239,12 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
             TitleFadeS2CPacket times = new TitleFadeS2CPacket(fadeInTicks, stayTicks, fadeOutTicks);
             player.networkHandler.sendPacket(times);
             if (title != null) {
-                TitleS2CPacket titlepkt = new TitleS2CPacket(new LiteralTextContent(title));
+                TitleS2CPacket titlepkt = new TitleS2CPacket(Text.literal(title));
                 player.networkHandler.sendPacket(titlepkt);
             }
 
             if (subtitle != null) {
-            	SubtitleS2CPacket subtitlepkt = new SubtitleS2CPacket(new LiteralTextContent(subtitle));
+            	SubtitleS2CPacket subtitlepkt = new SubtitleS2CPacket(Text.literal(subtitle));
                 player.networkHandler.sendPacket(subtitlepkt);
             }
         }

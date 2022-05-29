@@ -1,6 +1,7 @@
 package org.dynmap.fabric_1_19;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
@@ -49,7 +50,7 @@ public class FabricWorld extends DynmapWorld {
     }
     
     public void updateWorld(World w) {
-    	this.updateWorldHeights(w.getHeight(), w.getDimension().getMinimumY(), w.getSeaLevel());
+    	this.updateWorldHeights(w.getHeight(), w.getBottomY(), w.getSeaLevel());
     }
 
     public FabricWorld(DynmapPlugin plugin, World w) {
@@ -58,7 +59,7 @@ public class FabricWorld extends DynmapWorld {
                 w.getRegistryKey() == World.NETHER,
                 w.getRegistryKey() == World.END,
                 w.getRegistryKey().getValue().getPath(),
-                w.getDimension().getMinimumY());
+                w.getBottomY());
         setWorldLoaded(w);
     }
 
@@ -148,8 +149,14 @@ public class FabricWorld extends DynmapWorld {
         world = w;
         this.sealevel = w.getSeaLevel();   // Read actual current sealevel from world
         // Update lighting table
-        for (int i = 0; i < 16; i++) {
-            this.setBrightnessTableEntry(i, w.getDimension().getBrightness(i));
+        for (int lightLevel = 0; lightLevel < 16; lightLevel++) {
+            // Algorithm based on LightmapTextureManager.getBrightness()
+            // We can't call that method because it's client-only.
+            // This means the code below can stop being correct if Mojang ever
+            // updates the curve; in that case we should reflect the changes.
+            float value = (float) lightLevel / 15.0f;
+            float brightness = value / (4.0f - 3.0f * value);
+            this.setBrightnessTableEntry(lightLevel, MathHelper.lerp(w.getDimension().ambientLight(), brightness, 1.0F));
         }
     }
 

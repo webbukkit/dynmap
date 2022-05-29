@@ -83,7 +83,8 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
             ThreadedAnvilChunkStorage acl = cps.threadedAnvilChunkStorage;
 
             ChunkPos coord = new ChunkPos(x, z);
-            return acl.getNbt(coord);
+            // Async chunk reading is synchronized here. Perhaps we can do async and improve performance?
+            return acl.getNbt(coord).join().orElse(null);
         } catch (Exception exc) {
             Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
             return null;
