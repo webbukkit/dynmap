@@ -6,7 +6,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
-import net.minecraft.server.filter.Message;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,14 +33,14 @@ public abstract class ServerPlayNetworkHandlerMixin {
     public ServerPlayerEntity player;
 
     @Inject(
-            method = "method_44155",
+            method = "handleDecoratedMessage",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/server/filter/Message;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/util/registry/RegistryKey;)V",
+                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/server/filter/FilteredMessage;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/util/registry/RegistryKey;)V",
                     shift = At.Shift.BEFORE
             )
     )
-    public void onGameMessage(Message<SignedChatMessage> message, CallbackInfo ci) {
+    public void onGameMessage(FilteredMessage<SignedChatMessage> message, CallbackInfo ci) {
         ServerChatEvents.EVENT.invoker().onChatMessage(player, message.raw().getContent().getString());
     }
 
@@ -53,7 +53,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    public void onSignUpdate(UpdateSignC2SPacket packet, List<Message<String>> signText, CallbackInfo info,
+    public void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage<String>> signText, CallbackInfo info,
             ServerWorld serverWorld, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity, SignBlockEntity signBlockEntity)
     {
         // Pull the raw text from the input.

@@ -2,7 +2,7 @@ package org.dynmap.fabric_1_19;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -96,7 +96,7 @@ public class DynmapPlugin {
         plugin = this;
         // Fabric events persist between server instances
         ServerLifecycleEvents.SERVER_STARTING.register(this::serverStart);
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> registerCommands(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> registerCommands(dispatcher));
         CustomServerLifecycleEvents.SERVER_STARTED_PRE_WORLD_LOAD.register(this::serverStarted);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::serverStop);
     }
