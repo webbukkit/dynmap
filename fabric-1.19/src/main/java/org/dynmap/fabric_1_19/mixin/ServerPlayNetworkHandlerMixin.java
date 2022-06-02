@@ -36,7 +36,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             )
     )
     public void onGameMessage(FilteredMessage<SignedMessage> message, CallbackInfo ci) {
-        ServerChatEvents.EVENT.invoker().onChatMessage(player, message.raw().getContent().getString());
+        ServerChatEvents.EVENT.invoker().onChatMessage(player, message.raw().signedContent().getString());
     }
 
     @Inject(
