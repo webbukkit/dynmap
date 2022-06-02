@@ -6,6 +6,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.client.render.LightmapTextureManager;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -49,7 +50,7 @@ public class FabricWorld extends DynmapWorld {
     }
     
     public void updateWorld(World w) {
-    	this.updateWorldHeights(w.getHeight(), w.getDimension().getMinimumY(), w.getSeaLevel());
+    	this.updateWorldHeights(w.getHeight(), w.getDimension().minY(), w.getSeaLevel());
     }
 
     public FabricWorld(DynmapPlugin plugin, World w) {
@@ -58,12 +59,12 @@ public class FabricWorld extends DynmapWorld {
                 w.getRegistryKey() == World.NETHER,
                 w.getRegistryKey() == World.END,
                 w.getRegistryKey().getValue().getPath(),
-                w.getDimension().getMinimumY());
+                w.getDimension().minY());
         setWorldLoaded(w);
     }
 
     public FabricWorld(DynmapPlugin plugin, String name, int height, int sealevel, boolean nether, boolean the_end, String deftitle, int miny) {
-        super(name, (height > maxWorldHeight) ? maxWorldHeight : height, sealevel, miny);
+        super(name, Math.min(height, maxWorldHeight), sealevel, miny);
         this.plugin = plugin;
         world = null;
         setTitle(deftitle);
@@ -149,7 +150,7 @@ public class FabricWorld extends DynmapWorld {
         this.sealevel = w.getSeaLevel();   // Read actual current sealevel from world
         // Update lighting table
         for (int i = 0; i < 16; i++) {
-            this.setBrightnessTableEntry(i, w.getDimension().getBrightness(i));
+            this.setBrightnessTableEntry(i, LightmapTextureManager.getBrightness(w.getDimension(), i));
         }
     }
 

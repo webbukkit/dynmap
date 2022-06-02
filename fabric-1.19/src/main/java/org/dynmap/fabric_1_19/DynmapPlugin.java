@@ -96,7 +96,7 @@ public class DynmapPlugin {
         plugin = this;
         // Fabric events persist between server instances
         ServerLifecycleEvents.SERVER_STARTING.register(this::serverStart);
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> registerCommands(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher,registryAccess, environment) -> registerCommands(dispatcher));
         CustomServerLifecycleEvents.SERVER_STARTED_PRE_WORLD_LOAD.register(this::serverStarted);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::serverStop);
     }
@@ -267,8 +267,7 @@ public class DynmapPlugin {
             }
         }
 
-        // TODO: Consider whether cheats are enabled for integrated server
-        return server.isSingleplayer() && player.equalsIgnoreCase(server.getSinglePlayerName());
+        return false;
     }
 
     boolean hasPerm(PlayerEntity psender, String permission) {

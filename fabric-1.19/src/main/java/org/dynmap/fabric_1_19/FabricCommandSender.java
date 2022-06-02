@@ -1,7 +1,6 @@
 package org.dynmap.fabric_1_19;
 
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
 import org.dynmap.common.DynmapCommandSender;
 
@@ -25,7 +24,7 @@ public class FabricCommandSender implements DynmapCommandSender {
     @Override
     public void sendMessage(String msg) {
         if (sender != null) {
-            Text ichatcomponent = new LiteralTextContent(msg);
+            Text ichatcomponent = Text.of(msg);
             sender.sendFeedback(ichatcomponent, false);
         }
     }

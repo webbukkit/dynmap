@@ -12,7 +12,6 @@ import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -272,7 +271,7 @@ public class FabricServer extends DynmapServerInterface {
             case SIGN_CHANGE:
                 BlockEvents.SIGN_CHANGE_EVENT.register((world, pos, lines, material, player) -> {
                     plugin.core.processSignChange("fabric", FabricWorld.getWorldName(plugin, world),
-                            pos.getX(), pos.getY(), pos.getZ(), lines, player.getName().asString());
+                            pos.getX(), pos.getY(), pos.getZ(), lines, player.getName().getString());
                 });
                 break;
 
@@ -292,8 +291,8 @@ public class FabricServer extends DynmapServerInterface {
 
     @Override
     public void broadcastMessage(String msg) {
-        Text component = new LiteralTextContent(msg);
-        server.getPlayerManager().broadcast(component, MessageType.SYSTEM, Util.NIL_UUID);
+        Text component = Text.of(msg);
+        server.getPlayerManager().broadcast(component, MessageType.SYSTEM);
         Log.info(stripChatColor(msg));
     }
 

@@ -83,7 +83,7 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
             ThreadedAnvilChunkStorage acl = cps.threadedAnvilChunkStorage;
 
             ChunkPos coord = new ChunkPos(x, z);
-            return acl.getNbt(coord);
+            return acl.getNbt(coord).get().get();
         } catch (Exception exc) {
             Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
             return null;
