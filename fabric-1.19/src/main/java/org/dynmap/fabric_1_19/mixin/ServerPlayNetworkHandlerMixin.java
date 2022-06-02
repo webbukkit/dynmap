@@ -3,17 +3,14 @@ package org.dynmap.fabric_1_19.mixin;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.List;
-
 import org.dynmap.fabric_1_19.event.BlockEvents;
 import org.dynmap.fabric_1_19.event.ServerChatEvents;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,21 +20,23 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.List;
+
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
 
     @Inject(
-            method = "handleMessage",
+            method = "handleDecoratedMessage",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;handleMessage(Lnet/minecraft/network/packet/c2s/play/ChatMessageC2SPacket;Lnet/minecraft/server/filter/FilteredMessage;)V",
+                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/server/filter/FilteredMessage;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/util/registry/RegistryKey;)V",
                     shift = At.Shift.BEFORE
             )
     )
-    public void onGameMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message, CallbackInfo info) {
-        ServerChatEvents.EVENT.invoker().onChatMessage(player, message.raw());
+    public void onGameMessage(FilteredMessage<SignedMessage> message, CallbackInfo ci) {
+        ServerChatEvents.EVENT.invoker().onChatMessage(player, message.raw().getContent().getString());
     }
 
     @Inject(

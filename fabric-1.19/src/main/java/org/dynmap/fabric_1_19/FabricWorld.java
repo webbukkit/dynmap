@@ -1,12 +1,13 @@
 package org.dynmap.fabric_1_19;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.world.dimension.DimensionType;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -48,9 +49,9 @@ public class FabricWorld extends DynmapWorld {
             return rk.getValue().getNamespace() + "_" + rk.getValue().getPath();
         }
     }
-    
+
     public void updateWorld(World w) {
-    	this.updateWorldHeights(w.getHeight(), w.getDimension().minY(), w.getSeaLevel());
+        this.updateWorldHeights(w.getHeight(), w.getDimension().minY(), w.getSeaLevel());
     }
 
     public FabricWorld(DynmapPlugin plugin, World w) {
@@ -150,8 +151,14 @@ public class FabricWorld extends DynmapWorld {
         this.sealevel = w.getSeaLevel();   // Read actual current sealevel from world
         // Update lighting table
         for (int i = 0; i < 16; i++) {
-            this.setBrightnessTableEntry(i, LightmapTextureManager.getBrightness(w.getDimension(), i));
+            this.setBrightnessTableEntry(i, FabricWorld.getBrightness(w.getDimension(), i));
         }
+    }
+
+    public static float getBrightness(DimensionType type, int lightLevel) {
+        float f = (float) lightLevel / 15.0F;
+        float g = f / (4.0F - 3.0F * f);
+        return MathHelper.lerp(type.ambientLight(), g, 1.0F);
     }
 
     /* Get light level of block */
