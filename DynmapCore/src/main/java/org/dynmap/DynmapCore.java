@@ -135,6 +135,7 @@ public class DynmapCore implements DynmapCommonAPI {
     private int fullrenderplayerlimit;  /* Number of online players that will cause fullrender processing to pause */
     private int updateplayerlimit;  /* Number of online players that will cause update processing to pause */
     private String publicURL;	// If set, public HRL for accessing dynmap (declared by administrator)
+    private String noPermissionMsg;
     private boolean didfullpause;
     private boolean didupdatepause;
     private Map<String, LinkedList<String>> ids_by_ip = new HashMap<String, LinkedList<String>>();
@@ -571,6 +572,9 @@ public class DynmapCore implements DynmapCommonAPI {
             Log.info("EXPERIMENTAL: chunk migration enabled");
         
         publicURL = configuration.getString("publicURL", "");
+
+        /* Send this message if the player does not have permission to use the command */
+        noPermissionMsg = configuration.getString("noPermissionMsg", "You don't have permission to use this command!");
         
         /* Load preupdate/postupdate commands */
         ImageIOManager.preUpdateCommand = configuration.getString("custom-commands/image-updates/preupdatecommand", "");
@@ -2097,7 +2101,7 @@ public class DynmapCore implements DynmapCommonAPI {
         if (!(sender instanceof DynmapPlayer) || sender.isOp()) {
             return true;
         } else if (!sender.hasPrivilege(permission.toLowerCase())) {
-            sender.sendMessage("You don't have permission to use this command!");
+            sender.sendMessage(noPermissionMsg);
             return false;
         }
         return true;
