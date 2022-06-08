@@ -3,8 +3,7 @@ package org.dynmap.fabric_1_19.mixin;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
@@ -40,7 +39,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
                     shift = At.Shift.BEFORE
             )
     )
-    public void onGameMessage(FilteredMessage<SignedChatMessage> message, CallbackInfo ci) {
+    public void onGameMessage(FilteredMessage<SignedMessage> message, CallbackInfo ci) {
         ServerChatEvents.EVENT.invoker().onChatMessage(player, message.raw().getContent().getString());
     }
 
