@@ -468,7 +468,7 @@ public class PostgreSQLMapStorage extends MapStorage {
                 doUpdate(c, "CREATE TABLE " + tableStandaloneFiles + " (FileName VARCHAR(128) NOT NULL, ServerID BIGINT NOT NULL DEFAULT 0, Content BYTEA, PRIMARY KEY (FileName, ServerID))");
                 doUpdate(c, "CREATE INDEX " + tableMaps + "_idx ON " + tableMaps + "(WorldID, MapID, Variant, ServerID)");  
                 doUpdate(c, "CREATE TABLE " + tableSchemaVersion + " (level INT PRIMARY KEY NOT NULL)");
-                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (3)");
+                doUpdate(c, "INSERT INTO " + tableSchemaVersion + " (level) VALUES (4)");
                 version = 4;	// initialzed to current schema
             } catch (SQLException x) {
             	logSQLException("Error creating tables", x);

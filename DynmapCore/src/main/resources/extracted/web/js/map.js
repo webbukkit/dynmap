@@ -74,7 +74,7 @@ DynMap.prototype = {
 	formatUrl: function(name, options) {
 		var url = this.options.url[name];
 		$.each(options, function(n,v) {
-			url = url.replace("{" + n + "}", v);
+			url = url.replace("{" + n + "}", encodeURIComponent(v));
 		});
 		return url;
 	},

@@ -104,6 +104,7 @@ import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.common.DynmapListenerManager.EventType;
+import org.dynmap.common.chunk.GenericMapChunkCache;
 import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.modsupport.ModSupportImpl;
@@ -514,46 +515,62 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             final MapChunkCache cc = c;
 
             while(!cc.isDoneLoading()) {
-                Future<Boolean> f = core.getServer().callSyncMethod(new Callable<Boolean>() {
-                    public Boolean call() throws Exception {
-                        boolean exhausted = true;
-                        
-                        if (prev_tick != cur_tick) {
-                            prev_tick = cur_tick;
-                            cur_tick_starttime = System.nanoTime();
-                        }                            
-                        if(chunks_in_cur_tick > 0) {
-                            boolean done = false;
-                            while (!done) {
-                                int cnt = chunks_in_cur_tick;
-                                if (cnt > 5) cnt = 5;
-                                chunks_in_cur_tick -= cc.loadChunks(cnt);
-                                exhausted = (chunks_in_cur_tick == 0) || ((System.nanoTime() - cur_tick_starttime) > perTickLimit);
-                                done = exhausted || cc.isDoneLoading();
+                if (BukkitVersionHelper.helper.isUnsafeAsync()) {
+                    Future<Boolean> f = core.getServer().callSyncMethod(new Callable<Boolean>() {
+                        public Boolean call() throws Exception {
+                            boolean exhausted = true;
+
+                            if (prev_tick != cur_tick) {
+                                prev_tick = cur_tick;
+                                cur_tick_starttime = System.nanoTime();
                             }
+                            if (chunks_in_cur_tick > 0) {
+                                boolean done = false;
+                                while (!done) {
+                                    int cnt = chunks_in_cur_tick;
+                                    if (cnt > 5) cnt = 5;
+                                    chunks_in_cur_tick -= cc.loadChunks(cnt);
+                                    exhausted = (chunks_in_cur_tick == 0) || ((System.nanoTime() - cur_tick_starttime) > perTickLimit);
+                                    done = exhausted || cc.isDoneLoading();
+                                }
+                            }
+                            return exhausted;
                         }
-                        return exhausted;
+                    });
+                    if (f == null) {
+                        return null;
                     }
-                });
-                if (f == null) {
-                    return null;
-                }
-                Boolean delay;
-                try {
-                    delay = f.get();
-                } catch (CancellationException cx) {
-                    return null;
-                } catch (InterruptedException cx) {
-                    return null;
-                } catch (ExecutionException ex) {
-                    Log.severe("Exception while fetching chunks: ", ex.getCause());
-                    return null;
-                } catch (Exception ix) {
-                    Log.severe(ix);
-                    return null;
-                }
-                if((delay != null) && delay.booleanValue()) {
-                    try { Thread.sleep(25); } catch (InterruptedException ix) {}
+                    Boolean delay;
+                    try {
+                        delay = f.get();
+                    } catch (CancellationException cx) {
+                        return null;
+                    } catch (InterruptedException cx) {
+                        return null;
+                    } catch (ExecutionException ex) {
+                        Log.severe("Exception while fetching chunks: ", ex.getCause());
+                        return null;
+                    } catch (Exception ix) {
+                        Log.severe(ix);
+                        return null;
+                    }
+
+                    if ((delay != null) && delay.booleanValue()) {
+                        try {
+                            Thread.sleep(25);
+                        } catch (InterruptedException ix) {
+                        }
+                    }
+                } else {
+                    if (prev_tick != cur_tick) {
+                        prev_tick = cur_tick;
+                        cur_tick_starttime = System.nanoTime();
+                    }
+                    if (cc instanceof GenericMapChunkCache) {
+                        ((GenericMapChunkCache) cc).loadChunksAsync();
+                    } else {
+                        cc.loadChunks(Integer.MAX_VALUE);
+                    }
                 }
             }
             /* If cancelled due to world unload return nothing */

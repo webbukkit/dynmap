@@ -32,7 +32,12 @@ public class BukkitVersionHelperGlowstone extends BukkitVersionHelper {
             throw new IllegalArgumentException("Error initializing dynmap - Glowstone version incompatible!");
         }
     }
-    
+
+    @Override
+    public boolean isUnsafeAsync() {
+        return true;
+    }
+
     @Override
     public Object[] getBiomeBaseList() {
         return new Object[0];

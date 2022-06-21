@@ -35,6 +35,10 @@ public abstract class BukkitVersionHelper {
         
     }
     /**
+     * Get if it's unsafe to load chunks async
+     */
+    public abstract boolean isUnsafeAsync();
+    /**
      * Get list of defined biomebase objects
      */
     public abstract Object[] getBiomeBaseList();

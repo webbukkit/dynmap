@@ -58,11 +58,19 @@ import java.util.Map;
 /**
  * Helper for isolation of bukkit version specific issues
  */
-public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {    
+public class BukkitVersionHelperSpigot117 extends BukkitVersionHelper {
+    private final boolean unsafeAsync;
+
     public BukkitVersionHelperSpigot117() {
+        this.unsafeAsync = true;
     }
-    
-    /**
+
+    @Override
+    public boolean isUnsafeAsync() {
+        return unsafeAsync;
+    }
+
+     /**
      * Get block short name list
      */
     @Override

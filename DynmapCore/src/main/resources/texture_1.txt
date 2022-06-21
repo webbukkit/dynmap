@@ -3201,8 +3201,6 @@ block:id=%attached_melon_stem,patch0=0:melon_stem,patch1=0:attached_melon_stem,b
 block:id=%pumpkin_stem,patch0=0:pumpkin_stem,blockcolor=foliagebiome,transparency=TRANSPARENT,stdrot=true
 # Melon stem
 block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TRANSPARENT,stdrot=true
-<<<<<<< HEAD
-=======
 
 [1.19-]texture:id=mangrove_planks,filename=assets/minecraft/textures/block/mangrove_planks.png,xcount=1,ycount=1
 [1.19-]texture:id=mangrove_propagule_hanging,filename=assets/minecraft/textures/block/mangrove_propagule_hanging.png,xcount=1,ycount=1
@@ -3735,4 +3733,3 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.19-]block:id=%lightning_rod,state=powered:false/facing:up,patch0=0:lightning_rod,transparency=SEMITRANSPARENT,stdrot=true
 [1.19-]block:id=%lightning_rod,state=powered:true/facing:down,patch0=0:lightning_rod_on,transparency=SEMITRANSPARENT,stdrot=true
 [1.19-]block:id=%lightning_rod,state=powered:false/facing:down,patch0=0:lightning_rod,transparency=SEMITRANSPARENT,stdrot=true
->>>>>>> aae2146b (fixed mud_bricks sides so it is no longer transparent. thanks BlargCraft on Reddit.)

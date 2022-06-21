@@ -27,7 +27,7 @@ componentconstructors['markers'] = function(dynmap, configuration) {
 			
 	function loadmarkers(world) {
 		removeAllMarkers();
-		var url = concatURL(dynmap.options.url.markers, '_markers_/marker_'+world+'.json');
+		var url = concatURL(dynmap.options.url.markers, '_markers_/marker_' + encodeURIComponent(world) + '.json');
 		
 		$.getJSON(url, function(data) {
 			var ts = data.timestamp;

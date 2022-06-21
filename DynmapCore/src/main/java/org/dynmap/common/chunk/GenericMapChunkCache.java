@@ -1,8 +1,10 @@
 package org.dynmap.common.chunk;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
@@ -37,6 +39,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	private int snapcnt;
 	private GenericChunk[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
 	private boolean[][] isSectionNotEmpty; /* Indexed by snapshot index, then by section index */
+	private AtomicInteger loadingChunks = new AtomicInteger(0); //the amount of threads loading chunks at this moment, used by async loading
 
 	private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
 			BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
@@ -697,6 +700,14 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	protected abstract GenericChunk getLoadedChunk(DynmapChunk ch);
 	// Load generic chunk from unloaded chunk
 	protected abstract GenericChunk loadChunk(DynmapChunk ch);
+	// Load generic chunk from existing and already loaded chunk async
+	protected Supplier<GenericChunk> getLoadedChunkAsync(DynmapChunk ch) {
+		throw new IllegalStateException("Not implemeted");
+	}
+	// Load generic chunks from unloaded chunk async
+	protected Supplier<GenericChunk> loadChunkAsync(DynmapChunk ch){
+		throw new IllegalStateException("Not implemeted");
+	}
 	
 	/**
 	 * Read NBT data from loaded chunks - needs to be called from server/world
@@ -754,10 +765,82 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		return cnt;
 	}
 
+	/**
+	 * Read NBT data from loaded chunks - do not needs to be called from server/world
+	 * Will throw {@link IllegalStateException} if not supporting
+	 */
+	public void getLoadedChunksAsync() {
+		class SimplePair { //simple pair of the supplier that finishes read async, and a consumer that also finish his work async
+			final Supplier<GenericChunk> supplier;
+			final BiConsumer<GenericChunk, Long> consumer;
+
+			SimplePair(Supplier<GenericChunk> supplier, BiConsumer<GenericChunk, Long> consumer) {
+				this.supplier = supplier;
+				this.consumer = consumer;
+			}
+		}
+		if (!dw.isLoaded()) {
+			isempty = true;
+			unloadChunks();
+			return;
+		}
+		List<SimplePair> lastApply = new ArrayList<>();
+		for (DynmapChunk dynmapChunk : chunks) {
+			long startTime = System.nanoTime();
+			int chunkIndex = (dynmapChunk.x - x_min) + (dynmapChunk.z - z_min) * x_dim;
+			if (snaparray[chunkIndex] != null)
+				continue; // Skip if already processed
+
+			boolean vis = isChunkVisible(dynmapChunk);
+
+			/* Check if cached chunk snapshot found */
+			if (tryChunkCache(dynmapChunk, vis)) {
+				endChunkLoad(startTime, ChunkStats.CACHED_SNAPSHOT_HIT);
+			}
+			// If chunk is loaded and not being unloaded, we're grabbing its NBT data
+			else {
+				// Get generic chunk from already loaded chunk, if we can
+				Supplier<GenericChunk> supplier = getLoadedChunkAsync(dynmapChunk);
+				long startPause = System.nanoTime();
+				BiConsumer<GenericChunk, Long> consumer = (ss, reloadTime) -> {
+					if (ss == null) return;
+					long pause = reloadTime - startPause;
+					if (vis) { // If visible
+						prepChunkSnapshot(dynmapChunk, ss);
+					} else {
+						if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
+							ss = getStone();
+						} else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
+							ss = getOcean();
+						} else {
+							ss = getEmpty();
+						}
+					}
+					snaparray[chunkIndex] = ss;
+					endChunkLoad(startTime - pause, ChunkStats.LOADED_CHUNKS);
+
+				};
+				lastApply.add(new SimplePair(supplier, consumer));
+			}
+		}
+		//impact on the main thread should be minimal, so we plan and finish the work after main thread finished it's part
+		lastApply.forEach(simplePair -> {
+			long reloadWork = System.nanoTime();
+			simplePair.consumer.accept(simplePair.supplier.get(), reloadWork);
+		});
+	}
+
 	@Override
 	public int loadChunks(int max_to_load) {
 		return getLoadedChunks() + readChunks(max_to_load);
+	}
 
+	/**
+	 * Prepare the chunks async
+	 */
+	public void loadChunksAsync() {
+		getLoadedChunksAsync();
+		readChunksAsync();
 	}
 
 	public int readChunks(int max_to_load) {
@@ -838,6 +921,96 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			}
 		}
 		return cnt;
+	}
+
+	public void readChunksAsync() {
+		class SimplePair { //pair of the chunk and the data which is readed async
+			private final Supplier<GenericChunk> supplier;
+			private final DynmapChunk chunk;
+
+			SimplePair(DynmapChunk chunk) {
+				this.chunk = chunk;
+				this.supplier = loadChunkAsync(chunk);
+			}
+		}
+		if (!dw.isLoaded()) {
+			isempty = true;
+			unloadChunks();
+			return;
+		}
+
+		List<DynmapChunk> chunks;
+		if (iterator == null) {
+			iterator = Collections.emptyListIterator();
+			chunks = new ArrayList<>(this.chunks);
+		} else {
+			chunks = new ArrayList<>();
+			iterator.forEachRemaining(chunks::add);
+		}
+		//if before increent was 0, means that we are the first, so we need to set this
+		if (loadingChunks.getAndIncrement() == 0) {
+			DynmapCore.setIgnoreChunkLoads(true);
+		}
+
+		try {
+			List<DynmapChunk> cached = new ArrayList<>();
+			List<SimplePair> notCached = new ArrayList<>();
+
+			iterator.forEachRemaining(chunks::add);
+			chunks.stream()
+					.filter(chunk -> snaparray[(chunk.x - x_min) + (chunk.z - z_min) * x_dim] == null)
+					.forEach(chunk -> {
+						if (cache.getSnapshot(dw.getName(), chunk.x, chunk.z) == null) {
+							notCached.add(new SimplePair(chunk));
+						} else {
+							cached.add(chunk);
+						}
+					});
+
+			cached.forEach(chunk -> {
+				long startTime = System.nanoTime();
+				tryChunkCache(chunk, isChunkVisible(chunk));
+				endChunkLoad(startTime, ChunkStats.CACHED_SNAPSHOT_HIT);
+			});
+			notCached.forEach(chunkSupplier -> {
+				long startTime = System.nanoTime();
+				GenericChunk chunk = chunkSupplier.supplier.get();
+				DynmapChunk dynmapChunk = chunkSupplier.chunk;
+				if (chunk != null) {
+					// If hidden
+					if (isChunkVisible(dynmapChunk)) {
+						// Prep snapshot
+						prepChunkSnapshot(dynmapChunk, chunk);
+					} else {
+						if (hidestyle == HiddenChunkStyle.FILL_STONE_PLAIN) {
+							chunk = getStone();
+						} else if (hidestyle == HiddenChunkStyle.FILL_OCEAN) {
+							chunk = getOcean();
+						} else {
+							chunk = getEmpty();
+						}
+					}
+					snaparray[(dynmapChunk.x - x_min) + (dynmapChunk.z - z_min) * x_dim] = chunk;
+					endChunkLoad(startTime, ChunkStats.UNLOADED_CHUNKS);
+				} else {
+					endChunkLoad(startTime, ChunkStats.UNGENERATED_CHUNKS);
+				}
+			});
+
+			isempty = true;
+			/* Fill missing chunks with empty dummy chunk */
+			for (int i = 0; i < snaparray.length; i++) {
+				if (snaparray[i] == null) {
+					snaparray[i] = getEmpty();
+				} else if (!snaparray[i].isEmpty) {
+					isempty = false;
+				}
+			}
+		} finally {
+			if (loadingChunks.decrementAndGet() == 0) {
+				DynmapCore.setIgnoreChunkLoads(false);
+			}
+		}
 	}
 
 	/**

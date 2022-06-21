@@ -63,12 +63,18 @@ import java.util.Set;
 /**
  * Helper for isolation of bukkit version specific issues
  */
-public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper { 
-		
+public class BukkitVersionHelperSpigot118 extends BukkitVersionHelper {
+    private final boolean unsafeAsync;
+
     public BukkitVersionHelperSpigot118() {
-    	
+        this.unsafeAsync = true;
     }
-    
+
+    @Override
+    public boolean isUnsafeAsync() {
+        return unsafeAsync;
+    }
+
     /**
      * Get block short name list
      */
