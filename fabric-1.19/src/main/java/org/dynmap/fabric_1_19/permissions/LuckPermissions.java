@@ -41,7 +41,7 @@ public class LuckPermissions implements PermissionProvider {
 
     private Optional<UUID> cachedUUID(String username) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(MinecraftServer.USER_CACHE_FILE));
+            BufferedReader reader = new BufferedReader(new FileReader("usercache.json"));
             JSONArray cache = (JSONArray) parser.parse(reader);
             for (Object it : cache) {
                 JSONObject user = (JSONObject) it;
