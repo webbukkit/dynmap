@@ -1,3 +1,16 @@
+// Workaround for Shadow not supporting Java 19 classes.
+// Remove this once Shadow updates.
+// See: https://github.com/johnrengelman/shadow/pull/770
+// See: https://discord.com/channels/722722769950998560/793019909055578113/978939925061857315
+buildscript {
+    configurations.all {
+        resolutionStrategy {
+            force("org.ow2.asm:asm:9.3")
+            force("org.ow2.asm:asm-commons:9.3")
+        }
+    }
+}
+
 plugins {
     id  "com.github.johnrengelman.shadow" version "7.1.0"
     id  'java'
@@ -25,7 +38,7 @@ allprojects  {
   apply plugin: 'java'
   
   group = 'us.dynmap'
-  version = '3.4-SNAPSHOT'
+  version = '3.4-beta-4'
 
 }
 

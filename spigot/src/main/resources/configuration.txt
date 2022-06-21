@@ -505,6 +505,9 @@ soft-ref-cache: true
 # If not set, 'dynmap url' will not return anything.  URL should be fully qualified (e.g. https://mc.westeroscraft.com/)
 #publicURL: http://my.greatserver.com/dynmap
 
+# Send this message if the player does not have permission to use the command
+noPermissionMsg: "You don't have permission to use this command!"
+
 # Set to true to enable verbose startup messages - can help with debugging map configuration problems
 # Set to false for a much quieter startup log
 verbose: false

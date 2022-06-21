@@ -27,6 +27,7 @@ import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.fabric_1_16_4.event.ServerChatEvents;
+import org.dynmap.fabric_1_16_4.event.BlockEvents;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.VisibilityLimit;
 
@@ -283,6 +284,10 @@ public class FabricServer extends DynmapServerInterface {
                     }
                 }, DynmapPlugin.this);
                 */
+                BlockEvents.SIGN_CHANGE_EVENT.register((world, pos, lines, material, player) -> {
+                    plugin.core.processSignChange("fabric", FabricWorld.getWorldName(plugin, world),
+                            pos.getX(), pos.getY(), pos.getZ(), lines, player.getName().asString());
+                });
                 break;
 
             default:
