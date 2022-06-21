@@ -396,9 +396,19 @@ public class DynmapPlugin {
         registerPlayerLoginListener();
 
         /* Initialize permissions handler */
-        permissions = FilePermissions.create();
-        if (permissions == null) {
-            permissions = new OpPermissions(new String[]{"webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self"});
+        if (FabricLoader.getInstance().isModLoaded("luckperms")) {
+            Log.info("Using luckperms for access control");
+            permissions = new LuckPermissions();
+        }
+        else if (FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0")) {
+            Log.info("Using fabric-permissions-api for access control");
+            permissions = new FabricPermissions();
+        } else {
+            /* Initialize permissions handler */
+            permissions = FilePermissions.create();
+            if (permissions == null) {
+                permissions = new OpPermissions(new String[]{"webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self"});
+            }
         }
         /* Get and initialize data folder */
         File dataDirectory = new File("dynmap");
