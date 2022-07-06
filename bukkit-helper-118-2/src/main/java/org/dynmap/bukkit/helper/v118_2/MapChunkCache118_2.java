@@ -1,10 +1,12 @@
 package org.dynmap.bukkit.helper.v118_2;
 
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.dynmap.DynmapChunk;
+import org.dynmap.MapManager;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.bukkit.helper.BukkitWorld;
 import org.dynmap.common.chunk.GenericChunk;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -37,11 +40,20 @@ public class MapChunkCache118_2 extends GenericMapChunkCache {
 
     // Load generic chunk from existing and already loaded chunk
     protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
-        return getLoadedChunk(chunk, false).get();
+        CraftWorld cw = (CraftWorld) w;
+        if (!cw.isChunkLoaded(chunk.x, chunk.z)) return null;
+        Chunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z); //already safe async on vanilla
+        if ((c == null) || !c.o) return null;    // c.loaded
+        NBTTagCompound nbt = ChunkRegionLoader.a(cw.getHandle(), c);
+        return nbt != null ? parseChunkFromNBT(new NBT.NBTCompound(nbt)) : null;
     }
     @Override
     protected Supplier<GenericChunk> getLoadedChunkAsync(DynmapChunk ch) {
-        return getLoadedChunk(ch, true);
+        Supplier<NBTTagCompound> nbtSupplier = provider.getLoadedChunk((CraftWorld) w, ch.x, ch.z);
+        return () -> {
+            NBTTagCompound nbt = nbtSupplier.get();
+            return nbt == null ? null : parseChunkFromNBT(new NBT.NBTCompound(nbt));
+        };
     }
 
     @Override
@@ -57,26 +69,6 @@ public class MapChunkCache118_2 extends GenericMapChunkCache {
         }
     }
 
-    private Supplier<GenericChunk> getLoadedChunk(DynmapChunk chunk, boolean async) {
-        CraftWorld cw = (CraftWorld) w;
-        if (!cw.isChunkLoaded(chunk.x, chunk.z)) return () -> null;
-        Chunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z); //already safe async on vanilla
-        if ((c == null) || c.o) return () -> null;    // c.loaded
-        if (async) { //the data of the chunk may change while we write, better to write it sync
-            CompletableFuture<NBTTagCompound> nbt = CompletableFuture.supplyAsync(() -> ChunkRegionLoader.a(cw.getHandle(), c), ((CraftServer) Bukkit.getServer()).getServer());
-            return () -> {
-                    NBTTagCompound compound = nbt.join();
-                    return compound == null ? null : parseChunkFromNBT(new NBT.NBTCompound(compound));
-            };
-        } else {
-            NBTTagCompound nbt = ChunkRegionLoader.a(cw.getHandle(), c);
-            GenericChunk genericChunk;
-            if (nbt != null) genericChunk = parseChunkFromNBT(new NBT.NBTCompound(nbt));
-            else genericChunk = null;
-            return () -> genericChunk;
-        }
-
-    }
     // Load generic chunk from unloaded chunk
     protected GenericChunk loadChunk(DynmapChunk chunk) {
         CraftWorld cw = (CraftWorld) w;
