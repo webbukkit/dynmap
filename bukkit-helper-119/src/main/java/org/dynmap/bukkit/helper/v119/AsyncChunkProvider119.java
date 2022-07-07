@@ -85,7 +85,7 @@ public class AsyncChunkProvider119 {
     public synchronized Supplier<NBTTagCompound> getLoadedChunk(CraftWorld world, int x, int z) {
         if (!world.isChunkLoaded(x, z)) return () -> null;
         Chunk c = world.getHandle().getChunkIfLoaded(x, z); //already safe async on vanilla
-        if ((c == null) || c.o) return () -> null;    // c.loaded
+        if ((c == null) || !c.o) return () -> null;    // c.loaded
         if (currTick != MinecraftServer.currentTick) {
             currTick = MinecraftServer.currentTick;
             currChunks = 0;
