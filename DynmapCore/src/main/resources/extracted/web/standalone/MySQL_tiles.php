@@ -94,7 +94,7 @@ if ($stmt->fetch()) {
         header('Content-Type: image/jpeg');
     }
     header('ETag: \'' . $thash . '\'');
-    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $tlast / 1000) . ' GMT');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', (int) ($tlast / 1000)) . ' GMT');
     if (is_null($tnewimage)) {
         echo $timage;
     } else {
