@@ -99,7 +99,7 @@ if ($res && $timage) {
         header('Content-Type: image/jpeg');
     }
     header('ETag: \'' . $thash . '\'');
-    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $tlast / 1000) . ' GMT');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', (int) ($tlast / 1000)) . ' GMT');
     echo stream_get_contents($timage);
 } else {
     header('Location: ../images/blank.png');
