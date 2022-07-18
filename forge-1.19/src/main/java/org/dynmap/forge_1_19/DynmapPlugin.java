@@ -68,10 +68,10 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimension
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ChunkDataEvent;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ChunkDataEvent;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.loading.LoadingModList;
@@ -1628,7 +1628,7 @@ public class DynmapPlugin
 		@SubscribeEvent
 		public void onPlayerLogin(PlayerLoggedInEvent event) {			
 			if(!core_enabled) return;
-            final DynmapPlayer dp = getOrAddPlayer((ServerPlayer)event.getPlayer());
+            final DynmapPlayer dp = getOrAddPlayer((ServerPlayer)event.getEntity());
             /* This event can be called from off server thread, so push processing there */
             core.getServer().scheduleServerTask(new Runnable() {
                 public void run() {
@@ -1639,8 +1639,8 @@ public class DynmapPlugin
         @SubscribeEvent
 		public void onPlayerLogout(PlayerLoggedOutEvent event) {
 			if(!core_enabled) return;
-            final DynmapPlayer dp = getOrAddPlayer((ServerPlayer)event.getPlayer());
-            final String name = event.getPlayer().getName().getString();
+            final DynmapPlayer dp = getOrAddPlayer((ServerPlayer)event.getEntity());
+            final String name = event.getEntity().getName().getString();
             /* This event can be called from off server thread, so push processing there */
             core.getServer().scheduleServerTask(new Runnable() {
                 public void run() {
@@ -1652,12 +1652,12 @@ public class DynmapPlugin
         @SubscribeEvent
 		public void onPlayerChangedDimension(PlayerChangedDimensionEvent event) {
             if(!core_enabled) return;
-            getOrAddPlayer((ServerPlayer)event.getPlayer());	// Freshen player object reference
+            getOrAddPlayer((ServerPlayer)event.getEntity());	// Freshen player object reference
 		}
         @SubscribeEvent
 		public void onPlayerRespawn(PlayerRespawnEvent event) {
             if(!core_enabled) return;
-            getOrAddPlayer((ServerPlayer)event.getPlayer());	// Freshen player object reference
+            getOrAddPlayer((ServerPlayer)event.getEntity());	// Freshen player object reference
 		}
     }
     private PlayerTracker playerTracker = null;
@@ -1672,9 +1672,9 @@ public class DynmapPlugin
 
     public class WorldTracker {
         @SubscribeEvent(priority=EventPriority.LOWEST)
-    	public void handleWorldLoad(WorldEvent.Load event) {
+    	public void handleWorldLoad(LevelEvent.Load event) {
 			if(!core_enabled) return;
-			LevelAccessor w = event.getWorld();
+			LevelAccessor w = event.getLevel();
 			if(!(w instanceof ServerLevel)) return;
             final ForgeWorld fw = getWorld((ServerLevel)w);
             // This event can be called from off server thread, so push processing there
@@ -1686,9 +1686,9 @@ public class DynmapPlugin
             }, 0);
     	}
         @SubscribeEvent(priority=EventPriority.LOWEST)
-    	public void handleWorldUnload(WorldEvent.Unload event) {
+    	public void handleWorldUnload(LevelEvent.Unload event) {
 			if(!core_enabled) return;
-			LevelAccessor w = event.getWorld();
+			LevelAccessor w = event.getLevel();
             if(!(w instanceof ServerLevel)) return;
             final ForgeWorld fw = getWorld((ServerLevel)w);
             if(fw != null) {
@@ -1711,7 +1711,7 @@ public class DynmapPlugin
     	public void handleChunkLoad(ChunkEvent.Load event) {
 			if(!onchunkgenerate) return;
 
-			LevelAccessor w = event.getWorld();
+			LevelAccessor w = event.getLevel();
             if(!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
 			if ((c != null) && (c.getStatus() == ChunkStatus.FULL) && (c instanceof LevelChunk)) {
@@ -1725,7 +1725,7 @@ public class DynmapPlugin
     	public void handleChunkUnload(ChunkEvent.Unload event) {
 			if(!onchunkgenerate) return;
 
-			LevelAccessor w = event.getWorld();
+			LevelAccessor w = event.getLevel();
             if(!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
 			if (c != null) {
@@ -1759,7 +1759,7 @@ public class DynmapPlugin
     	public void handleChunkDataSave(ChunkDataEvent.Save event) {
 			if(!onchunkgenerate) return;
 
-			LevelAccessor w = event.getWorld();
+			LevelAccessor w = event.getLevel();
             if(!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
 			if (c != null) {
@@ -1797,7 +1797,7 @@ public class DynmapPlugin
         	if(!core_enabled) return;
         	if(!onblockchange) return;
         	BlockUpdateRec r = new BlockUpdateRec();
-        	r.w = event.getWorld();
+        	r.w = event.getLevel();
             if(!(r.w instanceof ServerLevel)) return;  // band-aid to prevent errors in unsupported 'running in client' scenario
 			ForgeWorld fw = getWorld((ServerLevel)r.w, false);
 			if (fw == null) return;
