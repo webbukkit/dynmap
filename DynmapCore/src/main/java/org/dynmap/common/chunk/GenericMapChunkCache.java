@@ -766,7 +766,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	}
 
 	/**
-	 * Read NBT data from loaded chunks - do not needs to be called from server/world
+	 * Read NBT data from loaded chunks - do not needs to be called from server/world <p>
 	 * Will throw {@link IllegalStateException} if not supporting
 	 */
 	public void getLoadedChunksAsync() {
@@ -836,7 +836,9 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	}
 
 	/**
-	 * Prepare the chunks async
+	 * Loads all chunks in the world asynchronously.
+	 * <p>
+	 * If it is not supported, it will throw {@link IllegalStateException}
 	 */
 	public void loadChunksAsync() {
 		getLoadedChunksAsync();
@@ -923,6 +925,12 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		return cnt;
 	}
 
+	/**
+	 * It loads chunks from the cache or from the world, and if the chunk is not visible, it fills it with stone, ocean or
+	 * empty chunk
+	 * <p>
+	 * if it's not supported, will throw {@link IllegalStateException}
+	 */
 	public void readChunksAsync() {
 		class SimplePair { //pair of the chunk and the data which is readed async
 			private final Supplier<GenericChunk> supplier;
