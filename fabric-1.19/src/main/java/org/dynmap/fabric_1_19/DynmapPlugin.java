@@ -3,10 +3,10 @@ package org.dynmap.fabric_1_19;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
@@ -30,9 +30,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.WorldChunk;
-
 import org.dynmap.*;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
@@ -48,9 +45,7 @@ import org.dynmap.fabric_1_19.event.CustomServerChunkEvents;
 import org.dynmap.fabric_1_19.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_1_19.event.PlayerEvents;
 import org.dynmap.fabric_1_19.mixin.BiomeEffectsAccessor;
-import org.dynmap.fabric_1_19.permissions.FilePermissions;
-import org.dynmap.fabric_1_19.permissions.OpPermissions;
-import org.dynmap.fabric_1_19.permissions.PermissionProvider;
+import org.dynmap.fabric_1_19.permissions.*;
 import org.dynmap.permissions.PermissionsHandler;
 import org.dynmap.renderer.DynmapBlockState;
 
@@ -396,9 +391,19 @@ public class DynmapPlugin {
         registerPlayerLoginListener();
 
         /* Initialize permissions handler */
-        permissions = FilePermissions.create();
-        if (permissions == null) {
-            permissions = new OpPermissions(new String[]{"webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self"});
+        if (FabricLoader.getInstance().isModLoaded("luckperms")) {
+            Log.info("Using luckperms for access control");
+            permissions = new LuckPermissions();
+        }
+        else if (FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0")) {
+            Log.info("Using fabric-permissions-api for access control");
+            permissions = new FabricPermissions();
+        } else {
+            /* Initialize permissions handler */
+            permissions = FilePermissions.create();
+            if (permissions == null) {
+                permissions = new OpPermissions(new String[]{"webchat", "marker.icons", "marker.list", "webregister", "stats", "hide.self", "show.self"});
+            }
         }
         /* Get and initialize data folder */
         File dataDirectory = new File("dynmap");
