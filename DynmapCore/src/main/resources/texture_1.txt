@@ -3431,7 +3431,7 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.19-]block:id=%mangrove_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=mangrove_sign
 [1.19-]block:id=%mangrove_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=mangrove_sign
 [1.19-]block:id=%packed_mud,patch0=0:packed_mud,patch1=0:packed_mud,patch2=0:packed_mud,patch3=0:packed_mud,patch4=0:packed_mud,patch5=0:packed_mud,stdrot=true
-[1.19-]block:id=%mud_bricks,patch0=0:mud_bricks,stdrot=true
+[1.19-]block:id=%mud_bricks,patch0=0:mud_bricks,patch1=0:mud_bricks,patch2=0:mud_bricks,patch3=0:mud_bricks,patch4=0:mud_bricks,patch5=0:mud_bricks,stdrot=true
 [1.19-]block:id=%mud_brick_stairs,state=facing:north/half:top/shape:straight,patch0=0:mud_bricks,transparency=SEMITRANSPARENT,stdrot=true
 [1.19-]block:id=%mud_brick_stairs,state=facing:north/half:top/shape:inner_left,patch0=0:mud_bricks,transparency=SEMITRANSPARENT,stdrot=true
 [1.19-]block:id=%mud_brick_stairs,state=facing:north/half:top/shape:inner_right,patch0=0:mud_bricks,transparency=SEMITRANSPARENT,stdrot=true
