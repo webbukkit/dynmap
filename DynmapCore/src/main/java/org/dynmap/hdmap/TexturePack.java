@@ -2542,7 +2542,11 @@ public class TexturePack {
         else {
             faceindex = laststep.ordinal();
         }
-        textid = map.faces[faceindex];
+        try {
+        	textid = map.faces[faceindex];
+        } catch (ArrayIndexOutOfBoundsException aioob) {
+        	textid = -1
+        }
         if (ctm != null) {
             int mod = 0;
             if(textid >= COLORMOD_MULT_INTERNAL) {
