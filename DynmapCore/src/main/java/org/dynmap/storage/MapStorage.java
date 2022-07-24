@@ -26,13 +26,18 @@ public abstract class MapStorage {
     private static HashMap<String, Integer> filelocks = new HashMap<String, Integer>();
     private static final Integer WRITELOCK = (-1);
     protected File baseStandaloneDir;
+    protected boolean isShutdown;
 
     protected long serverID;
     
     protected MapStorage() {
         this.serverID = 0;
+        this.isShutdown = false;
     }
     
+    public void shutdownStorage() {
+    	this.isShutdown = true;
+    }
     // Proper modulo - versus the bogus Java behavior of negative modulo for negative numerators
     protected static final int modulo(int x, int y) {
         return ((x % y) + y) % y;
@@ -475,6 +480,7 @@ public abstract class MapStorage {
     }
     
     public void logSQLException(String opmsg, SQLException x) {
+    	if (isShutdown) return;
     	Log.severe("SQLException: " + opmsg);
     	Log.severe("  ErrorCode: " + x.getErrorCode() + ", SQLState=" + x.getSQLState());
     	Log.severe("  Message: " + x.getMessage());
@@ -485,4 +491,11 @@ public abstract class MapStorage {
     		cause = cause.getCause();
     	}
     }
+    
+    public static class StorageShutdownException extends Exception {
+		private static final long serialVersionUID = 8961471920726795043L;
+
+		public StorageShutdownException() {}
+    }
+
 }

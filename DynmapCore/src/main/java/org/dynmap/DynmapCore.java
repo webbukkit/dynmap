@@ -1113,7 +1113,9 @@ public class DynmapCore implements DynmapCommonAPI {
             mapManager.stopRendering();
             mapManager = null;
         }
-
+        if (defaultStorage != null) {
+        	defaultStorage.shutdownStorage();
+        }
         playerfacemgr = null;
         /* Clean up registered listeners */
         listenerManager.cleanup();
