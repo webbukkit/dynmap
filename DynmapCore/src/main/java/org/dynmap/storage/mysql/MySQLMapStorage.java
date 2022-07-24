@@ -793,10 +793,12 @@ public class MySQLMapStorage extends MapStorage {
         try {
             c = getConnection();
             boolean done = false;
+            int limit = 100;
+            int offset = 0;
             while (!done) {
 	            // Query tiles for given mapkey
 	            Statement stmt = c.createStatement();
-	            ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM " + tableTiles + " WHERE MapID=" + mapkey + " LIMIT 100;");
+	            ResultSet rs = stmt.executeQuery(String.format("SELECT x,y,zoom,Format FROM %s WHERE MapID=%d OFFSET %d LIMIT %d;", tableTiles, mapkey, offset, limit));
 	            int cnt = 0;
 	            while (rs.next()) {
 	                StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
@@ -810,7 +812,8 @@ public class MySQLMapStorage extends MapStorage {
 	            }
 	            rs.close();
 	            stmt.close();
-	            if (cnt < 100) done = true;
+	            if (cnt < limit) done = true;
+	            offset += cnt;
             }
             if(cbEnd != null)
                 cbEnd.searchEnded();

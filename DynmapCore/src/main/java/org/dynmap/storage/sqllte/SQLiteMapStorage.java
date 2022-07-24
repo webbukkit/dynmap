@@ -640,12 +640,14 @@ public class SQLiteMapStorage extends MapStorage {
             return;
         }
         try {
-            c = getConnection();
             boolean done = false;
+            int offset = 0;
+            int limit = 100;
             while (!done) {
+                c = getConnection();	// Do inside loop - single threaded sqlite will have issues otherwise....
 	            // Query tiles for given mapkey
 	            Statement stmt = c.createStatement();
-	            ResultSet rs = doExecuteQuery(stmt, "SELECT x,y,zoom,Format FROM Tiles WHERE MapID=" + mapkey + " LIMIT 100;");
+	            ResultSet rs = doExecuteQuery(stmt, String.format("SELECT x,y,zoom,Format FROM Tiles WHERE MapID=%d OFFSET %d LIMIT %d", mapkey, offset, limit));
 	            int cnt = 0;
 	            while (rs.next()) {
 	                StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
@@ -659,7 +661,10 @@ public class SQLiteMapStorage extends MapStorage {
 	            }
 	            rs.close();
 	            stmt.close();
-	            if (cnt < 100) done = true;
+	            if (cnt < limit) done = true;
+	            offset += cnt;
+	            releaseConnection(c, err);
+	            c = null;
             }
             if(cbEnd != null)
                 cbEnd.searchEnded();
@@ -1054,5 +1059,12 @@ public class SQLiteMapStorage extends MapStorage {
                 }
             }
         }
+    }
+    
+    public void logSQLException(String opmsg, SQLException x) {
+    	// Ignore interrupted
+    	if (x.getMessage().equals("Interrupted")) return;
+    	
+		super.logSQLException(opmsg,  x);
     }
 }
