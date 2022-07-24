@@ -293,6 +293,7 @@ public class MapManager {
         boolean pausedforworld = false;
         boolean updaterender = false;
         boolean resume = false;
+        boolean resumeInitDone = false;
         boolean quiet = false;
         String mapname;
         AtomicLong total_render_ns = new AtomicLong(0L);
@@ -503,7 +504,7 @@ public class MapManager {
             	return;
             }
             // If doing resume, load existing tile IDs here (constructor was stupid, and caused timeouts for non-trivial maps - need to check PRs better....
-            if (resume) { // if resume render
+            if (resume && (!resumeInitDone)) { // if resume render AND init not completed
                 sendMessage(String.format("Scanning map to find existing tiles for resume..."));
                 final MapStorage ms = world.getMapStorage();
                 ms.enumMapBaseTiles(world, map, new MapStorageBaseTileEnumCB() {
@@ -520,7 +521,7 @@ public class MapManager {
                     }
                 });
                 sendMessage(String.format("Scan complete - starting render"));
-                resume = false;	// Only due on first run
+                resumeInitDone = true;	// Only due on first run
             }
             
             if(tile0 == null) {    /* Not single tile render */
