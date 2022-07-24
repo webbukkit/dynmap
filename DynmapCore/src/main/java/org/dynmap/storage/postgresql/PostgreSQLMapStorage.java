@@ -698,22 +698,29 @@ public class PostgreSQLMapStorage extends MapStorage {
         }
         try {
             c = getConnection();
-            // Query tiles for given mapkey
-            Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM " + tableTiles + " WHERE MapID=" + mapkey + ";");
-            while (rs.next()) {
-                StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
-                final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
-                if(cb != null)
-                    cb.tileFound(st, encoding);
-                if(cbBase != null && st.zoom == 0)
-                    cbBase.tileFound(st, encoding);
-                st.cleanup();
+            boolean done = false;
+            
+            while (!done) {
+	            // Query tiles for given mapkey
+	            Statement stmt = c.createStatement();
+	            ResultSet rs = stmt.executeQuery("SELECT x,y,zoom,Format FROM " + tableTiles + " WHERE MapID=" + mapkey + " LIMIT 100;");
+	            int cnt = 0;
+	            while (rs.next()) {
+	                StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
+	                final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
+	                if(cb != null)
+	                    cb.tileFound(st, encoding);
+	                if(cbBase != null && st.zoom == 0)
+	                    cbBase.tileFound(st, encoding);
+	                st.cleanup();
+	                cnt++;
+	            }
+	            rs.close();
+	            stmt.close();
+	            if (cnt < 100) done = true;
             }
             if(cbEnd != null)
                 cbEnd.searchEnded();
-            rs.close();
-            stmt.close();
         } catch (SQLException x) {
         	logSQLException("Tile enum error", x);
             err = true;
