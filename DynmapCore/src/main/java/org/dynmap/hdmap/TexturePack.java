@@ -2545,7 +2545,7 @@ public class TexturePack {
         try {
         	textid = map.faces[faceindex];
         } catch (ArrayIndexOutOfBoundsException aioob) {
-        	textid = -1
+        	textid = -1;
         }
         if (ctm != null) {
             int mod = 0;
