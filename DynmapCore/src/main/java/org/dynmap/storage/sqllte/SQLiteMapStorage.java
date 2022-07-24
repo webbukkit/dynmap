@@ -647,7 +647,7 @@ public class SQLiteMapStorage extends MapStorage {
                 c = getConnection();	// Do inside loop - single threaded sqlite will have issues otherwise....
 	            // Query tiles for given mapkey
 	            Statement stmt = c.createStatement();
-	            ResultSet rs = doExecuteQuery(stmt, String.format("SELECT x,y,zoom,Format FROM Tiles WHERE MapID=%d OFFSET %d LIMIT %d", mapkey, offset, limit));
+	            ResultSet rs = doExecuteQuery(stmt, String.format("SELECT x,y,zoom,Format FROM Tiles WHERE MapID=%d LIMIT %d OFFSET %d;", mapkey, limit, offset));
 	            int cnt = 0;
 	            while (rs.next()) {
 	                StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
