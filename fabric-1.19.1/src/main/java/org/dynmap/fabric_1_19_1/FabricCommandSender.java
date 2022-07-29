@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19;
+package org.dynmap.fabric_1_19_1;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralTextContent;

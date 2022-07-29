@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19;
+package org.dynmap.fabric_1_19_1;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;

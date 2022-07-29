@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19;
+package org.dynmap.fabric_1_19_1;
 
 import java.util.concurrent.FutureTask;
 

@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19;
+package org.dynmap.fabric_1_19_1;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -36,16 +36,16 @@ import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapListenerManager;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.chunk.GenericChunkCache;
-import org.dynmap.fabric_1_19.command.DmapCommand;
-import org.dynmap.fabric_1_19.command.DmarkerCommand;
-import org.dynmap.fabric_1_19.command.DynmapCommand;
-import org.dynmap.fabric_1_19.command.DynmapExpCommand;
-import org.dynmap.fabric_1_19.event.BlockEvents;
-import org.dynmap.fabric_1_19.event.CustomServerChunkEvents;
-import org.dynmap.fabric_1_19.event.CustomServerLifecycleEvents;
-import org.dynmap.fabric_1_19.event.PlayerEvents;
-import org.dynmap.fabric_1_19.mixin.BiomeEffectsAccessor;
-import org.dynmap.fabric_1_19.permissions.*;
+import org.dynmap.fabric_1_19_1.command.DmapCommand;
+import org.dynmap.fabric_1_19_1.command.DmarkerCommand;
+import org.dynmap.fabric_1_19_1.command.DynmapCommand;
+import org.dynmap.fabric_1_19_1.command.DynmapExpCommand;
+import org.dynmap.fabric_1_19_1.event.BlockEvents;
+import org.dynmap.fabric_1_19_1.event.CustomServerChunkEvents;
+import org.dynmap.fabric_1_19_1.event.CustomServerLifecycleEvents;
+import org.dynmap.fabric_1_19_1.event.PlayerEvents;
+import org.dynmap.fabric_1_19_1.mixin.BiomeEffectsAccessor;
+import org.dynmap.fabric_1_19_1.permissions.*;
 import org.dynmap.permissions.PermissionsHandler;
 import org.dynmap.renderer.DynmapBlockState;
 

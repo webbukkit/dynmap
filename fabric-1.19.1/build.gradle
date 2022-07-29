@@ -1,5 +1,5 @@
 plugins {
-	// TODO: switch to a stable Loom release once 1.19 lands
+	// TODO: switch to a stable Loom release once 1.19.1 lands
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 }
 
@@ -9,7 +9,7 @@ group = parent.group
 
 eclipse {
     project {
-        name = "Dynmap(Fabric-1.19)"
+        name = "Dynmap(Fabric-1.19.1)"
     }
 }
 
