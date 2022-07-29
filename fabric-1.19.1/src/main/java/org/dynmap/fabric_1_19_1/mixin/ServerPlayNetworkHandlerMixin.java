@@ -34,13 +34,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Inject(
             method = "handleDecoratedMessage",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/server/filter/FilteredMessage;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/util/registry/RegistryKey;)V",
-                    shift = At.Shift.BEFORE
+                    value = "HEAD"
             )
     )
-    public void onGameMessage(FilteredMessage<SignedMessage> message, CallbackInfo ci) {
-        ServerChatEvents.EVENT.invoker().onChatMessage(player, message.raw().getContent().getString());
+    public void onGameMessage(SignedMessage signedMessage, CallbackInfo ci) {
+        ServerChatEvents.EVENT.invoker().onChatMessage(player, signedMessage.getContent().getString());
     }
 
     @Inject(
@@ -52,7 +50,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    public void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage<String>> signText, CallbackInfo info,
+    public void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage> signText, CallbackInfo info,
             ServerWorld serverWorld, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity, SignBlockEntity signBlockEntity)
     {
         // Pull the raw text from the input.

@@ -293,7 +293,7 @@ public class FabricServer extends DynmapServerInterface {
     @Override
     public void broadcastMessage(String msg) {
         Text component = Text.literal(msg);
-        server.getPlayerManager().broadcast(component, MessageType.SYSTEM);
+        server.getPlayerManager().broadcast(component, false);
         Log.info(stripChatColor(msg));
     }
 
