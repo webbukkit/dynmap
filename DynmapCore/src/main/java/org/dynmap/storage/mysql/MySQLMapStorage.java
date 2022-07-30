@@ -137,7 +137,11 @@ public class MySQLMapStorage extends MapStorage {
                     rslt.format = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
                     byte[] img = rs.getBytes("NewImage");
                     if (img == null) img = rs.getBytes("Image");
-                    rslt.image = new BufferInputStream(img);
+                    if (img == null) {
+                    	rslt = null;
+                    } else {
+                    	rslt.image = new BufferInputStream(img);
+                    }
                 }
                 rs.close();
                 stmt.close();
