@@ -138,7 +138,11 @@ public class PostgreSQLMapStorage extends MapStorage {
                     rslt.lastModified = rs.getLong("LastUpdate");
                     rslt.format = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
                     byte[] img = rs.getBytes("Image");
-                    rslt.image = new BufferInputStream(img);
+                    if (img == null) {
+                    	rslt = null;
+                	} else {
+                		rslt.image = new BufferInputStream(img);
+                	}
                 }
                 rs.close();
                 stmt.close();

@@ -129,7 +129,11 @@ public class SQLiteMapStorage extends MapStorage {
                     	// Trim trailing zeros from padding by BLOB field
                     	while((len > 0) && (img[len-1] == '\0')) len--;
                     }
-                    rslt.image = new BufferInputStream(img, len);
+                    if (img == null) {
+                    	rslt = null;
+                    } else {
+                    	rslt.image = new BufferInputStream(img, len);
+                    }
                 }
                 rs.close();
                 stmt.close();

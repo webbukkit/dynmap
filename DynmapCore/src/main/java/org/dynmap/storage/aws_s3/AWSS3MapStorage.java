@@ -101,7 +101,8 @@ public class AWSS3MapStorage extends MapStorage {
     				GetObjectResponse rsp = obj.getResponse();
                     TileRead tr = new TileRead();
                     byte[] buf = obj.getBytes();
-                    tr.image = new BufferInputStream(buf);
+                    if (buf == null) { return null; }
+                	tr.image = new BufferInputStream(buf);
                     tr.format = ImageEncoding.fromContentType(rsp.getContentType());
                     Map<String, String> meta = rsp.getMetadata();
                     String v = meta.get("x-dynmap-hash");
