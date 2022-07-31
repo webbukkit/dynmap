@@ -75,7 +75,7 @@ function updateStandaloneFileByServerId($fname, $sid, $content)
 
     initDbIfNeeded();
     $stmt = $db->prepare('UPDATE ' . $dbprefix . 'StandaloneFiles SET Content=:content WHERE FileName=:fname AND ServerID=:sid');
-    $stmt->bindParam(':content', $content, PDO::PARAM_STR);
+    $stmt->bindParam(':content', $content, PDO::PARAM_LOB);
     $stmt->bindParam(':fname', $fname, PDO::PARAM_STR);
     $stmt->bindParam(':sid', $sid, PDO::PARAM_INT);
     $res = $stmt->execute();
