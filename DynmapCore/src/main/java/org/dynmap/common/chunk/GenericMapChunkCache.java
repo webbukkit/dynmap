@@ -1304,8 +1304,10 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
                 long[] bdataPacked = nbtbiomes.getLongArray("data");
                 GenericNBTList bpalette = nbtbiomes.getList("palette", 8);
                 GenericBitStorage bdata = null;
-                if (bdataPacked.length > 0)
-                    bdata = nbt.makeBitStorage(bdataPacked.length, 64, bdataPacked);
+                if (bdataPacked.length > 0) {
+                	int valsPerLong = (64 / bdataPacked.length);
+                    bdata = nbt.makeBitStorage((64 + valsPerLong - 1) / valsPerLong, 64, bdataPacked);
+                }
                 for (int j = 0; j < 64; j++) {
                     int b = bdata != null ? bdata.get(j) : 0;
                     sbld.xyzBiome(j & 0x3, (j & 0x30) >> 4, (j & 0xC) >> 2, BiomeMap.byBiomeResourceLocation(bpalette.getString(b)));
