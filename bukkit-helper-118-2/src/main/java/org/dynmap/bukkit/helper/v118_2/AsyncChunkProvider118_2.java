@@ -96,6 +96,8 @@ public class AsyncChunkProvider118_2 {
             try {
                 return getAsyncSaveData.invoke(null, world.getHandle(), c);
             } catch (IllegalAccessException | InvocationTargetException e) {
+                //Save as from main thread
+                if (((CraftServer) Bukkit.getServer()).getServer().hasStopped()) return null;
                 throw new RuntimeException(e);
             }
         }, ((CraftServer) Bukkit.getServer()).getServer());

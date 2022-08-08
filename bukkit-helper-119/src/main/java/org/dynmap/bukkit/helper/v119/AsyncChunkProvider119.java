@@ -95,6 +95,8 @@ public class AsyncChunkProvider119 {
             try {
                 return getAsyncSaveData.invoke(null, world.getHandle(), c);
             } catch (ReflectiveOperationException e) {
+                //Save as from main thread
+                if (((CraftServer) Bukkit.getServer()).getServer().hasStopped()) return null;
                 throw new RuntimeException(e);
             }
         }, ((CraftServer) Bukkit.getServer()).getServer());
