@@ -692,6 +692,7 @@ public class MapManager {
                             }
                         });
                         rslt.add(future);
+                        
                     }
                 }
                 /* Now, do our render (first one) */

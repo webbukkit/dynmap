@@ -49,6 +49,8 @@ public class MicrosoftSQLMapStorage extends MapStorage {
     protected int port;
     private static final int POOLSIZE = 5;
     private Connection[] cpool = new Connection[POOLSIZE];
+    private long[] cpoolLastUseTS = new long[POOLSIZE];	// Time when last returned to pool
+    private static final long IDLE_TIMEOUT = 60000;	// Use 60 second timeout
     private int cpoolCount = 0;
     private static final Charset UTF8 = Charset.forName("UTF-8");
         
@@ -527,12 +529,22 @@ public class MicrosoftSQLMapStorage extends MapStorage {
     private Connection getConnection() throws SQLException {
         Connection c = null;
         synchronized (cpool) {
+        	long now = System.currentTimeMillis();
             while (c == null) {
                 for (int i = 0; i < cpool.length; i++) {    // See if available connection
                     if (cpool[i] != null) { // Found one
-                        c = cpool[i];
-                        cpool[i] = null;
-                        break;
+                    	// If in pool too long, close it and move on
+                    	if ((now - cpoolLastUseTS[i]) > IDLE_TIMEOUT) {
+                            try { cpool[i].close(); } catch (SQLException x) {}
+                            cpool[i] = null;
+                            cpoolCount--;
+                    	}
+                    	else {	// Else, use the connection
+                    		c = cpool[i];
+                    		cpool[i] = null;
+                    		cpoolLastUseTS[i] = now;
+                    		break;
+                    	}
                     }
                 }
                 if (c == null) {
@@ -565,6 +577,7 @@ public class MicrosoftSQLMapStorage extends MapStorage {
                 for (int i = 0; i < POOLSIZE; i++) {
                     if (cpool[i] == null) {
                         cpool[i] = c;
+                        cpoolLastUseTS[i] = System.currentTimeMillis();	// Record last use time
                         c = null; // Mark it recovered (no close needed
                         cpool.notifyAll();
                         break;
