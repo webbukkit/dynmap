@@ -30,6 +30,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -728,7 +729,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public int getArmorPoints() {
             if(player != null)
-                return Armor.getArmorPoints(player);
+                return (int) player.getAttribute(Attribute.GENERIC_ARMOR).getValue();
             else
                 return 0;
         }
