@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 /**
@@ -58,7 +59,14 @@ public class MapChunkCache119 extends GenericMapChunkCache {
         try {
             CompletableFuture<NBTTagCompound> nbt = provider.getChunk(((CraftWorld) w).getHandle(), chunk.x, chunk.z);
             return () -> {
-                NBTTagCompound compound = nbt.join();
+                NBTTagCompound compound;
+                try {
+                    compound = nbt.get();
+                } catch (InterruptedException e) {
+                    return null;
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
                 return compound == null ? null : parseChunkFromNBT(new NBT.NBTCompound(compound));
             };
         } catch (InvocationTargetException | IllegalAccessException ignored) {

@@ -92,11 +92,12 @@ public class AsyncChunkProvider119 {
         }
         //prepare data synchronously
         CompletableFuture<?> future = CompletableFuture.supplyAsync(() -> {
+            //Null will mean that we save with spigot methods, which may be risky on async
+            //Since we're not in main thread, it now refuses new tasks because of shutdown, the risk is lower
+            if (!Bukkit.isPrimaryThread()) return null;
             try {
                 return getAsyncSaveData.invoke(null, world.getHandle(), c);
             } catch (ReflectiveOperationException e) {
-                //Save as from main thread
-                if (((CraftServer) Bukkit.getServer()).getServer().hasStopped()) return null;
                 throw new RuntimeException(e);
             }
         }, ((CraftServer) Bukkit.getServer()).getServer());
@@ -104,15 +105,21 @@ public class AsyncChunkProvider119 {
         if (++currChunks > MapManager.mapman.getMaxChunkLoadsPerTick()) {
             try {
                 Thread.sleep(25); //hold the lock so other threads also won't stress main thread
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (InterruptedException ignored) {}
         }
         //save data asynchronously
         return () -> {
+            Object o = null;
             try {
-                return (NBTTagCompound) save.invoke(null, world.getHandle(), c, future.get());
-            } catch (ReflectiveOperationException | ExecutionException | InterruptedException e) {
+                o = future.get();
+                return (NBTTagCompound) save.invoke(null, world.getHandle(), c, o);
+            } catch (InterruptedException e) {
+                return null;
+            } catch (InvocationTargetException e) {
+                //We tried to use simple spigot methods at shutdown and failed, hopes for reading from disk
+                if (o == null) return null;
+                throw new RuntimeException(e);
+            } catch (ReflectiveOperationException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         };
