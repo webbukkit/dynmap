@@ -17,7 +17,7 @@ if (strcmp($userid, '-guest-')) {
     $loggedin = true;
 }
 
-$path = $_REQUEST['marker'];
+$path = htmlspecialchars($_REQUEST['marker']);
 if ((!isset($path)) || strstr($path, "..")) {
     header('HTTP/1.0 500 Error');
     echo "<h1>500 Error</h1>";
