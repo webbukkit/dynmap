@@ -17,12 +17,12 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.bukkit', name: 'bukkit', version: '1.7.10-R0.1-SNAPSHOT'
+    implementation group: 'org.bukkit', name: 'bukkit', version: '1.10.2-R0.1-SNAPSHOT'
     implementation 'com.nijikokun.bukkit:Permissions:3.1.6'
     implementation 'me.lucko.luckperms:luckperms-api:4.3'
     implementation 'net.luckperms:api:5.0'
     implementation('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
-    compileOnly 'net.skinsrestorer:skinsrestorer-api:14.1.+'
+    compileOnly 'net.skinsrestorer:skinsrestorer-api:14.2.+'
     implementation project(":dynmap-api")
     implementation project(path: ":DynmapCore", configuration: "shadow")
     implementation group: 'ru.tehkode', name: 'PermissionsEx', version: '1.19.1'
