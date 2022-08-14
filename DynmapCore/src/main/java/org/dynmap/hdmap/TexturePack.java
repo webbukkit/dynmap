@@ -1254,8 +1254,13 @@ public class TexturePack {
         /* Load image */
         if(is != null) {
             ImageIO.setUseCache(false);
-            img = ImageIO.read(is);
-            if(img == null) { throw new FileNotFoundException(); }
+            try {
+            	img = ImageIO.read(is);
+            } catch (IOException iox) {
+            }
+            if (img == null) { 
+            	Log.warning(String.format("Error loading image %s from module %s", fname, modid));
+        	}
         }
         if(idx >= imgs.length) {
             LoadedImage[] newimgs = new LoadedImage[idx+1];
