@@ -46,10 +46,10 @@ The following target platforms are supported, and you can find them at the links
 | Server type  | Version | Dynmap JAR | Where? |
 | ------------ | ------- | ---------- | ------ |
 | Spigot/PaperMC | ≤1.18.2  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap.274/) |
-| Spigot/PaperMC | ≤1.18.2 | `Dynmap-<version>-spigot.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
-| Forge | 1.12.2 | `Dynmap-<version>-forge-1.12.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
-| Forge | 1.14.4 | `Dynmap-<version>-forge-1.14.4.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
-| Forge | 1.15.2 | `Dynmap-<version>-forge-1.15.2.jar` | [GitHub Releases](https://github.com/webbukkit/dynmap/releases) |
+| Spigot/PaperMC | ≤1.18.2 | `Dynmap-<version>-spigot.jar` | [Bukkit](https://dev.bukkit.org/projects/dynmap) |
+| Forge | 1.12.2 | `Dynmap-<version>-forge-1.12.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge)|
+| Forge | 1.14.4 | `Dynmap-<version>-forge-1.14.4.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge)|
+| Forge | 1.15.2 | `Dynmap-<version>-forge-1.15.2.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge)|
 | Forge | 1.16.5 | `Dynmap-<version>-forge-1.16.5.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.17.1 | `Dynmap-<version>-forge-1.17.1.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.18, 1.18.1 | `Dynmap-<version>-forge-1.18.jar`   | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
