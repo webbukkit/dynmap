@@ -24,7 +24,7 @@ public class AsyncChunkProvider119 {
     private int currTick = MinecraftServer.currentTick;
     private int currChunks = 0;
 
-    public CompletableFuture<CompoundTag> getChunk(ServerLevel world, int x, int y) throws InvocationTargetException, IllegalAccessException {
+    public CompletableFuture<CompoundTag> getChunk(ServerLevel world, int x, int y) {
         return PaperFileIOThread.Holder.INSTANCE.loadChunkDataAsyncFuture(world, x, y, 5, false, true, true)
                 .thenApply(resultFuture -> resultFuture == null ? null : PaperFileIOThread.FAILURE_VALUE == resultFuture.chunkData ? null : resultFuture.chunkData);
     }

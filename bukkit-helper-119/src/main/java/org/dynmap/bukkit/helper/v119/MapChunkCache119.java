@@ -58,19 +58,15 @@ public class MapChunkCache119 extends GenericMapChunkCache {
     // Load generic chunk from unloaded chunk
     @Override
     protected Supplier<GenericChunk> loadChunkAsync(DynmapChunk chunk){
-        try {
-            CompletableFuture<CompoundTag> nbt = provider.getChunk(((CraftWorld) w).getHandle(), chunk.x, chunk.z);
-            return () -> {
-                try {
-                    if (Thread.interrupted()) throw new InterruptedException(); //reason to catch it, we would throw it anyway
-                    return nbt.join() == null ? null : parseChunkFromNBT(new NBT.NBTCompound(nbt.join()));
-                } catch (InterruptedException e) {
-                    return null;
-                }
-            };
-        } catch (InvocationTargetException | IllegalAccessException ignored) {
-            return () -> null;
-        }
+        CompletableFuture<CompoundTag> nbt = provider.getChunk(((CraftWorld) w).getHandle(), chunk.x, chunk.z);
+        return () -> {
+            try {
+                if (Thread.interrupted()) throw new InterruptedException(); //reason to catch it, we would throw it anyway
+                return nbt.join() == null ? null : parseChunkFromNBT(new NBT.NBTCompound(nbt.join()));
+            } catch (InterruptedException e) {
+                return null;
+            }
+        };
     }
 
     protected GenericChunk loadChunk(DynmapChunk chunk) {
