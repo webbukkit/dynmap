@@ -63,7 +63,7 @@ dependencies {
     implementation(project(':bukkit-helper-118-2')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-119')) {
+    implementation(project(path: ':bukkit-helper-119', configuration: 'spigotObf')) {
     	transitive = false
     }
 }

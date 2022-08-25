@@ -1,5 +1,9 @@
 package org.dynmap.bukkit.helper.v119;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.dynmap.DynmapChunk;
@@ -9,17 +13,10 @@ import org.dynmap.common.chunk.GenericChunk;
 import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.common.chunk.GenericMapChunkCache;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.level.ChunkCoordIntPair;
-import net.minecraft.world.level.chunk.storage.ChunkRegionLoader;
-import net.minecraft.world.level.chunk.Chunk;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 /**
@@ -38,36 +35,38 @@ public class MapChunkCache119 extends GenericMapChunkCache {
     // Load generic chunk from existing and already loaded chunk
     @Override
     protected Supplier<GenericChunk> getLoadedChunkAsync(DynmapChunk chunk) {
-        Supplier<NBTTagCompound> supplier = provider.getLoadedChunk((CraftWorld) w, chunk.x, chunk.z);
+        Supplier<CompoundTag> supplier = provider.getLoadedChunk((CraftWorld) w, chunk.x, chunk.z);
         return () -> {
-            NBTTagCompound nbt = supplier.get();
-            return nbt != null ? parseChunkFromNBT(new NBT.NBTCompound(nbt)) : null;
+            try {
+                if (Thread.interrupted()) throw new InterruptedException(); //reason to catch it, we would throw it anyway
+                CompoundTag nbt = supplier.get();
+                return nbt != null ? parseChunkFromNBT(new NBT.NBTCompound(nbt)) : null;
+            } catch (InterruptedException e) {
+                return null;
+            }
         };
     }
     protected GenericChunk getLoadedChunk(DynmapChunk chunk) {
         CraftWorld cw = (CraftWorld) w;
         if (!cw.isChunkLoaded(chunk.x, chunk.z)) return null;
-        Chunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z);
-        if (c == null || !c.o) return null;    // c.loaded
-        NBTTagCompound nbt = ChunkRegionLoader.a(cw.getHandle(), c);
-        return nbt != null ? parseChunkFromNBT(new NBT.NBTCompound(nbt)) : null;
+        LevelChunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z);
+        if (c == null || !c.loaded) return null;
+        CompoundTag nbt = ChunkSerializer.write(cw.getHandle(), c);
+        return parseChunkFromNBT(new NBT.NBTCompound(nbt));
     }
 
     // Load generic chunk from unloaded chunk
     @Override
     protected Supplier<GenericChunk> loadChunkAsync(DynmapChunk chunk){
         try {
-            CompletableFuture<NBTTagCompound> nbt = provider.getChunk(((CraftWorld) w).getHandle(), chunk.x, chunk.z);
+            CompletableFuture<CompoundTag> nbt = provider.getChunk(((CraftWorld) w).getHandle(), chunk.x, chunk.z);
             return () -> {
-                NBTTagCompound compound;
                 try {
-                    compound = nbt.get();
+                    if (Thread.interrupted()) throw new InterruptedException(); //reason to catch it, we would throw it anyway
+                    return nbt.join() == null ? null : parseChunkFromNBT(new NBT.NBTCompound(nbt.join()));
                 } catch (InterruptedException e) {
                     return null;
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
                 }
-                return compound == null ? null : parseChunkFromNBT(new NBT.NBTCompound(compound));
             };
         } catch (InvocationTargetException | IllegalAccessException ignored) {
             return () -> null;
@@ -76,14 +75,12 @@ public class MapChunkCache119 extends GenericMapChunkCache {
 
     protected GenericChunk loadChunk(DynmapChunk chunk) {
         CraftWorld cw = (CraftWorld) w;
-        NBTTagCompound nbt = null;
-        ChunkCoordIntPair cc = new ChunkCoordIntPair(chunk.x, chunk.z);
+        CompoundTag nbt = null;
+        ChunkPos cc = new ChunkPos(chunk.x, chunk.z);
         GenericChunk gc = null;
         try {	// BUGBUG - convert this all to asyn properly, since now native async
-            nbt = cw.getHandle().k().a.f(cc).join().get();	// playerChunkMap
-        } catch (CancellationException cx) {
-        } catch (NoSuchElementException snex) {
-        }
+            nbt = cw.getHandle().getChunkSource().chunkMap.read(cc).join().orElse(null);	// playerChunkMap
+        } catch (CancellationException ignored) {}
         if (nbt != null) {
             gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
         }

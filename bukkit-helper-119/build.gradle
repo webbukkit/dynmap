@@ -1,3 +1,7 @@
+plugins {
+    id("io.papermc.paperweight.userdev") version "1.3.8"
+}
+
 eclipse {
     project {
         name = "Dynmap(Spigot-1.19)"
@@ -7,9 +11,29 @@ eclipse {
 description = 'bukkit-helper-1.19'
 
 dependencies {
-  implementation project(':bukkit-helper')
-  implementation project(':dynmap-api')
-  implementation project(path: ':DynmapCore', configuration: 'shadow')
-  implementation group: 'org.spigotmc', name: 'spigot-api', version:'1.19-R0.1-SNAPSHOT'
-  implementation group: 'org.spigotmc', name: 'spigot', version:'1.19-R0.1-SNAPSHOT'
+    compileOnly project(':bukkit-helper')
+    compileOnly project(':dynmap-api')
+    compileOnly project(':DynmapCore')
+    compileOnly project(':DynmapCoreAPI')
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.2-R0.1-SNAPSHOT")
+}
+
+tasks {
+    assemble {
+        dependsOn(reobfJar)
+    }
+    reobfJar {
+        outputJar.set(layout.buildDirectory.file("libs/bukkit-helper-119-${parent.version}-reobf.jar"))
+    }
+    configurations {
+        spigotObf {
+            canBeConsumed = true
+            canBeResolved = false
+        }
+    }
+}
+artifacts {
+    spigotObf(layout.buildDirectory.file("libs/bukkit-helper-119-${parent.version}-reobf.jar")) {
+        builtBy(reobfJar)
+    }
 }
