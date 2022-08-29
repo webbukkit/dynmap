@@ -177,6 +177,8 @@ public class DynmapCore implements DynmapCommonAPI {
     private Boolean webserverCompConfigWarn = false;
     private final String CompConfigWiki = "https://github.com/webbukkit/dynmap/wiki/Component-Configuration";
 
+    private final String[] defaultTemplates = {"vlowres", "lowres", "medres", "hires", "low_boost_hi",
+            "hi_boost_vhi", "hi_boost_xhi"};
     /* Constructor for core */
     public DynmapCore() {
     }
@@ -2167,6 +2169,9 @@ public class DynmapCore implements DynmapCommonAPI {
     ConfigurationNode getDefaultTemplateConfigurationNode(DynmapWorld world) {
         String environmentName = world.getEnvironment();
         if(deftemplatesuffix.length() > 0) {
+            if(!Arrays.asList(defaultTemplates).contains(deftemplatesuffix)) {
+                Log.warning("Not using a default defined template, worlds might not be accessible.");
+            }
             environmentName += "-" + deftemplatesuffix;
         }
         Log.verboseinfo("Using environment as template: " + environmentName);
