@@ -61,7 +61,7 @@ public class BiomeMap {
             new BiomeMap(26, "COLD_BEACH", 0.05, 0.3, "minecraft:snowy_beach");
             new BiomeMap(27, "BIRCH_FOREST", 0.6, 0.6, "minecraft:birch_forest");
             new BiomeMap(28, "BIRCH_FOREST_HILLS", 0.6, 0.6, "minecraft:birch_forest_hills");
-            new BiomeMap(29, "ROOFED_FOREST", 0.7, 0.8, "minecraft:dark_forest");
+            new BiomeMap(29, "ROOFED_FOREST", 0.7, 0.8, 0xFFFFFF, 0x28340A, 0, "minecraft:dark_forest");
             new BiomeMap(30, "COLD_TAIGA", -0.5, 0.4, "minecraft:snowy_taiga");
             new BiomeMap(31, "COLD_TAIGA_HILLS", -0.5, 0.4, "minecraft:snowy_taiga_hills");
             new BiomeMap(32, "MEGA_TAIGA", 0.3, 0.8, "minecraft:giant_tree_taiga");
@@ -83,7 +83,7 @@ public class BiomeMap {
             new BiomeMap(151, "JUNGLE_EDGE_MOUNTAINS", 0.95, 0.8, "minecraft:modified_jungle_edge");
             new BiomeMap(155, "BIRCH_FOREST_MOUNTAINS", 0.6, 0.6, "minecraft:tall_birch_forest");
             new BiomeMap(156, "BIRCH_FOREST_HILLS_MOUNTAINS", 0.6, 0.6, "minecraft:tall_birch_hills");
-            new BiomeMap(157, "ROOFED_FOREST_MOUNTAINS", 0.7, 0.8, "minecraft:dark_forest_hills");
+            new BiomeMap(157, "ROOFED_FOREST_MOUNTAINS", 0.7, 0.8, 0xFFFFFF, 0x28340A, 0, "minecraft:dark_forest_hills");
             new BiomeMap(158, "COLD_TAIGA_MOUNTAINS", -0.5, 0.4, "minecraft:snowy_taiga_mountains");
             new BiomeMap(160, "MEGA_SPRUCE_TAIGA", 0.25, 0.8, "minecraft:giant_spruce_taiga");
             new BiomeMap(161, "MEGA_SPRUCE_TAIGA_HILLS", 0.3, 0.8, "minecraft:giant_spruce_taiga_hills");
