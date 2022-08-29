@@ -28,6 +28,7 @@ public class WebAuthManager {
     private static final String PWDHASH_PREFIX = "hash.";
     private Random rnd = new Random();
     private DynmapCore core;
+    private String publicRegistrationURL;
     
     public WebAuthManager(DynmapCore core) {
         this.core = core;
@@ -202,7 +203,8 @@ public class WebAuthManager {
         pending_registrations.put(uid.toLowerCase(), regkey.toLowerCase());
         sender.sendMessage("Registration pending for user ID: " + uid);
         sender.sendMessage("Registration code: " + regkey);
-        sender.sendMessage("Enter ID and code on registration web page (login.html) to complete registration");
+        publicRegistrationURL = core.configuration.getString("publicURL", "index.html");
+        sender.sendMessage("Enter ID and code on registration web page (" + publicRegistrationURL.toString() + ") to complete registration");
         if(other) {
             DynmapPlayer p = core.getServer().getPlayer(uid);
             if(p != null) {
