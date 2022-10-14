@@ -1,9 +1,12 @@
 package org.dynmap.bukkit.helper.v117;
 
+import net.minecraft.resources.MinecraftKey;
+import net.minecraft.world.level.biome.BiomeBase;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.dynmap.DynmapChunk;
 import org.dynmap.bukkit.helper.BukkitWorld;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.common.chunk.GenericChunk;
 import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.common.chunk.GenericMapChunkCache;
@@ -66,4 +69,18 @@ public class MapChunkCache117 extends GenericMapChunkCache {
 		this.w = dw.getWorld();
 		super.setChunks(dw, chunks);
 	}
+
+    @Override
+    public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
+        if (bm.getResourcelocation() == null) return colormap[bm.biomeLookup()];
+        BiomeBase base = BukkitVersionHelperSpigot117.getBiomeReg().get(MinecraftKey.a(bm.getResourcelocation()));
+        return base == null ? colormap[bm.biomeLookup()] : base.l().e().orElse(colormap[bm.biomeLookup()]);
+    }
+
+    @Override
+    public int getGrassColor(BiomeMap bm, int[] colormap, int x, int z) {
+        if (bm.getResourcelocation() == null) return colormap[bm.biomeLookup()];
+        BiomeBase base = BukkitVersionHelperSpigot117.getBiomeReg().get(MinecraftKey.a(bm.getResourcelocation()));
+        return base == null ? colormap[bm.biomeLookup()] : base.l().g().a(x, z, base.l().f().orElse(colormap[bm.biomeLookup()]));
+    }
 }
