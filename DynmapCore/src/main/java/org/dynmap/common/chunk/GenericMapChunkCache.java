@@ -55,7 +55,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		private final int worldheight;
 		private final int ymin;
 
-		protected OurMapIterator(int x0, int y0, int z0) {
+		OurMapIterator(int x0, int y0, int z0) {
 			initialize(x0, y0, z0);
 			worldheight = dw.worldheight;
 			ymin = dw.minY;
@@ -157,7 +157,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			}
 		}
 
-		public final BiomeMap getBiomeRel(int dx, int dz) {
+		private final BiomeMap getBiomeRel(int dx, int dz) {
 			int nx = x + dx;
 			int nz = z + dz;
 			int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
@@ -169,7 +169,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 		
 		@Override
-		public int getSmoothGrassColorMultiplier(int[] colormap) {
+		public final int getSmoothGrassColorMultiplier(int[] colormap) {
 			int mult = 0xFFFFFF;
 
 			try {
@@ -181,7 +181,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
 						if (bm == BiomeMap.NULL) continue; 
-						int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
+						int rmult = getGrassColor(bm, colormap, getX() + dx, getZ() + dz);
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
 						baccum += rmult & 0xFF;
@@ -200,7 +200,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 
 		@Override
-		public int getSmoothFoliageColorMultiplier(int[] colormap) {
+		public final int getSmoothFoliageColorMultiplier(int[] colormap) {
 			int mult = 0xFFFFFF;
 
 			try {
@@ -212,7 +212,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
 						if (bm == BiomeMap.NULL) continue; 
-						int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
+						int rmult = getFoliageColor(bm, colormap, getX() + dx, getZ() + dz);
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
 						baccum += rmult & 0xFF;
@@ -544,6 +544,14 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		public String getChunkStatus() {
 			return (snap != null) ? snap.chunkStatus : null;
 		}
+	}
+
+	public int getGrassColor(BiomeMap bm, int[] colormap, int x, int z) {
+		return bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
+	}
+
+	public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
+		return bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
 	}
 
 	private class OurEndMapIterator extends OurMapIterator {
