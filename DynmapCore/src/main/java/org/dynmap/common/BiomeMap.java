@@ -300,6 +300,9 @@ public class BiomeMap {
     public String getId() {
         return id;
     }
+    public String getResourcelocation() {
+        return resourcelocation;
+    }
     public String toString() {
     	return String.format("%s(%s)", id, resourcelocation);
     }

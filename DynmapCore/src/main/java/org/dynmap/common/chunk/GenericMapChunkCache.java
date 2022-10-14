@@ -55,7 +55,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		private final int worldheight;
 		private final int ymin;
 
-		OurMapIterator(int x0, int y0, int z0) {
+		protected OurMapIterator(int x0, int y0, int z0) {
 			initialize(x0, y0, z0);
 			worldheight = dw.worldheight;
 			ymin = dw.minY;
@@ -157,7 +157,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			}
 		}
 
-		private final BiomeMap getBiomeRel(int dx, int dz) {
+		public final BiomeMap getBiomeRel(int dx, int dz) {
 			int nx = x + dx;
 			int nz = z + dz;
 			int nchunkindex = ((nx >> 4) - x_min) + (((nz >> 4) - z_min) * x_dim);
@@ -169,7 +169,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 		
 		@Override
-		public final int getSmoothGrassColorMultiplier(int[] colormap) {
+		public int getSmoothGrassColorMultiplier(int[] colormap) {
 			int mult = 0xFFFFFF;
 
 			try {
@@ -200,7 +200,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		}
 
 		@Override
-		public final int getSmoothFoliageColorMultiplier(int[] colormap) {
+		public int getSmoothFoliageColorMultiplier(int[] colormap) {
 			int mult = 0xFFFFFF;
 
 			try {

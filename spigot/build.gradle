@@ -1,4 +1,6 @@
-
+plugins {
+    id "xyz.jpenilla.run-paper" version "1.0.6"
+}
 description = 'dynmap'
 
 eclipse {
@@ -82,7 +84,12 @@ processResources {
 jar {
     classifier = 'unshaded'
 }
-
+runServer {
+    // Configure the Minecraft version for our task.
+    // This is the only required configuration besides applying the plugin.
+    // Your plugin's jar (or shadowJar if present) will be used automatically.
+    minecraftVersion("1.19.2")
+}
 shadowJar {
     dependencies {
         include(dependency('org.bstats::'))
