@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -28,10 +29,16 @@ import java.util.List;
 public class BukkitVersionHelperSpigot116_4 extends BukkitVersionHelperGeneric {
     private final boolean unsafeAsync;
     private Field watercolorfield;
+	private static Field grassColorField;
+	private static Field foliageColorField;
+	private static Field grassColorModifierField;
     
     public BukkitVersionHelperSpigot116_4() {
 		Class biomefog =  getNMSClass("net.minecraft.server.BiomeFog");
 		watercolorfield = getPrivateField(biomefog, new String[] { "c" }, int.class);
+		grassColorField = getPrivateField(biomefog, new String[] { "g" }, Optional.class);
+		foliageColorField = getPrivateField(biomefog, new String[] { "f" }, Optional.class);
+		grassColorModifierField = getPrivateField(biomefog, new String[] { "h" }, BiomeFog.GrassColor.class);
          this.unsafeAsync = true;
     }
     
@@ -50,9 +57,9 @@ public class BukkitVersionHelperSpigot116_4 extends BukkitVersionHelperGeneric {
         return names;
     }
 
-    private IRegistry<BiomeBase> reg = null;
+    private static IRegistry<BiomeBase> reg = null;
 
-    private IRegistry<BiomeBase> getBiomeReg() {
+    public static IRegistry<BiomeBase> getBiomeReg() {
     	if (reg == null) {
     		reg = MinecraftServer.getServer().getCustomRegistry().b(IRegistry.ay);
     	}
@@ -159,6 +166,29 @@ public class BukkitVersionHelperSpigot116_4 extends BukkitVersionHelperGeneric {
 		} catch (IllegalAccessException e) {
 		}
     	return 0xFFFFFF;
+	}
+	@SuppressWarnings("unchecked")
+	public static Optional<Integer> getBiomeBaseGrassMult(BiomeBase bb) {
+		if (bb == null) return Optional.empty();
+		try {
+			return (Optional<Integer>) grassColorField.get(bb.l());
+		} catch (IllegalArgumentException | IllegalAccessException ignored) {}
+		return Optional.empty();
+	}
+	@SuppressWarnings("unchecked")
+	public static Optional<Integer> getBiomeBaseFoliageMult(BiomeBase bb) {
+		if (bb == null) return Optional.empty();
+		try {
+			return (Optional<Integer>) foliageColorField.get(bb.l());
+		} catch (IllegalArgumentException | IllegalAccessException ignored) {}
+		return Optional.empty();
+	}
+	public static BiomeFog.GrassColor getBiomeBaseGrassModifier(BiomeBase bb) {
+		if (bb == null) return BiomeFog.GrassColor.NONE;
+		try {
+			return (BiomeFog.GrassColor) grassColorModifierField.get(bb.l());
+		} catch (IllegalArgumentException | IllegalAccessException ignored) {}
+		return BiomeFog.GrassColor.NONE;
 	}
 
     /** Get temperature from biomebase */
