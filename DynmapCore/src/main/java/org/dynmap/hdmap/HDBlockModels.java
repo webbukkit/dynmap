@@ -255,7 +255,7 @@ public class HDBlockModels {
                 }
             }
         } catch (IOException iox) {
-            Log.severe("Error processing nodel files");
+            Log.severe("Error processing model files");
         } finally {
             if (in != null) {
                 try { in.close(); } catch (IOException iox) {}
