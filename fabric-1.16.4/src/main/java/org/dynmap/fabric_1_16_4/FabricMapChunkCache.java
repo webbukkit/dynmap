@@ -91,7 +91,11 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 	}
     @Override
     public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
-        return bm.<Biome>getBiomeObject().map(Biome::getEffects).flatMap(BiomeEffects::getFoliageColor).orElse(colormap[bm.biomeLookup()]);
+        return bm.<Biome>getBiomeObject()
+                .map(Biome::getEffects)
+                .map(BiomeEffectsAccessor.class::cast)
+                .flatMap(BiomeEffectsAccessor::getFoliageColor)
+                .orElse(colormap[bm.biomeLookup()]);
     }
 
     @Override
