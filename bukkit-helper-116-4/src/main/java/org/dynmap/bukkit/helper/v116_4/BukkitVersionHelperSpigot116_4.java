@@ -57,9 +57,9 @@ public class BukkitVersionHelperSpigot116_4 extends BukkitVersionHelperGeneric {
         return names;
     }
 
-    private static IRegistry<BiomeBase> reg = null;
+    private IRegistry<BiomeBase> reg = null;
 
-    public static IRegistry<BiomeBase> getBiomeReg() {
+    private IRegistry<BiomeBase> getBiomeReg() {
     	if (reg == null) {
     		reg = MinecraftServer.getServer().getCustomRegistry().b(IRegistry.ay);
     	}

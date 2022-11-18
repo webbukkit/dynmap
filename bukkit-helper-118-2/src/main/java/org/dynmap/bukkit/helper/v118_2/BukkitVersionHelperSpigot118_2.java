@@ -111,7 +111,7 @@ public class BukkitVersionHelperSpigot118_2 extends BukkitVersionHelper {
 
     private static IRegistry<BiomeBase> reg = null;
 
-    public static IRegistry<BiomeBase> getBiomeReg() {
+    private static IRegistry<BiomeBase> getBiomeReg() {
     	if (reg == null) {
     		reg = MinecraftServer.getServer().aU().d(IRegistry.aP);
     	}

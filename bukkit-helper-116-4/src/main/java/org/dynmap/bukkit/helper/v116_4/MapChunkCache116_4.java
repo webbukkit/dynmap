@@ -66,15 +66,14 @@ public class MapChunkCache116_4 extends GenericMapChunkCache {
 	}
     @Override
     public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
-        if (bm.getResourcelocation() == null) return colormap[bm.biomeLookup()];
-        BiomeBase base = BukkitVersionHelperSpigot116_4.getBiomeReg().get(MinecraftKey.a(bm.getResourcelocation()));
-        return BukkitVersionHelperSpigot116_4.getBiomeBaseFoliageMult(base).orElse(colormap[bm.biomeLookup()]);
+        Optional<BiomeBase> base = bm.getBiomeObject();
+        return BukkitVersionHelperSpigot116_4.getBiomeBaseFoliageMult(base.orElse(null)).orElse(colormap[bm.biomeLookup()]);
     }
 
     @Override
     public int getGrassColor(BiomeMap bm, int[] colormap, int x, int z) {
-        if (bm.getResourcelocation() == null) return colormap[bm.biomeLookup()];
-        BiomeBase base = BukkitVersionHelperSpigot116_4.getBiomeReg().get(MinecraftKey.a(bm.getResourcelocation()));
+        BiomeBase base = bm.<BiomeBase>getBiomeObject().orElse(null);
+        if (base == null) return bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
         int grassMult = BukkitVersionHelperSpigot116_4.getBiomeBaseGrassMult(base).orElse(colormap[bm.biomeLookup()]);
         BiomeFog.GrassColor modifier = BukkitVersionHelperSpigot116_4.getBiomeBaseGrassModifier(base);
         if (modifier == BiomeFog.GrassColor.DARK_FOREST) {
