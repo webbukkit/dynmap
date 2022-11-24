@@ -14,6 +14,7 @@ import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -149,7 +150,7 @@ public class DynmapPlugin {
                 baseb = b;
             }
 
-            Identifier ui = Registry.BLOCK.getId(b);
+            Identifier ui = Registries.BLOCK.getId(b);
             if (ui == null) {
                 continue;
             }

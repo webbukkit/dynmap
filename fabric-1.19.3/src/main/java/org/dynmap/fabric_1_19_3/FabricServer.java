@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.BannedIpList;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.MinecraftServer;
@@ -60,7 +61,7 @@ public class FabricServer extends DynmapServerInterface {
     public FabricServer(DynmapPlugin plugin, MinecraftServer server) {
         this.plugin = plugin;
         this.server = server;
-        this.biomeRegistry = server.getRegistryManager().get(Registry.BIOME_KEY);
+        this.biomeRegistry = server.getRegistryManager().get(RegistryKeys.BIOME);
     }
 
     private Optional<GameProfile> getProfileByName(String player) {
