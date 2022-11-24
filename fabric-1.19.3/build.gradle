@@ -1,0 +1,68 @@
+plugins {
+	// TODO: switch to a stable Loom release once 1.19.1 lands
+	id 'fabric-loom' version '0.12-SNAPSHOT'
+}
+
+archivesBaseName = "Dynmap"
+version = parent.version
+group = parent.group
+
+eclipse {
+    project {
+        name = "Dynmap(Fabric-1.19.1)"
+    }
+}
+
+configurations {
+    shadow
+    implementation.extendsFrom(shadow)
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
+    shadow project(path: ':DynmapCore', configuration: 'shadow')
+
+    modCompileOnly "me.lucko:fabric-permissions-api:0.1-SNAPSHOT"
+    compileOnly 'net.luckperms:api:5.4'
+}
+
+processResources {
+    filesMatching('fabric.mod.json') {
+        expand "version": project.version
+    }
+}
+
+java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
+
+jar {
+    from "LICENSE"
+    from {
+        configurations.shadow.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+remapJar {
+    archiveFileName = "${archivesBaseName}-${project.version}-fabric-${project.minecraft_version}.jar"
+    destinationDirectory = file '../target'
+}
+
+remapJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
+}
