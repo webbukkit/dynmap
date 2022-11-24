@@ -15,8 +15,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
-
-import net.minecraft.util.registry.RegistryKey;
 import org.dynmap.fabric_1_19_3.event.BlockEvents;
 import org.dynmap.fabric_1_19_3.event.ServerChatEvents;
 import org.spongepowered.asm.mixin.Mixin;
