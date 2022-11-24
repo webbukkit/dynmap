@@ -1,9 +1,9 @@
-package org.dynmap.fabric_1_19_1.mixin;
+package org.dynmap.fabric_1_19_3.mixin;
 
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.dynmap.fabric_1_19_1.event.PlayerEvents;
+import org.dynmap.fabric_1_19_3.event.PlayerEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

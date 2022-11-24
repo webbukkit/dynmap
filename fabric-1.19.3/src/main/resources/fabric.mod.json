@@ -18,7 +18,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "org.dynmap.fabric_1_19_1.DynmapMod"
+      "org.dynmap.fabric_1_19_3.DynmapMod"
     ]
   },
   "mixins": [

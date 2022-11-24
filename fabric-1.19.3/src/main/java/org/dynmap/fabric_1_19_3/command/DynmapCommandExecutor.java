@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19_1.command;
+package org.dynmap.fabric_1_19_3.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -8,7 +8,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.server.command.ServerCommandSource;
-import org.dynmap.fabric_1_19_1.DynmapPlugin;
+import org.dynmap.fabric_1_19_3.DynmapPlugin;
 
 import java.util.Arrays;
 

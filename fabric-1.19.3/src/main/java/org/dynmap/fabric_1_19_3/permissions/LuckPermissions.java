@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19_1.permissions;
+package org.dynmap.fabric_1_19_3.permissions;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.luckperms.api.LuckPerms;
@@ -9,7 +9,7 @@ import net.luckperms.api.util.Tristate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import org.dynmap.Log;
-import org.dynmap.fabric_1_19_1.DynmapPlugin;
+import org.dynmap.fabric_1_19_3.DynmapPlugin;
 import org.dynmap.json.simple.JSONArray;
 import org.dynmap.json.simple.JSONObject;
 import org.dynmap.json.simple.parser.JSONParser;
