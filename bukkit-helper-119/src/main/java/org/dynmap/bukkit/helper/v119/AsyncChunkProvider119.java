@@ -17,8 +17,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -27,59 +26,63 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"JavaReflectionMemberAccess"}) //java don't know about paper
 public class AsyncChunkProvider119 {
-    private final Thread ioThread;
     private final Method getChunk;
-    private final Predicate<NBTTagCompound> ifFailed;
     private final Method getAsyncSaveData;
     private final Method save;
+    private final Enum<?> data;
+    private final Enum<?> priority;
     private int currTick = MinecraftServer.currentTick;
     private int currChunks = 0;
 
     AsyncChunkProvider119() {
         try {
-            Predicate<NBTTagCompound> ifFailed1 = null;
-            Method getChunk1 = null, getAsyncSaveData1 = null, save1 = null;
-            Thread ioThread1 = null;
+            Method getChunk1 = null;
+            Method getAsyncSaveData1 = null;
+            Method save1 = null;
+            Enum<?> priority1 = null;
+            Enum<?> data1 = null;
             try {
-                Class<?> threadClass = Class.forName("com.destroystokyo.paper.io.PaperFileIOThread");
-                Class<?> asyncChunkData = Arrays.stream(ChunkRegionLoader.class.getClasses())
-                        .filter(c -> c.getSimpleName().equals("AsyncSaveData"))
-                        .findFirst()
-                        .orElseThrow(RuntimeException::new);
+                Class<?> threadClass = Class.forName("io.papermc.paper.chunk.system.io.RegionFileIOThread");
+
+                Class<?> dataclass = Arrays.stream(threadClass.getDeclaredClasses())
+                        .filter(c -> c.getSimpleName().equals("RegionFileType"))
+                        .findAny()
+                        .orElseThrow(NullPointerException::new);
+                data1 = Enum.valueOf(cast(dataclass), "CHUNK_DATA");
+
+                Class<?> priorityClass = Arrays.stream(Class.forName("ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor").getClasses())
+                        .filter(c -> c.getSimpleName().equals("Priority"))
+                        .findAny()
+                        .orElseThrow(NullPointerException::new);
+                //Almost lowest priority, but not quite so low as to be considered idle
+                //COMPLETING->BLOCKING->HIGHEST->HIGHER->HIGH->NORMAL->LOW->LOWER->LOWEST->IDLE
+                priority1 = Enum.valueOf(cast(priorityClass), "LOWEST");
+
                 getAsyncSaveData1 = ChunkRegionLoader.class.getMethod("getAsyncSaveData", WorldServer.class, IChunkAccess.class);
-                save1 = ChunkRegionLoader.class.getMethod("saveChunk", WorldServer.class, IChunkAccess.class, asyncChunkData);
-                Class<?>[] classes = threadClass.getClasses();
-                Class<?> holder = Arrays.stream(classes).filter(aClass -> aClass.getSimpleName().equals("Holder")).findAny().orElseThrow(RuntimeException::new);
-                ioThread1 = (Thread) holder.getField("INSTANCE").get(null);
-                getChunk1 = threadClass.getMethod("loadChunkDataAsync", WorldServer.class, int.class, int.class, int.class, Consumer.class, boolean.class, boolean.class, boolean.class);
-                NBTTagCompound failure = (NBTTagCompound) threadClass.getField("FAILURE_VALUE").get(null);
-                ifFailed1 = nbtTagCompound -> nbtTagCompound == failure;
-            } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
+                save1 = ChunkRegionLoader.class.getMethod("saveChunk", WorldServer.class, IChunkAccess.class, getAsyncSaveData1.getReturnType());
+                getChunk1 = threadClass.getMethod("loadDataAsync", WorldServer.class, int.class, int.class, data1.getClass(), BiConsumer.class, boolean.class, priority1.getClass());
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
             getAsyncSaveData = Objects.requireNonNull(getAsyncSaveData1);
             save = Objects.requireNonNull(save1);
-            ifFailed = Objects.requireNonNull(ifFailed1);
             getChunk = Objects.requireNonNull(getChunk1);
-            ioThread = Objects.requireNonNull(ioThread1);
+            data = Objects.requireNonNull(data1);
+            priority = Objects.requireNonNull(priority1);
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    private <T> T cast(Object o) {
+        return (T) o;
+    }
     public CompletableFuture<NBTTagCompound> getChunk(WorldServer world, int x, int y) throws InvocationTargetException, IllegalAccessException {
-        CompletableFuture<Object> future = new CompletableFuture<>();
-        getChunk.invoke(ioThread,world,x,y,5,(Consumer<Object>) future::complete, false, true, true);
-        return future.thenApply((resultFuture) -> {
-            if (resultFuture == null) return null;
-            try {
-                NBTTagCompound compound =  (NBTTagCompound) resultFuture.getClass().getField("chunkData").get(resultFuture);
-                return ifFailed.test(compound) ? null : compound;
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            return null;
-        });
+        CompletableFuture<NBTTagCompound> future = new CompletableFuture<>();
+        getChunk.invoke(null, world, x, y, data, (BiConsumer<NBTTagCompound, Throwable>) (nbt, exception) -> future.complete(nbt), true, priority);
+        return future;
     }
 
     public synchronized Supplier<NBTTagCompound> getLoadedChunk(CraftWorld world, int x, int z) {
