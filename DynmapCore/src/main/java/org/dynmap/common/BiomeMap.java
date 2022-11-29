@@ -3,6 +3,7 @@ package org.dynmap.common;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.dynmap.hdmap.HDBlockModels;
 
@@ -44,6 +45,7 @@ public class BiomeMap {
     private int watercolormult;
     private int grassmult;
     private int foliagemult;
+    private Optional<?> biomeObj = Optional.empty();
     private final String id;
     private final String resourcelocation;
     private final int index;
@@ -307,5 +309,11 @@ public class BiomeMap {
     }
     public String toString() {
     	return String.format("%s(%s)", id, resourcelocation);
+    }
+    public @SuppressWarnings("unchecked") <T> Optional<T> getBiomeObject() {
+        return (Optional<T>) biomeObj;
+    }
+    public void setBiomeObject(Object biomeObj) {
+        this.biomeObj = Optional.of(biomeObj);
     }
 }

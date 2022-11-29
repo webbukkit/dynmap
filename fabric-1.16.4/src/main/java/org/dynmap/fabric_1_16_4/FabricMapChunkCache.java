@@ -7,12 +7,16 @@ import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.dynmap.DynmapChunk;
 import org.dynmap.Log;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.common.chunk.GenericChunk;
 import org.dynmap.common.chunk.GenericMapChunkCache;
+import org.dynmap.fabric_1_16_4.mixin.BiomeEffectsAccessor;
 
 import java.util.*;
 
@@ -85,5 +89,29 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 		}
 		return gc;
 	}
+    @Override
+    public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
+        return bm.<Biome>getBiomeObject()
+                .map(Biome::getEffects)
+                .map(BiomeEffectsAccessor.class::cast)
+                .flatMap(BiomeEffectsAccessor::getFoliageColor)
+                .orElse(colormap[bm.biomeLookup()]);
+    }
+
+    @Override
+    public int getGrassColor(BiomeMap bm, int[] colormap, int x, int z) {
+        BiomeEffectsAccessor effects = (BiomeEffectsAccessor) bm.<Biome>getBiomeObject().map(Biome::getEffects).orElse(null);
+        if (effects == null) return colormap[bm.biomeLookup()];
+        int grassMult = effects.getGrassColor().orElse(colormap[bm.biomeLookup()]);
+        BiomeEffects.GrassColorModifier modifier = effects.getGrassColorModifier();
+        if (modifier == BiomeEffects.GrassColorModifier.DARK_FOREST) {
+            return ((grassMult & 0xfefefe) + 0x28340a) >> 1;
+        } else if (modifier == BiomeEffects.GrassColorModifier.SWAMP) {
+            double var5 = Biome.FOLIAGE_NOISE.sample(x * 0.0225, z * 0.0225, false);
+            return var5 < -0.1 ? 0x4c763c : 0x6a7039;
+        } else {
+            return grassMult;
+        }
+    }
 }
 

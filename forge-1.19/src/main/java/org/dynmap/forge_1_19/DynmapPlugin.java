@@ -1424,6 +1424,7 @@ public class DynmapPlugin
                     bmap.setWaterColorMultiplier(watermult);
                 	Log.verboseinfo("Set watercolormult for " + bmap.toString() + " (" + i + ") to " + Integer.toHexString(watermult));
                 }
+                bmap.setBiomeObject(bb);
             }
         }
         if(cnt > 0)

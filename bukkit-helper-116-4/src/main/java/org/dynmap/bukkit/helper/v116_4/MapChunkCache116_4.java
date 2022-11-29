@@ -6,12 +6,14 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.dynmap.DynmapChunk;
 import org.dynmap.bukkit.helper.BukkitWorld;
+import org.dynmap.common.BiomeMap;
 import org.dynmap.common.chunk.GenericChunk;
 import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.common.chunk.GenericMapChunkCache;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -62,5 +64,26 @@ public class MapChunkCache116_4 extends GenericMapChunkCache {
 		this.w = dw.getWorld();
 		super.setChunks(dw, chunks);
 	}
+    @Override
+    public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
+        Optional<BiomeBase> base = bm.getBiomeObject();
+        return BukkitVersionHelperSpigot116_4.getBiomeBaseFoliageMult(base.orElse(null)).orElse(colormap[bm.biomeLookup()]);
+    }
+
+    @Override
+    public int getGrassColor(BiomeMap bm, int[] colormap, int x, int z) {
+        BiomeBase base = bm.<BiomeBase>getBiomeObject().orElse(null);
+        if (base == null) return bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
+        int grassMult = BukkitVersionHelperSpigot116_4.getBiomeBaseGrassMult(base).orElse(colormap[bm.biomeLookup()]);
+        BiomeFog.GrassColor modifier = BukkitVersionHelperSpigot116_4.getBiomeBaseGrassModifier(base);
+        if (modifier == BiomeFog.GrassColor.DARK_FOREST) {
+            return ((grassMult & 0xfefefe) + 0x28340a) >> 1;
+        } else if (modifier == BiomeFog.GrassColor.SWAMP) {
+            double var5 = BiomeBase.f.a(x * 0.0225, z * 0.0225, false);
+            return var5 < -0.1 ? 0x4c763c : 0x6a7039;
+        } else {
+            return grassMult;
+        }
+    }
 }
 

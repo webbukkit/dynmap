@@ -181,7 +181,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
 						if (bm == BiomeMap.NULL) continue; 
-						int rmult = bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
+						int rmult = getGrassColor(bm, colormap, getX() + dx, getZ() + dz);
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
 						baccum += rmult & 0xFF;
@@ -212,7 +212,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 					for (int dz = -1; dz <= 1; dz++) {
 						BiomeMap bm = getBiomeRel(dx, dz);
 						if (bm == BiomeMap.NULL) continue; 
-						int rmult = bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
+						int rmult = getFoliageColor(bm, colormap, getX() + dx, getZ() + dz);
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
 						baccum += rmult & 0xFF;
@@ -544,6 +544,14 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		public String getChunkStatus() {
 			return (snap != null) ? snap.chunkStatus : null;
 		}
+	}
+
+	public int getGrassColor(BiomeMap bm, int[] colormap, int x, int z) {
+		return bm.getModifiedGrassMultiplier(colormap[bm.biomeLookup()]);
+	}
+
+	public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
+		return bm.getModifiedFoliageMultiplier(colormap[bm.biomeLookup()]);
 	}
 
 	private class OurEndMapIterator extends OurMapIterator {
