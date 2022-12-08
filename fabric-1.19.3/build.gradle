@@ -1,6 +1,5 @@
 plugins {
-	// TODO: switch to a stable Loom release once 1.19.3 lands
-	id 'fabric-loom' version '1.0-SNAPSHOT'
+	id 'fabric-loom' version '1.0.12'
 }
 
 archivesBaseName = "Dynmap"
