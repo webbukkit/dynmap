@@ -11,6 +11,7 @@ import net.minecraft.util.math.WordPackedArray;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 
@@ -100,4 +101,16 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 		}
 		return gc;
 	}
+
+    @Override
+    public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
+        return bm.<Biome>getBiomeObject().map(Biome::getEffects).flatMap(BiomeEffects::getFoliageColor).orElse(colormap[bm.biomeLookup()]);
+    }
+
+    @Override
+    public int getGrassColor(BiomeMap bm, int[] colormap, int x, int z) {
+        BiomeEffects effects = bm.<Biome>getBiomeObject().map(Biome::getEffects).orElse(null);
+        if (effects == null) return colormap[bm.biomeLookup()];
+        return effects.getGrassColorModifier().getModifiedGrassColor(x, z, effects.getGrassColor().orElse(colormap[bm.biomeLookup()]));
+    }
 }
