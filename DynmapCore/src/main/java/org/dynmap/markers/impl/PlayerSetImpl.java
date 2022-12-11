@@ -71,7 +71,7 @@ class PlayerSetImpl implements PlayerSet {
      *  Load marker from configuration node
      *  @param node - configuration node
      */
-    boolean loadPersistentData(ConfigurationNode node) {
+    boolean loadPersistentData(ConfigurationNode node, boolean isSafe) {
         List<String> plist = node.getList("players");
         if(plist != null) {
             players.clear();

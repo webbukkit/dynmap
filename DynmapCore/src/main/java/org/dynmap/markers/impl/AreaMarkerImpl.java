@@ -72,9 +72,9 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     AreaMarkerImpl(String id, String lbl, boolean markup, String world, double x[], double z[], boolean persistent, MarkerSetImpl set) {
         markerid = id;
         if(lbl != null)
-            label = markup ? lbl : Client.encodeForHTML(lbl);
+            label = markup ? Client.sanitizeHTML(lbl) : Client.encodeForHTML(lbl);
         else
-            label = markup ? id : Client.encodeForHTML(id);
+            label = markup ? Client.sanitizeHTML(id) : Client.encodeForHTML(id);
         this.markup = markup;
         this.corners = new ArrayList<Coord>();
         for(int i = 0; i < x.length; i++) {
@@ -118,9 +118,10 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
      *  Load marker from configuration node
      *  @param node - configuration node
      */
-    boolean loadPersistentData(ConfigurationNode node) {
+    boolean loadPersistentData(ConfigurationNode node, boolean isSafe) {
         markup = node.getBoolean("markup", false);
         label = MarkerAPIImpl.escapeForHTMLIfNeeded(node.getString("label", markerid), markup);
+        if (!isSafe) label = Client.sanitizeHTML(label);
         ytop = node.getDouble("ytop", 64.0);
         ybottom = node.getDouble("ybottom", 64.0);
         List<Double> xx = node.getList("x");
@@ -133,6 +134,7 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
         world = node.getString("world", "world");
         normalized_world = DynmapWorld.normalizeWorldName(world);
         desc = node.getString("desc", null);
+        if (!isSafe) desc = Client.sanitizeHTML(desc);
         lineweight = node.getInteger("strokeWeight", -1);
         if(lineweight == -1) {	/* Handle typo-saved value */
         	 lineweight = node.getInteger("stokeWeight", 3);
@@ -215,12 +217,7 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     @Override
     public void setLabel(String lbl, boolean markup) {
         if(markerset == null) return;
-        if (markup) {
-        	label = lbl;
-        }
-        else {	// If not markup, escape any HTML-active characters (<>&"')
-        	label = Client.encodeForHTML(lbl);
-        }
+        label = markup ? Client.sanitizeHTML(lbl) : Client.encodeForHTML(lbl);
         this.markup = markup;
         MarkerAPIImpl.areaMarkerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)
@@ -298,6 +295,7 @@ class AreaMarkerImpl implements AreaMarker, EnterExitMarker {
     @Override
     public void setDescription(String desc) {
         if(markerset == null) return;
+        desc = Client.sanitizeHTML(desc);
         if((this.desc == null) || (this.desc.equals(desc) == false)) {
             this.desc = desc;
             MarkerAPIImpl.areaMarkerUpdated(this, MarkerUpdate.UPDATED);

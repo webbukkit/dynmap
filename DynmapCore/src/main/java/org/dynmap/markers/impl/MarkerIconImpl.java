@@ -81,7 +81,7 @@ class MarkerIconImpl implements MarkerIcon {
         return node;
     }
 
-    boolean loadPersistentData(ConfigurationNode node) {
+    boolean loadPersistentData(ConfigurationNode node, boolean isSafe) {
         if(is_builtin)
             return false;
         

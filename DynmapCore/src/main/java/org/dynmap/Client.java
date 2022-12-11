@@ -286,6 +286,8 @@ public class Client {
     private static PolicyFactory sanitizer = null; 
     private static PolicyFactory OLDTAGS = new HtmlPolicyBuilder().allowElements("center", "basefont", "hr").toFactory();
     public static String sanitizeHTML(String html) {
+    	// Don't sanitize if null or no html markup
+    	if ((html == null) || (html.indexOf('<') < 0)) return html;
         PolicyFactory s = sanitizer;
         if (s == null) {
             // Generous but safe html formatting allowances
