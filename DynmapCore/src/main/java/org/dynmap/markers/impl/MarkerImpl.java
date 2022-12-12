@@ -63,7 +63,7 @@ class MarkerImpl implements Marker {
     MarkerImpl(String id, MarkerSetImpl set) {
         markerid = id;
         markerset = set;
-        label = Client.encodeForHTML(id);
+        label = Client.sanitizeHTML(Client.encodeForHTML(id));
         markup = false;
         desc = null;
         x = z = 0; y = 64; world = normalized_world = "world";
@@ -75,15 +75,17 @@ class MarkerImpl implements Marker {
      *  Load marker from configuration node
      *  @param node - configuration node
      */
-    boolean loadPersistentData(ConfigurationNode node) {
+    boolean loadPersistentData(ConfigurationNode node, boolean isSafe) {
         markup = node.getBoolean("markup", false);
         label = MarkerAPIImpl.escapeForHTMLIfNeeded(node.getString("label", markerid), markup);
+        if (!isSafe) label = Client.sanitizeHTML(label);
         x = node.getDouble("x", 0);
         y = node.getDouble("y", 64);
         z = node.getDouble("z", 0);
         world = node.getString("world", "world");
         normalized_world = DynmapWorld.normalizeWorldName(world);
         desc = node.getString("desc", null);
+        if (!isSafe) desc = Client.sanitizeHTML(desc);
         minzoom = node.getInteger("minzoom", -1);
         maxzoom = node.getInteger("maxzoom", -1);
         icon = MarkerAPIImpl.getMarkerIconImpl(node.getString("icon", MarkerIcon.DEFAULT)); 
@@ -168,7 +170,7 @@ class MarkerImpl implements Marker {
     @Override
     public void setLabel(String lbl, boolean markup) {
         if(markerset == null) return;
-    	label = markup ? lbl : Client.encodeForHTML(lbl);
+    	label = Client.sanitizeHTML(markup ? lbl : Client.encodeForHTML(lbl));
         this.markup = markup;
         MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)
@@ -239,6 +241,7 @@ class MarkerImpl implements Marker {
     @Override
     public void setDescription(String desc) {
         if(markerset == null) return;
+        desc = Client.sanitizeHTML(desc);
         if((this.desc == null) || (this.desc.equals(desc) == false)) {
             this.desc = desc;
             MarkerAPIImpl.markerUpdated(this, MarkerUpdate.UPDATED);

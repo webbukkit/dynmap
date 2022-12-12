@@ -449,14 +449,14 @@ class MarkerSetImpl implements MarkerSet {
      *  Load marker from configuration node
      *  @param node - configuration node
      */
-    boolean loadPersistentData(ConfigurationNode node) {
+    boolean loadPersistentData(ConfigurationNode node, boolean isSafe) {
         label = node.getString("label", setid); /* Get label */
         ConfigurationNode markernode = node.getNode("markers");
         if (markernode != null) {
             for(String id : markernode.keySet()) {
                 MarkerImpl marker = new MarkerImpl(id, this);   /* Make and load marker */
                 ConfigurationNode cfg = markernode.getNode(id);
-                if ((cfg != null) && marker.loadPersistentData(cfg)) {
+                if ((cfg != null) && marker.loadPersistentData(cfg, isSafe)) {
                     markers.put(id, marker);
                 }
                 else {
@@ -470,7 +470,7 @@ class MarkerSetImpl implements MarkerSet {
             for(String id : areamarkernode.keySet()) {
                 AreaMarkerImpl marker = new AreaMarkerImpl(id, this);   /* Make and load marker */
                 ConfigurationNode cfg = areamarkernode.getNode(id);
-                if ((cfg != null) && marker.loadPersistentData(cfg)) {
+                if ((cfg != null) && marker.loadPersistentData(cfg, isSafe)) {
                     areamarkers.put(id, marker);
                     if(marker.getBoostFlag()) {
                         if(boostingareamarkers == null) {
@@ -496,7 +496,7 @@ class MarkerSetImpl implements MarkerSet {
             for(String id : linemarkernode.keySet()) {
                 PolyLineMarkerImpl marker = new PolyLineMarkerImpl(id, this);   /* Make and load marker */
                 ConfigurationNode cfg = linemarkernode.getNode(id);
-                if ((cfg != null) && marker.loadPersistentData(cfg)) {
+                if ((cfg != null) && marker.loadPersistentData(cfg, isSafe)) {
                     linemarkers.put(id, marker);
                 }
                 else {
@@ -510,7 +510,7 @@ class MarkerSetImpl implements MarkerSet {
             for(String id : circlemarkernode.keySet()) {
                 CircleMarkerImpl marker = new CircleMarkerImpl(id, this);   /* Make and load marker */
                 ConfigurationNode cfg = circlemarkernode.getNode(id);
-                if ((cfg != null) && marker.loadPersistentData(cfg)) {
+                if ((cfg != null) && marker.loadPersistentData(cfg, isSafe)) {
                     circlemarkers.put(id, marker);
                     if(marker.getBoostFlag()) {
                         if(boostingcirclemarkers == null) {

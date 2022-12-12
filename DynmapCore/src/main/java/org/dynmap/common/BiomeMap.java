@@ -3,6 +3,7 @@ package org.dynmap.common;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.dynmap.hdmap.HDBlockModels;
 
@@ -19,7 +20,7 @@ public class BiomeMap {
     public static final BiomeMap EXTREME_HILLS = new BiomeMap(3, "EXTREME_HILLS", 0.2, 0.3, "minecraft:mountains");
     public static final BiomeMap FOREST = new BiomeMap(4, "FOREST", 0.7, 0.8, "minecraft:forest");
     public static final BiomeMap TAIGA = new BiomeMap(5, "TAIGA", 0.05, 0.8, "minecraft:taiga");
-    public static final BiomeMap SWAMPLAND = new BiomeMap(6, "SWAMPLAND", 0.8, 0.9, 0xE0FFAE, 0x4E0E4E, 0x4E0E4E, "minecraft:swamp");
+    public static final BiomeMap SWAMPLAND = new BiomeMap(6, "SWAMPLAND", 0.8, 0.9, 0xE0FFAE, 0x2e282a, 0x902c52, "minecraft:swamp");
     public static final BiomeMap RIVER = new BiomeMap(7, "RIVER", "minecraft:river");
     public static final BiomeMap HELL = new BiomeMap(8, "HELL", 2.0, 0.0, "minecraft:nether");
     public static final BiomeMap SKY = new BiomeMap(9, "SKY", "minecraft:the_end");
@@ -44,6 +45,7 @@ public class BiomeMap {
     private int watercolormult;
     private int grassmult;
     private int foliagemult;
+    private Optional<?> biomeObj = Optional.empty();
     private final String id;
     private final String resourcelocation;
     private final int index;
@@ -61,7 +63,7 @@ public class BiomeMap {
             new BiomeMap(26, "COLD_BEACH", 0.05, 0.3, "minecraft:snowy_beach");
             new BiomeMap(27, "BIRCH_FOREST", 0.6, 0.6, "minecraft:birch_forest");
             new BiomeMap(28, "BIRCH_FOREST_HILLS", 0.6, 0.6, "minecraft:birch_forest_hills");
-            new BiomeMap(29, "ROOFED_FOREST", 0.7, 0.8, "minecraft:dark_forest");
+            new BiomeMap(29, "ROOFED_FOREST", 0.7, 0.8, 0xFFFFFF, 0x28340A, 0, "minecraft:dark_forest");
             new BiomeMap(30, "COLD_TAIGA", -0.5, 0.4, "minecraft:snowy_taiga");
             new BiomeMap(31, "COLD_TAIGA_HILLS", -0.5, 0.4, "minecraft:snowy_taiga_hills");
             new BiomeMap(32, "MEGA_TAIGA", 0.3, 0.8, "minecraft:giant_tree_taiga");
@@ -69,30 +71,32 @@ public class BiomeMap {
             new BiomeMap(34, "EXTREME_HILLS_PLUS", 0.2, 0.3, "minecraft:wooded_mountains");
             new BiomeMap(35, "SAVANNA", 1.2, 0.0, "minecraft:savanna");
             new BiomeMap(36, "SAVANNA_PLATEAU", 1.0, 0.0, "minecraft:savanna_plateau");
-            new BiomeMap(37, "MESA", 2.0, 0.0, "minecraft:badlands");
-            new BiomeMap(38, "MESA_PLATEAU_FOREST", 2.0, 0.0, "minecraft:wooded_badlands_plateau");
-            new BiomeMap(39, "MESA_PLATEAU", 2.0, 0.0, "minecraft:badlands_plateau");
+            new BiomeMap(37, "MESA", 2.0, 0.0, 0xFFFFFF, 0x624c46, 0x8e5e70, "minecraft:badlands");
             new BiomeMap(129, "SUNFLOWER_PLAINS", 0.8, 0.4, "minecraft:sunflower_plains");
             new BiomeMap(130, "DESERT_MOUNTAINS", 2.0, 0.0, "minecraft:desert_lakes");
             new BiomeMap(131, "EXTREME_HILLS_MOUNTAINS", 0.2, 0.3, "minecraft:gravelly_mountains");
             new BiomeMap(132, "FLOWER_FOREST", 0.7, 0.8, "minecraft:flower_forest");
             new BiomeMap(133, "TAIGA_MOUNTAINS", 0.05, 0.8, "minecraft:taiga_mountains");
-            new BiomeMap(134, "SWAMPLAND_MOUNTAINS", 0.8, 0.9, 0xE0FFAE, 0x4E0E4E, 0x4E0E4E, "minecraft:swamp_hills");
             new BiomeMap(140, "ICE_PLAINS_SPIKES", 0.0, 0.5, "minecraft:ice_spikes");
             new BiomeMap(149, "JUNGLE_MOUNTAINS", 1.2, 0.9, "minecraft:modified_jungle");
             new BiomeMap(151, "JUNGLE_EDGE_MOUNTAINS", 0.95, 0.8, "minecraft:modified_jungle_edge");
             new BiomeMap(155, "BIRCH_FOREST_MOUNTAINS", 0.6, 0.6, "minecraft:tall_birch_forest");
             new BiomeMap(156, "BIRCH_FOREST_HILLS_MOUNTAINS", 0.6, 0.6, "minecraft:tall_birch_hills");
-            new BiomeMap(157, "ROOFED_FOREST_MOUNTAINS", 0.7, 0.8, "minecraft:dark_forest_hills");
+            new BiomeMap(157, "ROOFED_FOREST_MOUNTAINS", 0.7, 0.8, 0xFFFFFF, 0x28340A, 0, "minecraft:dark_forest_hills");
             new BiomeMap(158, "COLD_TAIGA_MOUNTAINS", -0.5, 0.4, "minecraft:snowy_taiga_mountains");
             new BiomeMap(160, "MEGA_SPRUCE_TAIGA", 0.25, 0.8, "minecraft:giant_spruce_taiga");
             new BiomeMap(161, "MEGA_SPRUCE_TAIGA_HILLS", 0.3, 0.8, "minecraft:giant_spruce_taiga_hills");
             new BiomeMap(162, "EXTREME_HILLS_PLUS_MOUNTAINS", 0.2, 0.3, "minecraft:modified_gravelly_mountains");
             new BiomeMap(163, "SAVANNA_MOUNTAINS", 1.2, 0.0, "minecraft:shattered_savanna");
             new BiomeMap(164, "SAVANNA_PLATEAU_MOUNTAINS", 1.0, 0.0, "minecraft:shattered_savanna_plateau");
-            new BiomeMap(165, "MESA_BRYCE", 2.0, 0.0, "minecraft:eroded_badlands");
-            new BiomeMap(166, "MESA_PLATEAU_FOREST_MOUNTAINS", 2.0, 0.0, "minecraft:modified_wooded_badlands_plateau");
-            new BiomeMap(167, "MESA_PLATEAU_MOUNTAINS", 2.0, 0.0, "minecraft:modified_badlands_plateau");
+            new BiomeMap(165, "MESA_BRYCE", 2.0, 0.0,0xFFFFFF, 0x624c46, 0x8e5e70, "minecraft:eroded_badlands");
+        }
+        if (HDBlockModels.checkVersionRange(mcver, "1.7.0-1.17.1")) {
+            new BiomeMap(38, "MESA_PLATEAU_FOREST", 2.0, 0.0, 0xFFFFFF, 0x624c46, 0x8e5e70, "minecraft:wooded_badlands_plateau");
+            new BiomeMap(39, "MESA_PLATEAU", 2.0, 0.0, 0xFFFFFF, 0x624c46, 0x8e5e70, "minecraft:badlands_plateau");
+            new BiomeMap(134, "SWAMPLAND_MOUNTAINS", 0.8, 0.9, 0xE0FFAE, 0x2e282a, 0x902c52, "minecraft:swamp_hills");
+            new BiomeMap(166, "MESA_PLATEAU_FOREST_MOUNTAINS", 2.0, 0.0,0xFFFFFF, 0x624c46, 0x8e5e70,  "minecraft:modified_wooded_badlands_plateau");
+            new BiomeMap(167, "MESA_PLATEAU_MOUNTAINS", 2.0, 0.0,0xFFFFFF, 0x624c46, 0x8e5e70,  "minecraft:modified_badlands_plateau");
         }
         if (HDBlockModels.checkVersionRange(mcver, "1.9.0-")) {
             new BiomeMap(127, "THE_VOID", "minecraft:the_void");
@@ -123,6 +127,9 @@ public class BiomeMap {
         if (HDBlockModels.checkVersionRange(mcver, "1.17.0-")) {
             new BiomeMap(174, "DRIPSTONE_CAVES", "minecraft:dripstone_caves");
             new BiomeMap(175, "LUSH_CAVES", "minecraft:lush_caves");
+        }
+        if (HDBlockModels.checkVersionRange(mcver, "1.18.0-")) {
+            new BiomeMap(38, "MESA_FOREST", 2.0, 0.0, 0xFFFFFF, 0x624c46, 0x8e5e70, "minecraft:wooded_badlands");
         }
         loadDone = true;
     }
@@ -302,5 +309,11 @@ public class BiomeMap {
     }
     public String toString() {
     	return String.format("%s(%s)", id, resourcelocation);
+    }
+    public @SuppressWarnings("unchecked") <T> Optional<T> getBiomeObject() {
+        return (Optional<T>) biomeObj;
+    }
+    public void setBiomeObject(Object biomeObj) {
+        this.biomeObj = Optional.of(biomeObj);
     }
 }

@@ -69,7 +69,7 @@ public class BukkitVersionHelperSpigot119 extends BukkitVersionHelper {
     public BukkitVersionHelperSpigot119() {
         boolean unsafeAsync1;
         try {
-            Class.forName("com.destroystokyo.paper.io.PaperFileIOThread");
+            Class.forName("io.papermc.paper.chunk.system.io.RegionFileIOThread");
             unsafeAsync1 = false;
         } catch (ClassNotFoundException e) {
             unsafeAsync1 = true;

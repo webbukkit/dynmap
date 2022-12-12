@@ -25,7 +25,11 @@ public class RoundVisibilityLimit implements VisibilityLimit {
         else
             chunk_corner_z = chunk_z * 16 + 15;
 
-        return (chunk_corner_x - x_center) * (chunk_corner_x - x_center) + (chunk_corner_z - z_center) * (chunk_corner_z - z_center) < radius * radius;
+        // By gmfamily - Use long representation of the distance between tested chunk and center of tested limit
+        // to avoid int overflow while computing the distance compared to limit radius using square delta value
+        long chunk_delta_x = chunk_corner_x - x_center;
+        long chunk_delta_z = chunk_corner_z - z_center;
+        return chunk_delta_x * chunk_delta_x + chunk_delta_z * chunk_delta_z < (long) radius * radius;
     }
 
     @Override

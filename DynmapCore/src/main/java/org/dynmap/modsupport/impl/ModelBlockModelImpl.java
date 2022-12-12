@@ -3,6 +3,7 @@ package org.dynmap.modsupport.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.dynmap.modsupport.BlockSide;
 import org.dynmap.modsupport.ModelBlockModel;
@@ -69,16 +70,16 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
         String line;
     	line = String.format("modellist:%s", ids);
     	for (ModelBlockImpl mb: boxes) {
-    		line += String.format(",box=%f/%f/%f", mb.from[0], mb.from[1], mb.from[2]);
+    		line += String.format(Locale.US, ",box=%f/%f/%f", mb.from[0], mb.from[1], mb.from[2]);
     		if (!mb.shade) {	// if shade=false
         		line += "/false";
     		}
-    		line += String.format(":%f/%f/%f", mb.to[0], mb.to[1], mb.to[2]);
+    		line += String.format(Locale.US, ":%f/%f/%f", mb.to[0], mb.to[1], mb.to[2]);
     		if ((mb.xrot != 0) || (mb.yrot != 0) || (mb.zrot != 0)) {	// If needed, add rotation
-    			line += String.format("/%f/%f/%f", mb.xrot, mb.yrot, mb.zrot);
+    			line += String.format(Locale.US, "/%f/%f/%f", mb.xrot, mb.yrot, mb.zrot);
     			// If origin also defined, add it
     			if (mb.rotorigin != null) {
-        			line += String.format("/%f/%f/%f", mb.rotorigin[0], mb.rotorigin[1], mb.rotorigin[2]);        				
+        			line += String.format(Locale.US, "/%f/%f/%f", mb.rotorigin[0], mb.rotorigin[1], mb.rotorigin[2]);        				
     			}
     		}
     		for (BlockSide bs : fromBlockSide.keySet()) {
@@ -101,7 +102,7 @@ public class ModelBlockModelImpl extends BlockModelImpl implements ModelBlockMod
         					break;
     				}
     				if (mside.uv != null) {
-    					line += String.format(":%s/%d/%f/%f/%f/%f", rval, mside.textureid, mside.uv[0], mside.uv[1], mside.uv[2], mside.uv[3]);
+    					line += String.format(Locale.US, ":%s/%d/%f/%f/%f/%f", rval, mside.textureid, mside.uv[0], mside.uv[1], mside.uv[2], mside.uv[3]);
     				}
     				else {
     					line += String.format(":%s/%d", rval, mside.textureid);  					

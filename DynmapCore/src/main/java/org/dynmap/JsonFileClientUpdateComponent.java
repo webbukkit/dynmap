@@ -27,6 +27,7 @@ import org.json.simple.parser.ParseException;
 import static org.dynmap.JSONUtils.*;
 
 import java.nio.charset.Charset;
+import java.util.concurrent.CompletableFuture;
 
 public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected long jsonInterval;
@@ -338,9 +339,12 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             else {
                 outputFile = "dynmap_" + dynmapWorld.getName() + ".json";
             }
-            byte[] content = Json.stringifyJson(update).getBytes(cs_utf8);
 
-            enqueueFileWrite(outputFile, content, dowrap);
+            CompletableFuture.runAsync(() -> {
+                byte[] content = Json.stringifyJson(update).getBytes(cs_utf8);
+
+                enqueueFileWrite(outputFile, content, dowrap);
+            });
         }
     }
     

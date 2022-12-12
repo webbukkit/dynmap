@@ -67,6 +67,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
             label = markup ? lbl : Client.encodeColorInHTML(lbl);
         else
             label = markup ? id : Client.encodeColorInHTML(id);
+        label = Client.sanitizeHTML(label);
         this.markup = markup;
         this.x = x; this.y = y; this.z = z;
         this.xr = xr; this.zr = zr;
@@ -86,7 +87,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     CircleMarkerImpl(String id, MarkerSetImpl set) {
         markerid = id;
         markerset = set;
-        label = Client.encodeForHTML(id);
+        label = Client.sanitizeHTML(Client.encodeForHTML(id));
         markup = false;
         desc = null;
         world = normalized_world = "world";
@@ -100,9 +101,10 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
      *  Load marker from configuration node
      *  @param node - configuration node
      */
-    boolean loadPersistentData(ConfigurationNode node) {
+    boolean loadPersistentData(ConfigurationNode node, boolean isSafe) {
         markup = node.getBoolean("markup", false);
         label = MarkerAPIImpl.escapeForHTMLIfNeeded(node.getString("label", markerid), markup);
+        if (!isSafe) label = Client.sanitizeHTML(label);
         world = node.getString("world", "world");
         normalized_world = DynmapWorld.normalizeWorldName(world);
         x = node.getDouble("x", 0);
@@ -111,6 +113,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
         xr = node.getDouble("xr", 0);
         zr = node.getDouble("zr", 0);
         desc = node.getString("desc", null);
+        if (!isSafe) desc = Client.sanitizeHTML(desc);
         lineweight = node.getInteger("strokeWeight", -1);
         if(lineweight == -1) {	/* Handle typo-saved value */
         	 lineweight = node.getInteger("stokeWeight", 3);
@@ -192,6 +195,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     @Override
     public void setLabel(String lbl, boolean markup) {
         label = markup ? lbl : Client.encodeForHTML(lbl);
+        label = Client.sanitizeHTML(label);
         this.markup = markup;
         MarkerAPIImpl.circleMarkerUpdated(this, MarkerUpdate.UPDATED);
         if(ispersistent)
@@ -262,6 +266,7 @@ class CircleMarkerImpl implements CircleMarker, EnterExitMarker {
     }
     @Override
     public void setDescription(String desc) {
+    	desc = Client.sanitizeHTML(desc);
         if((this.desc == null) || (this.desc.equals(desc) == false)) {
             this.desc = desc;
             MarkerAPIImpl.circleMarkerUpdated(this, MarkerUpdate.UPDATED);
