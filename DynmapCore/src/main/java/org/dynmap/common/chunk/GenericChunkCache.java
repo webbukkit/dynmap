@@ -18,6 +18,7 @@ public class GenericChunkCache {
     };
 
     private CacheHashMap snapcache;
+    private final Object snapcachelock;
     private ReferenceQueue<ChunkCacheRec> refqueue;
     private long cache_attempts;
     private long cache_success;
@@ -50,6 +51,7 @@ public class GenericChunkCache {
      * Create snapshot cache
      */
     public GenericChunkCache(int max_size, boolean softref) {
+    	snapcachelock = new Object();
         snapcache = new CacheHashMap(max_size);
         refqueue = new ReferenceQueue<ChunkCacheRec>();
         this.softref = softref;
@@ -62,8 +64,8 @@ public class GenericChunkCache {
      */
     public void invalidateSnapshot(String w, int x, int y, int z) {
         String key = getKey(w, x>>4, z>>4);
-        synchronized(snapcache) {
-            CacheRec rec = snapcache.remove(key);
+        synchronized(snapcachelock) {
+            CacheRec rec = (snapcache != null) ? snapcache.remove(key) : null;
             if(rec != null) {
                 snapcache.reverselookup.remove(rec.ref);
                 rec.ref.clear();
@@ -78,8 +80,8 @@ public class GenericChunkCache {
         for(int xx = (x0>>4); xx <= (x1>>4); xx++) {
             for(int zz = (z0>>4); zz <= (z1>>4); zz++) {
                 String key = getKey(w, xx, zz);
-                synchronized(snapcache) {
-                    CacheRec rec = snapcache.remove(key);
+                synchronized(snapcachelock) {
+                    CacheRec rec = (snapcache != null) ? snapcache.remove(key) : null;
                     if(rec != null) {
                         snapcache.reverselookup.remove(rec.ref);
                         rec.ref.clear();
@@ -97,8 +99,8 @@ public class GenericChunkCache {
         processRefQueue();
         ChunkCacheRec ss = null;
         CacheRec rec;
-        synchronized(snapcache) {
-            rec = snapcache.get(key);
+        synchronized(snapcachelock) {
+            rec = (snapcache != null) ? snapcache.get(key) : null;
             if(rec != null) {
                 ss = rec.ref.get();
                 if(ss == null) {
@@ -123,8 +125,8 @@ public class GenericChunkCache {
             rec.ref = new SoftReference<ChunkCacheRec>(ss, refqueue);
         else
             rec.ref = new WeakReference<ChunkCacheRec>(ss, refqueue);
-        synchronized(snapcache) {
-            CacheRec prevrec = snapcache.put(key, rec);
+        synchronized(snapcachelock) {
+            CacheRec prevrec = (snapcache != null) ? snapcache.put(key, rec) : null;
             if(prevrec != null) {
                 snapcache.reverselookup.remove(prevrec.ref);
             }
@@ -137,8 +139,8 @@ public class GenericChunkCache {
     private void processRefQueue() {
         Reference<? extends ChunkCacheRec> ref;
         while((ref = refqueue.poll()) != null) {
-            synchronized(snapcache) {
-                String k = snapcache.reverselookup.remove(ref);
+            synchronized(snapcachelock) {
+                String k = (snapcache != null) ? snapcache.reverselookup.remove(ref) : null;
                 if(k != null) {
                     snapcache.remove(k);
                 }
@@ -164,11 +166,13 @@ public class GenericChunkCache {
      * Cleanup
      */
     public void cleanup() {
-        if(snapcache != null) {
-            snapcache.clear();
-            snapcache.reverselookup.clear();
-            snapcache.reverselookup = null;
-            snapcache = null;
-        }
+		synchronized(snapcachelock) {
+	        if(snapcache != null) {
+	            snapcache.clear();
+	            snapcache.reverselookup.clear();
+	            snapcache.reverselookup = null;
+	            snapcache = null;
+	        }
+		}
     }
 }
