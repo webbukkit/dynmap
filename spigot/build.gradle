@@ -22,7 +22,7 @@ dependencies {
     implementation 'me.lucko.luckperms:luckperms-api:4.3'
     implementation 'net.luckperms:api:5.0'
     implementation('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
-    compileOnly 'net.skinsrestorer:skinsrestorer-api:14.2.+'
+    implementation('net.skinsrestorer:skinsrestorer-api:14.2.4') { transitive = false }
     implementation project(":dynmap-api")
     implementation project(path: ":DynmapCore", configuration: "shadow")
     implementation group: 'ru.tehkode', name: 'PermissionsEx', version: '1.19.1'
