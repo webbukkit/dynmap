@@ -1025,12 +1025,25 @@ public class DynmapPlugin
         }
         @Override
         public File getModContainerFile(String name) {
-        	ModFileInfo mfi = LoadingModList.get().getModFileById(name);    // Try case sensitive lookup
+            ModFileInfo mfi = LoadingModList.get().getModFileById(name);    // Try case sensitive lookup
             if (mfi != null) {
-            	File f = mfi.getFile().getFilePath().toFile();
-                return f;
+                try {
+                    File f = mfi.getFile().getFilePath().toFile();
+                    return f;
+                }
+                catch (UnsupportedOperationException ex) {
+                    //TODO Implement proper jar in jar method for fetching data
+/*
+                    Log.info("Searching for: " + name);
+                    for (IModInfo e: ModList.get().getMods()) {
+                        Log.info("in: " + e.getModId().toString());
+                        Log.info("resource: "+ ModList.get().getModFileById(e.getModId()).getFile().findResource(String.valueOf(mfi.getFile().getFilePath())));
+                    }
+*/
+                    Log.warning("jar in jar method found, skipping: " + ex.getMessage());
+                }
             }
-        	return null;
+            return null;
         }
         @Override
         public List<String> getModList() {
