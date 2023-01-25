@@ -5,7 +5,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.json.simple.JSONObject;
 import net.skinsrestorer.api.SkinsRestorerAPI;
-import net.skinsrestorer.api.reflection.ReflectionUtil;
+import net.skinsrestorer.api.property.IProperty;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,19 +25,12 @@ public class SkinsRestorerSkinUrlProvider implements SkinUrlProvider {
     public URL getSkinUrl(String playerName) {
         String skinName = mSkinsRestorerApi.getSkinName(playerName);
 
-        Object skinDataProperty = mSkinsRestorerApi.getSkinData(skinName == null ? playerName : skinName);
+        IProperty skinDataProperty = mSkinsRestorerApi.getSkinData(skinName == null ? playerName : skinName);
 
         if (skinDataProperty == null)
             return null;
 
-        String skinDataPropertyValue;
-
-        try {
-            skinDataPropertyValue = (String) ReflectionUtil.invokeMethod(skinDataProperty, "getValue");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        String skinDataPropertyValue = skinDataProperty.getValue();
 
         byte[] skinDataBytes = Base64.getDecoder().decode(skinDataPropertyValue);
 
