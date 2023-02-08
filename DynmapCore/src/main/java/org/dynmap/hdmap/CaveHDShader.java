@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 
-import org.dynmap.Color;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapCore;
-import org.dynmap.MapManager;
+import org.dynmap.*;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.renderer.DynmapBlockState;
@@ -22,6 +19,8 @@ import org.json.simple.JSONObject;
 public class CaveHDShader implements HDShader {
     private String name;
     private boolean iflit;
+    private Color startColor;
+    private Color endColor;
     private BitSet hiddenids = new BitSet();
 
     private void setHidden(DynmapBlockState blk) {
@@ -41,7 +40,8 @@ public class CaveHDShader implements HDShader {
     public CaveHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         iflit = configuration.getBoolean("onlyiflit", false);
-        
+        startColor = configuration.getColor("startColor", "#0000FF");
+        endColor = configuration.getColor("endColor", "#00FF00");
         for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); i++) {
         	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
         	if (bs.isAir() || bs.isWater()) {
@@ -187,17 +187,35 @@ public class CaveHDShader implements HDShader {
             		return false;
             	}
                 int cr, cg, cb;
-                int mult = 256;
+                int mult;
 
                 int ys = mapiter.getY() >> yshift;
-                if (ys < 64) {
-                    cr = 0;
-                    cg = 64 + ys * 3;
-                    cb = 255 - ys * 4;
-                } else {
-                    cr = (ys - 64) * 4;
-                    cg = 255;
-                    cb = 0;
+                if(startColor.getARGB() != 0xFF0000FF && endColor.getARGB() != 0xFF00FF00)
+                {
+                    if (startColor.getRed() + ys < 255)
+                        cr = startColor.getRed() + ys * endColor.getRed();
+                    else
+                        cr = startColor.getRed() - ys * endColor.getRed();
+                    if (startColor.getGreen() + ys < 255)
+                        cg = startColor.getGreen() + ys * endColor.getGreen();
+                    else
+                        cg = startColor.getGreen() - ys * endColor.getGreen();
+                    if (startColor.getBlue() + ys < 255)
+                        cb = startColor.getBlue() + ys * endColor.getBlue();
+                    else
+                        cb = startColor.getBlue() - ys * endColor.getBlue();
+                }
+                else
+                {
+                    if (ys < 64) {
+                        cr = 0;
+                        cg = 64 + ys * 3;
+                        cb = 255 - ys * 4;
+                    } else {
+                        cr = (ys - 64) * 4;
+                        cg = 255;
+                        cb = 0;
+                    }
                 }
                 /* Figure out which color to use */
                 switch(ps.getLastBlockStep()) {
