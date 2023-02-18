@@ -39,7 +39,7 @@ storage:
 components:
   - class: org.dynmap.ClientConfigurationComponent
   
-  # remeber to change the following class to org.dynmap.JsonFileClientUpdateComponent when using an external webserver.
+  # Remember to change the following class to org.dynmap.JsonFileClientUpdateComponent when using an external web server.
   - class: org.dynmap.InternalClientUpdateComponent
     sendhealth: true
     sendposition: true
