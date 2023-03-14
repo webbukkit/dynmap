@@ -36,6 +36,10 @@ dependencies {
     compileOnly 'net.luckperms:api:5.4'
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/dynmap.accesswidener")
+}
+
 processResources {
     filesMatching('fabric.mod.json') {
         expand "version": project.version

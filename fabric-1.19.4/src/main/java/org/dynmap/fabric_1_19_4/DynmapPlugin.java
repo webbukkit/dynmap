@@ -13,12 +13,10 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.network.ClientConnection;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -191,10 +189,6 @@ public class DynmapPlugin {
         return Item.byRawId(id);
     }
 
-    public static final ClientConnection getNetworkManager(ServerPlayNetworkHandler nh) {
-        return nh.connection;
-    }
-
     FabricPlayer getOrAddPlayer(ServerPlayerEntity player) {
         String name = player.getName().getString();
         FabricPlayer fp = players.get(name);
@@ -339,7 +333,7 @@ public class DynmapPlugin {
             if (bb != null) {
                 String id = biomeRegistry.getId(bb).getPath();
                 String rl = biomeRegistry.getId(bb).toString();
-                float tmp = bb.getTemperature(), hum = bb.getDownfall();
+                float tmp = bb.getTemperature(), hum = bb.weather.downfall();
                 int watermult = ((BiomeEffectsAccessor) bb.getEffects()).getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 

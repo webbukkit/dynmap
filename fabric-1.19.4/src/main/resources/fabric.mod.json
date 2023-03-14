@@ -24,6 +24,7 @@
   "mixins": [
     "dynmap.mixins.json"
   ],
+  "accessWidener" : "dynmap.accesswidener",
 
   "depends": {
     "fabricloader": ">=0.14.17",

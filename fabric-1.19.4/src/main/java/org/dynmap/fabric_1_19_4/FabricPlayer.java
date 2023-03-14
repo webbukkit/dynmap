@@ -120,8 +120,8 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
     public InetSocketAddress getAddress() {
         if (player != null) {
             ServerPlayNetworkHandler networkHandler = player.networkHandler;
-            if ((networkHandler != null) && (networkHandler.getConnection() != null)) {
-                SocketAddress sa = networkHandler.getConnection().getAddress();
+            if (networkHandler != null) {
+                SocketAddress sa = networkHandler.getConnectionAddress();
                 if (sa instanceof InetSocketAddress) {
                     return (InetSocketAddress) sa;
                 }
