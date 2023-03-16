@@ -3750,6 +3750,7 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.19.3-]texture:id=chiseled_bookshelf_side,filename=assets/minecraft/textures/block/chiseled_bookshelf_side.png,xcount=1,ycount=1
 [1.19.3-]texture:id=chiseled_bookshelf_empty,filename=assets/minecraft/textures/block/chiseled_bookshelf_empty.png,xcount=1,ycount=1
 [1.19.3-]texture:id=chiseled_bookshelf_occupied,filename=assets/minecraft/textures/block/chiseled_bookshelf_occupied.png,xcount=1,ycount=1
+[1.19.3-]texturefile:id=piglin,filename=assets/minecraft/textures/entity/piglin/piglin.png,format=SKIN
 
 [1.19.3-]texturefile:id=acacia_hanging_sign,filename=assets/minecraft/textures/entity/signs/hanging/acacia.png,format=SIGN
 [1.19.3-]texturefile:id=bamboo_hanging_sign,filename=assets/minecraft/textures/entity/signs/hanging/bamboo.png,format=SIGN
