@@ -65,6 +65,7 @@ project(':DynmapCoreAPI').projectDir = "$rootDir/DynmapCoreAPI" as File
 //project(':fabric-1.19.4').projectDir = "$rootDir/fabric-1.19.4" as File
 project(':fabric-1.19.3').projectDir = "$rootDir/fabric-1.19.3" as File
 project(':fabric-1.19.1').projectDir = "$rootDir/fabric-1.19.1" as File
+project(':fabric-1.19').projectDir = "$rootDir/fabric-1.19" as File
 project(':fabric-1.18.2').projectDir = "$rootDir/fabric-1.18.2" as File
 project(':fabric-1.17.1').projectDir = "$rootDir/fabric-1.17.1" as File
 project(':fabric-1.16.4').projectDir = "$rootDir/fabric-1.16.4" as File
