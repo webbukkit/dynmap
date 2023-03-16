@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_19_2;
+package org.dynmap.forge_1_19_3;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

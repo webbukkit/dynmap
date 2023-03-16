@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_19_2;
+package org.dynmap.forge_1_19_3;
 
 import java.io.File;
 
@@ -6,7 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.Log;
-import org.dynmap.forge_1_19_2.DynmapPlugin.OurLog;
+import org.dynmap.forge_1_19_3.DynmapPlugin.OurLog;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;

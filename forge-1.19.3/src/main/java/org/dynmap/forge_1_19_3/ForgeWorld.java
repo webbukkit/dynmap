@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_19_2;
+package org.dynmap.forge_1_19_3;
 /**
  * Forge specific implementation of DynmapWorld
  */

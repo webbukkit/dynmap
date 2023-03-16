@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_19_2.permissions;
+package org.dynmap.forge_1_19_3.permissions;
 
 import java.io.File;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.dynmap.ConfigurationNode;
 import org.dynmap.Log;
-import org.dynmap.forge_1_19_2.DynmapPlugin;
+import org.dynmap.forge_1_19_3.DynmapPlugin;
 
 import net.minecraft.server.level.ServerPlayer;
 

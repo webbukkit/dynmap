@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_19_2.permissions;
+package org.dynmap.forge_1_19_3.permissions;
 
 import java.util.Set;
 

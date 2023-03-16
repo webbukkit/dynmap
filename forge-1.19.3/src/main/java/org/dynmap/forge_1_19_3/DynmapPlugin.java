@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_19_2;
+package org.dynmap.forge_1_19_3;
 
 import java.io.File;
 import java.io.InputStream;
@@ -98,12 +98,12 @@ import org.dynmap.common.DynmapPlayer;
 import org.dynmap.common.DynmapServerInterface;
 import org.dynmap.common.DynmapListenerManager.EventType;
 import org.dynmap.common.chunk.GenericChunkCache;
-import org.dynmap.forge_1_19_2.DmapCommand;
-import org.dynmap.forge_1_19_2.DmarkerCommand;
-import org.dynmap.forge_1_19_2.DynmapCommand;
-import org.dynmap.forge_1_19_2.permissions.FilePermissions;
-import org.dynmap.forge_1_19_2.permissions.OpPermissions;
-import org.dynmap.forge_1_19_2.permissions.PermissionProvider;
+import org.dynmap.forge_1_19_3.DmapCommand;
+import org.dynmap.forge_1_19_3.DmarkerCommand;
+import org.dynmap.forge_1_19_3.DynmapCommand;
+import org.dynmap.forge_1_19_3.permissions.FilePermissions;
+import org.dynmap.forge_1_19_3.permissions.OpPermissions;
+import org.dynmap.forge_1_19_3.permissions.PermissionProvider;
 import org.dynmap.permissions.PermissionsHandler;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.DynmapLogger;
@@ -1415,7 +1415,7 @@ public class DynmapPlugin
             	ResourceLocation regid = getBiomeReg().getKey(bb);
                 String id = regid.getPath();
                 String rl = regid.toString();
-                float tmp = bb.getBaseTemperature(), hum = bb.getDownfall();
+                float tmp = bb.getBaseTemperature(), hum = bb.getModifiedClimateSettings().downfall();
                 int watermult = bb.getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 

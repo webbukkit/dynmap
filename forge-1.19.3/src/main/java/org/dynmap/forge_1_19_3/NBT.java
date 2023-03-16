@@ -1,4 +1,4 @@
-package org.dynmap.forge_1_19_2;
+package org.dynmap.forge_1_19_3;
 
 import org.dynmap.common.chunk.GenericBitStorage;
 import org.dynmap.common.chunk.GenericNBTCompound;
