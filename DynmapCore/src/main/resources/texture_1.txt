@@ -4249,6 +4249,7 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.19.4-]texture:id=cherry_trapdoor,filename=assets/minecraft/textures/block/cherry_trapdoor.png,xcount=1,ycount=1
 [1.19.4-]texture:id=cherry_door_top,filename=assets/minecraft/textures/block/cherry_door_top.png,xcount=1,ycount=1
 [1.19.4-]texture:id=cherry_door_bottom,filename=assets/minecraft/textures/block/cherry_door_bottom.png,xcount=1,ycount=1
+[1.19.4-]texturefile:id=cherry_sign,filename=assets/minecraft/textures/entity/signs/cherry.png,format=SIGN
 [1.19.4-]block:id=%cherry_planks,patch0=0:cherry_planks,patch1=0:cherry_planks,patch2=0:cherry_planks,patch3=0:cherry_planks,patch4=0:cherry_planks,patch5=0:cherry_planks,stdrot=true
 [1.19.4-]block:id=%cherry_sapling,patch0=0:cherry_sapling,transparency=TRANSPARENT,stdrot=true
 [1.19.4-]block:id=%cherry_planks,patch0=0:cherry_planks,patch1=0:cherry_planks,patch2=0:cherry_planks,patch3=0:cherry_planks,patch4=0:cherry_planks,patch5=0:cherry_planks,stdrot=true
@@ -4416,3 +4417,5 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.19.4-]block:id=%cherry_door,state=facing:east/hinge:left/half:lower/open:false,patch0=0:cherry_door_bottom,transparency=TRANSPARENT,stdrot=true
 [1.19.4-]block:id=%cherry_door,state=facing:east/hinge:right/half:lower/open:true,patch0=0:cherry_door_bottom,transparency=TRANSPARENT,stdrot=true
 [1.19.4-]block:id=%cherry_door,state=facing:east/hinge:right/half:lower/open:false,patch0=0:cherry_door_bottom,transparency=TRANSPARENT,stdrot=true
+[1.19.4-]block:id=cherry_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=cherry_sign
+[1.19.4-]block:id=cherry_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=cherry_sign
