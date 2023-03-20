@@ -63,7 +63,13 @@ shaders:
   - class: org.dynmap.hdmap.CaveHDShader
     name: cave-noplants
     hiddenids: [ 6, 17, 18, 31, 32, 37, 38, 39, 40, 50, 55, 78, 81, 83, 86, 99, 100, 103, 104, 105, 111, 115 ]
-    
+  # Cave view shader - new gradient option
+  - class: org.dynmap.hdmap.CaveHDShader
+    name: cave-gradient
+    startColor: "#FF0000"
+    endColor: "#0000FF"
+
+
   # Texture pack based shader for standard Minecraft textures
   - class: org.dynmap.hdmap.TexturePackHDShader
     name: stdtexture
