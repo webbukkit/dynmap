@@ -191,22 +191,27 @@ public class CaveHDShader implements HDShader {
             	}
                 int cr, cg, cb;
                 int mult;
-
+                int wh;
+                int dv = mapiter.getDataVersion();
+                if (dv >= 3337)
+                    wh = mapiter.getWorldHeight() + 64;
+                else
+                    wh = mapiter.getWorldHeight();
                 int ys = mapiter.getY() >> yshift;
                 if(startColor.getARGB() != 0xFF0000FF && endColor.getARGB() != 0xFF00FF00)
                 {
-                    if (startColor.getRed() + ys < 255)
-                        cr = startColor.getRed() + ys * endColor.getRed();
+                    if ((((wh - ys) /wh) * startColor.getRed()) < 255)
+                        cr = (((wh - ys) /wh) * startColor.getRed()) + ((ys/wh) * endColor.getRed());
                     else
-                        cr = startColor.getRed() - ys * endColor.getRed();
-                    if (startColor.getGreen() + ys < 255)
-                        cg = startColor.getGreen() + ys * endColor.getGreen();
+                        cr = (((wh - ys) /wh) * startColor.getRed()) - ((ys/wh) * endColor.getRed());
+                    if ((((wh - ys) /wh) * startColor.getGreen()) < 255)
+                        cg = (((wh - ys) /wh) * startColor.getGreen()) + ((ys/wh) * endColor.getGreen());
                     else
-                        cg = startColor.getGreen() - ys * endColor.getGreen();
-                    if (startColor.getBlue() + ys < 255)
-                        cb = startColor.getBlue() + ys * endColor.getBlue();
+                        cg = (((wh - ys) /wh) * startColor.getGreen()) - ((ys/wh) * endColor.getGreen());
+                    if ((((wh - ys) /wh) * startColor.getBlue()) < 255)
+                        cb = (((wh - ys) /wh) * startColor.getBlue()) + ((ys/wh) * endColor.getBlue());
                     else
-                        cb = startColor.getBlue() - ys * endColor.getBlue();
+                        cb = (((wh - ys) /wh) * startColor.getBlue()) - ((ys/wh) * endColor.getBlue());
                 }
                 else
                 {

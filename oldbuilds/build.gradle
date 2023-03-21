@@ -54,3 +54,5 @@ clean {
 
 task setupCIWorkspace {
 }
+compileJava.options.fork = true
+compileJava.options.forkOptions.executable = 'C:\\Program Files\\Java\\jdk-1.8.0\\bin'
