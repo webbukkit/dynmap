@@ -61,9 +61,9 @@ public class ChunkVersionHDShader implements HDShader {
     	new DataVersionMap(2975, "1.18.2", 0x38bfa5),
     	new DataVersionMap(3105, "1.19",   0xd56f82),
     	new DataVersionMap(3117, "1.19.1", 0xe196a4),
-        new DataVersionMap(3120, "1.19.2", 0xe196a4),
-        new DataVersionMap(3218, "1.19.3", 0xe196a4),
-        new DataVersionMap(3337, "1.19.4", 0xe196a4),
+        new DataVersionMap(3120, "1.19.2", 0xe7aeb8),
+        new DataVersionMap(3218, "1.19.3", 0xf8c0c8),
+        new DataVersionMap(3337, "1.19.4", 0xffb6c1),
     };
     final static Color unknown_color = new Color(255, 255, 255);
     

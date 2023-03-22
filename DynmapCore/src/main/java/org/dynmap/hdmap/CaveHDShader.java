@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 
-import org.dynmap.Color;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapCore;
-import org.dynmap.MapManager;
+import org.dynmap.*;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.renderer.DynmapBlockState;
@@ -18,6 +15,8 @@ import org.dynmap.utils.DynLongHashMap;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
+
+import javax.swing.*;
 
 public class CaveHDShader implements HDShader {
     private String name;
@@ -192,26 +191,29 @@ public class CaveHDShader implements HDShader {
                 int cr, cg, cb;
                 int mult;
                 int wh;
+                int ys = mapiter.getY() >> yshift;
                 int dv = mapiter.getDataVersion();
-                if (dv >= 3337)
+                if (dv >= 3337) {
                     wh = mapiter.getWorldHeight() + 64;
+                }
                 else
                     wh = mapiter.getWorldHeight();
-                int ys = mapiter.getY() >> yshift;
-                if(startColor.getARGB() != 0xFF0000FF && endColor.getARGB() != 0xFF00FF00)
-                {
-                    if ((((wh - ys) /wh) * startColor.getRed()) < 255)
-                        cr = (((wh - ys) /wh) * startColor.getRed()) + ((ys/wh) * endColor.getRed());
-                    else
-                        cr = (((wh - ys) /wh) * startColor.getRed()) - ((ys/wh) * endColor.getRed());
-                    if ((((wh - ys) /wh) * startColor.getGreen()) < 255)
-                        cg = (((wh - ys) /wh) * startColor.getGreen()) + ((ys/wh) * endColor.getGreen());
-                    else
-                        cg = (((wh - ys) /wh) * startColor.getGreen()) - ((ys/wh) * endColor.getGreen());
-                    if ((((wh - ys) /wh) * startColor.getBlue()) < 255)
-                        cb = (((wh - ys) /wh) * startColor.getBlue()) + ((ys/wh) * endColor.getBlue());
-                    else
-                        cb = (((wh - ys) /wh) * startColor.getBlue()) - ((ys/wh) * endColor.getBlue());
+                if(startColor.getARGB() != 0xFF0000FF || endColor.getARGB() != 0xFF00FF00) {
+                    if (ys == 0) {
+                        ys += 1;
+                    }
+//                    if (ys < wh/3) {
+//                        cr = (((wh/3 - ys) / wh/3) * startColor.getRed()) + (1 - ((wh/3 - ys) / wh) * endColor.getRed());
+//                    }
+//                    if (ys < wh/2) {
+//                        cg = (((wh/2 - ys) / wh/2) * startColor.getGreen()) + (1 - ((wh/2 - ys) / wh) * endColor.getGreen());
+//                    }
+//                    if (ys < wh) {
+//                        cb = (((wh - ys) / wh) * startColor.getBlue()) + (1 - ((wh - ys) / wh) * endColor.getBlue());
+//                    }
+                        cr = (((wh - ys) / wh) * startColor.getRed()) + (1 - ((wh - ys) / wh) * endColor.getRed());
+                        cg = (((wh - ys) / wh) * startColor.getGreen()) + (1 - ((wh - ys) / wh) * endColor.getGreen());
+                        cb = (((wh - ys) / wh) * startColor.getBlue()) + (1 - ((wh - ys) / wh) * endColor.getBlue());
                 }
                 else
                 {
