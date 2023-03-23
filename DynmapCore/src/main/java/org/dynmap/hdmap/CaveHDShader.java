@@ -43,8 +43,8 @@ public class CaveHDShader implements HDShader {
     public CaveHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         iflit = configuration.getBoolean("onlyiflit", false);
-        startColor = configuration.getColor("startColor", "#0000FF");
-        endColor = configuration.getColor("endColor", "#00FF00");
+        startColor = configuration.getColor("startColor", null);
+        endColor = configuration.getColor("endColor", null);
         for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); i++) {
         	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
         	if (bs.isAir() || bs.isWater()) {
@@ -118,19 +118,17 @@ public class CaveHDShader implements HDShader {
         protected MapIterator mapiter;
         protected HDMap map;
         private boolean air;
-        private int yshift;
+        private final int sealevel;
+        private final int ymax, ymin;
         final int[] lightingTable;
 
         private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
             this.map = map;
             this.color = new Color();
-            int wheight = mapiter.getWorldHeight();
-            yshift = 0;
-            while(wheight > 128) {
-                wheight >>= 1;
-                yshift++;
-            }
+            this.ymax = mapiter.getWorldHeight() - 1;
+            this.ymin = mapiter.getWorldYMin();
+            this.sealevel = mapiter.getWorldSeaLevel();
             if (MapManager.mapman.useBrightnessTable()) {
                 lightingTable = cache.getWorld().getBrightnessTable();
             }
@@ -192,30 +190,22 @@ public class CaveHDShader implements HDShader {
                 int cr, cg, cb;
                 int mult;
 
-                int ys = mapiter.getY() >> yshift;
-                if(startColor.getARGB() != 0xFF0000FF && endColor.getARGB() != 0xFF00FF00)
+                int y = mapiter.getY();
+                if((startColor != null) && (endColor != null))
                 {
-                    if (startColor.getRed() + ys < 255)
-                        cr = startColor.getRed() + ys * endColor.getRed();
-                    else
-                        cr = startColor.getRed() - ys * endColor.getRed();
-                    if (startColor.getGreen() + ys < 255)
-                        cg = startColor.getGreen() + ys * endColor.getGreen();
-                    else
-                        cg = startColor.getGreen() - ys * endColor.getGreen();
-                    if (startColor.getBlue() + ys < 255)
-                        cb = startColor.getBlue() + ys * endColor.getBlue();
-                    else
-                        cb = startColor.getBlue() - ys * endColor.getBlue();
+                	double interp = ((double)(y - this.ymin)) / (this.ymax - this.ymin);
+                	cr = (int)(((1.0 - interp) * startColor.getRed()) + (interp * endColor.getRed()));
+                	cg = (int)(((1.0 - interp) * startColor.getGreen()) + (interp * endColor.getGreen()));
+                	cb = (int)(((1.0 - interp) * startColor.getBlue()) + (interp * endColor.getBlue()));
                 }
                 else
                 {
-                    if (ys < 64) {
+                    if (y < this.sealevel) {
                         cr = 0;
-                        cg = 64 + ys * 3;
-                        cb = 255 - ys * 4;
+                        cg = 64 + ((192 * (y - this.ymin)) / (this.sealevel - this.ymin));
+                        cb = 255 - (255 * (y - this.ymin)) / (this.sealevel - this.ymin);
                     } else {
-                        cr = (ys - 64) * 4;
+                        cr = (255 * (y - this.sealevel)) / (this.ymax - this.sealevel);
                         cg = 255;
                         cb = 0;
                     }

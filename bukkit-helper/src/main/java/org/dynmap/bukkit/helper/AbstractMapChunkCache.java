@@ -97,6 +97,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
         private DynmapBlockState type = null;
         private final int worldheight;
         private final int ymin;
+        private final int sealevel;
         private final int x_base;
         private final int z_base;
         
@@ -108,6 +109,7 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
             initialize(x0, y0, z0);
             worldheight = w.getMaxHeight();
             ymin = dw.minY;
+            sealevel = dw.sealevel;
         }
         
         @Override
@@ -585,6 +587,14 @@ public abstract class AbstractMapChunkCache extends MapChunkCache {
         @Override
         public int getWorldHeight() {
             return worldheight;
+        }
+        @Override
+        public int getWorldYMin() {
+        	return ymin;
+        }
+        @Override
+        public int getWorldSeaLevel() {
+        	return sealevel;
         }
         @Override
         public long getBlockKey() {
