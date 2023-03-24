@@ -54,11 +54,13 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		private DynmapBlockState blk;
 		private final int worldheight;
 		private final int ymin;
+		private final int sealevel;
 
 		OurMapIterator(int x0, int y0, int z0) {
 			initialize(x0, y0, z0);
 			worldheight = dw.worldheight;
 			ymin = dw.minY;
+			sealevel = dw.sealevel;
 		}
 
 		@Override
@@ -483,7 +485,16 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		public final int getWorldHeight() {
 			return worldheight;
 		}
-
+		@Override
+	    public final int getWorldYMin() {
+			return ymin;
+		}
+	    /**
+	     * Get world sealevel
+	     */
+	    public final int getWorldSeaLevel() {
+	    	return sealevel;
+	    }
 		@Override
 		public final long getBlockKey() {
 			return (((chunkindex * (worldheight - ymin)) + (y - ymin)) << 8) | (bx << 4) | bz;
