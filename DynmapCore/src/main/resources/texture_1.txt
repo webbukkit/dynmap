@@ -4276,7 +4276,7 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.19.4-]block:id=%stripped_cherry_wood,state=axis:x,patch0=0:stripped_cherry_log,stdrot=true
 [1.19.4-]block:id=%stripped_cherry_wood,state=axis:y,patch0=0:stripped_cherry_log,patch1=0:stripped_cherry_log,patch2=0:stripped_cherry_log,patch3=0:stripped_cherry_log,patch4=0:stripped_cherry_log,patch5=0:stripped_cherry_log,stdrot=true
 [1.19.4-]block:id=%stripped_cherry_wood,state=axis:z,patch0=0:stripped_cherry_log,stdrot=true
-[1.19.4-]block:id=%cherry_leaves,patch0=0:cherry_leaves,patch1=0:cherry_leaves,patch2=0:cherry_leaves,patch3=0:cherry_leaves,patch4=0:cherry_leaves,patch5=0:cherry_leaves,blockcolor=foliage,transparency=SEMITRANSPARENT,stdrot=true
+[1.19.4-]block:id=%cherry_leaves,patch0=0:cherry_leaves,patch1=0:cherry_leaves,patch2=0:cherry_leaves,patch3=0:cherry_leaves,patch4=0:cherry_leaves,patch5=0:cherry_leaves,transparency=SEMITRANSPARENT,stdrot=true
 [1.19.4-]block:id=%cherry_pressure_plate,state=powered:true,patch0=0:cherry_planks,transparency=TRANSPARENT,stdrot=true
 [1.19.4-]block:id=%cherry_pressure_plate,state=powered:false,patch0=0:cherry_planks,transparency=TRANSPARENT,stdrot=true
 [1.19.4-]block:id=%cherry_trapdoor,state=facing:north/half:top/open:true,patch0=0:cherry_trapdoor,transparency=SEMITRANSPARENT,stdrot=true
