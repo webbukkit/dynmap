@@ -1295,19 +1295,19 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		            	bitsperblock = (statelist.length * 64) / 4096;
 	            		dbp = new DataBitsPacked(bitsperblock, 4096, statelist);
         			}
-        			if (bitsperblock > 8) {    // Not palette
-        				for (int j = 0; j < 4096; j++) {
-        					int v = db != null ? db.get(j) : dbp.getAt(j);
-                        	sbld.xyzBlockState(j & 0xF, (j & 0xF00) >> 8, (j & 0xF0) >> 4, DynmapBlockState.getStateByGlobalIndex(v));
-        				}
-        			}
-        			else {
+        			//if (bitsperblock > 8) {    // Not palette
+        			//	for (int j = 0; j < 4096; j++) {
+        			//		int v = db != null ? db.get(j) : dbp.getAt(j);
+                    //    	sbld.xyzBlockState(j & 0xF, (j & 0xF00) >> 8, (j & 0xF0) >> 4, DynmapBlockState.getStateByGlobalIndex(v));
+        			//	}
+        			//}
+        			//else {
         				sbld.xyzBlockStatePalette(palette);	// Set palette
         				for (int j = 0; j < 4096; j++) {
         					int v = db != null ? db.get(j) : dbp.getAt(j);
                         	sbld.xyzBlockStateInPalette(j & 0xF, (j & 0xF00) >> 8, (j & 0xF0) >> 4, (short)v);
         				}
-        			}
+        			//}
             	}
             }
             if (sec.contains("BlockLight")) {
