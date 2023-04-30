@@ -106,6 +106,8 @@ public class ForgeMapChunkCache extends MapChunkCache
         private BlockStep laststep;
         private DynmapBlockState blk;
         private final int worldheight;
+        private final int ymin;
+        private final int sealevel;
         private final int x_base;
         private final int z_base;
 
@@ -121,6 +123,8 @@ public class ForgeMapChunkCache extends MapChunkCache
 
             initialize(x0, y0, z0);
             worldheight = w.getHeight();
+            ymin = 0; 
+            sealevel = w.getSeaLevel();
         }
         @Override
         public final void initialize(int x0, int y0, int z0)
@@ -714,6 +718,14 @@ public class ForgeMapChunkCache extends MapChunkCache
         public int getWorldHeight()
         {
             return worldheight;
+        }
+        @Override
+        public int getWorldYMin() {
+        	return ymin;
+        }
+        @Override
+        public int getWorldSeaLevel() {
+        	return sealevel;
         }
         @Override
         public long getBlockKey()

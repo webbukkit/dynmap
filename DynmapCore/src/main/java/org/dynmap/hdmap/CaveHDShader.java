@@ -22,6 +22,8 @@ import org.json.simple.JSONObject;
 public class CaveHDShader implements HDShader {
     private String name;
     private boolean iflit;
+    private Color startColor;
+    private Color endColor;
     private BitSet hiddenids = new BitSet();
 
     private void setHidden(DynmapBlockState blk) {
@@ -41,7 +43,8 @@ public class CaveHDShader implements HDShader {
     public CaveHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         iflit = configuration.getBoolean("onlyiflit", false);
-        
+        startColor = configuration.getColor("startColor", null);
+        endColor = configuration.getColor("endColor", null);
         for (int i = 0; i < DynmapBlockState.getGlobalIndexMax(); i++) {
         	DynmapBlockState bs = DynmapBlockState.getStateByGlobalIndex(i);
         	if (bs.isAir() || bs.isWater()) {
@@ -115,19 +118,17 @@ public class CaveHDShader implements HDShader {
         protected MapIterator mapiter;
         protected HDMap map;
         private boolean air;
-        private int yshift;
+        private final int sealevel;
+        private final int ymax, ymin;
         final int[] lightingTable;
 
         private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
             this.map = map;
             this.color = new Color();
-            int wheight = mapiter.getWorldHeight();
-            yshift = 0;
-            while(wheight > 128) {
-                wheight >>= 1;
-                yshift++;
-            }
+            this.ymax = mapiter.getWorldHeight() - 1;
+            this.ymin = mapiter.getWorldYMin();
+            this.sealevel = mapiter.getWorldSeaLevel();
             if (MapManager.mapman.useBrightnessTable()) {
                 lightingTable = cache.getWorld().getBrightnessTable();
             }
@@ -187,17 +188,27 @@ public class CaveHDShader implements HDShader {
             		return false;
             	}
                 int cr, cg, cb;
-                int mult = 256;
+                int mult;
 
-                int ys = mapiter.getY() >> yshift;
-                if (ys < 64) {
-                    cr = 0;
-                    cg = 64 + ys * 3;
-                    cb = 255 - ys * 4;
-                } else {
-                    cr = (ys - 64) * 4;
-                    cg = 255;
-                    cb = 0;
+                int y = mapiter.getY();
+                if((startColor != null) && (endColor != null))
+                {
+                	double interp = ((double)(y - this.ymin)) / (this.ymax - this.ymin);
+                	cr = (int)(((1.0 - interp) * startColor.getRed()) + (interp * endColor.getRed()));
+                	cg = (int)(((1.0 - interp) * startColor.getGreen()) + (interp * endColor.getGreen()));
+                	cb = (int)(((1.0 - interp) * startColor.getBlue()) + (interp * endColor.getBlue()));
+                }
+                else
+                {
+                    if (y < this.sealevel) {
+                        cr = 0;
+                        cg = 64 + ((192 * (y - this.ymin)) / (this.sealevel - this.ymin));
+                        cb = 255 - (255 * (y - this.ymin)) / (this.sealevel - this.ymin);
+                    } else {
+                        cr = (255 * (y - this.sealevel)) / (this.ymax - this.sealevel);
+                        cg = 255;
+                        cb = 0;
+                    }
                 }
                 /* Figure out which color to use */
                 switch(ps.getLastBlockStep()) {

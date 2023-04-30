@@ -106,10 +106,18 @@ public interface MapIterator extends MapDataContext {
      */
     BlockStep getLastStep();
     /**
-     * Get world height
+     * Get world height (yMax+1)
      * @return height
      */
     int getWorldHeight();
+    /**
+     * Get world bottom (yMin)
+     */
+    int getWorldYMin();
+    /**
+     * Get world sealevel
+     */
+    int getWorldSeaLevel();
     /**
      * Get block key for current position (unique ID for block within cache being iterated)
      * @return block key
