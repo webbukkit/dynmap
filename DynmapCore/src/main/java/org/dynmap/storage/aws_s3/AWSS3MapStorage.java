@@ -27,23 +27,6 @@ import org.dynmap.storage.MapStorageTileSearchEndCB;
 import org.dynmap.utils.BufferInputStream;
 import org.dynmap.utils.BufferOutputStream;
 
-import io.github.linktosriram.s3lite.api.client.S3Client;
-import io.github.linktosriram.s3lite.api.exception.NoSuchKeyException;
-import io.github.linktosriram.s3lite.api.exception.S3Exception;
-import io.github.linktosriram.s3lite.api.region.Region;
-import io.github.linktosriram.s3lite.api.request.DeleteObjectRequest;
-import io.github.linktosriram.s3lite.api.request.GetObjectRequest;
-import io.github.linktosriram.s3lite.api.request.ListObjectsV2Request;
-import io.github.linktosriram.s3lite.api.request.PutObjectRequest;
-import io.github.linktosriram.s3lite.api.response.GetObjectResponse;
-import io.github.linktosriram.s3lite.api.response.ListObjectsV2Response;
-import io.github.linktosriram.s3lite.api.response.ResponseBytes;
-import io.github.linktosriram.s3lite.api.response.S3Object;
-import io.github.linktosriram.s3lite.core.auth.AwsBasicCredentials;
-import io.github.linktosriram.s3lite.core.client.DefaultS3ClientBuilder;
-import io.github.linktosriram.s3lite.http.spi.request.RequestBody;
-import io.github.linktosriram.s3lite.http.urlconnection.URLConnectionSdkHttpClient;
-
 public class AWSS3MapStorage extends MapStorage {
     public class StorageTile extends MapStorageTile {
         private final String baseKey;
@@ -222,6 +205,7 @@ public class AWSS3MapStorage extends MapStorage {
     
     private String bucketname;
     private String region;
+    private String apiURL;	// Custom API URL
     private String access_key_id;
     private String secret_access_key;
     private String prefix;
@@ -249,6 +233,7 @@ public class AWSS3MapStorage extends MapStorage {
         // Get our settings
         bucketname = core.configuration.getString("storage/bucketname", "dynmap");
         region = core.configuration.getString("storage/region", "us-east-1");
+        apiURL = core.configuration.getString("storage/api_url", null);
         access_key_id = core.configuration.getString("storage/aws_access_key_id", System.getenv("AWS_ACCESS_KEY_ID"));
         secret_access_key = core.configuration.getString("storage/aws_secret_access_key", System.getenv("AWS_SECRET_ACCESS_KEY"));
         prefix = core.configuration.getString("storage/prefix", "");
@@ -256,7 +241,14 @@ public class AWSS3MapStorage extends MapStorage {
         	prefix += '/';
         }
         // Now creste the access client for the S3 service
-        Log.info("Using AWS S3 storage: web site at S3 bucket " + bucketname + " in region " + region);
+        if (apiURL != null) {
+        	Region r = Region.getCustom(region, apiURL);
+        	Log.info("region=" + r);
+        	Log.info("Using S3-compatible storage: web site at S3 bucket " + bucketname + " in region " + region + " via API URL " + apiURL);
+        }
+        else {
+        	Log.info("Using AWS S3 storage: web site at S3 bucket " + bucketname + " in region " + region);
+        }
         S3Client s3 = null;
         try {
             s3 = getConnection();
