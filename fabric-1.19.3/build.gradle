@@ -12,6 +12,8 @@ eclipse {
     }
 }
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17) // Need this here so eclipse task generates correctly.
+
 configurations {
     shadow
     implementation.extendsFrom(shadow)
