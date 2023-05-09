@@ -67,13 +67,14 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 
 	private CompoundTag readChunk(int x, int z) {
 		try {
-			CompoundTag rslt = cps.chunkMap.readChunk(new ChunkPos(x, z));
+			CompoundTag rslt = cps.chunkMap.read(new ChunkPos(x, z));
 			if (rslt != null) {
-				if (rslt.contains("Level")) {
-					rslt = rslt.getCompound("Level");
+				CompoundTag lev = rslt;
+				if (lev.contains("Level")) {
+					lev = lev.getCompound("Level");
 				}
 				// Don't load uncooked chunks
-				String stat = rslt.getString("Status");
+				String stat = lev.getString("Status");
 				ChunkStatus cs = ChunkStatus.byName(stat);
 				if ((stat == null) ||
 				// Needs to be at least lighted
