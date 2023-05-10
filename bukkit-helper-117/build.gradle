@@ -6,6 +6,8 @@ eclipse {
 
 description = 'bukkit-helper-1.17'
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(16) // Need this here so eclipse task generates correctly.
+
 dependencies {
   implementation project(':bukkit-helper')
   implementation project(':dynmap-api')
