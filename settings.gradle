@@ -26,6 +26,7 @@ include ':bukkit-helper'
 include ':dynmap-api'
 include ':DynmapCore'
 include ':DynmapCoreAPI'
+include ':fabric-1.20'
 include ':fabric-1.19.4'
 include ':fabric-1.19.3'
 include ':fabric-1.19.1'
@@ -62,6 +63,7 @@ project(':bukkit-helper').projectDir = "$rootDir/bukkit-helper" as File
 project(':dynmap-api').projectDir = "$rootDir/dynmap-api" as File
 project(':DynmapCore').projectDir = "$rootDir/DynmapCore" as File
 project(':DynmapCoreAPI').projectDir = "$rootDir/DynmapCoreAPI" as File
+project(':fabric-1.20').projectDir = "$rootDir/fabric-1.20" as File
 project(':fabric-1.19.4').projectDir = "$rootDir/fabric-1.19.4" as File
 project(':fabric-1.19.3').projectDir = "$rootDir/fabric-1.19.3" as File
 project(':fabric-1.19.1').projectDir = "$rootDir/fabric-1.19.1" as File
