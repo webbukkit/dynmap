@@ -10,9 +10,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
@@ -52,6 +52,7 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Pattern;
+
 
 public class DynmapPlugin {
     // FIXME: Fix package-private fields after splitting is done
@@ -155,7 +156,6 @@ public class DynmapPlugin {
             String bn = ui.getNamespace() + ":" + ui.getPath();
             // Only do defined names, and not "air"
             if (!bn.equals(DynmapBlockState.AIR_BLOCK)) {
-                Material mat = bs.getMaterial();
                 String statename = "";
                 for (net.minecraft.state.property.Property<?> p : bs.getProperties()) {
                     if (statename.length() > 0) {
@@ -166,11 +166,11 @@ public class DynmapPlugin {
                 int lightAtten = bs.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN) ? 15 : (bs.isTransparent(EmptyBlockView.INSTANCE, BlockPos.ORIGIN) ? 0 : 1);
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
                 // Fill in base attributes
-                bld.setBaseState(basebs).setStateIndex(idx - baseidx).setBlockName(bn).setStateName(statename).setMaterial(mat.toString()).setLegacyBlockID(idx).setAttenuatesLight(lightAtten);
-				if (mat.isSolid()) { bld.setSolid(); }
-				if (mat == Material.AIR) { bld.setAir(); }
-				if (mat == Material.WOOD) { bld.setLog(); }
-				if (mat == Material.LEAVES) { bld.setLeaves(); }
+                bld.setBaseState(basebs).setStateIndex(idx - baseidx).setBlockName(bn).setStateName(statename).setLegacyBlockID(idx).setAttenuatesLight(lightAtten);
+				if (bs.isSolid()) { bld.setSolid(); }
+				if (bs.isAir()) { bld.setAir(); }
+				if (bs.isIn(BlockTags.LOGS)) { bld.setLog(); }
+				if (bs.isIn(BlockTags.LEAVES)) { bld.setLeaves(); }
 				if ((!bs.getFluidState().isEmpty()) && !(bs.getBlock() instanceof FluidBlock)) {
 					bld.setWaterlogged();
 				}
@@ -634,7 +634,7 @@ public class DynmapPlugin {
             ChunkSection[] sections = chunk.getSectionArray();
             for (int i = 0; i < sections.length; i++) {
                 if ((sections[i] != null) && (!sections[i].isEmpty())) {
-					int sy = sections[i].getYOffset();
+					int sy = chunk.getBottomY() + i * ChunkSection.field_31407 /* Mojmap: SECTION_HEIGHT */;
 					if (sy < ymin) ymin = sy;
 					if ((sy+16) > ymax) ymax = sy + 16;
                 }

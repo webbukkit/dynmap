@@ -271,7 +271,7 @@ public class FabricServer extends DynmapServerInterface {
                 break;
 
             case SIGN_CHANGE:
-                BlockEvents.SIGN_CHANGE_EVENT.register((world, pos, lines, material, player) -> {
+                BlockEvents.SIGN_CHANGE_EVENT.register((world, pos, lines, player, front) -> {
                     plugin.core.processSignChange("fabric", FabricWorld.getWorldName(plugin, world),
                             pos.getX(), pos.getY(), pos.getZ(), lines, player.getName().getString());
                 });

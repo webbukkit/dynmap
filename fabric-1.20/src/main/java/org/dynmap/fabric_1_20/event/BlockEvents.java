@@ -2,7 +2,6 @@ package org.dynmap.fabric_1_20.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.Material;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -21,9 +20,9 @@ public class BlockEvents {
     );
 
     public static Event<SignChangeCallback> SIGN_CHANGE_EVENT = EventFactory.createArrayBacked(SignChangeCallback.class,
-            (listeners) -> (world, pos, lines, material, player) -> {
+            (listeners) -> (world, pos, lines, player, front) -> {
                 for (SignChangeCallback callback : listeners) {
-                    callback.onSignChange(world, pos, lines, material, player);
+                    callback.onSignChange(world, pos, lines, player, front);
                 }
             }
     );
@@ -35,6 +34,6 @@ public class BlockEvents {
 
     @FunctionalInterface
     public interface SignChangeCallback {
-        void onSignChange(ServerWorld world, BlockPos pos, String[] lines, Material material, ServerPlayerEntity player);
+        void onSignChange(ServerWorld world, BlockPos pos, String[] lines, ServerPlayerEntity player, boolean front);
     }
 }

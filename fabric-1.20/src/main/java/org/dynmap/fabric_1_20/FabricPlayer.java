@@ -16,6 +16,7 @@ import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.dynmap.DynmapLocation;
 import org.dynmap.common.DynmapPlayer;
 
@@ -100,7 +101,7 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
         }
 
         Vec3d pos = player.getPos();
-        return FabricAdapter.toDynmapLocation(plugin, player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+        return FabricAdapter.toDynmapLocation(plugin, player.getServerWorld(), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
@@ -109,8 +110,9 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
             return null;
         }
 
-        if (player.world != null) {
-            return plugin.getWorld(player.world).getName();
+        World world = player.getWorld();
+        if (world != null) {
+            return plugin.getWorld(world).getName();
         }
 
         return null;

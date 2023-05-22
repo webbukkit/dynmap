@@ -15,7 +15,7 @@ public class ServerPlayerEntityMixin {
     @Inject(method = "teleport(Lnet/minecraft/server/world/ServerWorld;DDDFF)V", at = @At("RETURN"))
     public void teleport(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo info) {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-        if (targetWorld != player.world) {
+        if (targetWorld != player.getServerWorld()) {
             PlayerEvents.PLAYER_CHANGED_DIMENSION.invoker().onPlayerChangedDimension(player);
         }
     }
