@@ -1,9 +1,9 @@
-package org.dynmap.fabric_1_19_4.permissions;
+package org.dynmap.fabric_1_20.permissions;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.entity.player.PlayerEntity;
 import org.dynmap.Log;
-import org.dynmap.fabric_1_19_4.DynmapPlugin;
+import org.dynmap.fabric_1_20.DynmapPlugin;
 import org.dynmap.json.simple.parser.JSONParser;
 
 import java.util.Set;

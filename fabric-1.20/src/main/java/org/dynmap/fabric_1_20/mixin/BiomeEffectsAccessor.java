@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19_4.mixin;
+package org.dynmap.fabric_1_20.mixin;
 
 import net.minecraft.world.biome.BiomeEffects;
 import org.spongepowered.asm.mixin.Mixin;

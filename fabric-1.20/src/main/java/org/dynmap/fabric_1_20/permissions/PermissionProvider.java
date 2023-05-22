@@ -1,4 +1,4 @@
-package org.dynmap.fabric_1_19_4.permissions;
+package org.dynmap.fabric_1_20.permissions;
 
 import net.minecraft.entity.player.PlayerEntity;
 

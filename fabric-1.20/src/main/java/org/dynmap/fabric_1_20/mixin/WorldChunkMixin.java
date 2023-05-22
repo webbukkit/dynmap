@@ -1,10 +1,10 @@
-package org.dynmap.fabric_1_19_4.mixin;
+package org.dynmap.fabric_1_20.mixin;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
-import org.dynmap.fabric_1_19_4.event.BlockEvents;
+import org.dynmap.fabric_1_20.event.BlockEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

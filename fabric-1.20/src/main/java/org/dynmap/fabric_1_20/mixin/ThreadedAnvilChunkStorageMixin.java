@@ -1,11 +1,11 @@
-package org.dynmap.fabric_1_19_4.mixin;
+package org.dynmap.fabric_1_20.mixin;
 
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.world.chunk.Chunk;
-import org.dynmap.fabric_1_19_4.access.ProtoChunkAccessor;
-import org.dynmap.fabric_1_19_4.event.CustomServerChunkEvents;
+import org.dynmap.fabric_1_20.access.ProtoChunkAccessor;
+import org.dynmap.fabric_1_20.event.CustomServerChunkEvents;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
