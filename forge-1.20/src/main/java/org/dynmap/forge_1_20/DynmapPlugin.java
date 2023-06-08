@@ -27,7 +27,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
 
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -37,7 +36,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -50,6 +48,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.server.players.UserBanList;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
@@ -263,8 +262,8 @@ public class DynmapPlugin
                 if (bs.getSoundType() != null) { bld.setMaterial(bs.getSoundType().toString()); }
 				if (bs.isSolid()) { bld.setSolid(); }
 				if (bs.isAir()) { bld.setAir(); }
-				if (bs.getSoundType() == SoundType.WOOD) { bld.setLog(); }
-				if (b instanceof LeavesBlock) { bld.setLeaves(); }
+				if (bs.is(BlockTags.LOGS)) { bld.setLog(); }
+				if (bs.is(BlockTags.LEAVES)) { bld.setLeaves(); }
 				if ((!bs.getFluidState().isEmpty()) && !(bs.getBlock() instanceof LiquidBlock)) {
 					bld.setWaterlogged();
 				}

@@ -167,6 +167,7 @@ public class DynmapPlugin {
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);
                 // Fill in base attributes
                 bld.setBaseState(basebs).setStateIndex(idx - baseidx).setBlockName(bn).setStateName(statename).setLegacyBlockID(idx).setAttenuatesLight(lightAtten);
+                if (bs.getSoundGroup() != null) { bld.setMaterial(bs.getSoundGroup().toString()); }
 				if (bs.isSolid()) { bld.setSolid(); }
 				if (bs.isAir()) { bld.setAir(); }
 				if (bs.isIn(BlockTags.LOGS)) { bld.setLog(); }
