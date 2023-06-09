@@ -82,7 +82,7 @@ public class NBT {
 		}
 		@Override
 		public String getAsString(String s) {
-			return obj.c(s).f_();
+			return obj.c(s).m_();
 		}
 		@Override
 		public GenericBitStorage makeBitStorage(int bits, int count, long[] data) {

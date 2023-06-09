@@ -34,7 +34,7 @@ minecraft {
     }
 }
 
-project.archivesBaseName = "${project.archivesBaseName}-forge-1.19.3"
+project.archivesBaseName = "${project.archivesBaseName}-forge-1.20"
 
 dependencies {
     implementation project(path: ":DynmapCore", configuration: "shadow")

@@ -43,6 +43,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.resources.MinecraftKey;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.TagsBlock;
 import net.minecraft.world.level.BlockAccessAir;
 import net.minecraft.world.level.biome.BiomeBase;
 import net.minecraft.world.level.block.Block;
@@ -189,13 +190,15 @@ public class BukkitVersionHelperSpigot120 extends BukkitVersionHelper {
             int lightAtten = b.g(bd, BlockAccessAir.a, BlockPosition.b);	// getLightBlock
             //Log.info("statename=" + bname + "[" + sb + "], lightAtten=" + lightAtten);
             // Fill in base attributes
-            bld.setBaseState(lastbs).setStateIndex(idx).setBlockName(bname).setStateName(sb).setMaterial(mat.toString()).setAttenuatesLight(lightAtten);
-    		if (mat.b()) { bld.setSolid(); }
-            if (b instanceof BlockAir) { bld.setAir(); }
-            if (b instanceof BlockRotatable) { bld.setLog(); }
-            if (b instanceof BlockLeaves) { bld.setLeaves(); }
-            if ((!bd.r().c()) && ((bd.b() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
+            bld.setBaseState(lastbs).setStateIndex(idx).setBlockName(bname).setStateName(sb).setAttenuatesLight(lightAtten);
+            if (bd.w() != null) { bld.setMaterial(bd.w().toString()); }
+    		if (bd.e()) { bld.setSolid(); }
+            if (bd.i()) { bld.setAir(); }
+            if (bd.a(TagsBlock.t)) { bld.setLog(); }
+            if (bd.a(TagsBlock.O)) { bld.setLeaves(); }
+            if ((!bd.u().c()) && ((bd.b() instanceof BlockFluids) == false)) {	// Test if fluid type for block is not empty
 				bld.setWaterlogged();
+				//Log.info("statename=" + bname + "[" + sb + "] = waterlogged");
 			}
             DynmapBlockState dbs = bld.build(); // Build state
             
@@ -338,12 +341,12 @@ public class BukkitVersionHelperSpigot120 extends BukkitVersionHelper {
 
 	@Override
 	public long getInhabitedTicks(Chunk c) {
-		return ((CraftChunk)c).getHandle(ChunkStatus.o).u();
+		return ((CraftChunk)c).getHandle(ChunkStatus.n).u();
 	}
 
 	@Override
 	public Map<?, ?> getTileEntitiesForChunk(Chunk c) {
-		return ((CraftChunk)c).getHandle(ChunkStatus.o).i;
+		return ((CraftChunk)c).getHandle(ChunkStatus.n).k;
 	}
 
 	@Override
@@ -398,7 +401,7 @@ public class BukkitVersionHelperSpigot120 extends BukkitVersionHelper {
             return ((NBTTagByteArray)val).d();
         }
         else if(val instanceof NBTTagString) {
-            return ((NBTTagString)val).f_();
+            return ((NBTTagString)val).m_();
         }
         else if(val instanceof NBTTagIntArray) {
             return ((NBTTagIntArray)val).f();
