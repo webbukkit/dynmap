@@ -30,13 +30,13 @@ import java.util.function.Supplier;
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
  */
-public class MapChunkCache119_4 extends GenericMapChunkCache {
+public class MapChunkCache120 extends GenericMapChunkCache {
     private static final AsyncChunkProvider120 provider = BukkitVersionHelper.helper.isUnsafeAsync() ? null : new AsyncChunkProvider120();
     private World w;
     /**
      * Construct empty cache
      */
-    public MapChunkCache119_4(GenericChunkCache cc) {
+    public MapChunkCache120(GenericChunkCache cc) {
         super(cc);
     }
 

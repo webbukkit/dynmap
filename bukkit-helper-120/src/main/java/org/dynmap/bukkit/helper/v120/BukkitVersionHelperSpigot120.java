@@ -11,7 +11,6 @@ import org.dynmap.bukkit.helper.BukkitMaterial;
 import org.dynmap.bukkit.helper.BukkitVersionHelper;
 import org.dynmap.bukkit.helper.BukkitWorld;
 import org.dynmap.bukkit.helper.BukkitVersionHelperGeneric.TexturesPayload;
-import org.dynmap.bukkit.helper.v120.MapChunkCache119_4;
 import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
@@ -25,7 +24,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
 import net.minecraft.core.RegistryBlockID;
-import net.minecraft.core.RegistryBlocks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.BlockPosition;
@@ -47,10 +45,7 @@ import net.minecraft.tags.TagsBlock;
 import net.minecraft.world.level.BlockAccessAir;
 import net.minecraft.world.level.biome.BiomeBase;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BlockAir;
 import net.minecraft.world.level.block.BlockFluids;
-import net.minecraft.world.level.block.BlockLeaves;
-import net.minecraft.world.level.block.BlockRotatable;
 import net.minecraft.world.level.block.entity.TileEntity;
 import net.minecraft.world.level.block.state.IBlockData;
 import net.minecraft.world.level.chunk.ChunkStatus;
@@ -65,7 +60,6 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -215,7 +209,7 @@ public class BukkitVersionHelperSpigot120 extends BukkitVersionHelper {
      */
     @Override
     public MapChunkCache getChunkCache(BukkitWorld dw, List<DynmapChunk> chunks) {
-        MapChunkCache119_4 c = new MapChunkCache119_4(gencache);
+        MapChunkCache120 c = new MapChunkCache120(gencache);
         c.setChunks(dw, chunks);
         return c;
     }
