@@ -12,6 +12,6 @@ dependencies {
   implementation project(':bukkit-helper')
   implementation project(':dynmap-api')
   implementation project(path: ':DynmapCore', configuration: 'shadow')
-  implementation group: 'org.bukkit', name: 'bukkit', version:'1.13.2-R0.1-SNAPSHOT'
-  implementation group: 'org.bukkit', name: 'craftbukkit', version:'1.13.2-R0.1-SNAPSHOT'
+  compileOnly group: 'org.bukkit', name: 'bukkit', version:'1.13.2-R0.1-SNAPSHOT'
+  compileOnly group: 'org.bukkit', name: 'craftbukkit', version:'1.13.2-R0.1-SNAPSHOT'
 }

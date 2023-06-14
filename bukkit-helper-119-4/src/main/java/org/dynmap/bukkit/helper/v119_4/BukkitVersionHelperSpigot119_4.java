@@ -49,6 +49,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BlockFluids;
 import net.minecraft.world.level.block.entity.TileEntity;
 import net.minecraft.world.level.block.state.IBlockData;
+import net.minecraft.world.level.chunk.ChunkStatus;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -336,12 +337,12 @@ public class BukkitVersionHelperSpigot119_4 extends BukkitVersionHelper {
 
 	@Override
 	public long getInhabitedTicks(Chunk c) {
-		return ((CraftChunk)c).getHandle().u();
+		return ((CraftChunk)c).getHandle(ChunkStatus.o).u();
 	}
 
 	@Override
 	public Map<?, ?> getTileEntitiesForChunk(Chunk c) {
-		return ((CraftChunk)c).getHandle().i;
+		return ((CraftChunk)c).getHandle(ChunkStatus.o).i;
 	}
 
 	@Override

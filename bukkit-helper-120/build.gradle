@@ -1,0 +1,17 @@
+eclipse {
+    project {
+        name = "Dynmap(Spigot-1.20)"
+    }
+}
+
+description = 'bukkit-helper-1.20'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17) // Need this here so eclipse task generates correctly.
+
+dependencies {
+  implementation project(':bukkit-helper')
+  implementation project(':dynmap-api')
+  implementation project(path: ':DynmapCore', configuration: 'shadow')
+  compileOnly group: 'org.spigotmc', name: 'spigot-api', version:'1.20-R0.1-SNAPSHOT'
+  compileOnly group: 'org.spigotmc', name: 'spigot', version:'1.20-R0.1-SNAPSHOT'
+}

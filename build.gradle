@@ -28,6 +28,7 @@ eclipse {
 allprojects  {
   repositories {
      mavenLocal()
+     maven { url 'https://libraries.minecraft.net/' }
      maven { url "https://oss.sonatype.org/content/repositories/releases" }
      maven { url "https://repo.mikeprimm.com" }
      maven { url "https://repo.maven.apache.org/maven2" }
@@ -38,7 +39,7 @@ allprojects  {
   apply plugin: 'java'
   
   group = 'us.dynmap'
-  version = '3.5'
+  version = '3.6-beta-1'
 
 }
 

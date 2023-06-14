@@ -17,22 +17,24 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.bukkit', name: 'bukkit', version: '1.10.2-R0.1-SNAPSHOT'
-    implementation 'com.nijikokun.bukkit:Permissions:3.1.6'
-    implementation 'me.lucko.luckperms:luckperms-api:4.3'
-    implementation 'net.luckperms:api:5.0'
-    implementation('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
+    compileOnly group: 'org.bukkit', name: 'bukkit', version: '1.10.2-R0.1-SNAPSHOT'
+    compileOnly 'com.nijikokun.bukkit:Permissions:3.1.6'
+    compileOnly 'me.lucko.luckperms:luckperms-api:4.3'
+    compileOnly 'net.luckperms:api:5.0'
+    compileOnly('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
     compileOnly 'net.skinsrestorer:skinsrestorer-api:14.2.+'
     implementation project(":dynmap-api")
     implementation project(path: ":DynmapCore", configuration: "shadow")
-    implementation group: 'ru.tehkode', name: 'PermissionsEx', version: '1.19.1'
-    implementation group: 'de.bananaco', name: 'bPermissions', version: '2.9.1'
-    implementation group: 'com.platymuus.bukkit.permissions', name: 'PermissionsBukkit', version: '1.6'
-    implementation group: 'org.anjocaido', name: 'EssentialsGroupManager', version: '2.10.1'
+    compileOnly group: 'ru.tehkode', name: 'PermissionsEx', version: '1.19.1'
+    compileOnly group: 'de.bananaco', name: 'bPermissions', version: '2.9.1'
+    compileOnly group: 'com.platymuus.bukkit.permissions', name: 'PermissionsBukkit', version: '1.6'
+    compileOnly group: 'org.anjocaido', name: 'EssentialsGroupManager', version: '2.10.1'
     implementation group: 'org.bstats', name: 'bstats-bukkit', version: '2.2.1'
-    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
-    implementation project(':bukkit-helper')
+    compileOnly group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compileOnly group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
+    implementation(project(':bukkit-helper')) {
+        transitive = false
+    }
     implementation(project(':bukkit-helper-113-2')) {
         transitive = false
     }
@@ -72,6 +74,9 @@ dependencies {
     implementation(project(':bukkit-helper-119-4')) {
     	transitive = false
     }
+    implementation(project(':bukkit-helper-120')) {
+    	transitive = false
+    }
 }
 
 processResources {
@@ -108,6 +113,7 @@ shadowJar {
         include(dependency(':bukkit-helper-119'))
         include(dependency(':bukkit-helper-119-3'))
         include(dependency(':bukkit-helper-119-4'))
+        include(dependency(':bukkit-helper-120'))
     }
     relocate('org.bstats', 'org.dynmap.bstats')
     destinationDir = file '../target'

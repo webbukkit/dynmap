@@ -6,10 +6,12 @@ eclipse {
 
 description = 'bukkit-helper-1.18.2'
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17) // Need this here so eclipse task generates correctly.
+
 dependencies {
   implementation project(':bukkit-helper')
   implementation project(':dynmap-api')
   implementation project(path: ':DynmapCore', configuration: 'shadow')
-  implementation group: 'org.spigotmc', name: 'spigot-api', version:'1.18.2-R0.1-SNAPSHOT'
-  implementation group: 'org.spigotmc', name: 'spigot', version:'1.18.2-R0.1-SNAPSHOT'
+  compileOnly group: 'org.spigotmc', name: 'spigot-api', version:'1.18.2-R0.1-SNAPSHOT'
+  compileOnly group: 'org.spigotmc', name: 'spigot', version:'1.18.2-R0.1-SNAPSHOT'
 }

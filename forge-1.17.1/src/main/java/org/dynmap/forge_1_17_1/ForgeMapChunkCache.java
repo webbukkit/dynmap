@@ -67,7 +67,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 
 	private CompoundTag readChunk(int x, int z) {
 		try {
-			return cps.chunkMap.readChunk(new ChunkPos(x, z));
+			return cps.chunkMap.read(new ChunkPos(x, z));
 		} catch (Exception exc) {
 			Log.severe(String.format("Error reading chunk: %s,%d,%d", dw.getName(), x, z), exc);
 			return null;
