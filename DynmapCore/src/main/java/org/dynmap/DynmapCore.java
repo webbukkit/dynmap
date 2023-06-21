@@ -1359,7 +1359,7 @@ public class DynmapCore implements DynmapCommonAPI {
         new CommandInfo("dmap", "mapadd", "<world>:<map> <attrib>:<value> <attrib>:<value>", "Create map for world <world> with name <map> using provided attributes."),
         new CommandInfo("dmap", "mapset", "<world>:<map> <attrib>:<value> <attrib>:<value>", "Update map <map> of world <world> with new attribute values."),
         new CommandInfo("dmap", "worldreset", "<world>", "Reset world <world> to default template for world type"),
-        new CommandInfo("dmap", "worldreset", "<world> <templatename>", "Reset world <world> to temaplte <templatename>."),
+        new CommandInfo("dmap", "worldreset", "<world> <templatename>", "Reset world <world> to template <templatename>."),
         new CommandInfo("dmap", "worldgetlimits", "<world>", "List visibity and hidden limits for world"),
         new CommandInfo("dmap", "worldaddlimit", "<world> corner1:<x>/<z> corner2:<x>/<z>", "Add rectangular visibilty limit"),
         new CommandInfo("dmap", "worldaddlimit", "<world> type:round center:<x>/<z> radius:<radius>", "Add round visibilty limit"),
