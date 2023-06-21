@@ -9,8 +9,8 @@ eclipse {
 description = "dynmap-api"
 
 dependencies {
-    implementation group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
-    implementation project(":DynmapCoreAPI")
+    compileOnly group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
+    compileOnly project(":DynmapCoreAPI")
 }
 
 jar {
