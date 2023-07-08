@@ -238,6 +238,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
     }
     
+    private boolean banBrokenMsg = false;
     /**
      * Server access abstraction class
      */
@@ -315,12 +316,22 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         	}
     		return getServer().getMotd();
         }
+        private boolean isBanned(OfflinePlayer p) {
+        	try {
+	            if ((!banBrokenMsg) && (p != null) && p.isBanned()) {
+	                return true;
+	            }
+        	} catch (Exception x) {
+        		Log.severe("Server error - broken Ban API - ban check disabled - this may allow banned players to log in!!!", x);
+        		Log.severe("REPORT ERROR TO "+ Bukkit.getServer().getVersion() + " DEVELOPERS - THIS IS NOT DYNMAP ISSUE");
+        		banBrokenMsg = true;
+        	}
+        	return false;
+        }
         @Override
         public boolean isPlayerBanned(String pid) {
             OfflinePlayer p = getServer().getOfflinePlayer(pid);
-            if((p != null) && p.isBanned())
-                return true;
-            return false;
+            return isBanned(p);
         }
         @Override
         public boolean isServerThread() {
@@ -464,7 +475,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public Set<String> checkPlayerPermissions(String player, Set<String> perms) {
             OfflinePlayer p = getServer().getOfflinePlayer(player);
-            if(p.isBanned())
+            if (isBanned(p))
                 return new HashSet<String>();
             Set<String> rslt = permissions.hasOfflinePermissions(player, perms);
             if (rslt == null) {
@@ -478,7 +489,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public boolean checkPlayerPermission(String player, String perm) {
             OfflinePlayer p = getServer().getOfflinePlayer(player);
-            if(p.isBanned())
+            if (isBanned(p))
                 return false;
             boolean rslt = permissions.hasOfflinePermission(player, perm);
             return rslt;
