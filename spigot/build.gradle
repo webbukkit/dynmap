@@ -16,6 +16,8 @@ repositories {
     }
 }
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
 dependencies {
     implementation('org.bukkit:bukkit:1.10.2-R0.1-SNAPSHOT') { transitive = false }
     compileOnly('com.nijikokun.bukkit:Permissions:3.1.6')  { transitive = false }

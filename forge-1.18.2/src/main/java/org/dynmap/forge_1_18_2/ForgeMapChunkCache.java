@@ -1,5 +1,6 @@
 package org.dynmap.forge_1_18_2;
 
+import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.world.level.biome.Biome;
@@ -10,6 +11,7 @@ import org.dynmap.common.BiomeMap;
 import org.dynmap.common.chunk.GenericChunk;
 import org.dynmap.common.chunk.GenericChunkCache;
 import org.dynmap.common.chunk.GenericMapChunkCache;
+import org.dynmap.utils.TileFlags;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerChunkCache;
@@ -65,6 +67,8 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		super.setChunks(dw, chunks);
 	}
 
+	private static HashMap<String, TileFlags> tmap = new HashMap<String, TileFlags>();
+	
 	private CompoundTag readChunk(int x, int z) {
 		try {
 			CompoundTag rslt = cps.chunkMap.read(new ChunkPos(x, z));
@@ -80,6 +84,30 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 				// Needs to be at least lighted
 						(!cs.isOrAfter(ChunkStatus.LIGHT))) {
 					rslt = null;
+				}
+			}
+			if (rslt != null) {
+				int version = rslt.getInt("DataVersion");
+				if (version < 2975) {
+					boolean doIt = false;
+					synchronized(tmap) {
+						TileFlags tf = tmap.get(dw.getName());
+						if (tf == null) {
+							tf = new TileFlags();
+							tmap.put(dw.getName(), tf);
+						}
+						if (!tf.getFlag(x, z)) {
+							tf.setFlag(x,  z, true);
+							doIt = true;
+						}
+					}
+					if (doIt) {
+						ChunkPos pos = new ChunkPos(x, z);
+						CompoundTag newrec = cps.chunkMap.readChunk(pos);
+						if (rslt != null) {
+							cps.chunkMap.write(pos, newrec.copy());
+						}
+					}
 				}
 			}
 			// Log.info(String.format("loadChunk(%d,%d)=%s", x, z, (rslt != null) ?

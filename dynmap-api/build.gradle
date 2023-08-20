@@ -8,6 +8,8 @@ eclipse {
 
 description = "dynmap-api"
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
 dependencies {
     compileOnly group: 'org.bukkit', name: 'bukkit', version:'1.7.10-R0.1-SNAPSHOT'
     compileOnly project(":DynmapCoreAPI")

@@ -8,6 +8,8 @@ eclipse {
 
 description = 'bukkit-helper-1.13.2'
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
 dependencies {
   implementation project(':bukkit-helper')
   implementation project(':dynmap-api')
