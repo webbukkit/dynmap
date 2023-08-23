@@ -629,10 +629,12 @@ public class MapManager {
                     renderedmaps.addAll(map.getMapsSharingRender(world));
 
                     /* Now, prime the render queue */
-                    for (MapTile mt : map.getTiles(world, (int)loc.x, (int)loc.y, (int)loc.z)) {
-                        if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
-                            found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
-                            renderQueue.add(mt);
+                    if (map.isReadOnly() == false) {
+                        for (MapTile mt : map.getTiles(world, (int)loc.x, (int)loc.y, (int)loc.z)) {
+                            if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
+                                found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
+                                renderQueue.add(mt);
+                            }
                         }
                     }
                     if(!updaterender) { /* Only add other seed points for fullrender */
@@ -1072,6 +1074,10 @@ public class MapManager {
             tiles.clear();
             for(DynmapWorld w : worlds) {
                 for(MapTypeState mts : w.mapstate) {
+                    if (mts.type.isReadOnly()) {
+                        continue;
+                    }
+
                     if(mts.getNextInvalidTileCoord(coord)) {
                         mts.type.addMapTiles(tiles, w, coord.x, coord.y);
                         mts.validateTile(coord.x, coord.y);
@@ -1903,6 +1909,10 @@ public class MapManager {
                 }
                 if(world == null) continue;
                 for (MapTypeState mts : world.mapstate) {
+                    if (mts.type.isReadOnly()) {
+                        continue;
+                    }
+
                     List<TileFlags.TileCoord> tiles = mts.type.getTileCoords(world, evt.x, evt.y, evt.z);
                     invalidates += mts.invalidateTiles(tiles);
                 }
@@ -1935,6 +1945,10 @@ public class MapManager {
                 if(world == null) continue;
                 int invalidates = 0;
                 for (MapTypeState mts : world.mapstate) {
+                    if (mts.type.isReadOnly()) {
+                        continue;
+                    }
+
                     List<TileFlags.TileCoord> tiles = mts.type.getTileCoords(world, evt.xmin, evt.ymin, evt.zmin, evt.xmax, evt.ymax, evt.zmax);
                     invalidates += mts.invalidateTiles(tiles);
                 }

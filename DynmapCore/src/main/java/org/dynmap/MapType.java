@@ -10,6 +10,10 @@ import org.json.simple.JSONObject;
 
 public abstract class MapType {
     private boolean is_protected;
+    /**
+     * Is the map type read-only? (i.e. should not be updated by renderer)
+     */
+    private boolean is_readonly;
     protected int tileupdatedelay;
     
     public enum ImageVariant {
@@ -203,6 +207,26 @@ public abstract class MapType {
     public boolean setProtected(boolean p) {
         if(is_protected != p) {
             is_protected = p;
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Is the map type read-only? (i.e. should not be updated by renderer)
+     * @return true if read-only
+     */
+    public boolean isReadOnly() {
+        return is_readonly;
+    }
+
+    /**
+     * Set read-only state of map type
+     * @param r - true if read-only
+     * @return true if state changed
+     */
+    public boolean setReadOnly(boolean r) {
+        if(is_readonly != r) {
+            is_readonly = r;
             return true;
         }
         return false;
