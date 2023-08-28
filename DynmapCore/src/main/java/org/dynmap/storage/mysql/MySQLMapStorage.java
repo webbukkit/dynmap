@@ -809,29 +809,21 @@ public class MySQLMapStorage extends MapStorage {
         }
         try {
             c = getConnection();
-            boolean done = false;
-            int limit = 100;
-            int offset = 0;
-            while (!done) {
-	            // Query tiles for given mapkey
-	            Statement stmt = c.createStatement();
-	            ResultSet rs = stmt.executeQuery(String.format("SELECT x,y,zoom,Format FROM %s WHERE MapID=%d LIMIT %d OFFSET %d;", tableTiles, mapkey, limit, offset));
-	            int cnt = 0;
-	            while (rs.next()) {
-	                StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
-	                final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
-	                if(cb != null)
-	                    cb.tileFound(st, encoding);
-	                if(cbBase != null && st.zoom == 0)
-	                    cbBase.tileFound(st, encoding);
-	                st.cleanup();
-	                cnt++;
-	            }
-	            rs.close();
-	            stmt.close();
-	            if (cnt < limit) done = true;
-	            offset += cnt;
+            Statement stmt = c.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, //we want to stream our resultset one row at a time, we are not interessted in going back
+                    java.sql.ResultSet.CONCUR_READ_ONLY); //since we do not handle the entire resultset in memory -> tell the statement that we are going to work read only
+            stmt.setFetchSize(100); //we can change the jdbc "retrieval chunk size". Basicly we limit how much rows are kept in memory. Bigger value = less network calls to DB, but more memory consumption
+            ResultSet rs = stmt.executeQuery(String.format("SELECT x,y,zoom,Format FROM %s WHERE MapID=%d;", tableTiles, mapkey)); //we do the query, but do not set any limit / offset. Since data is not kept in memory, just streamed from DB this should not be a problem, only the rows from setFetchSize are kept in memory.
+            while (rs.next()) {
+                StorageTile st = new StorageTile(world, map, rs.getInt("x"), rs.getInt("y"), rs.getInt("zoom"), var);
+                final MapType.ImageEncoding encoding = MapType.ImageEncoding.fromOrd(rs.getInt("Format"));
+                if(cb != null)
+                    cb.tileFound(st, encoding);
+                if(cbBase != null && st.zoom == 0)
+                    cbBase.tileFound(st, encoding);
+                st.cleanup();
             }
+            rs.close();
+            stmt.close();
             if(cbEnd != null)
                 cbEnd.searchEnded();
         } catch (SQLException x) {
