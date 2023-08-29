@@ -679,6 +679,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 Log.warning("Using external server, but " + JsonFileClientUpdateComponent.class.toString() + " is DISABLED!");
                 webserverCompConfigWarn = true;
             }
+            DynmapWebserverStateListener.stateWebServerDisabled();
         }
         if (webserverCompConfigWarn) {
             Log.warning("If the website is missing files or not loading/updating, this might be why.");
@@ -1075,6 +1076,7 @@ public class DynmapCore implements DynmapCommonAPI {
         try {
             if(webServer != null) {
                 webServer.start();
+                DynmapWebserverStateListener.stateWebserverStarted();
                 Log.info("Web server started on address " + webhostname + ":" + webport);
             }
         } catch (Exception e) {
@@ -1100,6 +1102,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 Log.severe("Failed to stop WebServer!", e);
             }
             webServer = null;
+            DynmapWebserverStateListener.stateWebserverStopped();
         }
 
         if (componentManager != null) {
