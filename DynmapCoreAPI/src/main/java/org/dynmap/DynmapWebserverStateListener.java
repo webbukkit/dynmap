@@ -77,7 +77,7 @@ public abstract class DynmapWebserverStateListener
     }
 
     // Internal call - MODS/PLUGINS MUST NOT USE
-    public static void stateWebServerDisabled()
+    public static void stateWebserverDisabled()
     {
         for (DynmapWebserverStateListener l : listeners)
         {

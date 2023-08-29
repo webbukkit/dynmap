@@ -679,7 +679,7 @@ public class DynmapCore implements DynmapCommonAPI {
                 Log.warning("Using external server, but " + JsonFileClientUpdateComponent.class.toString() + " is DISABLED!");
                 webserverCompConfigWarn = true;
             }
-            DynmapWebserverStateListener.stateWebServerDisabled();
+            DynmapWebserverStateListener.stateWebserverDisabled();
         }
         if (webserverCompConfigWarn) {
             Log.warning("If the website is missing files or not loading/updating, this might be why.");
