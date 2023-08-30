@@ -517,7 +517,7 @@ public class MapManager {
                 }, new MapStorageTileSearchEndCB() {
                     @Override
                     public void searchEnded() {
-                    	
+
                     }
                 });
                 sendMessage(String.format("Scan complete - starting render"));
@@ -938,14 +938,16 @@ public class MapManager {
             scheduleDelayedJob(this, 5000);
         }
     }
-    
+    public int getActivePoolThreadCount(){
+        return render_pool.getActiveCount();
+    }
     private class DoZoomOutProcessing implements Runnable {
         public void run() {
             if (!tpspausezoomout) {
                 Debug.debug("DoZoomOutProcessing started");
                 ArrayList<DynmapWorld> wl = new ArrayList<DynmapWorld>(worlds);
                 for(DynmapWorld w : wl) {
-                    w.freshenZoomOutFiles();
+                    w.freshenZoomOutFiles(parallelrendercnt);
                 }
                 Debug.debug("DoZoomOutProcessing finished");
                 scheduleDelayedJob(this, zoomout_period*1000);
