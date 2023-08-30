@@ -153,6 +153,7 @@ public class HDMap extends MapType {
         this.append_to_world = configuration.getString("append_to_world", "");
         setProtected(configuration.getBoolean("protected", false));
         setTileUpdateDelay(configuration.getInteger("tileupdatedelay", -1));
+        setReadOnly(configuration.getBoolean("readonly", false));
     }
 
     public ConfigurationNode saveConfiguration() {

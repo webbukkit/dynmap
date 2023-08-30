@@ -1268,7 +1268,7 @@ public class IsoHDPerspective implements HDPerspective {
         // Mark the tiles we're going to render as validated
         for (int i = 0; i < numshaders; i++) {
             MapTypeState mts = world.getMapState(shaderstate[i].getMap());
-            if (mts != null) {
+            if (mts != null && mts.type.isReadOnly() == false) {
                 mts.validateTile(tile.tx, tile.ty);
             }
         }

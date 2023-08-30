@@ -131,6 +131,12 @@ public class HDMapManager {
                     /* If limited to one map, and this isn't it, skip */
                     if((mapname != null) && (!hdmap.getName().equals(mapname)))
                         continue;
+
+                    // Maps can be set to read-only, which means they don't get re-rendered
+                    if (map.isReadOnly()) {
+                        continue;
+                    }
+
                     shaders.add(hdmap.getShader().getStateInstance(hdmap, cache, mapiter, scale));
                 }
             }
