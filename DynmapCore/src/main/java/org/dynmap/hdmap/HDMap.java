@@ -181,6 +181,7 @@ public class HDMap extends MapType {
             cn.put("backgroundnight", bg_night_cfg);
         cn.put("append_to_world", append_to_world);
         cn.put("protected", isProtected());
+        cn.put("readonly", isReadOnly());
         if(this.tileupdatedelay > 0) {
             cn.put("tileupdatedelay", this.tileupdatedelay);
         }
