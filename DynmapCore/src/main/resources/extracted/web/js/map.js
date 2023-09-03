@@ -592,9 +592,6 @@ DynMap.prototype = {
 			me.selectWorldAndPan(location.world, location, function() {
 				if(completed) completed();
 			});
-		} else {
-			var latlng = me.maptype.getProjection().fromLocationToLatLng(location);
-			me.panToLatLng(latlng, completed);
 		}
 	},
 	panToLayerPoint: function(point, completed) {
@@ -779,8 +776,7 @@ DynMap.prototype = {
 				if (me.followingPlayer !== player) {
 					me.followPlayer(null);
 				}
-				if(player.location.world)
-					me.panToLocation(player.location);
+				me.panToLocation(player.location);
 			});
 		player.menuname.data('sort', player.sort);
 		// Inject into playerlist alphabetically
