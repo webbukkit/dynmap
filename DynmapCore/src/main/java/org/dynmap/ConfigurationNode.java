@@ -1,11 +1,15 @@
 package org.dynmap;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,13 +86,13 @@ public class ConfigurationNode implements Map<String, Object> {
         initparse();
         // If no file to read, just return false
         if (!f.canRead()) { return false; }
-        FileInputStream fis = null;
+        Reader fr = null;
         try {
-            fis = new FileInputStream(f);
-            Object o = yaml.load(new UnicodeReader(fis));
+            fr = new UnicodeReader(new BufferedInputStream(new FileInputStream(f)));
+            Object o = yaml.load(fr);
             if((o != null) && (o instanceof Map))
                 entries = (Map<String, Object>)o;
-            fis.close();
+            fr.close();
         }
         catch (YAMLException e) {
             Log.severe("Error parsing " + f.getPath() + ". Use http://yamllint.com to debug the YAML syntax." );
@@ -97,8 +101,8 @@ public class ConfigurationNode implements Map<String, Object> {
             Log.severe("Error reading " + f.getPath());
             return false;
         } finally {
-            if(fis != null) {
-                try { fis.close(); } catch (IOException x) {}
+            if(fr != null) {
+                try { fr.close(); } catch (IOException x) {}
             }
         }
         return (entries != null);
@@ -111,7 +115,7 @@ public class ConfigurationNode implements Map<String, Object> {
     public boolean save(File file) {
         initparse();
 
-        FileOutputStream stream = null;
+        OutputStream stream = null;
 
         File parent = file.getParentFile();
 
@@ -120,7 +124,7 @@ public class ConfigurationNode implements Map<String, Object> {
         }
 
         try {
-            stream = new FileOutputStream(file);
+            stream = new BufferedOutputStream(new FileOutputStream(file));
             OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
             yaml.dump(entries, writer);
             return true;

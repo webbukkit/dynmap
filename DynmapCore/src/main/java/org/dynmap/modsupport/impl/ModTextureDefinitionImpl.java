@@ -1,8 +1,10 @@
 package org.dynmap.modsupport.impl;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -278,9 +280,9 @@ public class ModTextureDefinitionImpl implements ModTextureDefinition {
     
     public void writeToFile(File destdir) throws IOException {
         File f = new File(destdir, this.modid + "-texture.txt");
-        FileWriter fw = null;
+        Writer fw = null;
         try {
-            fw = new FileWriter(f);
+            fw = new BufferedWriter(new FileWriter(f));
             // Write modname line
             String s = "modname:" + this.modid;
             fw.write(s + "\n\n");
