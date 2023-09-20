@@ -1923,7 +1923,7 @@ public class TexturePack {
         Map<DynmapBlockState, BitSet> bsprslt;
         try {
             String line;
-            rdr = new LineNumberReader(new InputStreamReader(txtfile));
+            rdr = new LineNumberReader(new BufferedReader(new InputStreamReader(txtfile)));
             while((line = rdr.readLine()) != null) {
                 boolean skip = false;
                 int lineNum = rdr.getLineNumber();
