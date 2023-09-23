@@ -30,7 +30,7 @@ public class DynmapMod implements ModInitializer {
         Path path = MOD_CONTAINER.getRootPath();
         try {
             jarfile = new File(DynmapCore.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | IllegalArgumentException e) {
             Log.severe("Unable to get DynmapCore jar path", e);
         }
 
