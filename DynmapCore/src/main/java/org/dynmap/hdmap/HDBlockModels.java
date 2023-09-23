@@ -1,5 +1,6 @@
 package org.dynmap.hdmap;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -356,7 +357,7 @@ public class HDBlockModels {
             int layerbits = 0;
             int rownum = 0;
             int scale = 0;
-            rdr = new LineNumberReader(new InputStreamReader(in));
+            rdr = new LineNumberReader(new BufferedReader(new InputStreamReader(in)));
             while ((line = rdr.readLine()) != null) {
                 boolean skip = false;
                 int lineNum = rdr.getLineNumber();

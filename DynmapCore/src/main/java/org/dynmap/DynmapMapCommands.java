@@ -92,6 +92,7 @@ public class DynmapMapCommands {
 		mapSetArgs.put("boostzoom", emptySupplier);
 		mapSetArgs.put("tilescale", emptySupplier);
 		mapSetArgs.put("tileupdatedelay", emptySupplier);
+		mapSetArgs.put("readonly", booleanSupplier);
 
 		tabCompletions = new HashMap<>();
 		tabCompletions.put("worldaddlimit", worldAddLimitArgs);
@@ -696,7 +697,7 @@ public class DynmapMapCommands {
                 sb.append(", lighting=").append(hdmt.getLighting().getName()).append(", mapzoomin=").append(hdmt.getMapZoomIn()).append(", mapzoomout=").append(hdmt.getMapZoomOutLevels());
                 sb.append(", img-format=").append(hdmt.getImageFormatSetting()).append(", icon=").append(hdmt.getIcon());
                 sb.append(", append-to-world=").append(hdmt.getAppendToWorld()).append(", boostzoom=").append(hdmt.getBoostZoom());
-                sb.append(", protected=").append(hdmt.isProtected()).append(", tilescale=").append(hdmt.getTileScale());
+                sb.append(", protected=").append(hdmt.isProtected()).append(", tilescale=").append(hdmt.getTileScale()).append(", readonly=").append(hdmt.isReadOnly());
                 if(hdmt.tileupdatedelay > 0) {
                     sb.append(", tileupdatedelay=").append(hdmt.tileupdatedelay);
                 }
@@ -995,6 +996,9 @@ public class DynmapMapCommands {
             }
             else if(tok[0].equalsIgnoreCase("protected")) {
                 did_update |= mt.setProtected(Boolean.parseBoolean(tok[1]));
+            }
+            else if(tok[0].equalsIgnoreCase("readonly")) {
+                did_update |= mt.setReadOnly(Boolean.parseBoolean(tok[1]));
             }
         }
         if(did_update) {

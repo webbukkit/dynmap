@@ -411,7 +411,7 @@
 
 .dynmap .sublist .item > a {
     display: block;
-
+    
     text-indent: -99999px;
     outline: none;
 }
@@ -806,10 +806,10 @@
 }
 
 .chatinput {
-
+    position: absolute;
 	width: 608px;
 	height: 16px;
-
+    bottom: 8px;
 	outline: none;
 	color: #fff;
 	background-color: #000000;
@@ -829,6 +829,9 @@
 }
 
 .loginbutton {
+    position: absolute;
+	bottom: 0px;
+	right: 4px;
 	color: #000;
 	font-family: sans-serif;
 	font-size: 11px;

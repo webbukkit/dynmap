@@ -90,6 +90,8 @@ worlds:
   #      shader: cave
   #      lighting: default
   #      mapzoomin: 3
+  #      # maps can be set to `readonly: false` to prevent updates
+  #      readonly: false 
   #
   # To just label world, and inherit rest from template, just provide name and title
   #- name: world2

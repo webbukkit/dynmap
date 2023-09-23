@@ -914,6 +914,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         if (helper == null) {
             Log.info("Dynmap is disabled (unsupported platform)");
+            this.setEnabled(false);
             return;
         }
         PluginDescriptionFile pdfFile = this.getDescription();

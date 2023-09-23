@@ -8,6 +8,8 @@ eclipse {
     }
 }
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
 dependencies {
     implementation project(':DynmapCoreAPI')
     implementation 'javax.servlet:javax.servlet-api:3.1'

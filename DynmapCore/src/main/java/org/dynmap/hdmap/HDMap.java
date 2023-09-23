@@ -153,6 +153,7 @@ public class HDMap extends MapType {
         this.append_to_world = configuration.getString("append_to_world", "");
         setProtected(configuration.getBoolean("protected", false));
         setTileUpdateDelay(configuration.getInteger("tileupdatedelay", -1));
+        setReadOnly(configuration.getBoolean("readonly", false));
     }
 
     public ConfigurationNode saveConfiguration() {
@@ -180,6 +181,7 @@ public class HDMap extends MapType {
             cn.put("backgroundnight", bg_night_cfg);
         cn.put("append_to_world", append_to_world);
         cn.put("protected", isProtected());
+        cn.put("readonly", isReadOnly());
         if(this.tileupdatedelay > 0) {
             cn.put("tileupdatedelay", this.tileupdatedelay);
         }
