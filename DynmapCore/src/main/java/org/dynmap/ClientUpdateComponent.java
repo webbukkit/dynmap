@@ -12,6 +12,7 @@ public class ClientUpdateComponent extends Component {
     private int hideifshadow;
     private int hideifunder;
     private boolean hideifsneaking;
+    private boolean hideifspectator;
     private boolean hideifinvisiblepotion;
     private boolean is_protected;
     public static boolean usePlayerColors;
@@ -24,6 +25,7 @@ public class ClientUpdateComponent extends Component {
         hideifshadow = configuration.getInteger("hideifshadow", 15);
         hideifunder = configuration.getInteger("hideifundercover", 15);
         hideifsneaking = configuration.getBoolean("hideifsneaking", false);
+        hideifspectator = configuration.getBoolean("hideifspectator", false);
         hideifinvisiblepotion = configuration.getBoolean("hide-if-invisiblity-potion", true);
         is_protected = configuration.getBoolean("protected-player-info", false);
         usePlayerColors = configuration.getBoolean("use-name-colors", false);
@@ -98,6 +100,9 @@ public class ClientUpdateComponent extends Component {
                 }
             }
             if((!hide) && hideifsneaking && p.isSneaking()) {
+                hide = true;
+            }
+            if((!hide) && hideifspectator && p.isSpectator()) {
                 hide = true;
             }
             if((!hide) && is_protected && (!see_all)) {

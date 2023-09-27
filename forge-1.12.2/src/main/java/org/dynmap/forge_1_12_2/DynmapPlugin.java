@@ -1328,12 +1328,16 @@ public class DynmapPlugin
         @Override
         public boolean isInvisible() {
             if(player != null) {
-                if (player.isSpectator())
-                    return true;
-                else return player.isInvisible();
+                return player.isInvisible()
             }
             return false;
         }
+
+        public boolean isSpectator() {
+            if(player != null) {return player.isSpectator()}
+            return false;
+        }
+
         @Override
         public int getSortWeight() {
             Integer wt = sortWeights.get(getName());

@@ -102,7 +102,6 @@ import org.dynmap.common.chunk.GenericMapChunkCache;
 import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.modsupport.ModSupportImpl;
-import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
@@ -756,10 +755,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         @Override
         public boolean isInvisible() {
             if(player != null) {
-                if (player.getGameMode() == GameMode.SPECTATOR)
-                    return true;
-                else return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
+                return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
             }
+            return false;
+        }
+        @Override
+        public boolean isSpectator() {
+          if(player != null) {
+              return player.getGameMode() == GameMode.SPECTATOR;
+          }
             return false;
         }
         @Override
