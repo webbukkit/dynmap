@@ -1,6 +1,7 @@
 package org.dynmap.hdmap;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -1823,7 +1824,7 @@ public class TexturePack {
         
         try {
             String line;
-            rdr = new LineNumberReader(new InputStreamReader(txtfile));
+            rdr = new LineNumberReader(new BufferedReader(new InputStreamReader(txtfile)));
             while((line = rdr.readLine()) != null) {
                 if(line.startsWith("#")) {
                 }
@@ -1922,7 +1923,7 @@ public class TexturePack {
         Map<DynmapBlockState, BitSet> bsprslt;
         try {
             String line;
-            rdr = new LineNumberReader(new InputStreamReader(txtfile));
+            rdr = new LineNumberReader(new BufferedReader(new InputStreamReader(txtfile)));
             while((line = rdr.readLine()) != null) {
                 boolean skip = false;
                 int lineNum = rdr.getLineNumber();

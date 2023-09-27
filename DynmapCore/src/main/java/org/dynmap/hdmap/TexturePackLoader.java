@@ -1,5 +1,6 @@
 package org.dynmap.hdmap;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,13 +62,13 @@ public class TexturePackLoader {
             if (zf != null) {
                 ZipEntry ze = zf.getEntry(rname);
                 if ((ze != null) && (!ze.isDirectory())) {
-                    return zf.getInputStream(ze);
+                    return new BufferedInputStream(zf.getInputStream(ze));
                 }
             }
             else if (tpdir != null) {
                 File f = new File(tpdir, rname);
                 if (f.isFile() && f.canRead()) {
-                    return new FileInputStream(f);
+                    return new BufferedInputStream(new FileInputStream(f));
                 }
             }
         } catch (IOException iox) {
@@ -75,7 +76,7 @@ public class TexturePackLoader {
         // Fall through - load as resource from mod, if possible, or from jar
         InputStream is = dsi.openResource(modname, rname);
         if (is != null) { 
-            return is;
+            return new BufferedInputStream(is);
         }
         if (modname != null) {
             ModSource ms = src_by_mod.get(modname);
@@ -118,7 +119,7 @@ public class TexturePackLoader {
             Log.warning("Resource " + rname + " for mod " + modname + " not found");
         }
         
-        return is;
+        return (is != null) ? new BufferedInputStream(is) : null;
     }
     public void close() {
         if(zf != null) {

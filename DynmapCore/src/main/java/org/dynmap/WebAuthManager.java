@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
-import java.util.Random;
 import java.util.Set;
 
 import org.dynmap.common.DynmapCommandSender;
@@ -26,7 +26,7 @@ public class WebAuthManager {
     public static final String WEBAUTHFILE = "webauth.txt";
     private static final String HASHSALT = "$HASH_SALT$";
     private static final String PWDHASH_PREFIX = "hash.";
-    private Random rnd = new Random();
+    private SecureRandom rnd = new SecureRandom();
     private DynmapCore core;
     private String publicRegistrationURL;
     

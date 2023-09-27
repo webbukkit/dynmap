@@ -1,8 +1,10 @@
 package org.dynmap.modsupport.impl;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -274,9 +276,9 @@ public class ModModelDefinitionImpl implements ModModelDefinition {
             return;
         }
         File f = new File(destdir, this.txtDef.getModID() + "-models.txt");
-        FileWriter fw = null;
+        Writer fw = null;
         try {
-            fw = new FileWriter(f);
+            fw = new BufferedWriter(new FileWriter(f));
             // Write modname line
             String s = "modname:" + this.txtDef.getModID();
             fw.write(s + "\n\n");
