@@ -2176,6 +2176,10 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 sender.sendMessage("file:\"filename\" required");
                 return true;
             }
+            if (!validateImportFile(file)) {
+                sender.sendMessage("Error: '" + ARG_FILE + "' cannot include directory separators - must be just filename in " + plugin.getImportFolder().getAbsolutePath() + " directory");
+                return true;
+            }
             if(label == null)
                 label = id;
             MarkerIcon ico = MarkerAPIImpl.getMarkerIconImpl(id);
@@ -2184,10 +2188,9 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
                 return true;
             }
             /* Open stream to filename */
-            File iconf = new File(file);
             FileInputStream fis = null;
             try {
-                fis = new FileInputStream(iconf);
+                fis = new FileInputStream(new File(plugin.getImportFolder(), file));
                 /* Create new icon */
                 MarkerIcon mi = api.createMarkerIcon(id, label, fis);
                 if(mi == null) {
@@ -3201,6 +3204,12 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
         }
         return true;
     }
+    private static boolean validateImportFile(String fname) {
+        if ((fname.indexOf('/') >= 0) || (fname.indexOf('\\') >= 0)) {
+        	return false;
+        }
+        return true;
+    }
     /** Process importdesc for given item */
     private static boolean processImportDesc(DynmapCore plugin, DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
         if(args.length > 1) {
@@ -3214,13 +3223,17 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             String f = parms.get(ARG_FILE);
             if (f == null) {
-                sender.sendMessage("Error: no '" + ARG_FILE + "' parameter");
+                sender.sendMessage("file:\"filename\" required");
+                return true;
+            }
+            if (!validateImportFile(f)) {
+                sender.sendMessage("Error: '" + ARG_FILE + "' cannot include directory separators - must be just filename in " + plugin.getImportFolder().getAbsolutePath() + " directory");
                 return true;
             }
             FileReader fr = null;
             String val = null;
             try {
-                fr = new FileReader(f);
+                fr = new FileReader(new File(plugin.getImportFolder(), f));
                 StringBuilder sb = new StringBuilder();
                 char[] buf = new char[512];
                 int len;
@@ -3261,13 +3274,17 @@ public class MarkerAPIImpl implements MarkerAPI, Event.Listener<DynmapWorld> {
             }
             String f = parms.get(ARG_FILE);
             if (f == null) {
-                sender.sendMessage("Error: no '" + ARG_FILE + "' parameter");
+                sender.sendMessage("file:\"filename\" required");
+                return true;
+            }
+            if (!validateImportFile(f)) {
+                sender.sendMessage("Error: '" + ARG_FILE + "' cannot include directory separators - must be just filename in " + plugin.getImportFolder().getAbsolutePath() + " directory");
                 return true;
             }
             FileReader fr = null;
             String val = null;
             try {
-                fr = new FileReader(f);
+                fr = new FileReader(new File(plugin.getImportFolder(), f));
                 StringBuilder sb = new StringBuilder();
                 char[] buf = new char[512];
                 int len;

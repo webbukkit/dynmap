@@ -164,6 +164,7 @@ public class DynmapCore implements DynmapCommonAPI {
     private File dataDirectory;
     private File tilesDirectory;
     private File exportDirectory;
+    private File importDirectory;
     private String plugin_ver;
     private MapStorage defaultStorage;
     
@@ -223,6 +224,9 @@ public class DynmapCore implements DynmapCommonAPI {
     }
     public final File getExportFolder() {
         return exportDirectory;
+    }
+    public final File getImportFolder() {
+        return importDirectory;
     }
     public void setMinecraftVersion(String mcver) {
         this.platformVersion = mcver;
@@ -427,6 +431,11 @@ public class DynmapCore implements DynmapCommonAPI {
         exportDirectory = getFile(configuration.getString("exportpath", "export"));
         if (!exportDirectory.isDirectory() && !exportDirectory.mkdirs()) {
             Log.warning("Could not create directory for exports ('" + exportDirectory + "').");
+        }
+        // Prime the imports directory
+        importDirectory = getFile(configuration.getString("importpath", "import"));
+        if (!importDirectory.isDirectory() && !importDirectory.mkdirs()) {
+            Log.warning("Could not create directory for imports ('" + importDirectory + "').");
         }
         // Create default storage handler
         String storetype = configuration.getString("storage/type", "filetree");
