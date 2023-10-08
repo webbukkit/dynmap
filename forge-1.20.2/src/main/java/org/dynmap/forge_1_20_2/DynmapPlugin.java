@@ -1308,6 +1308,13 @@ public class DynmapPlugin
         	return false;
         }
         @Override
+        public boolean isSpectator() {
+            if(player != null) {
+                return player.isSpectator();
+            }
+            return false;
+        }
+        @Override
         public int getSortWeight() {
             Integer wt = sortWeights.get(getName());
             if (wt != null)

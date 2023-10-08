@@ -68,6 +68,8 @@ components:
   #  hideifundercover: 14
   #  # (Optional) if true, players that are crouching/sneaking will be hidden 
     hideifsneaking: false
+    # optional, if true, players that are in spectator mode will be hidden
+    hideifspectator: false
     # If true, player positions/status is protected (login with ID with dynmap.playermarkers.seeall permission required for info other than self)
     protected-player-info: false
     # If true, hide players with invisibility potion effects active
