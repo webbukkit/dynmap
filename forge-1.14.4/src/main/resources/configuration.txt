@@ -65,7 +65,7 @@ components:
     # (optional) if true, player login IDs will be used for web chat when their IPs match
     use-player-login-ip: true
     # (optional) if use-player-login-ip is true, setting this to true will cause chat messages not matching a known player IP to be ignored
-    require-player-login-ip: false
+    require-player-login-ip: true
     # (optional) block player login IDs that are banned from chatting
     block-banned-player-chat: true
     # Require login for web-to-server chat (requires login-enabled: true)
@@ -96,7 +96,7 @@ components:
   #  includehiddenplayers: false
   #  use-name-colors: false
   #  use-player-login-ip: false
-  #  require-player-login-ip: false
+  #  require-player-login-ip: true
   #  block-banned-player-chat: true
   #  hideifshadow: 0
   #  hideifundercover: 0
