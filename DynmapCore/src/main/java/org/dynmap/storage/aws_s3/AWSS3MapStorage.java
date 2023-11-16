@@ -139,7 +139,7 @@ public class AWSS3MapStorage extends MapStorage {
         		else {
         			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(baseKey).contentType(map.getImageFormat().getEncoding().getContentType())
         					.addMetadata("x-dynmap-hash", Long.toHexString(hash)).addMetadata("x-dynmap-ts", Long.toString(timestamp)).build();
-        			s3.putObject(req, RequestBody.fromBytes(encImage.buf, encImage.len));
+        			s3.putObject(req, RequestBody.fromBytes(encImage.buf));
         		}
     			done = true;
             } catch (S3Exception x) {
@@ -518,7 +518,7 @@ public class AWSS3MapStorage extends MapStorage {
     		}
     		else {
     			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(baseKey).contentType("image/png").build();
-    			s3.putObject(req, RequestBody.fromBytes(encImage.buf, encImage.len));
+    			s3.putObject(req, RequestBody.fromBytes(encImage.buf));
     		}
 			done = true;
         } catch (S3Exception x) {
@@ -571,7 +571,7 @@ public class AWSS3MapStorage extends MapStorage {
     		}
     		else {
        			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(baseKey).contentType("image/png").build();
-    			s3.putObject(req, RequestBody.fromBytes(encImage.buf, encImage.len));
+    			s3.putObject(req, RequestBody.fromBytes(encImage.buf));
     		}
 			done = true;
         } catch (S3Exception x) {
@@ -734,7 +734,7 @@ public class AWSS3MapStorage extends MapStorage {
     				ct = "application/x-javascript";
     			}
        			PutObjectRequest req = PutObjectRequest.builder().bucketName(bucketname).key(baseKey).contentType(ct).build();
-    			s3.putObject(req, RequestBody.fromBytes(content.buf, content.len));
+    			s3.putObject(req, RequestBody.fromBytes(content.buf));
         		standalone_cache.put(fileid, digest);
     		}
 			done = true;
