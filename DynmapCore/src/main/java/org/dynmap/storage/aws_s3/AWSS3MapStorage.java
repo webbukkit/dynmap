@@ -1,6 +1,7 @@
 package org.dynmap.storage.aws_s3;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -221,7 +222,7 @@ public class AWSS3MapStorage extends MapStorage {
     }
     
     private String bucketname;
-    private String region;
+    private Region region;
     private String access_key_id;
     private String secret_access_key;
     private String prefix;
@@ -248,10 +249,20 @@ public class AWSS3MapStorage extends MapStorage {
         }
         // Get our settings
         bucketname = core.configuration.getString("storage/bucketname", "dynmap");
-        region = core.configuration.getString("storage/region", "us-east-1");
         access_key_id = core.configuration.getString("storage/aws_access_key_id", System.getenv("AWS_ACCESS_KEY_ID"));
         secret_access_key = core.configuration.getString("storage/aws_secret_access_key", System.getenv("AWS_SECRET_ACCESS_KEY"));
         prefix = core.configuration.getString("storage/prefix", "");
+
+        // Either use a custom region, or one of the default AWS regions
+        String region_name = core.configuration.getString("storage/region", "us-east-1");
+        String region_endpoint = core.configuration.getString("storage/override_endpoint", "");
+
+        if (region_endpoint.length() > 0) {
+            region = Region.of(region_name, URI.create(region_endpoint));
+        } else {
+            region = Region.fromString(region_name);
+        }
+
         if ((prefix.length() > 0) && (prefix.charAt(prefix.length()-1) != '/')) {
         	prefix += '/';
         }
@@ -763,7 +774,7 @@ public class AWSS3MapStorage extends MapStorage {
                     if (cpoolCount < POOLSIZE) {  // Still more we can have
                         c = new DefaultS3ClientBuilder()
                         	    .credentialsProvider(() -> AwsBasicCredentials.create(access_key_id, secret_access_key))
-                        	    .region(Region.fromString(region))
+                        	    .region(region)
                         	    .httpClient(URLConnectionSdkHttpClient.create())
                         	    .build();
                         if (c == null) {
