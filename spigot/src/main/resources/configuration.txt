@@ -46,7 +46,8 @@ storage:
   #bucketname: "dynmap-bucket-name"
   #region: us-east-1
   #aws_access_key_id: "<aws-access-key-id>"
-  #aws_secret_access_key: "<aws-secret-access-key>"  
+  #aws_secret_access_key: "<aws-secret-access-key>"
+  #override_endpoint: ""
   
 components:
   - class: org.dynmap.ClientConfigurationComponent
