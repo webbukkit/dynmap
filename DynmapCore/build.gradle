@@ -24,6 +24,8 @@ dependencies {
     implementation 'io.github.linktosriram.s3lite:http-client-url-connection:0.0.2-SNAPSHOT'
     implementation 'io.github.linktosriram.s3lite:http-client-spi:0.0.2-SNAPSHOT'
     implementation 'io.github.linktosriram.s3lite:util:0.0.2-SNAPSHOT'
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:3.0.0'
 }
 
 processResources {
@@ -62,7 +64,9 @@ shadowJar {
         include(dependency('io.github.linktosriram.s3lite:api:'))
         include(dependency('io.github.linktosriram.s3lite:http-client-url-connection:'))
         include(dependency('io.github.linktosriram.s3lite:http-client-spi:'))
-	    include(dependency('io.github.linktosriram.s3lite:util:'))
+        include(dependency('io.github.linktosriram.s3lite:util:'))
+        include(dependency('jakarta.xml.bind::'))
+        include(dependency('com.sun.xml.bind::'))
         include(dependency(':DynmapCoreAPI'))
         exclude("META-INF/maven/**")
         exclude("META-INF/services/**")
