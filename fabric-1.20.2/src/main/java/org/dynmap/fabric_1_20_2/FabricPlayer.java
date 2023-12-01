@@ -201,6 +201,13 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
         }
         return false;
     }
+    @Override
+    public boolean isSpectator() {
+        if(player != null) {
+            return player.isSpectator();
+        }
+        return false;
+    }
 
     @Override
     public int getSortWeight() {

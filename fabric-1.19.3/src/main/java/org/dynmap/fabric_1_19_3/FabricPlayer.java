@@ -194,12 +194,18 @@ public class FabricPlayer extends FabricCommandSender implements DynmapPlayer {
 
     @Override
     public boolean isInvisible() {
-        if (player != null) {
+        if(player != null) {
             return player.isInvisible();
         }
         return false;
     }
-
+    @Override
+    public boolean isSpectator() {
+        if(player != null) {
+            return player.isSpectator();
+        }
+        return false;
+    }
     @Override
     public int getSortWeight() {
         return plugin.getSortWeight(getName());

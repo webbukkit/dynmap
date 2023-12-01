@@ -22,14 +22,7 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.CustomChart;
 import org.bstats.json.JsonObjectBuilder;
 import org.bstats.json.JsonObjectBuilder.JsonObject;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -109,7 +102,6 @@ import org.dynmap.common.chunk.GenericMapChunkCache;
 import org.dynmap.hdmap.HDMap;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.modsupport.ModSupportImpl;
-import org.dynmap.renderer.DynmapBlockState;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.VisibilityLimit;
@@ -765,6 +757,13 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             if(player != null) {
                 return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
             }
+            return false;
+        }
+        @Override
+        public boolean isSpectator() {
+          if(player != null) {
+              return player.getGameMode() == GameMode.SPECTATOR;
+          }
             return false;
         }
         @Override

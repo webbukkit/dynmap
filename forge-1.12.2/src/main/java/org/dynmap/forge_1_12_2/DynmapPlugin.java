@@ -1327,10 +1327,17 @@ public class DynmapPlugin
         }
         @Override
         public boolean isInvisible() {
-        	if(player != null) {
-        		return player.isInvisible();
-        	}
-        	return false;
+            if(player != null) {
+                return player.isInvisible()
+            }
+            return false;
+        }
+        @override
+        public boolean isSpectator() {
+            if(player != null) {
+                return player.isSpectator()
+            }
+            return false;
         }
         @Override
         public int getSortWeight() {

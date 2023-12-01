@@ -44,6 +44,12 @@ public interface DynmapPlayer extends DynmapCommandSender {
      * @return true if sneaking
      */
     public boolean isSneaking();
+
+    /**
+     * get spectator gamemode
+     * @return true if gamemode spectator
+     */
+    public boolean isSpectator();
     /**
      * Get health
      * @return health points
