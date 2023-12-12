@@ -533,6 +533,7 @@ public class SQLiteMapStorage extends MapStorage {
     
     private static Connection configureConnection(Connection conn) throws SQLException {
         final Statement statement = conn.createStatement();
+        statement.execute("PRAGMA auto_vacuum = FULL;");
         statement.execute("PRAGMA journal_mode = WAL;");
         statement.close();
         return conn;
