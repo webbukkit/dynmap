@@ -856,7 +856,13 @@ modellist:id=%iron_bars,state=west:false/east:false/south:false/north:false,box=
 # Fern
 # Dead shrub
 # Tall grass
-patchblock:id=fern,id=grass,id=cobweb,id=tall_grass,id=dead_bush,id=sugar_cane,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+patchblock:id=fern,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+[-1.20.2]patchblock:id=grass,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+[1.20.3-]patchblock:id=short_grass,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+patchblock:id=cobweb,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+patchblock:id=tall_grass,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+patchblock:id=dead_bush,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+patchblock:id=sugar_cane,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
 
 # Seagrass
 # Tall seagrass

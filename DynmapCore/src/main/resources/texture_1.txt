@@ -814,7 +814,8 @@ block:id=detector_rail,state=powered:false,patch0=0:detector_rail,transparency=T
 # Web
 block:id=cobweb,patch0-1=0:cobweb,transparency=TRANSPARENT
 # Grass
-block:id=grass,patch0-1=1000:grass,transparency=TRANSPARENT
+[-1.20.2]block:id=grass,patch0-1=1000:grass,transparency=TRANSPARENT
+[1.20.3-]block:id=short_grass,patch0-1=1000:grass,transparency=TRANSPARENT
 # Fern
 block:id=fern,patch0-1=1000:fern,transparency=TRANSPARENT
 # Dead shrub
