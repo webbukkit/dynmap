@@ -30,10 +30,10 @@ public class TopoHDShader implements HDShader {
     public TopoHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
         
-        fillcolor = new Color[256];   /* Color by Y */
+        fillcolor = new Color[384];   /* Color by Y, (-64...319) */
         /* Load defined colors from parameters */
-        for(int i = 0; i < 256; i++) {
-            fillcolor[i] = configuration.getColor("color" + i,  null);
+        for(int i = 0; i < 384; i++) {
+            fillcolor[i] = configuration.getColor("color" + (i-64),  null);
         }
         linecolor = configuration.getColor("linecolor", null);
         watercolor = configuration.getColor("watercolor", null);
@@ -45,11 +45,11 @@ public class TopoHDShader implements HDShader {
         if(fillcolor[0] == null) {
             fillcolor[0] = new Color(0, 0, 0);
         }
-        if(fillcolor[255] == null) {
-            fillcolor[255] = new Color(255, 255, 255);
+        if(fillcolor[383] == null) {
+            fillcolor[383] = new Color(255, 255, 255);
         }
         int starty = 0;
-        for(int i = 1; i < 256; i++) {
+        for(int i = 1; i < 384; i++) {
             if(fillcolor[i] != null) {  /* Found color? */
                 int delta = i - starty;
                 Color c0 = fillcolor[starty];
@@ -146,7 +146,7 @@ public class TopoHDShader implements HDShader {
             /* Compute divider for Y - to map to existing color range */
             int wh = mapiter.getWorldHeight();
             heightshift = 0;
-            while(wh > 256) {
+            while(wh > 384) {
                 heightshift++;
                 wh >>= 1;
             }
@@ -203,7 +203,7 @@ public class TopoHDShader implements HDShader {
                 return false;
             }
             int y = mapiter.getY();
-            if (y < 0) y = 0;	// Clamp at zero for now
+            if (y < -64) y = -64;	// Clamp at -64
             /* See if we're close to an edge */
             int[] xyz = ps.getSubblockCoord();
             // Only color lines when spacing is matched
@@ -231,7 +231,7 @@ public class TopoHDShader implements HDShader {
                     }
                 }
                 else {
-                    c.setColor(fillcolor[y >> heightshift]);
+                    c.setColor(fillcolor[(y+64) >> heightshift]);
                     inWater = false;
                 }
                 break;
@@ -250,7 +250,7 @@ public class TopoHDShader implements HDShader {
                     }
                 }
                 else {
-                    c.setColor(fillcolor[y >> heightshift]);
+                    c.setColor(fillcolor[(y+64) >> heightshift]);
                     inWater = false;
                 }
                 break;
