@@ -70,7 +70,7 @@ public class DynmapBlockState {
     public static String REDSTONE_ORE_BLOCK = "minecraft:redstone_ore";
     public static String LIT_REDSTONE_ORE_BLOCK = "minecraft:lit_redstone_ore";
     public static String EMERALD_ORE_BLOCK = "minecraft:emerald_ore";
-    public static String QUARTZ_ORE_BLOCK = "minecraft:quartz_ore";
+    public static String QUARTZ_ORE_BLOCK = "minecraft:nether_quartz_ore";
     public static String NETHER_GOLD_ORE_BLOCK = "minecraft:nether_gold_ore";
     public static String DEEPSLATE_GOLD_ORE_BLOCK = "minecraft:deepslate_gold_ore";
     public static String DEEPSLATE_IRON_ORE_BLOCK = "minecraft:deepslate_iron_ore";
