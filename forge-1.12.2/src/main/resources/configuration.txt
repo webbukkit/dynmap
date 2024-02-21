@@ -62,13 +62,13 @@ components:
     webchat-permissions: false
     # Limit length of single chat messages
     chatlengthlimit: 256
-  #  # Optional - make players hidden when they are inside/underground/in shadows (#=light level: 0=full shadow,15=sky)
+  #  # (optional) make players hidden when they are inside/underground/in shadows (#=light level: 0=full shadow,15=sky)
   #  hideifshadow: 4
-  #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
+  #  # (optional) make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
   #  hideifundercover: 14
-  #  # (Optional) if true, players that are crouching/sneaking will be hidden 
+  #  # (optional) if true, players that are crouching/sneaking will be hidden
     hideifsneaking: false
-    # optional, if true, players that are in spectator mode will be hidden
+    # (optional) if true, players that are in spectator mode will be hidden
     hideifspectator: false
     # If true, player positions/status is protected (login with ID with dynmap.playermarkers.seeall permission required for info other than self)
     protected-player-info: false
@@ -144,11 +144,11 @@ components:
     type: chatbox
     showplayerfaces: true
     messagettl: 5
-    # Optional: set number of lines in scrollable message history: if set, messagettl is not used to age out messages
+    # (optional) set number of lines in scrollable message history: if set, messagettl is not used to age out messages
     #scrollback: 100
-    # Optional: set maximum number of lines visible for chatbox
+    # (optional) set maximum number of lines visible for chatbox
     #visiblelines: 10
-    # Optional: send push button
+    # (optional) send push button
     sendbutton: false
   - class: org.dynmap.ClientComponent
     type: playermarkers
@@ -160,11 +160,11 @@ components:
     smallplayerfaces: false
     # Option to make player faces larger - don't use with showplayerhealth or smallplayerfaces
     largeplayerfaces: false
-    # Optional - make player faces layer hidden by default
+    # (optional) make player faces layer hidden by default
     hidebydefault: false
-    # Optional - ordering priority in layer menu (low goes before high - default is 0)
+    # (optional) ordering priority in layer menu (low goes before high - default is 0)
     layerprio: 0
-    # Optional - label for player marker layer (default is 'Players')
+    # (optional) label for player marker layer (default is 'Players')
     label: "Players"
     
   #- class: org.dynmap.ClientComponent
@@ -242,20 +242,20 @@ tileupdatedelay: 30
 # Tile hashing is used to minimize tile file updates when no changes have occurred - set to false to disable
 enabletilehash: true
 
-# Optional - hide ores: render as normal stone (so that they aren't revealed by maps)
+# (optional) hide ores: render as normal stone (so that they aren't revealed by maps)
 #hideores: true
 
-# Optional - enabled BetterGrass style rendering of grass and snow block sides
+# (optional) enabled BetterGrass style rendering of grass and snow block sides
 #better-grass: true
 
-# Optional - enable smooth lighting by default on all maps supporting it (can be set per map as lighting option)
+# (optional) enable smooth lighting by default on all maps supporting it (can be set per map as lighting option)
 smooth-lighting: true
 
-# Optional - use world provider lighting table (good for custom worlds with custom lighting curves, like nether)
+# (optional) use world provider lighting table (good for custom worlds with custom lighting curves, like nether)
 #   false=classic Dynmap lighting curve
 use-brightness-table: true
 
-# Optional - render specific block names using the textures and models of another block name: can be used to hide/disguise specific
+# (optional) render specific block names using the textures and models of another block name: can be used to hide/disguise specific
 #  blocks (e.g. make ores look like stone, hide chests) or to provide simple support for rendering unsupported custom blocks
 block-alias:
 #    "minecraft:quartz_ore": "stone"
