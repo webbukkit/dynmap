@@ -143,6 +143,7 @@ components:
     spawnbedhidebydefault: true
     spawnbedminzoom: 0
     spawnbedformat: "%name%'s bed"
+    spawnbedremoveonplayerleave: true
     # (optional) show world border (vanilla 1.8+)
     showworldborder: true
     worldborderlabel: "Border"
