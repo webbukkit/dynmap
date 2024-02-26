@@ -364,7 +364,7 @@ public class HDBlockModels {
                 if ((line.length() > 0) && (line.charAt(0) == '[')) {    // If version constrained like
                     int end = line.indexOf(']');    // Find end
                     if (end < 0) {
-                        Log.severe("Format error - line " + lineNum + " of " + fname + ": bad version limit");
+                        Log.severe("Format error - line " + lineNum + " of " + fname + ": bad version limit of file: " + fname);
                         return;
                     }
                     String vertst = line.substring(1, end);
@@ -414,12 +414,12 @@ public class HDBlockModels {
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid model block name " + bblk.blockName + " at line " + lineNum);
+                            	Log.severe("Invalid model block name " + bblk.blockName + " at line " + lineNum + " of file: " + fname);
                             }
                         }
                     }
                     else {
-                        Log.severe("Block model missing required parameters = line " + lineNum + " of " + fname);
+                        Log.severe("Block model missing required parameters = line " + lineNum + " of file: " + fname);
                     }
                     layerbits = 0;
                 }
@@ -444,7 +444,7 @@ public class HDBlockModels {
                     }
                     bsprslt = bsp.getMatchingStates();
                     if (bsprslt.size() != 1) {
-                    	Log.severe("Missing rotate source on line " + lineNum);                    	
+                    	Log.severe("Missing rotate source on line " + lineNum + " of file: " + fname);
                     	continue;
                     }
                 	DynmapBlockState basebs = bsprslt.keySet().iterator().next();
@@ -452,7 +452,7 @@ public class HDBlockModels {
                 	/* get old model to be rotated */
                 	DynmapBlockState bs = basebs.getState(bits.nextSetBit(0));
                 	if (bs.isAir()) {
-                		Log.severe("Invalid rotate ID: " + bs + " on line " + lineNum);
+                		Log.severe("Invalid rotate ID: " + bs + " on line " + lineNum + " of file: " + fname);
                 		continue;
                 	}
                 	HDBlockModel mod = models_by_id_data.get(bs.globalStateIndex);
@@ -491,7 +491,7 @@ public class HDBlockModels {
                         }
                     }
                     else {
-                        Log.severe("Invalid rotate error - line " + lineNum + " of " + fname);
+                        Log.severe("Invalid rotate error - line " + lineNum + " of file:  " + fname);
                         continue;
                     }
                 }
@@ -513,7 +513,7 @@ public class HDBlockModels {
                     }
                     bsprslt = bsp.getMatchingStates();
                     if (bsprslt.size() != 1) {
-                    	Log.severe("Missing rotate source on line " + lineNum);                    	
+                    	Log.severe("Missing rotate source on line " + lineNum + " of file: " + fname);
                     	continue;
                     }
                 	DynmapBlockState basebs = bsprslt.keySet().iterator().next();
@@ -521,7 +521,7 @@ public class HDBlockModels {
                 	/* get old model to be rotated */
                 	DynmapBlockState bs = basebs.getState(bits.nextSetBit(0));
                 	if (bs.isAir()) {
-                		Log.severe("Invalid patchrotate ID: " + bs + " on line " + lineNum);
+                		Log.severe("Invalid patchrotate ID: " + bs + " on line " + lineNum + "of file: " + fname);
                 		continue;
                 	}
                     HDBlockModel mod = models_by_id_data.get(bs.globalStateIndex);
@@ -541,7 +541,7 @@ public class HDBlockModels {
                         }
                     }
                     else {
-                        Log.severe("Invalid rotate error - line " + lineNum + " of " + fname);
+                        Log.severe("Invalid rotate error - line " + lineNum + " of file: " + fname);
                         return;
                     }
                 }
@@ -560,7 +560,7 @@ public class HDBlockModels {
                     		}
                     	}
                     	else {
-                        	Log.severe("Invalid update ignore block name " + bbs + " at line " + lineNum);
+                        	Log.severe("Invalid update ignore block name " + bbs + " at line " + lineNum + " of file: " + fname);
                     	}
                     }
                 }
@@ -584,7 +584,7 @@ public class HDBlockModels {
                     for(int i = 0; i < args.length; i++) {
                         String[] v = args[i].split("=");
                         if(v.length < 2) {
-                            Log.severe("Format error - line " + lineNum + " of " + fname);
+                            Log.severe("Format error - line " + lineNum + " of file: " + fname);
                             return;
                         }
                         try {
@@ -592,7 +592,7 @@ public class HDBlockModels {
                             int parmval = config.getInteger(v[0], val); /* Read value, with applied default */
                             varvals.put(v[0], parmval); /* And save value */
                         } catch (NumberFormatException nfx) {
-                            Log.severe("Format error - line " + lineNum + " of " + fname);
+                            Log.severe("Format error - line " + lineNum + " of file: " + fname);
                             return;
                         }
                     }
@@ -668,7 +668,7 @@ public class HDBlockModels {
                             p_vmax = Double.parseDouble(av[1]);
                         }
                         else if(av[0].equals("UplusVmax")) {
-                            Log.warning("UplusVmax deprecated - use VmaxAtUMax - line " + lineNum + " of " + fname);
+                            Log.warning("UplusVmax deprecated - use VmaxAtUMax - line " + lineNum + " of file: " + fname);
                             p_uplusvmax = Double.parseDouble(av[1]);
                         }
                         else if(av[0].equals("VmaxAtUMax")) {
@@ -737,11 +737,11 @@ public class HDBlockModels {
                                 patchnum1 = Integer.parseInt(ids2[1]);
                             }
                             if (patchnum0 < 0) {
-                                Log.severe("Invalid patch index " + patchnum0 + " - line " + lineNum + " of " + fname);
+                                Log.severe("Invalid patch index " + patchnum0 + " - line " + lineNum + " of file: " + fname);
                                 return;
                             }
                             if (patchnum1 < patchnum0) {
-                                Log.severe("Invalid patch index " + patchnum1 + " - line " + lineNum + " of " + fname);
+                                Log.severe("Invalid patch index " + patchnum1 + " - line " + lineNum + " of file: " + fname);
                                 return;
                             }
                             String patchid = av[1];
@@ -749,7 +749,7 @@ public class HDBlockModels {
                             for (int i = patchnum0; i <= patchnum1; i++) {
                                 PatchDefinition pd = pdf.getPatchByName(patchid, i);
                                 if (pd == null) {
-                                    Log.severe("Invalid patch ID " + patchid + " - line " + lineNum + " of " + fname);
+                                    Log.severe("Invalid patch ID " + patchid + " - line " + lineNum + " of file: " + fname);
                                     return;
                                 }
                                 patches.add(i,  pd);
@@ -769,12 +769,12 @@ public class HDBlockModels {
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid patchmodel block name " + bs + " at line " + lineNum);
+                            	Log.severe("Invalid patchmodel block name " + bs + " at line " + lineNum + " of file: " + fname);
                             }
                         }
                     }
                     else {
-                        Log.severe("Patch block model missing required parameters = line " + lineNum + " of " + fname);
+                        Log.severe("Patch block model missing required parameters = line " + lineNum + " of file: " + fname);
                     }
                 }
                 // Shortcut for defining a patchblock that is a simple rectangular prism, with sidex corresponding to full block sides
@@ -832,12 +832,12 @@ public class HDBlockModels {
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid boxmodel block name " + bs + " at line " + lineNum);
+                            	Log.severe("Invalid boxmodel block name " + bs + " at line " + lineNum + " of file: " + fname);
                             }
                         }
                     }
                     else {
-                        Log.severe("Box block model missing required parameters = line " + lineNum + " of " + fname);
+                        Log.severe("Box block model missing required parameters = line " + lineNum + " of file: " + fname);
                     }
                 }
                 // Shortcut for defining a patchblock that is a simple rectangular prism, with sidex corresponding to full block sides
@@ -898,12 +898,12 @@ public class HDBlockModels {
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid boxlist block name " + bs + " at line " + lineNum);
+                            	Log.severe("Invalid boxlist block name " + bs + " at line " + lineNum + " of file: " + fname);
                             }
                         }
                     }
                     else {
-                        Log.severe("Box list block model missing required parameters = line " + lineNum + " of " + fname);
+                        Log.severe("Box list block model missing required parameters = line " + lineNum  + " of file: " + fname);
                     }
                 }
                 // Shortcur for building JSON model style 
@@ -932,7 +932,7 @@ public class HDBlockModels {
                             		}
                         		}
                         		else {
-                                	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + lineNum);                        			
+                                	Log.severe("Invalid modellist FROM value (" + prms[0] + " at line " + lineNum + " of file: " + fname);
                         		}
                         	}
                         	if (prms.length > 1) {	// Handle to (to-x/y/z or to-x/y/z/rotx/roty/rotz) or to-x/y/z/rotx/roty/rotz/rorigx/rorigy/rorigz
@@ -953,7 +953,7 @@ public class HDBlockModels {
                         			}
                         		}
                         		else {
-                                	Log.severe("Invalid modellist TO value (" + prms[1] + " at line " + lineNum);                        			
+                                	Log.severe("Invalid modellist TO value (" + prms[1] + " at line " + lineNum + " of file: " + fname);
                         		}
                         	}
                         	// Rest are faces (<side - upnsew>/<txtidx>/umin/vmin/umax/vmax> or <<side - upnsew>/<txtidx>)
@@ -971,14 +971,14 @@ public class HDBlockModels {
                         		ModelBoxSide side = new ModelBoxSide();
                         		side.rot = null;
                         		if ((flds.length != 2) && (flds.length != 6)) {
-                                	Log.severe("Invalid modellist face '" + v + "' at line " + lineNum);                        			                        				
+                                	Log.severe("Invalid modellist face '" + v + "' at line " + lineNum + " of file: " + fname);
                                 	continue;
                         		}
                         		if (flds.length > 0) {
                         			String face = flds[0];
                         			side.side = toBlockSide.get(face.substring(0, 1));
                         			if (side.side == null) {
-                                    	Log.severe("Invalid modellist side value (" + face + ") in '" + v + "' at line " + lineNum);                        			                        				
+                                    	Log.severe("Invalid modellist side value (" + face + ") in '" + v + "' at line " + lineNum + " of file: " + fname);
                                     	continue;
                         			}
                         			if (flds[0].length() > 1) {
@@ -1037,7 +1037,7 @@ public class HDBlockModels {
 									pd.add(patch);
 								}
 								else {
-	                            	Log.severe(String.format("Invalid modellist patch for box %.02f/%.02f/%.02f:%.02f/%.02f/%.02f side %s at line %d", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, lineNum));
+	                            	Log.severe(String.format("Invalid modellist patch for box %.02f/%.02f/%.02f:%.02f/%.02f/%.02f side %s at line %d of file: %s", bl.from[0], bl.from[1], bl.from[2], bl.to[0], bl.to[1], bl.to[2], side.side, lineNum, fname));
 	                            	Log.verboseinfo(String.format("line = %s:%s", typeid, line));
 								}
 							}
@@ -1054,12 +1054,12 @@ public class HDBlockModels {
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid modellist block name " + bs + " at line " + lineNum);
+                            	Log.severe("Invalid modellist block name " + bs + " at line " + lineNum + " of file: " + fname);
                             }
                         }
                     }
                     else {
-                        Log.severe("Model list block model missing required parameters = line " + lineNum + " of " + fname);
+                        Log.severe("Model list block model missing required parameters = line " + lineNum + " of " + fname + " of file: " + fname);
                     }
                 }
                 else if (typeid.equals("customblock")) {
@@ -1094,7 +1094,7 @@ public class HDBlockModels {
                             if (bs.isNotAir()) {
                                 CustomBlockModel cbm = new CustomBlockModel(bs, bsprslt.get(bs), cls, custargs, blockset);
                                 if(cbm.render == null) {
-                                    Log.severe("Custom block model failed to initialize = line " + lineNum + " of " + fname);
+                                    Log.severe("Custom block model failed to initialize = line " + lineNum + " of file: " + fname);
                                 }
                                 else {
                                     /* Update maximum texture count */
@@ -1106,12 +1106,12 @@ public class HDBlockModels {
                                 cnt++;
                             }
                             else {
-                            	Log.severe("Invalid custommodel block name " + bs + " at line " + lineNum);
+                            	Log.severe("Invalid custommodel block name " + bs + " at line " + lineNum + " of file: " + fname);
                             }
                         }
                     }
                     else {
-                        Log.severe("Custom block model missing required parameters = line " + lineNum + " of " + fname);
+                        Log.severe("Custom block model missing required parameters = line " + lineNum + " of file: " + fname);
                     }
                 }
                 else if (typeid.equals("modname")) {
@@ -1173,11 +1173,11 @@ public class HDBlockModels {
             if (need_mod_cfg) {
                 Log.severe("Error loading configuration file for " + modname);
             }
-            Log.verboseinfo("Loaded " + cnt + " block models from " + fname);
+            Log.verboseinfo("Loaded " + cnt + " block models from " + fname + " of file: " + fname);
         } catch (IOException iox) {
             Log.severe("Error reading models.txt - " + iox.toString());
         } catch (NumberFormatException nfx) {
-            Log.severe("Format error - line " + rdr.getLineNumber() + " of " + fname + ": " + nfx.getMessage());
+            Log.severe("Format error - line " + rdr.getLineNumber() + " of file: " + fname + ": " + nfx.getMessage());
         } finally {
             if(rdr != null) {
                 try {
