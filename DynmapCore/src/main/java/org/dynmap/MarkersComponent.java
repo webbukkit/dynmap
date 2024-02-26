@@ -31,6 +31,7 @@ public class MarkersComponent extends ClientComponent {
     private MarkerSet spawnbedset;
     private MarkerIcon spawnbedicon;
     private String spawnbedformat;
+    private boolean removebedonplayerleave;
     private long maxofflineage;
     private boolean showSpawn;
     private boolean showBorder;
@@ -180,7 +181,7 @@ public class MarkersComponent extends ClientComponent {
             
             spawnbedicon = api.getMarkerIcon(configuration.getString("spawnbedicon", "bed"));
             spawnbedformat = configuration.getString("spawnbedformat", "%name%'s bed");
-            
+            removebedonplayerleave = configuration.getBoolean("spawnbedremoveonplayerleave", true);
             /* Add listener for players coming and going */
             core.listenerManager.addListener(EventType.PLAYER_JOIN, new PlayerEventListener() {
                 @Override
@@ -188,15 +189,17 @@ public class MarkersComponent extends ClientComponent {
                     updatePlayer(p);
                 }
             });
-            core.listenerManager.addListener(EventType.PLAYER_QUIT, new PlayerEventListener() {
-                @Override
-                public void playerEvent(DynmapPlayer p) {                    
-                    Marker m = spawnbedset.findMarker(p.getName()+"_bed");
-                    if(m != null) {
-                        m.deleteMarker();
+            if (removebedonplayerleave) {
+                core.listenerManager.addListener(EventType.PLAYER_QUIT, new PlayerEventListener() {
+                    @Override
+                    public void playerEvent(DynmapPlayer p) {
+                        Marker m = spawnbedset.findMarker(p.getName() + "_bed");
+                        if (m != null) {
+                            m.deleteMarker();
+                        }
                     }
-                }
-            });
+                });
+            }
             core.listenerManager.addListener(EventType.PLAYER_BED_LEAVE, new PlayerEventListener() {
                 @Override
                 public void playerEvent(final DynmapPlayer p) {                    
