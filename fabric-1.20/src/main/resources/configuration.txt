@@ -19,7 +19,7 @@ deftemplatesuffix: hires
 # Note: changing this value will result in all maps that use the default value being required to be fully rendered
 #defaulttilescale: 0
 
-# Map storage scheme: only uncommoent one 'type' value
+# Map storage scheme: only uncomment one 'type' value
 #  filetree: classic and default scheme: tree of files, with all map data under the directory indicated by 'tilespath' setting
 #  sqlite: single SQLite database file (this can get VERY BIG), located at 'dbfile' setting (default is file dynmap.db in data directory)
 #  mysql: MySQL database, at hostname:port in database, accessed via userid with password
