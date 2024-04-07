@@ -26,11 +26,23 @@ public class TopoHDShader implements HDShader {
     private int worldheight = 384;
     public TopoHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
-        fillcolor = new Color[worldheight];   /* Color by Y, must be range of total world height, offset by +64*/
-        /* Load defined colors from parameters */
-        for(int i = 0; i < worldheight; i++) {
-            fillcolor[i] = configuration.getColor("color" + (i - 64),  null); /* need to substract by 64 because Color does not accept <0 indexes*/
+
+        if (HDBlockModels.checkVersionRange(core.getDynmapPluginPlatformVersion(), "-1.17.0")){
+            worldheight = 256;
+            fillcolor = new Color[worldheight];   /* Color by Y, must be range of total world height, offset by +64*/
+            /* Load defined colors from parameters */
+            for(int i = 0; i < worldheight; i++) {
+                fillcolor[i] = configuration.getColor("color" + (i - 64),  null); /* need to substract by 64 because Color does not accept <0 indexes*/
+            }
         }
+        else{
+            fillcolor = new Color[worldheight];   /* Color by Y, must be range of total world height, offset by +64*/
+            /* Load defined colors from parameters */
+            for(int i = 0; i < worldheight; i++) {
+                fillcolor[i] = configuration.getColor("color" + (i - 64),  null); /* need to substract by 64 because Color does not accept <0 indexes*/
+            }
+        }
+
         linecolor = configuration.getColor("linecolor", null);
         watercolor = configuration.getColor("watercolor", null);
         float wateralpha = configuration.getFloat("wateralpha", 1.0F);
