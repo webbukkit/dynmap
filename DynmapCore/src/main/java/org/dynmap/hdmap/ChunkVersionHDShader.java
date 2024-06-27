@@ -27,7 +27,7 @@ public class ChunkVersionHDShader implements HDShader {
     	int dataVersion;
     	//String version;
     	Color defcolor;
-    	DataVersionMap(int dv, String v, int c) {
+    	DataVersionMap(int dv, String v, Color c) {
     		dataVersion = dv;
     		//version = v;
     		defcolor = new Color((c>>16)&0xFF, (c>>8)&0xFF, c&0xFF);
@@ -59,11 +59,20 @@ public class ChunkVersionHDShader implements HDShader {
     	new DataVersionMap(2860, "1.18.0", 0xA3E4D7),
     	new DataVersionMap(2865, "1.18.1", 0x48C9B0),
     	new DataVersionMap(2975, "1.18.2", 0x38bfa5),
-    	new DataVersionMap(3105, "1.19",   0xd56f82),
+    	new DataVersionMap(3105, "1.19.0", 0xd56f82),
     	new DataVersionMap(3116, "1.19.1", 0xe196a4),
     	new DataVersionMap(3120, "1.19.2", 0xe7aeb8),
     	new DataVersionMap(3218, "1.19.3", 0xf8c0c8),
     	new DataVersionMap(3337, "1.19.4", 0xffb6c1),
+        new DataVersionMap(3463, "1.20.0", 0xe196a6),
+        new DataVersionMap(3465, "1.20.1", 0xe7aeb10),
+        new DataVersionMap(3578, "1.20.2", 0xe196a7),
+        new DataVersionMap(3698, "1.20.3", 0xe7aeb11),
+        new DataVersionMap(3700, "1.20.4", 0xe196a8),
+        new DataVersionMap(3837, "1.20.5", 0xe7aeb12),
+        new DataVersionMap(3839, "1.20.6", 0xe196a9),
+        new DataVersionMap(3953, "1.21.0", 0xe7aeb13),
+
     	
     };
     final static Color unknown_color = new Color(255, 255, 255);

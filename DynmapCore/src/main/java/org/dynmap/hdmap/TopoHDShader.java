@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 
-import org.dynmap.Color;
-import org.dynmap.ConfigurationNode;
-import org.dynmap.DynmapCore;
-import org.dynmap.MapManager;
+import org.dynmap.*;
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.exporter.OBJExport;
 import org.dynmap.renderer.DynmapBlockState;
@@ -26,15 +23,26 @@ public class TopoHDShader implements HDShader {
     private final Color watercolor;
     private BitSet hiddenids;
     private final int linespacing;
-    
+    private int worldheight;
     public TopoHDShader(DynmapCore core, ConfigurationNode configuration) {
         name = (String) configuration.get("name");
-        
-        fillcolor = new Color[256];   /* Color by Y */
-        /* Load defined colors from parameters */
-        for(int i = 0; i < 256; i++) {
-            fillcolor[i] = configuration.getColor("color" + i,  null);
+        if (HDBlockModels.checkVersionRange(core.getDynmapPluginPlatformVersion(), "-1.17.0")){
+            worldheight = 256;
+            fillcolor = new Color[worldheight];   /* Color by Y, must be range of total world height, offset by +64*/
+            /* Load defined colors from parameters */
+            for(int i = 0; i < worldheight; i++) {
+                fillcolor[i] = configuration.getColor("color" + (i - 64),  null); /* need to substract by 64 because Color does not accept <0 indexes*/
+            }
         }
+        else{
+            worldheight = configuration.getInteger("worldheight", 348);
+            fillcolor = new Color[worldheight];   /* Color by Y, must be range of total world height, offset by +64*/
+            /* Load defined colors from parameters */
+            for(int i = 0; i < worldheight; i++) {
+                fillcolor[i] = configuration.getColor("color" + (i - 64),  null); /* need to substract by 64 because Color does not accept <0 indexes*/
+            }
+        }
+
         linecolor = configuration.getColor("linecolor", null);
         watercolor = configuration.getColor("watercolor", null);
         float wateralpha = configuration.getFloat("wateralpha", 1.0F);
@@ -45,11 +53,11 @@ public class TopoHDShader implements HDShader {
         if(fillcolor[0] == null) {
             fillcolor[0] = new Color(0, 0, 0);
         }
-        if(fillcolor[255] == null) {
-            fillcolor[255] = new Color(255, 255, 255);
+        if(fillcolor[worldheight-1] == null) {
+            fillcolor[worldheight-1] = new Color(255, 255, 255);
         }
         int starty = 0;
-        for(int i = 1; i < 256; i++) {
+        for(int i = 0; i < worldheight; i++) {
             if(fillcolor[i] != null) {  /* Found color? */
                 int delta = i - starty;
                 Color c0 = fillcolor[starty];
