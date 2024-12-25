@@ -1,6 +1,6 @@
 name: dynmap
 main: org.dynmap.bukkit.DynmapPlugin
-version: "${version}-${buildnumber}"
+version: "${internalVersion}"
 api-version: 1.13
 authors: [mikeprimm]
 website: "https://www.reddit.com/r/Dynmap/"

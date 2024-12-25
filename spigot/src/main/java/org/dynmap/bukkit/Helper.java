@@ -40,6 +40,9 @@ public class Helper {
                 Log.info("Loading Glowstone support");
                 BukkitVersionHelper.helper = loadVersionHelper("org.dynmap.bukkit.helper.BukkitVersionHelperGlowstone");
             }
+            else if (v.contains("(MC: 1.21.3)")) {
+                BukkitVersionHelper.helper = loadVersionHelper("org.dynmap.bukkit.helper.v121_3.BukkitVersionHelperSpigot121_3");
+            }
             else if (v.contains("(MC: 1.21")) {
                 BukkitVersionHelper.helper = loadVersionHelper("org.dynmap.bukkit.helper.v121.BukkitVersionHelperSpigot121");
             }

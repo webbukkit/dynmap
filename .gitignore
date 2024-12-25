@@ -14,7 +14,7 @@
 # we use maven!
 /build.xml
 
-# maven
+# gradle out dir
 /target
 
 # vim
@@ -22,6 +22,7 @@
 
 # various other potential build files
 /build
+**/build/
 /bin
 /dist
 /manifest.mf
@@ -33,6 +34,7 @@
 
 *.log
 /.gradle
+**/.gradle
 /fabric-1.16.1_client.launch
 /fabric-1.16.1_server.launch
 /fabric-1.16.2_client.launch
