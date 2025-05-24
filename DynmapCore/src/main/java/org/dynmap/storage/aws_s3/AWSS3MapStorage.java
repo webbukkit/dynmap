@@ -61,9 +61,9 @@ public class AWSS3MapStorage extends MapStorage {
 
         @Override
         public boolean exists() {
-            // 检查是否应该跳过操作
+            // Check if the operation should be skipped
             if (shouldSkipOperation()) {
-                return false; // 在退避期间，假设文件不存在
+                return false; // Assume the file does not exist during backoff
             }
 
             boolean exists = false;
@@ -72,10 +72,10 @@ public class AWSS3MapStorage extends MapStorage {
                 minioClient = getConnection();
                 minioClient.statObject(StatObjectArgs.builder().bucket(bucketname).object(baseKey).build());
                 exists = true;
-                recordSuccess(); // 记录成功
+                recordSuccess(); // Record success
             } catch (ErrorResponseException x) {
                 if ("NoSuchKey".equals(x.errorResponse().code())) {
-                    // 文件不存在是正常情况，不算错误
+                    // File not found is a normal case, not an error
                     recordSuccess();
                 } else {
                     recordError(x, "exists check");
@@ -95,9 +95,9 @@ public class AWSS3MapStorage extends MapStorage {
 
         @Override
         public TileRead read() {
-            // 检查是否应该跳过操作
+            // Check if the operation should be skipped
             if (shouldSkipOperation()) {
-                return null; // 在退避期间，返回null表示无法读取
+                return null; // Return null during backoff to indicate read failure
             }
 
             MinioClient minioClient = null;
@@ -110,7 +110,7 @@ public class AWSS3MapStorage extends MapStorage {
                         TileRead tr = new TileRead();
                         tr.image = new BufferInputStream(buf);
                         tr.format = map.getImageFormat().getEncoding(); // Use map's format since MinIO doesn't return
-                                                                        // content-type metadata easily
+                        // content-type metadata easily
 
                         // Try to get metadata for hash and timestamp
                         try {
@@ -130,14 +130,14 @@ public class AWSS3MapStorage extends MapStorage {
                         } catch (Exception metaEx) {
                             // Ignore metadata errors
                         }
-                        recordSuccess(); // 记录成功
+                        recordSuccess(); // Record success
                         return tr;
                     }
                 }
-                recordSuccess(); // 即使文件为空也算成功
+                recordSuccess(); // Even if the file is empty, count as success
             } catch (ErrorResponseException x) {
                 if ("NoSuchKey".equals(x.errorResponse().code())) {
-                    recordSuccess(); // 文件不存在是正常情况
+                    recordSuccess(); // File not found is a normal case
                     return null; // Nominal case if it doesn't exist
                 }
                 recordError(x, "read");
@@ -151,9 +151,9 @@ public class AWSS3MapStorage extends MapStorage {
 
         @Override
         public boolean write(long hash, BufferOutputStream encImage, long timestamp) {
-            // 检查是否应该跳过操作
+            // Check if the operation should be skipped
             if (shouldSkipOperation()) {
-                return false; // 在退避期间，跳过写入操作
+                return false; // Skip write operation during backoff
             }
 
             boolean done = false;
@@ -177,7 +177,7 @@ public class AWSS3MapStorage extends MapStorage {
                             .build());
                 }
                 done = true;
-                recordSuccess(); // 记录成功
+                recordSuccess(); // Record success
             } catch (Exception x) {
                 recordError(x, "write");
             } finally {
@@ -270,14 +270,14 @@ public class AWSS3MapStorage extends MapStorage {
     private int cpoolCount = 0;
     private MinioClient[] cpool = new MinioClient[POOLSIZE];
 
-    // 错误处理和退避机制
+    // Error handling and backoff mechanism
     private final AtomicLong lastErrorTime = new AtomicLong(0);
     private final AtomicInteger consecutiveErrors = new AtomicInteger(0);
     private final AtomicLong lastErrorLogTime = new AtomicLong(0);
-    private static final long MIN_BACKOFF_MS = 1000; // 最小退避时间：1秒
-    private static final long MAX_BACKOFF_MS = 300000; // 最大退避时间：5分钟
-    private static final int MAX_CONSECUTIVE_ERRORS = 10; // 最大连续错误次数
-    private static final long ERROR_LOG_INTERVAL_MS = 60000; // 错误日志间隔：1分钟
+    private static final long MIN_BACKOFF_MS = 1000; // Minimum backoff time: 1 second
+    private static final long MAX_BACKOFF_MS = 300000; // Maximum backoff time: 5 minutes
+    private static final int MAX_CONSECUTIVE_ERRORS = 10; // Maximum consecutive errors
+    private static final long ERROR_LOG_INTERVAL_MS = 60000; // Error log interval: 1 minute
 
     public AWSS3MapStorage() {
     }
@@ -856,9 +856,9 @@ public class AWSS3MapStorage extends MapStorage {
     }
 
     /**
-     * 检查是否应该跳过操作（基于退避机制）
+     * Checks if the operation should be skipped (based on backoff mechanism)
      *
-     * @return true 如果应该跳过操作
+     * @return true if the operation should be skipped
      */
     private boolean shouldSkipOperation() {
         long currentTime = System.currentTimeMillis();
@@ -866,11 +866,11 @@ public class AWSS3MapStorage extends MapStorage {
         int errors = consecutiveErrors.get();
 
         if (errors == 0) {
-            return false; // 没有错误，正常执行
+            return false; // No errors, execute normally
         }
 
         if (errors >= MAX_CONSECUTIVE_ERRORS) {
-            // 达到最大错误次数，记录警告并跳过
+            // Maximum error count reached, log warning and skip
             long lastLogTime = lastErrorLogTime.get();
             if (currentTime - lastLogTime > ERROR_LOG_INTERVAL_MS) {
                 if (lastErrorLogTime.compareAndSet(lastLogTime, currentTime)) {
@@ -880,56 +880,56 @@ public class AWSS3MapStorage extends MapStorage {
                 }
             }
 
-            // 检查是否到了重试时间
+            // Check if it's time to retry
             if (currentTime - lastError < MAX_BACKOFF_MS) {
-                return true; // 还在最大退避时间内，跳过操作
+                return true; // Still within maximum backoff time, skip operation
             } else {
-                // 重置错误计数，允许重试
+                // Reset error count, allow retry
                 consecutiveErrors.set(0);
                 return false;
             }
         }
 
-        // 计算退避时间（指数退避）
+        // Calculate backoff time (exponential backoff)
         long backoffTime = Math.min(MIN_BACKOFF_MS * (1L << Math.min(errors - 1, 10)), MAX_BACKOFF_MS);
 
         if (currentTime - lastError < backoffTime) {
-            return true; // 还在退避时间内，跳过操作
+            return true; // Still within backoff time, skip operation
         }
 
-        return false; // 可以执行操作
+        return false; // Operation can be executed
     }
 
     /**
-     * 记录操作成功
+     * Record operation success
      */
     private void recordSuccess() {
         consecutiveErrors.set(0);
     }
 
     /**
-     * 记录操作失败
+     * Record operation failure
      *
-     * @param exception 异常信息
-     * @param operation 操作名称
+     * @param exception Exception information
+     * @param operation Operation name
      */
     private void recordError(Exception exception, String operation) {
         long currentTime = System.currentTimeMillis();
         lastErrorTime.set(currentTime);
         int errors = consecutiveErrors.incrementAndGet();
 
-        // 判断是否是认证/权限错误
+        // Determine if it's an authentication/permission error
         boolean isAuthError = isAuthenticationError(exception);
 
-        // 控制日志频率
+        // Control log frequency
         long lastLogTime = lastErrorLogTime.get();
         boolean shouldLog = false;
 
         if (isAuthError) {
-            // 认证错误：第一次立即记录，之后每分钟记录一次
+            // Authentication errors: log immediately for the first time, then once per minute
             shouldLog = (errors == 1) || (currentTime - lastLogTime > ERROR_LOG_INTERVAL_MS);
         } else {
-            // 其他错误：前3次立即记录，之后每分钟记录一次
+            // Other errors: log immediately for the first 3 times, then once per minute
             shouldLog = (errors <= 3) || (currentTime - lastLogTime > ERROR_LOG_INTERVAL_MS);
         }
 
@@ -954,7 +954,7 @@ public class AWSS3MapStorage extends MapStorage {
     }
 
     /**
-     * 判断是否是认证/权限相关错误
+     * Determine if it's an authentication/permission related error
      */
     private boolean isAuthenticationError(Exception exception) {
         if (exception instanceof ErrorResponseException) {
