@@ -9,7 +9,7 @@
 * [Where to go for questions and discussions](#where-to-go-for-questions-and-discussions)
 * [Where to go to make donations](#where-to-go-to-make-donations)
 # How to build
-Dynmap 3.x+ uses Gradle v8.7 for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.18.x+ requirements, the developer's
+Dynmap 3.x+ uses Gradle v8.12 for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.18.x+ requirements, the developer's
 default JDK must be a JDK 21 version - older versions will still be compiled
 to run on the default JDK for those platforms (JDK 8 for 1.16 and earlier, JDK 16 for 1.17.x, JDK 17 for 1.18 to 1.20.4, JDK 21 for 1.20.5+), and 
 common libraries are built using JDK 8.
@@ -48,6 +48,7 @@ The following target platforms are supported, and you can find them at the links
 | ------------ | ------- | ---------- | ------ |
 | Spigot/PaperMC | ≤1.21.4  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap%C2%AE.274/) |
 | Spigot/PaperMC | ≤1.21.4 | `Dynmap-<version>-spigot.jar` | [Modrinth](https://modrinth.com/plugin/dynmap/versions?l=paper&l=spigot) |
+| NeoForge | 1.20.6 - 1.21.4 | `Dynmap-<version>-neoforge-<MC_VERSION>.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Forge | 1.12.2 - 1.20.6 | `Dynmap-<version>-forge-<MC_VERSION>.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
 | Fabric | 1.14.4 - 1.21.4 | `Dynmap-<version>-fabric-<MC_VERSION>.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
     

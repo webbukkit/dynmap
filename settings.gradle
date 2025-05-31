@@ -2,6 +2,7 @@ pluginManagement {
   repositories {
     gradlePluginPortal()
     maven { url "https://maven.fabricmc.net/" }
+    maven { url "https://maven.neoforged.net/releases" }
     maven { url "https://papermc.io/repo/repository/maven-public/" }
   }
 }
@@ -45,6 +46,9 @@ include ':fabric-1.17.1'
 include ':fabric-1.16.4'
 include ':fabric-1.15.2'
 include ':fabric-1.14.4'
+include ':neoforge-1.21.4'
+include ':neoforge-1.21.1'
+include ':neoforge-1.20.6'
 include ':forge-1.21.3'
 include ':forge-1.21'
 include ':forge-1.20.6'
@@ -92,6 +96,9 @@ project(':fabric-1.17.1').projectDir = "$rootDir/fabric-1.17.1" as File
 project(':fabric-1.16.4').projectDir = "$rootDir/fabric-1.16.4" as File
 project(':fabric-1.15.2').projectDir = "$rootDir/fabric-1.15.2" as File
 project(':fabric-1.14.4').projectDir = "$rootDir/fabric-1.14.4" as File
+project(':neoforge-1.21.4').projectDir = "$rootDir/neoforge-1.21.4" as File
+project(':neoforge-1.21.1').projectDir = "$rootDir/neoforge-1.21.1" as File
+project(':neoforge-1.20.6').projectDir = "$rootDir/neoforge-1.20.6" as File
 project(':forge-1.21.3').projectDir = "$rootDir/forge-1.21.3" as File
 project(':forge-1.21').projectDir = "$rootDir/forge-1.21" as File
 project(':forge-1.20.6').projectDir = "$rootDir/forge-1.20.6" as File
@@ -101,4 +108,3 @@ project(':forge-1.17.1').projectDir = "$rootDir/forge-1.17.1" as File
 project(':forge-1.16.5').projectDir = "$rootDir/forge-1.16.5" as File
 project(':forge-1.15.2').projectDir = "$rootDir/forge-1.15.2" as File
 project(':forge-1.14.4').projectDir = "$rootDir/forge-1.14.4" as File
-

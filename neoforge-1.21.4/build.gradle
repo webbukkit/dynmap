@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+}
+plugins {
+    id  'eclipse'
+    id  'net.neoforged.gradle.userdev' version '7.0.178'
+}
+
+eclipse {
+    project {
+        name = "Dynmap(NeoForge-1.21.4)"
+    }
+}
+
+minecraft {
+    accessTransformers {
+        file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21) // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+
+ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
+
+
+project.archivesBaseName = "${project.archivesBaseName}-neoforge-1.21.4"
+
+dependencies {
+    implementation project(path: ":DynmapCore", configuration: "shadow")
+    implementation project(path: ':DynmapCoreAPI')
+    implementation "net.neoforged:neoforge:21.4.59-beta"
+}
+
+processResources
+{
+    filesMatching('META-INF/neoforge.mods.toml') {
+        // replace version and mcversion
+        expand(
+            version: project.version + '-' + project.ext.buildNumber,
+            mcversion: "1.21.4"
+        )
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency(':DynmapCore'))
+        include(dependency("commons-codec:commons-codec:"))
+        exclude("META-INF/maven/**")
+        exclude("META-INF/services/**")
+    }
+    relocate('org.apache.commons.codec', 'org.dynmap.neoforge_1_21_4.commons.codec')
+
+    archiveBaseName = "Dynmap"
+    archiveClassifier = "neoforge-1.21.4"
+    destinationDirectory = file '../target'
+}
+
+shadowJar.doLast {
+    task ->
+        ant.checksum file: task.archivePath
+}
+
+build.dependsOn(shadowJar)
