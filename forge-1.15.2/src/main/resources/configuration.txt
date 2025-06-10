@@ -45,13 +45,14 @@ storage:
   #bucketname: "dynmap-bucket-name"
   #region: us-east-1
   #aws_access_key_id: "<aws-access-key-id>"
-  #aws_secret_access_key: "<aws-secret-access-key>"  
+  #aws_secret_access_key: "<aws-secret-access-key>"
   #prefix: ""
   #override_endpoint: ""
+  #path_style_access: false
 
 components:
   - class: org.dynmap.ClientConfigurationComponent
-  
+
   # Remember to change the following class to org.dynmap.JsonFileClientUpdateComponent when using an external web server.
   - class: org.dynmap.InternalClientUpdateComponent
     sendhealth: true
@@ -79,7 +80,7 @@ components:
   #  hideifshadow: 4
   #  # Optional - make player hidden when they are under cover (#=sky light level,0=underground,15=open to sky)
   #  hideifundercover: 14
-  #  # (Optional) if true, players that are crouching/sneaking will be hidden 
+  #  # (Optional) if true, players that are crouching/sneaking will be hidden
     hideifsneaking: false
     # optional, if true, players that are in spectator mode will be hidden
     hideifspectator: false
@@ -112,12 +113,12 @@ components:
   #  chatlengthlimit: 256
   #  hide-if-invisiblity-potion: true
   #  hidenames: false
-   
+
   - class: org.dynmap.SimpleWebChatComponent
     allowchat: true
     # If true, web UI users can supply name for chat using 'playername' URL parameter.  'trustclientname' must also be set true.
     allowurlname: false
-  
+
   # Note: this component is needed for the dmarker commands, and for the Marker API to be available to other plugins
   - class: org.dynmap.MarkersComponent
     type: markers
@@ -147,7 +148,7 @@ components:
     # (optional) Show world border (vanilla 1.8+)
     showworldborder: true
     worldborderlabel: "Border"
-    
+
   - class: org.dynmap.ClientComponent
     type: chat
     allowurlname: false
@@ -180,12 +181,12 @@ components:
     layerprio: 0
     # Optional - label for player marker layer (default is 'Players')
     label: "Players"
-    
+
   #- class: org.dynmap.ClientComponent
   #  type: digitalclock
   - class: org.dynmap.ClientComponent
     type: link
-    
+
   - class: org.dynmap.ClientComponent
     type: timeofdayclock
     showdigitalclock: true
@@ -197,7 +198,7 @@ components:
     hidey: false
     show-mcr: false
     show-chunk: false
-    
+
   # Note: more than one logo component can be defined
   #- class: org.dynmap.ClientComponent
   #  type: logo
@@ -212,7 +213,7 @@ components:
   #  timeout: 1800 # in seconds (1800 seconds = 30 minutes)
   #  redirecturl: inactive.html
   #  #showmessage: 'You were inactive for too long.'
-  
+
   #- class: org.dynmap.TestComponent
   #  stuff: "This is some configuration-value"
 
@@ -411,7 +412,7 @@ grayplayerswhenhidden: true
 trusted-proxies:
   - "127.0.0.1"
   - "0:0:0:0:0:0:0:1"
-  
+
 joinmessage: "%playername% joined"
 quitmessage: "%playername% quit"
 spammessage: "You may only chat once every %interval% seconds."
@@ -482,7 +483,7 @@ soft-ref-cache: true
 #enterexitUseTitle: true
 # Set true if new enter messages should supercede pending exit messages (vs being queued in order), default false
 #enterReplacesExits: true
-    
+
 # Published public URL for Dynmap server (allows users to use 'dynmap url' command to get public URL usable to access server
 # If not set, 'dynmap url' will not return anything.  URL should be fully qualified (e.g. https://mc.westeroscraft.com/)
 #publicURL: http://my.greatserver.com/dynmap
