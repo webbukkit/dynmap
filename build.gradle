@@ -67,6 +67,10 @@ subprojects {
 clean {
   delete "target" 
 }
-
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 task setupCIWorkspace {
 }
