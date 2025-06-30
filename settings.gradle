@@ -38,7 +38,8 @@ include ':DynmapCoreAPI'
 // include ':fabric-1.21.1'
 // include ':fabric-1.21.3'
 // include ':fabric-1.21.5'
-include ':fabric-1.21.6'
+// include ':fabric-1.21.6'
+include ':fabric-1.21.7'
 // include ':fabric-1.21'
 // include ':fabric-1.20.6'
 // include ':fabric-1.19.4'
@@ -88,7 +89,8 @@ project(':DynmapCoreAPI').projectDir = "$rootDir/DynmapCoreAPI" as File
 // project(':fabric-1.21.1').projectDir = "$rootDir/fabric-1.21.1" as File
 // project(':fabric-1.21.3').projectDir = "$rootDir/fabric-1.21.3" as File
 // project(':fabric-1.21.5').projectDir = "$rootDir/fabric-1.21.5" as File
-project(':fabric-1.21.6').projectDir = "$rootDir/fabric-1.21.6" as File
+// project(':fabric-1.21.6').projectDir = "$rootDir/fabric-1.21.6" as File
+project(':fabric-1.21.7').projectDir = "$rootDir/fabric-1.21.7" as File
 // project(':fabric-1.21').projectDir = "$rootDir/fabric-1.21" as File
 // project(':fabric-1.20.6').projectDir = "$rootDir/fabric-1.20.6" as File
 // project(':fabric-1.19.4').projectDir = "$rootDir/fabric-1.19.4" as File
