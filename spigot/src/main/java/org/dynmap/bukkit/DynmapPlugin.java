@@ -988,7 +988,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
 
         /* Skins support via SkinsRestorer */
-        SkinsRestorerSkinUrlProvider skinUrlProvider = null;
+        SkinsRestorerProvider skinUrlProvider = null;
 
         if (core.configuration.getBoolean("skinsrestorer-integration", false)) {
 
@@ -998,7 +998,7 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                 Log.warning("SkinsRestorer integration can't be enabled because SkinsRestorer is not installed");
             } else {
                 try {
-                    skinUrlProvider = new SkinsRestorerSkinUrlProvider();
+                    skinUrlProvider = new SkinsRestorerProvider();
                     Log.info("SkinsRestorer API integration enabled");
                 } catch (NoClassDefFoundError e) {
                     skinUrlProvider = null;
