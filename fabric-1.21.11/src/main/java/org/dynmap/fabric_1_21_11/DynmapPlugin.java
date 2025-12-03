@@ -29,6 +29,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.client.color.world.BiomeColors;
 import org.dynmap.*;
 import org.dynmap.common.BiomeMap;
 import org.dynmap.common.DynmapCommandSender;
@@ -43,7 +44,6 @@ import org.dynmap.fabric_1_21_11.event.BlockEvents;
 import org.dynmap.fabric_1_21_11.event.CustomServerChunkEvents;
 import org.dynmap.fabric_1_21_11.event.CustomServerLifecycleEvents;
 import org.dynmap.fabric_1_21_11.event.PlayerEvents;
-import org.dynmap.fabric_1_21_11.mixin.BiomeEffectsAccessor;
 import org.dynmap.fabric_1_21_11.permissions.*;
 import org.dynmap.permissions.PermissionsHandler;
 import org.dynmap.renderer.DynmapBlockState;
@@ -335,7 +335,7 @@ public class DynmapPlugin {
                 String id = biomeRegistry.getId(bb).getPath();
                 String rl = biomeRegistry.getId(bb).toString();
                 float tmp = bb.getTemperature(), hum = bb.weather.downfall();
-                int watermult = ((BiomeEffectsAccessor) bb.getEffects()).getWaterColor();
+                int watermult = bb.getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
 
                 BiomeMap bmap = BiomeMap.NULL;
