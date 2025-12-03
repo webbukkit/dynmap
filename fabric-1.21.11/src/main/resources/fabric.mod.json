@@ -18,7 +18,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "org.dynmap.fabric_1_21_9_10.DynmapMod"
+      "org.dynmap.fabric_1_21_11.DynmapMod"
     ]
   },
   "mixins": [
@@ -27,8 +27,8 @@
   "accessWidener" : "dynmap.accesswidener",
 
   "depends": {
-    "fabricloader": ">=0.17.2",
-    "fabric": ">=0.108.0",
-    "minecraft": ["1.21.9", "1.21.10", "1.21.11-beta.1"]
+    "fabricloader": ">=0.18.1",
+    "fabric": ">=0.139.4",
+    "minecraft": ["1.21.11-beta.4"]
   }
 }
