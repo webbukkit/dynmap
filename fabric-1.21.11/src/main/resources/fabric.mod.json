@@ -27,8 +27,8 @@
   "accessWidener" : "dynmap.accesswidener",
 
   "depends": {
-    "fabricloader": ">=0.18.1",
+    "fabricloader": ">=0.18.2",
     "fabric": ">=0.139.4",
-    "minecraft": ["1.21.11-beta.4"]
+    "minecraft": ["1.21.11"]
   }
 }

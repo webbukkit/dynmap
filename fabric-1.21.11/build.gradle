@@ -63,7 +63,7 @@ jar {
 }
 
 remapJar {
-    archiveFileName = "${archivesBaseName}-${project.version}-fabric-${project.minecraft_version}-10.jar" // TODO: Remove -10 when updating after 1.21.10 release
+    archiveFileName = "${archivesBaseName}-${project.version}-fabric-${project.minecraft_version}.jar"
     destinationDirectory = file '../target'
 }
 
