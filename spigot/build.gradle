@@ -24,7 +24,7 @@ dependencies {
     compileOnly('me.lucko.luckperms:luckperms-api:4.3')  { transitive = false }
     compileOnly('net.luckperms:api:5.0')  { transitive = false }
     compileOnly('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
-    compileOnly('net.skinsrestorer:skinsrestorer-api:14.2.+')  { transitive = false }
+    compileOnly('net.skinsrestorer:skinsrestorer-api:15.5.+')  { transitive = false }
     implementation(project(":dynmap-api"))  { transitive = false }
     implementation(project(path: ":DynmapCore", configuration: "shadow"))  { transitive = false }
     compileOnly('ru.tehkode:PermissionsEx:1.19.1')  { transitive = false }
