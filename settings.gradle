@@ -95,3 +95,5 @@ project(':forge-1.16.5').projectDir = "$rootDir/forge-1.16.5" as File
 project(':forge-1.15.2').projectDir = "$rootDir/forge-1.15.2" as File
 project(':forge-1.14.4').projectDir = "$rootDir/forge-1.14.4" as File
 
+include ':neoforge-1.21.1'
+project(':neoforge-1.21.1').projectDir = "$rootDir/neoforge-1.21.1" as File
