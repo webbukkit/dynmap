@@ -17,7 +17,6 @@ file="META-INF/accesstransformer.cfg"
     mandatory=true
     versionRange="[21.1,)"
     ordering="NONE"
-    # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="SERVER"
 [[dependencies.dynmap]]
     modId="minecraft"

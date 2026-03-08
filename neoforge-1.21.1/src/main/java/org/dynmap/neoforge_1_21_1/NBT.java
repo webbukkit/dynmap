@@ -19,7 +19,7 @@ public class NBT {
 		}
 		@Override
 		public Set<String> getAllKeys() {
-			return obj.keySet();
+			return obj.getAllKeys();
 		}
 		@Override
 		public boolean contains(String s) {
@@ -27,7 +27,7 @@ public class NBT {
 		}
 		@Override
 		public boolean contains(String s, int i) {
-			// API changed in 1.21.1 - contains(String, int) behavior changed, reimplemented manually
+			// [1.21.1] Reimplemented type checking - 1.21 changed contains(s,i) behavior
 			Tag base = obj.get(s);
 			if (base == null)
 				return false;
@@ -41,61 +41,61 @@ public class NBT {
 		}
 		@Override
 		public byte getByte(String s) {
-			return obj.getByteOr(s, (byte)0);
+			return obj.getByte(s);
 		}
 		@Override
 		public short getShort(String s) {
-			return obj.getShortOr(s, (short)0);
+			return obj.getShort(s);
 		}
 		@Override
 		public int getInt(String s) {
-			return obj.getIntOr(s, (int)0);
+			return obj.getInt(s);
 		}
 		@Override
 		public long getLong(String s) {
-			return obj.getLongOr(s, (long)0);
+			return obj.getLong(s);
 		}
 		@Override
 		public float getFloat(String s) {
-			return obj.getFloatOr(s, (float)0);
+			return obj.getFloat(s);
 		}
 		@Override
 		public double getDouble(String s) {
-			return obj.getDoubleOr(s, (double)0);
+			return obj.getDouble(s);
 		}
 		@Override
 		public String getString(String s) {
-			return obj.getStringOr(s, "");
+			return obj.getString(s);
 		}
 		@Override
 		public byte[] getByteArray(String s) {
-			return obj.getByteArray(s).orElseGet(() -> new byte[0]);
+			return obj.getByteArray(s);
 		}
 		@Override
 		public int[] getIntArray(String s) {
-			return obj.getIntArray(s).orElseGet(() -> new int[0]);
+			return obj.getIntArray(s);
 		}
 		@Override
 		public long[] getLongArray(String s) {
-			return obj.getLongArray(s).orElseGet(() -> new long[0]);
+			return obj.getLongArray(s);
 		}
 		@Override
 		public GenericNBTCompound getCompound(String s) {
-			return new NBTCompound(obj.getCompoundOrEmpty(s));
+			return new NBTCompound(obj.getCompound(s));
 		}
 		@Override
 		public GenericNBTList getList(String s, int i) {
-			return new NBTList(obj.getListOrEmpty(s));
+			return new NBTList(obj.getList(s, i));
 		}
 		@Override
 		public boolean getBoolean(String s) {
-			return obj.getBooleanOr(s, false);
+			return obj.getBoolean(s);
 		}
 		@Override
 		public String getAsString(String s) {
-			Tag tag = obj.get(s);
-			if (tag == null) return "";
-			return tag.asString().orElse("");
+			// [1.21.1] Added null safety - getAsString behavior changed
+			Tag t = obj.get(s);
+			return t != null ? t.getAsString() : "";
 		}
 		@Override
 		public GenericBitStorage makeBitStorage(int bits, int count, long[] data) {
@@ -116,11 +116,11 @@ public class NBT {
 		}
 		@Override
 		public String getString(int idx) {
-			return obj.getStringOr(idx, "");
+			return obj.getString(idx);
 		}
 		@Override
 		public GenericNBTCompound getCompound(int idx) {
-			return new NBTCompound(obj.getCompoundOrEmpty(idx));
+			return new NBTCompound(obj.getCompound(idx));
 		}
 		public String toString() {
 			return obj.toString();

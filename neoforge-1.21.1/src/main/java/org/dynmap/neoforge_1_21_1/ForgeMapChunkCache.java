@@ -17,8 +17,8 @@ import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since
@@ -39,7 +39,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		GenericChunk gc = null;
 		ChunkAccess ch = cps.getChunk(chunk.x, chunk.z, ChunkStatus.FULL, false);
 		if (ch != null) {
-			CompoundTag nbt = ChunkSerializer.write(w, ch);
+            CompoundTag nbt = ChunkSerializer.write(w, ch);
 			if (nbt != null) {
 				gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 			}
@@ -75,7 +75,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 					lev = lev.getCompound("Level");
 				}
 				// Don't load uncooked chunks
-				String stat = lev.getString("Status");
+				String stat = lev.contains("Status") ? lev.getString("Status") : null;
 				ChunkStatus cs = ChunkStatus.byName(stat);
 				if ((stat == null) ||
 				// Needs to be at least lighted
@@ -95,8 +95,8 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 	}
 	@Override
 	public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
-		return bm.<Biome>getBiomeObject().map(Biome::getSpecialEffects)
-				.flatMap(BiomeSpecialEffects::getFoliageColorOverride)
+		return bm.<Biome>getBiomeObject().map(Biome::getSpecialEffects).
+				flatMap(BiomeSpecialEffects::getFoliageColorOverride)
 				.orElse(colormap[bm.biomeLookup()]);
 	}
 

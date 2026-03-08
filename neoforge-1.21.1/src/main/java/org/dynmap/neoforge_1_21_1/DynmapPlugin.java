@@ -46,7 +46,6 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.server.players.UserBanList;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Pose;
@@ -54,9 +53,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -64,7 +61,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
@@ -73,6 +70,8 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkDataEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.loading.LoadingModList;
@@ -123,10 +122,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import net.neoforged.neoforge.eventbus.api.EventPriority;
-import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
-
-import net.minecraft.world.level.EmptyBlockGetter;
 
 public class DynmapPlugin
 { 
@@ -138,7 +133,6 @@ public class DynmapPlugin
     private MapManager mapManager;
     private static net.minecraft.server.MinecraftServer server;
     public static DynmapPlugin plugin;
-    private ChatHandler chathandler;
     private HashMap<String, Integer> sortWeights = new HashMap<String, Integer>(); 
     // Drop world load ticket after 30 seconds
     private long worldIdleTimeoutNS = 30 * 1000000000L;
@@ -251,7 +245,9 @@ public class DynmapPlugin
                 }
                 int lightAtten = 15;
                 try {	// Workaround for mods with broken block state logic...
-                	lightAtten =bs.canOcclude() ? 15 : (bs.isAir() ? 0 : 1);
+                    // [1.21.1] canOcclude()+isAir() replace isSolidRender()+propagatesSkylightDown()
+                    // Avoids modernfix/ferritecore lazy BlockState cache Guava LoadingCache deadlock
+                    lightAtten = bs.canOcclude() ? 15 : (bs.isAir() ? 0 : 1);
                 } catch (Exception x) {
                 	Log.warning(String.format("Exception while checking lighting data for block state: %s[%s]", bn, statename));
                 	Log.verboseinfo("Exception: " + x.toString());
@@ -260,6 +256,7 @@ public class DynmapPlugin
                 // Fill in base attributes
                 bld.setBaseState(basebs).setStateIndex(idx - baseidx).setBlockName(bn).setStateName(statename).setLegacyBlockID(idx).setAttenuatesLight(lightAtten);
                 if (bs.getSoundType() != null) { bld.setMaterial(bs.getSoundType().toString()); }
+				// [1.21.1] canOcclude() replaces isSolid(); avoids same deadlock
 				if (bs.canOcclude()) { bld.setSolid(); }
 				if (bs.isAir()) { bld.setAir(); }
 				if (bs.is(BlockTags.LOGS)) { bld.setLog(); }
@@ -355,18 +352,16 @@ public class DynmapPlugin
     }
     private ConcurrentLinkedQueue<ChatMessage> msgqueue = new ConcurrentLinkedQueue<ChatMessage>();
     
-    public class ChatHandler {
-		@SubscribeEvent
-		public void handleChat(ServerChatEvent event) {
-		    String msg = event.getMessage().getString();
-            if(!msg.startsWith("/")) {
-                ChatMessage cm = new ChatMessage();
-                cm.message = msg;
-                cm.sender = event.getPlayer();
-                msgqueue.add(cm);
-            }
-		}
-    }
+    private boolean handleChatRegistered = false;
+	public void handleChat(final ServerChatEvent event) {
+	    String msg = event.getMessage().getString();
+        if(!msg.startsWith("/")) {
+            ChatMessage cm = new ChatMessage();
+            cm.message = msg;
+            cm.sender = event.getPlayer();
+            msgqueue.add(cm);
+        }
+	}
 
     /** TODO: depends on forge chunk manager
     private static class WorldBusyRecord {
@@ -532,9 +527,8 @@ public class DynmapPlugin
         }
 
         private GameProfile getProfileByName(String player) {
-            GameProfileCache cache = server.getProfileCache();
-            Optional<GameProfile> val = cache.get(player);
-            return val.isPresent() ? val.get() : null;
+        	ServerPlayer p = server.getPlayerList().getPlayerByName(player);
+        	return (p != null) ? p.getGameProfile() : null;
         }
         
         @Override
@@ -647,7 +641,8 @@ public class DynmapPlugin
         public boolean isPlayerBanned(String pid)
         {
             UserBanList bl = server.getPlayerList().getBans();
-            return bl.isBanned(getProfileByName(pid));
+            GameProfile nid = getProfileByName(pid);
+            return (nid != null) ? bl.isBanned(nid) : false;
         }
         
         @Override
@@ -674,7 +669,7 @@ public class DynmapPlugin
                 case WORLD_SPAWN_CHANGE:
                     /*TODO
                     pm.registerEvents(new Listener() {
-                        @EventHandler(priority=EventPriority.MONITOR)
+                        @EventHandler(priority=EventEventPriority.LOWEST)
                         public void onSpawnChange(SpawnChangeEvent evt) {
                             DynmapWorld w = new BukkitWorld(evt.getWorld());
                             core.listenerManager.processWorldEvent(EventType.WORLD_SPAWN_CHANGE, w);
@@ -691,7 +686,7 @@ public class DynmapPlugin
                 case PLAYER_BED_LEAVE:
                     /*TODO
                     pm.registerEvents(new Listener() {
-                        @EventHandler(priority=EventPriority.MONITOR)
+                        @EventHandler(priority=EventEventPriority.LOWEST)
                         public void onPlayerBedLeave(PlayerBedLeaveEvent evt) {
                             DynmapPlayer p = new BukkitPlayer(evt.getPlayer());
                             core.listenerManager.processPlayerEvent(EventType.PLAYER_BED_LEAVE, p);
@@ -701,16 +696,16 @@ public class DynmapPlugin
                     break;
 
                 case PLAYER_CHAT:
-                	if (chathandler == null) {
-                		chathandler = new ChatHandler();
-                		NeoForge.EVENT_BUS.register(chathandler);
+                	if (!handleChatRegistered) {
+                		handleChatRegistered = true;
+                		NeoForge.EVENT_BUS.addListener(DynmapPlugin.this::handleChat);
                 	}
                     break;
 
                 case BLOCK_BREAK:
                     /*TODO
                     pm.registerEvents(new Listener() {
-                        @EventHandler(priority=EventPriority.MONITOR)
+                        @EventHandler(priority=EventEventPriority.LOWEST)
                         public void onBlockBreak(BlockBreakEvent evt) {
                             if(evt.isCancelled()) return;
                             Block b = evt.getBlock();
@@ -726,7 +721,7 @@ public class DynmapPlugin
                 case SIGN_CHANGE:
                     /*TODO
                     pm.registerEvents(new Listener() {
-                        @EventHandler(priority=EventPriority.MONITOR)
+                        @EventHandler(priority=EventEventPriority.LOWEST)
                         public void onSignChange(SignChangeEvent evt) {
                             if(evt.isCancelled()) return;
                             Block b = evt.getBlock();
@@ -811,7 +806,7 @@ public class DynmapPlugin
             if (scm == null) return Collections.emptySet();
             UserBanList bl = scm.getBans();
             if (bl == null) return Collections.emptySet();
-            if(bl.isBanned(getProfileByName(player))) {
+            if (isPlayerBanned(player)) {
                 return Collections.emptySet();
             }
             Set<String> rslt = hasOfflinePermissions(player, perms);
@@ -830,7 +825,7 @@ public class DynmapPlugin
             if (scm == null) return false;
             UserBanList bl = scm.getBans();
             if (bl == null) return false;
-            if(bl.isBanned(getProfileByName(player))) {
+            if (isPlayerBanned(player)) {
                 return false;
             }
             return hasOfflinePermission(player, perm);
@@ -921,7 +916,8 @@ public class DynmapPlugin
         }
 
         @SubscribeEvent
-		public void tickEvent(TickEvent.ServerTickEvent event)  {
+		// [1.21.1] ServerTickEvent.Post replaces TickEvent.ServerTickEvent + Phase check
+		public void tickEvent(ServerTickEvent.Post event)  {
             cur_tick_starttime = System.nanoTime();
             long elapsed = cur_tick_starttime - lasttick;
             lasttick = cur_tick_starttime;
@@ -1062,27 +1058,11 @@ public class DynmapPlugin
         public InputStream openResource(String modid, String rname) {
         	if (modid == null) modid = "minecraft";
 
-        	Optional<? extends ModContainer> mc = ModList.get().getModContainerById(modid);
-            Object mod = (mc.isPresent()) ? mc.get().getMod() : null;
-            if (mod != null) {
-                ClassLoader cl = mod.getClass().getClassLoader();
-                if (cl == null) cl = ClassLoader.getSystemClassLoader();
-                InputStream is = cl.getResourceAsStream(rname);
-                if (is != null) {
-                    return is;
-                }
-            }
-            List<ModInfo> mcl = LoadingModList.get().getMods();
-            for (ModInfo mci : mcl) {
-                mc = ModList.get().getModContainerById(mci.getModId());
-                mod = (mc.isPresent()) ? mc.get().getMod() : null;
-                if (mod == null) continue;
-                ClassLoader cl = mod.getClass().getClassLoader();
-                if (cl == null) cl = ClassLoader.getSystemClassLoader();
-                InputStream is = cl.getResourceAsStream(rname);
-                if (is != null) {
-                    return is;
-                }
+        	ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) cl = ClassLoader.getSystemClassLoader();
+            InputStream is = cl.getResourceAsStream(rname);
+            if (is != null) {
+                return is;
             }
             return null;
         }
@@ -1193,7 +1173,7 @@ public class DynmapPlugin
                 return null;
             }
             Vec3 v = player.position();
-            return toLoc(player.serverLevel(), v.x, v.y, v.z);
+            return toLoc((ServerLevel) player.level(), v.x, v.y, v.z);
         }
         @Override
         public String getWorld()
@@ -1203,9 +1183,9 @@ public class DynmapPlugin
                 return null;
             }
 
-            if (player.serverLevel() != null)
+            if (player.level() != null)
             {
-                return DynmapPlugin.this.getWorld((ServerLevel)player.serverLevel()).getName();
+                return DynmapPlugin.this.getWorld((ServerLevel)player.level()).getName();
             }
 
             return null;
@@ -1552,7 +1532,7 @@ public class DynmapPlugin
         
         /* Register tick handler */
         if(!tickregistered) {
-            NeoForge.EVENT_BUS.register(fserver);
+        	NeoForge.EVENT_BUS.addListener(fserver::tickEvent);
             tickregistered = true;
         }
 
@@ -1727,49 +1707,55 @@ public class DynmapPlugin
             }
         }
         
+        private void touchChunk(ForgeWorld fw, ChunkAccess c, String cause) {
+			int ymax = Integer.MIN_VALUE;
+			int ymin = Integer.MAX_VALUE;
+			LevelChunkSection[] sections = c.getSections();
+			// If no sections, assume all
+			if (sections.length == 0) {
+				ymax = (c.getMaxSection()+1) << 4;
+				ymin = c.getMinSection() << 4;
+			}
+			else {
+				for(int i = 0; i < sections.length; i++) {
+					if((sections[i] != null) && (sections[i].hasOnlyAir() == false)) {
+						int sy = c.getSectionYFromSectionIndex(i) << 4;
+						if (sy < ymin) ymin = sy;
+						if ((sy+16) > ymax) ymax = sy + 16;
+					}
+				}
+			}
+			ChunkPos cp = c.getPos();
+			int x = cp.x << 4;
+			int z = cp.z << 4;
+			// If not empty AND not initial scan
+			if (ymax != Integer.MIN_VALUE) {
+				mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
+			}
+        }
+        
         @SubscribeEvent(priority=EventPriority.LOWEST)
     	public void handleChunkLoad(ChunkEvent.Load event) {
-			if(!onchunkgenerate) return;
-
 			LevelAccessor w = event.getLevel();
-            if(!(w instanceof ServerLevel)) return;
+            if (!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
-			if ((c != null) && (c.getPersistedStatus() == ChunkStatus.FULL) && (c instanceof LevelChunk)) {
+			if ((c != null) && (c.getPersistedStatus() == ChunkStatus.FULL)) {
 				ForgeWorld fw = getWorld((ServerLevel)w, false);
 				if (fw != null) {
 					addKnownChunk(fw, c.getPos());
 				}
 			}
     	}
-        @SubscribeEvent(priority=EventPriority.LOWEST)
     	public void handleChunkUnload(ChunkEvent.Unload event) {
-			if(!onchunkgenerate) return;
-
 			LevelAccessor w = event.getLevel();
-            if(!(w instanceof ServerLevel)) return;
+            if (!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
 			if (c != null) {
 				ForgeWorld fw = getWorld((ServerLevel)w, false);
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
 					if (!checkIfKnownChunk(fw, cp)) {
-        				int ymax = Integer.MIN_VALUE;
-        				int ymin = Integer.MAX_VALUE;
-        				LevelChunkSection[] sections = c.getSections();
-        				for(int i = 0; i < sections.length; i++) {
-        					if((sections[i] != null) && (sections[i].hasOnlyAir() == false)) {
-        						int sy = c.getSectionYFromSectionIndex(i);
-        						if (sy < ymin) ymin = sy;
-        						if ((sy+16) > ymax) ymax = sy + 16;
-        					}
-        				}
-        				int x = cp.x << 4;
-        				int z = cp.z << 4;
-        				// If not empty AND not initial scan
-        				if (ymax != Integer.MIN_VALUE) {
-        					//Log.info(String.format("chunkkeyerate(unload)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
-        					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
-        				}
+						touchChunk(fw, c, "unload");
 					}
 					removeKnownChunk(fw, cp);
 				}
@@ -1777,45 +1763,47 @@ public class DynmapPlugin
     	}
         @SubscribeEvent(priority=EventPriority.LOWEST)
     	public void handleChunkDataSave(ChunkDataEvent.Save event) {
-			if(!onchunkgenerate) return;
-
 			LevelAccessor w = event.getLevel();
-            if(!(w instanceof ServerLevel)) return;
+            if (!(w instanceof ServerLevel)) return;
 			ChunkAccess c = event.getChunk();
 			if (c != null) {
 				ForgeWorld fw = getWorld((ServerLevel)w, false);
 				ChunkPos cp = c.getPos();
 				if (fw != null) {
-					if (!checkIfKnownChunk(fw, cp)) {
-        				int ymax = Integer.MIN_VALUE;
-        				int ymin = Integer.MAX_VALUE;
-        				LevelChunkSection[] sections = c.getSections();
-        				for(int i = 0; i < sections.length; i++) {
-        					if((sections[i] != null) && (sections[i].hasOnlyAir() == false)) {
-        						int sy = c.getSectionYFromSectionIndex(i);
-        						if (sy < ymin) ymin = sy;
-        						if ((sy+16) > ymax) ymax = sy + 16;
-        					}
-        				}
-        				int x = cp.x << 4;
-        				int z = cp.z << 4;
-        				// If not empty AND not initial scan
-        				if (ymax != Integer.MIN_VALUE) {
-        					//Log.info(String.format("chunkkeyerate(save)(%s,%d,%d,%d,%d,%d,%s)", fw.getName(), x, ymin, z, x+15, ymax, z+15));
-        					mapManager.touchVolume(fw.getName(), x, ymin, z, x+15, ymax, z+15, "chunkgenerate");
-        				}
-        				// If cooked, add to known
-        				if ((c.getPersistedStatus() == ChunkStatus.FULL) && (c instanceof LevelChunk)) {
-        					addKnownChunk(fw, cp);
-        				}
-					}
+					touchChunk(fw, c, "datasave");
+    				// If cooked, add to known
+    				if (c.getPersistedStatus() == ChunkStatus.FULL) {
+    					addKnownChunk(fw, cp);
+    				}
 				}
 			}
     	}
         @SubscribeEvent(priority=EventPriority.LOWEST)
-        public void handleBlockEvent(BlockEvent event) {
+        public void handleBlockToolModificationEvent(BlockEvent.BlockToolModificationEvent event) {
+        	handleBlockEvent(event);
+        }
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+        public void handleBreakEvent(BlockEvent.BreakEvent event) {
+        	handleBlockEvent(event);
+        }
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+        public void handleEntityPlaceEvent(BlockEvent.EntityPlaceEvent event) {
+        	handleBlockEvent(event);
+        }
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+        public void handleFluidPlaceBlockEvent(BlockEvent.FluidPlaceBlockEvent event) {
+        	handleBlockEvent(event);
+        }
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+        public void handleNeighborNotifyEvent(BlockEvent.NeighborNotifyEvent event) {
+        	handleBlockEvent(event);
+        }
+        @SubscribeEvent(priority=EventPriority.LOWEST)
+        public void handlePortalSpawnEvent(BlockEvent.PortalSpawnEvent event) {
+        	handleBlockEvent(event);
+        }
+        private void handleBlockEvent(BlockEvent event) {
         	if(!core_enabled) return;
-        	if(!onblockchange) return;
         	BlockUpdateRec r = new BlockUpdateRec();
         	r.w = event.getLevel();
             if(!(r.w instanceof ServerLevel)) return;  // band-aid to prevent errors in unsupported 'running in client' scenario
@@ -1846,23 +1834,33 @@ public class DynmapPlugin
         	onblockchange = true;
     	if ((worldTracker == null) && (onblockchange || onchunkpopulate || onchunkgenerate)) {
     		worldTracker = new WorldTracker();
-    		NeoForge.EVENT_BUS.register(worldTracker);
+    		NeoForge.EVENT_BUS.addListener(worldTracker::handleWorldLoad);
+    		NeoForge.EVENT_BUS.addListener(worldTracker::handleWorldUnload);
+    		if (onchunkgenerate) {
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handleChunkLoad);
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handleChunkDataSave);
+    		}
+    		if (onblockchange) {
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handleBlockToolModificationEvent);
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handleBreakEvent);
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handleEntityPlaceEvent);
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handleFluidPlaceBlockEvent);
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handleNeighborNotifyEvent);
+    			NeoForge.EVENT_BUS.addListener(worldTracker::handlePortalSpawnEvent);
+    		}
     	}        
     	// Prime the known full chunks
         if (onchunkgenerate && (server.getAllLevels() != null)) { 
             for (ServerLevel world : server.getAllLevels()) {
             	ForgeWorld fw = getWorld(world);
             	if (fw == null) continue;
-            	Long2ObjectLinkedOpenHashMap<ChunkHolder> chunks = world.getChunkSource().chunkMap.visibleChunkMap;
-            	for (Entry<Long, ChunkHolder> k : chunks.long2ObjectEntrySet()) {
-            		long key = k.getKey().longValue();
-            		ChunkHolder ch = k.getValue();
+            	for (ChunkHolder ch : world.getChunkSource().chunkMap.visibleChunkMap.values()) {
             		ChunkAccess c = null;
             		try {
-            			c = ch.getLatestChunk();
+            			c = ch.getLatestChunk();  // [1.21.1] replaces getLastAvailable()
             		} catch (Exception x) { }
             		if (c == null) continue;
-            		ChunkStatus cs = c.getPersistedStatus();
+            		ChunkStatus cs = c.getPersistedStatus();  // [1.21.1] replaces getStatus()
             		ChunkPos pos = ch.getPos();
             		if (cs == ChunkStatus.FULL) {	// Cooked?
     					// Add it as known

@@ -1,6 +1,6 @@
 
 plugins {
-	id 'fabric-loom' version '1.6.11'
+	id 'fabric-loom' version '1.8.13'
 }
 
 archivesBaseName = "Dynmap"

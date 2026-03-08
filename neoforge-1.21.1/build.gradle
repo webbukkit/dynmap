@@ -15,15 +15,20 @@ eclipse {
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21) // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21)
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
-
 project.archivesBaseName = "${project.archivesBaseName}-neoforge-1.21.1"
+
+minecraft {
+    accessTransformers {
+        file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
 
 dependencies {
     implementation project(path: ":DynmapCore", configuration: "shadow")
@@ -34,7 +39,6 @@ dependencies {
 processResources
 {
     filesMatching('META-INF/neoforge.mods.toml') {
-        // replace version and mcversion
         expand(
         	version: project.version + '-' + project.ext.buildNumber,
         	mcversion: "1.21.1"
