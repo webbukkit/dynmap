@@ -39,7 +39,7 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 		GenericChunk gc = null;
 		ChunkAccess ch = cps.getChunk(chunk.x, chunk.z, ChunkStatus.FULL, false);
 		if (ch != null) {
-            CompoundTag nbt = ChunkSerializer.write(w, ch);
+			CompoundTag nbt = ChunkSerializer.write(w, ch);
 			if (nbt != null) {
 				gc = parseChunkFromNBT(new NBT.NBTCompound(nbt));
 			}
@@ -95,8 +95,8 @@ public class ForgeMapChunkCache extends GenericMapChunkCache {
 	}
 	@Override
 	public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
-		return bm.<Biome>getBiomeObject().map(Biome::getSpecialEffects).
-				flatMap(BiomeSpecialEffects::getFoliageColorOverride)
+		return bm.<Biome>getBiomeObject().map(Biome::getSpecialEffects)
+				.flatMap(BiomeSpecialEffects::getFoliageColorOverride)
 				.orElse(colormap[bm.biomeLookup()]);
 	}
 
