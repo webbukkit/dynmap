@@ -21,6 +21,7 @@ import org.dynmap.utils.Polygon;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.concurrent.*;
 
 public abstract class DynmapWorld {
     public List<MapType> maps = new ArrayList<MapType>();
@@ -55,6 +56,9 @@ public abstract class DynmapWorld {
     public int worldheight;	// really maxY+1
     public int minY;
     public int sealevel;
+
+    /* used for storing the amount of tiles processed with last zoom render */
+    private long lastZoomRenderTileCount = 0;
     
     protected void updateWorldHeights(int worldheight, int minY, int sealevel) {
     	this.worldheight = worldheight;
@@ -104,21 +108,120 @@ public abstract class DynmapWorld {
             mts.setZoomOutInv(tile.x, tile.y, tile.zoom);
         }
     }
-         
-    public void freshenZoomOutFiles() {
+    /**
+     * Constructs a thread pool executor that can be used for zoom out processing
+     * @return a new thread pool executor
+     */
+    private ThreadPoolExecutor getZoomThreadPool(int capacity){
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                1,
+                1,
+                0L,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(capacity)
+        );
+        executor.setThreadFactory(r -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            t.setPriority(Thread.MIN_PRIORITY);
+            t.setName("Dynmap Zoom Render Thread");
+            return t;
+        });
+        //if the queue is full, we try to put it into it again, until queue is at a level where it can take the request
+        //This ensures that we will not load too many zoom tiles to memory
+        executor.setRejectedExecutionHandler((r, internalExecutor) -> {
+            try {
+                internalExecutor.getQueue().put( r );
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        return executor;
+    }
+
+    /**
+     * Calculates the maximum parallel Zoom Render threads that are allowed to run. Minimum is 1
+     * Calculates based on mapmanagers Active Render Thread Count and Parallelrender count
+     * @param maxParallel the maximum allowed parallel zoom render threads
+     * @return the number of Zoom render Threads that are allowed to be running
+     */
+    private int getZoomThreadCount(int maxParallel){
+        int maxThreadCount;
+        int currentActive = MapManager.mapman.getActivePoolThreadCount();
+        maxThreadCount = maxParallel - currentActive;
+        if(maxThreadCount < 1){
+            maxThreadCount = 1;
+        }
+        return maxThreadCount;
+    }
+
+    /**
+     * Adjusts the Maximum Threads for a Threadpool Executor
+     * @param executor the Executor to change
+     * @param maxParallel
+     */
+    private void adjustZoomThreadCount(ThreadPoolExecutor executor, int maxParallel){
+        int newMaxPool = getZoomThreadCount(maxParallel);
+        if(executor.getMaximumPoolSize() != newMaxPool){
+            //we adjust the thread count for zoom rendering based on unused render threads
+            //the more render threads are not doing anything - the more zoom out rendering we get
+            executor.setMaximumPoolSize(newMaxPool);
+        }
+    }
+
+    public void freshenZoomOutFiles(int maxParallel) {
+        if(maxParallel < 1){
+            maxParallel = 1; //ensure that we have at least 1 thread for zoom rendering
+        }
+        int maxQueueSize = 2*maxParallel;
+        ThreadPoolExecutor executor = getZoomThreadPool(maxQueueSize);
         MapTypeState.ZoomOutCoord c = new MapTypeState.ZoomOutCoord();
+        long start1 = System.currentTimeMillis();
+        long tileCounter = 0;
+
         for (MapTypeState mts : mapstate) {
-            if (cancelled) return;
+            if (cancelled) {
+                break;
+            }
             MapType mt = mts.type;
             MapType.ImageVariant var[] = mt.getVariants();
             mts.startZoomOutIter(); // Start iterator
             while (mts.nextZoomOutInv(c)) {
-                if(cancelled) return;
+                if (cancelled) {
+                    break;
+                }
                 for (int varIdx = 0; varIdx < var.length; varIdx++) {
+                    if (cancelled) {
+                        break;
+                    }
+                    tileCounter++;
                     MapStorageTile tile = storage.getTile(this, mt, c.x, c.y, c.zoomlevel, var[varIdx]);
-                    processZoomFile(mts, tile, varIdx == 0);
+                    final MapTypeState finalMts = mts;
+                    final MapStorageTile finalTile = tile;
+                    final int finalVarIdx = varIdx;
+
+                    adjustZoomThreadCount(executor, maxParallel);
+                    executor.execute(() -> {
+                        processZoomFile(finalMts, finalTile, finalVarIdx == 0);
+                    });
                 }
             }
+        }
+        long end1 = System.currentTimeMillis();
+        long duration = end1-start1;
+        double perTile = (double) duration /  (double) tileCounter;
+        executor.shutdown();
+        if(tileCounter > 0 ){
+            Log.info(String.format("Zoom Processing %s - %d tiles (%.2f msec/tile, %.2fs per render)", getName(), tileCounter, perTile, (double) duration / 1000));
+        }else if(tileCounter == 0 && lastZoomRenderTileCount > 0){
+            Log.info(String.format("Zoom Processing %s - Completed", getName()));
+        }
+        lastZoomRenderTileCount = tileCounter;
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            Log.severe(e);
         }
     }
     
