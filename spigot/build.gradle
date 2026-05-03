@@ -34,6 +34,8 @@ dependencies {
     implementation group: 'org.bstats', name: 'bstats-bukkit', version: '3.0.2'
     compileOnly('com.googlecode.json-simple:json-simple:1.1.1') { transitive = false }
     compileOnly('com.google.code.gson:gson:2.8.9') { transitive = false }
+    compileOnly "org.checkerframework:checker-qual:3.42.0"
+    compileOnly('com.google.guava:guava:33.5.0-jre')
     implementation(project(':bukkit-helper')) {
         transitive = false
     }
@@ -109,6 +111,9 @@ dependencies {
     implementation(project(':bukkit-helper-121-11')) {
         transitive = false
     }
+    implementation(project(':bukkit-helper-26-1-2')) {
+        transitive = false
+    }
 }
 
 processResources {
@@ -156,6 +161,7 @@ shadowJar {
         include(dependency(':bukkit-helper-121-6'))
         include(dependency(':bukkit-helper-121-10'))
         include(dependency(':bukkit-helper-121-11'))
+        include(dependency(':bukkit-helper-26-1-2'))
     }
     relocate('org.bstats', 'org.dynmap.bstats')
     destinationDirectory = file '../target'

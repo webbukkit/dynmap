@@ -1,0 +1,13 @@
+
+description = 'bukkit-helper-26-1-2'
+
+dependencies {
+  implementation project(':bukkit-helper')
+  implementation project(':dynmap-api')
+  implementation project(path: ':DynmapCore', configuration: 'shadow')
+  implementation project(path: ':DynmapCoreAPI', configuration: 'shadow')
+  compileOnly group: 'org.spigotmc', name: 'spigot-api', version:'26.1.2-R0.1-SNAPSHOT'
+  compileOnly ('org.spigotmc:spigot:26.1.2-R0.1-SNAPSHOT') {
+    exclude group: "com.mojang", module: "jtracy"
+  }
+}
