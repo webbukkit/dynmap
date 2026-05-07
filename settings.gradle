@@ -6,6 +6,10 @@ pluginManagement {
   }
 }
 
+plugins {
+  id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
 rootProject.name = 'dynmap-common'
 
 include ':spigot'
@@ -109,4 +113,3 @@ project(':forge-1.17.1').projectDir = "$rootDir/forge-1.17.1" as File
 project(':forge-1.16.5').projectDir = "$rootDir/forge-1.16.5" as File
 project(':forge-1.15.2').projectDir = "$rootDir/forge-1.15.2" as File
 project(':forge-1.14.4').projectDir = "$rootDir/forge-1.14.4" as File
-
