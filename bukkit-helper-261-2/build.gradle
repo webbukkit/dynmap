@@ -1,0 +1,19 @@
+eclipse {
+    project {
+        name = "Dynmap(Spigot-26.1.2)"
+    }
+}
+
+description = 'bukkit-helper-26.1.2'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17)
+
+tasks.named('compileJava') {
+    enabled = false
+}
+
+dependencies {
+  implementation project(':bukkit-helper')
+  implementation project(':dynmap-api')
+  implementation project(path: ':DynmapCore', configuration: 'shadow')
+}
