@@ -47,16 +47,19 @@ include ':fabric-1.17.1'
 include ':fabric-1.16.4'
 include ':fabric-1.15.2'
 include ':fabric-1.14.4'
-include ':forge-1.21.11'
-include ':forge-1.21.10'
-include ':forge-1.21.6'
-include ':forge-1.20.6'
-include ':forge-1.19.3'
-include ':forge-1.18.2'
-include ':forge-1.17.1'
-include ':forge-1.16.5'
-include ':forge-1.15.2'
-include ':forge-1.14.4'
+// ForgeGradle 6.x does not support Gradle 9+; forge modules must be built with Gradle 8
+if (gradle.gradleVersion.startsWith('8.')) {
+    include ':forge-1.21.11'
+    include ':forge-1.21.10'
+    include ':forge-1.21.6'
+    include ':forge-1.20.6'
+    include ':forge-1.19.3'
+    include ':forge-1.18.2'
+    include ':forge-1.17.1'
+    include ':forge-1.16.5'
+    include ':forge-1.15.2'
+    include ':forge-1.14.4'
+}
 
 project(':spigot').projectDir = "$rootDir/spigot" as File
 project(':bukkit-helper-113-2').projectDir = "$rootDir/bukkit-helper-113-2" as File
@@ -97,14 +100,16 @@ project(':fabric-1.17.1').projectDir = "$rootDir/fabric-1.17.1" as File
 project(':fabric-1.16.4').projectDir = "$rootDir/fabric-1.16.4" as File
 project(':fabric-1.15.2').projectDir = "$rootDir/fabric-1.15.2" as File
 project(':fabric-1.14.4').projectDir = "$rootDir/fabric-1.14.4" as File
-project(':forge-1.21.11').projectDir = "$rootDir/forge-1.21.11" as File
-project(':forge-1.21.10').projectDir = "$rootDir/forge-1.21.10" as File
-project(':forge-1.21.6').projectDir = "$rootDir/forge-1.21.6" as File
-project(':forge-1.20.6').projectDir = "$rootDir/forge-1.20.6" as File
-project(':forge-1.19.3').projectDir = "$rootDir/forge-1.19.3" as File
-project(':forge-1.18.2').projectDir = "$rootDir/forge-1.18.2" as File
-project(':forge-1.17.1').projectDir = "$rootDir/forge-1.17.1" as File
-project(':forge-1.16.5').projectDir = "$rootDir/forge-1.16.5" as File
-project(':forge-1.15.2').projectDir = "$rootDir/forge-1.15.2" as File
-project(':forge-1.14.4').projectDir = "$rootDir/forge-1.14.4" as File
+if (gradle.gradleVersion.startsWith('8.')) {
+    project(':forge-1.21.11').projectDir = "$rootDir/forge-1.21.11" as File
+    project(':forge-1.21.10').projectDir = "$rootDir/forge-1.21.10" as File
+    project(':forge-1.21.6').projectDir = "$rootDir/forge-1.21.6" as File
+    project(':forge-1.20.6').projectDir = "$rootDir/forge-1.20.6" as File
+    project(':forge-1.19.3').projectDir = "$rootDir/forge-1.19.3" as File
+    project(':forge-1.18.2').projectDir = "$rootDir/forge-1.18.2" as File
+    project(':forge-1.17.1').projectDir = "$rootDir/forge-1.17.1" as File
+    project(':forge-1.16.5').projectDir = "$rootDir/forge-1.16.5" as File
+    project(':forge-1.15.2').projectDir = "$rootDir/forge-1.15.2" as File
+    project(':forge-1.14.4').projectDir = "$rootDir/forge-1.14.4" as File
+}
 
