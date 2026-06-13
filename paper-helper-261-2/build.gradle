@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'io.papermc.paperweight.userdev'
+
+configurations {
+    paperHelper
+}
+
+artifacts {
+    paperHelper(tasks.shadowJar.archiveFile) { builtBy(tasks.shadowJar) }
+}
+
+tasks.named("reobfJar") {
+    enabled = false
+}
+
+eclipse {
+    project {
+        name = "Dynmap(Paper-26.1.2)"
+    }
+}
+
+description = 'paper-helper-26.1.2'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+repositories {
+    maven { url "https://repo.papermc.io/repository/maven-public/" }
+}
+
+dependencies {
+    implementation project(':bukkit-helper')
+    implementation project(':dynmap-api')
+    implementation project(path: ':DynmapCore', configuration: 'shadow')
+    paperweight.paperDevBundle("26.1.2.build.69-stable")
+}

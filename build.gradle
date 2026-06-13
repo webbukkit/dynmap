@@ -22,6 +22,7 @@ allprojects  {
      maven { url "https://repo.mikeprimm.com" }
      maven { url "https://repo.maven.apache.org/maven2" }
      maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+     maven { url "https://repo.papermc.io/repository/maven-public/" }
      maven { url "https://repo.codemc.org/repository/maven-public/" }
   }
 
