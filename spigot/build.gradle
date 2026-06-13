@@ -15,13 +15,27 @@ repositories {
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+afterEvaluate {
+    configurations.matching { it.name in ['runtimeClasspath', 'testRuntimeClasspath'] }.configureEach {
+        attributes {
+            attribute(Attribute.of("org.gradle.jvm.version", Integer.class), 21)
+        }
+    }
+}
+
 
 dependencies {
     implementation('org.bukkit:bukkit:1.10.2-R0.1-SNAPSHOT') { transitive = false }
     compileOnly('com.nijikokun.bukkit:Permissions:3.1.6')  { transitive = false }
     compileOnly('me.lucko.luckperms:luckperms-api:4.3')  { transitive = false }
     compileOnly('net.luckperms:api:5.0')  { transitive = false }
+    compileOnly('org.checkerframework:checker-qual:3.42.0')
+    compileOnly('com.google.guava:guava:33.3.1-jre')
     compileOnly('com.github.MilkBowl:VaultAPI:1.7') { transitive = false }
     compileOnly('net.skinsrestorer:skinsrestorer-api:14.2.+')  { transitive = false }
     implementation(project(":dynmap-api"))  { transitive = false }
@@ -36,76 +50,79 @@ dependencies {
     implementation(project(':bukkit-helper')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-113-2')) {
+    runtimeOnly(project(':bukkit-helper-113-2')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-114-1')) {
+    runtimeOnly(project(':bukkit-helper-114-1')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-115')) {
+    runtimeOnly(project(':bukkit-helper-115')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-116')) {
+    runtimeOnly(project(':bukkit-helper-116')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-116-2')) {
+    runtimeOnly(project(':bukkit-helper-116-2')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-116-3')) {
+    runtimeOnly(project(':bukkit-helper-116-3')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-116-4')) {
+    runtimeOnly(project(':bukkit-helper-116-4')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-117')) {
+    runtimeOnly(project(':bukkit-helper-117')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-118')) {
+    runtimeOnly(project(':bukkit-helper-118')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-118-2')) {
+    runtimeOnly(project(':bukkit-helper-118-2')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-119')) {
+    runtimeOnly(project(':bukkit-helper-119')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-119-3')) {
+    runtimeOnly(project(':bukkit-helper-119-3')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-119-4')) {
+    runtimeOnly(project(':bukkit-helper-119-4')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-120')) {
+    runtimeOnly(project(':bukkit-helper-120')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-120-2')) {
+    runtimeOnly(project(':bukkit-helper-120-2')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-120-4')) {
+    runtimeOnly(project(':bukkit-helper-120-4')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-120-5')) {
+    runtimeOnly(project(':bukkit-helper-120-5')) {
     	transitive = false
     }
-    implementation(project(':bukkit-helper-121')) {
+    runtimeOnly(project(':bukkit-helper-121')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-121-3')) {
+    runtimeOnly(project(':bukkit-helper-121-3')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-121-4')) {
+    runtimeOnly(project(':bukkit-helper-121-4')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-121-5')) {
+    runtimeOnly(project(':bukkit-helper-121-5')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-121-6')) {
+    runtimeOnly(project(':bukkit-helper-121-6')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-121-10')) {
+    runtimeOnly(project(':bukkit-helper-121-10')) {
         transitive = false
     }
-    implementation(project(':bukkit-helper-121-11')) {
+    runtimeOnly(project(':bukkit-helper-121-11')) {
+        transitive = false
+    }
+    runtimeOnly(project(path: ':paper-helper-261-2', configuration: 'paperHelper')) {
         transitive = false
     }
 }
@@ -126,8 +143,10 @@ jar {
 }
 
 shadowJar {
+    configurations = [project.configurations.runtimeClasspath]
     dependencies {
-        include(dependency('org.bstats::'))
+        include(dependency('org.bstats:bstats-bukkit:'))
+        include(dependency('org.bstats:bstats-base:'))
         include(dependency(':dynmap-api'))
         include(dependency(":DynmapCore"))
         include(dependency(':bukkit-helper'))
@@ -155,6 +174,7 @@ shadowJar {
         include(dependency(':bukkit-helper-121-6'))
         include(dependency(':bukkit-helper-121-10'))
         include(dependency(':bukkit-helper-121-11'))
+        include(dependency(':paper-helper-261-2'))
     }
     relocate('org.bstats', 'org.dynmap.bstats')
     destinationDirectory = file '../target'
@@ -163,7 +183,7 @@ shadowJar {
 }
 shadowJar.doLast {
     task ->
-        ant.checksum file: task.archivePath
+        ant.checksum file: task.archiveFile.get().asFile
 }
 
 artifacts {
