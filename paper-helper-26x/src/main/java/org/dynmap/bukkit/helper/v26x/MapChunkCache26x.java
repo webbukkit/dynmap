@@ -1,4 +1,4 @@
-package org.dynmap.bukkit.helper.v261_2;
+package org.dynmap.bukkit.helper.v26x;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
@@ -25,10 +25,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Supplier;
 
-public class MapChunkCache261_2 extends GenericMapChunkCache {
+public class MapChunkCache26x extends GenericMapChunkCache {
 	private World w;
 
-	public MapChunkCache261_2(GenericChunkCache cc) {
+	public MapChunkCache26x(GenericChunkCache cc) {
 		super(cc);
 	}
 

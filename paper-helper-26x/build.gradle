@@ -15,11 +15,11 @@ tasks.named("reobfJar") {
 
 eclipse {
     project {
-        name = "Dynmap(Paper-26.1.2)"
+        name = "Dynmap(Paper-26.x)"
     }
 }
 
-description = 'paper-helper-26.1.2'
+description = 'paper-helper-26.x'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25

@@ -122,7 +122,7 @@ dependencies {
     runtimeOnly(project(':bukkit-helper-121-11')) {
         transitive = false
     }
-    runtimeOnly(project(path: ':paper-helper-261-2', configuration: 'paperHelper')) {
+    runtimeOnly(project(path: ':paper-helper-26x', configuration: 'paperHelper')) {
         transitive = false
     }
 }
@@ -174,7 +174,7 @@ shadowJar {
         include(dependency(':bukkit-helper-121-6'))
         include(dependency(':bukkit-helper-121-10'))
         include(dependency(':bukkit-helper-121-11'))
-        include(dependency(':paper-helper-261-2'))
+        include(dependency(':paper-helper-26x'))
     }
     relocate('org.bstats', 'org.dynmap.bstats')
     destinationDirectory = file '../target'
