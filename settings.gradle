@@ -38,16 +38,17 @@ include ':bukkit-helper'
 include ':dynmap-api'
 include ':DynmapCore'
 include ':DynmapCoreAPI'
+include ':fabric-1.14.4'
+include ':fabric-1.15.2'
+include ':fabric-1.16.4'
+include ':fabric-1.17.1'
+include ':fabric-1.18.2'
+include ':fabric-1.19.4'
+include ':fabric-1.20.6'
 include ':fabric-1.21.6'
 include ':fabric-1.21.9-10'
 include ':fabric-1.21.11'
-include ':fabric-1.20.6'
-include ':fabric-1.19.4'
-include ':fabric-1.18.2'
-include ':fabric-1.17.1'
-include ':fabric-1.16.4'
-include ':fabric-1.15.2'
-include ':fabric-1.14.4'
+include ':fabric-26.1'
 // ForgeGradle 6.x does not support Gradle 9+; forge modules must be built with Gradle 8
 if (gradle.gradleVersion.startsWith('8.')) {
     include ':forge-1.21.11'
@@ -92,16 +93,17 @@ project(':bukkit-helper').projectDir = "$rootDir/bukkit-helper" as File
 project(':dynmap-api').projectDir = "$rootDir/dynmap-api" as File
 project(':DynmapCore').projectDir = "$rootDir/DynmapCore" as File
 project(':DynmapCoreAPI').projectDir = "$rootDir/DynmapCoreAPI" as File
+project(':fabric-1.14.4').projectDir = "$rootDir/fabric-1.14.4" as File
+project(':fabric-1.15.2').projectDir = "$rootDir/fabric-1.15.2" as File
+project(':fabric-1.16.4').projectDir = "$rootDir/fabric-1.16.4" as File
+project(':fabric-1.17.1').projectDir = "$rootDir/fabric-1.17.1" as File
+project(':fabric-1.18.2').projectDir = "$rootDir/fabric-1.18.2" as File
+project(':fabric-1.19.4').projectDir = "$rootDir/fabric-1.19.4" as File
+project(':fabric-1.20.6').projectDir = "$rootDir/fabric-1.20.6" as File
 project(':fabric-1.21.6').projectDir = "$rootDir/fabric-1.21.6" as File
 project(':fabric-1.21.9-10').projectDir = "$rootDir/fabric-1.21.9-10" as File
 project(':fabric-1.21.11').projectDir = "$rootDir/fabric-1.21.11" as File
-project(':fabric-1.20.6').projectDir = "$rootDir/fabric-1.20.6" as File
-project(':fabric-1.19.4').projectDir = "$rootDir/fabric-1.19.4" as File
-project(':fabric-1.18.2').projectDir = "$rootDir/fabric-1.18.2" as File
-project(':fabric-1.17.1').projectDir = "$rootDir/fabric-1.17.1" as File
-project(':fabric-1.16.4').projectDir = "$rootDir/fabric-1.16.4" as File
-project(':fabric-1.15.2').projectDir = "$rootDir/fabric-1.15.2" as File
-project(':fabric-1.14.4').projectDir = "$rootDir/fabric-1.14.4" as File
+project(':fabric-26.1').projectDir = "$rootDir/fabric-26.1" as File
 if (gradle.gradleVersion.startsWith('8.')) {
     project(':forge-1.21.11').projectDir = "$rootDir/forge-1.21.11" as File
     project(':forge-1.21.10').projectDir = "$rootDir/forge-1.21.10" as File
