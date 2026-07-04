@@ -337,7 +337,7 @@ public class DynmapPlugin {
             if (bb != null) {
                 String id = biomeRegistry.getKey(bb).getPath();
                 String rl = biomeRegistry.getKey(bb).toString();
-                float tmp = bb.getBaseTemperature(), hum = 0.0f; // set humidity later?
+                float tmp = bb.getBaseTemperature(), hum = bb.climateSettings.downfall();
 
                 int watermult = bb.getWaterColor();
                 Log.verboseinfo("biome[" + i + "]: hum=" + hum + ", tmp=" + tmp + ", mult=" + Integer.toHexString(watermult));
