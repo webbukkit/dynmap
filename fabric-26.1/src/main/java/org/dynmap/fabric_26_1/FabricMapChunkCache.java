@@ -15,7 +15,6 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.chunk.storage.SerializableChunkData;
-import org.dynmap.fabric_26_1.access.BiomeSpecialEffectsExt;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
@@ -110,8 +109,7 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
     public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
         return bm.<Biome>getBiomeObject()
                 .map(Biome::getSpecialEffects)
-                .map(effects -> ((BiomeSpecialEffectsExt)(Object)effects)
-                        .dynmap$getFoliageColorOverride()
+                .map(effects -> effects.foliageColorOverride()
                         .orElse(colormap[bm.biomeLookup()]))
                 .orElse(colormap[bm.biomeLookup()]);
     }
@@ -124,12 +122,10 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 
         if (effects == null) return colormap[bm.biomeLookup()];
 
-        BiomeSpecialEffectsExt ext = (BiomeSpecialEffectsExt) (Object) effects;
-
-        int baseColor = ext.dynmap$getGrassColorOverride()
+        int baseColor = effects.grassColorOverride()
                         .orElse(colormap[bm.biomeLookup()]);
 
-        BiomeSpecialEffects.GrassColorModifier modifier = ext.dynmap$getGrassColorModifier();
+        BiomeSpecialEffects.GrassColorModifier modifier = effects.grassColorModifier();
         if (modifier != null)  return modifier.modifyColor((double)x, (double)z, baseColor);
 
         return baseColor;
