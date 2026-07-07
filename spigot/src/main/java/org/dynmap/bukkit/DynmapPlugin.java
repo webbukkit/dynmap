@@ -262,7 +262,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
 
         @Override
         public void scheduleServerTask(Runnable run, long delay) {
-            getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, run, delay);
+            if (FoliaUtil.isFolia()) {
+                if (delay <= 0) {
+                    FoliaUtil.runGlobalSync(DynmapPlugin.this, run);
+                } else {
+                    FoliaUtil.runGlobalDelayed(DynmapPlugin.this, run, delay);
+                }
+            } else {
+                getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, run, delay);
+            }
         }
         @Override
         public DynmapPlayer[] getOnlinePlayers() {
@@ -292,8 +300,12 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         }
         @Override
         public <T> Future<T> callSyncMethod(Callable<T> task) {
-            if(DynmapPlugin.this.isEnabled())
+            if(DynmapPlugin.this.isEnabled()) {
+                if (FoliaUtil.isFolia()) {
+                    return FoliaUtil.callGlobalSync(DynmapPlugin.this, task);
+                }
                 return getServer().getScheduler().callSyncMethod(DynmapPlugin.this, task);
+            }
             else
                 return null;
         }
@@ -372,14 +384,25 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
                         public void onPlayerChat(AsyncPlayerChatEvent evt) {
                             final Player p = evt.getPlayer();
                             final String msg = evt.getMessage();
-                            getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, new Runnable() {
-                                public void run() {
-                                    DynmapPlayer dp = null;
-                                    if(p != null)
-                                        dp = new BukkitPlayer(p);
-                                    core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, dp, msg);
-                                }
-                            });
+                            if (FoliaUtil.isFolia()) {
+                                FoliaUtil.runGlobalSync(DynmapPlugin.this, new Runnable() {
+                                    public void run() {
+                                        DynmapPlayer dp = null;
+                                        if(p != null)
+                                            dp = new BukkitPlayer(p);
+                                        core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, dp, msg);
+                                    }
+                                });
+                            } else {
+                                getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, new Runnable() {
+                                    public void run() {
+                                        DynmapPlayer dp = null;
+                                        if(p != null)
+                                            dp = new BukkitPlayer(p);
+                                        core.listenerManager.processChatEvent(EventType.PLAYER_CHAT, dp, msg);
+                                    }
+                                });
+                            }
                         }
                     }, DynmapPlugin.this);
                     break;
@@ -1036,11 +1059,15 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
         tps = 20.0;
         perTickLimit = core.getMaxTickUseMS() * 1000000;
 
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            public void run() {
-                processTick();
-            }
-        }, 1, 1);
+        if (FoliaUtil.isFolia()) {
+            FoliaUtil.runGlobalTimer(this, t -> processTick(), 1, 1);
+        } else {
+            getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                public void run() {
+                    processTick();
+                }
+            }, 1, 1);
+        }
     }
     
     private boolean readyToEnable() {
@@ -1273,12 +1300,21 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             public void onPlayerJoin(PlayerJoinEvent evt) {
                 final DynmapPlayer dp = new BukkitPlayer(evt.getPlayer());
                 // Give other handlers a change to prep player (nicknames and such from Essentials)
-                getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, new Runnable() {
-                    @Override
-                    public void run() {
-                        core.listenerManager.processPlayerEvent(EventType.PLAYER_JOIN, dp);
-                    }
-                }, 2);
+                if (FoliaUtil.isFolia()) {
+                    FoliaUtil.runGlobalDelayed(DynmapPlugin.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            core.listenerManager.processPlayerEvent(EventType.PLAYER_JOIN, dp);
+                        }
+                    }, 2);
+                } else {
+                    getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            core.listenerManager.processPlayerEvent(EventType.PLAYER_JOIN, dp);
+                        }
+                    }, 2);
+                }
             }
             @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
             public void onPlayerQuit(PlayerQuitEvent evt) {
@@ -1316,7 +1352,11 @@ public class DynmapPlugin extends JavaPlugin implements DynmapAPI {
             if((blocks_to_check == null) && (blocks_to_check_accum.isEmpty() == false)) { /* More pending? */
                 blocks_to_check = blocks_to_check_accum;
                 blocks_to_check_accum = new LinkedList<BlockToCheck>();
-                getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, this, 10);
+                if (FoliaUtil.isFolia()) {
+                    FoliaUtil.runGlobalDelayed(DynmapPlugin.this, this, 10);
+                } else {
+                    getServer().getScheduler().scheduleSyncDelayedTask(DynmapPlugin.this, this, 10);
+                }
             }
         }
     }
