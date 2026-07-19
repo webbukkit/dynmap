@@ -1,0 +1,43 @@
+version: 0.20
+#
+# Default template for "Normal" environment worlds (deftemplatesuffix="low_boost_hi")
+#  Uses the HDMap renderer with view from the SE with the "lowres" resolution (4 pixels per block edge), with boosted tiles
+# rendered at 'hires' (16 pixels per block edge)
+#
+#   This file MAY need to be replaced during an upgrade - rename file to 'custom-normal-low_boost_hi.txt' if you wish to customize it
+#
+templates:
+  # Template for normal world (HDMap lowres, with hires boost)
+  normal-low_boost_hi:
+    enabled: true
+    # Number of extra zoom-out levels for world (each level is twice as big as the previous one)
+    extrazoomout: 2
+    maps:
+      - class: org.dynmap.hdmap.HDMap
+        name: flat
+        title: "Flat"
+        prefix: flat
+        perspective: iso_S_90_lowres
+        shader: stdtexture
+        lighting: shadows
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 4
+      - class: org.dynmap.hdmap.HDMap
+        name: surface
+        title: "Surface"
+        prefix: t
+        perspective: iso_SE_30_lowres
+        shader: stdtexture
+        lighting: shadows
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 4
+        boostzoom: 2
+      - class: org.dynmap.hdmap.HDMap
+        name: cave
+        title: "Cave"
+        prefix: ct
+        perspective: iso_SE_60_lowres
+        shader: cave
+        lighting: default
+        # Adjust extra zoom in levels - default is 2
+        mapzoomin: 4

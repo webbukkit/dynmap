@@ -1,0 +1,1270 @@
+:root {
+  --colour-highlight: oklch(0.56 0.16 142.24);
+  --smokey-white: oklch(0.99 0 0);
+  --gunmetal: oklch(0.29 0.02 277.99);
+  --charcoal-grey: oklch(0.34 0.03 273.24);
+  --ship-grey: oklch(0.36 0.02 278.37);
+  --vampire-grey: oklch(0.45 0.02 278.64);
+  --cool-grey: oklch(0.72 0.02 270.22);
+  --slate-grey: oklch(0.6 0.02 264.54);
+  --status-error: oklch(0.51 0.12 22.01);
+}
+
+.montserrat-font {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* TILE DEBUGGING */
+/*.leaflet-tile {
+	margin: -1;
+	border: 1px solid red;
+}*/
+
+/*******************
+ * Attribution placement
+ */
+.leaflet-control-attribution {
+	margin-right: 20px !important;
+}
+
+/*******************
+ * Page setup
+ */
+
+.dynmap .map .tile img, img {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+
+
+/*******************
+ * fieldset and legend styles
+ */
+
+.dynmap fieldset {
+    border: none;
+    border-top: 1px solid rgba(196,196,196,0.4);
+}
+
+.dynmap legend {
+    padding: 8px 4px;
+    font-weight: bold;
+	color: #fff;
+}
+
+.leaflet-control-layers {
+    background-color: #bbb;
+}
+
+.leaflet-control-layers:hover {
+    background-color: #bbb;
+}
+
+.leaflet-control-zoom-in {
+    background-color: #eee;
+	}
+
+.leaflet-control-zoom-out {
+    background-color: #eee;
+	}
+
+.leaflet-control-zoom-in:hover {
+    background-color: #fff;
+	}
+
+.leaflet-control-zoom-out:hover {
+    background-color: #fff;
+	}
+
+
+/*******************
+ * Map Setup
+ */
+
+.dynmap > .map {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 0;
+}
+
+/* Map Controls */
+.gmnoprint{
+    margin-top:-75px;
+    margin-left:-20px;
+}
+
+
+/*******************
+ * Alerts are pretty.
+ */
+
+.alertbox {
+    position: fixed;
+    width: 50%;
+    z-index: 999;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+
+    color: #fff;
+    background: #c00;
+
+    border-color: #a00;
+
+    margin: auto;
+    padding: 8px;
+}
+
+
+/*******************
+ * shared rules
+ */
+
+.dynmap .panel ul, .dynmap .panel li {
+    list-style: none;
+
+    padding: 0;
+    margin: 0;
+}
+
+.maplist li a,
+.playerlist li a {
+    outline: none;
+    text-decoration: none;
+}
+
+.alertbox,
+.largeclock {
+    border-style: solid;
+    border-width: 0px 1px 1px 1px;
+
+    -moz-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    -o-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+
+    -moz-border-radius: 0 0 3px 3px;
+    -webkit-border-radius: 0 0 3px 3px;
+    -o-border-radius: 0 0 3px 3px;
+
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 3px 3px;
+}
+
+/*******************
+ * sidebar panels
+ */
+
+.dynmap .sidebar {
+
+    display: block;
+    position: absolute;
+    z-index: 120;
+
+    top: 0px;
+    right: 0px;
+
+    height: 100%;
+
+    background: rgb(0,0,0); /* FU IE */
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+
+    border-left: 1px solid rgba(0,0,0,0.5);
+}
+
+.dynmap .hitbar {
+
+    display: block;
+    position: absolute;
+    z-index: 110;
+
+    top: 0px;
+
+    height: 100%;
+    width: 16px;
+
+    text-align: center;
+
+    background: url(../images/sidebar_hint.png) rgb(0,0,0);
+    background: url(../images/sidebar_hint.png) rgba(0,0,0,0.6);
+    background-repeat: no-repeat;
+    background-position:center;
+
+    border: 1px solid rgba(0,0,0,0.5);
+}
+
+/* magic and metrics */
+
+/* The following only applies to desktops, not to mobile devices */
+@media screen and (min-device-width: 640px) {
+    .dynmap .sidebar {
+        -moz-transition: all 0.6s ease-in-out;
+        -webkit-transition: all 0.6s ease-in-out;
+        -o-transition: all 0.6s ease-in-out;
+        transition: all 0.6s ease-in-out;
+    }
+
+    .dynmap .hitbar {
+        -moz-transition: all 0.6s ease-in-out;
+        -webkit-transition: all 0.6s ease-in-out;
+        -o-transition: all 0.6s ease-in-out;
+        transition: all 0.6s ease-in-out;
+    }
+
+    .dynmap .sidebar:hover {
+        margin-right: 0px;
+    }
+
+    .dynmap .sidebar < .hitbar:hover {
+        margin-right: 0px;
+    }
+
+    .dynmap .sidebar:hover .hitbar {
+        right: -120px;
+    }
+}
+
+.dynmap .sidebar.pinned {
+    margin-right: 0px;
+}
+
+.dynmap .sidebar.pinned .hitbar {
+    right: -120px;
+}
+
+/* pinning */
+
+.dynmap .sidebar .panel > .pin {
+    position: absolute;
+
+    right: 8px;
+    top: 7px;
+
+    width: 16px;
+    height: 16px;
+
+    background-image: url(../images/window_close.png);
+}
+
+.dynmap .sidebar .panel > .pin:hover {
+    background-image: url(../images/window_pinned_hover.png);
+}
+
+.dynmap .sidebar.pinned .panel > .pin:hover {
+    background-image: url(../images/window_close_hover.png);
+}
+
+.dynmap .sidebar.pinned .panel > .pin {
+    background-image: url(../images/window_pinned.png);
+}
+
+
+/*******************
+ * Sidebar clock style
+ */
+/*
+.dynmap .panel .clock {
+    display: inline-block;
+    height: 16px;
+    z-index:50;
+
+    font-weight: bold;
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    margin-left: 8px;
+}
+*/
+.largeclock.digitalclock {
+	text-align: center;
+	font-size: 50px;
+	font-weight: bold;
+}
+
+.digitalclock {
+	text-align: center;
+	font-size: 20px;
+	font-weight:bold;
+}
+
+.digitalclock.night {
+    /* background-image: url(../images/clock_night.png); */
+    color: #dff;
+}
+
+.digitalclock.day {
+    /* background-image: url(../images/clock_day.png); */
+    color: #fd3;
+}
+
+.digitalclock.night, .digitalclock.day {
+    -moz-transition: color 8s 8s linear;
+    -webkit-transition: color 8s 8s linear;
+    -o-transition: color 8s 8s linear;
+    transition: color 8s 8s linear;
+}
+
+
+/*******************
+ * Large clock style
+ */
+
+.largeclock {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-color: rgba(0,0,0,0.5);
+    width: 150px;
+    height: 60px;
+    background: rgba(0,0,0,0.6);
+    z-index:50;
+
+    margin: auto;
+}
+
+.timeofday {
+    background-repeat: no-repeat;
+}
+
+.timeofday.sun {
+    background-image: url(../images/sun.png);
+}
+
+.timeofday.moon {
+    background-image: url(../images/moon.png);
+}
+
+.timeofday.digitalclock {
+	position: relative;
+	bottom: 25px;
+}
+
+/*******************
+ * Clock weather style
+ */
+
+.weather {
+    position: absolute;
+    top: 5px;
+    right: 0px;
+    width: 32px;
+    height: 32px;
+    display: block;
+    background-repeat: no-repeat;
+}
+
+.weather.sunny_day {
+    background-image: url(../images/weather_sunny_day.png);
+}
+
+.weather.stormy_day {
+    background-image: url(../images/weather_stormy_day.png);
+}
+.weather.thunder_day {
+    background-image: url(../images/weather_thunder_day.png);
+}
+
+.weather.sunny_night {
+    background-image: url(../images/weather_sunny_night.png);
+}
+
+.weather.stormy_night {
+    background-image: url(../images/weather_stormy_night.png);
+}
+.weather.thunder_night {
+    background-image: url(../images/weather_thunder_night.png);
+}
+
+/*******************
+ * generic sidebar sublist styling
+ */
+
+.dynmap .panel .subsection {
+    display: block;
+    clear: both;
+
+    width: 100%;
+    line-height: 18px;
+    margin: 0 0 30px 0;
+
+    border-bottom: 1px solid rgba(128,128,128,0.3);
+
+}
+
+.dynmap .sublist .item {
+    display: block;
+    float: left;
+
+    height: 18px;
+    width: 18px;
+
+    padding: 2px;
+    margin: 5px 2px;
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+
+    background: rgba(32,32,32,0.6);
+    border: 1px solid rgba(64,64,64,0.6);
+}
+
+.dynmap .sublist .item:hover {
+    background: rgba(64,64,64,0.6);
+    border: 1px solid rgba(128,128,128,0.6);
+}
+
+.dynmap .sublist .item.selected {
+    background: rgba(128,128,128,0.5);
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.dynmap .sublist .item > a {
+    display: block;
+    
+    text-indent: -99999px;
+    outline: none;
+}
+
+.dynmap .sublist .item > a {
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/*******************
+ * player list-specific styles
+ */
+
+.dynmap .playerlist .player {
+
+    display: inline-block;
+    float: left;
+    width: 100%;
+
+    padding: 4px 0;
+    border: 3px solid transparent;
+}
+
+.dynmap .playerlist .player.otherworld {
+	opacity: 0.5;
+}
+
+.dynmap .playerlist .player:hover {
+    background: rgba(64,64,64,0.6);
+}
+
+.dynmap .playerlist .player a {
+    color: #fff;
+}
+
+.dynmap .playerlist .playerIcon img {
+    width: 16px;
+    height: 16px;
+}
+
+.dynmap .playerlist .playerIcon > * {
+    vertical-align: middle;
+    border: none;
+}
+
+.dynmap .playerlist .playerIcon {
+    width: 16px;
+    height: 16px;
+
+    display: block;
+    float: left;
+
+    margin: 0px 4px 0px 2px;
+}
+
+.dynmap .playerlist .player.following {
+    background: rgba(128,128,128,0.5);
+    border: 1px solid rgba(255,255,255,0.5);
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+
+    padding: 6px 2px;
+
+    width: -webkit-calc(100% - 6px);
+    width: calc(100% - 6px);
+}
+
+.dynmap .playerlist .player:hover .playericon {
+    background: url(../images/player_follow_off.png) no-repeat;
+}
+
+.dynmap .playerlist .player.following .playericon {
+    background: url(../images/player_follow_on.gif) no-repeat;
+}
+
+.dynmap .playerlist .player.following .playericon > *,
+.dynmap .playerlist .player:hover .playericon > * {
+    visibility: hidden;
+}
+
+/*******************
+ * Playerlist Scrolling
+ */
+
+.panel .scrollup {
+    border: 1px solid rgba(64,64,64,0.6);
+	background: url(../images/scrollup.png) rgba(32,32,32,0.6);
+
+	margin-bottom: 4px;
+
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -o-border-radius: 2px;
+	border-radius: 2px;
+}
+
+.panel .scrolldown {
+    border: 1px solid rgba(64,64,64,0.6);
+	background: url(../images/scrolldown.png) rgba(32,32,32,0.6);
+
+	margin-top: 4px;
+
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -o-border-radius: 2px;
+	border-radius: 2px;
+}
+
+.panel .scrollup:hover, .panel .scrolldown:hover {
+    border: 1px solid rgba(128,128,128,0.6);
+	background: url(../images/scrollup.png) rgba(64,64,64,0.6);
+}
+
+.panel .scrollup:active, .panel .scrolldown:active {
+    border: 1px solid rgba(255,255,255,0.5);
+	background: url(../images/scrollup.png) rgba(128,128,128,0.5);
+}
+
+.panel .scrolldown:hover {
+    border: 1px solid rgba(128,128,128,0.6);
+	background: url(../images/scrolldown.png) rgba(64,64,64,0.6);
+}
+
+.panel .scrolldown:active {
+    border: 1px solid rgba(255,255,255,0.5);
+	background: url(../images/scrolldown.png) rgba(128,128,128,0.5);
+}
+
+.panel .scrollup, .panel .scrollup:active, .panel .scrollup:hover,
+.panel .scrolldown, .panel .scrolldown:active, .panel .scrolldown:hover {
+	height: 18px;
+	width: 100%;
+
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.sidebar .list {
+	overflow:hidden;
+}
+
+.sidebar .content {
+	min-height: 24px;
+}
+
+/*******************
+ * players on the map
+ */
+
+/* smooth player movements (contrib from KillahKiwi) */
+.dynmap .playerMarker {
+   -moz-transition: all 0.6s ease-in-out 0s;
+   -webkit-transition: all 0.6s ease-in-out 0s;
+   -o-transition: all 0.6s ease-in-out 0s;
+   transition: all 0.6s ease-in-out 0s;
+}
+
+/* do not animate player movements when zooming */
+.dynmap .leaflet-zoom-anim .leaflet-zoom-animated.playerMarker {
+    -moz-transition: -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+    -webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+    -o-transition: transform 0.25s cubic-bezier(0,0,0.25,1);
+    transition: transform 0.25s cubic-bezier(0,0,0.25,1);
+}
+
+.dynmap .playerIcon {
+	margin-top: -16px;
+	margin-left: -16px;
+	width: 32px;
+	height: 32px;
+}
+
+.dynmap .playerIconSm {
+	margin-top: -8px;
+	margin-left: -8px;
+	width: 16px;
+	height: 16px;
+}
+
+.dynmap .playerIconLg {
+	margin-top: -32px;
+	margin-left: -32px;
+	width: 64px;
+	height: 64px;
+}
+
+.dynmap .playerName {
+	position: absolute;
+	top: -19px;
+	left: 18px;
+    z-index:20;
+
+	white-space: nowrap;
+
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.dynmap .playerNameSm {
+	position: absolute;
+	top: -16px;
+	left: 10px;
+
+	white-space: nowrap;
+
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.dynmap .playerNameLg {
+	position: absolute;
+	top: -19px;
+	left: 34px;
+    z-index:20;
+
+	white-space: nowrap;
+
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.dynmap .playerNameNoHealth {
+	top: -7px;
+}
+
+.dynmap .healthContainer {
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 18px;
+
+	width: 50px;
+
+	background: rgba(0,0,0,0.6);
+	padding: 2px;
+
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+
+	z-index: 21;
+}
+
+.dynmap .healthContainerSm {
+	display: block;
+	position: absolute;
+	top: -2px;
+	left: 10px;
+
+	width: 50px;
+
+	background: rgba(0,0,0,0.6);
+	padding: 2px;
+
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.dynmap .healthContainerLg {
+	display: block;
+	position: absolute;
+	top: 1px;
+	left: 34px;
+
+	width: 50px;
+
+	background: rgba(0,0,0,0.6);
+	padding: 2px;
+
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+
+	z-index: 21;
+}
+
+.dynmap .playerHealth {
+	height: 7px;
+
+	background: url(../images/heart.png) repeat-x left center;
+}
+
+.dynmap .playerHealthBackground {
+	height: 7px;
+	width: 50px;
+
+	background: url(../images/heart_depleted.png) repeat-x left center;
+}
+
+.dynmap .playerArmor {
+	height: 7px;
+
+	background: url(../images/armor.png) repeat-x left center;
+}
+
+.dynmap .playerArmorBackground {
+	height: 7px;
+	width: 50px;
+
+	background: url(../images/armor_depleted.png) repeat-x left center;
+}
+
+
+/*******************
+ * Compass
+ */
+
+.compass, .compass_NE, .compass_SE, .compass_NW, .compass_SW {
+    display: block;
+    position: absolute;
+    z-index: 10;
+    top: 20px;
+    right: 32px;
+    height: 84px;
+    width: 83px;
+    background-repeat: no-repeat;
+}
+
+.compass, .compass_SE {
+    background-image: url(../images/compass.png);
+}
+
+.compass_NE {
+    background-image: url(../images/compass_NE.png);
+}
+
+.compass_NW {
+    background-image: url(../images/compass_NW.png);
+}
+
+.compass_SW {
+    background-image: url(../images/compass_SW.png);
+}
+
+.compass_flat, .compass_N, .compass_E, .compass_W, .compass_S {
+	top: 10px;
+	right: 21px;
+
+	height: 105px;
+	width: 105px;
+}
+
+.compass_flat, .compass_S {
+	background-image: url(../images/compass_flat.png);
+}
+
+.compass_N {
+	background-image: url(../images/compass_N.png);
+}
+
+.compass_E {
+	background-image: url(../images/compass_E.png);
+}
+
+.compass_W {
+	background-image: url(../images/compass_W.png);
+}
+
+.mobilecompass {
+    top: 5px;
+    right: 10px;
+	height: 42px;
+	width: 42px;
+	background-size: cover;
+}
+
+/*******************
+ * Chat
+ */
+
+.chat {
+	position: absolute;
+	bottom: 0px;
+	left: 32px;
+    z-index:50;
+
+    border-color: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
+
+    border-style: solid;
+    border-width: 1px 1px 0px 1px;
+
+    -moz-border-radius: 3px 3px 0px 0px;
+    -webkit-border-radius: 3px 3px 0px 0px;
+    -o-border-radius: 3px 3px 0px 0px;
+    border-radius: 3px 3px 0px 0px;
+
+    margin-left: 10px;
+}
+
+.chatinput {
+    position: absolute;
+	width: 608px;
+	height: 16px;
+    bottom: 8px;
+	outline: none;
+	color: #fff;
+	background-color: #000000;
+
+	border: 0px;
+	background: rgba(0, 0, 0, 0.6);
+	background-image: url(../images/chat_cursor.png);
+	background-repeat: no-repeat;
+	background-position: 1px center;
+
+	margin: 4px;
+	padding: 1px 1px 1px 15px;
+}
+
+.chatsendbutton {
+    background-color: #bbb;
+}
+
+.loginbutton {
+    position: absolute;
+	bottom: 0px;
+	right: 4px;
+	color: #000;
+	font-family: sans-serif;
+	font-size: 11px;
+	border: 1px solid rgba(128,128,128,0.6);
+	background-color: #bbb;
+	border-style: solid;
+	padding: 2px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	cursor: pointer;
+	margin: 0;
+}
+
+.messagelist {
+	color: white;
+	overflow: hidden;
+
+	width: 622px;
+	max-height: 6em;
+
+	margin: 4px 4px 0px 4px;
+	padding: 1px;
+}
+
+.scrollback:hover {
+	overflow-y: auto !important;
+}
+
+
+.messagerow {
+	position: relative;
+	max-height: 200px;
+
+	left: 0px;
+	bottom: 0px;
+
+	color: #fff;
+	font-weight: bold;
+}
+
+.messageicon {
+	position: relative;
+	top: 1px;
+	left: 0px;
+}
+
+.messagetext {
+	position: relative;
+	top: -3px;
+	left: 0px;
+}
+
+.leaflet-popup {
+	color: black;
+}
+
+.balloonmessage {
+	word-wrap: break-word;
+}
+
+/* Marker styles */
+.dynmap .mapMarker .markerName {
+	display: none;
+	z-index: 101;
+}
+
+.dynmap .mapMarker:hover .markerName,
+.dynmap .mapMarker .markerName-show {
+    display: block;
+	position: absolute;
+	z-index: 16;
+	
+	white-space: nowrap;
+
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 2px 6px;
+
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.dynmap .mapMarker .markerName16x16 {
+	top: -12px;
+	left: 12px;
+}
+
+.dynmap .mapMarker .markerName8x8 {
+	top: -4px;
+	left: 6px;
+}
+
+.dynmap .mapMarker .markerName32x32 {
+	top: -8px;
+	left: 18px;
+}
+
+.dynmap .mapMarker .markerIcon16x16 {
+	transform: translate(-50%, -50%);
+	width: 16px;
+	height: 16px;
+}
+
+.dynmap .mapMarker .markerIcon8x8 {
+	transform: translate(-50%, -50%);
+	width: 8px;
+	height: 8px;
+}
+
+.dynmap .mapMarker .markerIcon32x32 {
+	transform: translate(-50%, -50%);
+	width: 32px;
+	height: 32px;
+}
+
+.dynmap .mapMarker .markerName_offline_players {
+	font-style: italic; 
+}
+
+.dynmap .coord-control {
+	color: #000;
+	
+    border: 1px solid rgba(128,128,128,0.6);
+    background-color: #bbb;
+    border-style: solid;
+    
+	padding: 2px;
+	min-width: 80px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.dynmap .coord-control-noy {
+	width: 60px;
+}
+
+.dynmap .coord-control .coord-control-label {
+
+}
+
+.dynmap .coord-control .coord-control-value {
+    font-weight: bold;
+}
+
+.dynmap .dynmap-link {
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	border-radius: 7px;
+	padding: 2px;
+	background: rgba(0, 0, 0, 0.25);
+	}
+.dynmap .dynmap-link a {
+	background-color: rgba(255, 255, 255, 0.75);
+	}
+.dynmap .dynmap-link a {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.dynmap .dynmap-link a {
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	width: 19px;
+	height: 19px;
+	}
+.dynmap .dynmap-link a:hover {
+	background-color: #fff;
+	}
+.leaflet-big-buttons .dynmap-link a {
+	width: 27px;
+	height: 27px;
+	}
+.dynmap .dynmap-link-button {
+	background-image: url(images/link.png);
+	}
+
+/* Login/register panel */
+.dynmaplogin {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  width: 100%;
+  font-weight: bold;
+  color: #FFFFFF;
+  background: var(--vampire-grey);
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  box-sizing: border-box;
+
+  & * {
+    box-sizing: border-box;
+  }
+
+  .container {
+    --outer-margin: 2rem;
+    container-type: inline-size;
+    container-name: container;
+    position: relative;
+    width: calc(100% - var(--outer-margin) * 2);
+    max-width: 960px;
+    padding: 3rem;
+    margin: var(--outer-margin);
+    padding-block-start: 3rem;
+    border-radius: 20px;
+    /*background-image: url("https://wallpapersok.com/images/file/minecraft-landscape-with-cloudy-sky-b9nxzmdukp1j51zq.jpg"); */
+    background-color: var(--gunmetal);
+    box-shadow: 0px 30px 30px -5px var(--ship-grey);
+
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      content: '';
+      display: flex;
+      width: 100%;
+      height: 100%;
+      background: url("https://cdn.modrinth.com/data/fRQREgAc/2eaa1e6a6fa03e485a319a628d6b29ba382855b4_96.webp");
+      background-position: right 1rem;
+      background-repeat: no-repeat;
+      background-size: 25%;
+      pointer-events: none;
+      opacity: 0.4;
+      mix-blend-mode: overlay;
+    }
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--smokey-white);
+
+    span {
+      color: var(--colour-highlight);
+    }
+  }
+  h3 {
+    margin: 0;
+    margin-block-end: 5rem;
+    padding-right: 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cool-grey);
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+    text-decoration-color: var(--colour-highlight);
+
+    &:has(~ .statusmessage > div) {
+      margin-block-end: 3rem;
+    }
+  }
+
+  p {
+    line-height: 1.4;
+  }
+
+  a {
+    color: var(--colour-highlight);
+  }
+
+  code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    padding: 4px 6px;
+    background: #000000;
+    border-radius: 5px;
+  }
+
+  .loginregister {
+    font-size: 1rem;
+
+    &:has(#register-form:target) #login-form {
+      display: none;
+    }
+
+    #login-form { }
+
+    #register-form {
+      display: none;
+      &:target {
+        display: block;
+      }
+    }
+    input { 
+      width: 100%;
+      padding: 0;
+      font-size: 1rem;
+      color: var(--smokey-white);
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-weight: 500;
+      &::placeholder {
+        opacity: 0.1;
+        color: var(--smokey-white);
+
+      }
+      &:focus-visible {
+        background: none;
+        border: none;
+        outline: none;
+      }
+      &:is(:-webkit-autofill, :autofill) {
+        border: none;
+      }
+      
+      &[type="submit"] {
+        max-width: 20ch;
+        padding-block: 1rem;
+        padding-inline: 2rem;
+        background-color: var(--colour-highlight);
+        border-radius: calc(infinity * 1px);
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: .2s background ease;
+        &:hover {
+          background-color: oklch(from var(--colour-highlight) calc(l - 0.04) c h);
+        }
+        &:focus-visible {
+          border: 2px solid var(--smokey-white);
+        }
+      }
+    }
+
+    label {
+      margin-block-end: .2rem;
+      color: var(--slate-grey);
+      font-size: 0.813rem;
+      font-weight: 400;
+    }
+  }
+
+  form {
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr);
+    gap: 2rem;
+    max-width: 60ch;
+
+    p {
+      grid-column: 1 / -1;
+    }
+  }
+  .form-item {
+    position: relative;
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    padding-block: 1rem;
+    padding-inline: 2rem;
+    background-color: var(--charcoal-grey);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    transition: border .5s ease;
+    &:focus-within {
+      border: 2px solid var(--colour-highlight);
+      color: black;
+    }
+  }
+
+  @container (width > 400px) {
+    form {
+      grid-template-columns: repeat(2, minmax(100px, 1fr));
+      
+    }
+
+    .form-item.shortened {
+      grid-column: 1;
+      + .shortened {
+        grid-column: 2;
+      }
+    }
+
+    h3 {
+      padding: 0;
+    }
+  }
+}
+
+div.statusmessage {
+  position: relative;
+  z-index: 2;
+  &:empty {
+    display: none;
+  }
+  > div {
+  margin-block-end: 2rem;
+  padding: 1rem;
+  color: var(--smokey-white);
+  font-weight: bold;
+  font-size: 16px;
+  background: linear-gradient(90deg, var(--status-error) 30%, transparent 80%);
+  font-weight: 300;
+  border-radius: 5px;
+}
+
+.logincontainer {
+    background-color: rgba(0,0,0,0.0);
+}
+
+.pinnedloginbutton {
+	margin-right: 201px;
+}

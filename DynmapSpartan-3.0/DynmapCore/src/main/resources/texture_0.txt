@@ -1,0 +1,1802 @@
+# Mapping of texture resources to block ID and data values (v1.6.1+)
+version:1.6.1-1.12.2
+# block:id=<block-id>,data=<data-val|*>,top=<index>,bottom=<index>,north=<index>,south=<index>,east=<index>,west=<index>,allfaces=<index>,allsides=<index>
+# <index>=0-255 (index of patch in terrain.png), -1=clear, 1xxx=biome tint from grasscolor.png,257=stationary water,258=moving water,
+#      259=stationary lava,260=moving lava,261=extended piston side,262=piston side while extended,263=glass pane top,2xxx=biome tint from foliagecolor.png,4xxx=rotate texture 90,
+#      5xxx=rotate texture 180, 6xxx=rotate texture 270, 7xxx=flip texture horizontally, 8xxx=shift down 1/2 block, 9=shift down 1/2,flip horiz,
+#      10xxx=inclined-torch,11xxx=grass-side,12xxx=clear if same block,3xxx=biome tint from watercolor.png, 13xxx=pine tone, 14xxx=birch tone, 15xxx=lily tone,
+#      264=air portal with eye, 265=fire texture
+texturefile:id=chest,filename=assets/minecraft/textures/entity/chest/normal.png,format=CHEST
+texturefile:id=enderchest,filename=assets/minecraft/textures/entity/chest/ender.png,format=CHEST
+texturefile:id=bigchest,filename=assets/minecraft/textures/entity/chest/normal_double.png,format=BIGCHEST
+texturefile:id=sign,filename=assets/minecraft/textures/entity/sign.png,format=SIGN
+texturefile:id=skeleton,filename=assets/minecraft/textures/entity/skeleton/skeleton.png,format=SKIN
+texturefile:id=zombie,filename=assets/minecraft/textures/entity/zombie/zombie.png,format=SKIN
+texturefile:id=char,filename=assets/minecraft/textures/entity/steve.png,format=SKIN
+texturefile:id=creeper,filename=assets/minecraft/textures/entity/creeper/creeper.png,format=SKIN
+texturefile:id=wither,filename=assets/minecraft/textures/entity/wither/wither.png,format=SKIN
+texturefile:id=trapchest,filename=assets/minecraft/textures/entity/chest/trapped.png,format=CHEST
+texturefile:id=bigtrapchest,filename=assets/minecraft/textures/entity/chest/trapped_double.png,format=BIGCHEST
+texturefile:id=endportal,filename=assets/minecraft/textures/environment/end_sky.png
+texturepath:assets/minecraft/textures/blocks/
+texture:id=redstone_block
+texture:id=grass_side
+texture:id=quartz_ore
+texture:id=quartz_block_bottom
+texture:id=quartz_block_chiseled
+texture:id=quartz_block_chiseled_top
+texture:id=quartz_block_lines
+texture:id=quartz_block_lines_top
+texture:id=quartz_block_side
+texture:id=quartz_block_top
+texture:id=rail_normal_turned
+texture:id=rail_normal
+texture:id=rail_activator
+texture:id=rail_activator_powered
+texture:id=daylight_detector_side
+texture:id=daylight_detector_top
+texture:id=comparator_off
+texture:id=comparator_on
+texture:id=dropper_front_horizontal
+texture:id=dropper_front_vertical
+texture:id=hopper_inside
+texture:id=hopper_outside
+texture:id=hardened_clay_stained_black
+texture:id=hardened_clay_stained_blue
+texture:id=hardened_clay_stained_brown
+texture:id=hardened_clay_stained_cyan
+texture:id=hardened_clay_stained_gray
+texture:id=hardened_clay_stained_green
+texture:id=hardened_clay_stained_light_blue
+texture:id=hardened_clay_stained_lime
+texture:id=hardened_clay_stained_magenta
+texture:id=hardened_clay_stained_orange
+texture:id=hardened_clay_stained_pink
+texture:id=hardened_clay_stained_purple
+texture:id=hardened_clay_stained_red
+texture:id=hardened_clay_stained_silver
+texture:id=hardened_clay_stained_white
+texture:id=hardened_clay_stained_yellow
+texture:id=hay_block_side
+texture:id=hay_block_top
+texture:id=wool_colored_black
+texture:id=wool_colored_blue
+texture:id=wool_colored_brown
+texture:id=wool_colored_cyan
+texture:id=wool_colored_gray
+texture:id=wool_colored_green
+texture:id=wool_colored_light_blue
+texture:id=wool_colored_lime
+texture:id=wool_colored_magenta
+texture:id=wool_colored_orange
+texture:id=wool_colored_pink
+texture:id=wool_colored_purple
+texture:id=wool_colored_red
+texture:id=wool_colored_silver
+texture:id=wool_colored_white
+texture:id=wool_colored_yellow
+texture:id=hardened_clay
+texture:id=coal_block
+texture:id=stone
+texture:id=grass_top
+texture:id=dirt
+texture:id=cobblestone
+texture:id=planks_oak
+texture:id=planks_spruce
+texture:id=planks_birch
+texture:id=planks_jungle
+texture:id=sapling_oak
+texture:id=sapling_spruce
+texture:id=sapling_birch
+texture:id=sapling_jungle
+texture:id=bedrock
+texture:id=water_still,material=WATER
+texture:id=water_flow,material=WATER
+texture:id=lava_still
+texture:id=lava_flow
+texture:id=sand
+texture:id=gravel
+texture:id=gold_ore
+texture:id=iron_ore
+texture:id=coal_ore
+texture:id=log_birch_top
+texture:id=log_birch
+texture:id=log_jungle_top
+texture:id=log_jungle
+texture:id=log_oak_top
+texture:id=log_oak
+texture:id=log_spruce_top
+texture:id=log_spruce
+texture:id=leaves_birch
+texture:id=leaves_jungle
+texture:id=leaves_oak
+texture:id=leaves_spruce
+texture:id=sponge
+texture:id=glass,material=GLASS
+texture:id=glass_pane_top,material=GLASS
+texture:id=lapis_ore
+texture:id=lapis_block
+texture:id=furnace_side
+texture:id=furnace_top
+texture:id=furnace_front_off
+texture:id=furnace_front_on
+texture:id=dispenser_front_horizontal
+texture:id=dispenser_front_vertical
+texture:id=sandstone_bottom
+texture:id=sandstone_carved
+texture:id=sandstone_normal
+texture:id=sandstone_smooth
+texture:id=sandstone_top
+texture:id=noteblock
+texture:id=bed_feet_end
+texture:id=bed_feet_side
+texture:id=bed_feet_top
+texture:id=bed_head_end
+texture:id=bed_head_side
+texture:id=bed_head_top
+texture:id=rail_golden_powered
+texture:id=rail_golden
+texture:id=rail_detector_powered
+texture:id=rail_detector
+texture:id=piston_bottom
+texture:id=piston_inner
+texture:id=piston_side
+texture:id=piston_top_normal
+texture:id=piston_top_sticky
+texture:id=flower_dandelion
+texture:id=flower_rose
+texture:id=mushroom_brown
+texture:id=mushroom_red
+texture:id=gold_block
+texture:id=iron_block
+texture:id=stone_slab_side
+texture:id=stone_slab_top
+texture:id=stonebrick
+texture:id=nether_brick
+texture:id=brick
+texture:id=web
+texture:id=deadbush
+texture:id=tallgrass
+texture:id=fern
+texture:id=tnt_bottom
+texture:id=tnt_side
+texture:id=tnt_top
+texture:id=bookshelf
+texture:id=cobblestone_mossy
+texture:id=obsidian
+texture:id=torch_on
+texture:id=fire_layer_0
+texture:id=fire_layer_1
+texture:id=mob_spawner
+texture:id=redstone_dust_line
+texture:id=redstone_dust_cross
+texture:id=redstone_dust_line_overlay
+texture:id=redstone_dust_cross_overlay
+texture:id=diamond_ore
+texture:id=diamond_block
+texture:id=crafting_table_front
+texture:id=crafting_table_side
+texture:id=crafting_table_top
+texture:id=wheat_stage_0
+texture:id=wheat_stage_1
+texture:id=wheat_stage_2
+texture:id=wheat_stage_3
+texture:id=wheat_stage_4
+texture:id=wheat_stage_5
+texture:id=wheat_stage_6
+texture:id=wheat_stage_7
+texture:id=farmland_dry
+texture:id=farmland_wet
+texture:id=door_iron_lower
+texture:id=door_iron_upper
+texture:id=door_wood_lower
+texture:id=door_wood_upper
+texture:id=ladder
+texture:id=lever
+texture:id=redstone_ore
+texture:id=redstone_torch_off
+texture:id=redstone_torch_on
+texture:id=snow
+texture:id=ice
+texture:id=cactus_bottom
+texture:id=cactus_side
+texture:id=cactus_top
+texture:id=clay
+texture:id=reeds
+texture:id=jukebox_side
+texture:id=jukebox_top
+texture:id=pumpkin_side
+texture:id=pumpkin_top
+texture:id=netherrack
+texture:id=soul_sand
+texture:id=glowstone
+texture:id=portal
+texture:id=pumpkin_face_off
+texture:id=pumpkin_face_on
+texture:id=cake_bottom
+texture:id=cake_inner
+texture:id=cake_side
+texture:id=cake_top
+texture:id=trapdoor
+texture:id=stonebrick_mossy
+texture:id=stonebrick_cracked
+texture:id=stonebrick_carved
+texture:id=mushroom_block_inside
+texture:id=mushroom_block_skin_brown
+texture:id=mushroom_block_skin_red
+texture:id=mushroom_block_skin_stem
+texture:id=enchanting_table_bottom
+texture:id=enchanting_table_side
+texture:id=enchanting_table_top
+texture:id=brewing_stand_base
+texture:id=brewing_stand
+texture:id=cauldron_bottom
+texture:id=cauldron_inner
+texture:id=cauldron_side
+texture:id=cauldron_top
+texture:id=endframe_eye
+texture:id=endframe_side
+texture:id=endframe_top
+texture:id=end_stone
+texture:id=dragon_egg
+texture:id=redstone_lamp_off
+texture:id=redstone_lamp_on
+texture:id=iron_bars
+texture:id=melon_side
+texture:id=melon_top
+texture:id=pumpkin_stem_disconnected
+texture:id=melon_stem_disconnected
+texture:id=vine
+texture:id=mycelium_side
+texture:id=mycelium_top
+texture:id=waterlily
+texture:id=nether_wart_stage_0
+texture:id=nether_wart_stage_1
+texture:id=nether_wart_stage_2
+texture:id=emerald_ore
+texture:id=emerald_block
+texture:id=repeater_off
+texture:id=repeater_on
+texture:id=cocoa_stage_2
+texture:id=command_block
+texture:id=beacon
+texture:id=flower_pot
+texture:id=carrots_stage_0
+texture:id=carrots_stage_1
+texture:id=carrots_stage_2
+texture:id=carrots_stage_3
+texture:id=potatoes_stage_0
+texture:id=potatoes_stage_1
+texture:id=potatoes_stage_2
+texture:id=potatoes_stage_3
+texture:id=anvil_base
+texture:id=anvil_top_damaged_0
+texture:id=anvil_top_damaged_1
+texture:id=anvil_top_damaged_2
+texture:id=trip_wire_source
+# 1.7.2 textures
+[1.7.0-]texture:id=dirt_podzol_top
+[1.7.0-]texture:id=dirt_podzol_side
+[1.7.0-]texture:id=flower_blue_orchid
+[1.7.0-]texture:id=flower_allium
+[1.7.0-]texture:id=flower_houstonia
+[1.7.0-]texture:id=flower_tulip_red
+[1.7.0-]texture:id=flower_tulip_orange
+[1.7.0-]texture:id=flower_tulip_white
+[1.7.0-]texture:id=flower_tulip_pink
+[1.7.0-]texture:id=flower_oxeye_daisy
+[1.7.0-]texture:id=double_plant_fern_bottom
+[1.7.0-]texture:id=double_plant_fern_top
+[1.7.0-]texture:id=double_plant_grass_bottom
+[1.7.0-]texture:id=double_plant_grass_top
+[1.7.0-]texture:id=double_plant_paeonia_bottom
+[1.7.0-]texture:id=double_plant_paeonia_top
+[1.7.0-]texture:id=double_plant_rose_bottom
+[1.7.0-]texture:id=double_plant_rose_top
+[1.7.0-]texture:id=double_plant_sunflower_back
+[1.7.0-]texture:id=double_plant_sunflower_bottom
+[1.7.0-]texture:id=double_plant_sunflower_front
+[1.7.0-]texture:id=double_plant_sunflower_top
+[1.7.0-]texture:id=double_plant_syringa_bottom
+[1.7.0-]texture:id=double_plant_syringa_top
+[1.7.0-]texture:id=glass_black,material=GLASS
+[1.7.0-]texture:id=glass_blue,material=GLASS
+[1.7.0-]texture:id=glass_brown,material=GLASS
+[1.7.0-]texture:id=glass_cyan,material=GLASS
+[1.7.0-]texture:id=glass_gray,material=GLASS
+[1.7.0-]texture:id=glass_green,material=GLASS
+[1.7.0-]texture:id=glass_light_blue,material=GLASS
+[1.7.0-]texture:id=glass_lime,material=GLASS
+[1.7.0-]texture:id=glass_magenta,material=GLASS
+[1.7.0-]texture:id=glass_orange,material=GLASS
+[1.7.0-]texture:id=glass_pink,material=GLASS
+[1.7.0-]texture:id=glass_purple,material=GLASS
+[1.7.0-]texture:id=glass_red,material=GLASS
+[1.7.0-]texture:id=glass_silver,material=GLASS
+[1.7.0-]texture:id=glass_white,material=GLASS
+[1.7.0-]texture:id=glass_yellow,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_black,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_blue,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_brown,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_cyan,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_gray,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_green,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_light_blue,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_lime,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_magenta,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_orange,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_pink,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_purple,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_red,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_silver,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_white,material=GLASS
+[1.7.0-]texture:id=glass_pane_top_yellow,material=GLASS
+[1.7.0-]texture:id=ice_packed
+[1.7.0-]texture:id=leaves_acacia
+[1.7.0-]texture:id=leaves_big_oak
+[1.7.0-]texture:id=log_acacia
+[1.7.0-]texture:id=log_acacia_top
+[1.7.0-]texture:id=log_big_oak
+[1.7.0-]texture:id=log_big_oak_top
+[1.7.0-]texture:id=planks_acacia
+[1.7.0-]texture:id=planks_big_oak
+[1.7.0-]texture:id=sapling_acacia
+[1.7.0-]texture:id=sapling_roofed_oak
+[1.7.0-]texture:id=red_sand
+
+texturefile:id=d_txt,filename=assets/minecraft/textures/blocks/test_block/d_texture.png,xcount=1,ycount=1
+texturefile:id=e_txt,filename=assets/minecraft/textures/blocks/test_block/e_texture.png,xcount=1,ycount=1
+texturefile:id=n_txt,filename=assets/minecraft/textures/blocks/test_block/n_texture.png,xcount=1,ycount=1
+texturefile:id=s_txt,filename=assets/minecraft/textures/blocks/test_block/s_texture.png,xcount=1,ycount=1
+texturefile:id=u_txt,filename=assets/minecraft/textures/blocks/test_block/u_texture.png,xcount=1,ycount=1
+texturefile:id=w_txt,filename=assets/minecraft/textures/blocks/test_block/w_texture.png,xcount=1,ycount=1
+
+
+######
+# Stone
+block:id=stone,allfaces=0:stone,stdrot=true
+# Grass (TODO: sides)
+block:id=grass,allsides=11000:grass_side,top=1000:grass_top,bottom=0:dirt,stdrot=true
+# Dirt
+block:id=dirt,allfaces=0:dirt,stdrot=true
+[1.7.0-]block:id=dirt,data=2,top=0:dirt_podzol_top,bottom=0:dirt,allsides=0:dirt_podzol_side,stdrot=true
+# Cobblestone
+block:id=cobblestone,allfaces=0:cobblestone,stdrot=true
+# Wooden Plank (oak)
+[-1.6.4]block:id=planks,data=0,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allfaces=0:planks_oak,stdrot=true
+[1.7.0-]block:id=planks,data=0,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allfaces=0:planks_oak,stdrot=true
+# Wooden Plank (spruce)
+block:id=planks,data=1,allfaces=0:planks_spruce,stdrot=true
+# Wooden Plank (birch)
+block:id=planks,data=2,allfaces=0:planks_birch,stdrot=true
+# Wooden Plank (jungle)
+block:id=planks,data=3,allfaces=0:planks_jungle,stdrot=true
+# Wooden Plank (acacia)
+[1.7.0-]block:id=planks,data=4,allfaces=0:planks_acacia,stdrot=true
+# Wooden Plank (big oak)
+[1.7.0-]block:id=planks,data=5,allfaces=0:planks_big_oak,stdrot=true
+# Sapling (Oak)
+block:id=sapling,data=0,data=8,patch0-1=0:sapling_oak,transparency=TRANSPARENT
+# Sapling (Spruce)
+block:id=sapling,data=1,data=9,patch0-1=0:sapling_spruce,transparency=TRANSPARENT
+# Sapling (Birch)
+block:id=sapling,data=2,data=10,patch0-1=0:sapling_birch,transparency=TRANSPARENT
+# Sapling (Jungle)
+block:id=sapling,data=3,data=11,patch0-1=0:sapling_jungle,transparency=TRANSPARENT
+# Sapling (Acacia)
+[1.7.0-]block:id=sapling,data=4,data=12,patch0-1=0:sapling_acacia,transparency=TRANSPARENT
+# Sapling (Roofed Oak)
+[1.7.0-]block:id=sapling,data=5,data=13,patch0-1=0:sapling_roofed_oak,transparency=TRANSPARENT
+# Bedrock
+block:id=bedrock,allfaces=0:bedrock,stdrot=true
+# Water
+# Stationary water
+block:id=water,id=flowing_water,patch0=12000:water_still,patch1=12000:water_flow,transparency=SEMITRANSPARENT
+# Lava
+# Stationary Lava
+block:id=lava,id=flowing_lava,patch0=0:lava_still,patch1=0:lava_flow,transparency=SEMITRANSPARENT
+# Sand
+block:id=sand,allfaces=0:sand,stdrot=true
+[1.7.0-]block:id=sand,data=1,allfaces=0:red_sand,stdrot=true
+# Gravel
+block:id=gravel,allfaces=0:gravel,stdrot=true
+# Gold Ore
+block:id=gold_ore,allfaces=0:gold_ore,stdrot=true
+# Iron Ore
+block:id=iron_ore,allfaces=0:iron_ore,stdrot=true
+# Coal Ore
+block:id=coal_ore,allfaces=0:coal_ore,stdrot=true
+# Wood (oak)
+block:id=log,data=0,allsides=0:log_oak,topbottom=0:log_oak_top,stdrot=true
+block:id=log,data=4,north=0:log_oak_top,south=0:log_oak_top,east=4000:log_oak,west=4000:log_oak,top=0:log_oak,bottom=0:log_oak
+block:id=log,data=8,north=4000:log_oak,south=4000:log_oak,east=0:log_oak_top,west=0:log_oak_top,top=4000:log_oak,bottom=4000:log_oak
+block:id=log,data=12,allfaces=0:log_oak,stdrot=true
+# Wood (spruce/pine)
+block:id=log,data=1,allsides=0:log_spruce,topbottom=0:log_spruce_top,stdrot=true
+block:id=log,data=5,north=0:log_spruce_top,south=0:log_spruce_top,east=4000:log_spruce,west=4000:log_spruce,top=0:log_spruce,bottom=0:log_spruce
+block:id=log,data=9,north=4000:log_spruce,south=4000:log_spruce,east=0:log_spruce_top,west=0:log_spruce_top,top=4000:log_spruce,bottom=4000:log_spruce
+block:id=log,data=13,allfaces=0:log_spruce,stdrot=true
+# Wood (birch)
+block:id=log,data=2,allsides=0:log_birch,topbottom=0:log_birch_top,stdrot=true
+block:id=log,data=6,north=0:log_birch_top,south=0:log_birch_top,east=4000:log_birch,west=4000:log_birch,top=0:log_birch,bottom=0:log_birch
+block:id=log,data=10,north=4000:log_birch,south=4000:log_birch,east=0:log_birch_top,west=0:log_birch_top,top=4000:log_birch,bottom=4000:log_birch
+block:id=log,data=14,allfaces=0:log_birch,stdrot=true
+# Wood (jungle)
+block:id=log,data=3,allsides=0:log_jungle,topbottom=0:log_jungle_top,stdrot=true
+block:id=log,data=7,north=0:log_jungle_top,south=0:log_jungle_top,east=4000:log_jungle,west=4000:log_jungle,top=0:log_jungle,bottom=0:log_jungle
+block:id=log,data=11,north=4000:log_jungle,south=4000:log_jungle,east=0:log_jungle_top,west=0:log_jungle_top,top=4000:log_jungle,bottom=4000:log_jungle
+block:id=log,data=15,allfaces=0:log_jungle,stdrot=true
+# Leaves (oak)
+block:id=leaves,data=0,data=4,data=8,data=12,allfaces=2000:leaves_oak,stdrot=true,transparency=LEAVES
+# Leaves (spruce/pine)
+block:id=leaves,data=1,data=5,data=9,data=13,allfaces=13000:leaves_spruce,stdrot=true,transparency=LEAVES
+# Leaves (birch)
+block:id=leaves,data=2,data=6,data=10,data=14,allfaces=14000:leaves_birch,stdrot=true,transparency=LEAVES
+# Leaves (jungle)
+block:id=leaves,data=3,data=7,data=11,data=15,allfaces=2000:leaves_jungle,stdrot=true,transparency=LEAVES
+# Sponge
+block:id=sponge,allfaces=0:sponge,stdrot=true
+# Glass
+block:id=glass,allfaces=12000:glass,stdrot=true,transparency=TRANSPARENT
+# Lapis Lazuli Ore
+block:id=lapis_ore,allfaces=0:lapis_ore,stdrot=true
+# Lapis Lazuli Block
+block:id=lapis_block,allfaces=0:lapis_block,stdrot=true
+# Dispenser
+block:id=dispenser,data=0,data=8,face0=0:dispenser_front_vertical,face1=0:furnace_top,face2=0:furnace_top,face3=0:furnace_top,face4=0:furnace_top,face5=0:furnace_top,stdrot=true
+block:id=dispenser,data=1,data=9,face0=0:furnace_top,face1=0:dispenser_front_vertical,face2=0:furnace_top,face3=0:furnace_top,face4=0:furnace_top,face5=0:furnace_top,stdrot=true
+block:id=dispenser,data=2,data=10,face0=0:furnace_top,face1=0:furnace_top,face2=0:dispenser_front_horizontal,face3=0:furnace_side,face4=0:furnace_side,face5=0:furnace_side,stdrot=true
+block:id=dispenser,data=3,data=11,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:dispenser_front_horizontal,face4=0:furnace_side,face5=0:furnace_side,stdrot=true
+block:id=dispenser,data=4,data=12,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:dispenser_front_horizontal,face5=0:furnace_side,stdrot=true
+block:id=dispenser,data=5,data=13,face0=0:furnace_top,face1=0:furnace_top,face2=0:furnace_side,face3=0:furnace_side,face4=0:furnace_side,face5=0:dispenser_front_horizontal,stdrot=true
+# Sandstone
+block:id=sandstone,data=0,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone_normal,stdrot=true
+# Smooth Sandstone
+block:id=sandstone,data=2,allsides=0:sandstone_smooth,topbottom=0:sandstone_top,stdrot=true
+# Carved Sandstone
+block:id=sandstone,data=1,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=0:sandstone_carved,topbottom=0:sandstone_top,stdrot=true
+# Note Block 
+block:id=noteblock,allfaces=0:noteblock,stdrot=true
+# Bed - head - pointing west
+block:id=bed,data=8,topbottom=5000:bed_head_top,south=7000:bed_head_side,north=0:bed_head_side,west=0:bed_head_end,transparency=TRANSPARENT
+# Bed - foot - pointing west
+block:id=bed,data=0,topbottom=5000:bed_feet_top,south=7000:bed_feet_side,north=0:bed_feet_side,east=0:bed_feet_end,transparency=TRANSPARENT
+# Bed - head - pointing north
+block:id=bed,data=9,topbottom=4000:bed_head_top,north=0:bed_head_end,east=0:bed_head_side,west=7000:bed_head_side,transparency=TRANSPARENT
+# Bed - foot - pointing north
+block:id=bed,data=1,topbottom=4000:bed_feet_top,south=0:bed_feet_end,,east=0:bed_feet_side,west=7000:bed_feet_side,transparency=TRANSPARENT
+# Bed - head - pointing east
+block:id=bed,data=10,topbottom=0:bed_head_top,south=0:bed_head_side,north=7000:bed_head_side,east=0:bed_head_end,transparency=TRANSPARENT
+# Bed - foot - pointing east
+block:id=bed,data=2,topbottom=0:bed_feet_top,south=0:bed_feet_side,north=7000:bed_feet_side,west=0:bed_feet_end,,transparency=TRANSPARENT
+# Bed - head - pointing south
+block:id=bed,data=11,topbottom=6000:bed_head_top,south=0:bed_head_end,east=7000:bed_head_side,west=0:bed_head_side,transparency=TRANSPARENT
+# Bed - foot - pointing south
+block:id=bed,data=3,topbottom=6000:bed_feet_top,north=0:bed_feet_end,,east=7000:bed_feet_side,west=0:bed_feet_side,transparency=TRANSPARENT
+# Powered rail - heading east-west - unpowered
+block:id=golden_rail,data=0,patch0=0:rail_golden,transparency=TRANSPARENT
+# Powered rail - incline to east - unpowered
+# Powered rail - incline to west - unpowered
+block:id=golden_rail,data=4,data=5,patch0=0:rail_golden,transparency=TRANSPARENT
+# Powered rail - heading east-west - powered
+block:id=golden_rail,data=8,patch0=0:rail_golden_powered,transparency=TRANSPARENT
+# Powered rail - incline to east - powered
+# Powered rail - incline to west - powered
+block:id=golden_rail,data=12,data=13,patch0=0:rail_golden_powered,transparency=TRANSPARENT
+# Powered rail - heading north-south - unpowered
+block:id=golden_rail,data=1,patch0=0:rail_golden,transparency=TRANSPARENT
+# Powered rail - inclined to north - unpowered
+# Powered rail - inclined to south - unpowered
+block:id=golden_rail,data=2,data=3,patch0=0:rail_golden,transparency=TRANSPARENT
+# Powered rail - heading north-south - powered
+block:id=golden_rail,data=9,patch0=0:rail_golden_powered,transparency=TRANSPARENT
+# Powered rail - inclined to north - powered
+# Powered rail - inclined to south - powered
+block:id=golden_rail,data=10,data=11,patch0=0:rail_golden_powered,transparency=TRANSPARENT
+# Detector rail - heading east-west
+block:id=detector_rail,data=0,patch0=0:rail_detector,transparency=TRANSPARENT
+# Detector rail - incline to east
+# Detector rail - incline to west
+block:id=detector_rail,data=4,data=5,patch0=0:rail_detector,transparency=TRANSPARENT
+# Detector rail - heading north-south
+block:id=detector_rail,data=1,patch0=0:rail_detector,transparency=TRANSPARENT
+# Detector rail - incline to north
+# Detector rail - incline to south
+block:id=detector_rail,data=2,data=3,patch0=0:rail_detector,transparency=TRANSPARENT
+# Sticky piston - facing down
+block:id=sticky_piston,data=0,top=0:piston_bottom,bottom=0:piston_top_sticky,allsides=5000:piston_side,transparency=TRANSPARENT
+# Sticky piston - facing up
+block:id=sticky_piston,data=1,top=0:piston_top_sticky,bottom=0:piston_bottom,allsides=0:piston_side,transparency=TRANSPARENT
+# Sticky piston - facing east
+block:id=sticky_piston,data=2,east=0:piston_top_sticky,west=0:piston_bottom,top=6000:piston_side,bottom=4000:piston_side,north=4000:piston_side,south=6000:piston_side,transparency=TRANSPARENT
+# Sticky piston - facing west
+block:id=sticky_piston,data=3,west=0:piston_top_sticky,east=0:piston_bottom,top=4000:piston_side,bottom=6000:piston_side,north=6000:piston_side,south=4000:piston_side,transparency=TRANSPARENT
+# Sticky piston - facing north
+block:id=sticky_piston,data=4,north=0:piston_top_sticky,south=0:piston_bottom,top=0:piston_side,bottom=5000:piston_side,east=6000:piston_side,west=4000:piston_side,transparency=TRANSPARENT
+# Sticky piston - facing south
+block:id=sticky_piston,data=5,north=0:piston_bottom,south=0:piston_top_sticky,top=5000:piston_side,bottom=0:piston_side,east=4000:piston_side,west=6000:piston_side,transparency=TRANSPARENT
+# Sticky piston - extended facing down (TODO: side)
+block:id=sticky_piston,data=8,top=0:piston_bottom,bottom=0:piston_inner,allsides=5262,transparency=TRANSPARENT
+# Sticky piston - extended facing up  (TODO: side)
+block:id=sticky_piston,data=9,top=0:piston_inner,bottom=0:piston_bottom,allsides=262,transparency=TRANSPARENT
+# Sticky piston - extended facing east (TODO: side)
+block:id=sticky_piston,data=10,east=0:piston_inner,west=0:piston_bottom,top=6262,bottom=4262,north=4262,south=6262,transparency=TRANSPARENT
+# Sticky piston - extended facing west (TODO: side)
+block:id=sticky_piston,data=11,west=0:piston_inner,east=0:piston_bottom,top=4262,bottom=6262,north=6262,south=4262,transparency=TRANSPARENT
+# Sticky piston - extended facing north (TODO: side)
+block:id=sticky_piston,data=12,north=0:piston_inner,south=0:piston_bottom,top=262,bottom=5262,east=6262,west=4262,transparency=TRANSPARENT
+# Sticky piston - extended facing south (TODO: side)
+block:id=sticky_piston,data=13,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
+# Web
+block:id=web,patch0-1=0:web,transparency=TRANSPARENT
+# Dead shrub
+block:id=tallgrass,data=0,patch0-1=0:deadbush,transparency=TRANSPARENT
+# Tall Grass
+block:id=tallgrass,data=1,patch0-1=1000:tallgrass,transparency=TRANSPARENT
+# Fern
+block:id=tallgrass,data=2,patch0-1=1000:fern,transparency=TRANSPARENT
+# Dead shrub
+block:id=deadbush,patch0-1=0:deadbush,transparency=TRANSPARENT
+# Piston - facing down
+block:id=piston,data=0,top=0:piston_bottom,bottom=0:piston_top_normal,allsides=5000:piston_side,transparency=TRANSPARENT
+# Piston - facing up
+block:id=piston,data=1,top=0:piston_top_normal,bottom=0:piston_bottom,allsides=0:piston_side,transparency=TRANSPARENT
+# Piston - facing east
+block:id=piston,data=2,east=0:piston_top_normal,west=0:piston_bottom,top=6000:piston_side,bottom=4000:piston_side,north=4000:piston_side,south=6000:piston_side,transparency=TRANSPARENT
+# Piston - facing west
+block:id=piston,data=3,west=0:piston_top_normal,east=0:piston_bottom,top=4000:piston_side,bottom=6000:piston_side,north=6000:piston_side,south=4000:piston_side,transparency=TRANSPARENT
+# Piston - facing north
+block:id=piston,data=4,north=0:piston_top_normal,south=0:piston_bottom,top=0:piston_side,bottom=5000:piston_side,east=6000:piston_side,west=4000:piston_side,transparency=TRANSPARENT
+# Piston - facing south
+block:id=piston,data=5,north=0:piston_bottom,south=0:piston_top_normal,top=5000:piston_side,bottom=0:piston_side,east=4000:piston_side,west=6000:piston_side,transparency=TRANSPARENT
+# Piston - extended facing down (TODO:piston extension side)
+block:id=piston,data=8,top=0:piston_bottom,bottom=0:piston_inner,allsides=5262,transparency=TRANSPARENT
+# Piston - extended facing up (TODO:piston extension side)
+block:id=piston,data=9,top=0:piston_inner,bottom=0:piston_bottom,allsides=262,transparency=TRANSPARENT
+# Piston - extended facing east (TODO:piston extension side)
+block:id=piston,data=10,east=0:piston_inner,west=0:piston_bottom,top=6262,bottom=4262,north=4262,south=6262,transparency=TRANSPARENT
+# Piston - extended facing west (TODO:piston extension side)
+block:id=piston,data=11,west=0:piston_inner,east=0:piston_bottom,top=4262,bottom=6262,north=6262,south=4262,transparency=TRANSPARENT
+# Piston - extended facing north (TODO:piston extension side)
+block:id=piston,data=12,north=0:piston_inner,south=0:piston_bottom,top=262,bottom=5262,east=6262,west=4262,transparency=TRANSPARENT
+# Piston - extended facing south (TODO:piston extension side)
+block:id=piston,data=13,north=0:piston_bottom,south=0:piston_inner,top=5262,bottom=262,east=4262,west=6262,transparency=TRANSPARENT
+# Piston extension- facing down (TODO:piston extension side)
+block:id=piston_head,data=0,top=0:piston_inner,bottom=0:piston_top_normal,allsides=5261,transparency=TRANSPARENT
+# Piston extension - facing up (TODO:piston extension side)
+block:id=piston_head,data=1,top=0:piston_top_normal,bottom=0:piston_inner,allsides=261,transparency=TRANSPARENT
+# Piston extension - facing east (TODO:piston extension side)
+block:id=piston_head,data=2,east=0:piston_top_normal,west=0:piston_inner,top=6261,bottom=4261,north=4261,south=6261,transparency=TRANSPARENT
+# Piston extension - facing west (TODO:piston extension side)
+block:id=piston_head,data=3,west=0:piston_top_normal,east=0:piston_inner,top=4261,bottom=6261,north=6261,south=4261,transparency=TRANSPARENT
+# Piston extension - facing north (TODO:piston extension side)
+block:id=piston_head,data=4,north=0:piston_top_normal,south=0:piston_inner,top=261,bottom=5261,east=6261,west=4261,transparency=TRANSPARENT
+# Piston extension - facing south (TODO:piston extension side)
+block:id=piston_head,data=5,north=0:piston_inner,south=0:piston_top_normal,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
+# Sticky piston extension - facing down (TODO:piston extension side)
+block:id=piston_head,data=8,top=0:piston_inner,bottom=0:piston_top_sticky,allsides=5261,transparency=TRANSPARENT
+# Sticky piston extension - facing up (TODO:piston extension side)
+block:id=piston_head,data=9,top=0:piston_top_sticky,bottom=0:piston_inner,allsides=261,transparency=TRANSPARENT
+# Sticky piston extension - facing east (TODO:piston extension side)
+block:id=piston_head,data=10,east=0:piston_top_sticky,west=0:piston_inner,top=6261,bottom=4261,north=4261,south=6261,transparency=TRANSPARENT
+# Sticky piston extension - facing west (TODO:piston extension side)
+block:id=piston_head,data=11,west=0:piston_top_sticky,east=0:piston_inner,top=4261,bottom=6261,north=6261,south=4261,transparency=TRANSPARENT
+# Sticky piston extension - facing north (TODO:piston extension side)
+block:id=piston_head,data=12,north=0:piston_top_sticky,south=0:piston_inner,top=261,bottom=5261,east=6261,west=4261,transparency=TRANSPARENT
+# Sticky piston extension - facing south (TODO:piston extension side)
+block:id=piston_head,data=13,north=0:piston_inner,south=0:piston_top_sticky,top=5261,bottom=261,east=4261,west=6261,transparency=TRANSPARENT
+# Wool
+block:id=wool,data=0,allfaces=0:wool_colored_white,stdrot=true
+block:id=wool,data=1,allfaces=0:wool_colored_orange,stdrot=true
+block:id=wool,data=2,allfaces=0:wool_colored_magenta,stdrot=true
+block:id=wool,data=3,allfaces=0:wool_colored_light_blue,stdrot=true
+block:id=wool,data=4,allfaces=0:wool_colored_yellow,stdrot=true
+block:id=wool,data=5,allfaces=0:wool_colored_lime,stdrot=true
+block:id=wool,data=6,allfaces=0:wool_colored_pink,stdrot=true
+block:id=wool,data=7,allfaces=0:wool_colored_gray,stdrot=true
+block:id=wool,data=8,allfaces=0:wool_colored_silver,stdrot=true
+block:id=wool,data=9,allfaces=0:wool_colored_cyan,stdrot=true
+block:id=wool,data=10,allfaces=0:wool_colored_purple,stdrot=true
+block:id=wool,data=11,allfaces=0:wool_colored_blue,stdrot=true
+block:id=wool,data=12,allfaces=0:wool_colored_brown,stdrot=true
+block:id=wool,data=13,allfaces=0:wool_colored_green,stdrot=true
+block:id=wool,data=14,allfaces=0:wool_colored_red,stdrot=true
+block:id=wool,data=15,allfaces=0:wool_colored_black,stdrot=true
+# Dandelion
+block:id=yellow_flower,patch0-1=0:flower_dandelion,transparency=TRANSPARENT
+# Rose
+[-1.6.4]block:id=red_flower,patch0-1=0:flower_rose,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=0,data=9,data=10,data=11,data=12,data=13,data=14,data=15,patch0-1=0:flower_rose,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=1,patch0-1=0:flower_blue_orchid,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=2,patch0-1=0:flower_allium,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=3,patch0-1=0:flower_houstonia,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=4,patch0-1=0:flower_tulip_red,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=5,patch0-1=0:flower_tulip_orange,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=6,patch0-1=0:flower_tulip_white,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=7,patch0-1=0:flower_tulip_pink,transparency=TRANSPARENT
+[1.7.0-]block:id=red_flower,data=8,patch0-1=0:flower_oxeye_daisy,transparency=TRANSPARENT
+
+# Brown mushroom
+block:id=brown_mushroom,patch0-1=0:mushroom_brown,transparency=TRANSPARENT
+# Red mushroom
+block:id=red_mushroom,patch0-1=0:mushroom_red,transparency=TRANSPARENT
+# Gold block
+block:id=gold_block,allfaces=0:gold_block,stdrot=true
+# Iron block
+block:id=iron_block,allfaces=0:iron_block,stdrot=true
+# Double Slab - stone
+block:id=double_stone_slab,data=0,allsides=0:stone_slab_side,topbottom=0:stone_slab_top,stdrot=true
+block:id=double_stone_slab,data=8,allfaces=0:stone_slab_top,stdrot=true
+# Double Slab - Sandstone
+block:id=double_stone_slab,data=1,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone_normal,stdrot=true
+block:id=double_stone_slab,data=9,allfaces=0:sandstone_top,stdrot=true
+# Double Slab - Wood
+block:id=double_stone_slab,data=2,allfaces=0:planks_oak,stdrot=true
+block:id=double_stone_slab,data=10,allfaces=0:planks_oak,stdrot=true
+# Double Slab - Cobblestone
+block:id=double_stone_slab,data=3,allfaces=0:cobblestone,stdrot=true
+block:id=double_stone_slab,data=11,allfaces=0:cobblestone,stdrot=true
+# Double Slab - Brick
+block:id=double_stone_slab,data=4,allfaces=0:brick,stdrot=true
+block:id=double_stone_slab,data=12,allfaces=0:brick,stdrot=true
+# Double Slab - Stone Brick
+block:id=double_stone_slab,data=5,allfaces=0:stonebrick,stdrot=true
+block:id=double_stone_slab,data=13,allfaces=0:stonebrick,stdrot=true
+# Double Slab - Nether Brick
+block:id=double_stone_slab,data=6,allfaces=0:nether_brick,stdrot=true
+block:id=double_stone_slab,data=14,allfaces=0:nether_brick,stdrot=true
+# Double Slab - Quartz
+block:id=double_stone_slab,data=7,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side
+block:id=double_stone_slab,data=15,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side
+# Slab - stone
+block:id=stone_slab,data=0,data=8,allsides=0:stone_slab_side,topbottom=0:stone_slab_top,stdrot=true,transparency=SEMITRANSPARENT
+# Slab - Sandstone
+block:id=stone_slab,data=1,data=9,bottom=0:sandstone_bottom,top=0:sandstone_top,allsides=0:sandstone_normal,stdrot=true,transparency=SEMITRANSPARENT
+# Slab - Wood
+block:id=stone_slab,data=2,data=10,allfaces=0:planks_oak,stdrot=true,transparency=SEMITRANSPARENT
+# Slab - Cobblestone
+block:id=stone_slab,data=3,data=11,allfaces=0:cobblestone,stdrot=true,transparency=SEMITRANSPARENT
+# Slab - Brick
+block:id=stone_slab,data=4,data=12,allfaces=0:brick,stdrot=true,transparency=SEMITRANSPARENT
+# Slab - Stone Brick
+block:id=stone_slab,data=5,data=13,allfaces=0:stonebrick,stdrot=true,transparency=SEMITRANSPARENT
+# Slab - Nether brick
+block:id=stone_slab,data=6,data=14,allfaces=0:nether_brick,stdrot=true,transparency=SEMITRANSPARENT
+# Slab - Quartz
+block:id=stone_slab,data=7,data=15,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true,transparency=SEMITRANSPARENT
+# Brick Block
+block:id=brick_block,allfaces=0:brick,stdrot=true
+# TNT
+block:id=tnt,top=0:tnt_top,bottom=0:tnt_bottom,allsides=0:tnt_side,stdrot=true
+# Bookshelf
+block:id=bookshelf,topbottom=0:planks_oak,allsides=0:bookshelf,stdrot=true
+# Mossy Cobblestone
+block:id=mossy_cobblestone,allfaces=0:cobblestone_mossy,stdrot=true
+# Obsidian
+block:id=obsidian,allfaces=0:obsidian,stdrot=true
+# Torch
+block:id=torch,data=*,patch0=0:torch_on,transparency=TRANSPARENT
+# Fire
+block:id=fire,patch0-3=0:fire_layer_0,patch4-7=0:fire_layer_1,transparency=TRANSPARENT
+# Monster spawner
+block:id=mob_spawner,allfaces=0:mob_spawner,stdrot=true,transparency=TRANSPARENT
+# Wooden stairs
+block:id=oak_stairs,data=*,patch0-2=0:planks_oak,transparency=SEMITRANSPARENT
+# Chest
+block:id=chest,data=*,patch0=0:chest,patch1=1:chest,patch2=2:chest,patch3=3:chest,patch4=4:chest,patch5=5:chest,patch6=0:bigchest,patch7=1:bigchest,patch8=2:bigchest,patch9=3:bigchest,patch10=4:bigchest,patch11=5:bigchest,patch12=6:bigchest,patch13=7:bigchest,patch14=8:bigchest,patch15=9:bigchest
+# Redstone wire
+block:id=redstone_wire,data=*,patch0=17000:redstone_dust_line,patch1=17000:redstone_dust_cross,patch2=0:redstone_dust_line_overlay,patch3=0:redstone_dust_cross_overlay,colorMult=C00000,layer0=2,layer1=3,transparency=TRANSPARENT
+# Diamond ore
+block:id=diamond_ore,allfaces=0:diamond_ore,stdrot=true
+# Diamond block
+block:id=diamond_block,allfaces=0:diamond_block,stdrot=true
+# Crafting table
+block:id=crafting_table,topbottom=0:crafting_table_top,east=0:crafting_table_front,west=0:crafting_table_front,north=0:crafting_table_side,south=0:crafting_table_side,stdrot=true
+# Crops (size 1)
+block:id=wheat,data=0,patch0-3=0:wheat_stage_0,transparency=TRANSPARENT
+# Crops (size 2)
+block:id=wheat,data=1,patch0-3=0:wheat_stage_1,transparency=TRANSPARENT
+# Crops (size 3)
+block:id=wheat,data=2,patch0-3=0:wheat_stage_2,transparency=TRANSPARENT
+# Crops (size 4)
+block:id=wheat,data=3,patch0-3=0:wheat_stage_3,transparency=TRANSPARENT
+# Crops (size 5)
+block:id=wheat,data=4,patch0-3=0:wheat_stage_4,transparency=TRANSPARENT
+# Crops (size 6)
+block:id=wheat,data=5,patch0-3=0:wheat_stage_5,transparency=TRANSPARENT
+# Crops (size 7)
+block:id=wheat,data=6,patch0-3=0:wheat_stage_6,transparency=TRANSPARENT
+# Crops (size 8)
+block:id=wheat,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,patch0-3=0:wheat_stage_7,transparency=TRANSPARENT
+# Farmland (dry)
+block:id=farmland,data=0,top=0:farmland_dry,allsides=0:dirt,bottom=0:dirt,stdrot=true
+# Farmland (wet)
+block:id=farmland,data=1,data=2,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,top=0:farmland_wet,allsides=0:dirt,bottom=0:dirt,stdrot=true
+# Furnace (facing east)
+block:id=furnace,data=2,top=0:furnace_top,east=0:furnace_front_off,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Furnace (facing west)
+block:id=furnace,data=3,top=0:furnace_top,west=0:furnace_front_off,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Furnace (facing north)
+block:id=furnace,data=4,top=0:furnace_top,north=0:furnace_front_off,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Furnace (facing south)
+block:id=furnace,data=5,top=0:furnace_top,south=0:furnace_front_off,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Burning Furnace (facing east)
+block:id=lit_furnace,data=2,top=0:furnace_top,east=0:furnace_front_on,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Burning Furnace (facing west)
+block:id=lit_furnace,data=3,top=0:furnace_top,west=0:furnace_front_on,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Burning Furnace (facing north)
+block:id=lit_furnace,data=4,top=0:furnace_top,north=0:furnace_front_on,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Burning Furnace (facing south)
+block:id=lit_furnace,data=5,top=0:furnace_top,south=0:furnace_front_on,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top,stdrot=true
+# Signpost
+block:id=standing_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=sign
+# Wooden Door
+block:id=wooden_door,data=*,patch0=0:door_wood_upper,patch1=0:door_wood_lower,transparency=TRANSPARENT
+
+# Ladder
+block:id=ladder,patch0=0:ladder,transparency=TRANSPARENT
+# Rail - heading east-west
+block:id=rail,data=0,patch0=0:rail_normal,transparency=TRANSPARENT
+# Rail - incline to east
+# Rail - incline to west
+block:id=rail,data=4,data=5,patch0=0:rail_normal,transparency=TRANSPARENT
+# Rail - heading north-south
+block:id=rail,data=1,patch0=0:rail_normal,transparency=TRANSPARENT
+# Rail - incline to north
+# Rail - incline to south
+block:id=rail,data=2,data=3,patch0=0:rail_normal,transparency=TRANSPARENT
+# Rails - northeast corner
+# Rails - southeast corner
+# Rails - southwest corner
+# Rails - northwest corner
+block:id=rail,data=6,data=7,data=8,data=9,patch0=0:rail_normal_turned,transparency=TRANSPARENT
+# Cobblestone Stairs
+block:id=stone_stairs,data=*,patch0-2=0:cobblestone,transparency=SEMITRANSPARENT
+# Wall sign
+block:id=wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=sign
+# Lever
+block:id=lever,patch0-4=0:cobblestone,patch5-8=0:lever,transparency=TRANSPARENT
+# Stone pressure plate
+block:id=stone_pressure_plate,allfaces=0:stone,stdrot=true,transparency=TRANSPARENT
+
+# Iron Door
+block:id=iron_door,data=*,patch0=0:door_iron_upper,patch1=0:door_iron_lower,transparency=TRANSPARENT
+
+# Wooden pressure plate
+block:id=wooden_pressure_plate,allfaces=0:planks_oak,stdrot=true,transparency=TRANSPARENT
+# Redstone Ore
+block:id=redstone_ore,id=lit_redstone_ore,allfaces=0:redstone_ore,stdrot=true
+# Redstone Torch - unlit - inclined
+block:id=unlit_redstone_torch,data=1,data=2,data=3,data=4,patch0=0:redstone_torch_off,transparency=TRANSPARENT
+# Redstone Torch - unlit - up
+block:id=unlit_redstone_torch,data=5,patch0=0:redstone_torch_off,transparency=TRANSPARENT
+# Redstone Torch - lit - inclined
+block:id=redstone_torch,data=1,data=2,data=3,data=4,patch0=0:redstone_torch_on,transparency=TRANSPARENT
+# Redstone Torch - lit - up
+block:id=redstone_torch,data=5,patch0=0:redstone_torch_on,transparency=TRANSPARENT
+# Stone button
+block:id=stone_button,allfaces=0:stone,stdrot=true,transparency=TRANSPARENT
+# Snow
+block:id=snow_layer,allfaces=0:snow,stdrot=true,transparency=TRANSPARENT
+# Ice
+block:id=ice,allfaces=12000:ice,stdrot=true,transparency=TRANSPARENT
+# Snow block
+block:id=snow,allfaces=0:snow,stdrot=true
+# Cactus
+block:id=cactus,patch0=0:cactus_side,patch1=0:cactus_side,patch2=0:cactus_side,patch3=0:cactus_side,patch4=0:cactus_top,patch5=0:cactus_bottom,transparency=SEMITRANSPARENT
+# Clay block
+block:id=clay,allfaces=0:clay,stdrot=true
+# Sugar Cane
+block:id=reeds,patch0-1=0:reeds,transparency=TRANSPARENT
+# Jukebox
+block:id=jukebox,allsides=0:jukebox_side,topbottom=0:jukebox_top,stdrot=true
+# Fence
+block:id=fence,patch0-2=0:planks_oak,transparency=TRANSPARENT
+# Pumpkin
+block:id=pumpkin,allsides=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Netherrock
+block:id=netherrack,allfaces=0:netherrack,stdrot=true
+# SoulSand
+block:id=soul_sand,allfaces=0:soul_sand,stdrot=true
+# Glowstone Block
+block:id=glowstone,allfaces=0:glowstone,stdrot=true
+# Portal
+block:id=portal,allfaces=0:portal,stdrot=true,transparency=TRANSPARENT
+# Jack O Lantern (east)
+block:id=lit_pumpkin,data=2,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_face_on,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Jack O Lantern (south)
+block:id=lit_pumpkin,data=3,north=0:pumpkin_side,south=0:pumpkin_face_on,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Jack O Lantern (west)
+block:id=lit_pumpkin,data=0,north=0:pumpkin_side,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_face_on,topbottom=0:pumpkin_top,stdrot=true
+# Jack O Lantern (north)
+block:id=lit_pumpkin,data=1,north=0:pumpkin_face_on,south=0:pumpkin_side,east=0:pumpkin_side,west=0:pumpkin_side,topbottom=0:pumpkin_top,stdrot=true
+# Cake Block
+block:id=cake,allsides=0:cake_side,top=0:cake_top,bottom=0:cake_bottom,stdrot=true,transparency=TRANSPARENT
+# Repeater (off) facing east
+block:id=unpowered_repeater,data=0,data=4,data=8,data=12,top=6000:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (off) facing south
+block:id=unpowered_repeater,data=1,data=5,data=9,data=13,top=5000:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (off) facing west
+block:id=unpowered_repeater,data=2,data=6,data=10,data=14,top=4000:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (off) facing west
+block:id=unpowered_repeater,data=3,data=7,data=11,data=15,top=0:repeater_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (on) facing east
+block:id=powered_repeater,data=0,data=4,data=8,data=12,top=6000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (on) facing south
+block:id=powered_repeater,data=1,data=5,data=9,data=13,top=5000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (on) facing west
+block:id=powered_repeater,data=2,data=6,data=10,data=14,top=4000:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Repeater (on) facing west
+block:id=powered_repeater,data=3,data=7,data=11,data=15,top=0:repeater_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# Locked Chest (95)
+[-1.6.4]block:id=stained_glass,data=*,top=6000,bottom=6005,south=2,north=1,east=4,west=3,txtid=chest
+# Stained Glass (95)
+[1.7.0-]block:id=stained_glass,data=0,allfaces=12000:glass_white,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=1,allfaces=12000:glass_orange,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=2,allfaces=12000:glass_magenta,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=3,allfaces=12000:glass_light_blue,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=4,allfaces=12000:glass_yellow,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=5,allfaces=12000:glass_lime,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=6,allfaces=12000:glass_pink,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=7,allfaces=12000:glass_gray,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=8,allfaces=12000:glass_silver,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=9,allfaces=12000:glass_cyan,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=10,allfaces=12000:glass_purple,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=11,allfaces=12000:glass_blue,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=12,allfaces=12000:glass_brown,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=13,allfaces=12000:glass_green,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=14,allfaces=12000:glass_red,stdrot=true,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass,data=15,allfaces=12000:glass_black,stdrot=true,transparency=TRANSPARENT
+
+# Trapdoor
+block:id=trapdoor,allfaces=0:trapdoor,stdrot=true,transparency=TRANSPARENT
+# Stone w/ silverfish inside
+block:id=monster_egg,data=0,allfaces=0:stone,stdrot=true
+# Cobblestone w/ silverfish inside
+block:id=monster_egg,data=1,allfaces=0:cobblestone,stdrot=true
+# Stone Bricks w/ silverfish inside
+block:id=monster_egg,data=2,allfaces=0:stonebrick,stdrot=true
+# Stone Bricks
+block:id=stonebrick,data=0,allfaces=0:stonebrick,stdrot=true
+# Mossy Stone Bricks
+block:id=stonebrick,data=1,allfaces=0:stonebrick_mossy,stdrot=true
+# Cracked Stone Bricks
+block:id=stonebrick,data=2,allfaces=0:stonebrick_cracked,stdrot=true
+# Patterned Stone Bricks
+block:id=stonebrick,data=3,allfaces=0:stonebrick_carved,stdrot=true
+# Brown Mushroom Block - inside
+# Red Mushroom Block - inside
+block:id=brown_mushroom_block,id=red_mushroom_block,data=0,allfaces=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - N-E-top cap color
+block:id=brown_mushroom_block,data=1,top=0:mushroom_block_skin_brown,north=0:mushroom_block_skin_brown,east=0:mushroom_block_skin_brown,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - N-E-top cap color
+block:id=red_mushroom_block,data=1,top=0:mushroom_block_skin_red,north=0:mushroom_block_skin_red,east=0:mushroom_block_skin_red,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - E-top cap color
+block:id=brown_mushroom_block,data=2,top=0:mushroom_block_skin_brown,east=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - E-top cap color
+block:id=red_mushroom_block,data=2,top=0:mushroom_block_skin_red,east=0:mushroom_block_skin_red,north=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - S-E-top cap color
+block:id=brown_mushroom_block,data=3,top=0:mushroom_block_skin_brown,south=0:mushroom_block_skin_brown,east=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - S-E-top cap color
+block:id=red_mushroom_block,data=3,top=0:mushroom_block_skin_red,south=0:mushroom_block_skin_red,east=0:mushroom_block_skin_red,north=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - N-top cap color
+block:id=brown_mushroom_block,data=4,top=0:mushroom_block_skin_brown,north=0:mushroom_block_skin_brown,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - N-top cap color
+block:id=red_mushroom_block,data=4,top=0:mushroom_block_skin_red,north=0:mushroom_block_skin_red,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top cap color
+block:id=brown_mushroom_block,data=5,top=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top cap color
+block:id=red_mushroom_block,data=5,top=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top-S cap color
+block:id=brown_mushroom_block,data=6,top=0:mushroom_block_skin_brown,south=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top-S cap color
+block:id=red_mushroom_block,data=6,top=0:mushroom_block_skin_red,south=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,west=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - N-W cap color
+block:id=brown_mushroom_block,data=7,top=0:mushroom_block_skin_brown,north=0:mushroom_block_skin_brown,west=0:mushroom_block_skin_brown,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - N-W cap color
+block:id=red_mushroom_block,data=7,top=0:mushroom_block_skin_red,north=0:mushroom_block_skin_red,west=0:mushroom_block_skin_red,south=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top-W cap color
+block:id=brown_mushroom_block,data=8,top=0:mushroom_block_skin_brown,west=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top-W cap color
+block:id=red_mushroom_block,data=8,top=0:mushroom_block_skin_red,west=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,south=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - top-S-W cap color
+block:id=brown_mushroom_block,data=9,top=0:mushroom_block_skin_brown,west=0:mushroom_block_skin_brown,south=0:mushroom_block_skin_brown,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Red Mushroom Block - top-S-W cap color
+block:id=red_mushroom_block,data=9,top=0:mushroom_block_skin_red,west=0:mushroom_block_skin_red,south=0:mushroom_block_skin_red,north=0:mushroom_block_inside,east=0:mushroom_block_inside,bottom=0:mushroom_block_inside,stdrot=true
+# Brown Mushroom Block - stem
+# Red Mushroom Block - stem
+block:id=brown_mushroom_block,id=red_mushroom_block,data=10,topbottom=0:mushroom_block_inside,allsides=0:mushroom_block_skin_stem,stdrot=true
+# Brown Mushroom Block - all cap
+block:id=brown_mushroom_block,data=14,topbottom=0:mushroom_block_skin_brown,allsides=0:mushroom_block_skin_brown,stdrot=true
+# Red Mushroom Block - all cap
+block:id=red_mushroom_block,data=14,topbottom=0:mushroom_block_skin_red,allsides=0:mushroom_block_skin_red,stdrot=true
+# Brown Mushroom Block - stem all sides
+# Red Mushroom Block - stem all sides
+block:id=brown_mushroom_block,id=red_mushroom_block,data=15,allfaces=0:mushroom_block_skin_stem,stdrot=true
+# Iron fence
+block:id=iron_bars,patch0-1=0:iron_bars,transparency=TRANSPARENT
+# Glass pane
+block:id=glass_pane,patch0=12000:glass,patch1=12000:glass_pane_top,transparency=TRANSPARENT
+# Watermellon
+block:id=melon_block,allsides=0:melon_side,topbottom=0:melon_top,stdrot=true
+# Pumpkin stem 
+block:id=pumpkin_stem,allsides=1000:pumpkin_stem_disconnected,stdrot=true,transparency=TRANSPARENT
+# Melon stem
+block:id=melon_stem,allsides=1000:melon_stem_disconnected,stdrot=true,transparency=TRANSPARENT
+# Vines
+block:id=vine,patch0-4=2000:vine,transparency=TRANSPARENT
+# Fence gate
+block:id=fence_gate,patch0-2=0:planks_oak,stdrot=true,transparency=TRANSPARENT
+# Brick stair
+block:id=brick_stairs,data=*,patch0-2=0:brick,transparency=SEMITRANSPARENT
+# Stone brick stair
+block:id=stone_brick_stairs,data=*,patch0-2=0:stonebrick,transparency=SEMITRANSPARENT
+# Mycelium
+block:id=mycelium,top=0:mycelium_top,allsides=0:mycelium_side,bottom=0:dirt,stdrot=true
+# Lily pad
+block:id=waterlily,patch0=15000:waterlily,transparency=TRANSPARENT
+# Nether brick
+block:id=nether_brick,allfaces=0:nether_brick,stdrot=true
+# Nether brick fence
+block:id=nether_brick_fence,patch0-2=0:nether_brick,transparency=TRANSPARENT
+# Nether brick stairs
+block:id=nether_brick_stairs,data=*,patch0-2=0:nether_brick,transparency=SEMITRANSPARENT
+# Nether Wart (small)
+block:id=nether_wart,data=0,patch0-1=0:nether_wart_stage_0,transparency=TRANSPARENT
+# Nether Wart (medium)
+block:id=nether_wart,data=1,data=2,patch0-1=0:nether_wart_stage_1,transparency=TRANSPARENT
+# Nether Wart (large)
+block:id=nether_wart,data=3,data=4,data=5,data=6,data=7,patch0-1=0:nether_wart_stage_2,transparency=TRANSPARENT
+# Enchantment table
+block:id=enchanting_table,data=*,top=0:enchanting_table_top,allsides=0:enchanting_table_side,bottom=0:enchanting_table_bottom,stdrot=true,transparency=TRANSPARENT
+# Brewing stand
+block:id=brewing_stand,data=*,patch0=0:brewing_stand_base,patch1-7=0:brewing_stand,transparency=TRANSPARENT
+# Cauldron
+block:id=cauldron,data=*,top=0:cauldron_top,bottom=0:cauldron_bottom,allsides=0:cauldron_side,stdrot=true,transparency=TRANSPARENT
+# End portal
+block:id=end_portal,data=*,topbottom=0:endportal,stdrot=true
+# End portal frame (no eye)
+block:id=end_portal_frame,data=0,data=1,data=2,data=3,top=0:endframe_top,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
+# End portal fram (eye installed) (TODO: eye installed)
+block:id=end_portal_frame,data=4,data=5,data=6,data=7,top=0:endframe_eye,allsides=0:endframe_side,bottom=0:end_stone,stdrot=true
+# White stone
+block:id=end_stone,data=*,allfaces=0:end_stone,stdrot=true
+# Dragon Egg
+block:id=dragon_egg,data=*,allfaces=0:dragon_egg,stdrot=true
+# Redstone lamp (off)
+block:id=redstone_lamp,data=*,allfaces=0:redstone_lamp_off,stdrot=true
+# Redstone lamp (on)
+block:id=lit_redstone_lamp,data=*,allfaces=0:redstone_lamp_on,stdrot=true
+# Wooden Double Slab (Oak)
+block:id=double_wooden_slab,data=0,data=8,allfaces=0:planks_oak,stdrot=true
+# Wooden Double Slab (Spruce)
+block:id=double_wooden_slab,data=1,data=9,allfaces=0:planks_spruce,stdrot=true
+# Wooden Double Slab (Birch)
+block:id=double_wooden_slab,data=2,data=10,allfaces=0:planks_birch,stdrot=true
+# Wooden Double Slab (Jungle)
+block:id=double_wooden_slab,data=3,data=11,allfaces=0:planks_jungle,stdrot=true
+# Wooden Double Slab (Acacia)
+[1.7.0-]block:id=double_wooden_slab,data=4,data=12,allfaces=0:planks_acacia,stdrot=true
+# Wooden Double Slab (Big Oak)
+[1.7.0-]block:id=double_wooden_slab,data=5,data=13,allfaces=0:planks_big_oak,stdrot=true
+# Wooden Slab (Oak)
+block:id=wooden_slab,data=0,data=8,allfaces=0:planks_oak,stdrot=true,transparency=SEMITRANSPARENT
+# Wooden Slab (Spruce)
+block:id=wooden_slab,data=1,data=9,allfaces=0:planks_spruce,stdrot=true,transparency=SEMITRANSPARENT
+# Wooden Slab (Birch)
+block:id=wooden_slab,data=2,data=10,allfaces=0:planks_birch,stdrot=true,transparency=SEMITRANSPARENT
+# Wooden Slab (Jungle)
+block:id=wooden_slab,data=3,data=11,allfaces=0:planks_jungle,stdrot=true,transparency=SEMITRANSPARENT
+# Wooden Slab (Acacia)
+[1.7.0-]block:id=wooden_slab,data=4,data=12,allfaces=0:planks_acacia,stdrot=true,transparency=SEMITRANSPARENT
+# Wooden Slab (Big Oak)
+[1.7.0-]block:id=wooden_slab,data=5,data=13,allfaces=0:planks_big_oak,stdrot=true,transparency=SEMITRANSPARENT
+# Cocoa Plant (TODO: handle different stages, orientations)
+block:id=cocoa,data=*,allsides=0:cocoa_stage_2
+# Sandstone stairs
+block:id=sandstone_stairs,data=*,patch0=0:sandstone_normal,patch1=0:sandstone_top,patch2=0:sandstone_bottom,transparency=SEMITRANSPARENT
+# Emerald Ore
+block:id=emerald_ore,data=*,allfaces=0:emerald_ore,stdrot=true
+# Ender Chest (facing east)
+block:id=ender_chest,data=*,patch0=0:enderchest,patch1=1:enderchest,patch2=2:enderchest,patch3=3:enderchest,patch4=4:enderchest,patch5=5:enderchest
+# Tripwire Hook
+block:id=tripwire_hook,data=*,patch0-5=0:cobblestone,patch6-7=0:trip_wire_source,transparency=TRANSPARENT
+# Tripwire
+block:id=tripwire,data=*
+# Block of Emerald
+block:id=emerald_block,data=*,allfaces=0:emerald_block,stdrot=true
+# Spruce Wooden stairs
+block:id=spruce_stairs,data=*,patch0-2=0:planks_spruce,transparency=SEMITRANSPARENT
+# Birch Wooden stairs
+block:id=birch_stairs,data=*,patch0-2=0:planks_birch,transparency=SEMITRANSPARENT
+# Jungle Wooden stairs
+block:id=jungle_stairs,data=*,patch0-2=0:planks_jungle,transparency=SEMITRANSPARENT
+# Command block
+block:id=command_block,data=*,allfaces=0:command_block,stdrot=true
+# Beacon
+block:id=beacon,data=*,patch0-5=12000:glass,patch6-9=0:obsidian,patch10=6000:obsidian,patch11-14=0:beacon,patch15=6000:beacon,transparency=TRANSPARENT
+# Cobblestone wall
+block:id=cobblestone_wall,data=0,data=2,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,patch0-2=0:cobblestone,transparency=TRANSPARENT
+# Mossy cobblestone wall
+block:id=cobblestone_wall,data=1,patch0-2=0:cobblestone_mossy,transparency=TRANSPARENT
+# Flower pot
+block:id=flower_pot,data=0,patch0-5=0:flower_pot,patch6=0:dirt,transparency=TRANSPARENT
+# Flower pot with Rose
+block:id=flower_pot,data=1,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:flower_rose,transparency=TRANSPARENT
+# Flower pot with Dandelion
+block:id=flower_pot,data=2,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:flower_dandelion,transparency=TRANSPARENT
+# Flower pot with Oak Sapling
+block:id=flower_pot,data=3,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:sapling_oak,transparency=TRANSPARENT
+# Flower pot with Spruce Sapling
+block:id=flower_pot,data=4,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:sapling_spruce,transparency=TRANSPARENT
+# Flower pot with Birch Sapling
+block:id=flower_pot,data=5,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:sapling_birch,transparency=TRANSPARENT
+# Flower pot with Jungle Sapling
+block:id=flower_pot,data=6,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:sapling_jungle,transparency=TRANSPARENT
+# Flower pot with Red Mushroom
+block:id=flower_pot,data=7,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:mushroom_red,transparency=TRANSPARENT
+# Flower pot with Brown Mushroom
+block:id=flower_pot,data=8,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:mushroom_brown,transparency=TRANSPARENT
+# Flower pot with cactus
+block:id=flower_pot,data=9,patch0-5=0:flower_pot,patch6=0:dirt,patch7-10=0:cactus_side,patch11=0:cactus_top,transparency=TRANSPARENT
+# Flower pot with dead bush
+block:id=flower_pot,data=10,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=0:deadbush,transparency=TRANSPARENT
+# Flower pot with fern
+block:id=flower_pot,data=11,patch0-5=0:flower_pot,patch6=0:dirt,patch7-8=1000:fern,transparency=TRANSPARENT
+# Carrots
+block:id=carrots,data=0,data=1,patch0-3=0:carrots_stage_0,transparency=TRANSPARENT
+block:id=carrots,data=2,data=3,patch0-3=0:carrots_stage_1,transparency=TRANSPARENT
+block:id=carrots,data=4,data=5,data=6,patch0-3=0:carrots_stage_2,transparency=TRANSPARENT
+block:id=carrots,data=7,patch0-3=0:carrots_stage_3,transparency=TRANSPARENT
+# Potato
+block:id=potatoes,data=0,data=1,patch0-3=0:potatoes_stage_0,transparency=TRANSPARENT
+block:id=potatoes,data=2,data=3,patch0-3=0:potatoes_stage_1,transparency=TRANSPARENT
+block:id=potatoes,data=4,data=5,data=6,patch0-3=0:potatoes_stage_2,transparency=TRANSPARENT
+block:id=potatoes,data=7,patch0-3=0:potatoes_stage_3,transparency=TRANSPARENT
+# Wooden button
+block:id=wooden_button,allfaces=0:planks_oak,stdrot=true,transparency=TRANSPARENT
+# Head
+block:id=skull,data=*,patch0=5:skeleton,patch1=4:skeleton,patch2=1:skeleton,patch3=0:skeleton,patch4=2:skeleton,patch5=3:skeleton,patch6=5:wither,patch7=4:wither,patch8=1:wither,patch9=0:wither,patch10=2:wither,patch11=3:wither,patch12=5:zombie,patch13=4:zombie,patch14=1:zombie,patch15=0:zombie,patch16=2:zombie,patch17=3:zombie,patch18=5:char,patch19=4:char,patch20=1:char,patch21=0:char,patch22=2:char,patch23=3:char,patch24=5:creeper,patch25=4:creeper,patch26=1:creeper,patch27=0:creeper,patch28=2:creeper,patch29=3:creeper,transparency=TRANSPARENT
+# Anvil (normal)
+block:id=anvil,data=0,data=1,data=2,data=3,data=12,data=13,data=14,data=15,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_0,transparency=TRANSPARENT
+# Anvil (slight damage)
+block:id=anvil,data=4,data=5,data=6,data=7,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_1,transparency=TRANSPARENT
+# Anvil (heavy damage)
+block:id=anvil,data=8,data=9,data=10,data=11,patch0-19=0:anvil_base,patch20=6000:anvil_top_damaged_2,transparency=TRANSPARENT
+
+# Trap Chest
+block:id=trapped_chest,data=*,patch0=0:trapchest,patch1=1:trapchest,patch2=2:trapchest,patch3=3:trapchest,patch4=4:trapchest,patch5=5:trapchest,patch6=0:bigtrapchest,patch7=1:bigtrapchest,patch8=2:bigtrapchest,patch9=3:bigtrapchest,patch10=4:bigtrapchest,patch11=5:bigtrapchest,patch12=6:bigtrapchest,patch13=7:bigtrapchest,patch14=8:bigtrapchest,patch15=9:bigtrapchest
+
+# Light weighted pressure plate
+block:id=light_weighted_pressure_plate,allfaces=0:gold_block,stdrot=true,transparency=TRANSPARENT
+# Heavy weighted pressure plate
+block:id=heavy_weighted_pressure_plate,allfaces=0:iron_block,stdrot=true,transparency=TRANSPARENT
+
+# (149) Redstone Comparator (inactive)
+block:id=unpowered_comparator,data=0,data=4,data=8,data=12,top=6000:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=unpowered_comparator,data=1,data=5,data=9,data=13,top=5000:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=unpowered_comparator,data=2,data=6,data=10,data=14,top=4000:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=unpowered_comparator,data=3,data=7,data=11,data=15,top=0:comparator_off,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+# (150) Redstone Comparator (active)
+block:id=powered_comparator,data=0,data=4,data=8,data=12,top=6000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=powered_comparator,data=1,data=5,data=9,data=13,top=5000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=powered_comparator,data=2,data=6,data=10,data=14,top=4000:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+block:id=powered_comparator,data=3,data=7,data=11,data=15,top=0:comparator_on,allsides=0:stone,bottom=0:stone,transparency=TRANSPARENT
+
+# (151) Daylight Sensor
+block:id=daylight_detector,data=*,allsides=0:daylight_detector_side,bottom=0:daylight_detector_side,top=0:daylight_detector_top,stdrot=true,transparency=TRANSPARENT
+
+# (152) Block of Redstone
+block:id=redstone_block,data=*,allfaces=0:redstone_block,stdrot=true
+
+# (153)	Nether Quartz Ore
+block:id=quartz_ore,data=*,allfaces=0:quartz_ore,stdrot=true
+
+# (154)	Hopper
+block:id=hopper,data=*,allsides=0:hopper_outside,top=0:hopper_inside,bottom=0:hopper_outside,stdrot=true
+
+#  (155:0) Block of Quartz
+block:id=quartz_block,data=0,top=0:quartz_block_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_side,stdrot=true
+#  (155:1) Chiseled Quartz Block
+block:id=quartz_block,data=1,top=0:quartz_block_chiseled_top,bottom=0:quartz_block_bottom,allsides=0:quartz_block_chiseled,stdrot=true
+#  (155:2) Pillar Quartz Block (vertical)
+block:id=quartz_block,data=2,top=0:quartz_block_lines_top,bottom=0:quartz_block_lines_top,allsides=0:quartz_block_lines,stdrot=true
+#  (155:3) Pillar Quartz Block (north-south)
+block:id=quartz_block,data=3,top=4000:quartz_block_lines,bottom=4000:quartz_block_lines,east=6000:quartz_block_lines,west=6000:quartz_block_lines,north=0:quartz_block_lines_top,south=0:quartz_block_lines_top,stdrot=true
+#  (155:4) Pillar Quartz Block (east-west)
+block:id=quartz_block,data=4,top=0:quartz_block_lines,bottom=0:quartz_block_lines,north=6000:quartz_block_lines,south=6000:quartz_block_lines,east=0:quartz_block_lines_top,west=0:quartz_block_lines_top,stdrot=true
+
+# (156)	Quartz Stairs
+block:id=quartz_stairs,data=*,patch0=0:quartz_block_side,patch1=0:quartz_block_top,patch2=0:quartz_block_bottom,transparency=SEMITRANSPARENT
+
+# (157)	Activator Rail
+# Activator rail - heading east-west - unpowered
+block:id=activator_rail,data=0,patch0=0:rail_activator,transparency=TRANSPARENT
+# Activator rail - incline to east - unpowered
+# Activator rail - incline to west - unpowered
+block:id=activator_rail,data=4,data=5,patch0=0:rail_activator,transparency=TRANSPARENT
+# Activator rail - heading east-west - powered
+block:id=activator_rail,data=8,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+# Activator rail - incline to east - powered
+# Activator rail - incline to west - powered
+block:id=activator_rail,data=12,data=13,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+# Activator rail - heading north-south - unpowered
+block:id=activator_rail,data=1,patch0=0:rail_activator,transparency=TRANSPARENT
+# Activator rail - inclined to north - unpowered
+# Activator rail - inclined to south - unpowered
+block:id=activator_rail,data=2,data=3,patch0=0:rail_activator,transparency=TRANSPARENT
+# Activator rail - heading north-south - powered
+block:id=activator_rail,data=9,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+# Activator rail - inclined to north - powered
+# Activator rail - inclined to south - powered
+block:id=activator_rail,data=10,data=11,patch0=0:rail_activator_powered,transparency=TRANSPARENT
+
+# (158)	Dropper
+block:id=dropper,data=0,top=0:furnace_top,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=6000:dropper_front_vertical
+block:id=dropper,data=1,top=6000:dropper_front_vertical,east=0:furnace_top,south=0:furnace_top,north=0:furnace_top,west=0:furnace_top,bottom=0:furnace_top
+block:id=dropper,data=2,top=0:furnace_top,east=0:dropper_front_horizontal,south=0:furnace_side,north=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=3,top=0:furnace_top,west=0:dropper_front_horizontal,south=0:furnace_side,north=0:furnace_side,east=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=4,top=0:furnace_top,north=0:dropper_front_horizontal,south=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+block:id=dropper,data=5,top=0:furnace_top,south=0:dropper_front_horizontal,north=0:furnace_side,east=0:furnace_side,west=0:furnace_side,bottom=0:furnace_top
+
+# (159) Colored clay
+block:id=stained_hardened_clay,data=15,stdrot=true,allfaces=0:hardened_clay_stained_black
+block:id=stained_hardened_clay,data=14,stdrot=true,allfaces=0:hardened_clay_stained_red
+block:id=stained_hardened_clay,data=13,stdrot=true,allfaces=0:hardened_clay_stained_green
+block:id=stained_hardened_clay,data=12,stdrot=true,allfaces=0:hardened_clay_stained_brown
+block:id=stained_hardened_clay,data=11,stdrot=true,allfaces=0:hardened_clay_stained_blue
+block:id=stained_hardened_clay,data=10,stdrot=true,allfaces=0:hardened_clay_stained_purple
+block:id=stained_hardened_clay,data=9,stdrot=true,allfaces=0:hardened_clay_stained_cyan
+block:id=stained_hardened_clay,data=8,stdrot=true,allfaces=0:hardened_clay_stained_silver
+block:id=stained_hardened_clay,data=7,stdrot=true,allfaces=0:hardened_clay_stained_gray
+block:id=stained_hardened_clay,data=6,stdrot=true,allfaces=0:hardened_clay_stained_pink
+block:id=stained_hardened_clay,data=5,stdrot=true,allfaces=0:hardened_clay_stained_lime
+block:id=stained_hardened_clay,data=4,stdrot=true,allfaces=0:hardened_clay_stained_yellow
+block:id=stained_hardened_clay,data=3,stdrot=true,allfaces=0:hardened_clay_stained_light_blue
+block:id=stained_hardened_clay,data=2,stdrot=true,allfaces=0:hardened_clay_stained_magenta
+block:id=stained_hardened_clay,data=1,stdrot=true,allfaces=0:hardened_clay_stained_orange
+block:id=stained_hardened_clay,data=0,stdrot=true,allfaces=0:hardened_clay_stained_white
+# (160) Stained Glass Pane
+[1.7.0-]block:id=stained_glass_pane,data=0,patch0=12000:glass_white,patch1=12000:glass_pane_top_white,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=1,patch0=12000:glass_orange,patch1=12000:glass_pane_top_orange,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=2,patch0=12000:glass_magenta,patch1=12000:glass_pane_top_magenta,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=3,patch0=12000:glass_light_blue,patch1=12000:glass_pane_top_light_blue,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=4,patch0=12000:glass_yellow,patch1=12000:glass_pane_top_yellow,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=5,patch0=12000:glass_lime,patch1=12000:glass_pane_top_lime,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=6,patch0=12000:glass_pink,patch1=12000:glass_pane_top_pink,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=7,patch0=12000:glass_gray,patch1=12000:glass_pane_top_gray,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=8,patch0=12000:glass_silver,patch1=12000:glass_pane_top_silver,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=9,patch0=12000:glass_cyan,patch1=12000:glass_pane_top_cyan,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=10,patch0=12000:glass_purple,patch1=12000:glass_pane_top_purple,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=11,patch0=12000:glass_blue,patch1=12000:glass_pane_top_blue,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=12,patch0=12000:glass_brown,patch1=12000:glass_pane_top_brown,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=13,patch0=12000:glass_green,patch1=12000:glass_pane_top_green,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=14,patch0=12000:glass_red,patch1=12000:glass_pane_top_red,transparency=TRANSPARENT
+[1.7.0-]block:id=stained_glass_pane,data=15,patch0=12000:glass_black,patch1=12000:glass_pane_top_black,transparency=TRANSPARENT
+
+# Leaves (acacia) (161)
+[1.7.0-]block:id=leaves2,data=0,data=4,data=8,data=12,allfaces=2000:leaves_acacia,stdrot=true,transparency=LEAVES
+# Leaves (big oak) (161)
+[1.7.0-]block:id=leaves2,data=1,data=5,data=9,data=13,allfaces=2000:leaves_big_oak,stdrot=true,transparency=LEAVES
+
+# Wood (acacia) (162)
+[1.7.0-]block:id=log2,data=0,allsides=0:log_acacia,topbottom=0:log_acacia_top,stdrot=true
+[1.7.0-]block:id=log2,data=4,north=0:log_acacia_top,south=0:log_acacia_top,east=4000:log_acacia,west=4000:log_acacia,top=0:log_acacia,bottom=0:log_acacia
+[1.7.0-]block:id=log2,data=8,north=4000:log_acacia,south=4000:log_acacia,east=0:log_acacia_top,west=0:log_acacia_top,top=4000:log_acacia,bottom=4000:log_acacia
+[1.7.0-]block:id=log2,data=12,allfaces=0:log_acacia,stdrot=true
+# Wood (big oak) (162)
+[1.7.0-]block:id=log2,data=1,allsides=0:log_spruce,topbottom=0:log_spruce_top,stdrot=true
+[1.7.0-]block:id=log2,data=5,north=0:log_spruce_top,south=0:log_spruce_top,east=4000:log_spruce,west=4000:log_spruce,top=0:log_spruce,bottom=0:log_spruce
+[1.7.0-]block:id=log2,data=9,north=4000:log_spruce,south=4000:log_spruce,east=0:log_spruce_top,west=0:log_spruce_top,top=4000:log_spruce,bottom=4000:log_spruce
+[1.7.0-]block:id=log2,data=13,allfaces=0:log_spruce,stdrot=true
+# Acacia Stairs (163)
+[1.7.0-]block:id=acacia_stairs,data=*,patch0-2=0:planks_acacia,transparency=SEMITRANSPARENT
+# Dark Oak Stairs (164)
+[1.7.0-]block:id=dark_oak_stairs,data=*,patch0-2=0:planks_big_oak,transparency=SEMITRANSPARENT
+
+# (170) Hay
+block:id=hay_block,data=*,allsides=0:hay_block_side,topbottom=0:hay_block_top,stdrot=true
+# (171) Carpet
+block:id=carpet,data=15,stdrot=true,allfaces=0:wool_colored_black
+block:id=carpet,data=14,stdrot=true,allfaces=0:wool_colored_red
+block:id=carpet,data=13,stdrot=true,allfaces=0:wool_colored_green
+block:id=carpet,data=12,stdrot=true,allfaces=0:wool_colored_brown
+block:id=carpet,data=11,stdrot=true,allfaces=0:wool_colored_blue
+block:id=carpet,data=10,stdrot=true,allfaces=0:wool_colored_purple
+block:id=carpet,data=9,stdrot=true,allfaces=0:wool_colored_cyan
+block:id=carpet,data=8,stdrot=true,allfaces=0:wool_colored_silver
+block:id=carpet,data=7,stdrot=true,allfaces=0:wool_colored_gray
+block:id=carpet,data=6,stdrot=true,allfaces=0:wool_colored_pink
+block:id=carpet,data=5,stdrot=true,allfaces=0:wool_colored_lime
+block:id=carpet,data=4,stdrot=true,allfaces=0:wool_colored_yellow
+block:id=carpet,data=3,stdrot=true,allfaces=0:wool_colored_light_blue
+block:id=carpet,data=2,stdrot=true,allfaces=0:wool_colored_magenta
+block:id=carpet,data=1,stdrot=true,allfaces=0:wool_colored_orange
+block:id=carpet,data=0,stdrot=true,allfaces=0:wool_colored_white
+# (172) Hardened clay
+block:id=hardened_clay,data=*,stdrot=true,allfaces=0:hardened_clay
+# (173) Coal block    
+block:id=coal_block,data=*,stdrot=true,allfaces=0:coal_block
+# (174) Packed Ice
+[1.7.0-]block:id=packed_ice,allfaces=0:ice_packed,stdrot=true
+# (175) Double Plant
+[1.7.0-]block:id=double_plant,data=0,data=1,data=2,data=3,data=4,data=5,patch0=0:double_plant_sunflower_bottom,patch1=0:double_plant_syringa_bottom,patch2=1000:double_plant_grass_bottom,patch3=1000:double_plant_fern_bottom,patch4=0:double_plant_rose_bottom,patch5=0:double_plant_paeonia_bottom,transparency=TRANSPARENT
+[1.7.0-]block:id=double_plant,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,patch0=0:double_plant_sunflower_top,patch1=0:double_plant_syringa_top,patch2=1000:double_plant_grass_top,patch3=1000:double_plant_fern_top,patch4=0:double_plant_rose_top,patch5=0:double_plant_paeonia_top,transparency=TRANSPARENT
+
+# 1.8 blocks
+[1.8.0-]texture:id=stone_granite
+[1.8.0-]texture:id=stone_granite_smooth
+[1.8.0-]texture:id=stone_diorite
+[1.8.0-]texture:id=stone_diorite_smooth
+[1.8.0-]texture:id=stone_andesite
+[1.8.0-]texture:id=stone_andesite_smooth
+[1.8.0-]texture:id=sponge_wet
+[1.8.0-]texture:id=slime
+[1.8.0-]texture:id=iron_trapdoor
+[1.8.0-]texture:id=prismarine_bricks
+[1.8.0-]texture:id=prismarine_dark
+[1.8.0-]texture:id=prismarine_rough
+[1.8.0-]texture:id=sea_lantern
+[1.8.0-]texture:id=daylight_detector_inverted_top
+[1.8.0-]texture:id=red_sandstone_bottom
+[1.8.0-]texture:id=red_sandstone_carved
+[1.8.0-]texture:id=red_sandstone_normal
+[1.8.0-]texture:id=red_sandstone_smooth
+[1.8.0-]texture:id=red_sandstone_top
+[1.8.0-]texture:id=planks_big_oak
+[1.8.0-]texture:id=door_acacia_lower
+[1.8.0-]texture:id=door_acacia_upper
+[1.8.0-]texture:id=door_birch_lower
+[1.8.0-]texture:id=door_birch_upper
+[1.8.0-]texture:id=door_dark_oak_lower
+[1.8.0-]texture:id=door_dark_oak_upper
+[1.8.0-]texture:id=door_iron_lower
+[1.8.0-]texture:id=door_iron_upper
+[1.8.0-]texture:id=door_jungle_lower
+[1.8.0-]texture:id=door_jungle_upper
+[1.8.0-]texture:id=door_spruce_lower
+[1.8.0-]texture:id=door_spruce_upper
+# Granite
+[1.8.0-]block:id=stone,data=1,allfaces=0:stone_granite,stdrot=true
+# Polished Granite
+[1.8.0-]block:id=stone,data=2,allfaces=0:stone_granite_smooth,stdrot=true
+# Diorite
+[1.8.0-]block:id=stone,data=3,allfaces=0:stone_diorite,stdrot=true
+# Polished Diorite
+[1.8.0-]block:id=stone,data=4,allfaces=0:stone_diorite_smooth,stdrot=true
+# Andesite
+[1.8.0-]block:id=stone,data=5,allfaces=0:stone_andesite,stdrot=true
+# Polished Andesite
+[1.8.0-]block:id=stone,data=6,allfaces=0:stone_andesite_smooth,stdrot=true
+# Wet Sponge
+[1.8.0-]block:id=sponge,data=1,allfaces=0:sponge_wet,stdrot=true
+# Slime Block
+[1.8.0-]block:id=slime,data=*,allfaces=0:slime,stdrot=true
+# Barrier
+[1.8.0-]block:id=barrier,data=*,transparency=TRANSPARENT
+# Iron Trapdoor
+[1.8.0-]block:id=iron_trapdoor,allfaces=0:iron_trapdoor,stdrot=true,transparency=TRANSPARENT
+# Prismarine
+[1.8.0-]block:id=prismarine,data=0,allfaces=0:prismarine_rough,stdrot=true
+# Prismarine Bricks
+[1.8.0-]block:id=prismarine,data=1,allfaces=0:prismarine_bricks,stdrot=true
+# Dark Prismarine
+[1.8.0-]block:id=prismarine,data=2,allfaces=0:prismarine_dark,stdrot=true
+# Sea Lantern
+[1.8.0-]block:id=sea_lantern,data=*,allfaces=0:sea_lantern,stdrot=true
+
+# Inverted Daylight Sensor
+[1.8.0-]block:id=daylight_detector_inverted,data=*,allsides=0:daylight_detector_side,bottom=0:daylight_detector_side,top=0:daylight_detector_inverted_top,stdrot=true,transparency=TRANSPARENT
+
+# Red Sandstone
+[1.8.0-]block:id=red_sandstone,data=0,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone_normal,stdrot=true
+
+# Carved Red Sandstone
+[1.8.0-]block:id=red_sandstone,data=1,data=3,data=4,data=5,data=6,data=7,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,allsides=0:red_sandstone_carved,topbottom=0:red_sandstone_top,stdrot=true
+
+# Smooth Red Sandstone
+[1.8.0-]block:id=red_sandstone,data=2,allsides=0:red_sandstone_smooth,topbottom=0:red_sandstone_top,stdrot=true
+
+# Red Sandstone stairs
+[1.8.0-]block:id=red_sandstone_stairs,data=*,patch0=0:red_sandstone_normal,patch1=0:red_sandstone_top,patch2=0:red_sandstone_bottom,transparency=SEMITRANSPARENT
+
+# Red Sandstone Slab (Double)
+[1.8.0-]block:id=double_stone_slab2,data=0,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone_normal,stdrot=true
+[1.8.0-]block:id=double_stone_slab2,data=8,allfaces=0:red_sandstone_top,stdrot=true
+
+# Red Sandstone Slab
+[1.8.0-]block:id=stone_slab2,data=0,data=8,bottom=0:red_sandstone_bottom,top=0:red_sandstone_top,allsides=0:red_sandstone_normal,stdrot=true,transparency=SEMITRANSPARENT
+
+# Fence Gate (Spruce)
+[1.8.0-]block:id=spruce_fence_gate,patch0-2=0:planks_spruce,stdrot=true,transparency=TRANSPARENT
+
+# Fence Gate (Birch)
+[1.8.0-]block:id=birch_fence_gate,patch0-2=0:planks_birch,stdrot=true,transparency=TRANSPARENT
+
+# Fence Gate (Jungle)
+[1.8.0-]block:id=jungle_fence_gate,patch0-2=0:planks_jungle,stdrot=true,transparency=TRANSPARENT
+
+# Fence Gate (Dark Oak)
+[1.8.0-]block:id=dark_oak_fence_gate,patch0-2=0:planks_big_oak,stdrot=true,transparency=TRANSPARENT
+
+# Fence Gate (Acacia)
+[1.8.0-]block:id=acacia_fence_gate,patch0-2=0:planks_acacia,stdrot=true,transparency=TRANSPARENT
+
+# Fence (Spruce)
+[1.8.0-]block:id=spruce_fence,patch0-2=0:planks_spruce,transparency=TRANSPARENT
+
+# Fence (Birch)
+[1.8.0-]block:id=birch_fence,patch0-2=0:planks_birch,transparency=TRANSPARENT
+
+# Fence (Jungle)
+[1.8.0-]block:id=jungle_fence,patch0-2=0:planks_jungle,transparency=TRANSPARENT
+
+# Fence (Dark Oak)
+[1.8.0-]block:id=dark_oak_fence,patch0-2=0:planks_big_oak,transparency=TRANSPARENT
+
+# Fence (Acacia)
+[1.8.0-]block:id=acacia_fence,patch0-2=0:planks_acacia,transparency=TRANSPARENT
+
+# Wooden Door Block (Spruce)
+[1.8.0-]block:id=spruce_door,data=*,patch0=0:door_spruce_upper,patch1=0:door_spruce_lower,transparency=TRANSPARENT
+
+# Wooden Door Block (Birch)
+[1.8.0-]block:id=birch_door,data=*,patch0=0:door_birch_upper,patch1=0:door_birch_lower,transparency=TRANSPARENT
+
+# Wooden Door Block (Jungle)
+[1.8.0-]block:id=jungle_door,data=*,patch0=0:door_jungle_upper,patch1=0:door_jungle_lower,transparency=TRANSPARENT
+
+# Wooden Door Block (Acacia)
+[1.8.0-]block:id=acacia_door,data=*,patch0=0:door_acacia_upper,patch1=0:door_acacia_lower,transparency=TRANSPARENT
+
+# Wooden Door Block (Dark Oak)
+[1.8.0-]block:id=dark_oak_door,data=*,patch0=0:door_dark_oak_upper,patch1=0:door_dark_oak_lower,transparency=TRANSPARENT
+
+# 1.9 blocks
+[1.9.0-]texture:id=end_rod
+[1.9.0-]texture:id=chorus_plant
+[1.9.0-]texture:id=chorus_flower
+[1.9.0-]texture:id=chorus_flower_dead
+[1.9.0-]texture:id=purpur_block
+[1.9.0-]texture:id=purpur_pillar_top
+[1.9.0-]texture:id=purpur_pillar
+[1.9.0-]texture:id=end_bricks
+[1.9.0-]texture:id=beetroots_stage_0
+[1.9.0-]texture:id=beetroots_stage_1
+[1.9.0-]texture:id=beetroots_stage_2
+[1.9.0-]texture:id=beetroots_stage_3
+[1.9.0-]texture:id=grass_path_top
+[1.9.0-]texture:id=grass_path_side
+[1.9.0-]texture:id=command_block_back
+[1.9.0-]texture:id=command_block_front
+[1.9.0-]texture:id=command_block_side
+[1.9.0-]texture:id=command_block_conditional
+[1.9.0-]texture:id=repeating_command_block_back
+[1.9.0-]texture:id=repeating_command_block_front
+[1.9.0-]texture:id=repeating_command_block_side
+[1.9.0-]texture:id=repeating_command_block_conditional
+[1.9.0-]texture:id=chain_command_block_back
+[1.9.0-]texture:id=chain_command_block_front
+[1.9.0-]texture:id=chain_command_block_side
+[1.9.0-]texture:id=chain_command_block_conditional
+[1.9.0-]texture:id=frosted_ice_0
+[1.9.0-]texture:id=frosted_ice_1
+[1.9.0-]texture:id=frosted_ice_2
+[1.9.0-]texture:id=frosted_ice_3
+
+# End rod
+[1.9.0-]block:id=end_rod,data=*,patch0=0:end_rod,transparency=TRANSPARENT
+
+# Chorus Plant
+[1.9.0-]block:id=chorus_plant,data=*,patch0-2=0:chorus_plant,transparency=TRANSPARENT
+
+# Chorus Flower
+[1.9.0-]block:id=chorus_flower,data=0,data=1,data=2,data=3,data=4,stdrot=true,allfaces=0:chorus_flower,transparency=TRANSPARENT
+[1.9.0-]block:id=chorus_flower,data=5,stdrot=true,allfaces=0:chorus_flower_dead,transparency=TRANSPARENT
+
+# Purpur Block
+[1.9.0-]block:id=purpur_block,data=*,stdrot=true,allfaces=0:purpur_block
+
+# Purpur Pillar
+[1.9.0-]block:id=purpur_pillar,data=0,allsides=0:purpur_pillar,topbottom=0:purpur_pillar_top,stdrot=true
+[1.9.0-]block:id=purpur_pillar,data=4,north=0:purpur_pillar_top,south=0:purpur_pillar_top,east=4000:purpur_pillar,west=4000:purpur_pillar,top=0:purpur_pillar,bottom=0:purpur_pillar
+[1.9.0-]block:id=purpur_pillar,data=8,north=4000:purpur_pillar,south=4000:purpur_pillar,east=0:purpur_pillar_top,west=0:purpur_pillar_top,top=4000:purpur_pillar,bottom=4000:purpur_pillar
+[1.9.0-]block:id=purpur_pillar,data=12,allfaces=0:purpur_pillar,stdrot=true
+
+# Purpur Stairs
+[1.9.0-]block:id=purpur_stairs,data=*,patch0-2=0:purpur_block,transparency=SEMITRANSPARENT
+
+# Purpur Slab (Double)
+[1.9.0-]block:id=purpur_double_slab,data=0,bottom=0:purpur_block,top=0:purpur_block,allsides=0:purpur_block,stdrot=true
+[1.9.0-]block:id=purpur_double_slab,data=8,allfaces=0:purpur_block,stdrot=true
+
+# Purpur Slab
+[1.9.0-]block:id=purpur_slab,data=0,data=8,bottom=0:purpur_block,top=0:purpur_block,allsides=0:purpur_block,stdrot=true,transparency=SEMITRANSPARENT
+
+# End Stone Bricks
+[1.9.0-]block:id=end_bricks,data=*,stdrot=true,allfaces=0:end_bricks
+
+# Beetroot
+[1.9.0-]block:id=beetroots,data=0,patch0-3=0:beetroots_stage_0,transparency=TRANSPARENT
+[1.9.0-]block:id=beetroots,data=1,patch0-3=0:beetroots_stage_1,transparency=TRANSPARENT
+[1.9.0-]block:id=beetroots,data=2,patch0-3=0:beetroots_stage_2,transparency=TRANSPARENT
+[1.9.0-]block:id=beetroots,data=3,patch0-3=0:beetroots_stage_3,transparency=TRANSPARENT
+
+# Grass Path
+[1.9.0-]block:id=grass_path,allsides=0:grass_path_side,top=0:grass_path_top,bottom=0:dirt,stdrot=true,transparency=SEMITRANSPARENT
+
+# End Gateway
+[1.9.0-]block:id=end_gateway,data=*,stdrot=true,allfaces=0:endportal
+
+# Command Block (1.9 improvements)
+[1.9.0-]block:id=command_block,data=0,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_side,north=5000:command_block_side,east=5000:command_block_side,west=5000:command_block_side
+[1.9.0-]block:id=command_block,data=1,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_side,north=0:command_block_side,east=0:command_block_side,west=0:command_block_side
+[1.9.0-]block:id=command_block,data=2,top=6000:command_block_side,bottom=6000:command_block_side,south=6000:command_block_side,north=6000:command_block_side,east=0:command_block_front,west=0:command_block_back
+[1.9.0-]block:id=command_block,data=3,top=4000:command_block_side,bottom=4000:command_block_side,south=4000:command_block_side,north=4000:command_block_side,east=0:command_block_back,west=0:command_block_front
+[1.9.0-]block:id=command_block,data=4,top=0:command_block_side,bottom=0:command_block_side,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_side,west=4000:command_block_side
+[1.9.0-]block:id=command_block,data=5,top=5000:command_block_side,bottom=5000:command_block_side,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_side,west=6000:command_block_side
+[1.9.0-]block:id=command_block,data=8,top=4000:command_block_back,bottom=4000:command_block_front,south=5000:command_block_conditional,north=5000:command_block_conditional,east=5000:command_block_conditional,west=5000:command_block_conditional
+[1.9.0-]block:id=command_block,data=9,top=4000:command_block_front,bottom=4000:command_block_back,south=0:command_block_conditional,north=0:command_block_conditional,east=0:command_block_conditional,west=0:command_block_conditional
+[1.9.0-]block:id=command_block,data=10,top=6000:command_block_conditional,bottom=6000:command_block_conditional,south=6000:command_block_conditional,north=6000:command_block_conditional,east=0:command_block_front,west=0:command_block_back
+[1.9.0-]block:id=command_block,data=11,top=4000:command_block_conditional,bottom=4000:command_block_conditional,south=4000:command_block_conditional,north=4000:command_block_conditional,east=0:command_block_back,west=0:command_block_front
+[1.9.0-]block:id=command_block,data=12,top=0:command_block_conditional,bottom=0:command_block_conditional,south=0:command_block_back,north=0:command_block_front,east=4000:command_block_conditional,west=4000:command_block_conditional
+[1.9.0-]block:id=command_block,data=13,top=5000:command_block_conditional,bottom=5000:command_block_conditional,south=0:command_block_front,north=0:command_block_back,east=6000:command_block_conditional,west=6000:command_block_conditional
+
+# Repeating Command Block
+[1.9.0-]block:id=repeating_command_block,data=0,top=4000:repeating_command_block_back,bottom=4000:repeating_command_block_front,south=5000:repeating_command_block_side,north=5000:repeating_command_block_side,east=5000:repeating_command_block_side,west=5000:repeating_command_block_side
+[1.9.0-]block:id=repeating_command_block,data=1,top=4000:repeating_command_block_front,bottom=4000:repeating_command_block_back,south=0:repeating_command_block_side,north=0:repeating_command_block_side,east=0:repeating_command_block_side,west=0:repeating_command_block_side
+[1.9.0-]block:id=repeating_command_block,data=2,top=6000:repeating_command_block_side,bottom=6000:repeating_command_block_side,south=6000:repeating_command_block_side,north=6000:repeating_command_block_side,east=0:repeating_command_block_front,west=0:repeating_command_block_back
+[1.9.0-]block:id=repeating_command_block,data=3,top=4000:repeating_command_block_side,bottom=4000:repeating_command_block_side,south=4000:repeating_command_block_side,north=4000:repeating_command_block_side,east=0:repeating_command_block_back,west=0:repeating_command_block_front
+[1.9.0-]block:id=repeating_command_block,data=4,top=0:repeating_command_block_side,bottom=0:repeating_command_block_side,south=0:repeating_command_block_back,north=0:repeating_command_block_front,east=4000:repeating_command_block_side,west=4000:repeating_command_block_side
+[1.9.0-]block:id=repeating_command_block,data=5,top=5000:repeating_command_block_side,bottom=5000:repeating_command_block_side,south=0:repeating_command_block_front,north=0:repeating_command_block_back,east=6000:repeating_command_block_side,west=6000:repeating_command_block_side
+[1.9.0-]block:id=repeating_command_block,data=8,top=4000:repeating_command_block_back,bottom=4000:repeating_command_block_front,south=5000:repeating_command_block_conditional,north=5000:repeating_command_block_conditional,east=5000:repeating_command_block_conditional,west=5000:repeating_command_block_conditional
+[1.9.0-]block:id=repeating_command_block,data=9,top=4000:repeating_command_block_front,bottom=4000:repeating_command_block_back,south=0:repeating_command_block_conditional,north=0:repeating_command_block_conditional,east=0:repeating_command_block_conditional,west=0:repeating_command_block_conditional
+[1.9.0-]block:id=repeating_command_block,data=10,top=6000:repeating_command_block_conditional,bottom=6000:repeating_command_block_conditional,south=6000:repeating_command_block_conditional,north=6000:repeating_command_block_conditional,east=0:repeating_command_block_front,west=0:repeating_command_block_back
+[1.9.0-]block:id=repeating_command_block,data=11,top=4000:repeating_command_block_conditional,bottom=4000:repeating_command_block_conditional,south=4000:repeating_command_block_conditional,north=4000:repeating_command_block_conditional,east=0:repeating_command_block_back,west=0:repeating_command_block_front
+[1.9.0-]block:id=repeating_command_block,data=12,top=0:repeating_command_block_conditional,bottom=0:repeating_command_block_conditional,south=0:repeating_command_block_back,north=0:repeating_command_block_front,east=4000:repeating_command_block_conditional,west=4000:repeating_command_block_conditional
+[1.9.0-]block:id=repeating_command_block,data=13,top=5000:repeating_command_block_conditional,bottom=5000:repeating_command_block_conditional,south=0:repeating_command_block_front,north=0:repeating_command_block_back,east=6000:repeating_command_block_conditional,west=6000:repeating_command_block_conditional
+
+# Chain Command Block
+[1.9.0-]block:id=chain_command_block,data=0,top=4000:chain_command_block_back,bottom=4000:chain_command_block_front,south=5000:chain_command_block_side,north=5000:chain_command_block_side,east=5000:chain_command_block_side,west=5000:chain_command_block_side
+[1.9.0-]block:id=chain_command_block,data=1,top=4000:chain_command_block_front,bottom=4000:chain_command_block_back,south=0:chain_command_block_side,north=0:chain_command_block_side,east=0:chain_command_block_side,west=0:chain_command_block_side
+[1.9.0-]block:id=chain_command_block,data=2,top=6000:chain_command_block_side,bottom=6000:chain_command_block_side,south=6000:chain_command_block_side,north=6000:chain_command_block_side,east=0:chain_command_block_front,west=0:chain_command_block_back
+[1.9.0-]block:id=chain_command_block,data=3,top=4000:chain_command_block_side,bottom=4000:chain_command_block_side,south=4000:chain_command_block_side,north=4000:chain_command_block_side,east=0:chain_command_block_back,west=0:chain_command_block_front
+[1.9.0-]block:id=chain_command_block,data=4,top=0:chain_command_block_side,bottom=0:chain_command_block_side,south=0:chain_command_block_back,north=0:chain_command_block_front,east=4000:chain_command_block_side,west=4000:chain_command_block_side
+[1.9.0-]block:id=chain_command_block,data=5,top=5000:chain_command_block_side,bottom=5000:chain_command_block_side,south=0:chain_command_block_front,north=0:chain_command_block_back,east=6000:chain_command_block_side,west=6000:chain_command_block_side
+[1.9.0-]block:id=chain_command_block,data=8,top=4000:chain_command_block_back,bottom=4000:chain_command_block_front,south=5000:chain_command_block_conditional,north=5000:chain_command_block_conditional,east=5000:chain_command_block_conditional,west=5000:chain_command_block_conditional
+[1.9.0-]block:id=chain_command_block,data=9,top=4000:chain_command_block_front,bottom=4000:chain_command_block_back,south=0:chain_command_block_conditional,north=0:chain_command_block_conditional,east=0:chain_command_block_conditional,west=0:chain_command_block_conditional
+[1.9.0-]block:id=chain_command_block,data=10,top=6000:chain_command_block_conditional,bottom=6000:chain_command_block_conditional,south=6000:chain_command_block_conditional,north=6000:chain_command_block_conditional,east=0:chain_command_block_front,west=0:chain_command_block_back
+[1.9.0-]block:id=chain_command_block,data=11,top=4000:chain_command_block_conditional,bottom=4000:chain_command_block_conditional,south=4000:chain_command_block_conditional,north=4000:chain_command_block_conditional,east=0:chain_command_block_back,west=0:chain_command_block_front
+[1.9.0-]block:id=chain_command_block,data=12,top=0:chain_command_block_conditional,bottom=0:chain_command_block_conditional,south=0:chain_command_block_back,north=0:chain_command_block_front,east=4000:chain_command_block_conditional,west=4000:chain_command_block_conditional
+[1.9.0-]block:id=chain_command_block,data=13,top=5000:chain_command_block_conditional,bottom=5000:chain_command_block_conditional,south=0:chain_command_block_front,north=0:chain_command_block_back,east=6000:chain_command_block_conditional,west=6000:chain_command_block_conditional
+
+# Frosted Ice
+[1.9.0-]block:id=frosted_ice,data=0,allfaces=12000:frosted_ice_0,stdrot=true,transparency=TRANSPARENT
+[1.9.0-]block:id=frosted_ice,data=1,allfaces=12000:frosted_ice_1,stdrot=true,transparency=TRANSPARENT
+[1.9.0-]block:id=frosted_ice,data=2,allfaces=12000:frosted_ice_2,stdrot=true,transparency=TRANSPARENT
+[1.9.0-]block:id=frosted_ice,data=3,allfaces=12000:frosted_ice_3,stdrot=true,transparency=TRANSPARENT
+
+# 1.10 blocks
+[1.10.0-]texture:id=magma
+[1.10.0-]texture:id=nether_wart_block
+[1.10.0-]texture:id=red_nether_brick
+[1.10.0-]texture:id=bone_block_side
+[1.10.0-]texture:id=bone_block_top
+[1.10.0-]texture:id=structure_block_save
+[1.10.0-]texture:id=structure_block_load
+[1.10.0-]texture:id=structure_block_corner
+[1.10.0-]texture:id=structure_block_data
+
+# Magma Block
+[1.10.0-]block:id=magma,data=*,stdrot=true,allfaces=0:magma
+
+# Nether Wart Block
+[1.10.0-]block:id=nether_wart_block,data=*,stdrot=true,allfaces=0:nether_wart_block
+
+# Red Nether Block
+[1.10.0-]block:id=red_nether_brick,data=*,stdrot=true,allfaces=0:red_nether_brick
+
+# Bone Block
+[1.10.0-]block:id=bone_block,data=0,allsides=0:bone_block_side,topbottom=0:bone_block_top,stdrot=true
+[1.10.0-]block:id=bone_block,data=4,north=0:bone_block_top,south=0:bone_block_top,east=4000:bone_block_side,west=4000:bone_block_side,top=0:bone_block_side,bottom=0:bone_block_side
+[1.10.0-]block:id=bone_block,data=8,north=4000:bone_block_side,south=4000:bone_block_side,east=0:bone_block_top,west=0:bone_block_top,top=4000:bone_block_side,bottom=4000:bone_block_side
+[1.10.0-]block:id=bone_block,data=12,allfaces=0:bone_block_side,stdrot=true
+
+# Structure Block
+[1.10.0-]block:id=structure_block,data=0,stdrot=true,allfaces=0:structure_block_save
+[1.10.0-]block:id=structure_block,data=1,stdrot=true,allfaces=0:structure_block_load
+[1.10.0-]block:id=structure_block,data=2,stdrot=true,allfaces=0:structure_block_corner
+[1.10.0-]block:id=structure_block,data=3,stdrot=true,allfaces=0:structure_block_data
+
+# 1.11 blocks
+[1.11.0-]texture:id=observer_front
+[1.11.0-]texture:id=observer_back
+[1.11.0-]texture:id=observer_side
+[1.11.0-]texture:id=observer_top
+[1.11.0-]texturefile:id=shulker_white,filename=assets/minecraft/textures/entity/shulker/shulker_white.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_orange,filename=assets/minecraft/textures/entity/shulker/shulker_orange.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_magenta,filename=assets/minecraft/textures/entity/shulker/shulker_magenta.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_light_blue,filename=assets/minecraft/textures/entity/shulker/shulker_light_blue.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_yellow,filename=assets/minecraft/textures/entity/shulker/shulker_yellow.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_lime,filename=assets/minecraft/textures/entity/shulker/shulker_lime.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_pink,filename=assets/minecraft/textures/entity/shulker/shulker_pink.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_gray,filename=assets/minecraft/textures/entity/shulker/shulker_gray.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_silver,filename=assets/minecraft/textures/entity/shulker/shulker_silver.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_cyan,filename=assets/minecraft/textures/entity/shulker/shulker_cyan.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_purple,filename=assets/minecraft/textures/entity/shulker/shulker_purple.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_blue,filename=assets/minecraft/textures/entity/shulker/shulker_blue.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_brown,filename=assets/minecraft/textures/entity/shulker/shulker_brown.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_green,filename=assets/minecraft/textures/entity/shulker/shulker_green.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_red,filename=assets/minecraft/textures/entity/shulker/shulker_red.png,format=SHULKER
+[1.11.0-]texturefile:id=shulker_black,filename=assets/minecraft/textures/entity/shulker/shulker_black.png,format=SHULKER
+
+# Observer Block
+[1.11.0-]block:id=observer,data=0,top=4000:observer_back,east=0:observer_top,south=4000:observer_side,north=4000:observer_side,west=0:observer_top,bottom=4000:observer_front
+[1.11.0-]block:id=observer,data=1,top=4000:observer_front,east=5000:observer_top,south=4000:observer_side,north=4000:observer_side,west=5000:observer_top,bottom=4000:observer_back
+[1.11.0-]block:id=observer,data=2,top=4000:observer_top,east=0:observer_front,south=0:observer_side,north=0:observer_side,west=0:observer_back,bottom=4000:observer_top
+[1.11.0-]block:id=observer,data=3,top=6000:observer_top,east=0:observer_back,south=0:observer_side,north=0:observer_side,west=0:observer_front,bottom=6000:observer_top
+[1.11.0-]block:id=observer,data=4,top=5000:observer_top,east=0:observer_side,south=0:observer_back,north=0:observer_front,west=0:observer_side,bottom=5000:observer_top
+[1.11.0-]block:id=observer,data=5,top=0:observer_top,east=0:observer_side,south=0:observer_front,north=0:observer_back,west=0:observer_side,bottom=0:observer_top
+
+# Shulker Blocks (facing bottom)
+[1.11.0-]block:id=white_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_white
+[1.11.0-]block:id=orange_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_orange
+[1.11.0-]block:id=magenta_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_magenta
+[1.11.0-]block:id=light_blue_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_light_blue
+[1.11.0-]block:id=yellow_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_yellow
+[1.11.0-]block:id=lime_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_lime
+[1.11.0-]block:id=pink_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_pink
+[1.11.0-]block:id=gray_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_gray
+[1.11.0-]block:id=silver_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_silver
+[1.11.0-]block:id=cyan_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_cyan
+[1.11.0-]block:id=purple_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_purple
+[1.11.0-]block:id=blue_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_blue
+[1.11.0-]block:id=brown_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_brown
+[1.11.0-]block:id=green_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_green
+[1.11.0-]block:id=red_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_red
+[1.11.0-]block:id=black_shulker_box,data=0,top=4005,bottom=0,south=5004,north=5002,east=5003,west=5001,txtid=shulker_black
+
+# Shulker Blocks (facing top)
+[1.11.0-]block:id=white_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_white
+[1.11.0-]block:id=orange_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_orange
+[1.11.0-]block:id=magenta_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_magenta
+[1.11.0-]block:id=light_blue_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_light_blue
+[1.11.0-]block:id=yellow_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_yellow
+[1.11.0-]block:id=lime_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_lime
+[1.11.0-]block:id=pink_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_pink
+[1.11.0-]block:id=gray_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_gray
+[1.11.0-]block:id=silver_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_silver
+[1.11.0-]block:id=cyan_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_cyan
+[1.11.0-]block:id=purple_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_purple
+[1.11.0-]block:id=blue_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_blue
+[1.11.0-]block:id=brown_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_brown
+[1.11.0-]block:id=green_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_green
+[1.11.0-]block:id=red_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_red
+[1.11.0-]block:id=black_shulker_box,data=1,top=0,bottom=5,south=1,north=2,east=3,west=4,txtid=shulker_black
+
+# Shulker Blocks (facing north)
+[1.11.0-]block:id=white_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_white
+[1.11.0-]block:id=orange_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_orange
+[1.11.0-]block:id=magenta_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_magenta
+[1.11.0-]block:id=light_blue_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_light_blue
+[1.11.0-]block:id=yellow_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_yellow
+[1.11.0-]block:id=lime_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_lime
+[1.11.0-]block:id=pink_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_pink
+[1.11.0-]block:id=gray_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_gray
+[1.11.0-]block:id=silver_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_silver
+[1.11.0-]block:id=cyan_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_cyan
+[1.11.0-]block:id=purple_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_purple
+[1.11.0-]block:id=blue_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_blue
+[1.11.0-]block:id=brown_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_brown
+[1.11.0-]block:id=green_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_green
+[1.11.0-]block:id=red_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_red
+[1.11.0-]block:id=black_shulker_box,data=2,top=6001,bottom=6002,south=6003,north=6004,east=0,west=7005,txtid=shulker_black
+
+# Shulker Blocks (facing south)
+[1.11.0-]block:id=white_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_white
+[1.11.0-]block:id=orange_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_orange
+[1.11.0-]block:id=magenta_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_magenta
+[1.11.0-]block:id=light_blue_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_light_blue
+[1.11.0-]block:id=yellow_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_yellow
+[1.11.0-]block:id=lime_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_lime
+[1.11.0-]block:id=pink_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_pink
+[1.11.0-]block:id=gray_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_gray
+[1.11.0-]block:id=silver_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_silver
+[1.11.0-]block:id=cyan_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_cyan
+[1.11.0-]block:id=purple_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_purple
+[1.11.0-]block:id=blue_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_blue
+[1.11.0-]block:id=brown_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_brown
+[1.11.0-]block:id=green_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_green
+[1.11.0-]block:id=red_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_red
+[1.11.0-]block:id=black_shulker_box,data=3,top=4001,bottom=4002,south=4003,north=4004,east=7005,west=0,txtid=shulker_black
+
+# Shulker Blocks (facing west)
+[1.11.0-]block:id=white_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_white
+[1.11.0-]block:id=orange_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_orange
+[1.11.0-]block:id=magenta_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_magenta
+[1.11.0-]block:id=light_blue_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_light_blue
+[1.11.0-]block:id=yellow_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_yellow
+[1.11.0-]block:id=lime_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_lime
+[1.11.0-]block:id=pink_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_pink
+[1.11.0-]block:id=gray_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_gray
+[1.11.0-]block:id=silver_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_silver
+[1.11.0-]block:id=cyan_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_cyan
+[1.11.0-]block:id=purple_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_purple
+[1.11.0-]block:id=blue_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_blue
+[1.11.0-]block:id=brown_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_brown
+[1.11.0-]block:id=green_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_green
+[1.11.0-]block:id=red_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_red
+[1.11.0-]block:id=black_shulker_box,data=4,top=1,bottom=2,south=7005,north=0,east=4003,west=4004,txtid=shulker_black
+
+# Shulker Blocks (facing east)
+[1.11.0-]block:id=white_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_white
+[1.11.0-]block:id=orange_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_orange
+[1.11.0-]block:id=magenta_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_magenta
+[1.11.0-]block:id=light_blue_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_light_blue
+[1.11.0-]block:id=yellow_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_yellow
+[1.11.0-]block:id=lime_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_lime
+[1.11.0-]block:id=pink_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_pink
+[1.11.0-]block:id=gray_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_gray
+[1.11.0-]block:id=silver_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_silver
+[1.11.0-]block:id=cyan_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_cyan
+[1.11.0-]block:id=purple_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_purple
+[1.11.0-]block:id=blue_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_blue
+[1.11.0-]block:id=brown_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_brown
+[1.11.0-]block:id=green_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_green
+[1.11.0-]block:id=red_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_red
+[1.11.0-]block:id=black_shulker_box,data=5,top=5001,bottom=5002,south=0,north=7005,east=6003,west=6004,txtid=shulker_black
+
+# 1.12 blocks
+[1.12.0-]texture:id=glazed_terracotta_white
+[1.12.0-]texture:id=glazed_terracotta_orange
+[1.12.0-]texture:id=glazed_terracotta_magenta
+[1.12.0-]texture:id=glazed_terracotta_light_blue
+[1.12.0-]texture:id=glazed_terracotta_yellow
+[1.12.0-]texture:id=glazed_terracotta_lime
+[1.12.0-]texture:id=glazed_terracotta_pink
+[1.12.0-]texture:id=glazed_terracotta_gray
+[1.12.0-]texture:id=glazed_terracotta_silver
+[1.12.0-]texture:id=glazed_terracotta_cyan
+[1.12.0-]texture:id=glazed_terracotta_purple
+[1.12.0-]texture:id=glazed_terracotta_blue
+[1.12.0-]texture:id=glazed_terracotta_brown
+[1.12.0-]texture:id=glazed_terracotta_green
+[1.12.0-]texture:id=glazed_terracotta_red
+[1.12.0-]texture:id=glazed_terracotta_black
+
+[1.12.0-]texture:id=concrete_white
+[1.12.0-]texture:id=concrete_orange
+[1.12.0-]texture:id=concrete_magenta
+[1.12.0-]texture:id=concrete_light_blue
+[1.12.0-]texture:id=concrete_yellow
+[1.12.0-]texture:id=concrete_lime
+[1.12.0-]texture:id=concrete_pink
+[1.12.0-]texture:id=concrete_gray
+[1.12.0-]texture:id=concrete_silver
+[1.12.0-]texture:id=concrete_cyan
+[1.12.0-]texture:id=concrete_purple
+[1.12.0-]texture:id=concrete_blue
+[1.12.0-]texture:id=concrete_brown
+[1.12.0-]texture:id=concrete_green
+[1.12.0-]texture:id=concrete_red
+[1.12.0-]texture:id=concrete_black
+
+[1.12.0-]texture:id=concrete_powder_white
+[1.12.0-]texture:id=concrete_powder_orange
+[1.12.0-]texture:id=concrete_powder_magenta
+[1.12.0-]texture:id=concrete_powder_light_blue
+[1.12.0-]texture:id=concrete_powder_yellow
+[1.12.0-]texture:id=concrete_powder_lime
+[1.12.0-]texture:id=concrete_powder_pink
+[1.12.0-]texture:id=concrete_powder_gray
+[1.12.0-]texture:id=concrete_powder_silver
+[1.12.0-]texture:id=concrete_powder_cyan
+[1.12.0-]texture:id=concrete_powder_purple
+[1.12.0-]texture:id=concrete_powder_blue
+[1.12.0-]texture:id=concrete_powder_brown
+[1.12.0-]texture:id=concrete_powder_green
+[1.12.0-]texture:id=concrete_powder_red
+[1.12.0-]texture:id=concrete_powder_black
+
+# Glazed Terracotta
+[1.12.0-]block:id=white_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_white,north=0:glazed_terracotta_white,south=5000:glazed_terracotta_white,west=4000:glazed_terracotta_white,east=6000:glazed_terracotta_white
+[1.12.0-]block:id=white_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_white,east=0:glazed_terracotta_white,west=5000:glazed_terracotta_white,north=4000:glazed_terracotta_white,south=6000:glazed_terracotta_white
+[1.12.0-]block:id=white_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_white,south=0:glazed_terracotta_white,north=5000:glazed_terracotta_white,east=4000:glazed_terracotta_white,west=6000:glazed_terracotta_white
+[1.12.0-]block:id=white_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_white,west=0:glazed_terracotta_white,east=5000:glazed_terracotta_white,south=4000:glazed_terracotta_white,north=6000:glazed_terracotta_white
+[1.12.0-]block:id=orange_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_orange,north=0:glazed_terracotta_orange,south=5000:glazed_terracotta_orange,west=4000:glazed_terracotta_orange,east=6000:glazed_terracotta_orange
+[1.12.0-]block:id=orange_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_orange,east=0:glazed_terracotta_orange,west=5000:glazed_terracotta_orange,north=4000:glazed_terracotta_orange,south=6000:glazed_terracotta_orange
+[1.12.0-]block:id=orange_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_orange,south=0:glazed_terracotta_orange,north=5000:glazed_terracotta_orange,east=4000:glazed_terracotta_orange,west=6000:glazed_terracotta_orange
+[1.12.0-]block:id=orange_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_orange,west=0:glazed_terracotta_orange,east=5000:glazed_terracotta_orange,south=4000:glazed_terracotta_orange,north=6000:glazed_terracotta_orange
+[1.12.0-]block:id=magenta_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_magenta,north=0:glazed_terracotta_magenta,south=5000:glazed_terracotta_magenta,west=4000:glazed_terracotta_magenta,east=6000:glazed_terracotta_magenta
+[1.12.0-]block:id=magenta_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_magenta,east=0:glazed_terracotta_magenta,west=5000:glazed_terracotta_magenta,north=4000:glazed_terracotta_magenta,south=6000:glazed_terracotta_magenta
+[1.12.0-]block:id=magenta_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_magenta,south=0:glazed_terracotta_magenta,north=5000:glazed_terracotta_magenta,east=4000:glazed_terracotta_magenta,west=6000:glazed_terracotta_magenta
+[1.12.0-]block:id=magenta_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_magenta,west=0:glazed_terracotta_magenta,east=5000:glazed_terracotta_magenta,south=4000:glazed_terracotta_magenta,north=6000:glazed_terracotta_magenta
+[1.12.0-]block:id=light_blue_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_light_blue,north=0:glazed_terracotta_light_blue,south=5000:glazed_terracotta_light_blue,west=4000:glazed_terracotta_light_blue,east=6000:glazed_terracotta_light_blue
+[1.12.0-]block:id=light_blue_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_light_blue,east=0:glazed_terracotta_light_blue,west=5000:glazed_terracotta_light_blue,north=4000:glazed_terracotta_light_blue,south=6000:glazed_terracotta_light_blue
+[1.12.0-]block:id=light_blue_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_light_blue,south=0:glazed_terracotta_light_blue,north=5000:glazed_terracotta_light_blue,east=4000:glazed_terracotta_light_blue,west=6000:glazed_terracotta_light_blue
+[1.12.0-]block:id=light_blue_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_light_blue,west=0:glazed_terracotta_light_blue,east=5000:glazed_terracotta_light_blue,south=4000:glazed_terracotta_light_blue,north=6000:glazed_terracotta_light_blue
+[1.12.0-]block:id=yellow_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_yellow,north=0:glazed_terracotta_yellow,south=5000:glazed_terracotta_yellow,west=4000:glazed_terracotta_yellow,east=6000:glazed_terracotta_yellow
+[1.12.0-]block:id=yellow_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_yellow,east=0:glazed_terracotta_yellow,west=5000:glazed_terracotta_yellow,north=4000:glazed_terracotta_yellow,south=6000:glazed_terracotta_yellow
+[1.12.0-]block:id=yellow_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_yellow,south=0:glazed_terracotta_yellow,north=5000:glazed_terracotta_yellow,east=4000:glazed_terracotta_yellow,west=6000:glazed_terracotta_yellow
+[1.12.0-]block:id=yellow_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_yellow,west=0:glazed_terracotta_yellow,east=5000:glazed_terracotta_yellow,south=4000:glazed_terracotta_yellow,north=6000:glazed_terracotta_yellow
+[1.12.0-]block:id=lime_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_lime,north=0:glazed_terracotta_lime,south=5000:glazed_terracotta_lime,west=4000:glazed_terracotta_lime,east=6000:glazed_terracotta_lime
+[1.12.0-]block:id=lime_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_lime,east=0:glazed_terracotta_lime,west=5000:glazed_terracotta_lime,north=4000:glazed_terracotta_lime,south=6000:glazed_terracotta_lime
+[1.12.0-]block:id=lime_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_lime,south=0:glazed_terracotta_lime,north=5000:glazed_terracotta_lime,east=4000:glazed_terracotta_lime,west=6000:glazed_terracotta_lime
+[1.12.0-]block:id=lime_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_lime,west=0:glazed_terracotta_lime,east=5000:glazed_terracotta_lime,south=4000:glazed_terracotta_lime,north=6000:glazed_terracotta_lime
+[1.12.0-]block:id=pink_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_pink,north=0:glazed_terracotta_pink,south=5000:glazed_terracotta_pink,west=4000:glazed_terracotta_pink,east=6000:glazed_terracotta_pink
+[1.12.0-]block:id=pink_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_pink,east=0:glazed_terracotta_pink,west=5000:glazed_terracotta_pink,north=4000:glazed_terracotta_pink,south=6000:glazed_terracotta_pink
+[1.12.0-]block:id=pink_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_pink,south=0:glazed_terracotta_pink,north=5000:glazed_terracotta_pink,east=4000:glazed_terracotta_pink,west=6000:glazed_terracotta_pink
+[1.12.0-]block:id=pink_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_pink,west=0:glazed_terracotta_pink,east=5000:glazed_terracotta_pink,south=4000:glazed_terracotta_pink,north=6000:glazed_terracotta_pink
+[1.12.0-]block:id=gray_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_gray,north=0:glazed_terracotta_gray,south=5000:glazed_terracotta_gray,west=4000:glazed_terracotta_gray,east=6000:glazed_terracotta_gray
+[1.12.0-]block:id=gray_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_gray,east=0:glazed_terracotta_gray,west=5000:glazed_terracotta_gray,north=4000:glazed_terracotta_gray,south=6000:glazed_terracotta_gray
+[1.12.0-]block:id=gray_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_gray,south=0:glazed_terracotta_gray,north=5000:glazed_terracotta_gray,east=4000:glazed_terracotta_gray,west=6000:glazed_terracotta_gray
+[1.12.0-]block:id=gray_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_gray,west=0:glazed_terracotta_gray,east=5000:glazed_terracotta_gray,south=4000:glazed_terracotta_gray,north=6000:glazed_terracotta_gray
+[1.12.0-]block:id=silver_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_silver,north=0:glazed_terracotta_silver,south=5000:glazed_terracotta_silver,west=4000:glazed_terracotta_silver,east=6000:glazed_terracotta_silver
+[1.12.0-]block:id=silver_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_silver,east=0:glazed_terracotta_silver,west=5000:glazed_terracotta_silver,north=4000:glazed_terracotta_silver,south=6000:glazed_terracotta_silver
+[1.12.0-]block:id=silver_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_silver,south=0:glazed_terracotta_silver,north=5000:glazed_terracotta_silver,east=4000:glazed_terracotta_silver,west=6000:glazed_terracotta_silver
+[1.12.0-]block:id=silver_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_silver,west=0:glazed_terracotta_silver,east=5000:glazed_terracotta_silver,south=4000:glazed_terracotta_silver,north=6000:glazed_terracotta_silver
+[1.12.0-]block:id=cyan_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_cyan,north=0:glazed_terracotta_cyan,south=5000:glazed_terracotta_cyan,west=4000:glazed_terracotta_cyan,east=6000:glazed_terracotta_cyan
+[1.12.0-]block:id=cyan_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_cyan,east=0:glazed_terracotta_cyan,west=5000:glazed_terracotta_cyan,north=4000:glazed_terracotta_cyan,south=6000:glazed_terracotta_cyan
+[1.12.0-]block:id=cyan_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_cyan,south=0:glazed_terracotta_cyan,north=5000:glazed_terracotta_cyan,east=4000:glazed_terracotta_cyan,west=6000:glazed_terracotta_cyan
+[1.12.0-]block:id=cyan_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_cyan,west=0:glazed_terracotta_cyan,east=5000:glazed_terracotta_cyan,south=4000:glazed_terracotta_cyan,north=6000:glazed_terracotta_cyan
+[1.12.0-]block:id=purple_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_purple,north=0:glazed_terracotta_purple,south=5000:glazed_terracotta_purple,west=4000:glazed_terracotta_purple,east=6000:glazed_terracotta_purple
+[1.12.0-]block:id=purple_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_purple,east=0:glazed_terracotta_purple,west=5000:glazed_terracotta_purple,north=4000:glazed_terracotta_purple,south=6000:glazed_terracotta_purple
+[1.12.0-]block:id=purple_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_purple,south=0:glazed_terracotta_purple,north=5000:glazed_terracotta_purple,east=4000:glazed_terracotta_purple,west=6000:glazed_terracotta_purple
+[1.12.0-]block:id=purple_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_purple,west=0:glazed_terracotta_purple,east=5000:glazed_terracotta_purple,south=4000:glazed_terracotta_purple,north=6000:glazed_terracotta_purple
+[1.12.0-]block:id=blue_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_blue,north=0:glazed_terracotta_blue,south=5000:glazed_terracotta_blue,west=4000:glazed_terracotta_blue,east=6000:glazed_terracotta_blue
+[1.12.0-]block:id=blue_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_blue,east=0:glazed_terracotta_blue,west=5000:glazed_terracotta_blue,north=4000:glazed_terracotta_blue,south=6000:glazed_terracotta_blue
+[1.12.0-]block:id=blue_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_blue,south=0:glazed_terracotta_blue,north=5000:glazed_terracotta_blue,east=4000:glazed_terracotta_blue,west=6000:glazed_terracotta_blue
+[1.12.0-]block:id=blue_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_blue,west=0:glazed_terracotta_blue,east=5000:glazed_terracotta_blue,south=4000:glazed_terracotta_blue,north=6000:glazed_terracotta_blue
+[1.12.0-]block:id=brown_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_brown,north=0:glazed_terracotta_brown,south=5000:glazed_terracotta_brown,west=4000:glazed_terracotta_brown,east=6000:glazed_terracotta_brown
+[1.12.0-]block:id=brown_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_brown,east=0:glazed_terracotta_brown,west=5000:glazed_terracotta_brown,north=4000:glazed_terracotta_brown,south=6000:glazed_terracotta_brown
+[1.12.0-]block:id=brown_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_brown,south=0:glazed_terracotta_brown,north=5000:glazed_terracotta_brown,east=4000:glazed_terracotta_brown,west=6000:glazed_terracotta_brown
+[1.12.0-]block:id=brown_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_brown,west=0:glazed_terracotta_brown,east=5000:glazed_terracotta_brown,south=4000:glazed_terracotta_brown,north=6000:glazed_terracotta_brown
+[1.12.0-]block:id=green_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_green,north=0:glazed_terracotta_green,south=5000:glazed_terracotta_green,west=4000:glazed_terracotta_green,east=6000:glazed_terracotta_green
+[1.12.0-]block:id=green_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_green,east=0:glazed_terracotta_green,west=5000:glazed_terracotta_green,north=4000:glazed_terracotta_green,south=6000:glazed_terracotta_green
+[1.12.0-]block:id=green_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_green,south=0:glazed_terracotta_green,north=5000:glazed_terracotta_green,east=4000:glazed_terracotta_green,west=6000:glazed_terracotta_green
+[1.12.0-]block:id=green_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_green,west=0:glazed_terracotta_green,east=5000:glazed_terracotta_green,south=4000:glazed_terracotta_green,north=6000:glazed_terracotta_green
+[1.12.0-]block:id=red_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_red,north=0:glazed_terracotta_red,south=5000:glazed_terracotta_red,west=4000:glazed_terracotta_red,east=6000:glazed_terracotta_red
+[1.12.0-]block:id=red_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_red,east=0:glazed_terracotta_red,west=5000:glazed_terracotta_red,north=4000:glazed_terracotta_red,south=6000:glazed_terracotta_red
+[1.12.0-]block:id=red_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_red,south=0:glazed_terracotta_red,north=5000:glazed_terracotta_red,east=4000:glazed_terracotta_red,west=6000:glazed_terracotta_red
+[1.12.0-]block:id=red_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_red,west=0:glazed_terracotta_red,east=5000:glazed_terracotta_red,south=4000:glazed_terracotta_red,north=6000:glazed_terracotta_red
+[1.12.0-]block:id=black_glazed_terracotta,data=0,stdrot=true,topbottom=0:glazed_terracotta_black,north=0:glazed_terracotta_black,south=5000:glazed_terracotta_black,west=4000:glazed_terracotta_black,east=6000:glazed_terracotta_black
+[1.12.0-]block:id=black_glazed_terracotta,data=1,stdrot=true,topbottom=6000:glazed_terracotta_black,east=0:glazed_terracotta_black,west=5000:glazed_terracotta_black,north=4000:glazed_terracotta_black,south=6000:glazed_terracotta_black
+[1.12.0-]block:id=black_glazed_terracotta,data=2,stdrot=true,topbottom=5000:glazed_terracotta_black,south=0:glazed_terracotta_black,north=5000:glazed_terracotta_black,east=4000:glazed_terracotta_black,west=6000:glazed_terracotta_black
+[1.12.0-]block:id=black_glazed_terracotta,data=3,stdrot=true,topbottom=4000:glazed_terracotta_black,west=0:glazed_terracotta_black,east=5000:glazed_terracotta_black,south=4000:glazed_terracotta_black,north=6000:glazed_terracotta_black
+
+# Concrete
+[1.12.0-]block:id=concrete,data=0,stdrot=true,allfaces=0:concrete_white
+[1.12.0-]block:id=concrete,data=1,stdrot=true,allfaces=0:concrete_orange
+[1.12.0-]block:id=concrete,data=2,stdrot=true,allfaces=0:concrete_magenta
+[1.12.0-]block:id=concrete,data=3,stdrot=true,allfaces=0:concrete_light_blue
+[1.12.0-]block:id=concrete,data=4,stdrot=true,allfaces=0:concrete_yellow
+[1.12.0-]block:id=concrete,data=5,stdrot=true,allfaces=0:concrete_lime
+[1.12.0-]block:id=concrete,data=6,stdrot=true,allfaces=0:concrete_pink
+[1.12.0-]block:id=concrete,data=7,stdrot=true,allfaces=0:concrete_gray
+[1.12.0-]block:id=concrete,data=8,stdrot=true,allfaces=0:concrete_silver
+[1.12.0-]block:id=concrete,data=9,stdrot=true,allfaces=0:concrete_cyan
+[1.12.0-]block:id=concrete,data=10,stdrot=true,allfaces=0:concrete_purple
+[1.12.0-]block:id=concrete,data=11,stdrot=true,allfaces=0:concrete_blue
+[1.12.0-]block:id=concrete,data=12,stdrot=true,allfaces=0:concrete_brown
+[1.12.0-]block:id=concrete,data=13,stdrot=true,allfaces=0:concrete_green
+[1.12.0-]block:id=concrete,data=14,stdrot=true,allfaces=0:concrete_red
+[1.12.0-]block:id=concrete,data=15,stdrot=true,allfaces=0:concrete_black
+
+# Concrete Powder
+[1.12.0-]block:id=concrete_powder,data=0,stdrot=true,allfaces=0:concrete_powder_white
+[1.12.0-]block:id=concrete_powder,data=1,stdrot=true,allfaces=0:concrete_powder_orange
+[1.12.0-]block:id=concrete_powder,data=2,stdrot=true,allfaces=0:concrete_powder_magenta
+[1.12.0-]block:id=concrete_powder,data=3,stdrot=true,allfaces=0:concrete_powder_light_blue
+[1.12.0-]block:id=concrete_powder,data=4,stdrot=true,allfaces=0:concrete_powder_yellow
+[1.12.0-]block:id=concrete_powder,data=5,stdrot=true,allfaces=0:concrete_powder_lime
+[1.12.0-]block:id=concrete_powder,data=6,stdrot=true,allfaces=0:concrete_powder_pink
+[1.12.0-]block:id=concrete_powder,data=7,stdrot=true,allfaces=0:concrete_powder_gray
+[1.12.0-]block:id=concrete_powder,data=8,stdrot=true,allfaces=0:concrete_powder_silver
+[1.12.0-]block:id=concrete_powder,data=9,stdrot=true,allfaces=0:concrete_powder_cyan
+[1.12.0-]block:id=concrete_powder,data=10,stdrot=true,allfaces=0:concrete_powder_purple
+[1.12.0-]block:id=concrete_powder,data=11,stdrot=true,allfaces=0:concrete_powder_blue
+[1.12.0-]block:id=concrete_powder,data=12,stdrot=true,allfaces=0:concrete_powder_brown
+[1.12.0-]block:id=concrete_powder,data=13,stdrot=true,allfaces=0:concrete_powder_green
+[1.12.0-]block:id=concrete_powder,data=14,stdrot=true,allfaces=0:concrete_powder_red
+[1.12.0-]block:id=concrete_powder,data=15,stdrot=true,allfaces=0:concrete_powder_black
+

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+	<title>Minecraft Dynamic Map</title>
+
+	<meta charset="utf-8" />
+	<meta name="keywords" content="minecraft, map, dynamic" />
+	<meta name="description" content="Minecraft Dynamic Map" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+	<!-- These 2 lines make us fullscreen on apple mobile products - remove if you don't like that -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+	<link rel="apple-touch-icon" sizes="180x180" href="images/icons/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="images/icons/favicon-16x16.png">
+	<link rel="manifest" href="images/icons/site.webmanifest">
+	<link rel="mask-icon" href="images/icons/safari-pinned-tab.svg" color="#000000">
+	<link rel="shortcut icon" href="images/icons/favicon.ico">
+	<meta name="msapplication-TileColor" content="#000000">
+	<meta name="msapplication-config" content="images/icons/browserconfig.xml">
+	<meta name="theme-color" content="#000000">
+
+	<script type="text/javascript" src="js/jquery-3.5.1.js?_=${version}-${buildnumber}"></script>
+	<link rel="stylesheet" type="text/css" href="css/leaflet.css?_=${version}-${buildnumber}" />
+	<script type="text/javascript" src="js/leaflet.js?_=${version}-${buildnumber}"></script>
+    <!-- FOr source debug on leaflet 	<script type="text/javascript" src="js/leaflet-src.js?_=${version}-${buildnumber}"></script> -->
+	<script type="text/javascript" src="js/custommarker.js?_=${version}-${buildnumber}"></script>
+
+	<script type="text/javascript" src="js/dynmaputils.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="js/sidebarutils.js?_=${version}-${buildnumber}"></script>
+
+	<!--<link rel="stylesheet" type="text/css" href="css/embedded.css" media="screen" />-->
+	<link rel="stylesheet" type="text/css" href="css/standalone.css?_=${version}-${buildnumber}" media="screen" />
+	<link rel="stylesheet" type="text/css" href="css/dynmap_style.css?_=${version}-${buildnumber}" media="screen" />
+	<!-- <link rel="stylesheet" type="text/css" href="css/override.css" media="screen" /> -->
+
+	<script type="text/javascript" src="version.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="js/jquery.json.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="js/jquery.mousewheel.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="js/minecraft.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="js/map.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="js/hdmap.js?_=${version}-${buildnumber}"></script>
+	<script type="text/javascript" src="standalone/config.js?_=${version}-${buildnumber}"></script>
+
+	<script type="text/javascript">
+			\$(document).ready(function() {
+				window.dynmap = new DynMap(\$.extend({
+					container: \$('#mcmap')
+				}, config));
+			});
+	</script>
+
+</head>
+<body>
+<noscript>
+ For full functionality of this site it is necessary to enable JavaScript.
+ Here are the <a href="http://www.enable-javascript.com/" target="_blank">
+ instructions how to enable JavaScript in your web browser</a>.
+</noscript>
+
+	<div id="mcmap"></div>
+</body>
+</html>

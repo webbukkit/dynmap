@@ -1,0 +1,40 @@
+# Eclipse stuff
+.classpath
+.project
+.settings
+
+# netbeans
+/nbproject
+
+# idea
+.idea/
+
+*.launch
+
+# we use maven!
+/build.xml
+
+# maven
+/target
+
+# vim
+.*.sw[a-p]
+
+# various other potential build files
+/build
+/bin
+/dist
+/manifest.mf
+/run
+
+# Mac filesystem dust
+/.DS_Store
+/dependency-reduced-pom.xml
+
+*.log
+/.gradle
+/fabric-1.16.1_client.launch
+/fabric-1.16.1_server.launch
+/fabric-1.16.2_client.launch
+/fabric-1.16.2_server.launch
+

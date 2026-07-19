@@ -1,0 +1,1250 @@
+version:1.6.1-1.12.2
+#
+# Patches - define surfaces to be used in patch models
+#
+# Vertical patch, 45 degrees from xz=1.0/0.0 to xz=0.0/1.0
+patch:id=VertX1Z0ToX0Z1,Ox=1.0,Oy=0.0,Oz=0.0,Ux=0.0,Uy=0.0,Uz=1.0,Vx=1.0,Vy=1.0,Vz=0.0,visibility=flip
+# Vertical patch, X- facing side from xz=0.4375/0.0 to 0.4375/1.0
+patch:id=VertX04375,Ox=0.4375,Oy=0.0,Oz=0.0,Ux=0.4375,Uy=0.0,Uz=1.0,Vx=0.4375,Vy=1.0,Vz=0.0,visibility=top
+# Vertical patch, X- facing side from xz=0.0625/0.0 to 0.0625/1.0
+patch:id=VertX00625,Ox=0.0625,Oy=0.0,Oz=0.0,Ux=0.0625,Uy=0.0,Uz=1.0,Vx=0.0625,Vy=1.0,Vz=0.0,visibility=top
+# Vertical patch, X+ facing side from xz=0.25,1.0 to 0.25/0.0
+patch:id=VertX025,Ox=0.25,Oy=0.0,Oz=1.0,Ux=0.25,Uy=0.0,Uz=0.0,Vx=0.25,Vy=1.0,Vz=1.0
+# Vertical patch, X+ facing side from xz=0.75,1.0 to 0.75/0.0
+patch:id=VertX075,Ox=0.75,Oy=0.0,Oz=1.0,Ux=0.75,Uy=0.0,Uz=0.0,Vx=0.75,Vy=1.0,Vz=1.0
+# Horizontal patch - Y+ facing at Y=1.0, top of texture at +Z
+patch:id=HorizY100ZTop,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,visibility=bottom
+# Horizontal patch - Y+ facing at Y=0.01, top of texture at +Z
+patch:id=HorizY001ZTop,Ox=0.0,Oy=0.01,Oz=0.0,Ux=1.0,Uy=0.01,Uz=0.0,Vx=0.0,Vy=0.01,Vz=1.0
+# Sloped patch - up to X+, top of texture at Z+
+patch:id=SlopeXUpZTop,Ox=0.0,Oy=0.0,Oz=0.0,Ux=0.0,Uy=0.0,Uz=1.0,Vx=1.0,Vy=1.0,Vz=0.0
+# Vertical patch at xz=0.0/0.0 to 1.0/0.0
+patch:id=VertX0,Ox=0.0,Oy=0.0,Oz=1.0,Ux=0.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,visibility=bottom
+# Vertical patch at xz=0.0/0.0 to 1.0/0.0, facing inward
+patch:id=VertX0In,Ox=0.0,Oy=0.0,Oz=1.0,Ux=0.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0
+# Sloped patch - from edge to middle of top (67.5 degrees): up to X+, top at Z+
+patch:id=SlopeXUpZTop675,Ox=0.375,Oy=0.0,Oz=0.0,Ux=0.375,Uy=0.0,Uz=1.0,Vx=0.5,Vy=1.0,Vz=0.0,visibility=top
+
+# Vertical patch, X+ facing side from xz=0.5,1.0 to 0.5/0.0
+patch:id=VertX05,Ox=0.5,Oy=0.0,Oz=1.0,Ux=0.5,Uy=0.0,Uz=0.0,Vx=0.5,Vy=1.0,Vz=1.0
+# Vertical patch, X+ facing side from xz=0.5,1.0 to 0.5/0.0 (left half)
+patch:id=VertX05Left,Ox=0.5,Oy=0.0,Oz=1.0,Ux=0.5,Uy=0.0,Uz=0.0,Vx=0.5,Vy=1.0,Vz=1.0,Umax=0.5
+# Vertical patch, X+ facing side from xz=0.5,1.0 to 0.5/0.0 (right half)
+patch:id=VertX05Right,Ox=0.5,Oy=0.0,Oz=1.0,Ux=0.5,Uy=0.0,Uz=0.0,Vx=0.5,Vy=1.0,Vz=1.0,Umin=0.5
+# Vertical patch, X+ facing side from xz=0.5,1.0 to 0.5/0.0 (strip - 0.4375 to 0.5625)
+patch:id=VertX05Strip,Ox=0.5,Oy=0.0,Oz=1.0,Ux=0.5,Uy=0.0,Uz=0.0,Vx=0.5,Vy=1.0,Vz=1.0,Umin=0.4375,Umax=0.5625
+# Horizontal patch - Y+ facing at Y=1.0, top of texture at +Z, vertical strip (0.4375 to 0.5625)
+patch:id=HorizY100ZTopStrip,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,Umin=0.4375,Umax=0.5625
+# Horizontal patch - Y+ facing at Y=1.0, top of texture at +Z, vertical strip (0.4375 to 0.5625), Top half (V>= 0.5)
+patch:id=HorizY100ZTopStripTop,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,Umin=0.4375,Umax=0.5625,Vmin=0.5
+# Horizontal patch - Y+ facing at Y=1.0, top of texture at +Z, vertical strip (0.4375 to 0.5625), Bottom half (V < 0.5)
+patch:id=HorizY100ZTopStripBottom,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1,0,Vz=1.0,Umin=0.4375,Umax=0.5625,Vmax=0.5
+
+# Torch slanted side - vertical, shifted to side and up (x=-0.5,y=0.2) and slanted out (Y offset by 0.4)
+patch:id=TorchSide1,Ox=-0.5,Oy=0.2,Oz=0.4375,Ux=0.5,Uy=0.2,Uz=0.4375,Vx=-0.1,Vy=1.2,Vz=0.4375,Vmax=0.8,visibility=bottom
+patch:id=TorchSide2,Ox=-0.5,Oy=0.2,Oz=0.5625,Ux=0.5,Uy=0.2,Uz=0.5625,Vx=-0.1,Vy=1.2,Vz=0.5625,Vmax=0.8,visibility=top
+patch:id=TorchSide3,Ox=0.0625,Oy=0.2,Oz=0.0,Ux=0.0625,Uy=0.2,Uz=1.0,Vx=0.4625,Vy=1.2,Vz=0.0,Vmax=0.8,visibility=bottom
+patch:id=TorchSide4,Ox=-0.0625,Oy=0.2,Oz=0.0,Ux=-0.0625,Uy=0.2,Uz=1.0,Vx=0.3375,Vy=1.2,Vz=0.0,Vmax=0.8,visibility=top
+patch:id=TorchTop,Ox=0.0,Oy=0.625,Oz=-0.0625,Ux=1.0,Uy=0.625,Uz=-0.0625,Vx=0.0,Vy=0.625,Vz=0.9375,Umin=0.4375,Umax=0.5625,Vmin=0.5,Vmax=0.625
+patch:id=TorchTopSlope,Ox=0.0,Oy=0.825,Oz=-0.3625,Ux=1.0,Uy=0.825,Uz=-0.3625,Vx=0.0,Vy=0.825,Vz=0.6375,Umin=0.4375,Umax=0.5625,Vmin=0.5,Vmax=0.625
+
+# Floor Lever patches
+# Vertical patch, facing X+, at X=0.3125, Y=0.0 to 0.1875, Z=0.25 to 0.75 (wider side)
+patch:id=LeverBase1,Ox=0.3125,Oy=0.0,Oz=0.0,Ux=0.3125,Uy=0.0,Uz=1.0,Vx=0.3125,Vy=1.0,Vz=0.0,Umin=0.25,Umax=0.75,Vmin=0.0,Vmax=0.1875
+# Vertical patch, facing Z+, at Z=0.25, Y=0.0 to 0.1875, X=0.3125 to 0.6875 (narrow side)
+patch:id=LeverBase2,Ox=0.0,Oy=0.0,Oz=0.25,Ux=1.0,Uy=0.0,Uz=0.25,Vx=0.0,Vy=1.0,Vz=0.25,Umin=0.3125,Umax=00.6875,Vmin=0,Vmax=0.1875
+# Horizontal patch, facing Y+, at Y=0.1875, X=0.3125 to 0.6875, Z=0.25 to 0.75
+patch:id=LeverBase3,Ox=0.0,Oy=0.1875,Oz=0.0,Ux=1.0,Uy=0.1875,Uz=0.0,Vx=0.0,Vy=0.1875,Vz=1.0,Umin=0.3125,Umax=0.6875,Vmin=0.25,Vmax=0.75
+# Vertical slanted patch, facing X+, 45 degree to Z+ (lever side)
+patch:id=LeverSide1,Ox=0.4375,Oy=0.5625,Oz=0.0,Ux=0.4375,Uy=-0.4375,Uz=1.0,Vx=0.4375,Vy=1.5626,Vz=1.0
+# Vertical slanted patch, facing X-, 45 degree to Z+ (lever side)
+patch:id=LeverSide2,Ox=0.5625,Oy=0.5625,Oz=0.0,Ux=0.5625,Uy=-0.4375,Uz=1.0,Vx=0.5625,Vy=1.5626,Vz=1.0
+# Horizontal slanted patch, facing Y+, 45 degree to Z+ (lever top)
+patch:id=LeverSide3,Ox=0.0,Oy=0.125,Oz=0.4375,Ux=1.0,Uy=0.125,Uz=0.4375,Vx=0.0,Vy=1.125,Vz=1.4375
+# Horizontal slanted patch, facing Y+, 45 degree to Z+ (lever bottom)
+patch:id=LeverSide4,Ox=0.0,Oy=0.0,Oz=0.5625,Ux=1.0,Uy=0.0,Uz=0.5625,Vx=0.0,Vy=1.0,Vz=1.5625
+# Wall switch patches
+# Vertical patch, facing X+, at X=0.3125, Z=0.0 to 0.1875, Y=0.25 to 0.75 (wider side)
+patch:id=WLeverBase1,Ox=0.3125,Oy=0.0,Oz=0.0,Ux=0.3125,Uy=1.0,Uz=0.0,Vx=0.3125,Vy=0.0,Vz=1.0,Umin=0.25,Umax=0.75,Vmin=0.0,Vmax=0.1875
+# Horizontal patch, facing Z-, at Y=0.25, Z=0.0 to 0.1875, X=0.3125 to 0.6875 (narrow side)
+patch:id=WLeverBase2,Ox=0.0,Oy=0.25,Oz=0.0,Ux=1.0,Uy=0.25,Uz=0.0,Vx=0.0,Vy=0.25,Vz=1.0,Umin=0.3125,Umax=00.6875,Vmin=0,Vmax=0.1875
+# Vertical patch, facing Y+, at Z=0.1875, X=0.3125 to 0.6875, Y=0.25 to 0.75
+patch:id=WLeverBase3,Ox=0.0,Oy=0.0,Oz=0.1875,Ux=1.0,Uy=0.0,Uz=0.1875,Vx=0.0,Vy=1.0,Vz=0.1875,Umin=0.3125,Umax=0.6875,Vmin=0.25,Vmax=0.75
+# Vertical patch, facing X-, at X=0.6875, Z=0.0 to 0.1875, Y=0.25 to 0.75 (wider side)
+patch:id=WLeverBase4,Ox=0.6875,Oy=0.0,Oz=0.0,Ux=0.6875,Uy=1.0,Uz=0.0,Vx=0.6875,Vy=0.0,Vz=1.0,Umin=0.25,Umax=0.75,Vmin=0.0,Vmax=0.1875
+# Horizontal patch, facing Z+, at Y=0.75, Z=0.0 to 0.1875, X=0.3125 to 0.6875 (narrow side)
+patch:id=WLeverBase5,Ox=0.0,Oy=0.75,Oz=0.0,Ux=1.0,Uy=0.75,Uz=0.0,Vx=0.0,Vy=0.75,Vz=1.0,Umin=0.3125,Umax=00.6875,Vmin=0,Vmax=0.1875
+# Vertical slanted patch, facing X+, 45 degree to Y+ (lever side)
+patch:id=WLeverSide1,Ox=0.4375,Oy=0.0,Oz=0.5625,Ux=0.4375,Uy=1.0,Uz=-0.4375,Vx=0.4375,Vy=1.0,Vz=1.5626
+# Vertical slanted patch, facing X-, 45 degree to Y+ (lever side)
+patch:id=WLeverSide2,Ox=0.5625,Oy=0.0,Oz=0.5625,Ux=0.5625,Uy=1.0,Uz=-0.4375,Vx=0.5625,Vy=1.0,Vz=1.5626
+# Horizontal slanted patch, facing Y+, 45 degree to Y+ (lever top)
+patch:id=WLeverSide3,Ox=0.0,Oy=0.4375,Oz=0.125,Ux=1.0,Uy=0.4375,Uz=0.125,Vx=0.0,Vy=1.4375,Vz=1.125
+# Horizontal slanted patch, facing Y+, 45 degree to Y+ (lever bottom)
+patch:id=WLeverSide4,Ox=0.0,Oy=0.5625,Oz=0.0,Ux=1.0,Uy=0.5625,Uz=0.0,Vx=0.0,Vy=1.5625,Vz=1.0
+
+# Wire patches
+# Wire patch - Y+ facing at Y=0.01, top of texture at +Z (none)
+patch:id=HorizY001ZTopNone,Ox=0.0,Oy=0.01,Oz=0.0,Ux=1.0,Uy=0.01,Uz=0.0,Vx=0.0,Vy=0.01,Vz=1.0,Umin=0.3125,Umax=0.6875,Vmin=0.3125,Vmax=0.6875,visibility=bottom
+# Wire patch - Y+ facing at Y=0.01, top of texture at +Z (N)
+patch:id=HorizY001ZTopN,Ox=0.0,Oy=0.01,Oz=0.0,Ux=1.0,Uy=0.01,Uz=0.0,Vx=0.0,Vy=0.01,Vz=1.0,Umin=0.3125,Umax=0.6875,Vmin=0.3125,visibility=bottom
+# Wire patch - Y+ facing at Y=0.01, top of texture at +Z (NS)
+patch:id=HorizY001ZTopNS,Ox=0.0,Oy=0.01,Oz=0.0,Ux=1.0,Uy=0.01,Uz=0.0,Vx=0.0,Vy=0.01,Vz=1.0,Vmin=0.3125,Vmax=0.6875,visibility=bottom
+# Wire patch - Y+ facing at Y=0.01, top of texture at +Z (NE)
+patch:id=HorizY001ZTopNE,Ox=0.0,Oy=0.01,Oz=0.0,Ux=1.0,Uy=0.01,Uz=0.0,Vx=0.0,Vy=0.01,Vz=1.0,Umin=0.3125,Vmin=0.3125,visibility=bottom
+# Wire patch - Y+ facing at Y=0.01, top of texture at +Z (NEW)
+patch:id=HorizY001ZTopNEW,Ox=0.0,Oy=0.01,Oz=0.0,Ux=1.0,Uy=0.01,Uz=0.0,Vx=0.0,Vy=0.01,Vz=1.0,Vmin=0.3125,visibility=bottom
+# Wire patch - Y+ facing at Y=0.01, top of texture at +Z (NESW)
+patch:id=HorizY001ZTopNESW,Ox=0.0,Oy=0.01,Oz=0.0,Ux=1.0,Uy=0.01,Uz=0.0,Vx=0.0,Vy=0.01,Vz=1.0,visibility=bottom
+
+# Wall sign patches
+patch:id=WSignFront,Ox=0.0,Oy=0.25,Oz=0.9166,Ux=1.0,Uy=0.25,Uz=0.9166,Vx=0.0,Vy=1.25,Vz=0.9166,visibility=bottom
+patch:id=WSignBack,Ox=0.0,Oy=0.25,Oz=1.0,Ux=1.0,Uy=0.25,Uz=1.0,Vx=0.0,Vy=1.25,Vz=1.0,visibility=top
+patch:id=WSignTop,Ox=0.0,Oy=0.75,Oz=0.9166,Ux=1.0,Uy=0.75,Uz=0.9166,Vx=0.0,Vy=0.75,Vz=1.9166,visibility=bottom
+patch:id=WSignBottom,Ox=0.0,Oy=0.25,Oz=0.9166,Ux=1.0,Uy=0.25,Uz=0.9166,Vx=0.0,Vy=0.25,Vz=1.9166,visibility=top
+patch:id=WSignLeft,Ox=0.0,Oy=0.25,Oz=0.9166,Ux=0.0,Uy=0.25,Uz=1.9166,Vx=0.0,Vy=1.25,Vz=0.9166,visibility=top
+patch:id=WSignRight,Ox=1.0,Oy=0.25,Oz=0.9166,Ux=1.0,Uy=0.25,Uz=1.9166,Vx=1.0,Vy=1.25,Vz=0.9166,visibility=bottom
+
+# Sign post patches
+patch:id=SignFront,Ox=0.0,Oy=0.5,Oz=0.45833,Ux=1.0,Uy=0.5,Uz=0.45833,Vx=0.0,Vy=1.5,Vz=0.45833,visibility=bottom
+patch:id=SignBack,Ox=0.0,Oy=0.5,Oz=0.54166,Ux=1.0,Uy=0.5,Uz=0.54166,Vx=0.0,Vy=1.5,Vz=0.54166,visibility=top
+patch:id=SignTop,Ox=0.0,Oy=1.0,Oz=0.45833,Ux=1.0,Uy=1.0,Uz=0.45833,Vx=0.0,Vy=1.0,Vz=1.45833,visibility=bottom
+patch:id=SignBottom,Ox=0.0,Oy=0.5,Oz=0.45833,Ux=1.0,Uy=0.5,Uz=0.45833,Vx=0.0,Vy=0.5,Vz=1.45833,visibility=top
+patch:id=SignLeft,Ox=0.0,Oy=0.5,Oz=0.45833,Ux=0.0,Uy=0.5,Uz=1.45833,Vx=0.0,Vy=1.5,Vz=0.45833,visibility=top
+patch:id=SignRight,Ox=1.0,Oy=0.5,Oz=0.45833,Ux=1.0,Uy=0.5,Uz=1.45833,Vx=1.0,Vy=1.5,Vz=0.45833,visibility=bottom
+patch:id=PostFront,Ox=0.45833,Oy=0.0,Oz=0.45833,Ux=1.45833,Uy=0.0,Uz=0.45833,Vx=0.45833,Vy=1.0,Vz=0.45833,visibility=bottom
+patch:id=PostBack,Ox=0.45833,Oy=0.0,Oz=0.54166,Ux=1.45833,Uy=0.0,Uz=0.54166,Vx=0.45833,Vy=1.0,Vz=0.54166,visibility=top
+patch:id=PostLeft,Ox=0.45833,Oy=0.0,Oz=0.45833,Ux=0.45833,Uy=0.0,Uz=1.45833,Vx=0.45833,Vy=1.0,Vz=0.45833,visibility=top
+patch:id=PostRight,Ox=0.54166,Oy=0.0,Oz=0.45833,Ux=0.54166,Uy=0.0,Uz=1.45833,Vx=0.54166,Vy=1.0,Vz=0.45833,visibility=bottom
+
+# Vertical patch, X- facing side from xz=0.1875/0.0 to 0.1875/1.0
+patch:id=VertX01875,Ox=0.1875,Oy=0.0,Oz=0.0,Ux=0.1875,Uy=0.0,Uz=1.0,Vx=0.1875,Vy=1.0,Vz=0.0,visibility=top
+# Vertical patch, Z- facing side from xz=0.0/0.1875 to 1.0/0.1875
+patch:id=VertZ01875,Ox=0.0,Oy=0.0,Oz=0.1875,Ux=1.0,Uy=0.0,Uz=0.1875,Vx=0.0,Vy=1.0,Vz=0.1875,visibility=top
+
+# Brewing stand patches
+patch:id=StandSide,Ox=0.0,Oy=0.0,Oz=0.4375,Ux=1.0,Uy=0.0,Uz=0.4375,Vx=0.0,Vy=1.0,Vz=0.4375,Umin=0.4375,Umax=0.5625,visibility=bottom
+patch:id=StandArm,Ox=0.0,Oy=0.0,Oz=0.5,Ux=1.0,Uy=0.0,Uz=0.5,Vx=0.0,Vy=1.0,Vz=0.5,Umin=0.5625,Umax=1.0
+
+# Beacon patches
+patch:id=BeaconGlassSide,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=0.0,visibility=bottom
+patch:id=BeaconObsidianSide,Ox=0.0,Oy=0.0,Oz=0.125,Ux=1.0,Uy=0.0,Uz=0.125,Vx=0.0,Vy=1.0,Vz=0.125,Umin=0.125,Umax=0.875,Vmin=0.0,Vmax=0.1875,visibility=bottom
+patch:id=BeaconGlassBottom,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=0.0,Vz=1.0,visibility=top
+patch:id=BeaconGlassTop,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,visibility=bottom
+patch:id=BeaconObsidianTop,Ox=0.0,Oy=0.1875,Oz=0.0,Ux=1.0,Uy=0.1875,Uz=0.0,Vx=0.0,Vy=0.1875,Vz=1.0,Umin=0.125,Umax=0.875,Vmin=0.125,Vmax=0.875,visibility=bottom
+patch:id=BeaconLightSide,Ox=0.0,Oy=0.0,Oz=0.1875,Ux=1.0,Uy=0.0,Uz=0.1875,Vx=0.0,Vy=1.0,Vz=0.1875,Umin=0.1875,Umax=0.8125,Vmin=0.1875,Vmax=0.8125,visibility=bottom
+patch:id=BeaconLightTop,Ox=0.0,Oy=0.8125,Oz=0.0,Ux=1.0,Uy=0.8125,Uz=0.0,Vx=0.0,Vy=0.8125,Vz=1.0,Umin=0.1875,Umax=0.8125,Vmin=0.1875,Vmax=0.8125,visibility=bottom
+
+# Cobblestone wall patches
+patch:id=CobblePostSide,Ox=0.0,Oy=0.0,Oz=0.25,Ux=1.0,Uy=0.0,Uz=0.25,Vx=0.0,Vy=1.0,Vz=0.25,Umin=0.25,Umax=0.75,visibility=bottom
+patch:id=CobblePostTop,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,Umin=0.25,Umax=0.75,Vmin=0.25,Vmax=0.75,visibility=bottom
+patch:id=CobblePostBottom,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=0.0,Vz=1.0,Umin=0.25,Umax=0.75,Vmin=0.25,Vmax=0.75,visibility=top
+patch:id=CobbleWallSide,Ox=0.0,Oy=0.0,Oz=0.3125,Ux=1.0,Uy=0.0,Uz=0.3125,Vx=0.0,Vy=1.0,Vz=0.3125,Umin=0.0,Umax=0.25,Vmin=0.0,Vmax=0.8175,visibility=bottom
+patch:id=CobbleWallSide2,Ox=0.0,Oy=0.0,Oz=0.6825,Ux=1.0,Uy=0.0,Uz=0.6825,Vx=0.0,Vy=1.0,Vz=0.6825,Umin=0.0,Umax=0.25,Vmin=0.0,Vmax=0.8175,visibility=top
+patch:id=CobbleWallTop,Ox=0.0,Oy=0.8175,Oz=0.0,Ux=1.0,Uy=0.8175,Uz=0.0,Vx=0.0,Vy=0.8175,Vz=1.0,Umin=0.0,Umax=0.25,Vmin=0.3125,Vmax=0.6875,visibility=bottom
+patch:id=CobbleWallBottom,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=0.0,Vz=1.0,Umin=0.0,Umax=0.25,Vmin=0.3125,Vmax=0.6875,visibility=top
+patch:id=CobbleFWallSide,Ox=0.0,Oy=0.0,Oz=0.3125,Ux=1.0,Uy=0.0,Uz=0.3125,Vx=0.0,Vy=1.0,Vz=0.3125,Umin=0.0,Umax=1.0,Vmin=0.0,Vmax=0.8175,visibility=bottom
+patch:id=CobbleFWallSide2,Ox=0.0,Oy=0.0,Oz=0.6825,Ux=1.0,Uy=0.0,Uz=0.6825,Vx=0.0,Vy=1.0,Vz=0.6825,Umin=0.0,Umax=1.0,Vmin=0.0,Vmax=0.8175,visibility=top
+patch:id=CobbleFWallTop,Ox=0.0,Oy=0.8175,Oz=0.0,Ux=1.0,Uy=0.8175,Uz=0.0,Vx=0.0,Vy=0.8175,Vz=1.0,Umin=0.0,Umax=1.0,Vmin=0.3125,Vmax=0.6875,visibility=bottom
+patch:id=CobbleFWallBottom,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=0.0,Vz=1.0,Umin=0.0,Umax=1.0,Vmin=0.3125,Vmax=0.6875,visibility=top
+
+# Flower pot patches
+patch:id=FlowerPotSide,Ox=0.0,Oy=0.0,Oz=0.3125,Ux=1.0,Uy=0.0,Uz=0.3125,Vx=0.0,Vy=1.0,Vz=0.3125,Umin=0.3125,Umax=0.6875,Vmin=0.0,Vmax=0.375,visibility=both
+patch:id=FlowerPotTop,Ox=0.0,Oy=0.375,Oz=0.0,Ux=1.0,Uy=0.375,Uz=0.0,Vx=0.0,Vy=0.375,Vz=1.0,Umin=0.3125,Umax=0.6875,Vmin=0.3125,Vmax=0.6875,visibility=bottom
+patch:id=FlowerPotBottom,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=0.0,Vz=1.0,Umin=0.3125,Umax=0.6875,Vmin=0.3125,Vmax=0.6875,visibility=top
+patch:id=FlowerPotDirt,Ox=0.0,Oy=0.25,Oz=0.0,Ux=1.0,Uy=0.25,Uz=0.0,Vx=0.0,Vy=0.25,Vz=1.0,Umin=0.375,Umax=0.625,Vmin=0.375,Vmax=0.625,visibility=bottom
+patch:id=FlowerPotPlant,Ox=0.875,Oy=0.25,Oz=0.125,Ux=0.125,Uy=0.25,Uz=0.875,Vx=0.875,Vy=1.0,Vz=0.125
+patch:id=FlowerPotFlower,Ox=1.0,Oy=0.25,Oz=0.0,Ux=0.0,Uy=0.25,Uz=1.0,Vx=1.0,Vy=1.25,Vz=0.0,Vmin=0.0,Vmax=0.75
+patch:id=FlowerPotCactusSide,Ox=0.0,Oy=0.0,Oz=0.375,Ux=1.0,Uy=0.0,Uz=0.375,Vx=0.0,Vy=1.0,Vz=0.375,Umin=0.375,Umax=0.625,Vmin=0.0,Vmax=1.0,visibility=both
+patch:id=FlowerPotCactusTop,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,Umin=0.375,Umax=0.625,Vmin=0.375,Vmax=0.625,visibility=bottom
+
+# Water
+ignore-updates:id=water,data=*
+# Lava
+ignore-updates:id=lava,data=*
+# Leaves
+ignore-updates:id=leaves,id=leaves2,data=*
+
+# Wood Stair
+# Cobblestone Stair
+# Brick Stair
+# Stone Brick Stair
+# Nether brick stair
+# Sandstone stair
+# Spruce Wood stair
+# Birch Wood stair
+# Jungle Wood stair
+# (156)	Quartz Stairs
+customblock:id=oak_stairs,id=stone_stairs,id=brick_stairs,id=stone_brick_stairs,id=nether_brick_stairs,id=sandstone_stairs,id=spruce_stairs,id=birch_stairs,id=jungle_stairs,id=quartz_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+
+# Slab (stone, sandstone, wood, cobblestone)
+# Wood Slab
+boxblock:id=stone_slab,id=wooden_slab,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,ymax=0.5
+# Top Slab (stone, sandstone, wood, cobblestone)
+# Top Wood Slab
+boxblock:id=stone_slab,id=wooden_slab,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,ymin=0.5
+# Snow
+boxblock:id=snow_layer,data=0,data=8,ymax=0.125
+boxblock:id=snow_layer,data=1,data=9,ymax=0.25
+boxblock:id=snow_layer,data=2,data=10,ymax=0.375
+boxblock:id=snow_layer,data=3,data=11,ymax=0.5
+boxblock:id=snow_layer,data=4,data=12,ymax=0.625
+boxblock:id=snow_layer,data=5,data=13,ymax=0.75
+boxblock:id=snow_layer,data=6,data=14,ymax=0.875
+
+# Torch - up
+# Redstone torch on - up
+# Redstone torch off - up
+patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=5,data=0,patch0=VertX04375#0,patch1=VertX04375@90#0,patch2=VertX04375@180#0,patch3=VertX04375@270#0,patch4=TorchTop#0
+# Torch - pointing south
+# Redstone torch on - pointing south
+# Redstone torch off - pointing south
+patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=1,patch0=TorchSide1#0,patch1=TorchSide2#0,patch2=TorchSide3#0,patch3=TorchSide4#0,patch4=TorchTopSlope@270#0
+# Torch - pointing north
+# Redstone torch on - pointing north
+# Redstone torch off - pointing north
+patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=2,patch0=TorchSide1@180#0,patch1=TorchSide2@180#0,patch2=TorchSide3@180#0,patch3=TorchSide4@180#0,patch4=TorchTopSlope@90#0
+# Torch - pointing west
+# Redstone torch on - pointing west
+# Redstone torch off - pointing west
+patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=3,patch0=TorchSide1@90#0,patch1=TorchSide2@90#0,patch2=TorchSide3@90#0,patch3=TorchSide4@90#0,patch4=TorchTopSlope#0
+# Torch - pointing east
+# Redstone torch on - pointing east
+# Redstone torch off - pointing east
+patchblock:id=torch,id=unlit_redstone_torch,id=redstone_torch,data=4,patch0=TorchSide1@270#0,patch1=TorchSide2@270#0,patch2=TorchSide3@270#0,patch3=TorchSide4@270#0,patch4=TorchTopSlope@180#0
+ignore-updates:id=unlit_redstone_torch,id=redstone_torch,data=*
+
+# Fence
+# Nether Brick Fence
+customblock:id=fence,id=nether_brick_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=107
+
+# Stone pressure plate
+# Wooden pressure plate
+# Light weighted pressure plate
+# Heavy weighted pressure plate
+boxblock:id=wooden_pressure_plate,id=stone_pressure_plate,id=light_weighted_pressure_plate,id=heavy_weighted_pressure_plate,data=*,xmin=0.0625,xmax=0.9275,ymax=0.0625,zmin=0.0625,zmax=0.9275
+# Trapdoor (closed)
+boxblock:id=trapdoor,data=0,data=1,data=2,data=3,ymax=0.1875
+# Trapdoor (open: west attach)
+boxblock:id=trapdoor,data=4,data=12,zmin=0.8125
+# Trapdoor (open: east attach)
+boxblock:id=trapdoor,data=5,data=13,zmax=0.1875
+# Trapdoor (open: south attach)
+boxblock:id=trapdoor,data=6,data=14,xmin=0.8125
+# Trapdoor (open: north attach)
+boxblock:id=trapdoor,data=7,data=15,xmax=0.1875
+# Trapdoor (closed - top)
+boxblock:id=trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
+# Crops
+# Carrot
+# Potatoes
+patchblock:id=wheat,id=carrots,id=potatoes,data=*,patch0=VertX075,patch1=VertX075@90,patch2=VertX025,patch3=VertX025@90
+# Stone Button - facing bottom
+# Wooden Button - facing bottom
+boxblock:id=stone_button,id=wooden_button,data=0,data=8,xmin=0.3125,xmax=0.6875,ymin=0.875,zmin=0.375,zmax=0.625
+# Stone Button - facing south
+# Wooden Button - facing south
+boxblock:id=stone_button,id=wooden_button,data=1,data=9,xmax=0.125,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+# Stone Button - facing north
+# Wooden Button - facing north
+boxblock:id=stone_button,id=wooden_button,data=2,data=10,xmin=0.875,ymin=0.375,ymax=0.625,zmin=0.3125,zmax=0.6875
+# Stone Button - facing west
+# Wooden Button - facing west
+boxblock:id=stone_button,id=wooden_button,data=3,data=11,zmax=0.125,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+# Stone Button - facing east
+# Wooden Button - facing east
+boxblock:id=stone_button,id=wooden_button,data=4,data=12,zmin=0.875,ymin=0.375,ymax=0.625,xmin=0.3125,xmax=0.6875
+# Stone Button - facing top
+# Wooden Button - facing top
+boxblock:id=stone_button,id=wooden_button,data=5,data=13,xmin=0.3125,xmax=0.6875,ymax=0.125,zmin=0.375,zmax=0.625
+# Rails - flat - east/west
+# Powered rails - flat - east/west
+# Detector rails - flat - east/west
+# (157)	Activator Rail
+patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=0,patch0=HorizY001ZTop
+# Powered rails - flat - east/west (powered)
+# (157)	Activator Rail
+patchblock:id=golden_rail,id=activator_rail,data=8,patch0=HorizY001ZTop
+# Rails - flat - north/south
+# Powered rails - flat - north/south
+# Detector rails - flat - north/south
+# (157)	Activator Rail
+patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=1,patch0=HorizY001ZTop@90
+# Powered rails - flat - north/south (powred)
+# (157)	Activator Rail
+patchblock:id=golden_rail,id=activator_rail,data=9,patch0=HorizY001ZTop@90
+# Rails - ascending to south 
+# Powered rails - ascending to south (powered or unpowered)
+# Detector rails - ascending to south
+# (157)	Activator Rail
+patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=2,data=10,patch0=SlopeXUpZTop
+# Rails - ascending to north
+# Powered rails - ascending to north
+# Detector rails - ascending to north
+# (157)	Activator Rail
+patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=3,data=11,patch0=SlopeXUpZTop@180
+# Rails - ascending to east
+# Powered rails - ascending to east
+# Detector rails - ascending to east
+# (157)	Activator Rail
+patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=4,data=12,patch0=SlopeXUpZTop@270
+# Rails - ascending to west
+# Powered rails - ascending to west
+# Detector rails - ascending to west
+# (157)	Activator Rail
+patchblock:id=rail,id=golden_rail,id=detector_rail,id=activator_rail,data=5,data=13,patch0=SlopeXUpZTop@90
+# Rails - northeast corner
+patchblock:id=rail,data=6,patch0=HorizY001ZTop@90
+# Rails - southeast corner
+patchblock:id=rail,data=7,patch0=HorizY001ZTop@180
+# Rails - southwest corner
+patchblock:id=rail,data=8,patch0=HorizY001ZTop@270
+# Rails - northwest corner
+patchblock:id=rail,data=9,patch0=HorizY001ZTop
+# Ladder - attached to east side of block
+patchblock:id=ladder,data=2,patch0=VertX0In@270
+# Ladder - attached to west side of block
+patchblock:id=ladder,data=3,patch0=VertX0In@90
+# Ladder - attached to north side of block
+patchblock:id=ladder,data=4,patch0=VertX0In@180
+# Ladder - attached to south side of block
+patchblock:id=ladder,data=5,patch0=VertX0In
+# Wall sign - facing east
+patchblock:id=wall_sign,data=2,patch0=WSignFront,patch1=WSignBack,patch2=WSignTop,patch3=WSignBottom,patch4=WSignLeft,patch5=WSignRight
+# Wall sign - facing west
+patchblock:id=wall_sign,data=3,patch0=WSignFront@180,patch1=WSignBack@180,patch2=WSignTop@180,patch3=WSignBottom@180,patch4=WSignLeft@180,patch5=WSignRight@180
+# Wall sign - facing north
+patchblock:id=wall_sign,data=4,patch0=WSignFront@270,patch1=WSignBack@270,patch2=WSignTop@270,patch3=WSignBottom@270,patch4=WSignLeft@270,patch5=WSignRight@270
+# Wall sign - facing south
+patchblock:id=wall_sign,data=5,patch0=WSignFront@90,patch1=WSignBack@90,patch2=WSignTop@90,patch3=WSignBottom@90,patch4=WSignLeft@90,patch5=WSignRight@90
+
+# Redstone wire
+customblock:id=redstone_wire,data=*,class=org.dynmap.hdmap.renderer.RedstoneWireRenderer
+ignore-updates:id=redstone_wire,data=*
+# Signpost - facing west
+patchblock:id=standing_sign,data=0,patch0=SignFront@180,patch1=SignBack@180,patch2=SignTop@180,patch3=SignBottom@180,patch4=SignLeft@180,patch5=SignRight@180,patch6=PostFront@180,patch7=PostBack@180,patch8=PostLeft@180,patch9=PostRight@180
+# Signpost - facing north
+patchblock:id=standing_sign,data=4,patch0=SignFront@270,patch1=SignBack@270,patch2=SignTop@270,patch3=SignBottom@270,patch4=SignLeft@270,patch5=SignRight@270,patch6=PostFront@270,patch7=PostBack@270,patch8=PostLeft@270,patch9=PostRight@270
+# Signpost - facing east
+patchblock:id=standing_sign,data=8,patch0=SignFront,patch1=SignBack,patch2=SignTop,patch3=SignBottom,patch4=SignLeft,patch5=SignRight,patch6=PostFront,patch7=PostBack,patch8=PostLeft,patch9=PostRight
+# Signpost - facing south
+patchblock:id=standing_sign,data=12,patch0=SignFront@90,patch1=SignBack@90,patch2=SignTop@90,patch3=SignBottom@90,patch4=SignLeft@90,patch5=SignRight@90,patch6=PostFront@90,patch7=PostBack@90,patch8=PostLeft@90,patch9=PostRight@90
+# Signpost - facing northwest
+patchblock:id=standing_sign,data=2,patch0=SignFront@225,patch1=SignBack@225,patch2=SignTop@225,patch3=SignBottom@225,patch4=SignLeft@225,patch5=SignRight@225,patch6=PostFront@225,patch7=PostBack@225,patch8=PostLeft@225,patch9=PostRight@225
+# Signpost - facing northeast
+patchblock:id=standing_sign,data=6,patch0=SignFront@315,patch1=SignBack@315,patch2=SignTop@315,patch3=SignBottom@315,patch4=SignLeft@315,patch5=SignRight@315,patch6=PostFront@315,patch7=PostBack@315,patch8=PostLeft@315,patch9=PostRight@315
+# Signpost - facing southeast
+patchblock:id=standing_sign,data=10,patch0=SignFront@45,patch1=SignBack@45,patch2=SignTop@45,patch3=SignBottom@45,patch4=SignLeft@45,patch5=SignRight@45,patch6=PostFront@45,patch7=PostBack@45,patch8=PostLeft@45,patch9=PostRight@45
+# Signpost - facing southwest
+patchblock:id=standing_sign,data=14,patch0=SignFront@135,patch1=SignBack@135,patch2=SignTop@135,patch3=SignBottom@135,patch4=SignLeft@135,patch5=SignRight@135,patch6=PostFront@135,patch7=PostBack@135,patch8=PostLeft@135,patch9=PostRight@135
+# Signpost - facing west-northwest
+patchblock:id=standing_sign,data=1,patch0=SignFront@203,patch1=SignBack@203,patch2=SignTop@203,patch3=SignBottom@203,patch4=SignLeft@203,patch5=SignRight@203,patch6=PostFront@203,patch7=PostBack@203,patch8=PostLeft@203,patch9=PostRight@203
+# Signpost - facing north-northeast
+patchblock:id=standing_sign,data=5,patch0=SignFront@293,patch1=SignBack@293,patch2=SignTop@293,patch3=SignBottom@293,patch4=SignLeft@293,patch5=SignRight@293,patch6=PostFront@293,patch7=PostBack@293,patch8=PostLeft@293,patch9=PostRight@293
+# Signpost - facing north-northeast
+patchblock:id=standing_sign,data=9,patch0=SignFront@23,patch1=SignBack@23,patch2=SignTop@23,patch3=SignBottom@23,patch4=SignLeft@23,patch5=SignRight@23,patch6=PostFront@23,patch7=PostBack@23,patch8=PostLeft@23,patch9=PostRight@23
+# Signpost - facing north-northeast
+patchblock:id=standing_sign,data=13,patch0=SignFront@113,patch1=SignBack@113,patch2=SignTop@113,patch3=SignBottom@113,patch4=SignLeft@113,patch5=SignRight@113,patch6=PostFront@113,patch7=PostBack@113,patch8=PostLeft@113,patch9=PostRight@113
+# Signpost - facing west-southwest
+patchblock:id=standing_sign,data=15,patch0=SignFront@157,patch1=SignBack@157,patch2=SignTop@157,patch3=SignBottom@157,patch4=SignLeft@157,patch5=SignRight@157,patch6=PostFront@157,patch7=PostBack@157,patch8=PostLeft@157,patch9=PostRight@157
+# Signpost - facing north-northwest
+patchblock:id=standing_sign,data=3,patch0=SignFront@247,patch1=SignBack@247,patch2=SignTop@247,patch3=SignBottom@247,patch4=SignLeft@247,patch5=SignRight@247,patch6=PostFront@247,patch7=PostBack@247,patch8=PostLeft@247,patch9=PostRight@247
+# Signpost - facing east-northeast
+patchblock:id=standing_sign,data=7,patch0=SignFront@337,patch1=SignBack@337,patch2=SignTop@337,patch3=SignBottom@337,patch4=SignLeft@337,patch5=SignRight@337,patch6=PostFront@337,patch7=PostBack@337,patch8=PostLeft@337,patch9=PostRight@337
+# Signpost - facing south-southeast
+patchblock:id=standing_sign,data=11,patch0=SignFront@67,patch1=SignBack@67,patch2=SignTop@67,patch3=SignBottom@67,patch4=SignLeft@67,patch5=SignRight@67,patch6=PostFront@67,patch7=PostBack@67,patch8=PostLeft@67,patch9=PostRight@67
+# Fire
+patchblock:id=fire,data=*,patch0=VertX0,patch1=VertX0@90,patch2=VertX0@180,patch3=VertX0@270,patch4=SlopeXUpZTop675,patch5=SlopeXUpZTop675@90,patch6=SlopeXUpZTop675@180,patch4=SlopeXUpZTop675@270
+# Bed - head - pointing west
+block:id=bed,data=8,scale=16
+layer:0,1,2
+***-------------
+***-------------
+***-------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+***-------------
+***-------------
+***-------------
+layer:3,4,5,6,7,8
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+layer:9
+----------------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+-******---------
+----------------
+# Bed - head - pointing north
+block:id=bed,data=9,scale=16
+rotate:id=bed,data=8,rot=90
+# Bed - head - pointing east
+block:id=bed,data=10,scale=16
+rotate:id=bed,data=8,rot=180
+# Bed - head - pointing south
+block:id=bed,data=11,scale=16
+rotate:id=bed,data=8,rot=270
+# Bed - foot - pointing west
+block:id=bed,data=0,scale=16
+layer:0,1,2
+-------------***
+-------------***
+-------------***
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+-------------***
+-------------***
+-------------***
+layer:3,4,5,6,7,8
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+# Bed - foot - pointing north
+block:id=bed,data=1,scale=16
+rotate:id=bed,data=0,rot=90
+# Bed - foot - pointing east
+block:id=bed,data=2,scale=16
+rotate:id=bed,data=0,rot=180
+# Bed - foot - pointing south
+block:id=bed,data=3,scale=16
+rotate:id=bed,data=0,rot=270
+
+# Wooden/Iron Door
+customblock:id=wooden_door,id=iron_door,data=*,class=org.dynmap.hdmap.renderer.DoorRenderer
+
+# Wall lever, facing south
+patchblock:id=lever,data=1,patch0=WLeverBase1@270,patch1=WLeverBase2@270,patch2=WLeverBase3@270,patch3=WLeverBase4@270,patch4=WLeverBase5@270,patch5=WLeverSide1@270,patch6=WLeverSide2@270,patch7=WLeverSide3@270,patch8=WLeverSide4@270
+patchblock:id=lever,data=9,patch0=WLeverBase1@270,patch1=WLeverBase2@270,patch2=WLeverBase3@270,patch3=WLeverBase4@270,patch4=WLeverBase5@270,patch5=WLeverSide1@0/90/180,patch6=WLeverSide2@0/90/180,patch7=WLeverSide3@0/90/180,patch8=WLeverSide4@0/90/180
+# Wall lever, facing north
+patchblock:id=lever,data=2,patch0=WLeverBase1@90,patch1=WLeverBase2@90,patch2=WLeverBase3@90,patch3=WLeverBase4@90,patch4=WLeverBase5@90,patch5=WLeverSide1@90,patch6=WLeverSide2@90,patch7=WLeverSide3@90,patch8=WLeverSide4@90
+patchblock:id=lever,data=10,patch0=WLeverBase1@90,patch1=WLeverBase2@90,patch2=WLeverBase3@90,patch3=WLeverBase4@90,patch4=WLeverBase5@90,patch5=WLeverSide1@0/270/180,patch6=WLeverSide2@0/270/180,patch7=WLeverSide3@0/270/180,patch8=WLeverSide4@0/270/180
+# Wall lever, facing west
+patchblock:id=lever,data=3,patch0=WLeverBase1,patch1=WLeverBase2,patch2=WLeverBase3,patch3=WLeverBase4,patch4=WLeverBase5,patch5=WLeverSide1,patch6=WLeverSide2,patch7=WLeverSide3,patch8=WLeverSide4
+patchblock:id=lever,data=11,patch0=WLeverBase1,patch1=WLeverBase2,patch2=WLeverBase3,patch3=WLeverBase4,patch4=WLeverBase5,patch5=WLeverSide1@0/0/180,patch6=WLeverSide2@0/0/180,patch7=WLeverSide3@0/0/180,patch8=WLeverSide4@0/0/180
+# Wall lever, facing east
+patchblock:id=lever,data=4,patch0=WLeverBase1@180,patch1=WLeverBase2@180,patch2=WLeverBase3@180,patch3=WLeverBase4@180,patch4=WLeverBase5@180,patch5=WLeverSide1@180,patch6=WLeverSide2@180,patch7=WLeverSide3@180,patch8=WLeverSide4@180
+patchblock:id=lever,data=12,patch0=WLeverBase1@180,patch1=WLeverBase2@180,patch2=WLeverBase3@180,patch3=WLeverBase4@180,patch4=WLeverBase5@180,patch5=WLeverSide1@0/180/180,patch6=WLeverSide2@0/180/180,patch7=WLeverSide3@0/180/180,patch8=WLeverSide4@0/180/180
+# Ground lever, off tp south
+patchblock:id=lever,data=6,patch0=LeverBase1@270,patch1=LeverBase1@90,patch2=LeverBase2@270,patch3=LeverBase2@90,patch4=LeverBase3@270,patch5=LeverSide1@270,patch6=LeverSide2@270,patch7=LeverSide3@270,patch8=LeverSide4@270
+patchblock:id=lever,data=14,patch0=LeverBase1@270,patch1=LeverBase1@90,patch2=LeverBase2@270,patch3=LeverBase2@90,patch4=LeverBase3@270,patch5=LeverSide1@90,patch6=LeverSide2@90,patch7=LeverSide3@90,patch8=LeverSide4@90
+# Ground lever, off tp west
+patchblock:id=lever,data=5,patch0=LeverBase1,patch1=LeverBase1@180,patch2=LeverBase2,patch3=LeverBase2@180,patch4=LeverBase3,patch5=LeverSide1,patch6=LeverSide2,patch7=LeverSide3,patch8=LeverSide4
+patchblock:id=lever,data=13,patch0=LeverBase1,patch1=LeverBase1@180,patch2=LeverBase2,patch3=LeverBase2@180,patch4=LeverBase3,patch5=LeverSide1@180,patch6=LeverSide2@180,patch7=LeverSide3@180,patch8=LeverSide4@180
+# Ceiling lever, off tp west
+patchblock:id=lever,data=7
+patchrotate:id=lever,data=5,rotz=180
+patchblock:id=lever,data=15
+patchrotate:id=lever,data=13,rotz=180
+# Ceiling lever, off tp south
+patchblock:id=lever,data=0
+patchrotate:id=lever,data=6,rotx=180
+patchblock:id=lever,data=8
+patchrotate:id=lever,data=14,rotx=180
+# Cactus
+patchblock:id=cactus,data=*,patch0=VertX00625,patch1=VertX00625@90,patch2=VertX00625@180,patch3=VertX00625@270,patch4=HorizY100ZTop,patch5=HorizY100ZTop@180/0/0
+# Redstone repeater (on) facing east
+# Redstone repeater (off) facing east
+block:id=unpowered_repeater,id=powered_repeater,data=0,data=4,data=8,data=12,scale=16
+layer:0,1
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+layer:2,3,4,5,6,7,8,9
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+--------**--**--
+--------**--**--
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+# Redstone repeater (on) facing south
+# Redstone repeater (off) facing south
+block:id=unpowered_repeater,id=powered_repeater,data=1,data=5,data=9,data=13,scale=16
+rotate:id=unpowered_repeater,data=0,rot=90
+# Redstone repeater (on) facing west
+# Redstone repeater (off) facing west
+block:id=unpowered_repeater,id=powered_repeater,data=2,data=6,data=10,data=14,scale=16
+rotate:id=unpowered_repeater,data=0,rot=180
+# Redstone repeater (on) facing north
+# Redstone repeater (off) facing north
+block:id=unpowered_repeater,id=powered_repeater,data=3,data=7,data=11,data=15,scale=16
+rotate:id=unpowered_repeater,data=0,rot=270
+# Sticky piston - extended facing down
+# Piston - extended facing down
+block:id=sticky_piston,id=piston,data=8,scale=8
+layer:0,1
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+layer:2,3,4,5,6,7
+********
+********
+********
+********
+********
+********
+********
+********
+# Sticky piston - extended facing up
+block:id=sticky_piston,id=piston,data=9,scale=8
+layer:0,1,2,3,4,5
+********
+********
+********
+********
+********
+********
+********
+********
+layer:6,7
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+# Sticky piston - extended facing east
+# Piston - extended facing east
+block:id=sticky_piston,id=piston,data=10,scale=8
+layer:0,1,2,5,6,7
+******--
+******--
+******--
+******--
+******--
+******--
+******--
+******--
+layer:3,4
+******--
+******--
+******--
+********
+********
+******--
+******--
+******--
+# Sticky piston - extended facing west
+# Piston - extended facing west
+block:id=sticky_piston,id=piston,data=11,scale=8
+rotate:id=sticky_piston,data=10,rot=180
+# Sticky piston - extended facing north
+# Piston - extended facing north
+block:id=sticky_piston,id=piston,data=12,scale=8
+rotate:id=sticky_piston,data=10,rot=270
+# Sticky piston - extended facing south
+# Piston - extended facing south
+block:id=sticky_piston,id=piston,data=13,scale=8
+rotate:id=sticky_piston,data=10,rot=90
+# Sticky piston extension - extended facing down
+# Piston extension - extended facing down
+block:id=piston_head,data=0,data=8,scale=8
+layer:2,3,4,5,6,7
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+layer:0,1
+********
+********
+********
+********
+********
+********
+********
+********
+# Sticky piston extension - extended facing up
+# Piston extension - extended facing up
+block:id=piston_head,data=1,data=9,scale=8
+layer:0,1,2,3,4,5
+--------
+--------
+--------
+---**---
+---**---
+--------
+--------
+--------
+layer:6,7
+********
+********
+********
+********
+********
+********
+********
+********
+# Sticky piston extension - extended facing east
+# Piston extension - extended facing east
+block:id=piston_head,data=2,data=10,scale=8
+layer:0,1,2,5,6,7
+------**
+------**
+------**
+------**
+------**
+------**
+------**
+------**
+layer:3,4
+------**
+------**
+------**
+********
+********
+------**
+------**
+------**
+# Sticky piston extension - extended facing west
+# Piston extension - extended facing west
+block:id=piston_head,data=3,data=11,scale=8
+rotate:id=piston_head,data=2,rot=180
+# Sticky piston extension - extended facing north
+# Piston extension - extended facing north
+block:id=piston_head,data=4,data=12,scale=8
+rotate:id=piston_head,data=2,rot=270
+# Sticky piston extension - extended facing west
+# Piston extension - extended facing west
+block:id=piston_head,data=5,data=13,scale=8
+rotate:id=piston_head,data=2,rot=90
+# Glass pane
+# Iron fence
+customblock:id=glass_pane,id=iron_bars,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+# Web
+# Nether Wart
+# Rose
+# Dandelion
+# Brown Mushroom
+# Red Mushroom
+# Dead shrubs
+# Dead schrub (tall grass)
+# Sapling
+# Sugar Cane
+patchblock:id=sapling,id=web,id=tallgrass,id=deadbush,id=yellow_flower,id=red_flower,id=brown_mushroom,id=red_mushroom,id=reeds,id=nether_wart,data=*,patch0=VertX1Z0ToX0Z1,patch1=VertX1Z0ToX0Z1@90
+
+# Vines - N side of block
+patchblock:id=vine,data=2,patch0=VertX0In
+# Vines - E side of block
+patchblock:id=vine,data=4,patch0=VertX0In@90
+# Vines - S side of block
+patchblock:id=vine,data=8,patch0=VertX0In@180
+# Vines - W side of block
+patchblock:id=vine,data=1,patch0=VertX0In@270
+# Vines - N+E sides of block
+patchblock:id=vine,data=6,patch0=VertX0In,patch1=VertX0In@90
+# Vines - E+S side of block
+patchblock:id=vine,data=12,patch0=VertX0In@90,patch1=VertX0In@180
+# Vines - S+W side of block
+patchblock:id=vine,data=9,patch0=VertX0In@180,patch1=VertX0In@270
+# Vines - W+N side of block
+patchblock:id=vine,data=3,patch0=VertX0In@270,patch1=VertX0In
+# Vines - N+S sides of block
+patchblock:id=vine,data=10,patch0=VertX0In,patch1=VertX0In@180
+# Vines - E+W side of block
+patchblock:id=vine,data=5,patch0=VertX0In@90,patch1=VertX0In@270
+# Vines - N+E+W sides of block
+patchblock:id=vine,data=7,patch0=VertX0In@90,patch1=VertX0In@270,patch2=VertX0In
+# Vines - N+E+S side of block
+patchblock:id=vine,data=14,patch0=VertX0In@180,patch1=VertX0In,patch2=VertX0In@90
+# Vines - E+S+W side of block
+patchblock:id=vine,data=13,patch0=VertX0In@270,patch1=VertX0In@90,patch2=VertX0In@180
+# Vines - N+S+W side of block
+patchblock:id=vine,data=11,patch0=VertX0In,patch1=VertX0In@180,patch2=VertX0In@270
+# Vines - N+S+E+W sides of block
+patchblock:id=vine,data=15,patch0=VertX0In@270,patch1=VertX0In@90,patch2=VertX0In@180,patch3=VertX0In
+# Fence gate
+customblock:id=fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+# Pumpkin stem
+# Mellon stem
+block:id=pumpkin_stem,id=melon_stem,data=*,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+----------------
+----------------
+----------------
+---*--------*---
+----*------*----
+-----*----*-----
+------*--*------
+-------**-------
+-------**-------
+------*--*------
+-----*----*-----
+----*------*----
+---*--------*---
+----------------
+----------------
+----------------
+# Lily pad
+patchblock:id=waterlily,data=*,patch0=HorizY001ZTop
+# Water
+# Lava
+customblock:id=flowing_water,id=water,id=flowing_lava,id=lava,class=org.dynmap.hdmap.renderer.FluidStateRenderer
+# Enchantment Table
+boxblock:id=enchanting_table,data=*,ymax=0.75
+
+# Brewing Stand
+patchblock:id=brewing_stand,data=*,patch0=HorizY001ZTop,patch1=StandSide,patch2=StandSide@90,patch3=StandSide@180,patch4=StandSide@270,patch5=StandArm,patch6=StandArm@120,patch7=StandArm@240
+# Cauldron
+block:id=cauldron,data=*,scale=8
+layer:0,1
+**----**
+*------*
+--------
+--------
+--------
+--------
+*------*
+**----**
+layer:2,3
+********
+********
+********
+********
+********
+********
+********
+********
+layer:4,5,6,7
+********
+*------*
+*------*
+*------*
+*------*
+*------*
+*------*
+********
+# Air portal
+block:id=end_portal,data=*,scale=8
+layer:6
+********
+********
+********
+********
+********
+********
+********
+********
+# Air portal frame (no eye)
+block:id=end_portal_frame,data=0,data=1,data=2,data=3,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+# Air portal fram (eye)
+block:id=end_portal_frame,data=4,data=5,data=6,data=7,scale=16
+layer:0,1,2,3,4,5,6,7,8,9,10,11,12
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+layer:13,14
+----------------
+----------------
+----------------
+----------------
+----********----
+----********----
+----********----
+----********----
+----********----
+----********----
+----********----
+----********----
+----------------
+----------------
+----------------
+----------------
+# Dragon Egg
+block:id=dragon_egg,data=*,scale=8
+layer:0,7
+--------
+--------
+---**---
+--****--
+--****--
+---**---
+--------
+--------
+layer:1,6
+--------
+---**---
+--****--
+-******-
+-******-
+--****--
+---**---
+--------
+layer:2,5
+---**---
+--****--
+-******-
+********
+********
+-******-
+--****--
+---**---
+layer:3,4
+--****--
+-******-
+********
+********
+********
+********
+-******-
+--****--
+# Chest - single, facing west
+# Trap Chest - single, facing west
+customblock:id=chest,id=trapped_chest,data=*,class=org.dynmap.hdmap.renderer.ChestRenderer
+
+# Cake Block
+block:id=cake,data=*,scale=16
+layer:0,1,2,3,4,5,6,7
+----------------
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+-**************-
+----------------
+# Tripwire Hook
+patch:id=HookBoxSide1,Ox=0.0,Oy=0.0,Oz=0.375,Ux=1.0,Uy=0.0,Uz=0.375,Vx=0.0,Vy=1.0,Vz=0.375,Umin=0.875,Umax=1.0,Vmin=0.0625,Vmax=0.5625,visibility=bottom
+patch:id=HookBoxSide2,Ox=0.0,Oy=0.0,Oz=0.625,Ux=1.0,Uy=0.0,Uz=0.625,Vx=0.0,Vy=1.0,Vz=0.625,Umin=0.875,Umax=1.0,Vmin=0.0625,Vmax=0.5625,visibility=top
+patch:id=HookBoxSide3,Ox=0.0,Oy=0.0625,Oz=0.0,Ux=1.0,Uy=0.0625,Uz=0.0,Vx=0.0,Vy=0.0625,Vz=1.0,Umin=0.875,Umax=1.0,Vmin=0.375,Vmax=0.625,visibility=top
+patch:id=HookBoxSide4,Ox=0.0,Oy=0.5625,Oz=0.0,Ux=1.0,Uy=0.5625,Uz=0.0,Vx=0.0,Vy=0.5625,Vz=1.0,Umin=0.875,Umax=1.0,Vmin=0.375,Vmax=0.625,visibility=bottom
+patch:id=HookBoxSide5,Ox=0.875,Oy=0.0,Oz=0.0,Ux=0.875,Uy=0.0,Uz=1.0,Vx=0.875,Vy=1.0,Vz=0.0,Umin=0.375,Umax=0.625,Vmin=0.0625,Vmax=0.5625,visibility=top
+patch:id=HookBoxSide6,Ox=1.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=1.0,Vx=1.0,Vy=1.0,Vz=0.0,Umin=0.375,Umax=0.625,Vmin=0.0625,Vmax=0.5625,visibility=bottom
+patch:id=HookArmSide1,Ox=0.0,Oy=0.375,Oz=0.0,Ux=1.0,Uy=0.375,Uz=0.0,Vx=0.0,Vy=0.375,Vz=1.0,visibility=top
+patch:id=HookArmSide2,Ox=0.0,Oy=0.25,Oz=0.0,Ux=1.0,Uy=0.25,Uz=0.0,Vx=0.0,Vy=0.25,Vz=1.0,visibility=bottom
+
+patchblock:id=tripwire_hook,data=0,data=4,data=8,data=12,patch0=HookBoxSide1@270,patch1=HookBoxSide2@270,patch2=HookBoxSide3@270,patch3=HookBoxSide4@270,patch4=HookBoxSide5@270,patch5=HookBoxSide6@270,patch6=HookArmSide1,patch7=HookArmSide2
+patchblock:id=tripwire_hook,data=1,data=5,data=9,data=13
+patchrotate:id=tripwire_hook,data=0,rot=90
+patchblock:id=tripwire_hook,data=2,data=6,data=10,data=14
+patchrotate:id=tripwire_hook,data=0,rot=180
+patchblock:id=tripwire_hook,data=3,data=7,data=11,data=15
+patchrotate:id=tripwire_hook,data=0,rot=270
+
+# Ender Chest - facing south
+customblock:id=ender_chest,data=*,class=org.dynmap.hdmap.renderer.ChestRenderer,doublechest=false
+
+# Beacon
+patchblock:id=beacon,data=*,patch0=BeaconGlassSide,patch1=BeaconGlassSide@90,patch2=BeaconGlassSide@180,patch3=BeaconGlassSide@270,patch4=BeaconGlassTop,patch5=BeaconGlassBottom,patch6=BeaconObsidianSide,patch7=BeaconObsidianSide@90,patch8=BeaconObsidianSide@180,patch9=BeaconObsidianSide@270,patch10=BeaconObsidianTop,patch11=BeaconLightSide,patch12=BeaconLightSide@90,patch13=BeaconLightSide@180,,patch14=BeaconLightSide@270,patch15=BeaconLightTop
+
+# Cobblestone wall
+customblock:id=cobblestone_wall,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=wall,link0=107
+
+# Flower pot
+patchblock:id=flower_pot,data=0,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt
+# Flower pot with flower
+patchblock:id=flower_pot,data=1,data=2,data=7,data=8,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotFlower,patch8=FlowerPotFlower@90
+# Flower pot with plant
+patchblock:id=flower_pot,data=3,data=4,data=5,data=6,data=10,data=11,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotPlant,patch8=FlowerPotPlant@90
+# Flower pot with cactus
+patchblock:id=flower_pot,data=9,patch0=FlowerPotTop,patch1=FlowerPotBottom,patch2=FlowerPotSide,patch3=FlowerPotSide@90,patch4=FlowerPotSide@180,patch5=FlowerPotSide@270,patch6=FlowerPotDirt,patch7=FlowerPotCactusSide,patch8=FlowerPotCactusSide@90,,patch9=FlowerPotCactusSide@180,,patch10=FlowerPotCactusSide@270,,patch11=FlowerPotCactusTop
+# Head
+patch:id=HeadTop,Ox=0.75,Oy=0.5,Oz=0.75,Ux=0.25,Uy=0.5,Uz=0.75,Vx=0.75,Vy=0.5,Vz=0.25,visibility=bottom
+patch:id=HeadBottom,Ox=0.25,Oy=0.0,Oz=0.25,Ux=0.75,Uy=0.0,Uz=0.25,Vx=0.25,Vy=0.0,Vz=0.75,visibility=top
+patch:id=HeadSide,Ox=0.75,Oy=0.0,Oz=0.25,Ux=0.25,Uy=0.0,Uz=0.25,Vx=0.75,Vy=0.5,Vz=0.25,visibility=top
+#patchblock:id=skull,data=*,patch0=HeadTop,patch1=HeadBottom,patch2=HeadSide,patch3=HeadSide@90,patch4=HeadSide@180,patch5=HeadSide@270
+customblock:id=skull,data=*,class=org.dynmap.hdmap.renderer.SkullRenderer
+# Anvil
+patch:id=AnvilBaseSide,Ox=0.0,Oy=0.0,Oz=0.125,Ux=1.0,Uy=0.0,Uz=0.125,Vx=0.0,Vy=1.0,Vz=0.125,Umin=0.125,Umax=0.875,Vmin=0.0,Vmax=0.25,visibility=both
+patch:id=AnvilBaseTop,Ox=0.0,Oy=0.25,Oz=0.0,Ux=1.0,Uy=0.25,Uz=0.0,Vx=0.0,Vy=0.25,Vz=1.0,Umin=0.125,Umax=0.875,Vmin=0.125,Vmax=0.875,visibility=bottom
+patch:id=AnvilBaseBottom,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=0.0,Vz=1.0,Umin=0.125,Umax=0.875,Vmin=0.125,Vmax=0.875,visibility=top
+patch:id=AnvilStepSide1,Ox=0.0,Oy=0.0,Oz=0.25,Ux=1.0,Uy=0.0,Uz=0.25,Vx=0.0,Vy=1.0,Vz=0.25,Umin=0.1875,Umax=0.8125,Vmin=0.25,Vmax=0.3125,visibility=both
+patch:id=AnvilStepSide2,Ox=0.0,Oy=0.0,Oz=0.1875,Ux=1.0,Uy=0.0,Uz=0.1875,Vx=0.0,Vy=1.0,Vz=0.1875,Umin=0.25,Umax=0.75,Vmin=0.25,Vmax=0.3125,visibility=both
+patch:id=AnvilStepTop,Ox=0.0,Oy=0.3125,Oz=0.0,Ux=1.0,Uy=0.3125,Uz=0.0,Vx=0.0,Vy=0.3125,Vz=1.0,Umin=0.1875,Umax=0.8125,Vmin=0.25,Vmax=0.75,visibility=bottom
+patch:id=AnvilStandSide1,Ox=0.0,Oy=0.0,Oz=0.375,Ux=1.0,Uy=0.0,Uz=0.375,Vx=0.0,Vy=1.0,Vz=0.375,Umin=0.25,Umax=0.75,Vmin=0.3125,Vmax=0.625,visibility=both
+patch:id=AnvilStandSide2,Ox=0.0,Oy=0.0,Oz=0.25,Ux=1.0,Uy=0.0,Uz=0.25,Vx=0.0,Vy=1.0,Vz=0.25,Umin=0.325,Umax=0.675,Vmin=0.3125,Vmax=0.625,visibility=both
+patch:id=AnvilTopSide1,Ox=0.0,Oy=0.0,Oz=0.1825,Ux=1.0,Uy=0.0,Uz=0.1825,Vx=0.0,Vy=1.0,Vz=0.1825,Umin=0.0,Umax=1.0,Vmin=0.625,Vmax=1.0,visibility=both
+patch:id=AnvilTopSide2,Ox=0.0,Oy=0.0,Oz=0.0,Ux=1.0,Uy=0.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=0.0,Umin=0.1825,Umax=0.8175,Vmin=0.625,Vmax=1.0,visibility=both
+patch:id=AnvilTopTop,Ox=0.0,Oy=1.0,Oz=0.0,Ux=1.0,Uy=1.0,Uz=0.0,Vx=0.0,Vy=1.0,Vz=1.0,Umin=0.0,Umax=1.0,Vmin=0.1825,Vmax=0.8175,visibility=bottom
+patch:id=AnvilTopBottom,Ox=0.0,Oy=0.625,Oz=0.0,Ux=1.0,Uy=0.625,Uz=0.0,Vx=0.0,Vy=0.625,Vz=1.0,Umin=0.0,Umax=1.0,Vmin=0.1825,Vmax=0.8175,visibility=top
+patchblock:id=anvil,data=1,data=5,data=9,data=13,patch0=AnvilBaseTop,patch1=AnvilBaseBottom,patch2=AnvilBaseSide,patch3=AnvilBaseSide@90,patch4=AnvilBaseSide@180,patch5=AnvilBaseSide@270,patch6=AnvilStepTop,patch7=AnvilStepSide1,patch8=AnvilStepSide2@90,patch9=AnvilStepSide1@180,patch10=AnvilStepSide2@270,patch11=AnvilStandSide1,patch12=AnvilStandSide2@90,patch13=AnvilStandSide1@180,patch14=AnvilStandSide2@270,patch15=AnvilTopBottom,patch16=AnvilTopSide1,patch17=AnvilTopSide2@90,patch18=AnvilTopSide1@180,patch19=AnvilTopSide2@270,patch20=AnvilTopTop
+patchblock:id=anvil,data=0,data=4,data=8,data=12
+patchrotate:id=anvil,data=1,rot=270
+patchblock:id=anvil,data=2,data=6,data=10,data=14
+patchrotate:id=anvil,data=1,rot=90
+patchblock:id=anvil,data=3,data=7,data=11,data=15
+patchrotate:id=anvil,data=1,rot=180
+
+# (151) Daylight Sensor
+boxblock:id=daylight_detector,data=*,ymax=0.375
+
+# (149) Redstone Comparator (inactive)
+# (150) Redstone Comparator (active)
+block:id=unpowered_comparator,id=powered_comparator,data=0,data=4,data=8,data=12,scale=16
+layer:0,1
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+layer:2,3
+----------------
+----------------
+----------------
+----------------
+---**-----------
+---**-----------
+----------------
+------------**--
+------------**--
+----------------
+---**-----------
+---**-----------
+----------------
+----------------
+----------------
+----------------
+layer:4,5,6
+----------------
+----------------
+----------------
+----------------
+---**-----------
+---**-----------
+----------------
+----------------
+----------------
+----------------
+---**-----------
+---**-----------
+----------------
+----------------
+----------------
+----------------
+block:id=unpowered_comparator,id=powered_comparator,data=1,data=5,data=9,data=13,scale=16
+rotate:id=unpowered_comparator,data=0,rot=90
+block:id=unpowered_comparator,id=powered_comparator,data=2,data=6,data=10,data=14,scale=16
+rotate:id=unpowered_comparator,data=0,rot=180
+block:id=unpowered_comparator,id=powered_comparator,data=3,data=7,data=11,data=15,scale=16
+rotate:id=unpowered_comparator,data=0,rot=270
+
+# (154)	Hopper
+block:id=hopper,data=*,scale=16
+layer:0,1,2,3
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+------****------
+------****------
+------****------
+------****------
+----------------
+----------------
+----------------
+----------------
+----------------
+----------------
+layer:4,5,6,7,8,9
+----------------
+----------------
+----------------
+----------------
+----********----
+----********----
+----********----
+----********----
+----********----
+----********----
+----********----
+----********----
+----------------
+----------------
+----------------
+----------------
+layer:10
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+****************
+layer:11,12,13,14,15
+****************
+****************
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+**------------**
+****************
+****************
+
+# Colored glass pane (160)
+[1.7.0-]customblock:id=stained_glass_pane,data=*,class=org.dynmap.hdmap.renderer.PaneRenderer
+# Acacia Stairs (163)
+# Dark Oak Stairs (164)
+[1.7.0-]customblock:id=acacia_stairs,id=dark_oak_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+
+# (171) Carpet
+boxblock:id=carpet,data=*,ymax=0.0625
+# (175) Double Plant
+[1.7.0-]customblock:id=double_plant,data=0,data=1,data=2,data=3,data=4,data=5,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6
+[1.7.0-]customblock:id=double_plant,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,class=org.dynmap.hdmap.renderer.PlantRenderer,metacnt=6,metasrc=below
+
+# 1.8 blocks
+
+# Iron Trapdoor
+[1.8.0-]boxblock:id=iron_trapdoor,data=0,data=1,data=2,data=3,ymax=0.1875
+[1.8.0-]boxblock:id=iron_trapdoor,data=4,data=12,zmin=0.8125
+[1.8.0-]boxblock:id=iron_trapdoor,data=5,data=13,zmax=0.1875
+[1.8.0-]boxblock:id=iron_trapdoor,data=6,data=14,xmin=0.8125
+[1.8.0-]boxblock:id=iron_trapdoor,data=7,data=15,xmax=0.1875
+[1.8.0-]boxblock:id=iron_trapdoor,data=8,data=9,data=10,data=11,ymin=0.8125
+
+# Inverted Daylight Sensor
+[1.8.0-]boxblock:id=daylight_detector_inverted,data=*,ymax=0.375
+
+# Red Sandstone stairs
+[1.8.0-]customblock:id=red_sandstone_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+
+# Red Sandstone Slab
+[1.8.0-]boxblock:id=stone_slab2,data=0,ymax=0.5
+[1.8.0-]boxblock:id=stone_slab2,data=8,ymin=0.5
+
+# Fence Gate (Spruce)
+[1.8.0-]customblock:id=spruce_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+
+# Fence Gate (Birch)
+[1.8.0-]customblock:id=birch_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+
+# Fence Gate (Jungle)
+[1.8.0-]customblock:id=jungle_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+
+# Fence Gate (Dark Oak)
+[1.8.0-]customblock:id=dark_oak_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+
+# Fence Gate (Acacia)
+[1.8.0-]customblock:id=acacia_fence_gate,data=*,class=org.dynmap.hdmap.renderer.FenceGateBlockRenderer
+
+# Fence (Spruce)
+[1.8.0-]customblock:id=spruce_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=183
+
+# Fence (Birch)
+[1.8.0-]customblock:id=birch_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=184
+
+# Fence (Jungle)
+[1.8.0-]customblock:id=jungle_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=185
+
+# Fence (Dark Oak)
+[1.8.0-]customblock:id=dark_oak_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=186
+
+# Fence (Acacia)
+[1.8.0-]customblock:id=acacia_fence,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=fence,link0=187
+
+# Wooden Door Block (Spruce)
+# Wooden Door Block (Birch)
+# Wooden Door Block (Jungle)
+# Wooden Door Block (Acacia)
+# Wooden Door Block (Dark Oak)
+[1.8.0-]customblock:id=spruce_door,id=birch_door,id=jungle_door,id=acacia_door,id=dark_oak_door,data=*,class=org.dynmap.hdmap.renderer.DoorRenderer
+
+# 1.9 models
+
+# End rod
+#[1.9.0-]block:id=end_rod,data=*,patch0=0:end_rod,transparency=TRANSPARENT
+
+# Chorus Plant
+[1.9.0-]customblock:id=chorus_plant,data=*,class=org.dynmap.hdmap.renderer.FenceWallBlockRenderer,type=wall,link0=200
+
+# Chorus Flower
+[1.9.0-]block:id=chorus_flower,data=*,scale=8
+[1.9.0-]layer:0,7
+[1.9.0-]--------
+[1.9.0-]-******-
+[1.9.0-]-******-
+[1.9.0-]-******-
+[1.9.0-]-******-
+[1.9.0-]-******-
+[1.9.0-]-******-
+[1.9.0-]--------
+[1.9.0-]layer:1,2,3,4,5,6
+[1.9.0-]-******-
+[1.9.0-]********
+[1.9.0-]********
+[1.9.0-]********
+[1.9.0-]********
+[1.9.0-]********
+[1.9.0-]********
+[1.9.0-]-******-
+
+# Purpur Block
+
+# Purpur Pillar
+
+# Purpur Stairs
+[1.9.0-]customblock:id=purpur_stairs,data=*,class=org.dynmap.hdmap.renderer.StairBlockRenderer
+
+# Purpur Slab (Double)
+
+# Purpur Slab
+[1.9.0-]boxblock:id=purpur_slab,data=0,data=1,data=2,data=3,data=4,data=5,data=6,data=7,ymax=0.5
+[1.9.0-]boxblock:id=purpur_slab,data=8,data=9,data=10,data=11,data=12,data=13,data=14,data=15,ymin=0.5
+
+# End Stone Bricks
+
+# Beetroot
+[1.9.0-]patchblock:id=beetroots,data=*,patch0=VertX075,patch1=VertX075@90,patch2=VertX025,patch3=VertX025@90
+
+# Grass Path
+[1.9.0-]boxblock:id=grass_path,data=*,ymax=0.9375
+
+# 209		End Gateway
+
+# 255		Structure Block
+
+# 1.10 blocks

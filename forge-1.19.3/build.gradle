@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -18,7 +17,12 @@ eclipse {
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17) // Need this here so eclipse task generates correctly.
+java {
+    sourceCompatibility = JavaVersion.toVersion('17')
+    targetCompatibility = JavaVersion.toVersion('17')
+}
+compileJava.sourceCompatibility = '17'
+compileJava.targetCompatibility = '17' // Need this here so eclipse task generates correctly.
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
@@ -34,7 +38,7 @@ minecraft {
     }
 }
 
-project.archivesBaseName = "${project.archivesBaseName}-forge-1.19.3"
+project.base.archivesName = "${project.base.archivesName.get()}-forge-1.19.3"
 
 dependencies {
     implementation project(path: ":DynmapCore", configuration: "shadow")
