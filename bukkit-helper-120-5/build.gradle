@@ -6,7 +6,12 @@ eclipse {
 
 description = 'bukkit-helper-1.20.5'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17) // Need this here so eclipse task generates correctly.
+java {
+    sourceCompatibility = JavaVersion.toVersion('17')
+    targetCompatibility = JavaVersion.toVersion('17')
+}
+compileJava.sourceCompatibility = '17'
+compileJava.targetCompatibility = '17' // Need this here so eclipse task generates correctly.
 
 dependencies {
   implementation project(':bukkit-helper')
