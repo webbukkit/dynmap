@@ -16,7 +16,17 @@ repositories {
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java {
+    sourceCompatibility = JavaVersion.toVersion('1.8')
+    targetCompatibility = JavaVersion.toVersion('1.8')
+    // spigot never links against bukkit-helper-* at compile time - it only loads whichever one
+    // matches the running server via reflection (see Helper.java) - so Gradle's automatic
+    // "consumer JVM version must be >= dependency's JVM version" check is a false positive here;
+    // several bukkit-helper-* modules (117+) target newer JDKs than spigot's own JDK 8 baseline.
+    disableAutoTargetJvm()
+}
+compileJava.sourceCompatibility = '1.8'
+compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 dependencies {
     implementation('org.bukkit:bukkit:1.10.2-R0.1-SNAPSHOT') { transitive = false }
@@ -109,6 +119,9 @@ dependencies {
     implementation(project(':bukkit-helper-121-11')) {
         transitive = false
     }
+    implementation(project(':bukkit-helper-26-2')) {
+        transitive = false
+    }
 }
 
 processResources {
@@ -128,7 +141,8 @@ jar {
 
 shadowJar {
     dependencies {
-        include(dependency('org.bstats::'))
+        include(dependency('org.bstats:bstats-bukkit:.*'))
+        include(dependency('org.bstats:bstats-base:.*'))
         include(dependency(':dynmap-api'))
         include(dependency(":DynmapCore"))
         include(dependency(':bukkit-helper'))
@@ -156,6 +170,7 @@ shadowJar {
         include(dependency(':bukkit-helper-121-6'))
         include(dependency(':bukkit-helper-121-10'))
         include(dependency(':bukkit-helper-121-11'))
+        include(dependency(':bukkit-helper-26-2'))
     }
     relocate('org.bstats', 'org.dynmap.bstats')
     destinationDirectory = file '../target'
@@ -164,7 +179,7 @@ shadowJar {
 }
 shadowJar.doLast {
     task ->
-        ant.checksum file: task.archivePath
+        ant.checksum file: task.archiveFile.get().asFile
 }
 
 artifacts {

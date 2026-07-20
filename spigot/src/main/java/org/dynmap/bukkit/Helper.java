@@ -1,6 +1,7 @@
 package org.dynmap.bukkit;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
 import org.dynmap.Log;
@@ -15,6 +16,18 @@ public class Helper {
 			return (BukkitVersionHelper) cons.newInstance();
 		} catch (Exception x) {
 			Log.severe("Error loading " + classname, x);
+			return null;
+		}
+	}
+
+	// Server#getMinecraftVersion() was added long after the ancient Bukkit API (1.10.2) that this
+	// module compiles against, so it isn't a compile-time symbol here - called via reflection instead.
+	private static String getMinecraftVersionReflective() {
+		try {
+			Method m = Bukkit.getServer().getClass().getMethod("getMinecraftVersion");
+			return (String) m.invoke(Bukkit.getServer());
+		} catch (Exception x) {
+			Log.severe("Error calling Server#getMinecraftVersion()", x);
 			return null;
 		}
 	}
@@ -116,6 +129,23 @@ public class Helper {
             }
             else if (v.contains("(MC: 1.13.2)")) {
                 BukkitVersionHelper.helper = loadVersionHelper("org.dynmap.bukkit.helper.v113_2.BukkitVersionHelperSpigot113_2");
+            }
+            // Minecraft 26.1+ switched to year.release version numbers - the "(MC: x)" substring is
+            // still present (confirmed on a real 26.2 server: "26.2-62-... (MC: 26.2)"), just with
+            // the new-style version string inside it instead of the old "1.x.y" one.
+            else if (v.contains("(MC: 26.2)")) {
+                BukkitVersionHelper.helper = loadVersionHelper("org.dynmap.bukkit.helper.v26_2.BukkitVersionHelperSpigot26_2");
+            }
+            // Fallback in case some future server reports the Minecraft version differently (e.g. no
+            // "(MC: x)" substring at all) - try the dedicated accessor before giving up.
+            else if (!v.contains("(MC:")) {
+            	String mcver = getMinecraftVersionReflective();
+            	if ("26.2".equals(mcver)) {
+            		BukkitVersionHelper.helper = loadVersionHelper("org.dynmap.bukkit.helper.v26_2.BukkitVersionHelperSpigot26_2");
+            	}
+            	else {
+            		Log.severe("Unsupported Minecraft version (" + mcver + ") - Dynmap does not yet have a bukkit-helper for this version.");
+            	}
             }
             else {
             	BukkitVersionHelper.helper = loadVersionHelper("org.dynmap.bukkit.helper.BukkitVersionHelperCB");
