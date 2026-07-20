@@ -1,0 +1,84 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version '1.17.16'
+}
+
+base.archivesName = "Dynmap"
+version = parent.version
+group = parent.group
+
+eclipse {
+    project {
+        name = "Dynmap(Fabric-26.2)"
+    }
+}
+
+// Minecraft 26.1+ ships unobfuscated, so Loom no longer remaps anything - mods compile and run
+// directly against the real (Mojang-named) classes. This means: no "mappings" dependency, no
+// "mod*" dependency configurations (they're just normal implementation/compileOnly now), and no
+// remapJar task (the plain jar task IS the final artifact).
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+configurations {
+    shadow
+    implementation.extendsFrom(shadow)
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
+    shadow project(path: ':DynmapCore', configuration: 'shadow')
+
+    compileOnly "me.lucko:fabric-permissions-api:0.7.0"
+    compileOnly 'net.luckperms:api:5.4'
+}
+
+processResources {
+    filesMatching('fabric.mod.json') {
+        expand "version": project.version
+    }
+}
+
+java {
+    // Loom will automatically attach sourcesJar to the "build" task if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
+
+jar {
+    archiveFileName = "${base.archivesName.get()}-${project.version}-fabric-${project.minecraft_version}.jar"
+    destinationDirectory = file '../target'
+    from "LICENSE"
+    from {
+        configurations.shadow.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+jar.doLast {
+    task ->
+        ant.checksum file: task.archiveFile.get().asFile
+}
+
+// This module bundles DynmapCore manually above via the custom "shadow" configuration + jar.from(zipTree(...)).
+// The com.gradleup.shadow PLUGIN (applied to every subproject at the root level) also auto-registers its own
+// unrelated "shadowJar" task that bundles the whole Gradle runtimeClasspath by default - with plain
+// `implementation` deps on fabric-api/fabric-loader/minecraft (the new no-remap convention) that classpath is
+// huge and blows past the 65535-entry zip limit. Disable it since it's not what builds this module's jar.
+tasks.named('shadowJar') {
+    enabled = false
+}

@@ -2,7 +2,7 @@ plugins {
 	id 'fabric-loom' version '1.13.6'
 }
 
-archivesBaseName = "Dynmap"
+base.archivesName = "Dynmap"
 version = parent.version
 group = parent.group
 
@@ -12,7 +12,12 @@ eclipse {
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21) // Need this here so eclipse task generates correctly.
+java {
+    sourceCompatibility = JavaVersion.toVersion('21')
+    targetCompatibility = JavaVersion.toVersion('21')
+}
+compileJava.sourceCompatibility = '21'
+compileJava.targetCompatibility = '21' // Need this here so eclipse task generates correctly.
 
 configurations {
     shadow
@@ -63,11 +68,11 @@ jar {
 }
 
 remapJar {
-    archiveFileName = "${archivesBaseName}-${project.version}-fabric-${project.minecraft_version}-10.jar" // TODO: Remove -10 when updating after 1.21.10 release
+    archiveFileName = "${base.archivesName.get()}-${project.version}-fabric-${project.minecraft_version}-10.jar" // TODO: Remove -10 when updating after 1.21.10 release
     destinationDirectory = file '../target'
 }
 
 remapJar.doLast {
     task ->
-        ant.checksum file: task.archivePath
+        ant.checksum file: task.archiveFile.get().asFile
 }

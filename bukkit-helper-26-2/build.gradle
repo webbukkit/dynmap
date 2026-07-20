@@ -1,0 +1,37 @@
+plugins {
+    id 'io.papermc.paperweight.userdev' version '2.0.0-beta.21'
+}
+
+eclipse {
+    project {
+        name = "Dynmap(Spigot-26.2)"
+    }
+}
+
+description = 'bukkit-helper-26.2'
+
+// Paper 26.2 requires JDK 25 to compile against - use a real Gradle toolchain (rather than just a
+// sourceCompatibility flag) so this module can be built with JDK 25 regardless of what JDK is
+// running the Gradle daemon itself (root project still targets JDK 8 elsewhere).
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+  implementation project(':bukkit-helper')
+  implementation project(':dynmap-api')
+  implementation project(path: ':DynmapCore', configuration: 'shadow')
+  // Minecraft ships unobfuscated as of 26.1+, so there is no more "spigot mappings" reobf jar
+  // (org.spigotmc:spigot / org.spigotmc:spigot-api) to depend on for NMS access - paperweight-userdev's
+  // dev bundle supplies the full compile classpath (Paper/Bukkit API + real Mojang-mapped net.minecraft.*
+  // classes) by itself, so no separate paper-api dependency is needed (or resolvable) here.
+  paperweight.paperDevBundle('26.2.build.+')
+}
