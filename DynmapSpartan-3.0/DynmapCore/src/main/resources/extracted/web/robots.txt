@@ -1,6 +1,0 @@
-User-agent: *
-Disallow: /tiles/
-Disallow: /js/
-Disallow: /standalone/
-Disallow: /images/
-Disallow: /css/

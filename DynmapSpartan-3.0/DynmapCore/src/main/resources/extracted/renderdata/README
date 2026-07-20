@@ -1,1 +1,0 @@
-Most renderdata files are now internal - custom files can still be placed in the dynmap/renderdata directory.

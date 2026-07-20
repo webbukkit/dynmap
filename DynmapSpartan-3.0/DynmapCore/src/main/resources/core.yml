@@ -1,3 +1,0 @@
-version: "${version}-${buildnumber}"
-authors: [mikeprimm]
-

@@ -1,3 +1,0 @@
-# The user is free to add new and custom lightings here, including replacements for standard ones
-# Dynmap's install will not overwrite it
-lightings:
