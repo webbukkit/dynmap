@@ -21,8 +21,18 @@ To build and get all jars in `target/`, run:
 Or (on Windows):
 
     gradlew.bat setup build
-    
-The Forge 1.12.2 versions (specifically ForgeGradle for these) are very sensitive to being built by JDK 8, so to build them, 
+
+This main build covers Spigot/PaperMC, all `bukkit-helper-*`, and all `fabric-*` modules, and requires
+Gradle 9.5.1 (handled automatically by the wrapper). Building `bukkit-helper-26-2` (Paper/Spigot 26.2
+support) additionally requires a **JDK 25** installation for Gradle's toolchain to pick up.
+
+Forge 1.14.4 through 1.21.11 build via ForgeGradle, which does not yet support Gradle 9, so they live in
+their own build:
+
+    cd forge-build
+    ./gradlew setup build
+
+The Forge 1.12.2 version (specifically ForgeGradle for this) is very sensitive to being built by JDK 8, so to build it, 
 set JAVA_HOME to correspond to a JDK 8 installation, then build using the following;
 
     cd oldgradle
@@ -46,10 +56,10 @@ The following target platforms are supported, and you can find them at the links
 
 | Server type  | Version | Dynmap JAR | Where? |
 | ------------ | ------- | ---------- | ------ |
-| Spigot/PaperMC | ≤1.21.4  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap%C2%AE.274/) |
-| Spigot/PaperMC | ≤1.21.4 | `Dynmap-<version>-spigot.jar` | [Modrinth](https://modrinth.com/plugin/dynmap/versions?l=paper&l=spigot) |
+| Spigot/PaperMC | ≤1.21.11, 26.2  | `Dynmap-<version>-spigot.jar` | [SpigotMC](https://www.spigotmc.org/resources/dynmap%C2%AE.274/) |
+| Spigot/PaperMC | ≤1.21.11, 26.2 | `Dynmap-<version>-spigot.jar` | [Modrinth](https://modrinth.com/plugin/dynmap/versions?l=paper&l=spigot) |
 | Forge | 1.12.2 - 1.20.6 | `Dynmap-<version>-forge-<MC_VERSION>.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
-| Fabric | 1.14.4 - 1.21.4 | `Dynmap-<version>-fabric-<MC_VERSION>.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
+| Fabric | 1.14.4 - 1.21.11, 26.2 | `Dynmap-<version>-fabric-<MC_VERSION>.jar` | [Curseforge](https://www.curseforge.com/minecraft/mc-mods/dynmapforge) |
     
 # Data Storage
 Dynmap supports the following storage backends:
