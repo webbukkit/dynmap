@@ -254,7 +254,7 @@ public class DynmapPlugin
                 	if (statename.length() > 0) {
                 		statename += ",";
                 	}
-                	statename += p.getName() + "=" + bs.get(p).toString();
+                	statename += p.getName() + "=" + p.getName(bs.get(p));
                 }
                 int lightAtten = bs.isOpaqueCube(EmptyBlockReader.INSTANCE, BlockPos.ZERO) ? 15 : (bs.propagatesSkylightDown(EmptyBlockReader.INSTANCE, BlockPos.ZERO) ? 0 : 1);
                 //Log.info("statename=" + bn + "[" + statename + "], lightAtten=" + lightAtten);

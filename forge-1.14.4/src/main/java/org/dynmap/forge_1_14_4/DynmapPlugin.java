@@ -242,7 +242,7 @@ public class DynmapPlugin
                 		statename += ",";
                 	}
                     try {
-                        statename += p.getName() + "=" + bs.get(p).toString();
+                        statename += p.getName() + "=" + p.getName(bs.get(p));
                     } catch (IllegalFormatConversionException e){
                     }
                 }
