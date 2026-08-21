@@ -201,6 +201,22 @@ public class DynmapPlugin
     }
 
     /**
+     * Get the name of a property's value within a block state, as it is serialized into
+     * the chunk NBT.
+     *
+     * Property#getName(T) resolves to the serialized name for enum properties, which is what
+     * the chunk palette stores. Calling toString() on the value instead yields the Java
+     * enum constant name. That matches only by coincidence -- as it does for vanilla,
+     * whose constants are uppercased serialized names -- so modded enums whose constant
+     * names differ (e.g. a constant N_E serialized as "ne") fail to resolve at chunk load
+     * and silently render as air.
+     */
+    private static <T extends Comparable<T>> String getPropertyValueName(BlockState bs,
+            net.minecraft.world.level.block.state.properties.Property<T> p) {
+        return p.getName(bs.getValue(p));
+    }
+
+    /**
      * Initialize block states (org.dynmap.blockstate.DynmapBlockState)
      */
     public void initializeBlockStates() {
@@ -243,7 +259,7 @@ public class DynmapPlugin
                 	if (statename.length() > 0) {
                 		statename += ",";
                 	}
-                	statename += p.getName() + "=" + bs.getValue(p).toString();
+                	statename += p.getName() + "=" + getPropertyValueName(bs, p);
                 }
                 int lightAtten = 15;
                 try {	// Workaround for mods with broken block state logic...
