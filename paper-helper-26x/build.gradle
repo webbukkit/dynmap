@@ -34,5 +34,5 @@ dependencies {
     implementation project(':bukkit-helper')
     implementation project(':dynmap-api')
     implementation project(path: ':DynmapCore', configuration: 'shadow')
-    paperweight.paperDevBundle("26.1.2.build.69-stable")
+    paperweight.paperDevBundle("26.2.build.112-stable")
 }

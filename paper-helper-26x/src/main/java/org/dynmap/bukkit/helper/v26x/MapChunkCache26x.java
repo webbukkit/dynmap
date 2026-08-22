@@ -37,7 +37,7 @@ public class MapChunkCache26x extends GenericMapChunkCache {
 		CompletableFuture<Optional<SerializableChunkData>> chunkData = CompletableFuture.supplyAsync(() -> {
 			CraftWorld cw = (CraftWorld) w;
 			LevelChunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z);
-			if (c == null || !c.loaded) {
+			if (c == null) {
 				return Optional.empty();
 			}
 			return Optional.of(SerializableChunkData.copyOf(cw.getHandle(), c));
@@ -56,7 +56,7 @@ public class MapChunkCache26x extends GenericMapChunkCache {
 		CraftWorld cw = (CraftWorld) w;
 		if (!cw.isChunkLoaded(chunk.x, chunk.z)) return null;
 		LevelChunk c = cw.getHandle().getChunkIfLoaded(chunk.x, chunk.z);
-		if (c == null || !c.loaded) return null;
+		if (c == null) return null;
 		SerializableChunkData chunkData = SerializableChunkData.copyOf(cw.getHandle(), c);
 		CompoundTag nbt = chunkData.write();
 		return nbt != null ? parseChunkFromNBT(new NBT.NBTCompound(nbt)) : null;
