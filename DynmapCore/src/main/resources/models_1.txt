@@ -480,113 +480,22 @@ ignore-updates:id=redstone_wire
 # Fire
 modellist:id=fire,box=0/0/8.8/false:16/16/8.8/-22.5/0/0:s/0/0/0/16/16,box=0/0/7.2/false:16/16/7.2/22.5/0/0:n/0/0/0/16/16,box=8.8/0/0/false:8.8/16/16/0/0/-22/5:w/0/0/0/16/16,box=7.2/0/0/false:7.2/16/16/0/0/22.5:e/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01:s/0/0/0/16/16:n/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01/0/90/0:s/0/0/0/16/16:n/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01/0/180/0:s/0/0/0/16/16:n/0/0/0/16/16,box=0/0/0.01/false:16/16/0.01/0/270/0:s/0/0/0/16/16:n/0/0/0/16/16
 
-# Bed - head - pointing west
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=8,scale=16
-layer:0,1,2
-***-------------
-***-------------
-***-------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-***-------------
-***-------------
-***-------------
-layer:3,4,5,6,7,8
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-layer:9
-----------------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
--******---------
-----------------
 # Bed - head - pointing north
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=9,scale=16
-rotate:id=white_bed,data=8,rot=90
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:head/facing:north,box=0/3/0:16/9/16:u/0:d/1:n180/4/0/0/16/6:w270/2/0/0/6/16:e90/3/0/0/6/16,box=0/0/0:3/3/3:d/10/3/0/6/3:n/10/0/3/3/6:s/10/0/3/3/6:w/10/0/3/3/6:e/10/0/3/3/6,box=13/0/0:16/3/3:d/12/3/0/6/3:n/12/0/3/3/6:s/12/0/3/3/6:w/12/0/3/3/6:e/12/0/3/3/6
 # Bed - head - pointing east
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=10,scale=16
-rotate:id=white_bed,data=8,rot=180
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:head/facing:east,box=0/3/0:16/9/16:u/0:d/1:n180/4/0/0/16/6:w270/2/0/0/6/16:e90/3/0/0/6/16:R/0/90/0,box=0/0/0:3/3/3:d/10/3/0/6/3:n/10/0/3/3/6:s/10/0/3/3/6:w/10/0/3/3/6:e/10/0/3/3/6:R/0/90/0,box=13/0/0:16/3/3:d/12/3/0/6/3:n/12/0/3/3/6:s/12/0/3/3/6:w/12/0/3/3/6:e/12/0/3/3/6:R/0/90/0
 # Bed - head - pointing south
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=11,scale=16
-rotate:id=white_bed,data=8,rot=270
-# Bed - foot - pointing west
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=0,scale=16
-layer:0,1,2
--------------***
--------------***
--------------***
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
-----------------
--------------***
--------------***
--------------***
-layer:3,4,5,6,7,8
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
-****************
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:head/facing:south,box=0/3/0:16/9/16:u/0:d/1:n180/4/0/0/16/6:w270/2/0/0/6/16:e90/3/0/0/6/16:R/0/180/0,box=0/0/0:3/3/3:d/10/3/0/6/3:n/10/0/3/3/6:s/10/0/3/3/6:w/10/0/3/3/6:e/10/0/3/3/6:R/0/180/0,box=13/0/0:16/3/3:d/12/3/0/6/3:n/12/0/3/3/6:s/12/0/3/3/6:w/12/0/3/3/6:e/12/0/3/3/6:R/0/180/0
+# Bed - head - pointing west
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:head/facing:west,box=0/3/0:16/9/16:u/0:d/1:n180/4/0/0/16/6:w270/2/0/0/6/16:e90/3/0/0/6/16:R/0/270/0,box=0/0/0:3/3/3:d/10/3/0/6/3:n/10/0/3/3/6:s/10/0/3/3/6:w/10/0/3/3/6:e/10/0/3/3/6:R/0/270/0,box=13/0/0:16/3/3:d/12/3/0/6/3:n/12/0/3/3/6:s/12/0/3/3/6:w/12/0/3/3/6:e/12/0/3/3/6:R/0/270/0
 # Bed - foot - pointing north
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=1,scale=16
-rotate:id=white_bed,data=0,rot=90
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:foot/facing:north,box=0/3/0:16/9/16:u/5:d/6:s180/9/0/0/16/6:w270/7/0/0/6/16:e90/8/0/0/6/16,box=0/0/13:3/3/16:d/14/3/0/6/3:n/14/0/3/3/6:s/14/0/3/3/6:w/14/0/3/3/6:e/14/0/3/3/6,box=13/0/13:16/3/16:d/16/3/0/6/3:n/16/0/3/3/6:s/16/0/3/3/6:w/16/0/3/3/6:e/16/0/3/3/6
 # Bed - foot - pointing east
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=2,scale=16
-rotate:id=white_bed,data=0,rot=180
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:foot/facing:east,box=0/3/0:16/9/16:u/5:d/6:s180/9/0/0/16/6:w270/7/0/0/6/16:e90/8/0/0/6/16:R/0/90/0,box=0/0/13:3/3/16:d/14/3/0/6/3:n/14/0/3/3/6:s/14/0/3/3/6:w/14/0/3/3/6:e/14/0/3/3/6:R/0/90/0,box=13/0/13:16/3/16:d/16/3/0/6/3:n/16/0/3/3/6:s/16/0/3/3/6:w/16/0/3/3/6:e/16/0/3/3/6:R/0/90/0
 # Bed - foot - pointing south
-block:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,data=3,scale=16
-rotate:id=white_bed,data=0,rot=270
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:foot/facing:south,box=0/3/0:16/9/16:u/5:d/6:s180/9/0/0/16/6:w270/7/0/0/6/16:e90/8/0/0/6/16:R/0/180/0,box=0/0/13:3/3/16:d/14/3/0/6/3:n/14/0/3/3/6:s/14/0/3/3/6:w/14/0/3/3/6:e/14/0/3/3/6:R/0/180/0,box=13/0/13:16/3/16:d/16/3/0/6/3:n/16/0/3/3/6:s/16/0/3/3/6:w/16/0/3/3/6:e/16/0/3/3/6:R/0/180/0
+# Bed - foot - pointing west
+modellist:id=white_bed,id=orange_bed,id=magenta_bed,id=light_blue_bed,id=yellow_bed,id=lime_bed,id=pink_bed,id=gray_bed,id=light_gray_bed,id=cyan_bed,id=purple_bed,id=blue_bed,id=brown_bed,id=green_bed,id=red_bed,id=black_bed,state=part:foot/facing:west,box=0/3/0:16/9/16:u/5:d/6:s180/9/0/0/16/6:w270/7/0/0/6/16:e90/8/0/0/6/16:R/0/270/0,box=0/0/13:3/3/16:d/14/3/0/6/3:n/14/0/3/3/6:s/14/0/3/3/6:w/14/0/3/3/6:e/14/0/3/3/6:R/0/270/0,box=13/0/13:16/3/16:d/16/3/0/6/3:n/16/0/3/3/6:s/16/0/3/3/6:w/16/0/3/3/6:e/16/0/3/3/6:R/0/270/0
 
 # Oak door
 # Iron Door
