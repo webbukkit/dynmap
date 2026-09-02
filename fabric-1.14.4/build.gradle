@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.13.6'
+	id 'fabric-loom' version '1.15.5'
 }
 
 apply plugin: 'eclipse'
@@ -10,13 +10,15 @@ eclipse {
     }
 }
 
-archivesBaseName = "Dynmap"
+base { archivesName = "Dynmap" }
 version = parent.version
 group = parent.group
 
 configurations {
-    shadow
-    implementation.extendsFrom(shadow)
+    bundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
 }
 
 dependencies {
@@ -27,7 +29,8 @@ dependencies {
 
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
-    shadow project(path: ':DynmapCore', configuration: 'shadow')
+    implementation project(path: ':DynmapCore', configuration: 'shadow')
+    bundle project(path: ':DynmapCore', configuration: 'shadow')
 }
 
 processResources {
@@ -46,16 +49,16 @@ java {
 jar {
     from "LICENSE"
     from {
-        configurations.shadow.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
+        configurations.bundle.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
     }
 }
 
 remapJar {
-    archiveFileName = "${archivesBaseName}-${project.version}-fabric-${project.minecraft_version}.jar"
+    archiveFileName = "${base.archivesName.get()}-${project.version}-fabric-${project.minecraft_version}.jar"
     destinationDirectory = file '../target'
 }
 
 remapJar.doLast {
     task ->
-        ant.checksum file: task.archivePath
+        ant.checksum file: task.archiveFile.get().asFile
 }
