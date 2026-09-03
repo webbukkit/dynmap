@@ -1,21 +1,8 @@
-// Workaround for Shadow not supporting Java 19 classes.
-// Remove this once Shadow updates.
-// See: https://github.com/johnrengelman/shadow/pull/770
-// See: https://discord.com/channels/722722769950998560/793019909055578113/978939925061857315
-buildscript {
-    configurations.all {
-        resolutionStrategy {
-            force("org.ow2.asm:asm:9.5")
-            force("org.ow2.asm:asm-commons:9.5")
-        }
-    }
-}
-
 plugins {
-    //id  "com.github.johnrengelman.shadow" version "7.1.0"
-    id  "io.github.goooler.shadow" version "8.1.7"
+    id  "com.gradleup.shadow" version "9.4.2"
     id  'java'
     id  'maven-publish'
+    id  'io.papermc.paperweight.userdev' version '2.0.0-beta.21' apply false
 }
 
 apply plugin: 'eclipse'
@@ -35,6 +22,7 @@ allprojects  {
      maven { url "https://repo.mikeprimm.com" }
      maven { url "https://repo.maven.apache.org/maven2" }
      maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+     maven { url "https://repo.papermc.io/repository/maven-public/" }
      maven { url "https://repo.codemc.org/repository/maven-public/" }
   }
 
@@ -52,13 +40,17 @@ ext {
   globals = new Globals()
 }
 
-subprojects {  
-  apply plugin: "io.github.goooler.shadow"
+subprojects {
+  if (!it.name.startsWith('fabric-') && !it.name.startsWith('forge-')) {
+    apply plugin: "com.gradleup.shadow"
+  }
   apply plugin: 'java'
   apply plugin: 'maven-publish'
 
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
   tasks.withType(JavaCompile) {
   	options.encoding = 'UTF-8'
   }

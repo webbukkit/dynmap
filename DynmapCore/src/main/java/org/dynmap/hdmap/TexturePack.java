@@ -1123,7 +1123,7 @@ public class TexturePack {
 		});
     
     private void patchBedImages(int img_id, int[] imgids) {
-        patchCustomImages(img_id, imgids, bed_patches, 64);
+        patchCustomImages(img_id, imgids, bed_patches, 4); // 4 tiles of 16 pixels
     }
     
     /* Copy texture pack */
