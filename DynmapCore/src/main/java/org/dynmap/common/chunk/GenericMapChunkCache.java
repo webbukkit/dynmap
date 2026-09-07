@@ -1194,7 +1194,82 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	}
 
 	private static final String litStates[] = { "light", "spawn", "heightmaps", "full" };
-	
+
+	/**
+	 * Resolve a block state from its palette name and property string ("prop=value,prop=value", may be empty).
+	 * <p>
+	 * Default implementation matches against the registered DynmapBlockState names. Without properties it returns
+	 * the block's base (first registered) state, which is wrong for 26.3+ chunks: there, an entry without
+	 * properties means the block's <em>default</em> state, which only the game knows. Platforms should override
+	 * this to resolve through the game's block registry.
+	 */
+	protected DynmapBlockState lookupBlockState(String name, String statestr) {
+		DynmapBlockState bs = null;
+		if ((statestr != null) && (!statestr.isEmpty())) {
+			bs = DynmapBlockState.getStateByNameAndState(name, statestr);
+		}
+		if (bs == null) {
+			bs = DynmapBlockState.getBaseStateByName(name);
+		}
+		return bs;
+	}
+
+	/**
+	 * Resolve one entry of a section block state palette ("block_states" / "palette", 1.18+).
+	 * Entry formats seen so far:
+	 * <ul>
+	 *   <li>1.18 - 26.2: compound { Name: "ns:block", Properties: { prop: "value", ... } }</li>
+	 *   <li>26.3+: plain string "ns:block" (list of strings when no entry has properties)</li>
+	 *   <li>26.3+: compound { "": "ns:block" } for entries without properties</li>
+	 *   <li>26.3+: compound { id: "ns:block", properties: { prop: "value", ... } }</li>
+	 * </ul>
+	 * In the 26.3+ codec an entry without properties denotes the block's default state; otherwise all
+	 * properties are listed.
+	 */
+	private DynmapBlockState parseBlockStatePaletteEntry(GenericNBTList plist, int pi) {
+		String pname = null;
+		String statestr = null;
+		String s = plist.getString(pi);
+		// String entry (26.3+); older platform NBT wrappers may return SNBT of a compound here, so skip those
+		if ((s != null) && (!s.isEmpty()) && (s.charAt(0) != '{')) {
+			int bracket = s.indexOf('[');
+			if (bracket >= 0) {	// Defensive: "ns:block[prop=value,...]"
+				int end = s.lastIndexOf(']');
+				pname = s.substring(0, bracket);
+				statestr = s.substring(bracket + 1, (end > bracket) ? end : s.length());
+			}
+			else {
+				pname = s;
+			}
+		}
+		else {
+			GenericNBTCompound tc = plist.getCompound(pi);
+			String propkey = "Properties";
+			pname = tc.getString("Name");
+			if ((pname == null) || pname.isEmpty()) {	// 26.3+ compound forms
+				propkey = "properties";
+				pname = tc.getString("id");
+				if ((pname == null) || pname.isEmpty()) {
+					pname = tc.getString("");
+				}
+			}
+			if (tc.contains(propkey)) {
+				StringBuilder sb = new StringBuilder();
+				GenericNBTCompound prop = tc.getCompound(propkey);
+				for (String pid : prop.getAllKeys()) {
+					if (sb.length() > 0) sb.append(',');
+					sb.append(pid).append('=').append(prop.getAsString(pid));
+				}
+				statestr = sb.toString();
+			}
+		}
+		DynmapBlockState bs = null;
+		if ((pname != null) && (!pname.isEmpty())) {
+			bs = lookupBlockState(pname, statestr);
+		}
+		return (bs != null) ? bs : DynmapBlockState.AIR;
+	}
+
 	public GenericChunk parseChunkFromNBT(GenericNBTCompound orignbt) {
 		GenericNBTCompound nbt = orignbt;
 		if ((nbt != null) && nbt.contains("Level", GenericNBTCompound.TAG_COMPOUND)) {
@@ -1347,23 +1422,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
             		GenericNBTList plist = block_states.getList("palette", GenericNBTCompound.TAG_COMPOUND);
             		palette = new DynmapBlockState[plist.size()];
             		for (int pi = 0; pi < plist.size(); pi++) {
-            			GenericNBTCompound tc = plist.getCompound(pi);
-            			String pname = tc.getString("Name");
-            			if (tc.contains("Properties")) {
-            				StringBuilder statestr = new StringBuilder();
-            				GenericNBTCompound prop = tc.getCompound("Properties");
-            				for (String pid : prop.getAllKeys()) {
-            					if (statestr.length() > 0) statestr.append(',');
-            					statestr.append(pid).append('=').append(prop.getAsString(pid));
-            				}
-            				palette[pi] = DynmapBlockState.getStateByNameAndState(pname, statestr.toString());
-            			}
-            			if (palette[pi] == null) {
-            				palette[pi] = DynmapBlockState.getBaseStateByName(pname);
-            			}
-            			if (palette[pi] == null) {
-            				palette[pi] = DynmapBlockState.AIR;
-            			}
+            			palette[pi] = parseBlockStatePaletteEntry(plist, pi);
             		}
         			GenericBitStorage db = null;
         			DataBitsPacked dbp = null;
