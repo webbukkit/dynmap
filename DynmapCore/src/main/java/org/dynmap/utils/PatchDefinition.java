@@ -232,25 +232,25 @@ public class PatchDefinition implements RenderPatch {
         boolean good = true;
         // Compute visible corners to see if we're inside cube (u.x = xu-x0, v.x = xv-x0)
         double xx0 = x0 + u.x * umin + v.x * vmin;
-        double xx1 = x0 + u.x * vmin + v.x * vmax;
+        double xx1 = x0 + u.x * umin + v.x * vmax;
         double xx2 = x0 + u.x * umax + v.x * vmin;
-        double xx3 = x0 + u.x * vmax + v.x * vmax;
+        double xx3 = x0 + u.x * umax + v.x * vmax;
         if (outOfRange(xx0) || outOfRange(xx1) || outOfRange(xx2) || outOfRange(xx3)) {
             Log.verboseinfo(String.format("Invalid visible range xu=[%f:%f], xv=[%f:%f]", xx0, xx2, xx1, xx3));
             good = false;
         }
         double yy0 = y0 + u.y * umin + v.y * vmin;
-        double yy1 = y0 + u.y * vmin + v.y * vmax;
+        double yy1 = y0 + u.y * umin + v.y * vmax;
         double yy2 = y0 + u.y * umax + v.y * vmin;
-        double yy3 = y0 + u.y * vmax + v.y * vmax;
+        double yy3 = y0 + u.y * umax + v.y * vmax;
         if (outOfRange(yy0) || outOfRange(yy1) || outOfRange(yy2) || outOfRange(yy3)) {
             Log.verboseinfo(String.format("Invalid visible range yu=[%f:%f], yv=[%f:%f]", yy0, yy2, yy1, yy3));
             good = false;
         }
         double zz0 = z0 + u.z * umin + v.z * vmin;
-        double zz1 = z0 + u.z * vmin + v.z * vmax;
+        double zz1 = z0 + u.z * umin + v.z * vmax;
         double zz2 = z0 + u.z * umax + v.z * vmin;
-        double zz3 = z0 + u.z * vmax + v.z * vmax;
+        double zz3 = z0 + u.z * umax + v.z * vmax;
         if (outOfRange(zz0) || outOfRange(zz1) || outOfRange(zz2) || outOfRange(zz3)) {
             Log.verboseinfo(String.format("Invalid visible range zu=[%f:%f], zv=[%f:%f]", zz0, zz2, zz1, zz3));
             good = false;
