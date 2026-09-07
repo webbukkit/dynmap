@@ -15,6 +15,12 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.chunk.storage.SerializableChunkData;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
@@ -30,6 +36,7 @@ import org.dynmap.utils.*;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Container for managing chunks - dependent upon using chunk snapshots, since rendering is off server thread
@@ -104,6 +111,57 @@ public class FabricMapChunkCache extends GenericMapChunkCache {
 		}
 		return gc;
 	}
+
+    // 26.3+ chunk palettes omit the properties of a block in its default state and otherwise list all of them.
+    // Resolve the entry through the game registry (default state + explicit properties) and map the exact
+    // BlockState to its Dynmap state, instead of guessing from the Dynmap name table.
+    private static final ConcurrentHashMap<String, DynmapBlockState> paletteStateCache = new ConcurrentHashMap<>();
+
+    @Override
+    protected DynmapBlockState lookupBlockState(String name, String statestr) {
+        String key = ((statestr == null) || statestr.isEmpty()) ? name : name + "[" + statestr + "]";
+        DynmapBlockState dbs = paletteStateCache.get(key);
+        if (dbs != null) return dbs;
+        BlockState bs = resolveGameBlockState(name, statestr);
+        if (bs != null) {
+            int idx = Block.BLOCK_STATE_REGISTRY.getId(bs);
+            if ((idx >= 0) && (idx < DynmapPlugin.stateByID.length)) {
+                dbs = DynmapPlugin.stateByID[idx];
+            }
+        }
+        if (dbs == null) {
+            dbs = super.lookupBlockState(name, statestr);
+        }
+        if (dbs != null) {
+            paletteStateCache.put(key, dbs);
+        }
+        return dbs;
+    }
+
+    private static BlockState resolveGameBlockState(String name, String statestr) {
+        Identifier id = Identifier.tryParse(name);
+        if (id == null) return null;
+        Optional<Block> blk = BuiltInRegistries.BLOCK.getOptional(id);
+        if (!blk.isPresent()) return null;
+        BlockState bs = blk.get().defaultBlockState();
+        if ((statestr != null) && (!statestr.isEmpty())) {
+            StateDefinition<Block, BlockState> def = blk.get().getStateDefinition();
+            for (String kv : statestr.split(",")) {
+                int eq = kv.indexOf('=');
+                if (eq <= 0) continue;
+                Property<?> p = def.getProperty(kv.substring(0, eq).trim());
+                if (p != null) {
+                    bs = withValue(bs, p, kv.substring(eq + 1).trim());
+                }
+            }
+        }
+        return bs;
+    }
+
+    private static <T extends Comparable<T>> BlockState withValue(BlockState bs, Property<T> p, String value) {
+        Optional<T> v = p.getValue(value);
+        return v.isPresent() ? bs.setValue(p, v.get()) : bs;
+    }
 
     @Override
     public int getFoliageColor(BiomeMap bm, int[] colormap, int x, int z) {
