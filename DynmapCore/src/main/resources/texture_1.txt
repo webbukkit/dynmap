@@ -8974,6 +8974,8 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [26.3-]block:id=%pink_wool_stairs,state=facing:east/half:bottom/shape:outer_left,patch0=0:pink_wool,transparency=SEMITRANSPARENT,stdrot=true
 [26.3-]block:id=%pink_wool_stairs,state=facing:east/half:bottom/shape:outer_right,patch0=0:pink_wool,transparency=SEMITRANSPARENT,stdrot=true
 [26.3-]texturefile:id=poplar_sign,filename=assets/minecraft/textures/entity/signs/poplar.png,format=SIGN
+[26.3-]block:id=poplar_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=poplar_sign
+[26.3-]block:id=poplar_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=poplar_sign
 [26.3-]texturefile:id=straw_bed,filename=assets/minecraft/textures/entity/bed/straw.png,format=BED
 [26.3-]texture:id=shelf_mushroom_stage0,filename=assets/minecraft/textures/block/shelf_mushroom_stage0.png,xcount=1,ycount=1
 [26.3-]texture:id=shelf_mushroom_stage1,filename=assets/minecraft/textures/block/shelf_mushroom_stage1.png,xcount=1,ycount=1
