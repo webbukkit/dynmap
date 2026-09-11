@@ -8976,9 +8976,9 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [26.3-]texturefile:id=poplar_sign,filename=assets/minecraft/textures/entity/signs/poplar.png,format=SIGN
 [26.3-]block:id=poplar_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=poplar_sign
 [26.3-]block:id=poplar_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=poplar_sign
-[26.3-]texturefile:id=straw_bed,filename=assets/minecraft/textures/entity/bed/straw.png,format=BED
+[26.3-]texture:id=straw_bed,filename=assets/minecraft/textures/block/straw_bed.png,xcount=1,ycount=1
 [26.3-]texture:id=shelf_mushroom_stage0,filename=assets/minecraft/textures/block/shelf_mushroom_stage0.png,xcount=1,ycount=1
 [26.3-]texture:id=shelf_mushroom_stage1,filename=assets/minecraft/textures/block/shelf_mushroom_stage1.png,xcount=1,ycount=1
-[26.3-]block:id=straw_bed,patch0=0:straw_bed,patch1=1:straw_bed,patch2=2:straw_bed,patch3=3:straw_bed,patch4=4:straw_bed,patch5=5:straw_bed,patch6=6:straw_bed,patch7=7:straw_bed,patch8=8:straw_bed,patch9=9:straw_bed,patch10=10:straw_bed,patch11=11:straw_bed,patch12=12:straw_bed,patch13=13:straw_bed,patch14=14:straw_bed,patch15=15:straw_bed,patch16=16:straw_bed,patch17=17:straw_bed,transparency=TRANSPARENT
+[26.3-]block:id=straw_bed,patch0=0:straw_bed,transparency=TRANSPARENT
 [26.3-]block:id=%shelf_mushroom,state=age:0,patch0=0:shelf_mushroom_stage0,transparency=TRANSPARENT,stdrot=true
 [26.3-]block:id=%shelf_mushroom,state=age:1,patch0=0:shelf_mushroom_stage1,transparency=TRANSPARENT,stdrot=true
