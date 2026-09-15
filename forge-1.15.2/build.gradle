@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -18,7 +17,10 @@ eclipse {
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
@@ -31,8 +33,6 @@ minecraft {
         }
     }
 }
-
-project.archivesBaseName = "${project.archivesBaseName}-forge-1.15.2"
 
 dependencies {
     implementation project(path: ":DynmapCore", configuration: "shadow")
@@ -61,7 +61,7 @@ shadowJar {
 
 shadowJar.doLast {
     task ->
-        ant.checksum file: task.archivePath
+        ant.checksum file: task.archiveFile.get().asFile
 }
 
 afterEvaluate {

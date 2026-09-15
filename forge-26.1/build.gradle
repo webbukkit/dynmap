@@ -1,0 +1,75 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'net.minecraftforge.gradle' version '[7.0.17,8)'
+}
+
+eclipse {
+    project {
+        name = "Dynmap(Forge-26.1)"
+    }
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+
+ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
+
+configurations {
+    bundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+}
+
+minecraft {
+    // Auto-applies src/main/resources/META-INF/accesstransformer.cfg
+    accessTransformer = true
+}
+
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${project.forge_version}")
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.1'
+
+    implementation project(path: ":DynmapCore", configuration: "shadow")
+    implementation project(path: ':DynmapCoreAPI')
+    bundle project(path: ':DynmapCore', configuration: 'shadow')
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+}
+
+processResources {
+    filesMatching('META-INF/mods.toml') {
+        // replace version and mcversion
+        expand(
+            version: project.version + '-' + project.ext.buildNumber,
+            mcversion: project.minecraft_version
+        )
+    }
+}
+
+jar {
+    archiveBaseName = "Dynmap"
+    archiveClassifier = "forge-${project.minecraft_version}"
+    destinationDirectory = file('../target')
+    from "LICENSE"
+    from {
+        configurations.bundle.collect { it.toString().contains("guava") ? null : it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+jar.doLast {
+    task ->
+        ant.checksum file: task.archiveFile.get().asFile
+}
