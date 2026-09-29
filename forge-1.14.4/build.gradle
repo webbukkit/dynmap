@@ -8,7 +8,7 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-//apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.gradleup.shadow'
 apply plugin: 'eclipse'
 
 eclipse {
