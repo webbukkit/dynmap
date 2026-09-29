@@ -9,38 +9,40 @@
 * [Where to go for questions and discussions](#where-to-go-for-questions-and-discussions)
 * [Where to go to make donations](#where-to-go-to-make-donations)
 # How to build
-Dynmap 3.x+ uses Gradle v8.7 for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.18.x+ requirements, the developer's
-default JDK must be a JDK 21 version - older versions will still be compiled
-to run on the default JDK for those platforms (JDK 8 for 1.16 and earlier, JDK 16 for 1.17.x, JDK 17 for 1.18 to 1.20.4, JDK 21 for 1.20.5+), and 
-common libraries are built using JDK 8.
+The platforms need different Gradle versions, so a full build takes three runs. All jars end up in `target/`.
 
-To build and get all jars in `target/`, run:
+| Run | Gradle | Start it with | Builds |
+| --- | ------ | ------------- | ------ |
+| 1 | 9.5.1 (`./gradlew`) | JDK 25 | Core, Spigot/PaperMC (including Paper 26.x), all Fabric modules |
+| 2 | 8.14 (an installed Gradle, not the wrapper) | JDK 21 | Forge 1.14.4 to 1.21.11 |
+| 3 | 4.10.2 (`oldbuilds/gradlew`) | JDK 8 | Forge 1.12.2 |
 
-    ./gradlew setup build
-    
-Or (on Windows):
+Why three: ForgeGradle 6.x doesn't run on Gradle 9, while Fabric Loom and paperweight (used for Paper 26.x) need it.
+`settings.gradle` checks the Gradle version and includes only the modules that fit, so run 1 does not build the Forge modules.
 
-    gradlew.bat setup build
-    
-The Forge 1.12.2 versions (specifically ForgeGradle for these) are very sensitive to being built by JDK 8, so to build them, 
-set JAVA_HOME to correspond to a JDK 8 installation, then build using the following;
+Every module still compiles for its own Java target: JDK 8 for 1.16 and earlier, JDK 16 for 1.17.x, JDK 17 for 1.18 to 1.20.4,
+JDK 21 for 1.20.5+, JDK 25 for Paper 26.x. Common libraries are built for Java 8. Gradle does not download a JDK for you, so install
+the ones you need (8, 16, 17, 21 and 25 for a full build) where Gradle can find them, for example `~/.jdks`.
 
-    cd oldgradle
-    ./gradlew setup build
-    
-Or (on Windows):
+Run 1, with `JAVA_HOME` set to JDK 25 (Windows: `gradlew.bat build`):
 
-    cd oldgradle
-    gradlew.bat setup build
+    ./gradlew build
 
-Those familiar with gradle can save time by specifying a build (or commenting in settings.gradle) BUT this is not suitable for uploading DEV code changes.
+Run 2, with `JAVA_HOME` set to JDK 21 and Gradle 8.14 on your `PATH`:
 
-NOTE: PR code submissions MUST be built and TESTED for ALL platforms (including oldgradle), or be rejected and negatively influence future approvals. 
+    gradle build
+
+Run 3, with `JAVA_HOME` set to a JDK 8 installation (Forge 1.12.2 is very sensitive to the JDK version; Windows: `gradlew.bat build`):
+
+    cd oldbuilds
+    ./gradlew build
+
+Those familiar with Gradle can save time by building a single module, for example `./gradlew :fabric-1.18.2:build`, or by commenting out modules in
+`settings.gradle`. That is not suitable for uploading DEV code changes.
+
+NOTE: PR code submissions MUST be built and TESTED for ALL platforms (all three runs), or be rejected and negatively influence future approvals.
 For more check [contributing rules](#contributing-to-dynmaps-code).
 
-    ./gradlew :fabric-1.18:build
-
-    
 # What platforms are supported?
 The following target platforms are supported, and you can find them at the links supplied:
 

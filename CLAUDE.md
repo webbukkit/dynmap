@@ -4,31 +4,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-platform project supporting Spigot/PaperMC, Forge, and Fabric across multiple Minecraft versions (1.12.2 - 1.21.x).
+Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-platform project supporting Spigot/PaperMC, Forge, and Fabric across multiple Minecraft versions (1.12.2 - 1.21.x, plus Paper 26.x).
 
 ## Build Commands
 
-```bash
-# Build all platforms (requires JDK 21 as default)
-./gradlew setup build
+A full build takes three runs, because the platforms need different Gradle versions. Outputs go to `/target`.
 
-# Build outputs go to /target directory
+```bash
+# Run 1: Gradle 9.5.1 wrapper, started with JDK 25.
+# Builds core, Spigot/Paper (incl. Paper 26.x) and all Fabric modules.
+./gradlew build
+
+# Run 2: installed Gradle 8.14 (not the wrapper), started with JDK 21.
+# Builds Forge 1.14.4 - 1.21.11.
+gradle build
+
+# Run 3: Gradle 4.10.2 via oldbuilds/, started with JDK 8.
+# Builds Forge 1.12.2.
+cd oldbuilds
+./gradlew build
 
 # Build specific module (for faster iteration, but NOT for PR submissions)
 ./gradlew :DynmapCore:build
 
 # Run unit tests (DynmapCore only — JUnit 4)
 ./gradlew :DynmapCore:test
-
-# Forge 1.12.2 (requires JDK 8 - set JAVA_HOME accordingly)
-cd oldgradle
-./gradlew setup build
 ```
 
+`settings.gradle` includes Forge 1.14.4 - 1.21.11 only on Gradle 8, and `spigot`, `paper-helper-26x` and the Fabric modules only on Gradle 9+.
+ForgeGradle 6.x doesn't run on Gradle 9. Fabric Loom and `paperweight-userdev` need it.
+
 **JDK Requirements:**
-- Default: JDK 21
-- Forge 1.12.2 (oldgradle): JDK 8 strictly required
-- Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5+)
+- Run 1 (Gradle 9): start with JDK 25. `paper-helper-26x` compiles for Java 25, and on JDK 21 it fails with `invalid source release: 25`
+- Run 2 (Gradle 8): start with JDK 21
+- Run 3 (`oldbuilds`): JDK 8 strictly required
+- Gradle does not download a JDK for you. Legacy Forge needs JDK 8, 16 and 17 installed where Gradle can find them (for example `~/.jdks`)
+- Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5+), JDK 25 (Paper 26.x)
 
 **Build notes:**
 - `gradle.properties` sets `org.gradle.parallel=false` and `org.gradle.daemon=false` — do not change these
@@ -46,8 +57,9 @@ cd oldgradle
 **Platform Implementations:**
 - `spigot/` - Bukkit/PaperMC implementation (`DynmapPlugin.java`)
 - `bukkit-helper-*` - Version-specific NMS code (one per MC version: 1.13-1.21)
+- `paper-helper-26x/` - Paper 26.x helper on Mojang mappings (`paperweight-userdev`, Java 25)
 - `fabric-*` - Fabric mod implementations (1.14.4-1.21.x)
-- `forge-*` - Forge mod implementations (1.14.4-1.21.x); `forge-1.12.2` lives in `oldgradle/`
+- `forge-*` - Forge mod implementations (1.14.4-1.21.x); `forge-1.12.2` is built from `oldbuilds/` (its Gradle wrapper jar is in `oldgradle/`)
 
 ### Dependency Flow
 ```
@@ -90,12 +102,12 @@ The `bukkit-helper-*` modules contain version-specific NMS code; `spigot/` deleg
 Unit tests exist in `DynmapCore/src/test/` (JUnit 4) covering `Matrix3D`, `Vector3D`, `IpAddressMatcher`, `DynIntHashMap`, and `BufferInputStream`. Run with `./gradlew :DynmapCore:test`.
 
 Full verification requires:
-1. Building all platforms: `./gradlew setup build` AND `cd oldgradle && ./gradlew setup build`
+1. Building all platforms with the three runs listed under Build Commands
 2. Manual testing on target Minecraft server platforms
 
 ## Critical Contribution Rules
 
-**PRs must build and test on ALL platforms including oldgradle. Changes to DynmapCore/DynmapCoreAPI require testing on all platforms.**
+**PRs must build and test on ALL platforms, including the Gradle 8 and `oldbuilds` runs. Changes to DynmapCore/DynmapCoreAPI require testing on all platforms.**
 
 - **Java 8 compatibility required** — Code must compile and run on Java 8
 - **Java only** — No Kotlin, Scala, or other JVM languages

@@ -60,3 +60,4 @@ Kosma
 Kosma's
 DEV
 Modrinth
+Mojang
