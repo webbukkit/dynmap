@@ -6097,3 +6097,11 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.21.9-]texturefile:id=oxidized_copper_chest,filename=assets/minecraft/textures/entity/chest/copper_oxidized.png,format=CHEST
 [1.21.9-]texturefile:id=bigooxidizedcopperchest,filename=assets/minecraft/textures/entity/chest/copper_oxidized_double.png,format=BIGCHEST
 [1.21.9-]block:id=oxidized_copper_chest,id=waxed_oxidized_copper_chest,data=*,patch0=0:oxidized_copper_chest,patch1=1:oxidized_copper_chest,patch2=2:oxidized_copper_chest,patch3=3:oxidized_copper_chest,patch4=4:oxidized_copper_chest,patch5=5:oxidized_copper_chest,patch6=0:bigooxidizedcopperchest,patch7=1:bigooxidizedcopperchest,patch8=2:bigooxidizedcopperchest,patch9=3:bigooxidizedcopperchest,patch10=4:bigooxidizedcopperchest,patch11=5:bigooxidizedcopperchest,patch12=6:bigooxidizedcopperchest,patch13=7:bigooxidizedcopperchest,patch14=8:bigooxidizedcopperchest,patch15=9:bigooxidizedcopperchest
+[1.21.9-]texture:id=copper_golem_face,filename=assets/minecraft/textures/block/copper_golem_face.png,xcount=1,ycount=1
+[1.21.9-]texture:id=copper_golem_face_exposed,filename=assets/minecraft/textures/block/copper_golem_face_exposed.png,xcount=1,ycount=1
+[1.21.9-]texture:id=copper_golem_face_weathered,filename=assets/minecraft/textures/block/copper_golem_face_weathered.png,xcount=1,ycount=1
+[1.21.9-]texture:id=copper_golem_face_oxidized,filename=assets/minecraft/textures/block/copper_golem_face_oxidized.png,xcount=1,ycount=1
+[1.21.9-]block:id=copper_golem_statue,id=waxed_copper_golem_statue,patch0=0:copper_block,patch1=0:copper_golem_face,transparency=TRANSPARENT
+[1.21.9-]block:id=exposed_copper_golem_statue,id=waxed_exposed_copper_golem_statue,patch0=0:exposed_copper,patch1=0:copper_golem_face_exposed,transparency=TRANSPARENT
+[1.21.9-]block:id=weathered_copper_golem_statue,id=waxed_weathered_copper_golem_statue,patch0=0:weathered_copper,patch1=0:copper_golem_face_weathered,transparency=TRANSPARENT
+[1.21.9-]block:id=oxidized_copper_golem_statue,id=waxed_oxidized_copper_golem_statue,patch0=0:oxidized_copper,patch1=0:copper_golem_face_oxidized,transparency=TRANSPARENT
