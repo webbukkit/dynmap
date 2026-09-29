@@ -1,15 +1,9 @@
-buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '[6.0.24,6.2)', changing: true
-    }
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'com.gradleup.shadow' version '9.4.2'
+    id 'net.minecraftforge.gradle' version '[7.0.17,8)'
 }
-apply plugin: 'net.minecraftforge.gradle'
-//apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'eclipse'
 
 eclipse {
     project {
@@ -17,44 +11,42 @@ eclipse {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+}
+
 minecraft {
-    mappings channel: 'official', version: '1.21.10'
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    reobf = false
-    copyIdeResources = true
-    runs {
-        server {
-	        property 'eventbus.api.strictRuntimeChecks', 'true'
-            workingDirectory project.file('run').canonicalPath
-        }
-    }
+    // Auto-applies src/main/resources/META-INF/accesstransformer.cfg
+    accessTransformer = true
 }
 
 dependencies {
-    implementation project(path: ":DynmapCore", configuration: "shadow")
-    implementation project(path: ':DynmapCoreAPI')
+    implementation minecraft.dependency('net.minecraftforge:forge:1.21.10-60.1.5')
     annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.7'
-    
-    minecraft 'net.minecraftforge:forge:1.21.10-60.1.5'
+
+    implementation project(path: ':DynmapCore', configuration: 'shadow')
+    implementation project(path: ':DynmapCoreAPI')
 }
 
-processResources
-{
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
     filesMatching('META-INF/mods.toml') {
         // replace version and mcversion
         expand(
-        	version: project.version + '-' + project.ext.buildNumber,
-        	mcversion: "1.21.10"
-    	)
+            version: project.version + '-' + project.ext.buildNumber,
+            mcversion: "1.21.10"
+        )
     }
 }
 
@@ -65,11 +57,11 @@ shadowJar {
         exclude("META-INF/maven/**")
         exclude("META-INF/services/**")
     }
-	relocate('org.apache.commons.codec', 'org.dynmap.forge_1_21_10.commons.codec')
-    
+    relocate('org.apache.commons.codec', 'org.dynmap.forge_1_21_10.commons.codec')
+
     archiveBaseName = "Dynmap"
     archiveClassifier = "forge-1.21.10"
-    destinationDirectory = file '../target'
+    destinationDirectory = file('../target')
 }
 
 shadowJar.doLast {
