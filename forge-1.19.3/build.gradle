@@ -1,16 +1,10 @@
-buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.+', changing: true
-    }
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'com.gradleup.shadow' version '9.4.2'
+    id 'net.minecraftforge.gradle' version '[7.0.17,8)'
+    id 'net.minecraftforge.renamer' version '1.1.2'
 }
-apply plugin: 'net.minecraftforge.gradle'
-//apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'eclipse'
 
 eclipse {
     project {
@@ -18,39 +12,41 @@ eclipse {
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17) // Need this here so eclipse task generates correctly.
-
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
 
-minecraft {
-    mappings channel: 'official', version: '1.19.3'
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    runs {
-        server {
-            workingDirectory project.file('run').canonicalPath
-        }
-    }
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
 }
 
-project.archivesBaseName = "${project.archivesBaseName}-forge-1.19.3"
+minecraft {
+    // Auto-applies src/main/resources/META-INF/accesstransformer.cfg
+    accessTransformer = true
+}
 
 dependencies {
-    implementation project(path: ":DynmapCore", configuration: "shadow")
+    implementation minecraft.dependency('net.minecraftforge:forge:1.19.3-44.0.1')
+
+    implementation project(path: ':DynmapCore', configuration: 'shadow')
     implementation project(path: ':DynmapCoreAPI')
-    
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.1'
 }
 
-processResources
-{
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+processResources {
     filesMatching('META-INF/mods.toml') {
         // replace version and mcversion
         expand(
-        	version: project.version + '-' + project.ext.buildNumber,
-        	mcversion: "1.19.3"
-    	)
+            version: project.version + '-' + project.ext.buildNumber,
+            mcversion: "1.19.3"
+        )
     }
 }
 
@@ -61,33 +57,20 @@ shadowJar {
         exclude("META-INF/maven/**")
         exclude("META-INF/services/**")
     }
-	relocate('org.apache.commons.codec', 'org.dynmap.forge_1_19_3.commons.codec')
-    
+    relocate('org.apache.commons.codec', 'org.dynmap.forge_1_19_3.commons.codec')
+
     archiveBaseName = "Dynmap"
-    archiveClassifier = "forge-1.19.3"
-    destinationDirectory = file '../target'
+    archiveClassifier = "dev"
 }
 
-shadowJar.doLast {
-    task ->
-        ant.checksum file: task.archivePath
+// Forge 1.19.3 uses SRG names at runtime, so the shadow jar has to be remapped
+renamer.classes('renameShadowJar', tasks.named('shadowJar', Jar)) {
+    map.from minecraft.dependency.toSrgFile
+    output = layout.projectDirectory.file("../target/Dynmap-${project.version}-forge-1.19.3.jar")
 }
 
-afterEvaluate {
-reobf {
-    shadowJar {
-        mappings = createMcpToSrg.output
-    }
-}
+tasks.named('renameShadowJar') {
+    doLast { task -> ant.checksum file: task.output.get().asFile }
 }
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    archiveClassifier = 'dev'
-}
-
-artifacts {
-    archives deobfJar
-}
-
-build.dependsOn(shadowJar)
+build.dependsOn(tasks.named('renameShadowJar'))

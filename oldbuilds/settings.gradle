@@ -1,5 +1,0 @@
-rootProject.name = 'dynmap-common'
-include ':forge-1.12.2'
-
-project(':forge-1.12.2').projectDir = "$rootDir/../forge-1.12.2" as File
-

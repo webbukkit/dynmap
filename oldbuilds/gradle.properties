@@ -1,2 +1,0 @@
-org.gradle.jvmargs=-Xmx3G
-org.gradle.daemon=false
