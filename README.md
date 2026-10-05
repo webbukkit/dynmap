@@ -9,33 +9,22 @@
 * [Where to go for questions and discussions](#where-to-go-for-questions-and-discussions)
 * [Where to go to make donations](#where-to-go-to-make-donations)
 # How to build
-Dynmap 3.x+ uses Gradle v8.7 for building support for all platforms, with all resulting artifacts produced in the /targets directory.  Due to Minecraft 1.18.x+ requirements, the developer's
+Dynmap 3.x+ uses Gradle 9 for building support for all platforms, with all resulting artifacts produced in the /target directory. The developer's
 default JDK must be a JDK 21 version - older versions will still be compiled
-to run on the default JDK for those platforms (JDK 8 for 1.16 and earlier, JDK 16 for 1.17.x, JDK 17 for 1.18 to 1.20.4, JDK 21 for 1.20.5+), and 
-common libraries are built using JDK 8.
+to run on the default JDK for those platforms (JDK 8 for 1.16 and earlier, JDK 16 for 1.17.x, JDK 17 for 1.18 to 1.20.4, JDK 21 for 1.20.5+), and
+common libraries are built using JDK 8. Gradle does not download a JDK for you, so install the ones you need where Gradle can find them.
 
 To build and get all jars in `target/`, run:
 
-    ./gradlew setup build
-    
+    ./gradlew build
+
 Or (on Windows):
 
-    gradlew.bat setup build
-    
-The Forge 1.12.2 versions (specifically ForgeGradle for these) are very sensitive to being built by JDK 8, so to build them, 
-set JAVA_HOME to correspond to a JDK 8 installation, then build using the following;
-
-    cd oldgradle
-    ./gradlew setup build
-    
-Or (on Windows):
-
-    cd oldgradle
-    gradlew.bat setup build
+    gradlew.bat build
 
 Those familiar with gradle can save time by specifying a build (or commenting in settings.gradle) BUT this is not suitable for uploading DEV code changes.
 
-NOTE: PR code submissions MUST be built and TESTED for ALL platforms (including oldgradle), or be rejected and negatively influence future approvals. 
+NOTE: PR code submissions MUST be built and TESTED for ALL platforms, or be rejected and negatively influence future approvals. 
 For more check [contributing rules](#contributing-to-dynmaps-code).
 
     ./gradlew :fabric-1.18:build

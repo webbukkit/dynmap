@@ -10,7 +10,7 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 
 ```bash
 # Build all platforms (requires JDK 21 as default)
-./gradlew setup build
+./gradlew build
 
 # Build outputs go to /target directory
 
@@ -19,15 +19,10 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 
 # Run unit tests (DynmapCore only — JUnit 4)
 ./gradlew :DynmapCore:test
-
-# Forge 1.12.2 (requires JDK 8 - set JAVA_HOME accordingly)
-cd oldgradle
-./gradlew setup build
 ```
 
 **JDK Requirements:**
 - Default: JDK 21
-- Forge 1.12.2 (oldgradle): JDK 8 strictly required
 - Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5+)
 
 **Build notes:**
@@ -47,7 +42,7 @@ cd oldgradle
 - `spigot/` - Bukkit/PaperMC implementation (`DynmapPlugin.java`)
 - `bukkit-helper-*` - Version-specific NMS code (one per MC version: 1.13-1.21)
 - `fabric-*` - Fabric mod implementations (1.14.4-1.21.x)
-- `forge-*` - Forge mod implementations (1.14.4-1.21.x); `forge-1.12.2` lives in `oldgradle/`
+- `forge-*` - Forge mod implementations (1.17.1-1.21.x), built with ForgeGradle 7; 1.17.1-1.19.3 are remapped to SRG names by the Renamer plugin
 
 ### Dependency Flow
 ```
@@ -90,12 +85,12 @@ The `bukkit-helper-*` modules contain version-specific NMS code; `spigot/` deleg
 Unit tests exist in `DynmapCore/src/test/` (JUnit 4) covering `Matrix3D`, `Vector3D`, `IpAddressMatcher`, `DynIntHashMap`, and `BufferInputStream`. Run with `./gradlew :DynmapCore:test`.
 
 Full verification requires:
-1. Building all platforms: `./gradlew setup build` AND `cd oldgradle && ./gradlew setup build`
+1. Building all platforms: `./gradlew build`
 2. Manual testing on target Minecraft server platforms
 
 ## Critical Contribution Rules
 
-**PRs must build and test on ALL platforms including oldgradle. Changes to DynmapCore/DynmapCoreAPI require testing on all platforms.**
+**PRs must build and test on ALL platforms. Changes to DynmapCore/DynmapCoreAPI require testing on all platforms.**
 
 - **Java 8 compatibility required** — Code must compile and run on Java 8
 - **Java only** — No Kotlin, Scala, or other JVM languages
