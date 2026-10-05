@@ -1,0 +1,90 @@
+name: Build platform jars
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Build core
+        run: ./gradlew :DynmapCoreAPI:build :DynmapCore:build --console=plain
+
+      - name: Upload DynmapCore jar
+        uses: actions/upload-artifact@v7
+        with:
+          path: target/DynmapCore-*.jar
+          archive: false
+          if-no-files-found: error
+
+      - name: Upload DynmapCoreAPI jar
+        uses: actions/upload-artifact@v7
+        with:
+          path: target/DynmapCoreAPI-*.jar
+          archive: false
+          if-no-files-found: error
+
+  platform:
+    needs: core
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep in sync with the platform modules in settings.gradle
+        module:
+          - spigot
+          - fabric-1.14.4
+          - fabric-1.15.2
+          - fabric-1.16.4
+          - fabric-1.17.1
+          - fabric-1.18.2
+          - fabric-1.19.4
+          - fabric-1.20.6
+          - fabric-1.21.6
+          - fabric-1.21.9-10
+          - fabric-1.21.11
+          - forge-1.17.1
+          - forge-1.18.2
+          - forge-1.19.3
+          - forge-1.20.6
+          - forge-1.21.6
+          - forge-1.21.10
+          - forge-1.21.11
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Build ${{ matrix.module }}
+        run: ./gradlew :${{ matrix.module }}:build --console=plain
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v7
+        with:
+          path: target/Dynmap-*.jar
+          archive: false
+          if-no-files-found: error
+
+      - name: Upload MD5
+        uses: actions/upload-artifact@v7
+        with:
+          path: target/Dynmap-*.jar.MD5
+          archive: false
+          if-no-files-found: error
