@@ -2,6 +2,9 @@ package org.dynmap;
 
 import static org.dynmap.JSONUtils.a;
 import static org.dynmap.JSONUtils.s;
+
+import java.util.List;
+
 import org.dynmap.Event.Listener;
 import org.json.simple.JSONObject;
 
@@ -26,6 +29,9 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "cyrillic", c.getBoolean("cyrillic-support", false));
                 s(t, "showlayercontrol", c.getString("showlayercontrol", "true"));
                 s(t, "grayplayerswhenhidden", c.getBoolean("grayplayerswhenhidden", true));
+                List<String> sidebarworlds = c.getStrings("sidebar-worlds", null);
+                if (sidebarworlds != null)
+                    s(t, "sidebarworlds", sidebarworlds);
                 s(t, "login-enabled", core.isLoginSupportEnabled());
                 String sn = core.getServer().getServerName();
                 if(sn.equals("Unknown Server"))
@@ -35,6 +41,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "msg-players", c.getString("msg/players", "Players"));
                 s(t, "msg-chatrequireslogin", c.getString("msg/chatrequireslogin", "Chat Requires Login"));
                 s(t, "msg-chatnotallowed", c.getString("msg/chatnotallowed", "You are not permitted to send chat messages"));
+                s(t, "msg-chatplaceholder", c.getString("msg/chatplaceholder", "Press T to chat"));
                 s(t, "msg-hiddennamejoin", c.getString("msg/hiddennamejoin", "Player joined"));
                 s(t, "msg-hiddennamequit", c.getString("msg/hiddennamequit", "Player quit"));
                 s(t, "maxcount", core.getMaxPlayers());

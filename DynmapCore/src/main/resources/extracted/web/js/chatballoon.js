@@ -31,7 +31,7 @@ componentconstructors['chatballoon'] = function(dynmap, configuration) {
 		var popup = me.chatpopups[message.account];
 		if (!popup) {
 			me.chatpopups[message.account] = popup = {
-				layer: new L.Popup({autoPan: configuration.focuschatballoons, closeButton: false}),
+				layer: new L.Popup({autoPan: configuration.focuschatballoons, closeButton: false, className: 'chatballoon', offset: [0, -14]}),
 				content: $('<div/>').addClass('balloonmessages')[0]
 			};
 			popup.layer.setContent($(popup.content).html());

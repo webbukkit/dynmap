@@ -24,13 +24,16 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 
 	if (dynmap.options.allowwebchat) {
 	  if(dynmap.options.loggedin || !dynmap.options['webchat-requires-login']) {
+		var placeholder = dynmap.options['msg-chatplaceholder'] || 'Press T to chat';
 		var chatinput = $('<input/>')
 			.addClass('chatinput')
 			.attr({
 				id: 'chatinput',
 				type: 'text',
 				value: '',
-				maxlength: dynmap.options.chatlengthlimit
+				maxlength: dynmap.options.chatlengthlimit,
+				placeholder: placeholder,
+				autocomplete: 'off'
 			})
 			.keydown(function(event) {
 				if (event.keyCode == '13') {
@@ -40,7 +43,29 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 						chatinput.val('');
 					}
 				}
+				else if (event.keyCode == '27') {	// Escape closes chat, like in game
+					chatinput.blur();
+				}
+			})
+			// While typing, show the recent history too (faded lines included), like in game
+			.focus(function() {
+				chat.addClass('open');
+				chatinput.attr('placeholder', '');
+				messagelist.show().scrollTop(messagelist.scrollHeight());
+			})
+			.blur(function() {
+				chat.removeClass('open');
+				chatinput.attr('placeholder', placeholder);
+				messagelist.scrollTop(messagelist.scrollHeight());
 			});
+		// 'T' opens chat, like in game
+		$(document).keydown(function(event) {
+			if ((event.key == 't' || event.key == 'T') && !event.ctrlKey && !event.metaKey && !event.altKey &&
+				!$(event.target).is('input, textarea, select, [contenteditable]')) {
+				event.preventDefault();
+				chatinput.focus();
+			}
+		});
 		if(configuration.sendbutton) {
 			var chatbutton = $('<button/>').addClass('chatsendbutton').click(function(event) {
 			  if(chatinput.val() != '') {
@@ -69,7 +94,14 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			var c = messagelist.children();
 			c.slice(0, Math.max(0, c.length-configuration.scrollback)).each(function(index, elem){ $(elem).remove(); });
 		} else {
-			setTimeout(function() { row.remove(); }, (configuration.messagettl * 1000));
+			// Fade out after messagettl, but keep the line for the history shown while typing
+			setTimeout(function() {
+				row.fadeOut(600, function() {
+					row.addClass('faded').css('display', '');
+				});
+			}, (configuration.messagettl * 1000));
+			var history = messagelist.children();
+			history.slice(0, Math.max(0, history.length - 99)).remove();
 		}
 		messagelist.append(row);
 		messagelist.show();
@@ -79,38 +111,39 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	$(dynmap).bind('playerjoin', function(event, playername) {
 		if ((dynmap.options.joinmessage.length > 0) && (playername.length > 0)) {
 			addrow($('<div/>')
-				.addClass('messagerow')
+				.addClass('messagerow messagerow-status')
 				.append(dynmap.options.joinmessage.replace('%playername%', playername))
 				);
 		}
 		else if ((dynmap.options['msg-hiddennamejoin'].length > 0) && (playername.length == 0)) {
 			addrow($('<div/>')
-				.addClass('messagerow')
+				.addClass('messagerow messagerow-status')
 				.append(dynmap.options['msg-hiddennamejoin'])
 				);
 		}
 	});
-	
+
 	$(dynmap).bind('playerquit', function(event, playername) {
 		if ((dynmap.options.quitmessage.length > 0) && (playername.length > 0)) {
 			addrow($('<div/>')
-				.addClass('messagerow')
+				.addClass('messagerow messagerow-status')
 				.append(dynmap.options.quitmessage.replace('%playername%', playername))
 				);
 		}
 		else if ((dynmap.options['msg-hiddennamequit'].length > 0) && (playername.length == 0)) {
 			addrow($('<div/>')
-				.addClass('messagerow')
+				.addClass('messagerow messagerow-status')
 				.append(dynmap.options['msg-hiddennamequit'])
 				);
 		}
 	});
-	
+
 	$(dynmap).bind('chat', function(event, message) {
 		var playerName = message.name;
 		var playerAccount = message.account;
 		var messageRow = $('<div/>')
-			.addClass('messagerow');
+			.addClass('messagerow')
+			.addClass('source-' + message.source);
 
 		var playerIconContainer = $('<span/>')
 			.addClass('messageicon');
@@ -126,21 +159,22 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 
 		var playerChannelContainer = '';
 		if (message.channel) {
-			playerChannelContainer = $('<span/>').addClass('messagetext')
+			playerChannelContainer = $('<span/>').addClass('messagetext messagechannel')
 			.text('[' + message.channel + '] ')
 			.appendTo(messageRow);
 		}
-			
+
 		if (message.source === 'player' && configuration.showworld && playerAccount) {
 			var playerWorldContainer = $('<span/>')
-			 .addClass('messagetext')
+			 .addClass('messagetext messageworld')
 			 .text('['+dynmap.players[playerAccount].location.world.name+']')
 			 .appendTo(messageRow);
 		}
 
 		var playerNameContainer = '';
 		if(message.name) {
-			playerNameContainer = $('<span/>').addClass('messagetext').append(' '+message.name+': ');
+			// Punctuation around the name comes from the stylesheet (<name> like in game)
+			playerNameContainer = $('<span/>').addClass('messagetext messagename').append(message.name);
 		}
 		
 		var playerMessageContainer = $('<span/>')

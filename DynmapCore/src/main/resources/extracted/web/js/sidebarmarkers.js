@@ -19,7 +19,7 @@ componentconstructors['sidebarmarkers'] = function(dynmap, configuration) {
 	function initSection() {
 		me.markersSection = SidebarUtils.createListSection(cfg.title);
 		me.markersList = me.markersSection.content.addClass('markerslist');
-		dynmap.sidebarPanel.find('fieldset:eq(0)').after(me.markersSection.section);
+		dynmap.worldlist.closest('fieldset').after(me.markersSection.section);
 		dynmap.sidebarSections.push(me.markersSection);
 	}
 	

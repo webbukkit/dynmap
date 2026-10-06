@@ -1,0 +1,992 @@
+/*******************
+ * Minecraft-style theme for the map page
+ *
+ * Loaded after dynmap_style.css and overrides its rules: GUI panels and buttons for the sidebar and
+ * map controls, nametags for players and markers, in-game chat, and item-tooltip chat balloons.
+ * Font: Pixelify Sans, SIL Open Font License 1.1 (see fonts/OFL.txt).
+ */
+
+@font-face {
+	font-family: 'Pixelify Sans';
+	src: url(fonts/PixelifySans-Regular.woff2) format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+.dynmap {
+	--mc-font: 'Pixelify Sans', 'Courier New', monospace;
+
+	/* GUI panel */
+	--mc-panel: #c6c6c6;
+	--mc-highlight: #ffffff;
+	--mc-shade: #555555;
+	--mc-outline: #000000;
+	--mc-label: #404040;
+
+	/* Inventory slot */
+	--mc-slot: #8b8b8b;
+	--mc-slot-shade: #373737;
+
+	/* Button */
+	--mc-button: #6f6f6f;
+	--mc-button-hover: #7c7c7c;
+	--mc-button-highlight: #a8a8a8;
+	--mc-button-shade: #4c4c4c;
+	--mc-text: #ffffff;
+	--mc-text-shadow: #3f3f3f;
+	--mc-text-hover: #ffffa0;
+
+	/* Dark GUI (sidebar, layers panel): button-grey panel holding darker rows and slots */
+	--mc-dark-panel: var(--mc-button);
+	--mc-dark-label: #e8e8e8;
+	--mc-row: #555555;
+	--mc-row-hover: #626262;
+	--mc-row-highlight: #767676;
+	--mc-row-shade: #3c3c3c;
+	--mc-dark-slot: #373737;
+	--mc-dark-slot-shade: #1e1e1e;
+	--mc-dark-slot-highlight: #8b8b8b;
+
+	/* Translucent black used by chat, nametags and the debug-style overlay */
+	--mc-overlay: rgba(0, 0, 0, 0.5);
+
+	/* Item tooltip */
+	--mc-tooltip: rgba(16, 0, 16, 0.94);
+	--mc-tooltip-border-top: rgba(80, 0, 255, 0.6);
+	--mc-tooltip-border-bottom: rgba(40, 0, 127, 0.6);
+
+	/* Chat colours (with their 25% brightness drop shadows) */
+	--mc-overworld: #55ff55;
+	--mc-overworld-shadow: #153f15;
+	--mc-nether: #ff5555;
+	--mc-nether-shadow: #3f1515;
+	--mc-end: #ff55ff;
+	--mc-end-shadow: #3f153f;
+	--mc-other: #55ffff;
+	--mc-other-shadow: #153f3f;
+	--mc-yellow: #ffff55;
+	--mc-yellow-shadow: #3f3f15;
+	--mc-gray: #aaaaaa;
+
+	/* Bevels */
+	--mc-panel-bevel: inset 2px 2px 0 var(--mc-highlight), inset -2px -2px 0 var(--mc-shade);
+	--mc-button-bevel: inset 2px 2px 0 var(--mc-button-highlight), inset -2px -2px 0 var(--mc-button-shade);
+	--mc-slot-bevel: inset 2px 2px 0 var(--mc-slot-shade), inset -2px -2px 0 var(--mc-highlight);
+	--mc-row-bevel: inset 2px 2px 0 var(--mc-row-highlight), inset -2px -2px 0 var(--mc-row-shade);
+	--mc-dark-slot-bevel: inset 2px 2px 0 var(--mc-dark-slot-shade), inset -2px -2px 0 var(--mc-dark-slot-highlight);
+	--mc-drop: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/*******************
+ * Sidebar
+ */
+
+.dynmap .sidebar {
+	background: var(--mc-dark-panel);
+	color: var(--mc-text);
+	font-family: var(--mc-font);
+	font-size: 14px;
+
+	border-left: 2px solid var(--mc-outline);
+	box-shadow: var(--mc-button-bevel);
+}
+
+/* Hidden-sidebar handle, kept clear of the 2px outline */
+.dynmap .hitbar {
+	right: 202px;
+	width: 14px;
+	box-sizing: border-box;
+
+	background: url(../images/sidebar_hint.png) no-repeat center, var(--mc-button);
+	border: 2px solid var(--mc-outline);
+	border-right: none;
+	box-shadow: inset 2px 2px 0 var(--mc-button-highlight), inset 0 -2px 0 var(--mc-button-shade);
+}
+
+/* Pin / close button */
+.dynmap .sidebar .panel > .pin {
+	top: 10px;
+	right: 10px;
+	z-index: 1;
+
+	width: 20px;
+	height: 20px;
+
+	background-color: var(--mc-row);
+	background-repeat: no-repeat;
+	background-position: center;
+	border: 2px solid var(--mc-outline);
+	box-shadow: var(--mc-row-bevel);
+	cursor: pointer;
+}
+
+.dynmap .sidebar .panel > .pin:hover {
+	background-color: var(--mc-row-hover);
+	border-color: var(--mc-highlight);
+}
+
+/* Sections */
+
+.dynmap .sidebar fieldset.section {
+	min-width: 0;
+	margin: 0;
+	padding: 4px 10px 10px;
+	border: none;
+}
+
+/* Engraved divider between sections */
+.dynmap .sidebar fieldset.section + fieldset.section {
+	border-top: 2px solid var(--mc-row-shade);
+	box-shadow: inset 0 2px 0 var(--mc-button-highlight);
+}
+
+/* Floated so it lays out like a normal block instead of sitting on the fieldset border */
+.dynmap .sidebar legend {
+	float: left;
+	width: 100%;
+
+	padding: 10px 0 8px;
+
+	color: var(--mc-text);
+	font-size: 16px;
+	font-weight: normal;
+	line-height: 16px;
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+.dynmap .sidebar fieldset.section > .scrollup,
+.dynmap .sidebar fieldset.section > .content,
+.dynmap .sidebar fieldset.section > .scrolldown {
+	clear: both;
+}
+
+/* Scroll buttons */
+.dynmap .sidebar .panel .scrollup,
+.dynmap .sidebar .panel .scrolldown {
+	width: auto;
+	height: 12px;
+
+	background-color: var(--mc-row);
+	background-repeat: no-repeat;
+	background-position: center;
+	border: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-row-bevel);
+	cursor: pointer;
+}
+
+.dynmap .sidebar .panel .scrollup {
+	background-image: url(../images/scrollup.png);
+	margin: 0 0 4px;
+}
+
+.dynmap .sidebar .panel .scrolldown {
+	background-image: url(../images/scrolldown.png);
+	margin: 4px 0 0;
+}
+
+.dynmap .sidebar .panel .scrollup:hover,
+.dynmap .sidebar .panel .scrolldown:hover {
+	background-color: var(--mc-row-hover);
+	border-color: var(--mc-highlight);
+}
+
+.dynmap .sidebar .panel .scrollup:active,
+.dynmap .sidebar .panel .scrolldown:active {
+	box-shadow: inset 2px 2px 0 var(--mc-row-shade), inset -2px -2px 0 var(--mc-row-highlight);
+}
+
+/* Player list - one button per player */
+
+.dynmap .sidebar .playerlist .player {
+	display: grid;
+	grid-template-columns: 28px minmax(0, 1fr);
+	grid-template-rows: auto auto;
+	column-gap: 6px;
+	align-items: center;
+
+	float: none;
+	width: auto;
+	box-sizing: border-box;
+
+	margin: 0 0 4px;
+	padding: 3px 6px 3px 3px;
+
+	background: var(--mc-row);
+	border: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-row-bevel);
+	cursor: pointer;
+}
+
+.dynmap .sidebar .playerlist .player:last-child {
+	margin-bottom: 0;
+}
+
+.dynmap .sidebar .playerlist .player:hover {
+	background: var(--mc-row-hover);
+	border-color: var(--mc-highlight);
+}
+
+.dynmap .sidebar .playerlist .player:hover > a {
+	color: var(--mc-text-hover);
+}
+
+.dynmap .sidebar .playerlist .player.following {
+	width: auto;
+	padding: 3px 6px 3px 3px;
+
+	background: var(--mc-row-hover);
+	border: 2px solid var(--mc-highlight);
+	border-radius: 0;
+}
+
+/* Player head in a small inventory slot */
+.dynmap .sidebar .playerlist .playerIcon {
+	grid-row: 1 / span 2;
+	float: none;
+
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 2px;
+
+	background: var(--mc-dark-slot);
+	box-shadow: var(--mc-dark-slot-bevel);
+}
+
+.dynmap .sidebar .playerlist .playerIcon > * {
+	display: block;
+	width: 24px;
+	height: 24px;
+}
+
+.dynmap .sidebar .playerlist .player > a {
+	grid-column: 2;
+	align-self: end;
+
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+
+	color: var(--mc-text);
+	font-size: 16px;
+	line-height: 17px;
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+.dynmap .sidebar .playerlist .player.following > a {
+	color: var(--mc-text-hover);
+}
+
+/* Players outside the shown world stay clickable (clicking switches world), so only dim them slightly */
+.dynmap .sidebar .playerlist .player.otherworld {
+	opacity: 1;
+}
+
+.dynmap .sidebar .playerlist .player.otherworld:not(:hover):not(.following) > a {
+	color: #d8d8d8;
+}
+
+/* Dimension the player is in */
+.dynmap .sidebar .playerlist .playerworld {
+	grid-column: 2;
+	align-self: start;
+
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+
+	font-size: 12px;
+	line-height: 14px;
+}
+
+.dynmap .sidebar .playerlist .playerworld:empty {
+	display: none;
+}
+
+.dynmap .sidebar .playerlist .player:has(.playerworld:empty) > a {
+	grid-row: 1 / span 2;
+	align-self: center;
+}
+
+.dynmap .sidebar .playerworld.dim-overworld { color: var(--mc-overworld); text-shadow: 1px 1px 0 var(--mc-overworld-shadow); }
+.dynmap .sidebar .playerworld.dim-nether { color: var(--mc-nether); text-shadow: 1px 1px 0 var(--mc-nether-shadow); }
+.dynmap .sidebar .playerworld.dim-end { color: var(--mc-end); text-shadow: 1px 1px 0 var(--mc-end-shadow); }
+.dynmap .sidebar .playerworld.dim-other { color: var(--mc-other); text-shadow: 1px 1px 0 var(--mc-other-shadow); }
+
+/* World list and other sub-lists (map types, sidebar markers) - icons sit in inventory slots */
+
+.dynmap .sidebar .panel .subsection {
+	width: auto;
+	margin: 0 0 10px;
+	padding: 0;
+
+	border: none;
+	line-height: normal;
+}
+
+.dynmap .sidebar .panel .subsection:last-child {
+	margin-bottom: 0;
+}
+
+.dynmap .sidebar .world > .worldtitle {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	margin: 0 0 5px;
+
+	color: var(--mc-dark-label);
+	font-size: 15px;
+	line-height: 16px;
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+/* Little block for each dimension */
+.dynmap .sidebar .world > .worldtitle::before {
+	content: '';
+	flex: none;
+
+	width: 12px;
+	height: 12px;
+
+	outline: 2px solid var(--mc-outline);
+	outline-offset: 0;
+}
+
+.dynmap .sidebar .world.dim-overworld > .worldtitle::before {
+	background: linear-gradient(#7cbd4a 0 4px, #5b8f32 4px 6px, #8b5e3c 6px 9px, #74492c 9px);
+}
+
+.dynmap .sidebar .world.dim-nether > .worldtitle::before {
+	background: repeating-conic-gradient(#8f3434 0 25%, #6b2323 0 50%) 0 0 / 6px 6px;
+}
+
+.dynmap .sidebar .world.dim-end > .worldtitle::before {
+	background: repeating-conic-gradient(#e2e5a8 0 25%, #c4c787 0 50%) 0 0 / 6px 6px;
+}
+
+.dynmap .sidebar .world.dim-other > .worldtitle::before {
+	background: repeating-conic-gradient(#9b45e0 0 25%, #6b1fb3 0 50%) 0 0 / 6px 6px;
+}
+
+/* A world outside the main list, shown while it is being viewed */
+.dynmap .sidebar .worldlist .world.visiting {
+	padding-top: 10px;
+	border-top: 2px dashed var(--mc-button-highlight);
+}
+
+.dynmap .sidebar .worldlist .world.visiting::before {
+	content: 'Visiting';
+	display: inline-block;
+	margin: 0 0 6px;
+	padding: 1px 5px 2px;
+
+	color: var(--mc-text);
+	background: #6b1fb3;
+	font-size: 11px;
+	line-height: 12px;
+	text-shadow: 1px 1px 0 #1b0830;
+}
+
+.dynmap .sidebar .sublist {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	padding: 2px;
+}
+
+.dynmap .sidebar .sublist .item {
+	position: relative;
+	float: none;
+
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 2px;
+
+	background: var(--mc-dark-slot);
+	border: none;
+	border-radius: 0;
+	box-shadow: var(--mc-dark-slot-bevel);
+	cursor: pointer;
+}
+
+.dynmap .sidebar .sublist .item > a {
+	width: 32px;
+	height: 32px;
+
+	background-size: 32px 32px;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: pixelated;
+}
+
+/* Hovered slot: white wash over the item, like in an inventory */
+.dynmap .sidebar .sublist .item:hover {
+	background: var(--mc-dark-slot);
+	border: none;
+}
+
+.dynmap .sidebar .sublist .item:hover::after {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+
+	width: 32px;
+	height: 32px;
+
+	background: rgba(255, 255, 255, 0.4);
+	pointer-events: none;
+}
+
+/* Selected map: hotbar-style selection frame */
+.dynmap .sidebar .sublist .item.selected {
+	background: var(--mc-dark-slot);
+	border: none;
+	box-shadow: var(--mc-dark-slot-bevel), 0 0 0 2px var(--mc-highlight), 0 0 0 4px var(--mc-outline);
+	z-index: 1;
+}
+
+/*******************
+ * Map controls - zoom, layers, link and login are buttons
+ */
+
+.dynmap .leaflet-bar {
+	background: var(--mc-outline);
+	border: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-drop);
+}
+
+.dynmap .leaflet-bar a,
+.dynmap .leaflet-bar a:hover {
+	width: 28px;
+	height: 28px;
+
+	color: var(--mc-text);
+	background-color: var(--mc-button);
+	border-bottom: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-button-bevel);
+
+	font: 22px/28px var(--mc-font);
+	text-indent: 0;
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+.dynmap .leaflet-bar a:first-child,
+.dynmap .leaflet-bar a:last-child {
+	border-radius: 0;
+}
+
+.dynmap .leaflet-bar a:last-child {
+	border-bottom: none;
+}
+
+.dynmap .leaflet-bar a:hover {
+	color: var(--mc-text-hover);
+	background-color: var(--mc-button-hover);
+	box-shadow: var(--mc-button-bevel), inset 0 0 0 2px var(--mc-highlight);
+}
+
+/* Disabled button (zoom limit reached) */
+.dynmap .leaflet-bar a.leaflet-disabled,
+.dynmap .leaflet-bar a.leaflet-disabled:hover {
+	color: #a0a0a0;
+	background-color: #2c2c2c;
+	box-shadow: none;
+	text-shadow: none;
+	cursor: default;
+}
+
+/* Layers: a button that opens into a dark GUI panel, like the sidebar */
+.dynmap .leaflet-control-layers {
+	color: var(--mc-text);
+	background: var(--mc-dark-panel);
+	border: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-button-bevel), var(--mc-drop);
+
+	font: 14px/18px var(--mc-font);
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+.dynmap .leaflet-control-layers:not(.leaflet-control-layers-expanded):hover {
+	background: var(--mc-button-hover);
+	border-color: var(--mc-highlight);
+}
+
+/* White icon with text shadow (the image itself is dark) */
+.dynmap .leaflet-control-layers-toggle {
+	width: 32px;
+	height: 32px;
+
+	background-size: 22px 22px;
+	filter: brightness(0) invert(1) drop-shadow(2px 2px 0 var(--mc-text-shadow));
+}
+
+.dynmap .leaflet-control-layers-expanded {
+	padding: 8px 12px 8px 8px;
+	color: var(--mc-text);
+	background: var(--mc-dark-panel);
+}
+
+.dynmap .leaflet-control-layers label {
+	margin: 2px 0;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+/* Checkbox: inventory slot with a pixel tick */
+.dynmap .leaflet-control-layers-selector {
+	-webkit-appearance: none;
+	appearance: none;
+
+	width: 16px;
+	height: 16px;
+	margin: 0 6px 0 0;
+	vertical-align: -3px;
+
+	background: var(--mc-dark-slot) no-repeat center / 12px 12px;
+	box-shadow: var(--mc-dark-slot-bevel);
+	cursor: pointer;
+}
+
+.dynmap .leaflet-control-layers-selector:checked {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23fff' d='M0 2h1v1H0zM1 3h1v1H1zM2 4h1v1H2zM3 3h1v1H3zM4 2h1v1H4zM5 1h1v1H5z'/%3E%3C/svg%3E");
+}
+
+.dynmap .leaflet-control-layers-selector:focus-visible {
+	outline: 2px solid var(--mc-highlight);
+}
+
+.dynmap .leaflet-control-layers-separator {
+	margin: 6px -12px 6px -8px;
+	border-top: 2px solid var(--mc-row-shade);
+	box-shadow: 0 2px 0 var(--mc-button-highlight);
+}
+
+/* Link button */
+.dynmap .dynmap-link {
+	padding: 0;
+
+	background: var(--mc-button);
+	border: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-button-bevel), var(--mc-drop);
+}
+
+.dynmap .dynmap-link:hover {
+	background: var(--mc-button-hover);
+	border-color: var(--mc-highlight);
+}
+
+.dynmap .dynmap-link a,
+.dynmap .dynmap-link a:hover {
+	width: 28px;
+	height: 28px;
+
+	background-color: transparent;
+	border-radius: 0;
+	filter: brightness(0) invert(1) drop-shadow(2px 2px 0 var(--mc-text-shadow));
+}
+
+/* Login / logout and other plain buttons */
+.dynmap .loginbutton,
+.dynmap .chat .chatsendbutton {
+	padding: 4px 10px;
+
+	color: var(--mc-text);
+	background: var(--mc-button);
+	border: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-button-bevel);
+
+	font: 14px/16px var(--mc-font);
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+	cursor: pointer;
+}
+
+.dynmap .loginbutton:hover,
+.dynmap .chat .chatsendbutton:hover {
+	color: var(--mc-text-hover);
+	background: var(--mc-button-hover);
+	border-color: var(--mc-highlight);
+}
+
+/* Location: like the F3 debug screen */
+.dynmap .coord-control {
+	min-width: 96px;
+	padding: 4px 8px 5px;
+
+	color: var(--mc-text);
+	background: var(--mc-overlay);
+	border: none;
+	border-radius: 0;
+
+	font: 14px/17px var(--mc-font);
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+.dynmap .coord-control-noy {
+	width: auto;
+}
+
+.dynmap .coord-control .coord-control-label {
+	color: var(--mc-gray);
+}
+
+.dynmap .coord-control .coord-control-value {
+	font-weight: normal;
+}
+
+/* Alerts */
+.dynmap .alertbox {
+	color: var(--mc-text);
+	background: #8b1a1a;
+	border: 2px solid var(--mc-outline);
+	border-top: none;
+	border-radius: 0;
+	box-shadow: inset 2px 0 0 #c94b4b, inset -2px -2px 0 #4a0d0d, var(--mc-drop);
+
+	font: 16px/20px var(--mc-font);
+	text-shadow: 2px 2px 0 #3f0f0f;
+}
+
+/*******************
+ * Clock - a window onto the sky
+ */
+
+.dynmap .largeclock {
+	overflow: hidden;
+
+	background: linear-gradient(#090a1f, #1c2453);
+	border: 2px solid var(--mc-outline);
+	border-top: none;
+	border-radius: 0;
+	box-shadow: inset 2px 0 0 rgba(255, 255, 255, 0.2), inset -2px -2px 0 rgba(0, 0, 0, 0.35), var(--mc-drop);
+}
+
+.dynmap .largeclock:has(.digitalclock.day) {
+	background: linear-gradient(#5b8cff, #a8c6ff);
+}
+
+.dynmap .timeofday.digitalclock {
+	font: 24px/28px var(--mc-font);
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+/*******************
+ * Nametags for players and markers on the map
+ */
+
+.dynmap .playerName,
+.dynmap .playerNameSm,
+.dynmap .playerNameLg,
+.dynmap .mapMarker:hover .markerName,
+.dynmap .mapMarker .markerName-show {
+	padding: 1px 5px 2px;
+
+	color: var(--mc-text);
+	background: var(--mc-overlay);
+	border-radius: 0;
+
+	font: 14px/15px var(--mc-font);
+}
+
+.dynmap .healthContainer,
+.dynmap .healthContainerSm,
+.dynmap .healthContainerLg {
+	background: var(--mc-overlay);
+	border-radius: 0;
+}
+
+.dynmap .playerMarker > img {
+	filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.45));
+}
+
+/*******************
+ * Popups (marker descriptions) - GUI panel with a pixel pointer
+ */
+
+.dynmap .leaflet-popup-content-wrapper {
+	color: var(--mc-label);
+	background: var(--mc-panel);
+	border: 2px solid var(--mc-outline);
+	border-radius: 0;
+	box-shadow: var(--mc-panel-bevel), 0 4px 0 rgba(0, 0, 0, 0.3);
+
+	font: 14px/18px var(--mc-font);
+}
+
+.dynmap .leaflet-popup-content {
+	margin: 10px 16px 10px 12px;
+}
+
+.dynmap .leaflet-popup-tip-container {
+	width: 12px;
+	height: 6px;
+	margin-left: -6px;
+}
+
+.dynmap .leaflet-popup {
+	margin-bottom: 6px;
+}
+
+.dynmap .leaflet-popup-tip {
+	width: 12px;
+	height: 6px;
+	margin: 0;
+	padding: 0;
+
+	background: var(--mc-outline);
+	box-shadow: none;
+	transform: none;
+	clip-path: polygon(0 0, 12px 0, 12px 2px, 10px 2px, 10px 4px, 8px 4px, 8px 6px, 4px 6px, 4px 4px, 2px 4px, 2px 2px, 0 2px);
+}
+
+.dynmap .leaflet-popup a.leaflet-popup-close-button {
+	top: 4px;
+	right: 4px;
+	color: var(--mc-label);
+	font: 18px/14px var(--mc-font);
+}
+
+.dynmap .leaflet-popup a.leaflet-popup-close-button:hover {
+	color: var(--mc-outline);
+}
+
+/*******************
+ * Chat balloons - item tooltips above the player
+ */
+
+.dynmap .chatballoon {
+	filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+}
+
+.dynmap .chatballoon .leaflet-popup-content-wrapper {
+	padding: 2px;
+
+	color: var(--mc-text);
+	background: var(--mc-tooltip);
+	border: none;
+	box-shadow: none;
+	/* Notched corners */
+	clip-path: polygon(2px 0, calc(100% - 2px) 0, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0 calc(100% - 2px), 0 2px);
+
+	text-align: left;
+}
+
+.dynmap .chatballoon .leaflet-popup-content {
+	margin: 0;
+	padding: 4px 8px 5px;
+
+	border: 2px solid transparent;
+	border-image: linear-gradient(var(--mc-tooltip-border-top), var(--mc-tooltip-border-bottom)) 1;
+
+	font: 16px/19px var(--mc-font);
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+.dynmap .chatballoon .leaflet-popup-tip {
+	background: var(--mc-tooltip);
+}
+
+/* Older lines greyed like tooltip lore, the newest pops in */
+.dynmap .chatballoon .balloonmessage {
+	color: var(--mc-gray);
+}
+
+.dynmap .chatballoon .balloonmessage:last-child {
+	color: var(--mc-text);
+	animation: mc-balloon-pop 0.2s ease-out;
+}
+
+@keyframes mc-balloon-pop {
+	from { opacity: 0; transform: translateY(4px); }
+	to { opacity: 1; transform: none; }
+}
+
+/*******************
+ * Chat box - in-game chat lines and chat bar
+ */
+
+.dynmap .chat {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+
+	left: 46px;
+	bottom: 8px;
+	width: min(640px, calc(100% - 62px));
+	margin: 0;
+
+	background: none;
+	border: none;
+	border-radius: 0;
+
+	font-family: var(--mc-font);
+}
+
+/* Keep clear of a pinned sidebar (on narrow screens the chat may go under it instead) */
+@media (min-width: 700px) {
+	.dynmap:has(.sidebar.pinned) .chat {
+		width: min(640px, calc(100% - 272px));
+	}
+}
+
+.dynmap .chat .messagelist {
+	grid-column: 1 / -1;
+
+	width: auto;
+	margin: 0 0 4px;
+	padding: 0;
+
+	color: var(--mc-text);
+	/* 1em = one chat line, so the max-height in em set from 'visiblelines' shows whole lines */
+	font-size: 23px;
+
+	scrollbar-width: thin;
+	scrollbar-color: var(--mc-panel) rgba(0, 0, 0, 0.3);
+}
+
+/* Chat open: show the history, scrollable */
+.dynmap .chat.open .messagelist {
+	max-height: min(50vh, 400px) !important;
+	overflow-y: auto;
+}
+
+.dynmap .chat .messagerow {
+	position: static;
+	max-height: none;
+	padding: 2px 8px;
+
+	color: var(--mc-text);
+	background: var(--mc-overlay);
+
+	font-size: 16px;
+	font-weight: normal;
+	line-height: 19px;
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+	overflow-wrap: anywhere;
+}
+
+.dynmap .chat .messagerow.faded {
+	display: none;
+}
+
+.dynmap .chat.open .messagerow.faded {
+	display: block;
+}
+
+.dynmap .chat .messageicon {
+	position: static;
+	display: inline-block;
+	margin-right: 6px;
+	vertical-align: -3px;
+}
+
+.dynmap .chat .messageicon:empty {
+	display: none;
+}
+
+.dynmap .chat .messageicon img {
+	display: block;
+	width: 16px;
+	height: 16px;
+}
+
+.dynmap .chat .messagetext {
+	position: static;
+}
+
+.dynmap .chat .messagename {
+	margin-right: 0.35em;
+}
+
+.dynmap .chat .messagename::before { content: '<'; }
+.dynmap .chat .messagename::after { content: '>'; }
+
+.dynmap .chat .messagechannel,
+.dynmap .chat .messageworld {
+	color: var(--mc-gray);
+}
+
+/* Sent from the web map */
+.dynmap .chat .source-web .messagename {
+	color: var(--mc-other);
+	text-shadow: 2px 2px 0 var(--mc-other-shadow);
+}
+
+.dynmap .chat .source-web .messagename::before { content: '[Web] <'; }
+
+/* Server / plugin broadcasts: [Server] message */
+.dynmap .chat .source-plugin .messagename::before { content: '['; }
+.dynmap .chat .source-plugin .messagename::after { content: ']'; }
+
+/* Errors shown to this viewer */
+.dynmap .chat .source-me {
+	color: var(--mc-nether);
+	text-shadow: 2px 2px 0 var(--mc-nether-shadow);
+}
+
+.dynmap .chat .source-me .messagename::before { content: ''; }
+.dynmap .chat .source-me .messagename::after { content: ':'; }
+
+/* Joined / left the game */
+.dynmap .chat .messagerow-status {
+	color: var(--mc-yellow);
+	text-shadow: 2px 2px 0 var(--mc-yellow-shadow);
+}
+
+.dynmap .chat .chatinput {
+	position: static;
+	grid-column: 1;
+	grid-row: 2;
+
+	width: 100%;
+	height: 28px;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 4px 8px;
+
+	color: var(--mc-text);
+	background: rgba(0, 0, 0, 0.35);
+	border: 2px solid transparent;
+	border-radius: 0;
+	outline: none;
+	caret-color: var(--mc-text);
+
+	font: 16px/18px var(--mc-font);
+	text-shadow: 2px 2px 0 var(--mc-text-shadow);
+}
+
+.dynmap .chat .chatinput::placeholder {
+	color: #c6c6c6;
+	opacity: 1;
+}
+
+.dynmap .chat .chatinput:hover {
+	background: rgba(0, 0, 0, 0.45);
+}
+
+.dynmap .chat .chatinput:focus {
+	background: rgba(0, 0, 0, 0.6);
+	border-color: rgba(255, 255, 255, 0.35);
+}
+
+.dynmap .chat .chatsendbutton {
+	grid-column: 2;
+	grid-row: 2;
+	height: 28px;
+	margin-left: 4px;
+	padding: 0 10px;
+}
+
+.dynmap .chat .loginbutton {
+	position: static;
+	grid-column: 1 / -1;
+	justify-self: start;
+}

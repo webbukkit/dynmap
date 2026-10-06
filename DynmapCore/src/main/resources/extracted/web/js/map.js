@@ -64,6 +64,7 @@ DynMap.prototype = {
 	sidebarPanel: null,
 	playerlist: null,
 	playerfield: null,
+	visitingworld: null,
 	layercontrol: undefined,
 	
 	sidebarSections: [],
@@ -219,9 +220,16 @@ DynMap.prototype = {
 		if(!nopanel)
 			sidebar.appendTo(container);
 
+		// Players come first so they always sit at the top of the sidebar
+		var playersSection = SidebarUtils.createListSection(me.options['msg-players']);
+		me.playerlist = playersSection.content.addClass('playerlist');
+		playersSection.section.addClass('playersection').appendTo(panel);
+		me.playerfield = playersSection.legend;
+		me.sidebarSections.push(playersSection);
+
 		var worldsSection = SidebarUtils.createListSection(me.options['msg-maptypes']);
 		me.worldlist = worldsSection.content.addClass('worldlist');
-		worldsSection.section.appendTo(panel);
+		worldsSection.section.addClass('worldsection').appendTo(panel);
 		me.sidebarSections.push(worldsSection);
 
         var maplists = {};
@@ -229,8 +237,11 @@ DynMap.prototype = {
 		$.each(me.worlds, function(index, world) {
 			var maplist;
 			world.element = $('<li/>')
-				.addClass('world subsection')
-				.text(world.title)
+				.addClass('world subsection dim-' + me.getWorldDimension(world))
+				.append($('<span/>')
+						.addClass('worldtitle')
+						.text(me.getWorldTitle(world))
+				)
 				.append(maplist = $('<ul/>')
 						.addClass('maplist sublist')
 				)
@@ -285,18 +296,24 @@ DynMap.prototype = {
 					.appendTo(mlist);
 			});
 		});
-		$.each(me.worlds, function(index, world) {
-			if(worldsadded[world.name]) {
-				world.element.appendTo(me.worldlist);
-			}
+		// Only the main dimensions are listed permanently. Any other world is still reachable (by
+		// clicking a player who is in it, or by URL) and is listed while it is being viewed.
+		var listedworlds = $.grep(me.getSidebarWorldNames(), function(name) {
+			return worldsadded[name];
 		});
-		
-		var playersSection = SidebarUtils.createListSection(me.options['msg-players']);
-		me.playerlist = playersSection.content.addClass('playerlist');
-		playersSection.section.appendTo(panel);
-		me.playerfield = playersSection.legend;
-		me.sidebarSections.push(playersSection);
-		
+		if(listedworlds.length == 0) {	// None of the configured worlds exist - list everything
+			$.each(me.worlds, function(name) {
+				if(worldsadded[name])
+					listedworlds.push(name);
+			});
+		}
+		$.each(listedworlds, function(index, name) {
+			me.worlds[name].element.appendTo(me.worldlist);
+		});
+		$(me).bind('mapchanged', function() {
+			me.updateVisitingWorld();
+		});
+
 		function upd() {
 			me.updateSidebarHeight();
 		}
@@ -473,6 +490,53 @@ DynMap.prototype = {
 				'overflow-x': ''
 			});
 		}
+	},
+	// Names of the worlds always listed under map types, in display order (sidebar-worlds in configuration.txt)
+	getSidebarWorldNames: function() {
+		var names = this.options.sidebarworlds;
+		if(names && names.length > 0)
+			return names;
+		var overworld = this.options.defaultworld || 'world';
+		return [ overworld, 'DIM-1', overworld + '_nether', 'DIM1', overworld + '_the_end' ];	// Forge/Fabric and Bukkit names
+	},
+	getWorldDimension: function(world) {
+		var name = world.name;
+		var overworld = this.options.defaultworld || 'world';
+		if(name == overworld)
+			return 'overworld';
+		if((name == 'DIM-1') || (name == overworld + '_nether'))
+			return 'nether';
+		if((name == 'DIM1') || (name == overworld + '_the_end'))
+			return 'end';
+		return 'other';
+	},
+	getWorldTitle: function(world) {
+		if(world.title && (world.title != world.name))
+			return world.title;	// Title set in worlds.txt
+		switch(this.getWorldDimension(world)) {
+			case 'overworld': return 'Overworld';
+			case 'nether': return 'The Nether';
+			case 'end': return 'The End';
+		}
+		// Modded dimensions are named <namespace>_<path> (e.g. ad_astra_venus): make them readable
+		return world.name.replace(/_/g, ' ').replace(/\b[a-z]/g, function(c) { return c.toUpperCase(); });
+	},
+	// List the world being viewed while it is not one of the sidebar worlds
+	updateVisitingWorld: function() {
+		var me = this;
+		var current = $(me.maptype.element).closest('.world');
+		if(me.visitingworld && (me.visitingworld[0] !== current[0])) {
+			me.visitingworld.removeClass('visiting').detach();
+			me.visitingworld = null;
+		}
+		var added = false;
+		if((current.length > 0) && !$.contains(me.worldlist[0], current[0])) {
+			me.visitingworld = current.addClass('visiting').appendTo(me.worldlist);
+			added = true;
+		}
+		me.updateSidebarHeight();
+		if(added)
+			me.worldlist.scrollTop(me.worldlist.prop('scrollHeight'));
 	},
 	getProjection: function() { return this.maptype.getProjection(); },
 	selectMapAndPan: function(map, location, completed) {
@@ -772,6 +836,9 @@ DynMap.prototype = {
 				})
 				.append(player.name)
 			)
+			.append(player.menuworld = $('<span/>')
+				.addClass('playerworld')
+			)
 			.click(function(e) {
 				if (me.followingPlayer !== player) {
 					me.followPlayer(null);
@@ -779,6 +846,7 @@ DynMap.prototype = {
 				me.panToLocation(player.location);
 			});
 		player.menuname.data('sort', player.sort);
+		me.updatePlayerWorld(player);
 		// Inject into playerlist alphabetically
 		var firstNodeAfter = me.playerlist.children().filter(function() {
 		    var itm = $('a', this);
@@ -811,7 +879,8 @@ DynMap.prototype = {
 		if (player.menuname && (player.menuname.html() != player.name)) {
 		    player.menuname.html(player.name);
 		}
-		
+		me.updatePlayerWorld(player);
+
 		// Update menuitem.
 		if(me.options.grayplayerswhenhidden)
 			player.menuitem.toggleClass('otherworld', me.world !== location.world);
@@ -820,6 +889,18 @@ DynMap.prototype = {
 			// Follow the updated player.
 			me.panToLocation(player.location);
 		}
+	},
+	// Show which dimension the player is in (empty when the world is hidden or unknown)
+	updatePlayerWorld: function(player) {
+		var world = player.location.world;
+		var worldname = world ? world.name : '';
+		if (player.menuworldname === worldname) {
+			return;
+		}
+		player.menuworldname = worldname;
+		player.menuworld
+			.attr('class', 'playerworld' + (world ? ' dim-' + this.getWorldDimension(world) : ''))
+			.text(world ? this.getWorldTitle(world) : '');
 	},
 	removePlayer: function(player) {
 		var me = this;
