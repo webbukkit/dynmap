@@ -51,6 +51,7 @@ include ':forge-1.21.11'
 include ':forge-1.21.10'
 include ':forge-1.21.6'
 include ':forge-1.20.6'
+include ':forge-1.20.1'
 include ':forge-1.19.3'
 include ':forge-1.18.2'
 include ':forge-1.17.1'
@@ -101,6 +102,7 @@ project(':forge-1.21.11').projectDir = "$rootDir/forge-1.21.11" as File
 project(':forge-1.21.10').projectDir = "$rootDir/forge-1.21.10" as File
 project(':forge-1.21.6').projectDir = "$rootDir/forge-1.21.6" as File
 project(':forge-1.20.6').projectDir = "$rootDir/forge-1.20.6" as File
+project(':forge-1.20.1').projectDir = "$rootDir/forge-1.20.1" as File
 project(':forge-1.19.3').projectDir = "$rootDir/forge-1.19.3" as File
 project(':forge-1.18.2').projectDir = "$rootDir/forge-1.18.2" as File
 project(':forge-1.17.1').projectDir = "$rootDir/forge-1.17.1" as File
