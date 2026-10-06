@@ -28,6 +28,7 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 **Build notes:**
 - `gradle.properties` sets `org.gradle.parallel=false` and `org.gradle.daemon=false` — do not change these
 - `snakeyaml` is pinned at 1.23 intentionally — newer versions break on Windows-encoded config files
+- `.github/workflows/build-platforms.yml` builds each platform module in a matrix and uploads the jars as artifacts — when adding or removing a platform module (`spigot`, `fabric-*`, `forge-*`), update its module list
 
 ## Architecture
 
