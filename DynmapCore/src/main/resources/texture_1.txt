@@ -6105,3 +6105,10 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.21.9-]block:id=exposed_copper_golem_statue,id=waxed_exposed_copper_golem_statue,patch0=0:exposed_copper,patch1=0:copper_golem_face_exposed,transparency=TRANSPARENT
 [1.21.9-]block:id=weathered_copper_golem_statue,id=waxed_weathered_copper_golem_statue,patch0=0:weathered_copper,patch1=0:copper_golem_face_weathered,transparency=TRANSPARENT
 [1.21.9-]block:id=oxidized_copper_golem_statue,id=waxed_oxidized_copper_golem_statue,patch0=0:oxidized_copper,patch1=0:copper_golem_face_oxidized,transparency=TRANSPARENT
+
+# Golden Dandelion
+[26.1-]texture:id=golden_dandelion
+[26.1-]block:id=%golden_dandelion,patch0=0:golden_dandelion,transparency=TRANSPARENT,stdrot=true
+[26.1-]block:id=%potted_golden_dandelion,patch0=0:flower_pot,patch1=0:dirt,patch2=0:golden_dandelion,transparency=TRANSPARENT,stdrot=true
+
+
