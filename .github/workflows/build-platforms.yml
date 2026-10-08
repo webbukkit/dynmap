@@ -1,6 +1,9 @@
 name: Build platform jars
 
 on:
+  push:
+    branches:
+      - v3.0-community-edition
   workflow_dispatch:
 
 permissions:
