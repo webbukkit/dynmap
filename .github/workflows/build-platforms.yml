@@ -46,37 +46,73 @@ jobs:
       fail-fast: false
       matrix:
         # Keep in sync with the platform modules in settings.gradle
-        module:
-          - spigot
-          - fabric-1.14.4
-          - fabric-1.15.2
-          - fabric-1.16.4
-          - fabric-1.17.1
-          - fabric-1.18.2
-          - fabric-1.19.4
-          - fabric-1.20.6
-          - fabric-1.21.6
-          - fabric-1.21.9-10
-          - fabric-1.21.11
-          - forge-1.17.1
-          - forge-1.18.2
-          - forge-1.19.3
-          - forge-1.20.6
-          - forge-1.21.6
-          - forge-1.21.10
-          - forge-1.21.11
+        include:
+          - module: spigot
+            task: ':spigot:build'
+            java: '21'
+          - module: fabric-1.14.4
+            task: ':fabric-1.14.4:build'
+            java: '21'
+          - module: fabric-1.15.2
+            task: ':fabric-1.15.2:build'
+            java: '21'
+          - module: fabric-1.16.4
+            task: ':fabric-1.16.4:build'
+            java: '21'
+          - module: fabric-1.17.1
+            task: ':fabric-1.17.1:build'
+            java: '21'
+          - module: fabric-1.18.2
+            task: ':fabric-1.18.2:build'
+            java: '21'
+          - module: fabric-1.19.4
+            task: ':fabric-1.19.4:build'
+            java: '21'
+          - module: fabric-1.20.6
+            task: ':fabric-1.20.6:build'
+            java: '21'
+          - module: fabric-1.21.6
+            task: ':fabric-1.21.6:build'
+            java: '21'
+          - module: fabric-1.21.9-10
+            task: ':fabric-1.21.9-10:build'
+            java: '21'
+          - module: fabric-1.21.11
+            task: ':fabric-1.21.11:build'
+            java: '21'
+          - module: forge-1.17.1
+            task: ':forge-1.17.1:build'
+            java: '21'
+          - module: forge-1.18.2
+            task: ':forge-1.18.2:build'
+            java: '21'
+          - module: forge-1.19.3
+            task: ':forge-1.19.3:build'
+            java: '21'
+          - module: forge-1.20.6
+            task: ':forge-1.20.6:build'
+            java: '21'
+          - module: forge-1.21.6
+            task: ':forge-1.21.6:build'
+            java: '21'
+          - module: forge-1.21.10
+            task: ':forge-1.21.10:build'
+            java: '21'
+          - module: forge-1.21.11
+            task: ':forge-1.21.11:build'
+            java: '21'
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up JDK 21
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: ${{ matrix.java }}
           cache: gradle
 
       - name: Build ${{ matrix.module }}
-        run: ./gradlew :${{ matrix.module }}:build --console=plain
+        run: ./gradlew ${{ matrix.task }} --console=plain
 
       - name: Upload jar
         uses: actions/upload-artifact@v7
