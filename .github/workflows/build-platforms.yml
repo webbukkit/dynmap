@@ -112,7 +112,33 @@ jobs:
           cache: gradle
 
       - name: Build ${{ matrix.module }}
-        run: ./gradlew ${{ matrix.task }} --console=plain
+        shell: bash
+        run: ./gradlew ${{ matrix.task }} --console=plain --info --stacktrace 2>&1 | tee build-${{ matrix.module }}.log
+
+      - name: Print build errors
+        if: failure()
+        shell: bash
+        run: |
+          echo "::group::Error lines"
+          grep -n -i -E 'error|exception|caused by|failed|FAILURE|class file version' build-${{ matrix.module }}.log | tail -n 100 || true
+          echo "::endgroup::"
+          echo "::group::Last 200 log lines"
+          tail -n 200 build-${{ matrix.module }}.log
+          echo "::endgroup::"
+          for f in hs_err_pid*.log; do [ -f "$f" ] && { echo "::group::$f"; head -n 60 "$f"; echo "::endgroup::"; }; done || true
+
+      - name: Upload build logs and reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-failure-${{ matrix.module }}
+          path: |
+            build-${{ matrix.module }}.log
+            build/reports/
+            ${{ matrix.module }}/build/reports/
+            ${{ matrix.module }}/build/tmp/
+            hs_err_pid*.log
+          if-no-files-found: warn
 
       - name: Upload jar
         uses: actions/upload-artifact@v7
