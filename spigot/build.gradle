@@ -121,7 +121,7 @@ dependencies {
     runtimeOnly(project(':bukkit-helper-121-11')) {
         transitive = false
     }
-    runtimeOnly(project(':paper-helper-26x')) {
+    runtimeOnly(project(path: ':paper-helper-26x', configuration: 'paperHelper')) {
         transitive = false
     }
 }
