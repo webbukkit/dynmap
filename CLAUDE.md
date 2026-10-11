@@ -9,7 +9,7 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 ## Build Commands
 
 ```bash
-# Build all platforms (requires JDK 21 as default)
+# Build all platforms (requires JDK 25, see below)
 ./gradlew build
 
 # Build outputs go to /target directory
@@ -22,7 +22,8 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 ```
 
 **JDK Requirements:**
-- Default: JDK 21
+- Full build (`./gradlew build`): JDK 25 — required for MC >= 26.x modules (`paper-helper-26x`, and so `spigot`)
+- Fabric/Forge modules, `DynmapCoreAPI` and `DynmapCore` build on JDK 21; CI uses JDK 21 for them and JDK 25 for `spigot`
 - Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5+)
 
 **Build notes:**
