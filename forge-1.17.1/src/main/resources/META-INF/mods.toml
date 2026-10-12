@@ -4,7 +4,7 @@ issueTrackerURL="https://github.com/webbukkit/dynmap/issues"
 license="Apache Public License v2"
 [[mods]]
 modId="dynmap"
-version="${version}"
+version="${fullVersion}"
 displayName="Dynmap"
 authors="mikeprimm"
 description='''

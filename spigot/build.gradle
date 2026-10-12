@@ -131,7 +131,7 @@ processResources {
     filesMatching('plugin.yml') {
         // replace version and mcversion
         expand(
-                buildnumber: project.parent.ext.globals.buildNumber,
+                fullVersion: fullVersion,
                 version: project.version
         )
     }
@@ -177,7 +177,7 @@ shadowJar {
     }
     relocate('org.bstats', 'org.dynmap.bstats')
     destinationDirectory = file '../target'
-    archiveBaseName = "Dynmap"
+    archiveBaseName = "Dynmap-CE"
     archiveClassifier = 'spigot'
 }
 shadowJar.doLast {

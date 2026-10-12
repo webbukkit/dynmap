@@ -13,8 +13,6 @@ eclipse {
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
-ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
-
 repositories {
     minecraft.mavenizer(it)
     maven fg.forgeMaven
@@ -44,7 +42,7 @@ processResources {
     filesMatching('META-INF/mods.toml') {
         // replace version and mcversion
         expand(
-            version: project.version + '-' + project.ext.buildNumber,
+            fullVersion: fullVersion,
             mcversion: "1.21.10"
         )
     }
@@ -59,7 +57,7 @@ shadowJar {
     }
     relocate('org.apache.commons.codec', 'org.dynmap.forge_1_21_10.commons.codec')
 
-    archiveBaseName = "Dynmap"
+    archiveBaseName = "Dynmap-CE"
     archiveClassifier = "forge-1.21.10"
     destinationDirectory = file('../target')
 }

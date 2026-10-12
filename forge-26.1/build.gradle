@@ -14,8 +14,6 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
-ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
-
 configurations {
     bundle {
         canBeResolved = true
@@ -53,14 +51,14 @@ processResources {
     filesMatching('META-INF/mods.toml') {
         // replace version and mcversion
         expand(
-            version: project.version + '-' + project.ext.buildNumber,
+            fullVersion: fullVersion,
             mcversion: project.minecraft_version
         )
     }
 }
 
 jar {
-    archiveBaseName = "Dynmap"
+    archiveBaseName = "Dynmap-CE"
     archiveClassifier = "forge-${project.minecraft_version}"
     destinationDirectory = file('../target')
     from "LICENSE"

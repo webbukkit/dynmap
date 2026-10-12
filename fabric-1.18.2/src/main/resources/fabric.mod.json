@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "dynmap",
-  "version": "${version}",
+  "version": "${fullVersion}",
   "name": "Dynmap",
   "description": "Dynamic, Google-maps style rendered maps for your Minecraft server",
   "authors": [

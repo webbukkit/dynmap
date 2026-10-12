@@ -1,2 +1,2 @@
-var dynmapversion = "${version}-${buildnumber}";
+var dynmapversion = "${fullVersion}";
 

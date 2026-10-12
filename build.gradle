@@ -28,15 +28,10 @@ allprojects  {
   apply plugin: 'java'
   
   group = 'us.dynmap'
-  version = '3.9-SNAPSHOT'
+  if (!project.hasProperty('fullVersion')) {
+    ext.fullVersion = version
+  }
 
-}
-
-class Globals {
-  String buildNumber =  System.getenv().BUILD_NUMBER ?: "Dev"
-}
-ext {
-  globals = new Globals()
 }
 
 subprojects {

@@ -14,8 +14,6 @@ eclipse {
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
-ext.buildNumber = System.getenv().BUILD_NUMBER ?: "Dev"
-
 repositories {
     minecraft.mavenizer(it)
     maven fg.forgeMaven
@@ -44,7 +42,7 @@ processResources {
     filesMatching('META-INF/mods.toml') {
         // replace version and mcversion
         expand(
-            version: project.version + '-' + project.ext.buildNumber,
+            fullVersion: fullVersion,
             mcversion: "1.18.2"
         )
     }
@@ -59,14 +57,14 @@ shadowJar {
     }
     relocate('org.apache.commons.codec', 'org.dynmap.forge_1_18_2.commons.codec')
 
-    archiveBaseName = "Dynmap"
+    archiveBaseName = "Dynmap-CE"
     archiveClassifier = "dev"
 }
 
 // Forge 1.18.2 uses SRG names at runtime, so the shadow jar has to be remapped
 renamer.classes('renameShadowJar', tasks.named('shadowJar', Jar)) {
     map.from minecraft.dependency.toSrgFile
-    output = layout.projectDirectory.file("../target/Dynmap-${project.version}-forge-1.18.2.jar")
+    output = layout.projectDirectory.file("../target/Dynmap-CE-${project.version}-forge-1.18.2.jar")
 }
 
 tasks.named('renameShadowJar') {

@@ -58,7 +58,7 @@ loom {
 
 processResources {
     filesMatching('fabric.mod.json') {
-        expand "version": project.version
+        expand "fullVersion": fullVersion
     }
 }
 
@@ -71,7 +71,7 @@ java {
 }
 
 jar {
-    archiveFileName = "${base.archivesName.get()}-${project.version}-fabric-${project.minecraft_version}.jar"
+    archiveFileName = "Dynmap-CE-${project.version}-fabric-${project.minecraft_version}.jar"
     destinationDirectory = file('../target')
     from "LICENSE"
     from {
