@@ -4,14 +4,68 @@ on:
   push:
     branches:
       - v3.0-community-edition
+    tags:
+      - 'ce-[0-9]*'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  core:
+  version:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      fullVersion: ${{ steps.v.outputs.fullVersion }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Tag ce-X.Y.Z -> 3.10.0, N commits after it -> 3.10.1-dev.N, no tag -> 3.x-dev.
+      - name: Compute version
+        id: v
+        shell: bash
+        run: |
+          hash=$(git rev-parse --short=7 HEAD)
+          desc=$(git describe --tags --long --abbrev=7 --match 'ce-[0-9]*.[0-9]*.[0-9]*' --exclude 'ce-*-*' 2>/dev/null || true)
+          if [[ $desc =~ ^ce-([0-9]+)\.([0-9]+)\.([0-9]+)-([0-9]+)-g ]]; then
+            if [ "${BASH_REMATCH[4]}" = 0 ]; then
+              version="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
+              full="$version+$hash"
+              kind="release"
+            else
+              base="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.$((BASH_REMATCH[3] + 1))-dev.${BASH_REMATCH[4]}"
+              version="$base-$hash"
+              full="$base+$hash"
+              kind="dev build, ${BASH_REMATCH[4]} commit(s) after the last tag"
+            fi
+          elif [ -n "$desc" ]; then
+            echo "::error::Unsupported tag $desc, expected ce-X.Y.Z"
+            exit 1
+          else
+            version="3.x-dev-$hash"
+            full="3.x-dev+$hash"
+            kind="dev build, no ce-* tag found"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "fullVersion=$full" >> "$GITHUB_OUTPUT"
+          echo "Version: $full (jar: $version)"
+          {
+            echo "### Version"
+            echo "- Build type: $kind"
+            echo "- Ref: \`$GITHUB_REF_NAME\` @ \`$hash\`"
+            echo "- Last tag: \`${desc:-none}\`"
+            echo "- Jar version: \`$version\`"
+            echo "- Full version (\`/dynmap version\`): \`$full\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  core:
+    needs: version
+    runs-on: ubuntu-latest
+    env:
+      ORG_GRADLE_PROJECT_version: ${{ needs.version.outputs.version }}
+      ORG_GRADLE_PROJECT_fullVersion: ${{ needs.version.outputs.fullVersion }}
     steps:
       - uses: actions/checkout@v7
 
@@ -40,8 +94,11 @@ jobs:
           if-no-files-found: error
 
   platform:
-    needs: core
+    needs: [version, core]
     runs-on: ubuntu-latest
+    env:
+      ORG_GRADLE_PROJECT_version: ${{ needs.version.outputs.version }}
+      ORG_GRADLE_PROJECT_fullVersion: ${{ needs.version.outputs.fullVersion }}
     strategy:
       fail-fast: false
       matrix:
