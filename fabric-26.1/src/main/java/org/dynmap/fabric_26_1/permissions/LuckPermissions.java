@@ -87,8 +87,7 @@ public class LuckPermissions implements PermissionProvider {
         if (player == null) return false;
         String name = player.getName().getString().toLowerCase();
         if (DynmapPlugin.plugin.isOp(name)) return true;
-        // return Permissions.check(player, permissionKey(permission));
-        return true; // TODO: implement proper permission checks (waiting on fabric-permissions-api update)
+        return Permissions.check(player, permissionKey(permission));
     }
 
     @Override
