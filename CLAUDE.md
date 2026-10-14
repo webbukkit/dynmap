@@ -22,9 +22,9 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 ```
 
 **JDK Requirements:**
-- Full build (`./gradlew build`): JDK 25 — required for MC >= 26.x modules (`paper-helper-26x`, and so `spigot`)
-- Fabric/Forge modules, `DynmapCoreAPI` and `DynmapCore` build on JDK 21; CI uses JDK 21 for them and JDK 25 for `spigot`
-- Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5+)
+- Full build (`./gradlew build`): JDK 25 — required for MC >= 26.x modules (`paper-helper-26x` and so `spigot`, `fabric-26.1`, `forge-26.1`)
+- Other Fabric/Forge modules, `DynmapCoreAPI` and `DynmapCore` build on JDK 21; CI uses JDK 21 for them and JDK 25 for `spigot`, `fabric-26.1` and `forge-26.1`
+- Runtime targets: JDK 8 (1.16-), JDK 16 (1.17.x), JDK 17 (1.18-1.20.4), JDK 21 (1.20.5-1.21.x), JDK 25 (26.x)
 
 **Build notes:**
 - `gradle.properties` sets `org.gradle.parallel=false` and `org.gradle.daemon=false` — do not change these
@@ -43,8 +43,8 @@ Dynmap is a dynamic web mapping plugin/mod for Minecraft servers. It's a multi-p
 **Platform Implementations:**
 - `spigot/` - Bukkit/PaperMC implementation (`DynmapPlugin.java`)
 - `bukkit-helper-*` - Version-specific NMS code (one per MC version: 1.13-1.21)
-- `fabric-*` - Fabric mod implementations (1.14.4-1.21.x)
-- `forge-*` - Forge mod implementations (1.17.1-1.21.x), built with ForgeGradle 7; 1.17.1-1.19.3 are remapped to SRG names by the Renamer plugin
+- `fabric-*` - Fabric mod implementations (1.14.4-1.21.x, 26.x); `fabric-26.1` covers MC 26.1-26.3
+- `forge-*` - Forge mod implementations (1.17.1-1.21.x, 26.x), built with ForgeGradle 7; 1.17.1-1.19.3 are remapped to SRG names by the Renamer plugin; `forge-26.1` covers MC 26.x
 
 ### Dependency Flow
 ```
