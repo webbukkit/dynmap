@@ -80,6 +80,9 @@ jobs:
           - module: fabric-1.21.11
             task: ':fabric-1.21.11:build'
             java: '21'
+          - module: fabric-26.1
+            task: ':fabric-26.1:build'
+            java: '25'
           - module: forge-1.17.1
             task: ':forge-1.17.1:build'
             java: '21'
@@ -101,6 +104,9 @@ jobs:
           - module: forge-1.21.11
             task: ':forge-1.21.11:build'
             java: '21'
+          - module: forge-26.1
+            task: ':forge-26.1:build'
+            java: '25'
     steps:
       - uses: actions/checkout@v7
 
