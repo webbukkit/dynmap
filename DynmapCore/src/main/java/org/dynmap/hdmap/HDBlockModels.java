@@ -445,6 +445,10 @@ public class HDBlockModels {
                     }
                     DynmapBlockState basebs = bsprslt.keySet().iterator().next();
                     BitSet bits = bsprslt.get(basebs);
+                    if (bits.isEmpty()) {
+                        Log.severe("Missing rotate source on line " + lineNum + " of file: " + fname);
+                        continue;
+                    }
                     /* get old model to be rotated */
                     DynmapBlockState bs = basebs.getState(bits.nextSetBit(0));
                     if (bs.isAir()) {
@@ -513,6 +517,10 @@ public class HDBlockModels {
                     }
                     DynmapBlockState basebs = bsprslt.keySet().iterator().next();
                     BitSet bits = bsprslt.get(basebs);
+                    if (bits.isEmpty()) {
+                        Log.severe("Missing rotate source on line " + lineNum + " of file: " + fname);
+                        continue;
+                    }
                     /* get old model to be rotated */
                     DynmapBlockState bs = basebs.getState(bits.nextSetBit(0));
                     if (bs.isAir()) {
