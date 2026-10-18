@@ -176,6 +176,13 @@ shadowJar {
         include(dependency(':paper-helper-26x'))
     }
     relocate('org.bstats', 'org.dynmap.bstats')
+    // Paper 1.20.5-1.21.4 remaps plugins with ASM that cannot read Java 25 class files (the 26.x helper): keep them
+    // where only a Java 25 runtime looks (the jar is multi-release)
+    eachFile {
+        if (it.path.startsWith('org/dynmap/bukkit/helper/v26x/')) {
+            it.path = 'META-INF/versions/25/' + it.path
+        }
+    }
     destinationDirectory = file '../target'
     archiveBaseName = "Dynmap-CE"
     archiveClassifier = 'spigot'
