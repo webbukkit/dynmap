@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.border.WorldBorder;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -238,6 +239,13 @@ public class ForgeWorld extends DynmapWorld
                 p.addVertex(wb.getMaxX(), wb.getMinZ());
                 return p;
             }
+        }
+        return null;
+    }
+    @Override
+    public Long getBiomeZoomSeed() {
+        if (world != null) {
+            return BiomeManager.obfuscateSeed(world.getLevel().getSeed());
         }
         return null;
     }
