@@ -575,7 +575,7 @@ block:id=andesite,allfaces=0:andesite,stdrot=true
 # Polished Andesite
 block:id=polished_andesite,allfaces=0:polished_andesite,stdrot=true
 # Grass
-block:id=grass_block,data=0,allsides=0:grass_block_snow,top=1000:grass_block_top,bottom=0:dirt,stdrot=true
+block:id=grass_block,data=0,allsides=0:grass_block_snow,top=0:grass_block_top,bottom=0:dirt,stdrot=true
 block:id=grass_block,data=1,allsides=1000:grass_block_side_overlay,top=1000:grass_block_top,bottom=0:dirt,patch6=0:grass_block_side,layer0=6,layer2-3=6,layer5=6,stdrot=true
 # Dirt
 block:id=dirt,allfaces=0:dirt,stdrot=true
@@ -1122,7 +1122,7 @@ block:id=brick_stairs,patch0-2=0:bricks,transparency=SEMITRANSPARENT
 # Stone brick stair
 block:id=stone_brick_stairs,patch0-2=0:stone_bricks,transparency=SEMITRANSPARENT
 # Mycelium
-block:id=mycelium,data=0,allsides=0:grass_block_snow,top=1000:grass_block_top,bottom=0:dirt,stdrot=true
+block:id=mycelium,data=0,allsides=0:grass_block_snow,top=0:grass_block_top,bottom=0:dirt,stdrot=true
 block:id=mycelium,data=1,top=0:mycelium_top,allsides=0:mycelium_side,bottom=0:dirt,stdrot=true
 # Lily pad
 block:id=lily_pad,patch0=15000:lily_pad,transparency=TRANSPARENT
