@@ -4968,17 +4968,30 @@ block:id=%melon_stem,patch0=0:melon_stem,blockcolor=foliagebiome,transparency=TR
 [1.21.4-]block:id=%pale_oak_door,state=facing:east/hinge:right/half:lower/open:false,patch0=0:pale_oak_door_bottom,transparency=TRANSPARENT,stdrot=true
 [1.21.4-]block:id=pale_oak_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,patch6=6,patch7=7,patch8=8,patch9=9,transparency=TRANSPARENT,txtid=pale_oak_sign
 [1.21.4-]block:id=pale_oak_wall_sign,patch0=0,patch1=1,patch2=2,patch3=3,patch4=4,patch5=5,transparency=TRANSPARENT,txtid=pale_oak_sign
-#Cracking heart
-[1.21.4-]texture:id=creaking_heart_top_active,filename=assets/minecraft/textures/block/creaking_heart_top_active.png,xcount=1,ycount=1
+#Creaking heart
+[1.21.4-1.21.4]texture:id=creaking_heart_top_active,filename=assets/minecraft/textures/block/creaking_heart_top_active.png,xcount=1,ycount=1
 [1.21.4-]texture:id=creaking_heart_top,filename=assets/minecraft/textures/block/creaking_heart_top.png,xcount=1,ycount=1
-[1.21.4-]texture:id=creaking_heart_active,filename=assets/minecraft/textures/block/creaking_heart_active.png,xcount=1,ycount=1
+[1.21.4-1.21.4]texture:id=creaking_heart_active,filename=assets/minecraft/textures/block/creaking_heart_active.png,xcount=1,ycount=1
 [1.21.4-]texture:id=creaking_heart,filename=assets/minecraft/textures/block/creaking_heart.png,xcount=1,ycount=1
-[1.21.4-]block:id=%creaking_heart,state=axis:x/active:false,patch0=0:creaking_heart_top,patch1=6000:creaking_heart,patch2=6000:creaking_heart,patch3=0:creaking_heart_top,patch4=6000:creaking_heart,patch5=6000:creaking_heart,stdrot=true
-[1.21.4-]block:id=%creaking_heart,state=axis:y/active:false,patch0=0:creaking_heart,patch1=0:creaking_heart_top,patch2=0:creaking_heart,patch3=0:creaking_heart,patch4=0:creaking_heart_top,patch5=0:creaking_heart,stdrot=true
-[1.21.4-]block:id=%creaking_heart,state=axis:z/active:false,patch0=6000:creaking_heart,patch1=0:creaking_heart,patch2=0:creaking_heart_top,patch3=6000:creaking_heart,patch4=0:creaking_heart,patch5=0:creaking_heart_top,stdrot=true
-[1.21.4-]block:id=%creaking_heart,state=axis:x/active:true,patch0=0:creaking_heart_top_active,patch1=6000:creaking_heart_active,patch2=6000:creaking_heart_active,patch3=0:creaking_heart_top_active,patch4=6000:creaking_heart_active,patch5=6000:creaking_heart_active,stdrot=true
-[1.21.4-]block:id=%creaking_heart,state=axis:y/active:true,patch0=0:creaking_heart_active,patch1=0:creaking_heart_top_active,patch2=0:creaking_heart_active,patch3=0:creaking_heart_active,patch4=0:creaking_heart_top_active,patch5=0:creaking_heart_active,stdrot=true
-[1.21.4-]block:id=%creaking_heart,state=axis:z/active:true,patch0=6000:creaking_heart_active,patch1=0:creaking_heart_active,patch2=0:creaking_heart_top_active,patch3=6000:creaking_heart_active,patch4=0:creaking_heart_active,patch5=0:creaking_heart_top_active,stdrot=true
+[1.21.4-1.21.4]block:id=%creaking_heart,state=axis:x/active:false,patch0=0:creaking_heart_top,patch1=6000:creaking_heart,patch2=6000:creaking_heart,patch3=0:creaking_heart_top,patch4=6000:creaking_heart,patch5=6000:creaking_heart,stdrot=true
+[1.21.4-1.21.4]block:id=%creaking_heart,state=axis:y/active:false,patch0=0:creaking_heart,patch1=0:creaking_heart_top,patch2=0:creaking_heart,patch3=0:creaking_heart,patch4=0:creaking_heart_top,patch5=0:creaking_heart,stdrot=true
+[1.21.4-1.21.4]block:id=%creaking_heart,state=axis:z/active:false,patch0=6000:creaking_heart,patch1=0:creaking_heart,patch2=0:creaking_heart_top,patch3=6000:creaking_heart,patch4=0:creaking_heart,patch5=0:creaking_heart_top,stdrot=true
+[1.21.4-1.21.4]block:id=%creaking_heart,state=axis:x/active:true,patch0=0:creaking_heart_top_active,patch1=6000:creaking_heart_active,patch2=6000:creaking_heart_active,patch3=0:creaking_heart_top_active,patch4=6000:creaking_heart_active,patch5=6000:creaking_heart_active,stdrot=true
+[1.21.4-1.21.4]block:id=%creaking_heart,state=axis:y/active:true,patch0=0:creaking_heart_active,patch1=0:creaking_heart_top_active,patch2=0:creaking_heart_active,patch3=0:creaking_heart_active,patch4=0:creaking_heart_top_active,patch5=0:creaking_heart_active,stdrot=true
+[1.21.4-1.21.4]block:id=%creaking_heart,state=axis:z/active:true,patch0=6000:creaking_heart_active,patch1=0:creaking_heart_active,patch2=0:creaking_heart_top_active,patch3=6000:creaking_heart_active,patch4=0:creaking_heart_active,patch5=0:creaking_heart_top_active,stdrot=true
+[1.21.5-]texture:id=creaking_heart_dormant,filename=assets/minecraft/textures/block/creaking_heart_dormant.png,xcount=1,ycount=1
+[1.21.5-]texture:id=creaking_heart_top_dormant,filename=assets/minecraft/textures/block/creaking_heart_top_dormant.png,xcount=1,ycount=1
+[1.21.5-]texture:id=creaking_heart_awake,filename=assets/minecraft/textures/block/creaking_heart_awake.png,xcount=1,ycount=1
+[1.21.5-]texture:id=creaking_heart_top_awake,filename=assets/minecraft/textures/block/creaking_heart_top_awake.png,xcount=1,ycount=1
+[1.21.5-]block:id=%creaking_heart,state=axis:x/creaking_heart_state:uprooted,patch0=0:creaking_heart_top,patch1=6000:creaking_heart,patch2=6000:creaking_heart,patch3=0:creaking_heart_top,patch4=6000:creaking_heart,patch5=6000:creaking_heart,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:x/creaking_heart_state:dormant,patch0=0:creaking_heart_top_dormant,patch1=6000:creaking_heart_dormant,patch2=6000:creaking_heart_dormant,patch3=0:creaking_heart_top_dormant,patch4=6000:creaking_heart_dormant,patch5=6000:creaking_heart_dormant,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:x/creaking_heart_state:awake,patch0=0:creaking_heart_top_awake,patch1=6000:creaking_heart_awake,patch2=6000:creaking_heart_awake,patch3=0:creaking_heart_top_awake,patch4=6000:creaking_heart_awake,patch5=6000:creaking_heart_awake,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:y/creaking_heart_state:uprooted,patch0=0:creaking_heart,patch1=0:creaking_heart_top,patch2=0:creaking_heart,patch3=0:creaking_heart,patch4=0:creaking_heart_top,patch5=0:creaking_heart,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:y/creaking_heart_state:dormant,patch0=0:creaking_heart_dormant,patch1=0:creaking_heart_top_dormant,patch2=0:creaking_heart_dormant,patch3=0:creaking_heart_dormant,patch4=0:creaking_heart_top_dormant,patch5=0:creaking_heart_dormant,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:y/creaking_heart_state:awake,patch0=0:creaking_heart_awake,patch1=0:creaking_heart_top_awake,patch2=0:creaking_heart_awake,patch3=0:creaking_heart_awake,patch4=0:creaking_heart_top_awake,patch5=0:creaking_heart_awake,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:z/creaking_heart_state:uprooted,patch0=6000:creaking_heart,patch1=0:creaking_heart,patch2=0:creaking_heart_top,patch3=6000:creaking_heart,patch4=0:creaking_heart,patch5=0:creaking_heart_top,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:z/creaking_heart_state:dormant,patch0=6000:creaking_heart_dormant,patch1=0:creaking_heart_dormant,patch2=0:creaking_heart_top_dormant,patch3=6000:creaking_heart_dormant,patch4=0:creaking_heart_dormant,patch5=0:creaking_heart_top_dormant,stdrot=true
+[1.21.5-]block:id=%creaking_heart,state=axis:z/creaking_heart_state:awake,patch0=6000:creaking_heart_awake,patch1=0:creaking_heart_awake,patch2=0:creaking_heart_top_awake,patch3=6000:creaking_heart_awake,patch4=0:creaking_heart_awake,patch5=0:creaking_heart_top_awake,stdrot=true
 #All the resin stuff
 [1.21.4-]texture:id=resin_bricks,filename=assets/minecraft/textures/block/resin_bricks.png,xcount=1,ycount=1
 [1.21.4-]texture:id=chiseled_resin_bricks,filename=assets/minecraft/textures/block/chiseled_resin_bricks.png,xcount=1,ycount=1
