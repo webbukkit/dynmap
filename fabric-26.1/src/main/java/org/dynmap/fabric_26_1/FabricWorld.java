@@ -9,6 +9,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.border.WorldBorder;
+import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.server.level.ServerLevel;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -234,6 +236,14 @@ public class FabricWorld extends DynmapWorld {
                 p.addVertex(wb.getMaxX(), wb.getMinZ());
                 return p;
             }
+        }
+        return null;
+    }
+
+    @Override
+    public Long getBiomeZoomSeed() {
+        if (world instanceof ServerLevel) {
+            return BiomeManager.obfuscateSeed(((ServerLevel) world).getSeed());
         }
         return null;
     }
