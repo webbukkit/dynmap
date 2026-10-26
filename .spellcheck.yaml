@@ -21,5 +21,6 @@ matrix:
         - 'code'
         - 'pre'
   sources:
-  - '**/*.md'
+  - 'README.md'
+  - 'CONTRIBUTING.md'
   default_encoding: utf-8
