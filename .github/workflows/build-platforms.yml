@@ -30,7 +30,7 @@ jobs:
         id: v
         shell: bash
         run: |
-          hash=$(git rev-parse --short=7 HEAD)
+          hash=$(git rev-parse --short=7 "${{ github.event.pull_request.head.sha || 'HEAD' }}")
           desc=$(git describe --tags --long --abbrev=7 --match 'ce-[0-9]*.[0-9]*.[0-9]*' --exclude 'ce-*-*' 2>/dev/null || true)
           if [[ $desc =~ ^ce-([0-9]+)\.([0-9]+)\.([0-9]+)-([0-9]+)-g ]]; then
             if [ "${BASH_REMATCH[4]}" = 0 ]; then
