@@ -8,6 +8,9 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.hash.Hashing;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,6 +19,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
+import org.dynmap.hdmap.HDBlockModels;
 import org.dynmap.utils.MapChunkCache;
 import org.dynmap.utils.Polygon;
 import org.dynmap.utils.TileFlags;
@@ -248,5 +252,14 @@ public class BukkitWorld extends DynmapWorld {
     		lastBorder = BukkitVersionHelper.helper.getWorldBorder(world);
     	}
     	return lastBorder;
+    }
+    // Since 1.18 the client picks the biome of a block from the 3D noise biomes with seeded jitter
+    private static final boolean biomeZoom3D = HDBlockModels.checkVersionRange(Bukkit.getBukkitVersion().split("-")[0], "1.18-");
+    @Override
+    public Long getBiomeZoomSeed() {
+        if ((world != null) && biomeZoom3D) {
+            return Hashing.sha256().hashLong(world.getSeed()).asLong();	// BiomeManager.obfuscateSeed
+        }
+        return null;
     }
 }
