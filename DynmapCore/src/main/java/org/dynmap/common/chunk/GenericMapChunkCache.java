@@ -1193,7 +1193,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		return true;
 	}
 
-	private static final String litStates[] = { "light", "spawn", "heightmaps", "full" };
+	private static final String litStates[] = { "light", "spawn", "heightmaps", "full", "minecraft:light", "minecraft:spawn", "minecraft:heightmaps", "minecraft:full"};
 
 	/**
 	 * Resolve a block state from its palette name and property string ("prop=value,prop=value", may be empty).
