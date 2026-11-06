@@ -1193,7 +1193,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		return true;
 	}
 
-	private static final String litStates[] = { "light", "spawn", "heightmaps", "full" };
+	private static final String litStates[] = { "light", "spawn", "heightmaps", "full", "minecraft:light", "minecraft:spawn", "minecraft:heightmaps", "minecraft:full"};
 
 	/**
 	 * Resolve a block state from its palette name and property string ("prop=value,prop=value", may be empty).
@@ -1280,6 +1280,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		int version = orignbt.getInt("DataVersion");
 		boolean lit = nbt.getBoolean("isLightOn");
 		boolean hasLitState = false;
+		boolean hasPaperStarlight = orignbt.contains("starlight.light_version");
 		if (status != null) {
 			for (String litState : litStates) {
 				if (status.equals(litState)) {
@@ -1495,7 +1496,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			sbld.reset();
         }
         // Assume skylight is only trustworthy in a lit state
-		if ((!hasLitState) || (!lit)) {
+		if ((!hasLitState) || (!lit && !hasPaperStarlight)) {
 			hasLight = false;
 		}
         // If no light, do simple generate
