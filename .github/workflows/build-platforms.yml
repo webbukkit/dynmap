@@ -145,13 +145,19 @@ jobs:
             java: '25'
           - module: forge-1.17.1
             task: ':forge-1.17.1:build'
-            java: '21'
+            java: |
+              8
+              21
           - module: forge-1.18.2
             task: ':forge-1.18.2:build'
-            java: '21'
+            java: |
+              8
+              21
           - module: forge-1.19.3
             task: ':forge-1.19.3:build'
-            java: '21'
+            java: |
+              8
+              21
           - module: forge-1.20.6
             task: ':forge-1.20.6:build'
             java: '21'
