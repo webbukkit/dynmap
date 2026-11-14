@@ -711,9 +711,8 @@ public class DynmapCore implements DynmapCommonAPI {
         
         /* Print version info */
         Log.info("version " + plugin_ver + " is enabled - core version " + version );
-        Log.info("You are running the Community Edition of Dynmap. This version provides support for more recent versions and contains additional fixes on top of the original Dynmap");
-        Log.info("For support, visit our Community Edition Discord at https://discord.gg/3FfRMBGNkD");
-        Log.info("To report or track bugs, visit https://github.com/webbukkit/dynmap/issues");
+        Log.info("Dynmap Community Edition - community-maintained, based on Dynmap by Mike Primm");
+        Log.info("For support, to report bugs, and more info, visit https://github.com/webbukkit/dynmap/wiki/Community-Edition");
 
         events.<Object>trigger("initialized", null);
                 
