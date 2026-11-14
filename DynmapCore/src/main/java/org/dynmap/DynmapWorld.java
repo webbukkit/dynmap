@@ -568,4 +568,13 @@ public abstract class DynmapWorld {
     public Polygon  getWorldBorder() {
         return null;
     }
+
+    /**
+     * Seed used by the client to pick the biome of a block from the 4x4x4 noise biomes
+     * (BiomeManager.obfuscateSeed(worldSeed) in vanilla)
+     * @return biome zoom seed, or null if not available (biomes are then read from the noise grid directly)
+     */
+    public Long getBiomeZoomSeed() {
+        return null;
+    }
 }

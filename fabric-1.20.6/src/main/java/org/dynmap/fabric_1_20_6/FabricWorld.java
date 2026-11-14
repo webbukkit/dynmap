@@ -7,6 +7,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.server.world.ServerWorld;
 import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapLocation;
 import org.dynmap.DynmapWorld;
@@ -231,6 +233,14 @@ public class FabricWorld extends DynmapWorld {
                 p.addVertex(wb.getBoundEast(), wb.getBoundNorth());
                 return p;
             }
+        }
+        return null;
+    }
+
+    @Override
+    public Long getBiomeZoomSeed() {
+        if (world instanceof ServerWorld) {
+            return BiomeAccess.hashSeed(((ServerWorld) world).getSeed());
         }
         return null;
     }

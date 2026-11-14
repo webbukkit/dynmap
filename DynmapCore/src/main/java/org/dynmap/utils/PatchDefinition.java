@@ -99,9 +99,9 @@ public class PatchDefinition implements RenderPatch {
     	if (rotorigin == null) rotorigin = offsetCenter;
     	/* Precompute trig once - reused for all three vector rotations */
     	double sinX = 0, cosX = 1, sinY = 0, cosY = 1, sinZ = 0, cosZ = 1;
-    	if (rotatex != 0) { double r = Math.toRadians(rotatex); sinX = Math.sin(r); cosX = Math.cos(r); }
-    	if (rotatey != 0) { double r = Math.toRadians(rotatey); sinY = Math.sin(r); cosY = Math.cos(r); }
-    	if (rotatez != 0) { double r = Math.toRadians(rotatez); sinZ = Math.sin(r); cosZ = Math.cos(r); }
+    	if (rotatex != 0) { double r = Math.toRadians(rotatex); sinX = snapTrig(Math.sin(r)); cosX = snapTrig(Math.cos(r)); }
+    	if (rotatey != 0) { double r = Math.toRadians(rotatey); sinY = snapTrig(Math.sin(r)); cosY = snapTrig(Math.cos(r)); }
+    	if (rotatez != 0) { double r = Math.toRadians(rotatez); sinZ = snapTrig(Math.sin(r)); cosZ = snapTrig(Math.cos(r)); }
         Vector3D vec = new Vector3D(orig.x0, orig.y0, orig.z0);
         rotatePrecomputed(vec, sinX, cosX, sinY, cosY, sinZ, cosZ, rotorigin); /* Rotate origin */
         x0 = vec.x; y0 = vec.y; z0 = vec.z;
@@ -125,25 +125,34 @@ public class PatchDefinition implements RenderPatch {
         update();
     }
 
+    /* Make sin/cos of right angles exact (cos(90) is 6e-17, not 0): rotated faces would otherwise land just off
+     * the block boundary and z-fight with coplanar faces (water of waterlogged blocks) */
+    private static double snapTrig(double v) {
+        if (Math.abs(v) < 1e-12) return 0.0;
+        if (Math.abs(v - 1.0) < 1e-12) return 1.0;
+        if (Math.abs(v + 1.0) < 1e-12) return -1.0;
+        return v;
+    }
+
     private static void rotatePrecomputed(Vector3D vec,
             double sinX, double cosX, double sinY, double cosY, double sinZ, double cosZ,
             Vector3D origin) {
-    	if (sinX == 0 && sinY == 0 && sinZ == 0) return;
+    	if (cosX == 1 && cosY == 1 && cosZ == 1) return;
         vec.subtract(origin);
         /* Do X rotation */
-        if (sinX != 0) {
+        if (cosX != 1) {
             double nval = vec.z * sinX + vec.y * cosX;
             vec.z = vec.z * cosX - vec.y * sinX;
             vec.y = nval;
         }
         /* Do Y rotation */
-        if (sinY != 0) {
+        if (cosY != 1) {
             double nval = vec.x * cosY - vec.z * sinY;
             vec.z = vec.x * sinY + vec.z * cosY;
             vec.x = nval;
         }
         /* Do Z rotation */
-        if (sinZ != 0) {
+        if (cosZ != 1) {
             double nval = vec.y * sinZ + vec.x * cosZ;
             vec.y = vec.y * cosZ - vec.x * sinZ;
             vec.x = nval;

@@ -46,6 +46,51 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 	private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
 			BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
+	// Biome Blend radius of the vanilla client (Options.biomeBlendRadius, default 2 = 5x5)
+	private static final int BIOME_BLEND_RADIUS = 2;
+	private static final int BLEND_GRASS = 0;
+	private static final int BLEND_FOLIAGE = 1;
+	private static final int BLEND_SWAMP = 2;
+	private static final int BLEND_WATER = 3;
+	private static final int BLEND_COLORMAP = 4;
+	private static final int ZOOM_CACHE_SIZE = 1024;
+	private static final int ZOOM_CACHE_MASK = ZOOM_CACHE_SIZE - 1;
+	private boolean useBiomeZoom;
+	private long biomeZoomSeed;
+
+	// Same as LinearCongruentialGenerator.next
+	private static long lcgNext(long rval, long c) {
+		rval *= rval * 6364136223846793005L + 1442695040888963407L;
+		return rval + c;
+	}
+
+	// Same as BiomeManager.getFiddle
+	private static double getFiddle(long rval) {
+		double uniform = Math.floorMod(rval >> 24, 1024L) / 1024.0;
+		return (uniform - 0.5) * 0.9;
+	}
+
+	// Same as BiomeManager.getFiddledDistance
+	private static double getFiddledDistance(long seed, int xRandom, int yRandom, int zRandom, double distanceX,
+			double distanceY, double distanceZ) {
+		long rval = seed;
+		rval = lcgNext(rval, xRandom);
+		rval = lcgNext(rval, yRandom);
+		rval = lcgNext(rval, zRandom);
+		rval = lcgNext(rval, xRandom);
+		rval = lcgNext(rval, yRandom);
+		rval = lcgNext(rval, zRandom);
+		double fiddleX = getFiddle(rval);
+		rval = lcgNext(rval, seed);
+		double fiddleY = getFiddle(rval);
+		rval = lcgNext(rval, seed);
+		double fiddleZ = getFiddle(rval);
+		double dz = distanceZ + fiddleZ;
+		double dy = distanceY + fiddleY;
+		double dx = distanceX + fiddleX;
+		return dz * dz + dy * dy + dx * dx;
+	}
+
 	/**
 	 * Iterator for traversing map chunk cache (base is for non-snapshot)
 	 */
@@ -57,6 +102,10 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		private final int worldheight;
 		private final int ymin;
 		private final int sealevel;
+		private final long[] zoomCacheKey = new long[ZOOM_CACHE_SIZE];
+		private final BiomeMap[] zoomCacheVal = new BiomeMap[ZOOM_CACHE_SIZE];
+		private int blendX, blendY, blendZ, blendMode = -1, blendResult;
+		private int[] blendMap, blendSwampMap;
 
 		OurMapIterator(int x0, int y0, int z0) {
 			initialize(x0, y0, z0);
@@ -172,85 +221,106 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			}
 		}
 		
-		@Override
-		public final int getSmoothGrassColorMultiplier(int[] colormap) {
-			int mult;
-
-			try {
-				int raccum = 0;
-				int gaccum = 0;
-				int baccum = 0;
-				int cnt = 0;
-				for (int dx = -1; dx <= 1; dx++) {
-					for (int dz = -1; dz <= 1; dz++) {
-						BiomeMap bm = getBiomeRel(dx, dz);
-						if (bm == BiomeMap.NULL) continue; 
-						int rmult = getGrassColor(bm, colormap, getX() + dx, getZ() + dz);
-						raccum += (rmult >> 16) & 0xFF;
-						gaccum += (rmult >> 8) & 0xFF;
-						baccum += rmult & 0xFF;
-						cnt++;
-					}
-				}
-				cnt = (cnt > 0) ? cnt : 1;
-				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
-			} catch (Exception exc) {
-				//Log.info("getSmoothGrassColorMultiplier() error: " + exc);
-				mult = 0xFFFFFF;
+		/**
+		 * Noise biome (4x4x4 cell) at the given quart coordinates, like ChunkAccess.getNoiseBiome (Y clamped to the world)
+		 */
+		private BiomeMap getNoiseBiome(int qx, int qy, int qz) {
+			int nx = qx << 2;
+			int nz = qz << 2;
+			int cx = nx >> 4;
+			int cz = nz >> 4;
+			if ((cx < x_min) || (cx > x_max) || (cz < z_min) || (cz > z_max)) {
+				return BiomeMap.NULL;
 			}
-
-			//Log.info(String.format("getSmoothGrassColorMultiplier() at %d, %d = %X", x, z, mult));
-			return mult;
+			int ny = Math.max(ymin, Math.min(worldheight - 1, qy << 2));
+			GenericChunk c = snaparray[(cx - x_min) + ((cz - z_min) * x_dim)];
+			return (c != null) ? c.getBiome(nx, ny, nz) : BiomeMap.NULL;
 		}
 
-		@Override
-		public final int getSmoothFoliageColorMultiplier(int[] colormap) {
-			int mult = 0xFFFFFF;
-
-			try {
-				int raccum = 0;
-				int gaccum = 0;
-				int baccum = 0;
-				int cnt = 0;
-				for (int dx = -1; dx <= 1; dx++) {
-					for (int dz = -1; dz <= 1; dz++) {
-						BiomeMap bm = getBiomeRel(dx, dz);
-						if (bm == BiomeMap.NULL) continue; 
-						int rmult = getFoliageColor(bm, colormap, getX() + dx, getZ() + dz);
-						raccum += (rmult >> 16) & 0xFF;
-						gaccum += (rmult >> 8) & 0xFF;
-						baccum += rmult & 0xFF;
-						cnt++;
-					}
-				}
-				cnt = (cnt > 0) ? cnt : 1;
-				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
-			} catch (Exception exc) {
-				//Log.info("getSmoothFoliageColorMultiplier() error: " + exc);
+		/**
+		 * Biome of a block as seen by the client: same as BiomeManager.getBiome, which picks one of the 8 surrounding
+		 * noise biomes using seeded jitter, so biome borders are not aligned on the 4x4 grid
+		 */
+		private BiomeMap getZoomedBiome(int bx, int by, int bz) {
+			long key = (((long) (bx & 0x3FFFFFF)) << 38) | (((long) (bz & 0x3FFFFFF)) << 12) | (by & 0xFFF);
+			int slot = (int) ((key ^ (key >>> 21) ^ (key >>> 42)) & ZOOM_CACHE_MASK);
+			BiomeMap bm = zoomCacheVal[slot];
+			if ((bm != null) && (zoomCacheKey[slot] == key)) {
+				return bm;
 			}
-			//Log.info(String.format("getSmoothFoliageColorMultiplier() at %d, %d = %X", x, z, mult));
-
-			return mult;
+			int absX = bx - 2;
+			int absY = by - 2;
+			int absZ = bz - 2;
+			int parentX = absX >> 2;
+			int parentY = absY >> 2;
+			int parentZ = absZ >> 2;
+			double fractX = (absX & 3) / 4.0;
+			double fractY = (absY & 3) / 4.0;
+			double fractZ = (absZ & 3) / 4.0;
+			int minI = 0;
+			double minDist = Double.POSITIVE_INFINITY;
+			for (int i = 0; i < 8; i++) {
+				boolean xEven = (i & 4) == 0;
+				boolean yEven = (i & 2) == 0;
+				boolean zEven = (i & 1) == 0;
+				double d = getFiddledDistance(biomeZoomSeed, xEven ? parentX : parentX + 1, yEven ? parentY : parentY + 1,
+						zEven ? parentZ : parentZ + 1, xEven ? fractX : fractX - 1.0, yEven ? fractY : fractY - 1.0,
+						zEven ? fractZ : fractZ - 1.0);
+				if (minDist > d) {
+					minI = i;
+					minDist = d;
+				}
+			}
+			bm = getNoiseBiome((minI & 4) == 0 ? parentX : parentX + 1, (minI & 2) == 0 ? parentY : parentY + 1,
+					(minI & 1) == 0 ? parentZ : parentZ + 1);
+			zoomCacheKey[slot] = key;
+			zoomCacheVal[slot] = bm;
+			return bm;
 		}
 
-		@Override
-		public final int getSmoothColorMultiplier(int[] colormap, int[] swampmap) {
-			int mult = 0xFFFFFF;
+		private BiomeMap getBlendBiome(int dx, int dz) {
+			if (useBiomeZoom) {
+				return getZoomedBiome(x + dx, y, z + dz);
+			}
+			return getBiomeRel(dx, dz);
+		}
 
+		/**
+		 * Average of the biome colors over a (2r+1)x(2r+1) square, as ClientLevel.calculateBlockTint does with the
+		 * default Biome Blend setting. Texels of the same block share the result, so the last one is cached.
+		 */
+		private int getBlendedColor(int mode, int[] colormap, int[] swampmap) {
+			if ((blendX == x) && (blendY == y) && (blendZ == z) && (blendMode == mode) && (blendMap == colormap)
+					&& (blendSwampMap == swampmap)) {
+				return blendResult;
+			}
+			int mult = 0xFFFFFF;
 			try {
 				int raccum = 0;
 				int gaccum = 0;
 				int baccum = 0;
 				int cnt = 0;
-				for (int dx = -1; dx <= 1; dx++) {
-					for (int dz = -1; dz <= 1; dz++) {
-						BiomeMap bm = getBiomeRel(dx, dz);
-						if (bm == BiomeMap.NULL) continue; 
+				for (int dx = -BIOME_BLEND_RADIUS; dx <= BIOME_BLEND_RADIUS; dx++) {
+					for (int dz = -BIOME_BLEND_RADIUS; dz <= BIOME_BLEND_RADIUS; dz++) {
+						BiomeMap bm = getBlendBiome(dx, dz);
+						if (bm == BiomeMap.NULL) continue;
 						int rmult;
-						if (bm == BiomeMap.SWAMPLAND) {
-							rmult = swampmap[bm.biomeLookup()];
-						} else {
-							rmult = colormap[bm.biomeLookup()];
+						switch (mode) {
+							case BLEND_GRASS:
+								rmult = getGrassColor(bm, colormap, x + dx, z + dz);
+								break;
+							case BLEND_FOLIAGE:
+								rmult = getFoliageColor(bm, colormap, x + dx, z + dz);
+								break;
+							case BLEND_SWAMP:
+								rmult = (bm == BiomeMap.SWAMPLAND) ? swampmap[bm.biomeLookup()] : colormap[bm.biomeLookup()];
+								break;
+							case BLEND_WATER:
+								rmult = bm.getWaterColorMult();
+								break;
+							default:
+								rmult = colormap[bm.biomeLookup()];
+								break;
 						}
 						raccum += (rmult >> 16) & 0xFF;
 						gaccum += (rmult >> 8) & 0xFF;
@@ -261,70 +331,41 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 				cnt = (cnt > 0) ? cnt : 1;
 				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
 			} catch (Exception exc) {
-				//Log.info("getSmoothColorMultiplier() error: " + exc);
+				//Log.info("getBlendedColor() error: " + exc);
 			}
-			//Log.info(String.format("getSmoothColorMultiplier() at %d, %d = %X", x, z, mult));
-
+			blendX = x;
+			blendY = y;
+			blendZ = z;
+			blendMode = mode;
+			blendMap = colormap;
+			blendSwampMap = swampmap;
+			blendResult = mult;
 			return mult;
+		}
+
+		@Override
+		public final int getSmoothGrassColorMultiplier(int[] colormap) {
+			return getBlendedColor(BLEND_GRASS, colormap, null);
+		}
+
+		@Override
+		public final int getSmoothFoliageColorMultiplier(int[] colormap) {
+			return getBlendedColor(BLEND_FOLIAGE, colormap, null);
+		}
+
+		@Override
+		public final int getSmoothColorMultiplier(int[] colormap, int[] swampmap) {
+			return getBlendedColor(BLEND_SWAMP, colormap, swampmap);
 		}
 
 		@Override
 		public final int getSmoothWaterColorMultiplier() {
-			int multv = 0xFFFFFF;
-			try {
-				int raccum = 0;
-				int gaccum = 0;
-				int baccum = 0;
-				int cnt = 0;
-				for (int dx = -1; dx <= 1; dx++) {
-					for (int dz = -1; dz <= 1; dz++) {
-						BiomeMap bm = getBiomeRel(dx, dz);
-						if (bm == BiomeMap.NULL) continue; 
-						int rmult = bm.getWaterColorMult();
-						raccum += (rmult >> 16) & 0xFF;
-						gaccum += (rmult >> 8) & 0xFF;
-						baccum += rmult & 0xFF;
-						cnt++;
-					}
-				}
-				cnt = (cnt > 0) ? cnt : 1;
-				multv = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
-			} catch (Exception exc) {
-				//Log.info("getSmoothWaterColorMultiplier(nomap) error: " + exc);
-			}
-			//Log.info(String.format("getSmoothWaterColorMultiplier(nomap) at %d, %d = %X", x, z, multv));
-
-			return multv;
+			return getBlendedColor(BLEND_WATER, null, null);
 		}
 
 		@Override
 		public final int getSmoothWaterColorMultiplier(int[] colormap) {
-			int mult = 0xFFFFFF;
-
-			try {
-				int raccum = 0;
-				int gaccum = 0;
-				int baccum = 0;
-				int cnt = 0;
-				for (int dx = -1; dx <= 1; dx++) {
-					for (int dz = -1; dz <= 1; dz++) {
-						BiomeMap bm = getBiomeRel(dx, dz);
-						if (bm == BiomeMap.NULL) continue; 
-						int rmult = colormap[bm.biomeLookup()];
-						raccum += (rmult >> 16) & 0xFF;
-						gaccum += (rmult >> 8) & 0xFF;
-						baccum += rmult & 0xFF;
-						cnt++;
-					}
-				}
-				cnt = (cnt > 0) ? cnt : 1;
-				mult = ((raccum / cnt) << 16) | ((gaccum / cnt) << 8) | (baccum / cnt);
-			} catch (Exception exc) {
-				//Log.info("getSmoothWaterColorMultiplier() error: " + exc);
-			}
-			//Log.info(String.format("getSmoothWaterColorMultiplier() at %d, %d = %X", x, z, mult));
-
-			return mult;
+			return getBlendedColor(BLEND_COLORMAP, colormap, null);
 		}
 
 		/**
@@ -621,6 +662,9 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 
 	public void setChunks(DynmapWorld dw, List<DynmapChunk> chunks) {
 		this.dw = dw;
+		Long zoomSeed = dw.getBiomeZoomSeed();
+		useBiomeZoom = (zoomSeed != null);
+		biomeZoomSeed = useBiomeZoom ? zoomSeed : 0L;
 		nsect = (int)Math.ceil((dw.worldheight - dw.minY) / 16.0);
 		sectoff = (int)(Math.ceil((-dw.minY) / 16.0));
 		this.chunks = chunks;
