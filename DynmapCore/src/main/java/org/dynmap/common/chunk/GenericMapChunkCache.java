@@ -1278,9 +1278,8 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		if (nbt == null) return null;
 		String status = nbt.getString("Status");
 		int version = orignbt.getInt("DataVersion");
-		boolean lit = nbt.getBoolean("isLightOn");
+		boolean lit = nbt.getBoolean("isLightOn") || orignbt.contains("starlight.light_version"); // Chunks with Starlight data always have isLightOn as false. Affects chunks from Paper and Fabric servers with the Starlight mod.
 		boolean hasLitState = false;
-		boolean hasPaperStarlight = orignbt.contains("starlight.light_version");
 		if (status != null) {
 			for (String litState : litStates) {
 				if (status.equals(litState)) {
@@ -1496,7 +1495,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 			sbld.reset();
         }
         // Assume skylight is only trustworthy in a lit state
-		if ((!hasLitState) || (!lit && !hasPaperStarlight)) {
+		if ((!hasLitState) || (!lit)) {
 			hasLight = false;
 		}
         // If no light, do simple generate
