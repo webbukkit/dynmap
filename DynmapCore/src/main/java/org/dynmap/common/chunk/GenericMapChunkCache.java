@@ -1193,7 +1193,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		return true;
 	}
 
-	private static final String litStates[] = { "light", "spawn", "heightmaps", "full" };
+	private static final String litStates[] = { "light", "spawn", "heightmaps", "full", "minecraft:light", "minecraft:spawn", "minecraft:heightmaps", "minecraft:full"};
 
 	/**
 	 * Resolve a block state from its palette name and property string ("prop=value,prop=value", may be empty).
@@ -1278,7 +1278,7 @@ public abstract class GenericMapChunkCache extends MapChunkCache {
 		if (nbt == null) return null;
 		String status = nbt.getString("Status");
 		int version = orignbt.getInt("DataVersion");
-		boolean lit = nbt.getBoolean("isLightOn");
+		boolean lit = nbt.getBoolean("isLightOn") || orignbt.contains("starlight.light_version"); // Chunks with Starlight data always have isLightOn as false. Affects chunks from Paper and Fabric servers with the Starlight mod.
 		boolean hasLitState = false;
 		if (status != null) {
 			for (String litState : litStates) {
